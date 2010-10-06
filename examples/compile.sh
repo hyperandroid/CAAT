@@ -1,3 +1,0 @@
-echo "/*** @author  Hyperandroid  ||  http://hyperandroid.com/ ***/" > ../build/all.js
-java -jar /home/ibon/closure\ compiler/compiler.jar --js ../src/CAAT.js --js ../src/core/class.js --js ../src/core/browserdetect.js --js ../src/model/actor.js --js ../src/model/conpoundimage.js --js ../src/model/imagepreloader.js --js ../src/model/pez.js --js ../src/model/director.js --js ../src/model/mouseevent.js --js ../src/model/scene.js --js ../src/math/affinetransform2D.js --js ../src/math/point.js --js ../src/math/rectangle.js --js ../src/math/bezier.js --js ../src/path/path.js --js ../src/path/pathactor.js --js ../src/behaviour/behaviour.js --js scene1.js --js scene2.js --js scene3.js --js scene4.js --js scene5.js --js scene6.js --js main.js >> ../build/all.js
-
