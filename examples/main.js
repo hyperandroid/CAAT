@@ -130,14 +130,8 @@ function setupTRButtonPaintIndex(prev, index) {
 
 function __init(images) {
 
-    canvascontainer= document.createElement('div');
-    document.body.appendChild(canvascontainer);
-
 	var director = new CAAT.Director();
     director.initialize(680,500);
-
-    canvascontainer.appendChild( director.domCanvas );
-
 	director.addScene( __scene1(director,images) );
 	director.addScene( __scene2(director,images) );
 	director.addScene( __scene3(director,images) );
@@ -209,8 +203,6 @@ function __init(images) {
 		}
 	}
 	
-    CAAT.director= director;
-	CAAT.time= new Date().getTime();
 	setInterval(
             function loop() {
 	            CAAT.director.render( new Date().getTime() - CAAT.time );

@@ -12,7 +12,9 @@
  *
  * TODO:
  *  + add more scene change transitions (translations and flip)
- *  + expose more events. 
+ *  + expose more events.
+ *  + pump keyboard events
+ *  + modify event pumping: prevent default, bubling, etc.
  *
  **/
 
@@ -37,17 +39,25 @@
 
         initialize : function(width,height) {
 
-            var canvas= document.getElementById('s');
-            canvas.width= 680;
-            canvas.height=500;
+            var canvascontainer= document.createElement('div');
+            document.body.appendChild(canvascontainer);
+
+            var canvas= document.createElement('canvas');
+            canvas.width= width;
+            canvas.height=height;
+
+            canvascontainer.appendChild( canvas );
 
             this.setBounds(0, 0, canvas.width, canvas.height);
             this.create();
             this.canvas= canvas;
             this.crc= canvas.getContext('2d');
-            this.domCanvas= canvas;
 
             __GlobalEnableEvents(this);
+
+            CAAT.director= this;
+            CAAT.time= new Date().getTime();
+            
         },
         render : function(time) {
 

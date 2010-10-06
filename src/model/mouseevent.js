@@ -89,7 +89,7 @@ function __GlobalEnableEvents(director) {
     __mousePoint=         new CAAT.Point();
     __screenMousePoint=   new CAAT.Point();
 
-    document.body.onkeydown=
+    document.onkeydown=
         function(evt,c) {
             var key = (evt.which) ? evt.which : event.keyCode;
             switch( key ) {
@@ -105,7 +105,7 @@ function __GlobalEnableEvents(director) {
             }
         };
 
-    document.body.onkeyup=
+    document.onkeyup=
             function(evt,c) {
                 var key = (evt.which) ? evt.which : event.keyCode;
                 switch( key ) {
@@ -122,7 +122,7 @@ function __GlobalEnableEvents(director) {
             };
 
 
-    director.canvas.addEventListener('mouseup',
+    document.addEventListener('mouseup',
             function(e) {
                 __mouseDown = false;
                 if (null != __lastSelectedActor) {
@@ -151,7 +151,7 @@ function __GlobalEnableEvents(director) {
             },
             false);
 
-    director.canvas.addEventListener('mousedown',
+    document.addEventListener('mousedown',
             function(e) {
                 __mouseDown = true;
                 __lastSelectedActor = director.findActorAtPosition(__mousePoint);
@@ -167,7 +167,7 @@ function __GlobalEnableEvents(director) {
             },
             false);
 
-    director.canvas.addEventListener('mouseover',
+    document.addEventListener('mouseover',
             function(e) {
                 __getCanvasCoord(__mousePoint, e);
                 __lastSelectedActor = director.findActorAtPosition(__mousePoint);
@@ -183,7 +183,7 @@ function __GlobalEnableEvents(director) {
             },
             false);
 
-    director.canvas.addEventListener('mouseout',
+    document.addEventListener('mouseout',
             function(e) {
                 if (null != __lastSelectedActor) {
                     __lastSelectedActor.mouseExit(new CAAT.MouseEvent().init(0, 0, __modifiers, __lastSelectedActor, __screenMousePoint));
@@ -193,7 +193,7 @@ function __GlobalEnableEvents(director) {
             },
             false);
 
-    director.canvas.addEventListener('mousemove',
+    document.addEventListener('mousemove',
             function(e) {
 
                 __getCanvasCoord(__mousePoint, e);
@@ -250,7 +250,7 @@ function __GlobalEnableEvents(director) {
             },
             false);
 
-    director.canvas.addEventListener("dblclick", function(e) {
+    document.addEventListener("dblclick", function(e) {
         __getCanvasCoord(__mousePoint, e);
         if (null != __lastSelectedActor) {
             __lastSelectedActor.mouseDblClick(

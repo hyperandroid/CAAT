@@ -535,7 +535,12 @@
 		this.textAlign= "left";
 		this.textBaseline= "top";
 		this.outlineColor= "black";
-		
+
+        // TODO: remove when IE9 fixes text clipping.
+        if ( CAAT.director.getBrowserName()=='MSIE' ) {
+            this.clip= false;
+        }
+
 		return this;
 	};
 	
