@@ -13,7 +13,7 @@ function __scene4(director, images) {
 	scene.addChild(cc);	
 	
 	var coords= new CAAT.TextActor();
-	coords.font="20px sans-serif";
+	coords.setFont("20px sans-serif");
 	coords.textAlign="left";
 	coords.textBaseline="top";
 	coords.setText("");
@@ -25,7 +25,7 @@ function __scene4(director, images) {
 	scene.addChild(coords);
 
 	var coords2= new CAAT.TextActor();
-	coords2.font="20px sans-serif";
+	coords2.setFont("20px sans-serif");
 	coords2.textAlign="left";
 	coords2.textBaseline="top";
 	coords2.setText("");
@@ -37,7 +37,7 @@ function __scene4(director, images) {
 	scene.addChild(coords2);
 
 	var coords3= new CAAT.TextActor();
-	coords3.font="20px sans-serif";
+	coords3.setFont("20px sans-serif");
 	coords3.textAlign="left";
 	coords3.textBaseline="top";
 	coords3.setText("");
@@ -81,27 +81,22 @@ function __scene4(director, images) {
 			
 			canvas.strokeStyle= this.pointed ? 'red' : 'black';
 			canvas.strokeRect(0,0,this.width,this.height );
-			
-			if ( this.clip ) {
-				canvas.beginPath();
-				canvas.rect(0,0,this.width,this.height);
-				canvas.clip();
 				
-				canvas.strokeStyle='white';
-				canvas.beginPath();
-				canvas.moveTo(5,10);
-				canvas.lineTo(20,10);
-				canvas.lineTo(15,5);
-				
-				canvas.moveTo(20,10);
-				canvas.lineTo(15,15);
-				
-				canvas.lineWidth=2;
-				canvas.lineJoin='round';
-				canvas.lineCap='round';
+            canvas.strokeStyle='white';
+            canvas.beginPath();
+            canvas.moveTo(5,10);
+            canvas.lineTo(20,10);
+            canvas.lineTo(15,5);
 
-				canvas.stroke();
-			}			
+            canvas.moveTo(20,10);
+            canvas.lineTo(15,15);
+
+            canvas.lineWidth=2;
+            canvas.lineJoin='round';
+            canvas.lineCap='round';
+
+            canvas.stroke();
+
 
 		};
 		p.mouseDblClick= dblclick;
@@ -204,7 +199,7 @@ function __scene4(director, images) {
 	cc1.addBehaviour(rb);
 	
 	var text= new CAAT.TextActor();
-	text.font="30px sans-serif";
+	text.setFont("30px sans-serif");
 	text.setText("Perfect Pixel");
 	text.textAlign="center";
 	text.setLocation(150,0);
@@ -214,7 +209,7 @@ function __scene4(director, images) {
 	cc1.addChild(text);
 
 	var text2= new CAAT.TextActor();
-	text2.font="30px sans-serif";
+	text2.setFont("30px sans-serif");
 	text2.textAlign="center";
 	text2.setText("Collision detection");
 	text2.setLocation(150,30);
@@ -224,7 +219,7 @@ function __scene4(director, images) {
 	cc1.addChild(text2);
 
 	var text3= new CAAT.TextActor();
-	text3.font="30px sans-serif";
+	text3.setFont("30px sans-serif");
 	text3.textAlign="center";
 	text3.setText("Drag Enabled");
 	text3.setLocation(150,60);
@@ -234,7 +229,7 @@ function __scene4(director, images) {
 	cc1.addChild(text3);
 
 	var text4= new CAAT.TextActor();
-	text4.font="20px sans-serif";
+	text4.setFont("20px sans-serif");
 	text4.textAlign="center";
 	text4.setText("Drag + [Control,Shift,Alt]");
 	text4.setLocation(150,100);
@@ -243,7 +238,7 @@ function __scene4(director, images) {
 	cc1.addChild(text4);
 
 	var text5= new CAAT.TextActor();
-	text5.font="20px sans-serif";
+	text5.setFont("20px sans-serif");
 	text5.textAlign="center";
 	text5.setText("Double Click");
 	text5.setLocation(150,120);

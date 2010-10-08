@@ -124,7 +124,7 @@ function __scene6_text(director,scene) {
 	cc.addBehaviour(rb);	
 	
 	var text= new CAAT.TextActor();
-	text.font="50px sans-serif";
+	text.setFont("50px sans-serif");
 	text.setText("Fish");
 	text.textAlign="center";
 	text.setLocation(150,0);
@@ -134,7 +134,7 @@ function __scene6_text(director,scene) {
 	cc.addChild(text);
 	
 	var text2= new CAAT.TextActor();
-	text2.font="50px sans-serif";
+	text2.setFont("50px sans-serif");
 	text2.setText("Field");
 	text2.textAlign="center";
 	text2.setLocation(150,50);

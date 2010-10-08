@@ -15,6 +15,7 @@ function __scene5(director, images) {
 	p.addCubicTo( 535,500,  155,500,  155,250 );
 	p.endPath();
 
+
 	// actor de path para poder verlo y manipularlo
 	var pa= new CAAT.PathActor();
 	pa.setPath(p);
@@ -28,13 +29,13 @@ function __scene5(director, images) {
 	gradient.addColorStop(1,'blue');	
 	
 	var text= new CAAT.TextActor();
-	text.font="40px sans-serif";
+	text.setFont("40px sans-serif");
 	text.setText("Text on path   :D");
 	text.textAlign="left";
 	text.create();
 	text.fillStyle=gradient;
 	text.textBaseline="bottom";
-	text.setPath( p );
+	text.setPath( p, new CAAT.Interpolator().createBounceInOutInterpolator() );
 	scene.addChild(text);		
 
 	var gradient2= director.crc.createLinearGradient(0,0,0,40);
@@ -43,13 +44,13 @@ function __scene5(director, images) {
 	gradient2.addColorStop(1,'#ffff00');	
 	
 	var text2= new CAAT.TextActor();
-	text2.font="40px sans-serif";
+	text2.setFont("40px sans-serif");
 	text2.setText("Text under path   :D");
 	text2.textAlign="left";
 	text2.create();
 	text2.fillStyle=gradient2;
 	text2.textBaseline="top";
-	text2.setPath( p );
+	text2.setPath( p, new CAAT.Interpolator().createExponentialInOutInterpolator(3) );
 	text2.sign= -1;
 	scene.addChild(text2);		
 	
@@ -81,7 +82,7 @@ function __scene5_text(director,scene) {
 	gradient.addColorStop(1,'#d0d0d0');	
 	
 	var text= new CAAT.TextActor();
-	text.font="40px sans-serif";
+	text.setFont("40px sans-serif");
 	text.setText("Text on Path");
 	text.textAlign="center";
 	text.setLocation(150,0);
@@ -91,7 +92,7 @@ function __scene5_text(director,scene) {
 	cc1.addChild(text);
 
 	var text2= new CAAT.TextActor();
-	text2.font="40px sans-serif";
+	text2.setFont("40px sans-serif");
 	text2.textAlign="center";
 	text2.setText("Interpolated");
 	text2.setLocation(150,40);
@@ -101,7 +102,7 @@ function __scene5_text(director,scene) {
 	cc1.addChild(text2);
 
 	var text4= new CAAT.TextActor();
-	text4.font="40px sans-serif";
+	text4.setFont("40px sans-serif");
 	text4.textAlign="center";
 	text4.setText("As well");
 	text4.setLocation(150,80);

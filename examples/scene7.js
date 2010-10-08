@@ -55,7 +55,7 @@ function __scene7(director, images) {
     root.mouseExit= function(mouseEvent) {}
 
     var children= new CAAT.TextActor();
-    children.font="20px sans-serif";
+    children.setFont("20px sans-serif");
     children.textAlign="left";
     children.textBaseline="top";
     children.setText("");

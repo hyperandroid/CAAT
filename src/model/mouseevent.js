@@ -7,6 +7,8 @@
  * Here it is also the logic to on mouse events, pump the correct event to the appropiate scene
  * graph Actor.
  *
+ * 20101008 Hyperandroid. changed event scope from CAAT.director.canvas to window. Works under
+ *          al major browsers on linux and win7. Thanks @alteredq for this tip.
  *
  * TODO: add events for event pumping:
  *  + cancelBubling
@@ -89,7 +91,7 @@ function __GlobalEnableEvents(director) {
     __mousePoint=         new CAAT.Point();
     __screenMousePoint=   new CAAT.Point();
 
-    document.onkeydown=
+    window.addEventListener('keydown',
         function(evt,c) {
             var key = (evt.which) ? evt.which : event.keyCode;
             switch( key ) {
@@ -103,26 +105,28 @@ function __GlobalEnableEvents(director) {
                 __modifiers|=CAAT.MouseEvent.prototype.ALT_MASK;
                 break;
             }
-        };
+        },
+        false);
 
-    document.onkeyup=
-            function(evt,c) {
-                var key = (evt.which) ? evt.which : event.keyCode;
-                switch( key ) {
-                case CAAT.MouseEvent.prototype.SHIFT:
-                    __modifiers&=~CAAT.MouseEvent.prototype.SHIFT_MASK;
-                    break;
-                case CAAT.MouseEvent.prototype.CONTROL:
-                    __modifiers&=~CAAT.MouseEvent.prototype.CONTROL_MASK;
-                    break;
-                case CAAT.MouseEvent.prototype.ALT:
-                    __modifiers&=~CAAT.MouseEvent.prototype.ALT_MASK;
-                    break;
-                }
-            };
+    window.addEventListener('keyup',
+        function(evt,c) {
+            var key = (evt.which) ? evt.which : event.keyCode;
+            switch( key ) {
+            case CAAT.MouseEvent.prototype.SHIFT:
+                __modifiers&=~CAAT.MouseEvent.prototype.SHIFT_MASK;
+                break;
+            case CAAT.MouseEvent.prototype.CONTROL:
+                __modifiers&=~CAAT.MouseEvent.prototype.CONTROL_MASK;
+                break;
+            case CAAT.MouseEvent.prototype.ALT:
+                __modifiers&=~CAAT.MouseEvent.prototype.ALT_MASK;
+                break;
+            }
+        },
+        false );
 
 
-    document.addEventListener('mouseup',
+    window.addEventListener('mouseup',
             function(e) {
                 __mouseDown = false;
                 if (null != __lastSelectedActor) {
@@ -151,7 +155,7 @@ function __GlobalEnableEvents(director) {
             },
             false);
 
-    document.addEventListener('mousedown',
+    window.addEventListener('mousedown',
             function(e) {
                 __mouseDown = true;
                 __lastSelectedActor = director.findActorAtPosition(__mousePoint);
@@ -167,7 +171,7 @@ function __GlobalEnableEvents(director) {
             },
             false);
 
-    document.addEventListener('mouseover',
+    window.addEventListener('mouseover',
             function(e) {
                 __getCanvasCoord(__mousePoint, e);
                 __lastSelectedActor = director.findActorAtPosition(__mousePoint);
@@ -183,7 +187,7 @@ function __GlobalEnableEvents(director) {
             },
             false);
 
-    document.addEventListener('mouseout',
+    window.addEventListener('mouseout',
             function(e) {
                 if (null != __lastSelectedActor) {
                     __lastSelectedActor.mouseExit(new CAAT.MouseEvent().init(0, 0, __modifiers, __lastSelectedActor, __screenMousePoint));
@@ -193,7 +197,7 @@ function __GlobalEnableEvents(director) {
             },
             false);
 
-    document.addEventListener('mousemove',
+    window.addEventListener('mousemove',
             function(e) {
 
                 __getCanvasCoord(__mousePoint, e);
@@ -250,7 +254,7 @@ function __GlobalEnableEvents(director) {
             },
             false);
 
-    document.addEventListener("dblclick", function(e) {
+    window.addEventListener("dblclick", function(e) {
         __getCanvasCoord(__mousePoint, e);
         if (null != __lastSelectedActor) {
             __lastSelectedActor.mouseDblClick(

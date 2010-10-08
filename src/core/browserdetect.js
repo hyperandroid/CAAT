@@ -2,6 +2,9 @@
  * 
  * taken from: http://www.quirksmode.org/js/detect.html
  *
+ * 20101008 Hyperandroid. IE9 seems to identify himself as Explorer and stopped calling himself MSIE.
+ *          Added Explorer description to browser list. Thanks @alteredq for this tip.
+ *
  */
 var BrowserDetect = {
 	init: function () {
@@ -80,6 +83,12 @@ var BrowserDetect = {
 			subString: "MSIE",
 			identity: "Explorer",
 			versionSearch: "MSIE"
+		},
+		{
+			string: navigator.userAgent,
+			subString: "Explorer",
+			identity: "Explorer",
+			versionSearch: "Explorer"
 		},
 		{
 			string: navigator.userAgent,

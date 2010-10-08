@@ -28,7 +28,7 @@ function __scene3(director, images) {
 	cc.addBehaviour(rb);	
 	
 	var text= new CAAT.TextActor();
-	text.font="50px sans-serif";
+	text.setFont("50px sans-serif");
 	text.setText("Anchored");
 	text.textAlign="center";
 	text.setLocation(150,0);
@@ -38,7 +38,7 @@ function __scene3(director, images) {
 	cc.addChild(text);
 	
 	var text2= new CAAT.TextActor();
-	text2.font="50px sans-serif";
+	text2.setFont("50px sans-serif");
 	text2.textAlign="center";
 	text2.setText("Affine");
 	text2.setLocation(150,50);
@@ -48,7 +48,7 @@ function __scene3(director, images) {
 	cc.addChild(text2);
 
 	var text3= new CAAT.TextActor();
-	text3.font="50px sans-serif";
+	text3.setFont("50px sans-serif");
 	text3.textAlign="center";
 	text3.setText("Transforms");
 	text3.setLocation(150,100);

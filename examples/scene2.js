@@ -119,17 +119,17 @@ function __scene2(director, images) {
 	scene.addChild(cc1);
 	cc1.mouseEnabled= false;
 	
-	var rb= new CAAT.RotateBehaviour();
-	rb.cycleBehaviour= true;
-	rb.setFrameTime( 0, 4000 );
-	rb.minAngle= -Math.PI/8;
-	rb.maxAngle= Math.PI/8;
-	rb.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
-	rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
-	cc1.addBehaviour(rb);
+	var rb1= new CAAT.RotateBehaviour();
+	rb1.cycleBehaviour= true;
+	rb1.setFrameTime( 0, 4000 );
+	rb1.minAngle= -Math.PI/8;
+	rb1.maxAngle= Math.PI/8;
+	rb1.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
+	rb1.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
+	cc1.addBehaviour(rb1);
 	
 	var text= new CAAT.TextActor();
-	text.font="50px sans-serif";
+	text.setFont("50px sans-serif");
 	text.setText("One Image.");
 	text.textAlign="center";
 	text.setLocation(150,0);
@@ -139,7 +139,7 @@ function __scene2(director, images) {
 	cc1.addChild(text);
 
 	var text2= new CAAT.TextActor();
-	text2.font="30px sans-serif";
+	text2.setFont("30px sans-serif");
 	text2.textAlign="center";
 	text2.setText("Behaviours on");
 	text2.setLocation(150,50);
@@ -149,7 +149,7 @@ function __scene2(director, images) {
 	cc1.addChild(text2);
 	
 	var text3= new CAAT.TextActor();
-	text3.font="30px sans-serif";
+	text3.setFont("30px sans-serif");
 	text3.textAlign="center";
 	text3.setText("MouseMove");
 	text3.setLocation(150,80);
@@ -159,7 +159,7 @@ function __scene2(director, images) {
 	cc1.addChild(text3);
 
 	var text4= new CAAT.TextActor();
-	text4.font="10px sans-serif";
+	text4.setFont("10px sans-serif");
 	text4.textAlign="center";
 	text4.setText("and");
 	text4.setLocation(150,110);
@@ -169,7 +169,7 @@ function __scene2(director, images) {
 	cc1.addChild(text4);
 	
 	var text5= new CAAT.TextActor();
-	text5.font="30px sans-serif";
+	text5.setFont("30px sans-serif");
 	text5.textAlign="center";
 	text5.setText("MouseDblClick");
 	text5.setLocation(150,120);

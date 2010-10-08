@@ -15,6 +15,12 @@
  * TextActor is an actor to show text in the scene graph.
  * TODO: add text presentation/animation effects.
  *
+ * 20101008 Hyperandroid.
+ *  + TextActor computes right its dimension.
+ *  + Clipping will be disabled by default until IE9 fixes.
+ *  + The TextActor.setPath has been upgraded to accept interpolator and path duration.
+ *
+ *
  **/
 
 
@@ -41,7 +47,7 @@
 		rpoint:					null,
 		
 		// clip el area del componente.
-		clip:					true,
+		clip:					false,
     
 		scaleX:					0, 
 		scaleY:					0,
@@ -86,6 +92,13 @@
 			canvas.save();
 				canvas.globalAlpha*= this.alpha;
 				this.prepareGraphics(canvas);
+
+                if ( this.clip ) {
+                    canvas.beginPath();
+                    canvas.rect(0,0,this.width,this.height);
+                    canvas.clip();
+                }
+
 				this.paint(director, time);
 			canvas.restore();
 		},
@@ -135,12 +148,7 @@
 			
 //			canvas.strokeStyle= this.pointed ? 'red' : 'black';
 //			canvas.strokeRect(0,0,this.width,this.height );
-			
-			if ( this.clip ) {
-				canvas.beginPath();
-				canvas.rect(0,0,this.width,this.height);
-				canvas.clip();
-			}			
+
 		},
 		setScale : function( sx, sy )    {
 			this.setScaleAnchored( sx, sy, this.ANCHOR_CENTER );
@@ -503,11 +511,9 @@
 		},
 		paint : function(director, time) {
 			
-//			SpriteActor.superclass.paint.call( this, canvas, time );
-			
 			var canvas= director.crc;
-			
-			// se dibujan en 0,0 porque el canvas ya viene transformado con traslación, etc.
+
+            // drawn at 0,0 because they're already affine-transformed.
 			switch(this.transformation)	{
 				case this.TR_FLIP_HORIZONTAL:
 					this.conpoundbitmap.paintInvertedH( canvas, this.spriteIndex, 0, 0);
@@ -526,6 +532,10 @@
 	});
 })();
 
+/**
+ * TextActor draws text on screen.
+ * TODO: on setText, calculate proper actor size.
+ */
 (function() {
 	CAAT.TextActor = function() {
 		
@@ -535,11 +545,7 @@
 		this.textAlign= "left";
 		this.textBaseline= "top";
 		this.outlineColor= "black";
-
-        // TODO: remove when IE9 fixes text clipping.
-        if ( CAAT.director.getBrowserName()=='MSIE' ) {
-            this.clip= false;
-        }
+        this.clip= false;
 
 		return this;
 	};
@@ -555,10 +561,41 @@
 		outlineColor:	null,
 		
 		path:			null,
+        pathInterpolator:	null,
+        pathDuration:       10000,
 		sign:			1,
 		
 		setText : function( sText ) {
 			this.text= sText;
+            this.setFont( this.font );
+        },
+        setFont : function(font) {
+
+            if ( !font ) {
+                return;
+            }
+
+            this.font= font;
+
+            if ( this.text=="" ) {
+                this.width= this.height= 0;
+                return;
+            }
+
+            CAAT.director.crc.save();
+            CAAT.director.crc.font= this.font;
+
+            this.width= CAAT.director.crc.measureText( this.text ).width;
+
+            try {
+                var pos= this.font.indexOf("px");
+                var s =  this.font.substring(0, pos );
+                this.height= parseInt(s);
+            } catch(e) {
+                this.height=20; // default height;
+            }
+
+            CAAT.director.crc.restore();
 		},
 		paint : function(director, time) {
 		
@@ -609,7 +646,7 @@
 			
 			var canvas= director.crc;
 			
-			var textWidth=this.sign * (time%10000) * this.path.getLength() / 10000;
+			var textWidth=this.sign * this.pathInterpolator.getPosition( (time%this.pathDuration)/this.pathDuration ).y * this.path.getLength() ;
 			var p0= new CAAT.Point();
 			var p1= new CAAT.Point();
 			
@@ -618,7 +655,7 @@
 				var charWidth= canvas.measureText( caracter ).width;
 				
 				var pathLength= this.path.getLength();
-				
+
 				var currentCurveLength= charWidth/2 + textWidth;
 
 				p0= this.path.getPositionFromLength(currentCurveLength).clone();
@@ -637,8 +674,10 @@
 				textWidth+= charWidth;
 			}
 		},
-		setPath : function( path ) {
+		setPath : function( path, interpolator, duration ) {
 			this.path= path;
+            this.pathInterpolator= interpolator || new CAAT.Interpolator.createLinearInterpolator();
+            this.pathDuration= duration || 10000;
 			this.setBounds(0,0,parent.width,parent.height);
 			this.mouseEnabled= false;
 		}
@@ -673,7 +712,7 @@
             if ( null!=this.strokeStyle ) {
                 canvas.strokeStyle= this.strokeStyle;
                 canvas.beginPath();
-                canvas.arc( 0,0, Math.min(this.width,this.height)/2, 0, 2*Math.PI, false );
+                canvas.arc( this.width/2, this.height/2, Math.min(this.width,this.height)/2, 0, 2*Math.PI, false );
                 canvas.stroke();
             }
         }
