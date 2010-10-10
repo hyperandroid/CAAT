@@ -1,7 +1,13 @@
 /**
  * @author  Hyperandroid  ||  http://hyperandroid.com/
  *
- * Example CAAT library initialization. 
+ * Example CAAT library initialization. This file should not be used as the official startup code.
+ * This file is used to add a navigator for each scene, and to build a concrete loading resources
+ * scheme.
+ *
+ * 20101010 Hyperandroid
+ *  + Refactored images loading.
+ *  + Added Image loading feedback
  *
  **/
 function setupTRButton(prev) {
@@ -128,17 +134,21 @@ function setupTRButtonPaintIndex(prev, index) {
 	};			
 }
 
-function __init(images) {
+/**
+ * This method will be called when the user presses the start button.
+ * @param director
+ */
+function __CAAT_director_initialize(director) {
 
-	var director = new CAAT.Director();
-    director.initialize(680,500);
-	director.addScene( __scene1(director,images) );
-	director.addScene( __scene2(director,images) );
-	director.addScene( __scene3(director,images) );
-	director.addScene( __scene4(director,images) );
-	director.addScene( __scene5(director,images) );
-	director.addScene( __scene6(director,images) );
-    director.addScene( __scene7(director,images) );
+    director.emptyScenes();
+
+	director.addScene( __scene1(director) );
+	director.addScene( __scene2(director) );
+	director.addScene( __scene3(director) );
+	director.addScene( __scene4(director) );
+	director.addScene( __scene5(director) );
+	director.addScene( __scene6(director) );
+    director.addScene( __scene7(director) );
 
 	director.easeIn(
             0,
@@ -203,26 +213,178 @@ function __init(images) {
 		}
 	}
 	
-	setInterval(
+
+}
+
+/**
+ * Sample loading scene.
+ * @param director
+ */
+function __CAAT__loadingScene(director) {
+
+	var scene= new CAAT.Scene();
+	scene.create();
+
+    var root= new CAAT.ActorContainer();
+    root.create();
+    root.setBounds(0,0,director.canvas.width,director.canvas.height);
+    scene.addChild( root );
+
+    root.fillStyle='#000000';
+    root.mouseEnter= function(mouseEvent) {}
+    root.mouseExit= function(mouseEvent) {}
+
+    var textLoading= new CAAT.TextActor();
+    textLoading.setFont("20px sans-serif");
+    textLoading.textAlign="left";
+    textLoading.textBaseline="top";
+    textLoading.setText("Loading    ");
+    textLoading.setLocation(15,20);
+    textLoading.create();
+    textLoading.fillStyle='white';
+    scene.addChild(textLoading);
+    textLoading.setLocation(
+            (director.canvas.width-textLoading.width)/2,
+            (director.canvas.height-textLoading.height)/2);
+
+    scene.loading= textLoading;
+
+    var rb= new CAAT.RotateBehaviour();
+    rb.cycleBehaviour= true;
+    rb.setFrameTime( 0, 5000 );
+    rb.minAngle= -Math.PI/4;
+    rb.maxAngle= Math.PI/4;
+    rb.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
+    rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
+    textLoading.addBehaviour(rb);
+
+    root.mouseMove= function(mouseEvent) {
+
+        var burbuja= new CAAT.ShapeActor();
+        burbuja.setLocation( mouseEvent.point.x, mouseEvent.point.y );
+        burbuja.create();
+        burbuja.mouseEnabled= false;
+        burbuja.compositeOp='lighter';
+        var r= 1+10*Math.random();
+        burbuja.setSize( 5+r, 5+r );
+
+        var r= 192 + (64*Math.random())>>0;
+        var g= (64*Math.random())>>0;
+        var b= (64*Math.random())>>0;
+        var a= 255;
+
+        burbuja.fillStyle="rgba("+r+","+g+","+b+","+a+")";
+
+        root.addChild(burbuja);
+
+        var cb= new CAAT.ContainerBehaviour();
+        cb.actor= burbuja;
+
+        cb.setFrameTime( scene.time+2000+1000*Math.random(), 500 );
+		cb.addListener(
+            {
+                behaviourExpired : function(behaviour, time) {
+                    behaviour.actor.discardable= true;
+                    behaviour.actor.setExpired(true);
+                }
+            });
+
+            var ab= new CAAT.AlphaBehaviour();
+            ab.setFrameTime( 0, 500 );
+            ab.startAlpha= 1;
+            ab.endAlpha= 0;
+            cb.addBehaviour(ab);
+
+            var tb= new CAAT.PathBehaviour();
+            tb.setFrameTime( 0, 500 );
+            tb.setPath(
+                    new CAAT.Path().setLinear(
+                            burbuja.x, burbuja.y,
+                            burbuja.x, burbuja.y-100-100*Math.random() ) );
+            cb.addBehaviour(tb);
+
+        burbuja.addBehaviour( cb );
+
+    }
+
+    /**
+     * This method will be called after imagePreloader after loading each image resource.
+     */
+    scene.loadedImage= function(index,size) {
+        textLoading.setText( 'Loading '+index+'/'+size );
+    }
+
+    /**
+     * This method will be called after imagePreloader ends loading resources.
+     */
+    scene.finishedLoading= function() {
+        this.loading.setText('Start');
+        this.loading.emptyBehaviourList();
+
+        var sb= new CAAT.ScaleBehaviour();
+        sb.setPingPong();
+        sb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
+        sb.minScaleX= 1;
+        sb.maxScaleX= 4;
+        sb.minScaleY= 1;
+        sb.maxScaleY= 4;
+        sb.setCycle(true);
+        sb.setFrameTime( scene.time, 1000 );
+
+        this.loading.addBehaviour(sb);
+
+        // after changing the from 'loading' to 'start', set mouseclick function to initialize demo.
+        this.loading.mouseClick= function(event) {
+            __CAAT_director_initialize(director);
+        }
+    };
+
+	return scene;
+}
+
+/**
+ * Entry point from document loading.
+ * @param images
+ */
+function __CAAT_init(images) {
+
+	var director = new CAAT.Director();
+    director.initialize(680,500);
+
+    var scene_loading= __CAAT__loadingScene(director);
+    director.addScene( scene_loading );
+    director.setScene(0);
+
+	new CAAT.ImagePreloader().loadImages(
+        [
+            {id:'fish',     url:'res/img/anim1.png'},
+            {id:'fish2',    url:'res/img/anim2.png'},
+            {id:'fish3',    url:'res/img/anim3.png'},
+            {id:'fish4',    url:'res/img/anim4.png'},
+            {id:'chapas',   url:'res/img/chapas.jpg'},
+            {id:'buble1',   url:'res/img/burbu1.png'},
+            {id:'buble2',   url:'res/img/burbu2.png'},
+            {id:'buble3',   url:'res/img/burbu3.png'},
+            {id:'buble4',   url:'res/img/burbu4.png'}
+        ],
+
+        function( counter, images ) {
+            scene_loading.loadedImage(counter, images.length);
+            if ( counter==images.length ) {
+                director.imagesCache= images;
+                scene_loading.finishedLoading();
+            }
+        }
+    );
+
+    setInterval(
             function loop() {
-	            CAAT.director.render( new Date().getTime() - CAAT.time );
+                var t= new Date().getTime();
+                CAAT.director.render( t - CAAT.time );
+                CAAT.time= t;
             },
             30);
 
 }
 
-window.addEventListener('load', function() {
-    // FIX: show loading callback info.
-	var il = new CAAT.ImagePreloader().loadImages(
-            [
-                'res/img/anim1.png',
-                'res/img/chapas.jpg',
-                    
-                'res/img/burbu1.png',
-                'res/img/burbu2.png',
-                'res/img/burbu3.png',
-                'res/img/burbu4.png'
-            ],
-            __init
-            );
-}, false);
+window.addEventListener('load', __CAAT_init, false);

@@ -19,6 +19,9 @@
  *  + TextActor computes right its dimension.
  *  + Clipping will be disabled by default until IE9 fixes.
  *  + The TextActor.setPath has been upgraded to accept interpolator and path duration.
+ * 20101009 Hyperandroid.
+ *  + added isGlobalAlpha modifier. If true, alpha will affect globally to this Actor, and contained
+ *    children.
  *
  *
  **/
@@ -58,6 +61,7 @@
 		rotationX:				0, 
 		rotationY:				0,
 		alpha:					1,
+        isGlobalAlpha:          true,
 		
 		expired:				false,
 		discardable:			false,
@@ -231,6 +235,10 @@
 	        this.y= y;
 	    },
 	    isInAnimationFrame : function(time)    {
+            if ( this.expired )	{
+                return false;
+            }
+
 	    	if ( this.duration==Number.MAX_VALUE ) {
 	    		return this.start_time<=time;
 	    	}
@@ -412,7 +420,9 @@
 
             // remove expired and discardable elements.
             for( i=this.childList.length-1; i>=0; i-- ) {
-                if ( this.childList[i].expired && this.childList[i].discardable ) {
+                var actor= this.childList[i];
+                if ( actor.expired && actor.discardable ) {
+                    actor.destroy();
                     this.childList.splice(i,1);
                 }
             }
@@ -450,7 +460,13 @@
 			}
 			
 			return this;
-		}
+		},
+        destroy : function() {
+            for( var i=this.childList.length-1; i>=0; i-- ) {
+                this.childList[i].destroy();
+            }
+            ActorContainer.superclass.destroy.call(this);
+        }
 	});
 	
 })();

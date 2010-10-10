@@ -11,11 +11,11 @@
 
 (function() {
 	 
-	CAAT.ConpoundBitmap= function() {
-		
+	CAAT.CompoundImage= function() {
+		return this;
 	};
 	
-	CAAT.ConpoundBitmap.prototype= {
+	CAAT.CompoundImage.prototype= {
 
 		NORMAL: 					1,
     	INV_VERTICAL: 				2,
@@ -38,6 +38,7 @@
         	this.height=image.height;
         	this.singleWidth=  	Math.floor(this.width/cols);
         	this.singleHeight= 	Math.floor(this.height/rows);
+            return this;
     	},
 	    paintInvertedH : function( canvas, imageIndex, x, y ) {
 	    	var sx0= Math.floor(imageIndex%this.cols)*this.singleWidth;

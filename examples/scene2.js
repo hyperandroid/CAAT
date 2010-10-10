@@ -2,13 +2,13 @@
  * @author  Hyperandroid  ||  http://hyperandroid.com/
  *
  **/
-function __scene2(director, images) {
+function __scene2(director) {
 	
 	var scene= new CAAT.Scene();
 	scene.create();
 	
-	conpoundimage = new CAAT.ConpoundBitmap();
-	conpoundimage.initialize(images[1], 6, 6);	
+	conpoundimage = new CAAT.CompoundImage();
+	conpoundimage.initialize( director.getImage('chapas'), 6, 6);
 	var __index=0;
 	
 	var padding= 10;

@@ -49,7 +49,7 @@ function __scene1_makeInterpolatorActor(scene, x, y, S, interpolatorReal, pez) {
 
 }
 
-function __scene1(director, images) {
+function __scene1(director) {
 	
 	var scene= new CAAT.Scene();
 	scene.create();
@@ -75,8 +75,8 @@ function __scene1(director, images) {
 	scene.addChild(pa);
 
     // sprites images
-	conpoundimage = new CAAT.ConpoundBitmap();
-	conpoundimage.initialize(images[0], 1, 3);
+	conpoundimage = new CAAT.CompoundImage();
+	conpoundimage.initialize( director.getImage('fish'), 1, 3);
 
 /*
 	// fish sprite. follows path 'path'.

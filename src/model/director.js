@@ -16,6 +16,9 @@
  *  + pump keyboard events
  *  + modify event pumping: prevent default, bubling, etc.
  *
+ * 20101010 Hyperandroid
+ *  + Added imagesCache and method getImage(sId).
+ *
  **/
 
 
@@ -32,10 +35,15 @@
         canvas:         null,
 		crc:			null,	// canvas rendering context
         time:           0,
-        domCanvas:      null,
 
         meIn:           null,
         meOut:          null,
+
+        /**
+         * ImagesCache is an array of JSON elements of the form:
+         * { id:string, image:Image }
+         */
+        imagesCache:    null,
 
         initialize : function(width,height) {
 
@@ -62,7 +70,7 @@
         render : function(time) {
 
 
-			this.time= time;
+			this.time+= time;
 			this.crc.globalAlpha=1;
             this.crc.globalCompositeOperation='source-over';
             this.crc.clearRect(0,0,this.width,this.height);
@@ -70,13 +78,20 @@
 			this.crc.setTransform(1,0,0,1,0,0);
 			
 			for( var i=0; i<this.childList.length; i++ ) {
-				if (this.childList[i].isInAnimationFrame(time)) {
+				if (this.childList[i].isInAnimationFrame(this.time)) {
 					this.crc.save();
+/*
                     var scene_time= time-this.childList[i].start_time;
 					this.childList[i].animate(this, scene_time);
                     this.childList[i].time= scene_time;
+*/
+					this.childList[i].animate(this, this.childList[i].time - this.childList[i].start_time);
+                    this.childList[i].time+= time;
+
 					this.crc.restore();
-				}
+				} else {
+                    console.log('scene oot');
+                }
 			}
 			
 		},
@@ -97,15 +112,12 @@
 			var ssin=this.scenes[ inSceneIndex ];
 			var sout=this.scenes[ outSceneIndex ];
 
-            meIn=  ssin.mouseEnabled;
-            meOut= sout.mouseEnabled;
+            ssin.setExpired(false);
+            sout.setExpired(false);
 
             ssin.mouseEnabled= false;
             sout.mouseEnabled= false;
 
-			ssin.setFrameTime(this.time, Number.MAX_VALUE);
-			sout.setFrameTime(this.time, Number.MAX_VALUE);
-			
 			ssin.resetTransform();
 			sout.resetTransform();
 
@@ -213,12 +225,11 @@
 			this.childList= [];
 			this.addChild(sin);
 
-            meIn= sin.mouseEnabled;
-            meOut= null;
-
+			sin.resetTransform();
+            sin.setLocation(0,0);
+            sin.alpha = 1;
             sin.mouseEnabled= false;
-
-			sin.setFrameTime(this.time, Number.MAX_VALUE);
+            sin.setExpired(false);
 		},
 		setScene : function( sceneIndex ) {
 			var sin= this.scenes[ sceneIndex ];
@@ -287,13 +298,12 @@
 			// scene is going out
 			if ( false==b_easeIn ) {
 				scene.setExpired(true);
-                scene.mouseEnabled= meOut;
 			} else {
 				this.currentScene= scene;
                 this.currentScene.activated();
-                this.currentScene.mouseEnabled= meIn;
 			}
-			
+            
+            scene.mouseEnabled= true;
 			scene.emptyBehaviourList();
 		},
 		getSceneIndex : function( scene ) {
@@ -315,7 +325,17 @@
 		},
 		getOSName : function() {
 			return BrowserDetect.OS;
-		}
+		},
+        getImage : function(sId) {
+            for( var i=0; i<this.imagesCache.length; i++ ) {
+                if ( this.imagesCache[i].id==sId ) {
+                    return this.imagesCache[i].image;
+                }
+            }
+        },
+        emptyScenes : function() {
+            this.scenes= [];
+        }
 
     });
 })();

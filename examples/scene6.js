@@ -2,13 +2,13 @@
  * @author  Hyperandroid  ||  http://hyperandroid.com/
  *
  **/
-function __scene6(director, images) {
+function __scene6(director) {
 	
 	var scene= new CAAT.Scene();
 	scene.create();
 
-	var conpoundimage = new CAAT.ConpoundBitmap();
-	conpoundimage.initialize(images[0], 1, 3);
+	var conpoundimage = new CAAT.CompoundImage();
+	conpoundimage.initialize( director.getImage('fish'), 1, 3);
 	
 	var w= (director.canvas.width/conpoundimage.singleWidth)>>0;
 	var h= (director.canvas.height/conpoundimage.singleWidth)>>0;
@@ -19,6 +19,7 @@ function __scene6(director, images) {
 	pezContainer.create();
 	pezContainer.setBounds(0,0,director.canvas.width,director.canvas.height);
 	pezContainer.mouseEnabled= false;
+
 	scene.addChild(pezContainer);
 	
 	

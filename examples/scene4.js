@@ -2,7 +2,7 @@
  * @author  Hyperandroid  ||  http://hyperandroid.com/
  *
  **/
-function __scene4(director, images) {
+function __scene4(director) {
 	
 	var scene= new CAAT.Scene();
 	scene.create();

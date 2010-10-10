@@ -256,6 +256,20 @@
 
             return this;
         },
+        setQuadric : function(x0,y0,x1,y1,x2,y2) {
+            this.beginPath(x0,y0);
+            this.addQuadricTo(x1,y1,x2,y2);
+            this.endPath();
+
+            return this;
+        },
+        setCubic : function(x0,y0,x1,y1,x2,y2,x3,y3) {
+            this.beginPath(x0,y0);
+            this.addCubicTo(x1,y1,x2,y2,x3,y3);
+            this.endPath();
+
+            return this;
+        },
 		addSegment : function(pathSegment) {
 			this.pathSegments.push(pathSegment);
             return this;

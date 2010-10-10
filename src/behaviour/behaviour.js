@@ -80,7 +80,7 @@
 				return false;
 			}
 			
-			return this.behaviourStartTime<time && time<this.behaviourStartTime+this.behaviourDuration;			
+			return this.behaviourStartTime<=time && time<this.behaviourStartTime+this.behaviourDuration;			
 		},
 		fireBehaviourExpiredEvent : function(time)	{
 			for( var i=0; i<this.listenerList.length; i++ )	{

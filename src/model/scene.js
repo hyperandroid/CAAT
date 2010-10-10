@@ -89,7 +89,7 @@
 
 			this.easeContainerBehaviour.addBehaviour(pb);
 
-			this.easeContainerBehaviour.setFrameTime( 0, time );
+			this.easeContainerBehaviour.setFrameTime( this.time, time );
 			this.easeContainerBehaviour.addListener(this);
 
 			this.emptyBehaviourList();
@@ -167,7 +167,7 @@
 
 			this.easeContainerBehaviour.addBehaviour(sb);
 			
-			this.easeContainerBehaviour.setFrameTime( 0, time );
+			this.easeContainerBehaviour.setFrameTime( this.time, time );
 			this.easeContainerBehaviour.addListener(this);
 			
 			this.emptyBehaviourList();
@@ -233,7 +233,7 @@
 			this.easeContainerBehaviour.addBehaviour(rb);
 			
 			
-			this.easeContainerBehaviour.setFrameTime( 0, time );
+			this.easeContainerBehaviour.setFrameTime( this.time, time );
 			this.easeContainerBehaviour.addListener(this);
 			
 			this.emptyBehaviourList();
@@ -246,7 +246,13 @@
 			this.easeContainerBehaviourListener.easeEnd(this, this.easeIn);
 		},
         activated : function() {
-            
+        },
+        /**
+         * Scenes, do not expire the same way Actors do.
+         * It simply will be set expired=true, but the frameTime won't be modified.
+         */
+        setExpired : function(bExpired) {
+            this.expired= bExpired;
         }
 	});
 })();

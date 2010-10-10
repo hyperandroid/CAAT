@@ -2,7 +2,7 @@
  * @author  Hyperandroid  ||  http://hyperandroid.com/
  *
  **/
-function __scene3(director, images) {
+function __scene3(director) {
 	
 	var scene= new CAAT.Scene();
 	scene.create();
@@ -58,8 +58,8 @@ function __scene3(director, images) {
 	cc.addChild(text3);
 	
 	
-	var conpoundimage = new CAAT.ConpoundBitmap();
-	conpoundimage.initialize(images[0], 1, 3);
+	var conpoundimage = new CAAT.CompoundImage();
+	conpoundimage.initialize( director.getImage('fish'), 1, 3);
 	
 	var anchor= [5,1,6, 3,0,4, 7,2,8], i;
 	// 10 peces con rotation y escalado. fijos sin path.

@@ -2,7 +2,7 @@
  * @author  Hyperandroid  ||  http://hyperandroid.com/
  *
  **/
-function __scene7(director, images) {
+function __scene7(director) {
 
 	var scene= new CAAT.Scene();
 	scene.create();
@@ -13,15 +13,18 @@ function __scene7(director, images) {
     scene.addChild( root );
     
 
-    conpoundimagefish = new CAAT.ConpoundBitmap();
-    conpoundimagefish.initialize(images[0], 1, 3);
+    conpoundimagefish = [];
+    conpoundimagefish.push( new CAAT.CompoundImage().initialize( director.getImage('fish'),  1, 3) );
+    conpoundimagefish.push( new CAAT.CompoundImage().initialize( director.getImage('fish2'), 1, 3) );
+    conpoundimagefish.push( new CAAT.CompoundImage().initialize( director.getImage('fish3'), 1, 3) );
+    conpoundimagefish.push( new CAAT.CompoundImage().initialize( director.getImage('fish4'), 1, 3) );
 
     for( var j=0; j<20; j++ ) {
         var fish = new CAAT.SpriteActor();
         fish.create();
         fish.setAnimationImageIndex( [0,1,2,1] );
         fish.changeFPS= 300;
-        fish.setSpriteImage(conpoundimagefish);
+        fish.setSpriteImage(conpoundimagefish[j%4]);
         fish.mouseEnabled= false;
         scene.addChild(fish);
 
@@ -34,15 +37,21 @@ function __scene7(director, images) {
                 Math.random()*director.height) );
         pbfish.setInterpolator( new CAAT.Interpolator().createExponentialInOutInterpolator(2,false) );
         pbfish.setFrameTime( 0, 2500+2500*Math.random() );
+
         pbfish.addListener( {
             behaviourExpired : function(behaviour,time) {
                 var endCoord= behaviour.path.endCurvePosition();
-                behaviour.setPath( new CAAT.Path().setLinear(
-                    endCoord.x,
-                    endCoord.y,
-                    Math.random()*director.width,
-                    Math.random()*director.height) );
-                behaviour.setFrameTime( scene.time, 1000+Math.random()*5000 );
+                behaviour.setPath(
+                        new CAAT.Path().setCubic(
+                            endCoord.x,
+                            endCoord.y,
+                            Math.random()*director.width,
+                            Math.random()*director.height,
+                            Math.random()*director.width,
+                            Math.random()*director.height,
+                            Math.random()*director.width,
+                            Math.random()*director.height) );
+                behaviour.setFrameTime( scene.time, 3000+Math.random()*3000 );
             }
         });
 
@@ -74,10 +83,10 @@ function __scene7(director, images) {
 
     root.mouseMove= function(mouseEvent) {
 
-        var img= images[2 + (Math.random()*3.99) >> 0];
+        var imgIndex= ((Math.random()*3.99) >> 0)+1;
 
-        var conpoundimage = new CAAT.ConpoundBitmap();
-        conpoundimage.initialize(img,1,1);
+        var conpoundimage = new CAAT.CompoundImage();
+        conpoundimage.initialize( director.getImage('buble'+imgIndex) ,1,1);
 
         var burbuja= new CAAT.SpriteActor();
         burbuja.setAnimationImageIndex( [0] );
@@ -85,15 +94,7 @@ function __scene7(director, images) {
         burbuja.setLocation( mouseEvent.point.x, mouseEvent.point.y );
         burbuja.create();
         burbuja.mouseEnabled= false;
-/*
-        var burbuja= new CAAT.ShapeActor();
-        burbuja.create();
-        var s= 3+20*Math.random();
-        burbuja.setBounds( mouseEvent.point.x, mouseEvent.point.y, s ,s );
-        burbuja.compositeOp= 'lighter';
-        burbuja.fillStyle= '#003f7f';
-        burbuja.mouseEnabled= false;
-*/
+
         root.addChild(burbuja);
 
         var cb= new CAAT.ContainerBehaviour();
@@ -116,7 +117,10 @@ function __scene7(director, images) {
 
             var tb= new CAAT.PathBehaviour();
             tb.setFrameTime( 0, 500 );
-            tb.setPath( new CAAT.Path().setLinear( burbuja.x, burbuja.y, burbuja.x, burbuja.y-100-100*Math.random() ) );
+            tb.setPath(
+                    new CAAT.Path().setLinear(
+                            burbuja.x, burbuja.y,
+                            burbuja.x, burbuja.y-100-100*Math.random() ) );
             cb.addBehaviour(tb);
         
         burbuja.addBehaviour( cb );
