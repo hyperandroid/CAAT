@@ -18,6 +18,9 @@
  *
  * 20101010 Hyperandroid
  *  + Added imagesCache and method getImage(sId).
+ * 20101011 Hyperandroid
+ *  + Reenabled all transitions for FF. Discovered that if ScaleX==0 || ScaleY==0, it will
+ *    stop rendering frames.
  *
  **/
 
@@ -80,17 +83,12 @@
 			for( var i=0; i<this.childList.length; i++ ) {
 				if (this.childList[i].isInAnimationFrame(this.time)) {
 					this.crc.save();
-/*
-                    var scene_time= time-this.childList[i].start_time;
-					this.childList[i].animate(this, scene_time);
-                    this.childList[i].time= scene_time;
-*/
 					this.childList[i].animate(this, this.childList[i].time - this.childList[i].start_time);
                     this.childList[i].time+= time;
 
 					this.crc.restore();
 				} else {
-                    console.log('scene oot');
+//                    console.log('scene oot');
                 }
 			}
 			
@@ -153,65 +151,49 @@
             var pin=Math.random();
             var pout=Math.random();
 
-			if ( this.getBrowserName()=='Firefox' ) {
-                var typeIn=  pin<.5  ? CAAT.Scene.prototype.EASE_ROTATION : CAAT.Scene.prototype.EASE_TRANSLATE;
-                var typeOut= pout<.5 ? CAAT.Scene.prototype.EASE_ROTATION : CAAT.Scene.prototype.EASE_TRANSLATE;
-				this.easeInOut( 
-						inIndex, 
-						typeIn,
-						(Math.random()*8.99)>>0,
-						
-						outIndex, 
-						typeOut,
-						(Math.random()*8.99)>>0,
-						
-						time,
-						alpha );
-				
-			} else {
-                var typeIn;
-                var interpolatorIn;
+            var typeIn;
+            var interpolatorIn;
 
-                if (pin<.33) {
-                    typeIn= CAAT.Scene.prototype.EASE_ROTATION;
-                    interpolatorIn= new CAAT.Interpolator().createExponentialInOutInterpolator(4);
-                } else if (pin<.66) {
-                    typeIn= CAAT.Scene.prototype.EASE_SCALE;
-                    interpolatorIn= new CAAT.Interpolator().createElasticOutInterpolator(1.1, .4);
-                } else {
-                    typeIn= CAAT.Scene.prototype.EASE_TRANSLATE;
-                    interpolatorIn= new CAAT.Interpolator().createBounceOutInterpolator();
-                }
+            if (pin<.33) {
+                typeIn= CAAT.Scene.prototype.EASE_ROTATION;
+                interpolatorIn= new CAAT.Interpolator().createExponentialInOutInterpolator(4);
+            } else if (pin<.66) {
+                typeIn= CAAT.Scene.prototype.EASE_SCALE;
+                interpolatorIn= new CAAT.Interpolator().createElasticOutInterpolator(1.1, .4);
+            } else {
+                typeIn= CAAT.Scene.prototype.EASE_TRANSLATE;
+                interpolatorIn= new CAAT.Interpolator().createBounceOutInterpolator();
+            }
 
-                var typeOut;
-                var InterpolatorOut;
+            var typeOut;
+            var InterpolatorOut;
 
-                if (pout<.33) {
-                    typeOut= CAAT.Scene.prototype.EASE_ROTATION;
-                    interpolatorOut= new CAAT.Interpolator().createExponentialInOutInterpolator(4);
-                } else if (pout<.66) {
-                    typeOut= CAAT.Scene.prototype.EASE_SCALE;
-                    interpolatorOut= new CAAT.Interpolator().createExponentialOutInterpolator(4);
-                } else {
-                    typeOut= CAAT.Scene.prototype.EASE_TRANSLATE;
-                    interpolatorOut= new CAAT.Interpolator().createBounceOutInterpolator();
-                }
+            if (pout<.33) {
+                typeOut= CAAT.Scene.prototype.EASE_ROTATION;
+                interpolatorOut= new CAAT.Interpolator().createExponentialInOutInterpolator(4);
+            } else if (pout<.66) {
+                typeOut= CAAT.Scene.prototype.EASE_SCALE;
+                interpolatorOut= new CAAT.Interpolator().createExponentialOutInterpolator(4);
+            } else {
+                typeOut= CAAT.Scene.prototype.EASE_TRANSLATE;
+                interpolatorOut= new CAAT.Interpolator().createBounceOutInterpolator();
+            }
 
-				this.easeInOut(
-						inIndex, 
-						typeIn,
-						(Math.random()*8.99)>>0,
-						
-						outIndex, 
-                        typeOut,
-						(Math.random()*8.99)>>0,
-						
-						time,
-						alpha,
-                        
-                        interpolatorIn,
-                        interpolatorOut);
-			}
+            this.easeInOut(
+                    inIndex,
+                    typeIn,
+                    (Math.random()*8.99)>>0,
+
+                    outIndex,
+                    typeOut,
+                    (Math.random()*8.99)>>0,
+
+                    time,
+                    alpha,
+
+                    interpolatorIn,
+                    interpolatorOut);
+
 		},
 		easeIn : function( inSceneIndex, type, time, alpha, anchor, interpolator ) {
 			var sin= this.scenes[ inSceneIndex ];

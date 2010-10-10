@@ -11,6 +11,9 @@
  *  + ScaleBehaviour:   takes control of scaling on x/y axis affine transform.
  *  + TODO: pathBehaviour.
  *
+ * 20101011 Hyperandroid
+ *  + ScaleBehaviour: if scaleX==0 || scaleY==0, FF3/4 will stop rendering.
+ *
  **/
 
 
@@ -211,7 +214,15 @@
 
 			var scaleX= this.minScaleX + time*(this.maxScaleX-this.minScaleX);
 			var scaleY= this.minScaleY + time*(this.maxScaleY-this.minScaleY);
-			
+
+            // Firefox 3.x & 4, will crash animation if either scaleX or scaleY equals 0.
+            if (0==scaleX ) {
+                scaleX=.01;
+            }
+            if (0==scaleY ) {
+                scaleY=.01;
+            }
+
 			actor.setScaleAnchored( scaleX, scaleY, this.anchor );			
 		}
 	});
