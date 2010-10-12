@@ -20,9 +20,11 @@
 			this.pathBoundingRectangle= path.getBoundingBox();
 		},
 		paint : function(director, time) {
+
+            var canvas= director.crc;
+
+            canvas.strokeStyle='black';
 			this.path.paint(director);
-			
-			var canvas= director.crc;
 			
 			if ( this.bOutline ) {
 				canvas.strokeStyle='black';

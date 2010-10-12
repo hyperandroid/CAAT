@@ -58,8 +58,9 @@ function __scene7(director) {
         fish.addBehaviour( pbfish );
     }
 
-
-    root.fillStyle='#3f3fff';
+    root.paint= function( director, time ) {
+        director.crc.drawImage( director.getImage('plants'), 0, 0, this.width, this.height );
+    }
     root.mouseEnter= function(mouseEvent) {}
     root.mouseExit= function(mouseEvent) {}
 
@@ -70,8 +71,8 @@ function __scene7(director) {
     children.setText("");
     children.setLocation(15,20);
     children.create();
-    children.fillStyle='black';
-    children.outlineColor= 'white';
+    children.fillStyle='white';
+    children.outlineColor= 'red';
     children.ouline= true;
     scene.addChild(children);
 

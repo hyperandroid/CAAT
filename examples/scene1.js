@@ -125,7 +125,7 @@ function __scene1(director) {
 
 function scene1_text(director,scene) {
 	var cc1= new CAAT.ActorContainer();
-	cc1.setBounds( 0,30, 280, 170 );
+	cc1.setBounds( 0,30, 280, 110 );
 	cc1.create();
 	cc1.mouseEnabled= false;
 	scene.addChild(cc1);
@@ -148,7 +148,7 @@ function scene1_text(director,scene) {
 	text.setFont("20px sans-serif");
 	text.setText("Conpound Path");
 	text.textAlign="center";
-	text.setLocation(150,0);
+	text.setLocation((cc1.width-text.textWidth)/2,0);
 	text.create();
 	text.fillStyle=gradient;
 	text.outline= true;
@@ -158,7 +158,7 @@ function scene1_text(director,scene) {
 	text2.setFont("20px sans-serif");
 	text2.textAlign="center";
 	text2.setText("Quadric,Cubic,Line segments");
-	text2.setLocation(150,20);
+	text2.setLocation((cc1.width-text2.textWidth)/2,20);
 	text2.create();
 	text2.fillStyle=gradient;
 	text2.outline= true;
@@ -168,7 +168,7 @@ function scene1_text(director,scene) {
 	text4.setFont("20px sans-serif");
 	text4.textAlign="center";
 	text4.setText("Fish Path");
-	text4.setLocation(150,50);
+	text4.setLocation((cc1.width-text4.textWidth)/2,50);
 	text4.create();
 	text4.fillStyle=gradient;
 	text4.outline= true;
@@ -178,7 +178,7 @@ function scene1_text(director,scene) {
 	text3.setFont("20px sans-serif");
 	text3.textAlign="center";
 	text3.setText("Interpolators");
-	text3.setLocation(150,70);
+	text3.setLocation((cc1.width-text3.textWidth)/2,70);
 	text3.create();
 	text3.fillStyle=gradient;
 	text3.outline= true;
@@ -188,7 +188,7 @@ function scene1_text(director,scene) {
 	text5.setFont("20px sans-serif");
 	text5.textAlign="center";
 	text5.setText("DblClick to Select");
-	text5.setLocation(150,90);
+	text5.setLocation((cc1.width-text5.textWidth)/2,90);
 	text5.create();
 	text5.fillStyle=gradient;
 	text5.outline= true;

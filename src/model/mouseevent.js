@@ -121,6 +121,9 @@ function __GlobalEnableEvents(director) {
             case CAAT.MouseEvent.prototype.ALT:
                 __modifiers&=~CAAT.MouseEvent.prototype.ALT_MASK;
                 break;
+            case 68:    // D
+                CAAT.director.debug= !CAAT.director.debug;
+                break;
             }
         },
         false );

@@ -23,6 +23,12 @@
             var p= new CAAT.Point();
             p.set( this.x, this.y );
             return p;
+        },
+        translate : function(x,y) {
+            this.x+= x;
+            this.y+= y;
+
+            return this;
         }
 	};
 })();

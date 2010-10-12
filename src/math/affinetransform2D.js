@@ -281,7 +281,17 @@
 			
 			return point;
 		},
-		inverseTransformCoord : function(point) {
+		transformCoordNoTranslate : function(point) {
+
+			//for( var i=0; i<this.stack.length; i++ ) {
+			for( var i=this.stack.length-1; i>=1; i-- ) {
+				var matrix= this.stack[i];
+				matrix.transform(point);
+			}
+
+			return point;
+		},
+        inverseTransformCoord : function(point) {
 
 			for( var i=0; i<this.stack.length; i++ ) {
 				var matrix= this.stack[i].getInverse();

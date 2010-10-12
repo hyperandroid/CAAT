@@ -31,7 +31,7 @@ function __scene3(director) {
 	text.setFont("50px sans-serif");
 	text.setText("Anchored");
 	text.textAlign="center";
-	text.setLocation(150,0);
+	text.setLocation((cc.width-text.width)/2,0);
 	text.create();
 	text.fillStyle=gradient;
 	text.outline= true;
@@ -41,7 +41,7 @@ function __scene3(director) {
 	text2.setFont("50px sans-serif");
 	text2.textAlign="center";
 	text2.setText("Affine");
-	text2.setLocation(150,50);
+	text2.setLocation((cc.width-text2.width)/2,50);
 	text2.create();
 	text2.fillStyle=gradient;
 	text2.outline= true;
@@ -51,7 +51,7 @@ function __scene3(director) {
 	text3.setFont("50px sans-serif");
 	text3.textAlign="center";
 	text3.setText("Transforms");
-	text3.setLocation(150,100);
+	text3.setLocation((cc.width-text3.width)/2,100);
 	text3.create();
 	text3.fillStyle=gradient;
 	text3.outline= true;

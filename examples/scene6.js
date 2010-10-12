@@ -110,7 +110,7 @@ function __scene6_text(director,scene) {
 	gradient.addColorStop(1,'#c0c0c0');
 	
 	var cc= new CAAT.ActorContainer();
-	cc.setBounds( 380,30, 300, 150 );
+	cc.setBounds( 380,30, 200, 100 );
 	cc.create();
 	scene.addChild(cc);
 	cc.mouseEnabled= false;
@@ -128,7 +128,7 @@ function __scene6_text(director,scene) {
 	text.setFont("50px sans-serif");
 	text.setText("Fish");
 	text.textAlign="center";
-	text.setLocation(150,0);
+	text.setLocation((cc.width-text.width)/2,0);
 	text.create();
 	text.fillStyle=gradient;
 	text.outline= true;
@@ -138,7 +138,7 @@ function __scene6_text(director,scene) {
 	text2.setFont("50px sans-serif");
 	text2.setText("Field");
 	text2.textAlign="center";
-	text2.setLocation(150,50);
+	text2.setLocation((cc.width-text2.width)/2,50);
 	text2.create();
 	text2.fillStyle=gradient;
 	text2.outline= true;

@@ -62,7 +62,7 @@ function __scene5(director) {
 
 function __scene5_text(director,scene) {
 	var cc1= new CAAT.ActorContainer();
-	cc1.setBounds( 200,200, 280, 170 );
+	cc1.setBounds( 200,200, 280, 120 );
 	cc1.create();
 	cc1.mouseEnabled= false;
 	scene.addChild(cc1);
@@ -85,7 +85,7 @@ function __scene5_text(director,scene) {
 	text.setFont("40px sans-serif");
 	text.setText("Text on Path");
 	text.textAlign="center";
-	text.setLocation(150,0);
+	text.setLocation((cc1.width-text.width)/2,0);
 	text.create();
 	text.fillStyle=gradient;
 	text.outline= true;
@@ -95,7 +95,7 @@ function __scene5_text(director,scene) {
 	text2.setFont("40px sans-serif");
 	text2.textAlign="center";
 	text2.setText("Interpolated");
-	text2.setLocation(150,40);
+	text2.setLocation((cc1.width-text2.width)/2,40);
 	text2.create();
 	text2.fillStyle=gradient;
 	text2.outline= true;
@@ -105,7 +105,7 @@ function __scene5_text(director,scene) {
 	text4.setFont("40px sans-serif");
 	text4.textAlign="center";
 	text4.setText("As well");
-	text4.setLocation(150,80);
+	text4.setLocation((cc1.width-text4.width)/2,80);
 	text4.create();
 	text4.fillStyle=gradient;
 	text4.outline= true;

@@ -22,8 +22,8 @@
  * 20101009 Hyperandroid.
  *  + added isGlobalAlpha modifier. If true, alpha will affect globally to this Actor, and contained
  *    children.
- *
- *
+ * 20101011 Hyperandroid.
+ *  + Added method chaining where possible.
  **/
 
 
@@ -32,6 +32,9 @@
 		this.transformationMatrix= new CAAT.MatrixStack();
 		this.rpoint= new CAAT.Point();
 		this.behaviourList= [];
+
+        this.screenBounds= new CAAT.Rectangle();
+
 		return this;
 	};
 	
@@ -83,47 +86,69 @@
 
         time:                   0,
 
-		animate : function(director, time) {
+        screenBounds:           null,
 
-            this.time= time;
+        setScreenBounds : function() {
 
-			for( var i=0; i<this.behaviourList.length; i++ )	{
-				this.behaviourList[i].apply(time,this);
-			}
-		
-			var canvas= director.crc;
-			
-			canvas.save();
-				canvas.globalAlpha*= this.alpha;
-				this.prepareGraphics(canvas);
+            var p=[];
+            p.push( new CAAT.Point().set(0,0) );
+            p.push( new CAAT.Point().set(this.width, this.height) );
+            p.push( new CAAT.Point().set(0,            this.height) );
+            p.push( new CAAT.Point().set(this.width, 0) );
 
-                if ( this.clip ) {
-                    canvas.beginPath();
-                    canvas.rect(0,0,this.width,this.height);
-                    canvas.clip();
+            for( var k=0; k<p.length; k++ ) {
+                this.transformCoord( p[k] );
+            }
+
+            var xmin= Number.MAX_VALUE, xmax=Number.MIN_VALUE;
+            var ymin= Number.MAX_VALUE, ymax=Number.MIN_VALUE;
+
+            for( var i=0; i<p.length; i++ ) {
+                if ( p[i].x < xmin ) {
+                    xmin=p[i].x;
+                }
+                if ( p[i].x > xmax ) {
+                    xmax=p[i].x;
                 }
 
-				this.paint(director, time);
-			canvas.restore();
-		},
+                if ( p[i].y < ymin ) {
+                    ymin=p[i].y;
+                }
+                if ( p[i].y > ymax ) {
+                    ymax=p[i].y;
+                }
+            }
+
+            this.screenBounds.x= xmin;
+            this.screenBounds.y= ymin;
+            this.screenBounds.width=  xmax-xmin;
+            this.screenBounds.height= ymax-ymin;
+
+        },
         setExpired : function(expired) {
             if ( expired ) {
                 this.expired= true;
                 this.duration= 0;
                 this.start_time=-1;
             }
+
+            return this;
         },
 		emptyBehaviourList : function() {
 			this.behaviourList=[];
+            return this;
 		},
 		prepareGraphics : function(canvas) {
 			this.transformationMatrix.prepareGraphics(canvas,this);
+            return this;
 		},
 		setPaint : function( paint )	{
 			this.fillStyle= paint;
+            return this;
 		},
 		setAlpha : function( alpha )	{
 			this.alpha= alpha;
+            return this;
 		},
 		resetTransform : function () {
 			this.rotationAngle=0;
@@ -135,11 +160,15 @@
 			this.scaleTX=0;
 			this.scaleTY=0;
 			this.scaleAnchor=0;
+
+            return this;
 		},
 		setFrameTime : function( startTime, duration ) {
 			this.start_time= startTime;
 			this.duration= duration;
 			this.expired= false;
+
+            return this;
 		},
 		paint : function(director, time) {
 			
@@ -156,6 +185,7 @@
 		},
 		setScale : function( sx, sy )    {
 			this.setScaleAnchored( sx, sy, this.ANCHOR_CENTER );
+            return this;
 		},
 		getAnchor : function( anchor ) {
 			var tx=0, ty=0;
@@ -211,28 +241,40 @@
 	        
 			this.scaleX=sx;
 			this.scaleY=sy;
+
+            return this;
 		},
 	    setRotation : function( angle )	{
 			this.setRotationAnchored( angle, this.width/2, this.height/2 );
+
+            return this;
 	    },
 	    setRotationAnchored : function( angle, rx, ry ) {
 	    	this.rotationAngle= angle;
 	    	this.rotationX= rx?rx:0;
 	    	this.rotationY= ry?ry:0;
+
+            return this;
 	    },
 	    setSize : function( w, h )   {
 	    	this.width= w;
 	    	this.height= h;
+
+            return this;
 	    },
 	    setBounds : function(x, y, w, h)  {
 	    	this.x= x;
 	    	this.y= y;
 	    	this.width= w;
 	    	this.height= h;
+
+            return this;
 	    },
 	    setLocation : function( x, y ) {
 	        this.x= x;
 	        this.y= y;
+
+            return this;
 	    },
 	    isInAnimationFrame : function(time)    {
             if ( this.expired )	{
@@ -260,14 +302,27 @@
 	    	this.setScale(1,1);
 	    	this.setRotation(0);
 	        this.behaviourList= [];
+
+            return this;
 		},
 		addBehaviour : function( behaviour )	{
 			this.behaviourList.push(behaviour);
+
+            return this;
 		},
 		initialize : function()	{
 		},
 		destroy : function()	{
 		},
+        transformCoord : function(point) {
+            var tthis= this;
+            while( tthis!=CAAT.director ) {
+                tthis.transformationMatrix.transformCoord(point);
+                tthis= tthis.parent;
+            }
+
+            return point;
+        },
 		inverseTransformCoord : function(point) {
 			var tthis= this;
 			while( tthis) {
@@ -375,6 +430,35 @@
 		mouseUp : function(mouseEvent) {
 		},
 		mouseDrag : function(mouseEvent) {
+		},
+        drawScreenBoundingBox : function( director, time ) {
+            if ( null!=this.screenBounds ) {
+                director.crc.strokeStyle='red';
+                director.crc.strokeRect(
+                    this.screenBounds.x, this.screenBounds.y,
+                    this.screenBounds.width, this.screenBounds.height );
+            }
+        },
+		animate : function(director, time) {
+			for( var i=0; i<this.behaviourList.length; i++ )	{
+				this.behaviourList[i].apply(time,this);
+			}
+
+			var canvas= director.crc;
+
+            canvas.globalAlpha*= this.alpha;
+            this.prepareGraphics(canvas);
+
+
+            if ( this.clip ) {
+                canvas.beginPath();
+                canvas.rect(0,0,this.width,this.height);
+                canvas.clip();
+            }
+
+            this.paint(director, time);
+
+            this.setScreenBounds();
 		}
 	};
 	
@@ -390,29 +474,25 @@
 	
 	
 	extend( CAAT.ActorContainer, CAAT.Actor, {
-		
+
+        drawScreenBoundingBox : function( director, time ) {
+            for( var i=0; i<this.childList.length; i++ ) {
+                this.childList[i].drawScreenBoundingBox(director,time);
+            }
+            CAAT.ActorContainer.superclass.drawScreenBoundingBox.call(this,director,time);
+
+        },
 		animate : function(director,time) {
 
+            CAAT.ActorContainer.superclass.animate.call(this,director,time);
+
+            var canvas= director.crc;
             var i;
-			for( i=0; i<this.behaviourList.length; i++ )	{
-				this.behaviourList[i].apply(time,this);
-			}
-		
-			var canvas= director.crc;
-			
-			canvas.globalAlpha*= this.alpha;			
-			this.prepareGraphics(canvas);
-			this.paint(director, time);
-			
-			if ( this.clip ) {
-				canvas.beginPath();
-				canvas.rect(0,0,this.width,this.height);
-				canvas.clip();
-			}
-	
+
             for( i=0; i<this.childList.length; i++ ) {
                 if (this.childList[i].isInAnimationFrame(time)) {
                     canvas.save();
+                    this.childList[i].time= time;
                     this.childList[i].animate(director, time);
                     canvas.restore();
                 }
@@ -430,6 +510,8 @@
 		addChild : function(child) {
 			child.parent= this;
 			this.childList.push(child);
+
+            return this;
 		},
 		findChild : function(child) {
 			for( var i in this.childList ) {
@@ -444,6 +526,8 @@
 			if ( -1!=pos ) {
 				this.childList.splice(pos,1);
 			}
+
+            return this;
 		},
 		findActorAtPosition : function(point) {
 
@@ -500,10 +584,14 @@
 			if ( null==this.animationImageIndex ) {
 				this.setAnimationImageIndex([0]);
 			}
+
+            return this;
 		},
 		setAnimationImageIndex : function( aAnimationImageIndex ) {
 			this.animationImageIndex= aAnimationImageIndex;
 			this.spriteIndex= aAnimationImageIndex[0];
+
+            return this;
 		},
 		animate : function( director, time )	{
 			
@@ -550,7 +638,6 @@
 
 /**
  * TextActor draws text on screen.
- * TODO: on setText, calculate proper actor size.
  */
 (function() {
 	CAAT.TextActor = function() {
@@ -567,23 +654,26 @@
 	};
 	
 	extend( CAAT.TextActor, CAAT.Actor, {
-		font:			null,
-		textAlign:		null,	// start, end, left, right, center
-		textBaseline:	null,	// top, hanging, middle, alphabetic, ideographic, bottom
-		fill:			true,
-		text:			null,
-		maxWidth:		null,
-		outline:		false,
-		outlineColor:	null,
+		font:			    null,
+		textAlign:		    null,	// start, end, left, right, center
+		textBaseline:	    null,	// top, hanging, middle, alphabetic, ideographic, bottom
+		fill:			    true,
+		text:			    null,
+		textWidth:		    0,
+        textHeight:         0,
+		outline:		    false,
+		outlineColor:	    null,
 		
-		path:			null,
+		path:			    null,
         pathInterpolator:	null,
         pathDuration:       10000,
-		sign:			1,
+		sign:			    1,
 		
 		setText : function( sText ) {
 			this.text= sText;
             this.setFont( this.font );
+
+            return this;
         },
         setFont : function(font) {
 
@@ -593,7 +683,7 @@
 
             this.font= font;
 
-            if ( this.text=="" ) {
+            if ( this.text=="" || null==this.text ) {
                 this.width= this.height= 0;
                 return;
             }
@@ -601,17 +691,26 @@
             CAAT.director.crc.save();
             CAAT.director.crc.font= this.font;
 
-            this.width= CAAT.director.crc.measureText( this.text ).width;
+            this.textWidth= CAAT.director.crc.measureText( this.text ).width;
+            if (this.width==0) {
+                this.width= this.textWidth;
+            }
 
             try {
                 var pos= this.font.indexOf("px");
                 var s =  this.font.substring(0, pos );
-                this.height= parseInt(s);
+                this.textHeight= parseInt(s);
             } catch(e) {
-                this.height=20; // default height;
+                this.textHeight=20; // default height;
+            }
+
+            if ( this.height==0 ) {
+                this.height= this.textHeight;
             }
 
             CAAT.director.crc.restore();
+
+            return this;
 		},
 		paint : function(director, time) {
 		
@@ -635,8 +734,16 @@
 			}
 			
 			if (null==this.path) {
+
+                var tx=0;
+                if ( this.textAlign=='center') {
+                    tx= this.width/2;
+                } else if ( this.textAlign=='right' ) {
+                    tx= this.width;
+                }
+
 				if ( this.fill ) {
-					canvas.fillText( this.text, 0, 0 );
+					canvas.fillText( this.text, tx, 0 );
 					if ( this.outline ) {
 						
 						// firefox necesita beginPath, si no, dibujara ademas el cuadrado del
@@ -645,13 +752,13 @@
 							canvas.strokeStyle= this.outlineColor;
 						}
 						canvas.beginPath();
-						canvas.strokeText( this.text, 0, 0 );
+						canvas.strokeText( this.text, tx, 0 );
 					}
 				} else {
 					if ( null!=this.outlineColor ) {
 						canvas.strokeStyle= this.outlineColor;
 					}
-					canvas.strokeText( this.text, 0, 0 );
+					canvas.strokeText( this.text, tx, 0 );
 				}
 			}
 			else {
@@ -722,7 +829,7 @@
             }
             canvas.globalCompositeOperation= this.compositeOp;
             canvas.beginPath();
-            canvas.arc( 0,0, Math.min(this.width,this.height)/2, 0, 2*Math.PI, false );
+            canvas.arc( this.width/2, this.height/2, Math.min(this.width,this.height)/2, 0, 2*Math.PI, false );
             canvas.fill();
 
             if ( null!=this.strokeStyle ) {

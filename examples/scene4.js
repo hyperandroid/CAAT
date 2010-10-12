@@ -183,7 +183,7 @@ function __scene4(director) {
 	
 	// texts
 	var cc1= new CAAT.ActorContainer();
-	cc1.setBounds( 380,30, 300, 150 );
+	cc1.setBounds( 380,30, 300, 140 );
 	cc1.create();
 	scene.addChild(cc1);
 	cc1.mouseEnabled= false;
@@ -202,7 +202,7 @@ function __scene4(director) {
 	text.setFont("30px sans-serif");
 	text.setText("Perfect Pixel");
 	text.textAlign="center";
-	text.setLocation(150,0);
+	text.setLocation((cc1.width-text.width)/2,0);
 	text.create();
 	text.fillStyle=gradient;
 	text.outline= true;
@@ -212,7 +212,7 @@ function __scene4(director) {
 	text2.setFont("30px sans-serif");
 	text2.textAlign="center";
 	text2.setText("Collision detection");
-	text2.setLocation(150,30);
+	text2.setLocation((cc1.width-text2.width)/2,30);
 	text2.create();
 	text2.fillStyle=gradient;
 	text2.outline= true;
@@ -222,7 +222,7 @@ function __scene4(director) {
 	text3.setFont("30px sans-serif");
 	text3.textAlign="center";
 	text3.setText("Drag Enabled");
-	text3.setLocation(150,60);
+	text3.setLocation((cc1.width-text3.width)/2,60);
 	text3.create();
 	text3.fillStyle=gradient;
 	text3.outline= true;
@@ -232,7 +232,7 @@ function __scene4(director) {
 	text4.setFont("20px sans-serif");
 	text4.textAlign="center";
 	text4.setText("Drag + [Control,Shift,Alt]");
-	text4.setLocation(150,100);
+	text4.setLocation((cc1.width-text4.width)/2,100);
 	text4.create();
 	text4.fillStyle='black';
 	cc1.addChild(text4);
@@ -241,7 +241,7 @@ function __scene4(director) {
 	text5.setFont("20px sans-serif");
 	text5.textAlign="center";
 	text5.setText("Double Click");
-	text5.setLocation(150,120);
+	text5.setLocation((cc1.width-text5.width)/2,120);
 	text5.create();
 	text5.fillStyle='black';
 	cc1.addChild(text5);

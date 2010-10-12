@@ -87,7 +87,6 @@ function setupTRButtonPaint(prev) {
 			
 		canvas.strokeStyle= this.pointed ? 'green' : '#ffff00';
 		canvas.beginPath();
-//			canvas.save();
 
 		canvas.moveTo(3,10);
 		canvas.lineTo(17,10);
@@ -101,8 +100,7 @@ function setupTRButtonPaint(prev) {
 		canvas.lineCap='round';
 
 		canvas.stroke();
-//			canvas.restore();
-	};			
+	};
 }
 
 function setupTRButtonPaintIndex(prev, index) {
@@ -236,13 +234,13 @@ function __CAAT__loadingScene(director) {
 
     var textLoading= new CAAT.TextActor();
     textLoading.setFont("20px sans-serif");
-    textLoading.textAlign="left";
+    textLoading.textAlign="center";
     textLoading.textBaseline="top";
-    textLoading.setText("Loading    ");
-    textLoading.setLocation(15,20);
+    textLoading.setText("  Loading  ");
+    textLoading.setSize( textLoading.textWidth, textLoading.textHeight );
     textLoading.create();
     textLoading.fillStyle='white';
-    scene.addChild(textLoading);
+    root.addChild(textLoading);
     textLoading.setLocation(
             (director.canvas.width-textLoading.width)/2,
             (director.canvas.height-textLoading.height)/2);
@@ -365,7 +363,8 @@ function __CAAT_init(images) {
             {id:'buble1',   url:'res/img/burbu1.png'},
             {id:'buble2',   url:'res/img/burbu2.png'},
             {id:'buble3',   url:'res/img/burbu3.png'},
-            {id:'buble4',   url:'res/img/burbu4.png'}
+            {id:'buble4',   url:'res/img/burbu4.png'},
+            {id:'plants',   url:'res/img/plants.jpg'}
         ],
 
         function( counter, images ) {
@@ -388,3 +387,4 @@ function __CAAT_init(images) {
 }
 
 window.addEventListener('load', __CAAT_init, false);
+

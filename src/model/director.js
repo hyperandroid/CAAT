@@ -33,6 +33,8 @@
 
 	extend( CAAT.Director, CAAT.ActorContainer, {
 
+        debug:          false,
+
 		scenes:			null,
 		currentScene:	null,
         canvas:         null,
@@ -71,8 +73,6 @@
             
         },
         render : function(time) {
-
-
 			this.time+= time;
 			this.crc.globalAlpha=1;
             this.crc.globalCompositeOperation='source-over';
@@ -83,13 +83,18 @@
 			for( var i=0; i<this.childList.length; i++ ) {
 				if (this.childList[i].isInAnimationFrame(this.time)) {
 					this.crc.save();
-					this.childList[i].animate(this, this.childList[i].time - this.childList[i].start_time);
+                    var tt= this.childList[i].time - this.childList[i].start_time;
+					this.childList[i].animate(this, tt);
                     this.childList[i].time+= time;
-
 					this.crc.restore();
-				} else {
+
+                    if ( this.debug ) {
+                        this.childList[i].drawScreenBoundingBox(this, tt);
+                    }
+				}
+//                else {
 //                    console.log('scene oot');
-                }
+//                }
 			}
 			
 		},
