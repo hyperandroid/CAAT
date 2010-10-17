@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>tut1</title>
+    <style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { }
+.s2 { color: rgb(0,0,255); }
+.s3 { color: rgb(0,128,0); font-weight: bold; }
+</style>
+</head>
+
+
+<body style="color:black; background:#ffffff;">
+
+<p>One of the minimum CAAT library setup programs could be this one:
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">function </span><span class="s1">__CAAT_tut1_init() {
+<a name="l2"><span class="ln">2    </span></a>
+<a name="l3"><span class="ln">3    </span></a>    </span><span class="s0">var </span><span class="s1">director = </span><span class="s0">new </span><span class="s1">CAAT.Director().initialize(</span><span class="s2">100</span><span class="s1">,</span><span class="s2">100</span><span class="s1">);
+<a name="l4"><span class="ln">4    </span></a>    </span><span class="s0">var </span><span class="s1">scene=     </span><span class="s0">new </span><span class="s1">CAAT.Scene().create();
+<a name="l5"><span class="ln">5    </span></a>    </span><span class="s0">var </span><span class="s1">circle=    </span><span class="s0">new </span><span class="s1">CAAT.ShapeActor().create().setLocation(</span><span class="s2">20</span><span class="s1">,</span><span class="s2">20</span><span class="s1">).setSize(</span><span class="s2">60</span><span class="s1">,</span><span class="s2">60</span><span class="s1">).setFillStyle(</span><span class="s3">'#ff0000'</span><span class="s1">).setStrokeStyle(</span><span class="s3">'#000000'</span><span class="s1">);
+<a name="l6"><span class="ln">6    </span></a>
+<a name="l7"><span class="ln">7    </span></a>    scene.addChild(circle);
+<a name="l8"><span class="ln">8    </span></a>    director.addScene(scene);
+<a name="l9"><span class="ln">9    </span></a>
+<a name="l10"><span class="ln">10   </span></a>    </span><span class="s0">var </span><span class="s1">canvasContainer= document.createElement(</span><span class="s3">'div'</span><span class="s1">);
+<a name="l11"><span class="ln">11   </span></a>    canvasContainer.appendChild( director.canvas );
+<a name="l12"><span class="ln">12   </span></a>    document.body.appendChild(canvasContainer);
+<a name="l13"><span class="ln">13   </span></a>
+<a name="l14"><span class="ln">14   </span></a>    director.loop(</span><span class="s2">1</span><span class="s1">);
+<a name="l15"><span class="ln">15   </span></a>}
+<a name="l16"><span class="ln">16   </span></a>
+<a name="l17"><span class="ln">17   </span></a>window.addEventListener(</span><span class="s3">'load'</span><span class="s1">, __CAAT_tut1_init, </span><span class="s0">false</span><span class="s1">);</span>
+</pre>
+
+<p>By executing it, we'll get a black-outlined red circle at position 20,20 and of radius 30.
+<p>Despite its simplicity, some facts must be taken into account:
+<ol>
+<li>When using CAAT, it's mandatory to create a CAAT.Director instance. The Director is the entry point to CAAT.
+<li>The Director instance is fed with scenes. CAAT.Scene instances are advanced actor containers. We'll see how the Director manages Scenes, and how to elegantly switch from one to the other.
+<li>Scenes are fed with CAAT.Actor instances. Indeed, as much as needed.
+<li>CAAT.Actor instances and its subinstances (ShapeActor, SpriteActor, etc.) have a lifecycle, so it must be explicitly stated the call to create method.
+<li>We must call director.loop to signal CAAT to start delivering content to the canvas.
+</ol>
+
+<p>And that's it, our red circle:
+
+</body>
+
+<script type="text/javascript" src="../../src/CAAT.js"></script>
+
+<script type="text/javascript" src="../../src/core/class.js"></script>
+<script type="text/javascript" src="../../src/core/browserdetect.js"></script>
+
+<script type="text/javascript" src="../../src/model/actor.js"></script>
+<script type="text/javascript" src="../../src/model/conpoundimage.js"></script>
+<script type="text/javascript" src="../../src/model/imagepreloader.js"></script>
+<script type="text/javascript" src="../../src/model/director.js"></script>
+<script type="text/javascript" src="../../src/model/mouseevent.js"></script>
+<script type="text/javascript" src="../../src/model/scene.js"></script>
+
+<script type="text/javascript" src="../../src/math/affinetransform2D.js"></script>
+<script type="text/javascript" src="../../src/math/point.js"></script>
+<script type="text/javascript" src="../../src/math/rectangle.js"></script>
+<script type="text/javascript" src="../../src/math/bezier.js"></script>
+
+<script type="text/javascript" src="../../src/path/path.js"></script>
+<script type="text/javascript" src="../../src/path/pathactor.js"></script>
+<script type="text/javascript" src="../../src/path/interpolator.js"></script>
+<script type="text/javascript" src="../../src/path/interpolatoractor.js"></script>
+
+<script type="text/javascript" src="../../src/behaviour/behaviour.js"></script>
+
+
+<script type="text/javascript" src="tut1.js"></script>
+</html>

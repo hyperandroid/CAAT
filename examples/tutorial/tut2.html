@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tutorial 2 - Behaviours</title>
+    <style type="text/css">
+.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
+.s0 { color: rgb(0,0,128); font-weight: bold; }
+.s1 { }
+.s2 { color: rgb(0,0,255); }
+.s3 { color: rgb(0,128,0); font-weight: bold; }
+</style>
+</head>
+
+
+<body style="color:black; background:#ffffff;">
+
+<h1>Behaviours</h1>
+<p>
+Behaviours are modifiers for common CAAT.Actor properties.
+<p>Concretely there are already out-of-the-box Behaviours to manage:
+<ol>
+<li>Rotations
+<li>Translations across complex Paths
+<li>Scalations
+<li>Alpha transparency
+</ol>
+<p>Behaviours apply to every kind of CAAT.Actor, including Scenes. Let's add some AlphaBehaviour to our previous circle example:
+<pre>
+<a name="l1"><span class="ln">1    </span></a><span class="s0">function </span><span class="s1">__CAAT_tut2_init() {
+<a name="l2"><span class="ln">2    </span></a>
+<a name="l3"><span class="ln">3    </span></a>    </span><span class="s0">var </span><span class="s1">director = </span><span class="s0">new </span><span class="s1">CAAT.Director().initialize(</span><span class="s2">100</span><span class="s1">,</span><span class="s2">100</span><span class="s1">);
+<a name="l4"><span class="ln">4    </span></a>    </span><span class="s0">var </span><span class="s1">scene=     </span><span class="s0">new </span><span class="s1">CAAT.Scene().create();
+<a name="l5"><span class="ln">5    </span></a>    </span><span class="s0">var </span><span class="s1">circle=    </span><span class="s0">new </span><span class="s1">CAAT.ShapeActor().create().setLocation(</span><span class="s2">20</span><span class="s1">,</span><span class="s2">20</span><span class="s1">).setSize(</span><span class="s2">60</span><span class="s1">,</span><span class="s2">60</span><span class="s1">).setFillStyle(</span><span class="s3">'#ff0000'</span><span class="s1">).setStrokeStyle(</span><span class="s3">'#000000'</span><span class="s1">);
+<a name="l6"><span class="ln">6    </span></a>
+<a name="l7"><span class="ln">7    </span></a>    scene.addChild(circle);
+<a name="l8"><span class="ln">8    </span></a>    director.addScene(scene);
+<a name="l9"><span class="ln">9    </span></a>
+<a name="l10"><span class="ln">10   </span></a>    </span><span class="s0">var </span><span class="s1">alpha= </span><span class="s0">new </span><span class="s1">CAAT.AlphaBehaviour();
+<a name="l11"><span class="ln">11   </span></a>    alpha.startAlpha= </span><span class="s2">0</span><span class="s1">;
+<a name="l12"><span class="ln">12   </span></a>    alpha.endAlpha= </span><span class="s2">1</span><span class="s1">;
+<a name="l13"><span class="ln">13   </span></a>    alpha.setFrameTime( </span><span class="s2">2000</span><span class="s1">, </span><span class="s2">5000 </span><span class="s1">);
+<a name="l14"><span class="ln">14   </span></a>
+<a name="l15"><span class="ln">15   </span></a>    circle.addBehaviour(alpha);
+<a name="l16"><span class="ln">16   </span></a>
+<a name="l17"><span class="ln">17   </span></a>    </span><span class="s0">var </span><span class="s1">canvasContainer= document.createElement(</span><span class="s3">'div'</span><span class="s1">);
+<a name="l18"><span class="ln">18   </span></a>    canvasContainer.appendChild( director.canvas );
+<a name="l19"><span class="ln">19   </span></a>    document.body.appendChild(canvasContainer);
+<a name="l20"><span class="ln">20   </span></a>
+<a name="l21"><span class="ln">21   </span></a>    director.loop(</span><span class="s2">10</span><span class="s1">);
+<a name="l22"><span class="ln">22   </span></a>}
+<a name="l23"><span class="ln">23   </span></a>
+<a name="l24"><span class="ln">24   </span></a>window.addEventListener(</span><span class="s3">'load'</span><span class="s1">, __CAAT_tut2_init, </span><span class="s0">false</span><span class="s1">);
+<a name="l29"><span class="ln">29   </span></a></span></pre>
+<p>
+    In the example, we're setting a behaviour to manage alpha transparency. During a 5000ms. lapse, the
+    circle's alpha will change linearly from 0 to 1, that's it, from total transparency to total opacity.
+    The first value of 2000 is to set up the behaviour start time. The behaviour will start applying when
+    the Scene time is greater or equal to 2000ms.
+</p>
+<p>But, as we can see, the behaviour expires, and does not repeat at all. We can set a cyclic behaviour by
+issuing
+<pre>alpha.cycle= <span class="s2">true</span><span class="s1">;</pre>
+<p> This way, the behaviour will be cyclic, so that it will apply forever.
+
+
+</body>
+</html>
+<script type="text/javascript" src="../../src/CAAT.js"></script>
+
+<script type="text/javascript" src="../../src/core/class.js"></script>
+<script type="text/javascript" src="../../src/core/browserdetect.js"></script>
+
+<script type="text/javascript" src="../../src/model/actor.js"></script>
+<script type="text/javascript" src="../../src/model/conpoundimage.js"></script>
+<script type="text/javascript" src="../../src/model/imagepreloader.js"></script>
+<script type="text/javascript" src="../../src/model/director.js"></script>
+<script type="text/javascript" src="../../src/model/mouseevent.js"></script>
+<script type="text/javascript" src="../../src/model/scene.js"></script>
+
+<script type="text/javascript" src="../../src/math/affinetransform2D.js"></script>
+<script type="text/javascript" src="../../src/math/point.js"></script>
+<script type="text/javascript" src="../../src/math/rectangle.js"></script>
+<script type="text/javascript" src="../../src/math/bezier.js"></script>
+
+<script type="text/javascript" src="../../src/path/path.js"></script>
+<script type="text/javascript" src="../../src/path/pathactor.js"></script>
+<script type="text/javascript" src="../../src/path/interpolator.js"></script>
+<script type="text/javascript" src="../../src/path/interpolatoractor.js"></script>
+
+<script type="text/javascript" src="../../src/behaviour/behaviour.js"></script>
+        
+<script type="text/javascript" src="tut2.js"></script>
