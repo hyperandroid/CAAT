@@ -60,13 +60,12 @@ function __scene6(director) {
 			var angle= Math.PI*2*Math.sin(time*3E-4) + i*Math.PI/50;
 			var radius= this.parent.width/8*Math.cos(time*3E-4);
 		    this.setLocation( 
-	//	    			this.parent.width/2 + 
+
 		    			this.__orgX + 
 		    			this.parent.width/4*Math.cos(time*3E-4) +	// move horizontally with time 
 		    			radius*Math.cos(angle)/2,
 		    			
-	//	    			this.parent.height/2 + 
-		    			this.__orgY +  
+		    			this.__orgY +
 		    			this.parent.height/4*Math.sin(time*3E-4) +	// move vertically with time 
 		    			radius*Math.sin(angle)/2
 		    );
@@ -110,7 +109,7 @@ function __scene6_text(director,scene) {
 	gradient.addColorStop(1,'#c0c0c0');
 	
 	var cc= new CAAT.ActorContainer();
-	cc.setBounds( 380,30, 200, 100 );
+	cc.setBounds( 380,30, 150, 100 );
 	cc.create();
 	scene.addChild(cc);
 	cc.mouseEnabled= false;
@@ -128,6 +127,7 @@ function __scene6_text(director,scene) {
 	text.setFont("50px sans-serif");
 	text.setText("Fish");
 	text.textAlign="center";
+    text.calcTextSize(director);
 	text.setLocation((cc.width-text.width)/2,0);
 	text.create();
 	text.fillStyle=gradient;
@@ -138,6 +138,7 @@ function __scene6_text(director,scene) {
 	text2.setFont("50px sans-serif");
 	text2.setText("Field");
 	text2.textAlign="center";
+    text2.calcTextSize(director);
 	text2.setLocation((cc.width-text2.width)/2,50);
 	text2.create();
 	text2.fillStyle=gradient;

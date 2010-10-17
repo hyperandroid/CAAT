@@ -131,6 +131,7 @@ function __scene2(director) {
 	var text= new CAAT.TextActor();
 	text.setFont("50px sans-serif");
 	text.setText("One Image.");
+    text.calcTextSize(director);
 	text.textAlign="center";
 	text.setLocation((cc1.width-text.width)/2,0);
 	text.create();
@@ -142,6 +143,7 @@ function __scene2(director) {
 	text2.setFont("30px sans-serif");
 	text2.textAlign="center";
 	text2.setText("Behaviours on");
+    text2.calcTextSize(director);
 	text2.setLocation((cc1.width-text2.width)/2,50);
 	text2.create();
 	text2.fillStyle=gradient;
@@ -152,6 +154,7 @@ function __scene2(director) {
 	text3.setFont("30px sans-serif");
 	text3.textAlign="center";
 	text3.setText("MouseMove");
+    text3.calcTextSize(director);
 	text3.setLocation((cc1.width-text3.width)/2,80);
 	text3.create();
 	text3.fillStyle=gradient;
@@ -162,6 +165,7 @@ function __scene2(director) {
 	text4.setFont("10px sans-serif");
 	text4.textAlign="center";
 	text4.setText("and");
+    text4.calcTextSize(director);
 	text4.setLocation((cc1.width-text4.width)/2,110);
 	text4.create();
 	text4.fillStyle='black';
@@ -172,6 +176,7 @@ function __scene2(director) {
 	text5.setFont("30px sans-serif");
 	text5.textAlign="center";
 	text5.setText("MouseDblClick");
+    text5.calcTextSize(director);
 	text5.setLocation((cc1.width-text5.width)/2,120);
 	text5.create();
 	text5.fillStyle=gradient;

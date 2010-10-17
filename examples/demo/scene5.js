@@ -84,6 +84,7 @@ function __scene5_text(director,scene) {
 	var text= new CAAT.TextActor();
 	text.setFont("40px sans-serif");
 	text.setText("Text on Path");
+    text.calcTextSize(director);
 	text.textAlign="center";
 	text.setLocation((cc1.width-text.width)/2,0);
 	text.create();
@@ -95,6 +96,7 @@ function __scene5_text(director,scene) {
 	text2.setFont("40px sans-serif");
 	text2.textAlign="center";
 	text2.setText("Interpolated");
+    text2.calcTextSize(director);
 	text2.setLocation((cc1.width-text2.width)/2,40);
 	text2.create();
 	text2.fillStyle=gradient;
@@ -105,6 +107,7 @@ function __scene5_text(director,scene) {
 	text4.setFont("40px sans-serif");
 	text4.textAlign="center";
 	text4.setText("As well");
+    text4.calcTextSize(director);
 	text4.setLocation((cc1.width-text4.width)/2,80);
 	text4.create();
 	text4.fillStyle=gradient;

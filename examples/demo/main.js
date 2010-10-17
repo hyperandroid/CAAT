@@ -237,6 +237,7 @@ function __CAAT__loadingScene(director) {
     textLoading.textAlign="center";
     textLoading.textBaseline="top";
     textLoading.setText("  Loading  ");
+    textLoading.calcTextSize(director);
     textLoading.setSize( textLoading.textWidth, textLoading.textHeight );
     textLoading.create();
     textLoading.fillStyle='white';
@@ -344,10 +345,12 @@ function __CAAT__loadingScene(director) {
  * Entry point from document loading.
  * @param images
  */
-function __CAAT_init(images) {
+function __CAAT_init() {
 
-	var director = new CAAT.Director();
-    director.initialize(680,500);
+    var canvascontainer= document.createElement('div');
+	var director = new CAAT.Director().initialize(680,500);
+    canvascontainer.appendChild( director.canvas );
+    document.body.appendChild(canvascontainer);
 
     var scene_loading= __CAAT__loadingScene(director);
     director.addScene( scene_loading );
@@ -376,14 +379,7 @@ function __CAAT_init(images) {
         }
     );
 
-    setInterval(
-            function loop() {
-                var t= new Date().getTime();
-                CAAT.director.render( t - CAAT.time );
-                CAAT.time= t;
-            },
-            30);
-
+    director.loop(60);
 }
 
 window.addEventListener('load', __CAAT_init, false);

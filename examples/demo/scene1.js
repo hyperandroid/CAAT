@@ -78,15 +78,6 @@ function __scene1(director) {
 	conpoundimage = new CAAT.CompoundImage();
 	conpoundimage.initialize( director.getImage('fish'), 1, 3);
 
-/*
-	// fish sprite. follows path 'path'.
-	var fish = new CAAT.Pez();
-	fish.setBounds(200, 70, 100, 100);
-	fish.create();
-	fish.setSpriteImage(conpoundimage);
-	scene.addChild(fish);
-*/
-
     var fish = new CAAT.SpriteActor();
     fish.create();
     fish.setAnimationImageIndex( [0,1,2,1] );
@@ -94,8 +85,6 @@ function __scene1(director) {
     fish.setSpriteImage(conpoundimage);
     fish.mouseEnabled= false;
     scene.addChild(fish);
-
-
 
     // path measurer behaviour
     var pb= new CAAT.PathBehaviour();
@@ -147,6 +136,7 @@ function scene1_text(director,scene) {
 	var text= new CAAT.TextActor();
 	text.setFont("20px sans-serif");
 	text.setText("Conpound Path");
+    text.calcTextSize(director);
 	text.textAlign="center";
 	text.setLocation((cc1.width-text.textWidth)/2,0);
 	text.create();
@@ -158,6 +148,7 @@ function scene1_text(director,scene) {
 	text2.setFont("20px sans-serif");
 	text2.textAlign="center";
 	text2.setText("Quadric,Cubic,Line segments");
+    text2.calcTextSize(director);
 	text2.setLocation((cc1.width-text2.textWidth)/2,20);
 	text2.create();
 	text2.fillStyle=gradient;
@@ -168,6 +159,7 @@ function scene1_text(director,scene) {
 	text4.setFont("20px sans-serif");
 	text4.textAlign="center";
 	text4.setText("Fish Path");
+    text4.calcTextSize(director);
 	text4.setLocation((cc1.width-text4.textWidth)/2,50);
 	text4.create();
 	text4.fillStyle=gradient;
@@ -178,6 +170,7 @@ function scene1_text(director,scene) {
 	text3.setFont("20px sans-serif");
 	text3.textAlign="center";
 	text3.setText("Interpolators");
+    text3.calcTextSize(director);
 	text3.setLocation((cc1.width-text3.textWidth)/2,70);
 	text3.create();
 	text3.fillStyle=gradient;
@@ -188,6 +181,7 @@ function scene1_text(director,scene) {
 	text5.setFont("20px sans-serif");
 	text5.textAlign="center";
 	text5.setText("DblClick to Select");
+    text5.calcTextSize(director);
 	text5.setLocation((cc1.width-text5.textWidth)/2,90);
 	text5.create();
 	text5.fillStyle=gradient;

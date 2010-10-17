@@ -30,6 +30,7 @@ function __scene3(director) {
 	var text= new CAAT.TextActor();
 	text.setFont("50px sans-serif");
 	text.setText("Anchored");
+    text.calcTextSize(director);
 	text.textAlign="center";
 	text.setLocation((cc.width-text.width)/2,0);
 	text.create();
@@ -41,6 +42,7 @@ function __scene3(director) {
 	text2.setFont("50px sans-serif");
 	text2.textAlign="center";
 	text2.setText("Affine");
+    text2.calcTextSize(director);
 	text2.setLocation((cc.width-text2.width)/2,50);
 	text2.create();
 	text2.fillStyle=gradient;
@@ -51,6 +53,7 @@ function __scene3(director) {
 	text3.setFont("50px sans-serif");
 	text3.textAlign="center";
 	text3.setText("Transforms");
+    text3.calcTextSize(director);
 	text3.setLocation((cc.width-text3.width)/2,100);
 	text3.create();
 	text3.fillStyle=gradient;
