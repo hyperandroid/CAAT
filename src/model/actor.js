@@ -37,7 +37,7 @@
 
 		return this;
 	};
-	
+
 	CAAT.Actor.prototype= {
 		behaviourList: 			null,
 		parent:					null,
@@ -47,25 +47,25 @@
 		height:					0,
 		start_time:				0,
 		duration:				Number.MAX_VALUE,
-		
+
 		transformationMatrix:	null,
-		
+
 		rpoint:					null,
-		
+
 		// clip el area del componente.
 		clip:					false,
-    
-		scaleX:					0, 
+
+		scaleX:					0,
 		scaleY:					0,
-		scaleTX:				0, 
+		scaleTX:				0,
 		scaleTY:				0,
 		scaleAnchor:			0,
-		rotationAngle:			0, 
-		rotationX:				0, 
+		rotationAngle:			0,
+		rotationX:				0,
 		rotationY:				0,
 		alpha:					1,
         isGlobalAlpha:          true,
-		
+
 		expired:				false,
 		discardable:			false,
 		selected:				false,
@@ -80,8 +80,8 @@
 		ANCHOR_TOP_LEFT:		5,
 		ANCHOR_TOP_RIGHT:		6,
 		ANCHOR_BOTTOM_LEFT:		7,
-		ANCHOR_BOTTOM_RIGHT:	8,		
-		
+		ANCHOR_BOTTOM_RIGHT:	8,
+
 		fillStyle:				null,
 
         time:                   0,
@@ -171,14 +171,14 @@
             return this;
 		},
 		paint : function(director, time) {
-			
+
 			var canvas= director.crc;
-			
+
 			if ( null!=this.parent && null!=this.fillStyle ) {
 				canvas.fillStyle= this.pointed ? 'orange' : (this.fillStyle!=null ? this.fillStyle : 'white'); //'white';
 				canvas.fillRect(0,0,this.width,this.height );
 			}
-			
+
 //			canvas.strokeStyle= this.pointed ? 'red' : 'black';
 //			canvas.strokeRect(0,0,this.width,this.height );
 
@@ -189,7 +189,7 @@
 		},
 		getAnchor : function( anchor ) {
 			var tx=0, ty=0;
-			
+
 			switch( anchor ) {
             case this.ANCHOR_CENTER:
             	tx= this.width/2;
@@ -228,17 +228,17 @@
             	ty= 0;
                 break;
 	        }
-			
+
 			return {x: tx, y: ty};
 		},
 		setScaleAnchored : function( sx, sy, anchor )    {
 			this.scaleAnchor= anchor;
-        
+
 			var obj= this.getAnchor( this.scaleAnchor );
-			
+
 			this.scaleTX= obj.x;
 			this.scaleTY= obj.y;
-	        
+
 			this.scaleX=sx;
 			this.scaleY=sy;
 
@@ -290,12 +290,12 @@
 	    	return true;
 	    },
 	    contains : function(x, y) {
-//	    	if (!this.isInAnimationFrame(0))    {    	
+//	    	if (!this.isInAnimationFrame(0))    {
 //	            return false;
 //	        }
-	
+
 	        return x>=0 && y>=0 && x<this.width && y<this.height;
-	    },    
+	    },
 		create : function()	{
 	    	this.scaleAnchor= this.ANCHOR_CENTER;
 	    	this.rotateAnchor= this.ANCHOR_CENTER;
@@ -316,7 +316,8 @@
 		},
         transformCoord : function(point) {
             var tthis= this;
-            while( tthis!=CAAT.director ) {
+//            while( tthis!=CAAT.director ) {
+            while( !(tthis instanceof CAAT.Director) ) {
                 tthis.transformationMatrix.transformCoord(point);
                 tthis= tthis.parent;
             }
@@ -329,20 +330,20 @@
 				tthis.transformationMatrix.inverseTransformCoord(point);
 				tthis= tthis.parent;
 			}
-			
+
 			return point;
 		},
 	    findActorAtPosition : function(point) {
 			if ( !this.mouseEnabled ) {
 				return null;
 			}
-			
+
 			this.rpoint.set( point.x, point.y );
 	    	this.transformationMatrix.inverseTransformCoord(this.rpoint);
 	    	return this.contains(this.rpoint.x, this.rpoint.y) ? this :null;
 	    },
 	    enableDrag : function() {
-	    	
+
 			this.ax= 0;
 			this.ay= 0;
 			this.mx= 0;
@@ -352,33 +353,33 @@
 			this.ara=0;
 			this.screenx=0;
 			this.screeny=0;
-	    	
+
 	    	this.mouseEnter= function(mouseEvent) {
 				this.ax= -1;
 				this.ay= -1;
 		    	this.pointed= true;
 		    	document.body.style.cursor = 'move';
 	    	};
-	    	
+
 	    	this.mouseExit= function(mouseEvent) {
 				this.ax= -1;
 				this.ay= -1;
 				this.pointed= false;
 				document.body.style.cursor = 'default';
 	    	};
-	    	
+
 	    	this.mouseMove= function(mouseEvent) {
 				this.mx= mouseEvent.point.x;
 				this.my= mouseEvent.point.y;
 	    	};
-	    	
+
 	    	this.mouseUp= function( mouseEvent) {
 				this.ax= -1;
 				this.ay= -1;
 	    	};
-	    	
+
 	    	this.mouseDrag= function(mouseEvent) {
-				
+
 				if ( this.ax==-1 || this.ay==-1 ) {
 					this.ax= mouseEvent.point.x;
 					this.ay= mouseEvent.point.y;
@@ -388,7 +389,7 @@
 					this.screenx= mouseEvent.screenPoint.x;
 					this.screeny= mouseEvent.screenPoint.y;
 				}
-				
+
 				if ( mouseEvent.isShiftDown() ) {
 					var scx= (mouseEvent.screenPoint.x-this.screenx)/100;
 					var scy= (mouseEvent.screenPoint.y-this.screeny)/100;
@@ -398,7 +399,7 @@
 						scy= sc;
 					}
 					this.setScale( scx+this.asx, scy+this.asy );
-					
+
 				} else if ( mouseEvent.isControlDown() ) {
 					var vx=  mouseEvent.screenPoint.x - this.screenx;
 					var vy=  mouseEvent.screenPoint.y - this.screeny;
@@ -409,8 +410,8 @@
 					this.ax= mouseEvent.point.x;
 					this.ay= mouseEvent.point.y;
 				}
-				
-	    		
+
+
 	    	};
 	    },
 	    mouseClick : function(mouseEvent) {
@@ -444,11 +445,13 @@
 				this.behaviourList[i].apply(time,this);
 			}
 
-			var canvas= director.crc;
+            this.setScreenBounds();
+		},
+        paintActor : function(director, time) {
+            var canvas= director.crc;
 
             canvas.globalAlpha*= this.alpha;
             this.prepareGraphics(canvas);
-
 
             if ( this.clip ) {
                 canvas.beginPath();
@@ -457,11 +460,20 @@
             }
 
             this.paint(director, time);
+        },
+        endAnimate : function(director,time) {
+        },
+        initialize : function(overrides) {
+            if (overrides) {
+               for (i in overrides) {
+                  this[i] = overrides[i];
+               }
+            }
 
-            this.setScreenBounds();
-		}
+            return this;
+        }
 	};
-	
+
 })();
 
 
@@ -471,8 +483,8 @@
 		this.childList= [];
 		return this;
 	};
-	
-	
+
+
 	extend( CAAT.ActorContainer, CAAT.Actor, {
 
         drawScreenBoundingBox : function( director, time ) {
@@ -482,21 +494,36 @@
             CAAT.ActorContainer.superclass.drawScreenBoundingBox.call(this,director,time);
 
         },
+        paintActor : function(director, time ) {
+            var canvas= director.crc;
+
+
+            canvas.save();
+            CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
+            for( var i=0; i<this.childList.length; i++ ) {
+                canvas.save();
+                this.childList[i].paintActor(director,time);
+                canvas.restore();
+            }
+            canvas.restore();
+
+        },
 		animate : function(director,time) {
 
             CAAT.ActorContainer.superclass.animate.call(this,director,time);
 
-            var canvas= director.crc;
             var i;
 
             for( i=0; i<this.childList.length; i++ ) {
                 if (this.childList[i].isInAnimationFrame(time)) {
-                    canvas.save();
                     this.childList[i].time= time;
                     this.childList[i].animate(director, time);
-                    canvas.restore();
                 }
             }
+		},
+        endAnimate : function(director,time) {
+
+            CAAT.ActorContainer.superclass.endAnimate.call(this,director,time);
 
             // remove expired and discardable elements.
             for( i=this.childList.length-1; i>=0; i-- ) {
@@ -504,9 +531,12 @@
                 if ( actor.expired && actor.discardable ) {
                     actor.destroy();
                     this.childList.splice(i,1);
+                } else {
+                    actor.endAnimate(director,time);
                 }
             }
-		},
+
+        },
 		addChild : function(child) {
 			child.parent= this;
 			this.childList.push(child);
@@ -534,7 +564,7 @@
 			if( null==CAAT.ActorContainer.superclass.findActorAtPosition.call(this,point) ) {
 				return null;
 			}
-			
+
 			// z-order
 			for( var i=this.childList.length-1; i>=0; i-- ) {
 				var contained= this.childList[i].findActorAtPosition( this.rpoint );
@@ -542,7 +572,7 @@
 					return contained;
 				}
 			}
-			
+
 			return this;
 		},
         destroy : function() {
@@ -552,7 +582,7 @@
             ActorContainer.superclass.destroy.call(this);
         }
 	});
-	
+
 })();
 
 (function() {
@@ -560,7 +590,7 @@
 		CAAT.SpriteActor.superclass.constructor.call(this);
 		return this;
 	};
-	
+
 	extend( CAAT.SpriteActor, CAAT.Actor, {
 		conpoundbitmap:			null,
 		animationImageIndex:	null,
@@ -568,15 +598,15 @@
 		changeFPS:				1000,
 		transformation:			0,
 		spriteIndex:			0,
-		
+
 		TR_NONE:				0,
 		TR_FLIP_HORIZONTAL:		1,
 		TR_FLIP_VERTICAL:		2,
-		TR_FLIP_ALL:			3,		
-		
+		TR_FLIP_ALL:			3,
+
 		prevX:					-1,
 		prevY:					-1,
-		
+
 		setSpriteImage : function(conpoundimage) {
 			this.conpoundbitmap= conpoundimage;
 			this.width= conpoundimage.singleWidth;
@@ -594,9 +624,9 @@
             return this;
 		},
 		animate : function( director, time )	{
-			
+
 			if ( this.conpoundbitmap && this.animationImageIndex )	{
-				
+
 				if ( this.animationImageIndex.length>1 ) {
 					if ( this.prevAnimationTime==-1 )	{
 						this.prevAnimationTime= time;
@@ -609,12 +639,12 @@
 						this.spriteIndex= this.animationImageIndex[Math.floor(ttime)];
 					}
 				}
-				
+
 				CAAT.SpriteActor.superclass.animate.call(this, director, time);
 			}
 		},
 		paint : function(director, time) {
-			
+
 			var canvas= director.crc;
 
             // drawn at 0,0 because they're already affine-transformed.
@@ -641,9 +671,9 @@
  */
 (function() {
 	CAAT.TextActor = function() {
-		
+
 		CAAT.TextActor.superclass.constructor.call(this);
-		
+
 		this.font= "10px sans-serif";
 		this.textAlign= "left";
 		this.textBaseline= "top";
@@ -652,7 +682,7 @@
 
 		return this;
 	};
-	
+
 	extend( CAAT.TextActor, CAAT.Actor, {
 		font:			    null,
 		textAlign:		    null,	// start, end, left, right, center
@@ -663,12 +693,12 @@
         textHeight:         0,
 		outline:		    false,
 		outlineColor:	    null,
-		
+
 		path:			    null,
         pathInterpolator:	null,
         pathDuration:       10000,
 		sign:			    1,
-		
+
 		setText : function( sText ) {
 			this.text= sText;
             this.setFont( this.font );
@@ -685,13 +715,15 @@
 
             if ( this.text=="" || null==this.text ) {
                 this.width= this.height= 0;
-                return;
             }
 
-            CAAT.director.crc.save();
-            CAAT.director.crc.font= this.font;
+            return this;
+		},
+        calcTextSize : function(director) {
+            director.crc.save();
+            director.crc.font= this.font;
 
-            this.textWidth= CAAT.director.crc.measureText( this.text ).width;
+            this.textWidth= director.crc.measureText( this.text ).width;
             if (this.width==0) {
                 this.width= this.textWidth;
             }
@@ -708,18 +740,22 @@
                 this.height= this.textHeight;
             }
 
-            CAAT.director.crc.restore();
+            director.crc.restore();
 
             return this;
-		},
+        },
 		paint : function(director, time) {
-		
+
 			if ( null==this.text) {
 				return;
 			}
-		
+
+            if ( this.textWidth==0 || this.textHeight==0 ) {
+                this.calcTextSize(director);
+            }
+
 			var canvas= director.crc;
-			
+
 			if( null!=this.font ) {
 				canvas.font= this.font;
 			}
@@ -727,12 +763,12 @@
 				canvas.textAlign= this.textAlign;
 			}
 			if ( null!=this.textBaseline ) {
-				canvas.textBaseline= this.textBaseline; 
+				canvas.textBaseline= this.textBaseline;
 			}
 			if ( null!=this.fillStyle ) {
 				canvas.fillStyle= this.fillStyle;
 			}
-			
+
 			if (null==this.path) {
 
                 var tx=0;
@@ -745,7 +781,7 @@
 				if ( this.fill ) {
 					canvas.fillText( this.text, tx, 0 );
 					if ( this.outline ) {
-						
+
 						// firefox necesita beginPath, si no, dibujara ademas el cuadrado del
 						// contenedor de los textos.
 						if ( null!=this.outlineColor ) {
@@ -766,34 +802,34 @@
 			}
 		},
 		drawOnPath : function(director, time) {
-			
+
 			var canvas= director.crc;
-			
+
 			var textWidth=this.sign * this.pathInterpolator.getPosition( (time%this.pathDuration)/this.pathDuration ).y * this.path.getLength() ;
 			var p0= new CAAT.Point();
 			var p1= new CAAT.Point();
-			
+
 			for( var i=0; i<this.text.length; i++ ) {
 				var caracter= this.text[i].toString();
 				var charWidth= canvas.measureText( caracter ).width;
-				
+
 				var pathLength= this.path.getLength();
 
 				var currentCurveLength= charWidth/2 + textWidth;
 
 				p0= this.path.getPositionFromLength(currentCurveLength).clone();
 				p1= this.path.getPositionFromLength(currentCurveLength-.1).clone();
-				
+
 				var angle= Math.atan2( p0.y-p1.y, p0.x-p1.x );
-				
+
 				canvas.save();
-				
+
 					canvas.translate( p0.x, p0.y );
 					canvas.rotate( angle );
 					canvas.fillText(caracter,0,0);
 
 				canvas.restore();
-				
+
 				textWidth+= charWidth;
 			}
 		},
@@ -821,17 +857,29 @@
         strokeStyle:    null,
         compositeOp:    null,
 
+        setFillStyle : function(fillStyle) {
+            this.fillStyle= fillStyle;
+            return this;
+        },
+        setStrokeStyle : function(strokeStyle) {
+            this.strokeStyle= strokeStyle;
+            return this;
+        },
+        setCompositeOp : function(compositeOp){
+            this.compositeOp= compositeOp;
+            return this;
+        },
         paint : function(director,time) {
             var canvas= director.crc;
 
+            canvas.globalCompositeOperation= this.compositeOp;
             if ( null!=this.fillStyle ) {
                 canvas.fillStyle= this.fillStyle;
+                canvas.beginPath();
+                canvas.arc( this.width/2, this.height/2, Math.min(this.width,this.height)/2, 0, 2*Math.PI, false );
+                canvas.fill();
             }
-            canvas.globalCompositeOperation= this.compositeOp;
-            canvas.beginPath();
-            canvas.arc( this.width/2, this.height/2, Math.min(this.width,this.height)/2, 0, 2*Math.PI, false );
-            canvas.fill();
-
+            
             if ( null!=this.strokeStyle ) {
                 canvas.strokeStyle= this.strokeStyle;
                 canvas.beginPath();

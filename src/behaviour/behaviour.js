@@ -105,8 +105,16 @@
 		},
 		setForTime : function( time, actor ) {
 			
-		}
-		
+		},
+        initialize : function(overrides) {
+            if (overrides) {
+               for (i in overrides) {
+                  this[i] = overrides[i];
+               }
+            }
+
+            return this;
+        }
 	};
 })();
 

@@ -27,8 +27,8 @@
 
 (function() {
 	CAAT.Director= function() {
-		this.scenes= [];
 		CAAT.Director.superclass.constructor.call(this);
+        this.scenes= [];
 	};
 
 	extend( CAAT.Director, CAAT.ActorContainer, {
@@ -50,16 +50,11 @@
          */
         imagesCache:    null,
 
-        initialize : function(width,height) {
+        initialize : function(width,height,canvas) {
 
-            var canvascontainer= document.createElement('div');
-            document.body.appendChild(canvascontainer);
-
-            var canvas= document.createElement('canvas');
+            canvas= canvas || document.createElement('canvas');
             canvas.width= width;
             canvas.height=height;
-
-            canvascontainer.appendChild( canvas );
 
             this.setBounds(0, 0, canvas.width, canvas.height);
             this.create();
@@ -70,21 +65,36 @@
 
             CAAT.director= this;
             CAAT.time= new Date().getTime();
-            
+
+            return this;
         },
         render : function(time) {
 			this.time+= time;
 			this.crc.globalAlpha=1;
             this.crc.globalCompositeOperation='source-over';
             this.crc.clearRect(0,0,this.width,this.height);
-            
+
 			this.crc.setTransform(1,0,0,1,0,0);
-			
-			for( var i=0; i<this.childList.length; i++ ) {
+
+            /**
+             * calculate animable elements and their bbox.
+             */
+            var i;
+			for( i=0; i<this.childList.length; i++ ) {
+				if (this.childList[i].isInAnimationFrame(this.time)) {
+                    var tt= this.childList[i].time - this.childList[i].start_time;
+					this.childList[i].animate(this, tt);
+				}
+			}
+
+            /**
+             * draw actors on scene.
+             */
+			for( i=0; i<this.childList.length; i++ ) {
 				if (this.childList[i].isInAnimationFrame(this.time)) {
 					this.crc.save();
                     var tt= this.childList[i].time - this.childList[i].start_time;
-					this.childList[i].animate(this, tt);
+					this.childList[i].paintActor(this, tt);
                     this.childList[i].time+= time;
 					this.crc.restore();
 
@@ -92,16 +102,18 @@
                         this.childList[i].drawScreenBoundingBox(this, tt);
                     }
 				}
-//                else {
-//                    console.log('scene oot');
-//                }
 			}
-			
+
+            this.endAnimate();
+
 		},
 		addScene : function( scene ) {
 			scene.setBounds(0,0,this.width,this.height);
 			this.scenes.push(scene);
 			scene.setEaseListener(this);
+            if ( null==this.currentScene ) {
+                this.setScene(0);
+            }
 		},
 		getNumScenes : function() {
 			return this.scenes.length;
@@ -129,7 +141,7 @@
 
             ssin.alpha = 1;
             sout.alpha = 1;
-			
+
 			if (typein==CAAT.Scene.prototype.EASE_ROTATION) {
 				ssin.easeRotationIn(time, alpha, anchorin, interpolatorIn );
 			} else if (typein==CAAT.Scene.prototype.EASE_SCALE) {
@@ -137,7 +149,7 @@
 			} else {
                 ssin.easeTranslationIn(time,alpha,anchorin,interpolatorIn );
             }
-			
+
 			if (typeout==CAAT.Scene.prototype.EASE_ROTATION) {
 				sout.easeRotationOut(time, alpha, anchorout, interpolatorOut );
 			} else if (typeout==CAAT.Scene.prototype.EASE_SCALE) {
@@ -145,7 +157,7 @@
 			} else {
                 sout.easeTranslationOut(time,alpha,anchorout, interpolatorOut);
             }
-			
+
 			this.childList= [];
 
 			this.addChild(sout);
@@ -223,27 +235,27 @@
 			this.childList= [];
 			this.addChild(sin);
 			this.currentScene= sin;
-			
+
 			sin.setFrameTime(this.time, Number.MAX_VALUE);
 		},
 		switchToScene : function( iNewSceneIndex, time, alpha, transition ) {
 			var currentSceneIndex= this.getSceneIndex(this.currentScene);
-			
+
 			if (!transition) {
 				this.setScene(iNewSceneIndex);
 			}
 			else {
 				this.easeInOutRandom( iNewSceneIndex, currentSceneIndex, time, alpha );
-			}			
+			}
 		},
 		switchToPrevScene : function(time, alpha, transition) {
-			
+
 			var currentSceneIndex= this.getSceneIndex(this.currentScene);
-			
+
 			if ( this.getNumScenes()<=1 || currentSceneIndex==0 ) {
 				return;
 			}
-			
+
 			if (!transition) {
 				this.setScene(currentSceneIndex-1);
 			}
@@ -252,9 +264,9 @@
 			}
 		},
 		switchToNextScene: function(time, alpha, transition) {
-			
+
 			var currentSceneIndex= this.getSceneIndex(this.currentScene);
-			
+
 			if ( this.getNumScenes()<=1 || currentSceneIndex==this.getNumScenes()-1 ) {
 				return;
 			}
@@ -289,7 +301,7 @@
 				this.currentScene= scene;
                 this.currentScene.activated();
 			}
-            
+
             scene.mouseEnabled= true;
 			scene.emptyBehaviourList();
 		},
@@ -322,12 +334,27 @@
         },
         emptyScenes : function() {
             this.scenes= [];
+        },
+        loop : function(fps) {
+            fps= fps || 30;
+            fps= 1000/fps;
+
+            var me= this;
+            var floop= function loop() {
+                var t= new Date().getTime();
+                me.render( t - CAAT.time );
+                CAAT.time= t;
+            };
+
+            floop();
+            setInterval( floop, fps);
+
         }
 
     });
 })();
 
-// TODO: ease in out flip. 
+// TODO: ease in out flip.
 /*		flip : function( inSceneIndex, time ) {
 			var ssin=this.scenes[ inSceneIndex ];
 			var sout=null;
