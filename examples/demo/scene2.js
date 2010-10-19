@@ -39,7 +39,7 @@ function __scene2(director) {
 			actor.setAnimationImageIndex( [ (__index++)%conpoundimage.getNumImages() ] );
 			cc.addChild(actor);
 			
-			var sb= new CAAT.ScaleBehaviour();
+			var sb= new CAAT.ScaleBehavior();
 			sb.setPingPong();
 			sb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
 			sb.minScaleX= 1;
@@ -56,21 +56,21 @@ function __scene2(director) {
                     //new CAAT.Interpolator().createElasticOutInterpolator(1.1, .4) );
                     new CAAT.Interpolator().createExponentialInOutInterpolator(3,true) );
 
-			actor.addBehaviour(sb);
+			actor.addBehavior(sb);
 			
-			var rb= new CAAT.RotateBehaviour();
+			var rb= new CAAT.RotateBehavior();
 			rb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
 			rb.minAngle=0;
 			rb.maxAngle=Math.PI*2;
 			rb.expired= true;
-			actor.addBehaviour(rb);
+			actor.addBehavior(rb);
 			
 			actor.mouseDblClick= function(mouseEvent) {
 				var actor= mouseEvent.source;
 				if( null==actor ) {
 					return;
 				}
-				var behaviour= actor.behaviourList[0];
+				var behaviour= actor.behaviorList[0];
 				if( null==behaviour ) {
 					return;
 				}
@@ -80,7 +80,7 @@ function __scene2(director) {
 					actor.parent.removeChild(actor);
 					// add last on parent
 					actor.parent.addChild(actor);
-					actor.behaviourList[0].setFrameTime(	mouseEvent.source.time,	1000 );
+					actor.behaviorList[0].setFrameTime(	mouseEvent.source.time,	1000 );
 				}				
 			};
 			
@@ -89,7 +89,7 @@ function __scene2(director) {
 				if( null==actor ) {
 					return;
 				}
-				var behaviour= actor.behaviourList[0];
+				var behaviour= actor.behaviorList[0];
 				if( null==behaviour ) {
 					return;
 				}
@@ -101,8 +101,8 @@ function __scene2(director) {
 					// add last on parent
 					actor.parent.addChild(actor);
 					
-					actor.behaviourList[0].setFrameTime(	mouseEvent.source.time,	500 );
-					actor.behaviourList[1].setFrameTime(	mouseEvent.source.time,	500 );
+					actor.behaviorList[0].setFrameTime(	mouseEvent.source.time,	500 );
+					actor.behaviorList[1].setFrameTime(	mouseEvent.source.time,	500 );
 				}
 			};
 		}
@@ -119,14 +119,14 @@ function __scene2(director) {
 	scene.addChild(cc1);
 	cc1.mouseEnabled= false;
 	
-	var rb1= new CAAT.RotateBehaviour();
-	rb1.cycleBehaviour= true;
+	var rb1= new CAAT.RotateBehavior();
+	rb1.cycleBehavior= true;
 	rb1.setFrameTime( 0, 4000 );
 	rb1.minAngle= -Math.PI/8;
 	rb1.maxAngle= Math.PI/8;
 	rb1.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
 	rb1.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
-	cc1.addBehaviour(rb1);
+	cc1.addBehavior(rb1);
 	
 	var text= new CAAT.TextActor();
 	text.setFont("50px sans-serif");
@@ -142,7 +142,7 @@ function __scene2(director) {
 	var text2= new CAAT.TextActor();
 	text2.setFont("30px sans-serif");
 	text2.textAlign="center";
-	text2.setText("Behaviours on");
+	text2.setText("Behaviors on");
     text2.calcTextSize(director);
 	text2.setLocation((cc1.width-text2.width)/2,50);
 	text2.create();

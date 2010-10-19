@@ -31,7 +31,7 @@
 	CAAT.Actor = function() {
 		this.transformationMatrix= new CAAT.MatrixStack();
 		this.rpoint= new CAAT.Point();
-		this.behaviourList= [];
+		this.behaviorList= [];
 
         this.screenBounds= new CAAT.Rectangle();
 
@@ -39,7 +39,7 @@
 	};
 
 	CAAT.Actor.prototype= {
-		behaviourList: 			null,
+		behaviorList: 			null,
 		parent:					null,
 		x:						0,
 		y:						0,
@@ -134,8 +134,8 @@
 
             return this;
         },
-		emptyBehaviourList : function() {
-			this.behaviourList=[];
+		emptyBehaviorList : function() {
+			this.behaviorList=[];
             return this;
 		},
 		prepareGraphics : function(canvas) {
@@ -301,12 +301,12 @@
 	    	this.rotateAnchor= this.ANCHOR_CENTER;
 	    	this.setScale(1,1);
 	    	this.setRotation(0);
-	        this.behaviourList= [];
+	        this.behaviorList= [];
 
             return this;
 		},
-		addBehaviour : function( behaviour )	{
-			this.behaviourList.push(behaviour);
+		addBehavior : function( behaviour )	{
+			this.behaviorList.push(behaviour);
 
             return this;
 		},
@@ -441,8 +441,8 @@
             }
         },
 		animate : function(director, time) {
-			for( var i=0; i<this.behaviourList.length; i++ )	{
-				this.behaviourList[i].apply(time,this);
+			for( var i=0; i<this.behaviorList.length; i++ )	{
+				this.behaviorList[i].apply(time,this);
 			}
 
             this.setScreenBounds();
@@ -857,6 +857,13 @@
         strokeStyle:    null,
         compositeOp:    null,
 
+        SHAPE_CIRCLE:   0,
+        SHAPE_RECTANGLE:1,
+
+        setShape : function(iShape) {
+            this.shape= iShape;
+            return this;
+        },
         setFillStyle : function(fillStyle) {
             this.fillStyle= fillStyle;
             return this;
@@ -870,23 +877,48 @@
             return this;
         },
         paint : function(director,time) {
-            var canvas= director.crc;
+            switch(this.shape) {
+                case 0:
+                    this.paintCircle(director,time);
+                    break;
+                case 1:
+                    this.paintRectangle(director,time);
+                    break;
+            }
+        },
+        paintCircle : function(director,time) {
+            var ctx= director.crc;
 
-            canvas.globalCompositeOperation= this.compositeOp;
+            ctx.globalCompositeOperation= this.compositeOp;
             if ( null!=this.fillStyle ) {
-                canvas.fillStyle= this.fillStyle;
-                canvas.beginPath();
-                canvas.arc( this.width/2, this.height/2, Math.min(this.width,this.height)/2, 0, 2*Math.PI, false );
-                canvas.fill();
+                ctx.fillStyle= this.fillStyle;
+                ctx.beginPath();
+                ctx.arc( this.width/2, this.height/2, Math.min(this.width,this.height)/2, 0, 2*Math.PI, false );
+                ctx.fill();
             }
             
             if ( null!=this.strokeStyle ) {
-                canvas.strokeStyle= this.strokeStyle;
-                canvas.beginPath();
-                canvas.arc( this.width/2, this.height/2, Math.min(this.width,this.height)/2, 0, 2*Math.PI, false );
-                canvas.stroke();
+                ctx.strokeStyle= this.strokeStyle;
+                ctx.beginPath();
+                ctx.arc( this.width/2, this.height/2, Math.min(this.width,this.height)/2, 0, 2*Math.PI, false );
+                ctx.stroke();
+            }
+        },
+        paintRectangle : function(director,time) {
+            var ctx= director.crc;
+
+            ctx.globalCompositeOperation= this.compositeOp;
+            if ( null!=this.fillStyle ) {
+                ctx.fillStyle= this.fillStyle;
+                ctx.fillRect(0,0,this.width,this.height);
+                ctx.fill();
+            }
+
+            if ( null!=this.strokeStyle ) {
+                ctx.strokeStyle= this.strokeStyle;
+                ctx.strokeRect(0,0,this.width,this.height);
+                ctx.stroke();
             }
         }
-
     });
 })();

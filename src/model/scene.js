@@ -24,11 +24,11 @@
 		EASE_TRANSLATE:					3,
 
 		createAlphaBehaviour: function(time, isIn) {
-			var ab= new CAAT.AlphaBehaviour();
+			var ab= new CAAT.AlphaBehavior();
 			ab.setFrameTime( 0, time );
 			ab.startAlpha= isIn ? 0 : 1;
 			ab.endAlpha= isIn ? 1 : 0;
-			this.easeContainerBehaviour.addBehaviour(ab);				
+			this.easeContainerBehaviour.addBehavior(ab);
 		},
 		easeTranslationIn : function( time, alpha, anchor, interpolator ) {
             this.easeTranslation( time, alpha, anchor, true, interpolator );
@@ -38,10 +38,10 @@
         },
 		easeTranslation : function( time, alpha, anchor, isIn, interpolator ) {
 
-            this.easeContainerBehaviour= new CAAT.ContainerBehaviour();
+            this.easeContainerBehaviour= new CAAT.ContainerBehavior();
             this.easeIn= isIn;
 
-            var pb= new CAAT.PathBehaviour();
+            var pb= new CAAT.PathBehavior();
             if ( interpolator ) {
                 pb.setInterpolator( interpolator );
             }
@@ -87,13 +87,13 @@
 				this.createAlphaBehaviour(time,isIn);
 			}
 
-			this.easeContainerBehaviour.addBehaviour(pb);
+			this.easeContainerBehaviour.addBehavior(pb);
 
 			this.easeContainerBehaviour.setFrameTime( this.time, time );
 			this.easeContainerBehaviour.addListener(this);
 
-			this.emptyBehaviourList();
-			CAAT.Scene.superclass.addBehaviour.call( this, this.easeContainerBehaviour );
+			this.emptyBehaviorList();
+			CAAT.Scene.superclass.addBehavior.call( this, this.easeContainerBehaviour );
 		},
 		easeScaleIn : function(starttime,time,alpha,anchor,interpolator) {
 			this.easeScale(starttime,time,alpha,anchor,true,interpolator);
@@ -104,7 +104,7 @@
 			this.easeIn= false;
 		},
 		easeScale : function(starttime,time,alpha,anchor,isIn,interpolator) {
-			this.easeContainerBehaviour= new CAAT.ContainerBehaviour();
+			this.easeContainerBehaviour= new CAAT.ContainerBehavior();
 
 			var x=0;
 			var y=0;
@@ -153,7 +153,7 @@
 				this.createAlphaBehaviour(time,isIn);
 			}
 			
-			var sb= new CAAT.ScaleBehaviour();
+			var sb= new CAAT.ScaleBehavior();
 			sb.setFrameTime( starttime, time );
 			sb.minScaleX= x;
 			sb.minScaleY= y;
@@ -165,18 +165,18 @@
                 sb.setInterpolator(interpolator);
             }
 
-			this.easeContainerBehaviour.addBehaviour(sb);
+			this.easeContainerBehaviour.addBehavior(sb);
 			
 			this.easeContainerBehaviour.setFrameTime( this.time, time );
 			this.easeContainerBehaviour.addListener(this);
 			
-			this.emptyBehaviourList();
-			CAAT.Scene.superclass.addBehaviour.call( this, this.easeContainerBehaviour );
+			this.emptyBehaviorList();
+			CAAT.Scene.superclass.addBehavior.call( this, this.easeContainerBehaviour );
 		},
 		/*
 		 * Do not use directly.
 		 */
-		addBehaviour : function(behaviour) {
+		addBehavior : function(behaviour) {
 			
 		},
 		easeRotationIn : function(time,alpha,anchor,interpolator) {
@@ -188,7 +188,7 @@
 			this.easeIn= false;
 		},
 		easeRotation : function(time,alpha,anchor,isIn,interpolator) {
-			this.easeContainerBehaviour= new CAAT.ContainerBehaviour();
+			this.easeContainerBehaviour= new CAAT.ContainerBehavior();
 			
 			var start=0;
 			var end=0;
@@ -221,7 +221,7 @@
 				this.createAlphaBehaviour(time,isIn);
 			}
 			
-			var rb= new CAAT.RotateBehaviour();
+			var rb= new CAAT.RotateBehavior();
 			rb.setFrameTime( 0, time );
 			rb.minAngle= start;
 			rb.maxAngle= end;
@@ -230,19 +230,19 @@
             if ( interpolator ) {
                 rb.setInterpolator(interpolator);
             }
-			this.easeContainerBehaviour.addBehaviour(rb);
+			this.easeContainerBehaviour.addBehavior(rb);
 			
 			
 			this.easeContainerBehaviour.setFrameTime( this.time, time );
 			this.easeContainerBehaviour.addListener(this);
 			
-			this.emptyBehaviourList();
-			CAAT.Scene.superclass.addBehaviour.call( this, this.easeContainerBehaviour );
+			this.emptyBehaviorList();
+			CAAT.Scene.superclass.addBehavior.call( this, this.easeContainerBehaviour );
 		},
 		setEaseListener : function( listener ) {
 			this.easeContainerBehaviourListener=listener;
 		},
-		behaviourExpired : function(actor) {
+		behaviorExpired : function(actor) {
 			this.easeContainerBehaviourListener.easeEnd(this, this.easeIn);
 		},
         activated : function() {

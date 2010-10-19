@@ -11,7 +11,7 @@
  *
  **/
 function setupTRButton(prev) {
-	var sb= new CAAT.ScaleBehaviour();
+	var sb= new CAAT.ScaleBehavior();
 	sb.setPingPong();
 	sb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
 	sb.minScaleX= 1;
@@ -19,14 +19,14 @@ function setupTRButton(prev) {
 	sb.minScaleY= 1;
 	sb.maxScaleY= 1.5;
 	sb.expired= true;
-	prev.addBehaviour(sb);
+	prev.addBehavior(sb);
 	
-	var ab= new CAAT.AlphaBehaviour();
+	var ab= new CAAT.AlphaBehavior();
 	ab.setPingPong();
 	ab.startAlpha=1;
 	ab.endAlpha=0.5;
 	ab.setCycle(true);
-	prev.addBehaviour(ab);
+	prev.addBehavior(ab);
 	
 	
 	prev.mouseExit= function(mouseEvent) {
@@ -34,15 +34,15 @@ function setupTRButton(prev) {
 		if( null==actor ) {
 			return;
 		}
-		var behaviour= actor.behaviourList[0];
+		var behaviour= actor.behaviorList[0];
 		if( null==behaviour ) {
 			return;
 		}
 		
 		actor.pointed= false;
 		
-		actor.behaviourList[0].setExpired(actor,mouseEvent.source.time);
-		actor.behaviourList[1].setExpired(actor,mouseEvent.source.time);
+		actor.behaviorList[0].setExpired(actor,mouseEvent.source.time);
+		actor.behaviorList[1].setExpired(actor,mouseEvent.source.time);
 	};
 	
 	prev.mouseEnter= function(mouseEvent) {
@@ -50,7 +50,7 @@ function setupTRButton(prev) {
 		if( null==actor ) {
 			return;
 		}
-		var behaviour= actor.behaviourList[0];
+		var behaviour= actor.behaviorList[0];
 		if( null==behaviour ) {
 			return;
 		}
@@ -58,10 +58,10 @@ function setupTRButton(prev) {
 		actor.pointed= true;
 		
 		if ( behaviour.expired ) {
-			actor.behaviourList[0].setFrameTime( mouseEvent.source.time, 1000 );
-			actor.behaviourList[0].setCycle(true);
-			actor.behaviourList[1].setFrameTime( mouseEvent.source.time, 1000 );
-			actor.behaviourList[1].setCycle(true);
+			actor.behaviorList[0].setFrameTime( mouseEvent.source.time, 1000 );
+			actor.behaviorList[0].setCycle(true);
+			actor.behaviorList[1].setFrameTime( mouseEvent.source.time, 1000 );
+			actor.behaviorList[1].setCycle(true);
 		}
 	};
 }
@@ -248,14 +248,14 @@ function __CAAT__loadingScene(director) {
 
     scene.loading= textLoading;
 
-    var rb= new CAAT.RotateBehaviour();
-    rb.cycleBehaviour= true;
+    var rb= new CAAT.RotateBehavior();
+    rb.cycleBehavior= true;
     rb.setFrameTime( 0, 5000 );
     rb.minAngle= -Math.PI/4;
     rb.maxAngle= Math.PI/4;
     rb.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
     rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
-    textLoading.addBehaviour(rb);
+    textLoading.addBehavior(rb);
 
     root.mouseMove= function(mouseEvent) {
 
@@ -276,33 +276,33 @@ function __CAAT__loadingScene(director) {
 
         root.addChild(burbuja);
 
-        var cb= new CAAT.ContainerBehaviour();
+        var cb= new CAAT.ContainerBehavior();
         cb.actor= burbuja;
 
         cb.setFrameTime( scene.time+2000+1000*Math.random(), 500 );
 		cb.addListener(
             {
-                behaviourExpired : function(behaviour, time) {
+                behaviorExpired : function(behaviour, time) {
                     behaviour.actor.discardable= true;
                     behaviour.actor.setExpired(true);
                 }
             });
 
-            var ab= new CAAT.AlphaBehaviour();
+            var ab= new CAAT.AlphaBehavior();
             ab.setFrameTime( 0, 500 );
             ab.startAlpha= 1;
             ab.endAlpha= 0;
-            cb.addBehaviour(ab);
+            cb.addBehavior(ab);
 
-            var tb= new CAAT.PathBehaviour();
+            var tb= new CAAT.PathBehavior();
             tb.setFrameTime( 0, 500 );
             tb.setPath(
                     new CAAT.Path().setLinear(
                             burbuja.x, burbuja.y,
                             burbuja.x, burbuja.y-100-100*Math.random() ) );
-            cb.addBehaviour(tb);
+            cb.addBehavior(tb);
 
-        burbuja.addBehaviour( cb );
+        burbuja.addBehavior( cb );
 
     }
 
@@ -318,9 +318,9 @@ function __CAAT__loadingScene(director) {
      */
     scene.finishedLoading= function() {
         this.loading.setText('Start');
-        this.loading.emptyBehaviourList();
+        this.loading.emptyBehaviorList();
 
-        var sb= new CAAT.ScaleBehaviour();
+        var sb= new CAAT.ScaleBehavior();
         sb.setPingPong();
         sb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
         sb.minScaleX= 1;
@@ -330,7 +330,7 @@ function __CAAT__loadingScene(director) {
         sb.setCycle(true);
         sb.setFrameTime( scene.time, 1000 );
 
-        this.loading.addBehaviour(sb);
+        this.loading.addBehavior(sb);
 
         // after changing the from 'loading' to 'start', set mouseclick function to initialize demo.
         this.loading.mouseClick= function(event) {

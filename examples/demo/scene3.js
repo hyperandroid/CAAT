@@ -18,14 +18,14 @@ function __scene3(director) {
 	scene.addChild(cc);
 	cc.mouseEnabled= false;
 	
-	var rb= new CAAT.RotateBehaviour();
-	rb.cycleBehaviour= true;
+	var rb= new CAAT.RotateBehavior();
+	rb.cycleBehavior= true;
 	rb.setFrameTime( 0, 4000 );
 	rb.minAngle= -Math.PI/8;
 	rb.maxAngle= Math.PI/8;
 	rb.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
 	rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
-	cc.addBehaviour(rb);	
+	cc.addBehavior(rb);
 	
 	var text= new CAAT.TextActor();
 	text.setFont("50px sans-serif");
@@ -74,13 +74,13 @@ function __scene3(director) {
 		p2.setLocation(60+(conpoundimage.singleWidth*2)*(i%3), 60+(conpoundimage.singleWidth)*((i/3)>>0) );
 		p2.create();
 		
-		var rb= new CAAT.RotateBehaviour();
-		rb.cycleBehaviour= true;
+		var rb= new CAAT.RotateBehavior();
+		rb.cycleBehavior= true;
 		rb.setFrameTime( 0, 2000 );
 		rb.minAngle= 0;
 		rb.maxAngle= Math.PI*2;
 		rb.anchor= anchor[i];
-		p2.addBehaviour(rb);
+		p2.addBehavior(rb);
 		
 		scene.addChild(p2);
 	}
@@ -94,8 +94,8 @@ function __scene3(director) {
 		p2.setLocation(60+(conpoundimage.singleWidth*2)*(i%3), 60+(conpoundimage.singleWidth)*((i/3)>>0)+offset );
 		p2.create();
 		
-		var sb= new CAAT.ScaleBehaviour();
-		sb.cycleBehaviour= true;
+		var sb= new CAAT.ScaleBehavior();
+		sb.cycleBehavior= true;
 		sb.setFrameTime( 0, 2000 );
 		sb.minScaleX= .5;
 		sb.minScaleY= .5;
@@ -103,7 +103,7 @@ function __scene3(director) {
 		sb.maxScaleY= 1.5;
 		sb.setPingPong();
 		sb.anchor= anchor[i];
-		p2.addBehaviour(sb);
+		p2.addBehavior(sb);
 		
 		scene.addChild(p2);
 	}	
@@ -121,7 +121,7 @@ function __scene3(director) {
 		p2.create();
 		p2.setRotation(angle);
 
-		var sb= new CAAT.ScaleBehaviour();
+		var sb= new CAAT.ScaleBehavior();
 		sb.setPingPong();
 		sb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
 		sb.minScaleX= 1;
@@ -130,28 +130,28 @@ function __scene3(director) {
 		sb.maxScaleY= 1;
 		sb.expired= true;
 		sb.anchor= CAAT.Actor.prototype.ANCHOR_LEFT;
-		p2.addBehaviour(sb);	
+		p2.addBehavior(sb);
 		
-		var ab= new CAAT.AlphaBehaviour();
+		var ab= new CAAT.AlphaBehavior();
 		ab.setPingPong();
 		ab.startAlpha=1;
 		ab.endAlpha=0;
 		ab.setFrameTime( i*250, 2000 );
 		ab.setCycle(true);
-		p2.addBehaviour(ab);
+		p2.addBehavior(ab);
 		
 		p2.mouseEnter= function(mouseEvent) {
 			var actor= mouseEvent.source;
 			if( null==actor ) {
 				return;
 			}
-			var behaviour= actor.behaviourList[0];
+			var behaviour= actor.behaviorList[0];
 			if( null==behaviour ) {
 				return;
 			}
 			
 			if ( behaviour.expired ) {
-				actor.behaviourList[0].setFrameTime( mouseEvent.source.time, 1000 );
+				actor.behaviorList[0].setFrameTime( mouseEvent.source.time, 1000 );
 			}
 		};		
 		

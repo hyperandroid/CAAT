@@ -56,6 +56,7 @@ function __scene1(director) {
 
     var lerps= [
         new CAAT.Interpolator().createLinearInterpolator(true),
+        new CAAT.Interpolator().createLinearInterpolator(false),
         new CAAT.Interpolator().createQubicBezierInterpolator({x:0,y:0}, {x:0,y:0}, {x:1,y:0}, {x:1,y:1} ),
         new CAAT.Interpolator().createQubicBezierInterpolator({x:0,y:0}, {x:0,y:1}, {x:1,y:0}, {x:1,y:1} ),
         new CAAT.Interpolator().createQubicBezierInterpolator({x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1} ),
@@ -87,7 +88,7 @@ function __scene1(director) {
     scene.addChild(fish);
 
     // path measurer behaviour
-    var pb= new CAAT.PathBehaviour();
+    var pb= new CAAT.PathBehavior();
     pb.setPath(path);
     pb.setInterpolator( lerps[0] );
     pb.setFrameTime(0,10000);
@@ -95,7 +96,7 @@ function __scene1(director) {
     pb.autoRotate= true;
 
     fish.pathMeasure= pb;
-    fish.addBehaviour( pb );
+    fish.addBehavior( pb );
 
     for( var i=0; i<lerps.length; i++ ) {
 	    __scene1_makeInterpolatorActor(
@@ -119,14 +120,14 @@ function scene1_text(director,scene) {
 	cc1.mouseEnabled= false;
 	scene.addChild(cc1);
 	
-	var rb= new CAAT.RotateBehaviour();
-	rb.cycleBehaviour= true;
+	var rb= new CAAT.RotateBehavior();
+	rb.cycleBehavior= true;
 	rb.setFrameTime( 0, 4000 );
 	rb.minAngle= -Math.PI/8;
 	rb.maxAngle= Math.PI/8;
 	rb.setInterpolator( new CAAT.Interpolator().createExponentialInOutInterpolator(3,true) );
 	rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
-	cc1.addBehaviour(rb);
+	cc1.addBehavior(rb);
 	
 	var gradient= director.crc.createLinearGradient(0,0,0,30);
 	gradient.addColorStop(0,'#00ff00');

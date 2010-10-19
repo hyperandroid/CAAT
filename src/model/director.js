@@ -44,6 +44,8 @@
         meIn:           null,
         meOut:          null,
 
+        timeline:       0,      // global director timeline.
+
         /**
          * ImagesCache is an array of JSON elements of the form:
          * { id:string, image:Image }
@@ -61,10 +63,12 @@
             this.canvas= canvas;
             this.crc= canvas.getContext('2d');
 
-            __GlobalEnableEvents(this);
-
-            CAAT.director= this;
-            CAAT.time= new Date().getTime();
+            if ( !CAAT.director ) {
+                CAAT.director=[];
+                __GlobalEnableEvents(this);
+            }
+            CAAT.director.push(this);
+            this.timeline= new Date().getTime();
 
             return this;
         },
@@ -303,7 +307,7 @@
 			}
 
             scene.mouseEnabled= true;
-			scene.emptyBehaviourList();
+			scene.emptyBehaviorList();
 		},
 		getSceneIndex : function( scene ) {
 			for( var i in this.scenes ) {
@@ -342,8 +346,8 @@
             var me= this;
             var floop= function loop() {
                 var t= new Date().getTime();
-                me.render( t - CAAT.time );
-                CAAT.time= t;
+                me.render( t - me.timeline );
+                me.timeline= t;
             };
 
             floop();

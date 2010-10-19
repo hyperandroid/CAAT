@@ -28,7 +28,7 @@ function __scene7(director) {
         fish.mouseEnabled= false;
         scene.addChild(fish);
 
-        var pbfish= new CAAT.PathBehaviour();
+        var pbfish= new CAAT.PathBehavior();
         pbfish.autoRotate= true;
         pbfish.setPath( new CAAT.Path().setLinear(
                 Math.random()*director.width,
@@ -39,7 +39,7 @@ function __scene7(director) {
         pbfish.setFrameTime( 0, 2500+2500*Math.random() );
 
         pbfish.addListener( {
-            behaviourExpired : function(behaviour,time) {
+            behaviorExpired : function(behaviour,time) {
                 var endCoord= behaviour.path.endCurvePosition();
                 behaviour.setPath(
                         new CAAT.Path().setCubic(
@@ -55,7 +55,7 @@ function __scene7(director) {
             }
         });
 
-        fish.addBehaviour( pbfish );
+        fish.addBehavior( pbfish );
     }
 
     root.paint= function( director, time ) {
@@ -98,33 +98,33 @@ function __scene7(director) {
 
         root.addChild(burbuja);
 
-        var cb= new CAAT.ContainerBehaviour();
+        var cb= new CAAT.ContainerBehavior();
         cb.actor= burbuja;
 
         cb.setFrameTime( scene.time+2000+1000*Math.random(), 500 );
 		cb.addListener(
             {
-                behaviourExpired : function(behaviour, time) {
+                behaviorExpired : function(behaviour, time) {
                     behaviour.actor.discardable= true;
                     behaviour.actor.setExpired(true);
                 }
             });
 
-            var ab= new CAAT.AlphaBehaviour();
+            var ab= new CAAT.AlphaBehavior();
             ab.setFrameTime( 0, 500 );
             ab.startAlpha= 1;
             ab.endAlpha= 0;
-            cb.addBehaviour(ab);
+            cb.addBehavior(ab);
 
-            var tb= new CAAT.PathBehaviour();
+            var tb= new CAAT.PathBehavior();
             tb.setFrameTime( 0, 500 );
             tb.setPath(
                     new CAAT.Path().setLinear(
                             burbuja.x, burbuja.y,
                             burbuja.x, burbuja.y-100-100*Math.random() ) );
-            cb.addBehaviour(tb);
+            cb.addBehavior(tb);
         
-        burbuja.addBehaviour( cb );
+        burbuja.addBehavior( cb );
 
     }
 

@@ -79,8 +79,8 @@ function __getCanvasCoord(point, e) {
 			+ document.documentElement.scrollTop;
 	}
 
-	posx-= CAAT.director.canvas.offsetLeft;
-	posy-= CAAT.director.canvas.offsetTop;
+	posx-= CAAT.director[0].canvas.offsetLeft;
+	posy-= CAAT.director[0].canvas.offsetTop;
 
 	point.set(posx,posy);
 	__screenMousePoint.set(posx, posy);
@@ -122,7 +122,7 @@ function __GlobalEnableEvents(director) {
                 __modifiers&=~CAAT.MouseEvent.prototype.ALT_MASK;
                 break;
             case 68:    // D
-                CAAT.director.debug= !CAAT.director.debug;
+                CAAT.director[0].debug= !CAAT.director[0].debug;
                 break;
             }
         },

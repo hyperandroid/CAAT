@@ -1,38 +1,38 @@
 /**
  * @author  Hyperandroid  ||  http://hyperandroid.com/
  *
- * Behaviours are keyframing elements.
- * By using a BehaviourContainer, you can specify different actions on any animation Actor.
- * An undefined number of behaviours can be defined for each Actor.
+ * Behaviors are keyframing elements.
+ * By using a BehaviorContainer, you can specify different actions on any animation Actor.
+ * An undefined number of Behaviors can be defined for each Actor.
  *
- * There're the following behaviours:
- *  + AlphaBehaviour:   controls container/actor global alpha.
- *  + RotateBehaviour:  takes control of rotation affine transform.
- *  + ScaleBehaviour:   takes control of scaling on x/y axis affine transform.
- *  + TODO: pathBehaviour.
+ * There're the following Behaviors:
+ *  + AlphaBehavior:   controls container/actor global alpha.
+ *  + RotateBehavior:  takes control of rotation affine transform.
+ *  + ScaleBehavior:   takes control of scaling on x/y axis affine transform.
+ *  + TODO: pathBehavior.
  *
  * 20101011 Hyperandroid
- *  + ScaleBehaviour: if scaleX==0 || scaleY==0, FF3/4 will stop rendering.
+ *  + ScaleBehavior: if scaleX==0 || scaleY==0, FF3/4 will stop rendering.
  *
  **/
 
 
 (function() {
-	CAAT.Behaviour= function() {
+	CAAT.Behavior= function() {
 		this.listenerList=[];
 		this.setDefaultInterpolator();
 		return this;
 	};
 	
-	CAAT.Behaviour.prototype= {
+	CAAT.Behavior.prototype= {
 			
 		listenerList:		null,
-		behaviourStartTime:	-1,
-		behaviourDuration:	-1,
-		cycleBehaviour:		false,
+		behaviorStartTime:	-1,
+		behaviorDuration:	-1,
+		cycleBehavior:		false,
 		expired:			true,
 		interpolator:		null,
-        actor:              null,   // actor the behaviour acts on.
+        actor:              null,   // actor the Behavior acts on.
 
 		setDefaultInterpolator : function() {
 			this.interpolator= new CAAT.Interpolator().createLinearInterpolator(false);
@@ -42,8 +42,8 @@
 			this.interpolator= new CAAT.Interpolator().createLinearInterpolator(true);
 		},
 		setFrameTime : function( startTime, duration ) {
-			this.behaviourStartTime= 	startTime;
-			this.behaviourDuration= 	duration;
+			this.behaviorStartTime= 	startTime;
+			this.behaviorDuration= 	duration;
 			this.expired=				false;
 		},
 		setInterpolator : function(interpolator) {
@@ -52,30 +52,30 @@
 		apply : function(time, actor) {
 		},
 		setCycle : function(bool) {
-			this.cycleBehaviour= bool;
+			this.cycleBehavior= bool;
 		},
-		addListener : function( behaviourListener ) {
-			this.listenerList.push(behaviourListener);
+		addListener : function( behaviorListener ) {
+			this.listenerList.push(behaviorListener);
 		},
 		getStartTime : function() {
-			return this.behaviourStartTime;
+			return this.behaviorStartTime;
 		},
 		getDuration : function() {
-			return this.behaviourDuration;
+			return this.behaviorDuration;
 			
 		},
-		isBehaviourInTime : function(time,actor) {
+		isBehaviorInTime : function(time,actor) {
 			if ( this.expired )	{
 				return false;
 			}
 			
-			if ( this.cycleBehaviour )	{
-				if ( time>this.behaviourStartTime )	{
-					time= (time-this.behaviourStartTime)%this.behaviourDuration + this.behaviourStartTime;
+			if ( this.cycleBehavior )	{
+				if ( time>this.behaviorStartTime )	{
+					time= (time-this.behaviorStartTime)%this.behaviorDuration + this.behaviorStartTime;
 				}
 			}
 			
-			if ( time>this.behaviourStartTime+this.behaviourDuration )	{
+			if ( time>this.behaviorStartTime+this.behaviorDuration )	{
 				if ( !this.expired )	{
 					this.setExpired(actor,time);
 				}
@@ -83,25 +83,25 @@
 				return false;
 			}
 			
-			return this.behaviourStartTime<=time && time<this.behaviourStartTime+this.behaviourDuration;			
+			return this.behaviorStartTime<=time && time<this.behaviorStartTime+this.behaviorDuration;
 		},
-		fireBehaviourExpiredEvent : function(time)	{
+		fireBehaviorExpiredEvent : function(actor,time)	{
 			for( var i=0; i<this.listenerList.length; i++ )	{
-				this.listenerList[i].behaviourExpired(this,time);
+				this.listenerList[i].behaviorExpired(this,time,actor);
 			}
 		},
 		normalizeTime : function(time)	{
-			time= time-this.behaviourStartTime;
-			if ( this.cycleBehaviour )	{
-				time%=this.behaviourDuration;
+			time= time-this.behaviorStartTime;
+			if ( this.cycleBehavior )	{
+				time%=this.behaviorDuration;
 			}
-			return this.interpolator.getPosition(time/this.behaviourDuration).y;
+			return this.interpolator.getPosition(time/this.behaviorDuration).y;
 		},
 		setExpired : function(actor,time) {
             // set for final interpolator value.
             this.expired= true;
 			this.setForTime(this.interpolator.getPosition(1).y,actor);
-			this.fireBehaviourExpiredEvent(time);
+			this.fireBehaviorExpiredEvent(actor,time);
 		},
 		setForTime : function( time, actor ) {
 			
@@ -123,64 +123,64 @@
  * Se debe aplicar a cada comportamiento contenido.
  */
 (function() {
-	CAAT.ContainerBehaviour= function() {
-		CAAT.ContainerBehaviour.superclass.constructor.call(this);
-		this.behaviours= [];
+	CAAT.ContainerBehavior= function() {
+		CAAT.ContainerBehavior.superclass.constructor.call(this);
+		this.behaviors= [];
 		return this;
 	};
 	
-	extend( CAAT.ContainerBehaviour, CAAT.Behaviour, {
+	extend( CAAT.ContainerBehavior, CAAT.Behavior, {
 		
-		behaviours:	null,
-		addBehaviour : function(behaviour)	{
+		behaviors:	null,
+		addBehavior : function(behavior)	{
 
-			this.behaviours.push(behaviour);
-			behaviour.addListener(this);
+			this.behaviors.push(behavior);
+			behavior.addListener(this);
 		},
 		apply : function(time, actor) {
-			if ( this.isBehaviourInTime(time,actor) )	{
+			if ( this.isBehaviorInTime(time,actor) )	{
 				time-= this.getStartTime();
-				if ( this.cycleBehaviour ){
+				if ( this.cycleBehavior ){
 					time%= this.getDuration();
 				}
 
-				for( var i=0; i<this.behaviours.length; i++ )	{
-					this.behaviours[i].apply(time, actor);
+				for( var i=0; i<this.behaviors.length; i++ )	{
+					this.behaviors[i].apply(time, actor);
 				}
 			}
 		},
 		setInterpolator : function(path) {
 		},
-		behaviourExpired : function(behaviour,time) {
-			if ( this.cycleBehaviour )	{
-				behaviour.setExpired(false,time);
+		behaviorExpired : function(behavior,time,actor) {
+			if ( this.cycleBehavior )	{
+				behavior.expired =  false;
 			} else {
-                this.fireBehaviourExpired( this, time );
+                this.fireBehaviorExpired( this, time, actor );
             }
 		},
 		setForTime : function(time, actor) {
-			for( var i=0; i<this.behaviours.length; i++ ) {
-				this.behaviours[i].setForTime( time, actor );
+			for( var i=0; i<this.behaviors.length; i++ ) {
+				this.behaviors[i].setForTime( time, actor );
 			}
 		}
 	});
 })();
 
 (function() {
-	CAAT.RotateBehaviour= function() {
-		CAAT.RotateBehaviour.superclass.constructor.call(this);
+	CAAT.RotateBehavior= function() {
+		CAAT.RotateBehavior.superclass.constructor.call(this);
 		this.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
 		return this;
 	};
 	
-	extend( CAAT.RotateBehaviour, CAAT.Behaviour, {
+	extend( CAAT.RotateBehavior, CAAT.Behavior, {
 	
 		minAngle:	0,
 		maxAngle:	0,
 		anchor:		0,
 		
 		apply : function(time, actor) {
-			if ( this.isBehaviourInTime(time,actor) )	{
+			if ( this.isBehaviorInTime(time,actor) )	{
 				time= this.normalizeTime(time);
 				
 				this.setForTime(time, actor);
@@ -199,13 +199,13 @@
 })();
 
 (function() {
-	CAAT.ScaleBehaviour= function() {
-		CAAT.RotateBehaviour.superclass.constructor.call(this);
+	CAAT.ScaleBehavior= function() {
+		CAAT.RotateBehavior.superclass.constructor.call(this);
 		this.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
 		return this;		
 	};
 	
-	extend( CAAT.ScaleBehaviour, CAAT.Behaviour, {
+	extend( CAAT.ScaleBehavior, CAAT.Behavior, {
 		minScaleX: 	0, 
 		maxScaleX:	0,
 		minScaleY:	0,
@@ -213,7 +213,7 @@
 		anchor:		0,		
 		
 		apply : function(time, actor) {
-			if ( this.isBehaviourInTime(time,actor) )	{
+			if ( this.isBehaviorInTime(time,actor) )	{
 				time= this.normalizeTime(time);
 				this.setForTime(time,actor);
 			}
@@ -237,17 +237,17 @@
 })();
 
 (function() {
-	CAAT.AlphaBehaviour= function() {
-		CAAT.AlphaBehaviour.superclass.constructor.call(this);
+	CAAT.AlphaBehavior= function() {
+		CAAT.AlphaBehavior.superclass.constructor.call(this);
 		return this;
 	};
 	
-	extend( CAAT.AlphaBehaviour, CAAT.Behaviour, {
+	extend( CAAT.AlphaBehavior, CAAT.Behavior, {
 		startAlpha:	0,
 		endAlpha:	0,
 
 		apply : function( time, actor )	{
-			if ( this.isBehaviourInTime(time,actor) )	{
+			if ( this.isBehaviorInTime(time,actor) )	{
 				time= this.normalizeTime(time);
 				this.setForTime( time, actor );
 			}
@@ -260,21 +260,21 @@
 })();
 
 /**
- * CAAT.PathBehaviour
+ * CAAT.PathBehavior
  *
  * autoRotate:  sets actor rotation to be heading from past to current path point.
- *              take into account that this will be incompatible with rotation behaviours
+ *              take into account that this will be incompatible with rotation Behaviors
  *              since they will set their own rotation configuration.
  *
  */
 (function() {
-	CAAT.PathBehaviour= function() {
-		CAAT.PathBehaviour.superclass.constructor.call(this);
+	CAAT.PathBehavior= function() {
+		CAAT.PathBehavior.superclass.constructor.call(this);
         this.onPath= this.innerPath;
 		return this;
 	};
 
-	extend( CAAT.PathBehaviour, CAAT.Behaviour, {
+	extend( CAAT.PathBehavior, CAAT.Behavior, {
 		path:           null,
         autoRotate :    false,
         posInPath:      CAAT.Actor.prototype.ANCHOR_CENTER,
@@ -301,12 +301,12 @@
             this.mc.y/= contour.length;
         },
         setFrameTime : function( startTime, duration ) {
-            CAAT.PathBehaviour.superclass.setFrameTime.call(this, startTime, duration );
+            CAAT.PathBehavior.superclass.setFrameTime.call(this, startTime, duration );
             this.prevX= -1;
             this.prevY= -1;
         },
 		apply : function( time, actor )	{
-			if ( this.isBehaviourInTime(time,actor) )	{
+			if ( this.isBehaviorInTime(time,actor) )	{
 				time= this.normalizeTime(time);
 				this.setForTime( time, actor );
 			}
@@ -361,7 +361,7 @@
 
 		},
         positionOnTime : function(time) {
-			if ( this.isBehaviourInTime(time,null) )	{
+			if ( this.isBehaviorInTime(time,null) )	{
 				time= this.normalizeTime(time);
                 return this.path.getPosition( time );
             }

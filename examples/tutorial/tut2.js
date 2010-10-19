@@ -20,26 +20,26 @@ function __CAAT_tut2_init() {
 
     director.addScene(scene);
 
-    var alpha_1= new CAAT.AlphaBehaviour();
+    var alpha_1= new CAAT.AlphaBehavior();
     alpha_1.startAlpha= 0;
     alpha_1.endAlpha= .5;
     alpha_1.setFrameTime( 2000, 5000 );
-        circle_1.addBehaviour(alpha_1);
+        circle_1.addBehavior(alpha_1);
 
-    var alpha_2= new CAAT.AlphaBehaviour();
+    var alpha_2= new CAAT.AlphaBehavior();
     alpha_2.startAlpha= 0;
     alpha_2.endAlpha= 1;
     alpha_2.setCycle(true);
     alpha_2.setFrameTime( 2000, 5000 );
-        circle_2.addBehaviour(alpha_2);
+        circle_2.addBehavior(alpha_2);
 
-    var alpha_3= new CAAT.AlphaBehaviour();
+    var alpha_3= new CAAT.AlphaBehavior();
     alpha_3.startAlpha= 0;
     alpha_3.setPingPong();
     alpha_3.endAlpha= 1;
     alpha_3.setCycle(true);
     alpha_3.setFrameTime( 2000, 5000 );
-        circle_3.addBehaviour(alpha_3);
+        circle_3.addBehavior(alpha_3);
 
 
     var canvasContainer= document.createElement('div');

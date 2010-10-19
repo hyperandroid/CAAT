@@ -67,14 +67,14 @@ function __scene5_text(director,scene) {
 	cc1.mouseEnabled= false;
 	scene.addChild(cc1);
 	
-	var rb= new CAAT.RotateBehaviour();
-	rb.cycleBehaviour= true;
+	var rb= new CAAT.RotateBehavior();
+	rb.cycleBehavior= true;
 	rb.setFrameTime( 0, 4000 );
 	rb.minAngle= -Math.PI/8;
 	rb.maxAngle= Math.PI/8;
 	rb.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
 	rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
-	cc1.addBehaviour(rb);
+	cc1.addBehavior(rb);
 	
 	var gradient= director.crc.createLinearGradient(0,0,0,30);
 	gradient.addColorStop(0,'black');
