@@ -21,8 +21,8 @@ function __scene3(director) {
 	var rb= new CAAT.RotateBehavior();
 	rb.cycleBehavior= true;
 	rb.setFrameTime( 0, 4000 );
-	rb.minAngle= -Math.PI/8;
-	rb.maxAngle= Math.PI/8;
+	rb.startAngle= -Math.PI/8;
+	rb.endAngle= Math.PI/8;
 	rb.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
 	rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
 	cc.addBehavior(rb);
@@ -77,8 +77,8 @@ function __scene3(director) {
 		var rb= new CAAT.RotateBehavior();
 		rb.cycleBehavior= true;
 		rb.setFrameTime( 0, 2000 );
-		rb.minAngle= 0;
-		rb.maxAngle= Math.PI*2;
+		rb.startAngle= 0;
+		rb.endAngle= Math.PI*2;
 		rb.anchor= anchor[i];
 		p2.addBehavior(rb);
 		
@@ -97,10 +97,10 @@ function __scene3(director) {
 		var sb= new CAAT.ScaleBehavior();
 		sb.cycleBehavior= true;
 		sb.setFrameTime( 0, 2000 );
-		sb.minScaleX= .5;
-		sb.minScaleY= .5;
-		sb.maxScaleX= 1.5;
-		sb.maxScaleY= 1.5;
+		sb.startScaleX= .5;
+		sb.startScaleY= .5;
+		sb.endScaleX= 1.5;
+		sb.endScaleY= 1.5;
 		sb.setPingPong();
 		sb.anchor= anchor[i];
 		p2.addBehavior(sb);
@@ -124,10 +124,10 @@ function __scene3(director) {
 		var sb= new CAAT.ScaleBehavior();
 		sb.setPingPong();
 		sb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-		sb.minScaleX= 1;
-		sb.maxScaleX= 3;
-		sb.minScaleY= 1;
-		sb.maxScaleY= 1;
+		sb.startScaleX= 1;
+		sb.endScaleX= 3;
+		sb.startScaleY= 1;
+		sb.endScaleY= 1;
 		sb.expired= true;
 		sb.anchor= CAAT.Actor.prototype.ANCHOR_LEFT;
 		p2.addBehavior(sb);

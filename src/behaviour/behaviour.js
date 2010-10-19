@@ -175,8 +175,8 @@
 	
 	extend( CAAT.RotateBehavior, CAAT.Behavior, {
 	
-		minAngle:	0,
-		maxAngle:	0,
+		startAngle:	0,
+		endAngle:	0,
 		anchor:		0,
 		
 		apply : function(time, actor) {
@@ -188,7 +188,7 @@
 		},
 		setForTime : function(time,actor) {
 			var angle= 
-				this.minAngle + time*(this.maxAngle-this.minAngle);
+				this.startAngle + time*(this.endAngle-this.startAngle);
 			
 			var obj= actor.getAnchor( this.anchor );
 			actor.setRotationAnchored(angle, obj.x, obj.y);
@@ -206,11 +206,11 @@
 	};
 	
 	extend( CAAT.ScaleBehavior, CAAT.Behavior, {
-		minScaleX: 	0, 
-		maxScaleX:	0,
-		minScaleY:	0,
-		maxScaleY:	0,
-		anchor:		0,		
+		startScaleX: 	0,
+		endScaleX:      0,
+		startScaleY:	0,
+		endScaleY:	    0,
+		anchor:		    0,		
 		
 		apply : function(time, actor) {
 			if ( this.isBehaviorInTime(time,actor) )	{
@@ -220,8 +220,8 @@
 		},
 		setForTime : function(time,actor) {
 
-			var scaleX= this.minScaleX + time*(this.maxScaleX-this.minScaleX);
-			var scaleY= this.minScaleY + time*(this.maxScaleY-this.minScaleY);
+			var scaleX= this.startScaleX + time*(this.endScaleX-this.startScaleX);
+			var scaleY= this.startScaleY + time*(this.endScaleY-this.startScaleY);
 
             // Firefox 3.x & 4, will crash animation if either scaleX or scaleY equals 0.
             if (0==scaleX ) {
@@ -270,35 +270,17 @@
 (function() {
 	CAAT.PathBehavior= function() {
 		CAAT.PathBehavior.superclass.constructor.call(this);
-        this.onPath= this.innerPath;
 		return this;
 	};
 
 	extend( CAAT.PathBehavior, CAAT.Behavior, {
 		path:           null,
         autoRotate :    false,
-        posInPath:      CAAT.Actor.prototype.ANCHOR_CENTER,
         prevX:          -1,
         prevY:          -1,
 
-        outerPath:      1,
-        innerPath:      2,
-        middlePath:     3,
-
-        onPath:         -1,
-
-        mc:             null,
-
         setPath : function(path) {
             this.path= path;
-            var contour= path.getContour();
-            this.mc= new CAAT.Point();
-            for( var i=0; i<contour.length; i++ ) {
-                this.mc.x+= contour[i].x;
-                this.mc.y+= contour[i].y;
-            }
-            this.mc.x/= contour.length;
-            this.mc.y/= contour.length;
         },
         setFrameTime : function( startTime, duration ) {
             CAAT.PathBehavior.superclass.setFrameTime.call(this, startTime, duration );

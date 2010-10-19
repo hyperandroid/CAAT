@@ -155,10 +155,10 @@
 			
 			var sb= new CAAT.ScaleBehavior();
 			sb.setFrameTime( starttime, time );
-			sb.minScaleX= x;
-			sb.minScaleY= y;
-			sb.maxScaleX= x2;
-			sb.maxScaleY= y2;
+			sb.startScaleX= x;
+			sb.startScaleY= y;
+			sb.endScaleX= x2;
+			sb.endScaleY= y2;
 			sb.anchor= anchor;
 
             if ( interpolator ) {
@@ -223,8 +223,8 @@
 			
 			var rb= new CAAT.RotateBehavior();
 			rb.setFrameTime( 0, time );
-			rb.minAngle= start;
-			rb.maxAngle= end;
+			rb.startAngle= start;
+			rb.endAngle= end;
 			rb.anchor= anchor;
 
             if ( interpolator ) {

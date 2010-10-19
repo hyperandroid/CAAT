@@ -192,8 +192,8 @@ function __scene4(director) {
 	var rb= new CAAT.RotateBehavior();
 	rb.cycleBehavior= true;
 	rb.setFrameTime( 0, 4000 );
-	rb.minAngle= -Math.PI/8;
-	rb.maxAngle= Math.PI/8;
+	rb.startAngle= -Math.PI/8;
+	rb.endAngle= Math.PI/8;
 	rb.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
 	rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
 	cc1.addBehavior(rb);

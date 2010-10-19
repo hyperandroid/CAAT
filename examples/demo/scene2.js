@@ -42,10 +42,10 @@ function __scene2(director) {
 			var sb= new CAAT.ScaleBehavior();
 			sb.setPingPong();
 			sb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-			sb.minScaleX= 1;
-			sb.maxScaleX= 2;
-			sb.minScaleY= 1;
-			sb.maxScaleY= 2;
+			sb.startScaleX= 1;
+			sb.endScaleX= 2;
+			sb.startScaleY= 1;
+			sb.endScaleY= 2;
 			sb.expired= true;
             /*
             sb.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator(
@@ -60,8 +60,8 @@ function __scene2(director) {
 			
 			var rb= new CAAT.RotateBehavior();
 			rb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-			rb.minAngle=0;
-			rb.maxAngle=Math.PI*2;
+			rb.startAngle=0;
+			rb.endAngle=Math.PI*2;
 			rb.expired= true;
 			actor.addBehavior(rb);
 			
@@ -122,8 +122,8 @@ function __scene2(director) {
 	var rb1= new CAAT.RotateBehavior();
 	rb1.cycleBehavior= true;
 	rb1.setFrameTime( 0, 4000 );
-	rb1.minAngle= -Math.PI/8;
-	rb1.maxAngle= Math.PI/8;
+	rb1.startAngle= -Math.PI/8;
+	rb1.endAngle= Math.PI/8;
 	rb1.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
 	rb1.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
 	cc1.addBehavior(rb1);

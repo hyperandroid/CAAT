@@ -14,10 +14,10 @@ function setupTRButton(prev) {
 	var sb= new CAAT.ScaleBehavior();
 	sb.setPingPong();
 	sb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-	sb.minScaleX= 1;
-	sb.maxScaleX= 1.5;
-	sb.minScaleY= 1;
-	sb.maxScaleY= 1.5;
+	sb.startScaleX= 1;
+	sb.endScaleX= 1.5;
+	sb.startScaleY= 1;
+	sb.endScaleY= 1.5;
 	sb.expired= true;
 	prev.addBehavior(sb);
 	
@@ -251,8 +251,8 @@ function __CAAT__loadingScene(director) {
     var rb= new CAAT.RotateBehavior();
     rb.cycleBehavior= true;
     rb.setFrameTime( 0, 5000 );
-    rb.minAngle= -Math.PI/4;
-    rb.maxAngle= Math.PI/4;
+    rb.startAngle= -Math.PI/4;
+    rb.endAngle= Math.PI/4;
     rb.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
     rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
     textLoading.addBehavior(rb);
@@ -323,10 +323,10 @@ function __CAAT__loadingScene(director) {
         var sb= new CAAT.ScaleBehavior();
         sb.setPingPong();
         sb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-        sb.minScaleX= 1;
-        sb.maxScaleX= 4;
-        sb.minScaleY= 1;
-        sb.maxScaleY= 4;
+        sb.startScaleX= 1;
+        sb.endScaleX= 4;
+        sb.startScaleY= 1;
+        sb.endScaleY= 4;
         sb.setCycle(true);
         sb.setFrameTime( scene.time, 1000 );
 

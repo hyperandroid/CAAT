@@ -123,8 +123,8 @@ function scene1_text(director,scene) {
 	var rb= new CAAT.RotateBehavior();
 	rb.cycleBehavior= true;
 	rb.setFrameTime( 0, 4000 );
-	rb.minAngle= -Math.PI/8;
-	rb.maxAngle= Math.PI/8;
+	rb.startAngle= -Math.PI/8;
+	rb.endAngle= Math.PI/8;
 	rb.setInterpolator( new CAAT.Interpolator().createExponentialInOutInterpolator(3,true) );
 	rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
 	cc1.addBehavior(rb);
