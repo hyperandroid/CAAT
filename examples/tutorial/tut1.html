@@ -10,11 +10,16 @@
 .s2 { color: rgb(0,0,255); }
 .s3 { color: rgb(0,128,0); font-weight: bold; }
 </style>
+
+<script type="text/javascript" src="http://caat.googlecode.com/files/caat.js"></script>
+
 </head>
 
 
 <body style="color:black; background:#ffffff;">
 
+<div class="section">
+    <h1>Getting started</h1>
 <p>One of the minimum CAAT library setup programs could be this one:
 <pre>
 <a name="l1"><span class="ln">1    </span></a><span class="s0">function </span><span class="s1">__CAAT_tut1_init() {
@@ -26,10 +31,6 @@
 <a name="l7"><span class="ln">7    </span></a>    scene.addChild(circle);
 <a name="l8"><span class="ln">8    </span></a>    director.addScene(scene);
 <a name="l9"><span class="ln">9    </span></a>
-<a name="l10"><span class="ln">10   </span></a>    </span><span class="s0">var </span><span class="s1">canvasContainer= document.createElement(</span><span class="s3">'div'</span><span class="s1">);
-<a name="l11"><span class="ln">11   </span></a>    canvasContainer.appendChild( director.canvas );
-<a name="l12"><span class="ln">12   </span></a>    document.body.appendChild(canvasContainer);
-<a name="l13"><span class="ln">13   </span></a>
 <a name="l14"><span class="ln">14   </span></a>    director.loop(</span><span class="s2">1</span><span class="s1">);
 <a name="l15"><span class="ln">15   </span></a>}
 <a name="l16"><span class="ln">16   </span></a>
@@ -47,33 +48,19 @@
 </ol>
 
 <p>And that's it, our red circle:
+</div>
+
+<div class="sample"><canvas id="_c1"></canvas></div>
+<script>
+    var director = new CAAT.Director().initialize(100,100,document.getElementById('_c1'));
+    var scene=     new CAAT.Scene().create();
+    var circle=    new CAAT.ShapeActor().create().setLocation(20,20).setSize(60,60).setFillStyle('#ff0000').setStrokeStyle('#000000');
+
+    scene.addChild(circle);
+    director.addScene(scene);
+
+    director.loop(1);
+</script>
 
 </body>
-
-<script type="text/javascript" src="../../src/CAAT.js"></script>
-
-<script type="text/javascript" src="../../src/core/class.js"></script>
-<script type="text/javascript" src="../../src/core/browserdetect.js"></script>
-
-<script type="text/javascript" src="../../src/model/actor.js"></script>
-<script type="text/javascript" src="../../src/model/conpoundimage.js"></script>
-<script type="text/javascript" src="../../src/model/imagepreloader.js"></script>
-<script type="text/javascript" src="../../src/model/director.js"></script>
-<script type="text/javascript" src="../../src/model/mouseevent.js"></script>
-<script type="text/javascript" src="../../src/model/scene.js"></script>
-
-<script type="text/javascript" src="../../src/math/affinetransform2D.js"></script>
-<script type="text/javascript" src="../../src/math/point.js"></script>
-<script type="text/javascript" src="../../src/math/rectangle.js"></script>
-<script type="text/javascript" src="../../src/math/bezier.js"></script>
-
-<script type="text/javascript" src="../../src/path/path.js"></script>
-<script type="text/javascript" src="../../src/path/pathactor.js"></script>
-<script type="text/javascript" src="../../src/path/interpolator.js"></script>
-<script type="text/javascript" src="../../src/path/interpolatoractor.js"></script>
-
-<script type="text/javascript" src="../../src/behaviour/behaviour.js"></script>
-
-
-<script type="text/javascript" src="tut1.js"></script>
 </html>
