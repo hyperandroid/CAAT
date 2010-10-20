@@ -56,7 +56,6 @@ function __scene1(director) {
 
     var lerps= [
         new CAAT.Interpolator().createLinearInterpolator(true),
-        new CAAT.Interpolator().createLinearInterpolator(false),
         new CAAT.Interpolator().createQubicBezierInterpolator({x:0,y:0}, {x:0,y:0}, {x:1,y:0}, {x:1,y:1} ),
         new CAAT.Interpolator().createQubicBezierInterpolator({x:0,y:0}, {x:0,y:1}, {x:1,y:0}, {x:1,y:1} ),
         new CAAT.Interpolator().createQubicBezierInterpolator({x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1} ),

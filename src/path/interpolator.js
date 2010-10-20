@@ -19,7 +19,7 @@
         interpolated:   null,
         paintScale:     90,
 
-        createLinearInterpolator : function(bPingPong) {
+        createLinearInterpolator : function(bPingPong, bInverse) {
             this.getPosition= function getPosition(time) {
 
                 var orgTime= time;
@@ -30,6 +30,10 @@
                     } else {
                         time= 1-(time-.5)*2;
                     }
+                }
+
+                if ( bInverse!=null && bInverse ) {
+                    time= 1-time;
                 }
 
                 return this.interpolated.set(orgTime,time);

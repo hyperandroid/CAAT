@@ -486,6 +486,8 @@ Some facts must be noticed:
 <h3>PathBehavior</h3>
     <p>This behavior manages translation across a predefined CAAT.Path. As an introduction, CAAT.PATH is composed
     of different path segments, either straight lines or curves.</p>
+    <p>There's one very important fact about paths, and is that the position on the path will always be the center of
+    the scene actor, and not any other coord.</p>
 <pre>setPath(<span class="s2">Path</span>)<span class="s1">;</pre>
     <p>Sets the path to traverse the CAAT.Actor across. The path must be an instance of CAAT.Path or an object of callback function
     that implements a method of the form getPosition(<span class="s2">time</span>)<span class="s1">;</spap></p>
@@ -493,9 +495,59 @@ Some facts must be noticed:
 <pre>autoRotate</pre>
     <p>Setting this flag to true, means that the actor the behavior is applied to will be rotating accordingly
     to the slope of the path at any given time.</p>
+    <p>The following example will create two square shapes, a yellow one, which sets autorotate to true, and a green one
+    which does not set the property. Both squares will traverse a circular path composed of two cubic bezier curves.
+    Do not pay attention to the setInterpolator method, we'll see them deeply in following chapters.</p>
+<div><canvas id="_c6"></canvas></div>
+<script>
+    var director_6 = new CAAT.Director().initialize(250,250,document.getElementById('_c6'));
+    var scene_6=     new CAAT.Scene().create();
 
-<div class="section">
-<h2>Defining custom behaviors [TBD]</h2>
-</div>
+    var shape_c6_0= new CAAT.ShapeActor().create().
+            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+            setLocation( 50,50 ).
+            setSize(50,50).
+            setFillStyle('#ffff00').
+            setStrokeStyle('#0000ff')
+    var shape_c6_1= new CAAT.ShapeActor().create().
+            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+            setLocation( 50,50 ).
+            setSize(50,50).
+            setFillStyle('#00ff00').
+            setStrokeStyle('#ff00ff')
+
+    // add two rectangle shapes to the scene.
+    scene_6.addChild(shape_c6_0);
+    scene_6.addChild(shape_c6_1);
+
+    // create a circular path.
+    var _path_c6= new CAAT.Path();
+    _path_c6.beginPath(25,125);
+    _path_c6.addCubicTo( 25,25,   225,25,   225,125 );
+    _path_c6.addCubicTo( 225,225,  25,225,  25,125 );
+    _path_c6.endPath();
+
+    // setup up a path traverser for the path.
+    var _pathbehavior_c6_0= new CAAT.PathBehavior();
+    _pathbehavior_c6_0.setPath( _path_c6 );
+    _pathbehavior_c6_0.setFrameTime(0,5000);
+    _pathbehavior_c6_0.setCycle(true);
+    _pathbehavior_c6_0.autoRotate= true;
+
+    // setup up an inverse path traverser for the path.
+    // ie, traverse from final path position to start position.
+    var _pathbehavior_c6_1= new CAAT.PathBehavior();
+    _pathbehavior_c6_1.setPath( _path_c6 );
+    _pathbehavior_c6_1.setFrameTime(0,5000);
+    _pathbehavior_c6_1.setCycle(true);
+    _pathbehavior_c6_1.setInterpolator( new CAAT.Interpolator().createLinearInterpolator(false,true) );
+
+    shape_c6_0.addBehavior( _pathbehavior_c6_0 );
+    shape_c6_1.addBehavior( _pathbehavior_c6_1 );
+
+    director_6.addScene(scene_6);
+    director_6.loop(30);
+</script>
+
 </body>
 </html>

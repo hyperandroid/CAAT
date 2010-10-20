@@ -294,9 +294,10 @@
 			}
 		},
 		setForTime : function(time,actor) {
-            if ( this.autoRotate ) {
 
-                var point= this.path.getPosition(time);
+            var point= this.path.getPosition(time);
+
+            if ( this.autoRotate ) {
 
                 if ( -1==this.prevX && -1==this.prevY )	{
                     this.prevX= point.x;
@@ -328,18 +329,13 @@
                 var modulo= Math.sqrt(ax*ax+ay*ay);
                 ax/=modulo;
                 ay/=modulo;
-
-                actor.setLocation(
-                        point.x - actor.width/2,  //- ay*actor.height/2,
-                        point.y - actor.height/2 //+ ax*actor.height/2);
-                );
-
-            } else {
-                var pointInPath= this.path.getPosition( time );
-                if ( null!=actor ) {
-                    actor.setLocation( pointInPath.x, pointInPath.y );
-                }
             }
+            
+            actor.setLocation(
+                    point.x - actor.width/2,  //- ay*actor.height/2,
+                    point.y - actor.height/2 //+ ax*actor.height/2);
+            );
+
 
 		},
         positionOnTime : function(time) {
