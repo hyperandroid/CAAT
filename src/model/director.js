@@ -39,6 +39,7 @@
 		currentScene:	null,
         canvas:         null,
 		crc:			null,	// canvas rendering context
+        ctx:            null,   // refactoring crc for a more convenient name
         time:           0,
 
         meIn:           null,
@@ -61,7 +62,8 @@
             this.setBounds(0, 0, canvas.width, canvas.height);
             this.create();
             this.canvas= canvas;
-            this.crc= canvas.getContext('2d');
+            this.ctx= canvas.getContext('2d');
+            this.crc= this.ctx;
 
             if ( !CAAT.director ) {
                 CAAT.director=[];
@@ -83,10 +85,10 @@
             /**
              * calculate animable elements and their bbox.
              */
-            var i;
+            var i,tt;
 			for( i=0; i<this.childList.length; i++ ) {
 				if (this.childList[i].isInAnimationFrame(this.time)) {
-                    var tt= this.childList[i].time - this.childList[i].start_time;
+                    tt= this.childList[i].time - this.childList[i].start_time;
 					this.childList[i].animate(this, tt);
 				}
 			}
@@ -97,7 +99,7 @@
 			for( i=0; i<this.childList.length; i++ ) {
 				if (this.childList[i].isInAnimationFrame(this.time)) {
 					this.crc.save();
-                    var tt= this.childList[i].time - this.childList[i].start_time;
+                    tt= this.childList[i].time - this.childList[i].start_time;
 					this.childList[i].paintActor(this, tt);
                     this.childList[i].time+= time;
 					this.crc.restore();
@@ -187,7 +189,7 @@
             }
 
             var typeOut;
-            var InterpolatorOut;
+            var interpolatorOut;
 
             if (pout<.33) {
                 typeOut= CAAT.Scene.prototype.EASE_ROTATION;

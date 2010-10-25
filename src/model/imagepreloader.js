@@ -31,7 +31,7 @@
                 this.images[i].image.onload = function imageLoaded() {
                     me.imageCounter++;
                     me.notificationCallback.call(this, me.imageCounter, me.images);
-                }
+                };
                 this.images[i].image.src= aImages[i].url;
             }
         }

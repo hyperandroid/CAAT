@@ -267,7 +267,7 @@
 			canvas.stroke();
 			canvas.restore();	
 			
-			CatmullRom.superclass.paint.call(this,director);
+			CAAT.CatmullRom.superclass.paint.call(this,director);
 		},
 		solve: function(point,t) {
 			var t2= t*t;

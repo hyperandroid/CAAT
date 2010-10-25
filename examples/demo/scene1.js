@@ -94,6 +94,10 @@ function __scene1(director) {
     pb.setCycle(true);
     pb.autoRotate= true;
 
+    // set pathbehavior to be traversed by the center of the fish
+    pb.translateX= fish.width/2;
+    pb.translateY= fish.height/2;
+
     fish.pathMeasure= pb;
     fish.addBehavior( pb );
 

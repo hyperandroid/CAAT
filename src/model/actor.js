@@ -310,8 +310,6 @@
 
             return this;
 		},
-		initialize : function()	{
-		},
 		destroy : function()	{
 		},
         transformCoord : function(point) {
@@ -465,7 +463,7 @@
         },
         initialize : function(overrides) {
             if (overrides) {
-               for (i in overrides) {
+               for (var i in overrides) {
                   this[i] = overrides[i];
                }
             }
@@ -493,6 +491,9 @@
             }
             CAAT.ActorContainer.superclass.drawScreenBoundingBox.call(this,director,time);
 
+        },
+        emptyChildren : function() {
+            this.childList= [];
         },
         paintActor : function(director, time ) {
             var canvas= director.crc;
@@ -525,6 +526,7 @@
 
             CAAT.ActorContainer.superclass.endAnimate.call(this,director,time);
 
+            var i;
             // remove expired and discardable elements.
             for( i=this.childList.length-1; i>=0; i-- ) {
                 var actor= this.childList[i];
@@ -579,7 +581,7 @@
             for( var i=this.childList.length-1; i>=0; i-- ) {
                 this.childList[i].destroy();
             }
-            ActorContainer.superclass.destroy.call(this);
+            CAAT.ActorContainer.superclass.destroy.call(this);
         }
 	});
 
@@ -835,7 +837,7 @@
 		},
 		setPath : function( path, interpolator, duration ) {
 			this.path= path;
-            this.pathInterpolator= interpolator || new CAAT.Interpolator.createLinearInterpolator();
+            this.pathInterpolator= interpolator || new CAAT.Interpolator().createLinearInterpolator();
             this.pathDuration= duration || 10000;
 			this.setBounds(0,0,parent.width,parent.height);
 			this.mouseEnabled= false;

@@ -117,7 +117,7 @@
 			}
 		},
         getContour : function(iSize) {
-            contour= [];
+            var contour= [];
 
             contour.push( this.getPosition(0).clone() );
             contour.push( this.getPosition(1).clone() );
@@ -343,13 +343,14 @@
 			this.pathSegmentDurationTime= [];
 
 			this.pathLength=0;
-			for( var i=0; i<this.pathSegments.length; i++) {
+            var i;
+			for( i=0; i<this.pathSegments.length; i++) {
 				this.pathLength+= this.pathSegments[i].getLength();
 				this.pathSegmentStartTime.push(0);
 				this.pathSegmentDurationTime.push(0);
 			}
 
-			for( var i=0; i<this.pathSegments.length; i++) {
+			for( i=0; i<this.pathSegments.length; i++) {
 				this.pathSegmentDurationTime[i]= this.pathSegments[i].getLength()/this.pathLength /* * duration*/;
 				if ( i>0 ) {
 					this.pathSegmentStartTime[i]= this.pathSegmentStartTime[i-1]+this.pathSegmentDurationTime[i-1];

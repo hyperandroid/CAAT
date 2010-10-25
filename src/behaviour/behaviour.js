@@ -108,7 +108,7 @@
 		},
         initialize : function(overrides) {
             if (overrides) {
-               for (i in overrides) {
+               for (var i in overrides) {
                   this[i] = overrides[i];
                }
             }
@@ -155,7 +155,8 @@
 			if ( this.cycleBehavior )	{
 				behavior.expired =  false;
 			} else {
-                this.fireBehaviorExpired( this, time, actor );
+//                this.fireBehaviorExpired( this, time, actor );
+                this.fireBehaviorExpiredEvent( actor, time );
             }
 		},
 		setForTime : function(time, actor) {
@@ -278,6 +279,8 @@
         autoRotate :    false,
         prevX:          -1,
         prevY:          -1,
+        translateX:     0,
+        translateY:     0,
 
         setPath : function(path) {
             this.path= path;
@@ -332,8 +335,8 @@
             }
             
             actor.setLocation(
-                    point.x - actor.width/2,  //- ay*actor.height/2,
-                    point.y - actor.height/2 //+ ax*actor.height/2);
+                    point.x - this.translateX, // - actor.width/2,  //- ay*actor.height/2,
+                    point.y - this.translateY  // - actor.height/2 //+ ax*actor.height/2);
             );
 
 

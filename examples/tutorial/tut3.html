@@ -1,0 +1,129 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tutorial 3 - Animable elements</title>
+
+<script type="text/javascript" src="sh/shCore.js"></script>
+<script type="text/javascript" src="sh/shBrushJScript.js"></script>
+<link href="sh/shCore.css" rel="stylesheet" type="text/css" />
+<link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css" />    
+
+<script type="text/javascript" src="../../build/caat.js"></script>
+
+<script type="text/javascript">
+     SyntaxHighlighter.all()
+</script>
+    
+<style>
+    div.code {
+       font-size: .7em;
+    }
+</style>
+
+</head>
+
+
+<body style="color:black; background:#ffffff;">
+
+<div class="section">
+    <h1>CAAT.Actor</h1>
+    <p>CAAT.Actor is the simplest object instance that will be drawn on screen.</p>
+    <p>This object contains default functionality for</p>
+    <ol>
+        <li>Set position on screen. In fact, as we've already seen on previous chapters, set position on the Director Canvas.</li>
+        <li>Set Size</li>
+        <li>Set affine transforms</li>
+        <li>Enable clipping</li>
+        <li>etc.</li>
+    </ol>
+    <p>An Actor by itself won't display on screen. The correct hierarchy to be defined is as follows:
+    <ul>
+        <li>Create a Director</li>
+        <li>Create a Scene</li>
+        <li>Add at least one Scene to the Director</li>
+        <li>Add Actor instances to the Scene</li>
+    </ul>
+    <p>Let's start by understanding the elements of the hierarchy and their API from top down, that's it, from the
+    Director to simple Actors.</p>
+</div>
+
+<div class="section">
+    <h1>CAAT.Director</h1>
+</div>
+
+<div class="section">
+    <h1>CAAT.Scene</h1>
+</div>
+
+<div class="section">
+    <h1>CAAT.Actor</h1>
+</div>
+
+<div class="section">
+    <h1>CAAT.ActorContainer</h1>
+</div>
+
+<div class="section">
+    <h1>CAAT.SpriteActor</h1>
+</div>
+
+<div class="section">
+    <h1>CAAT.TextActor</h1>
+</div>
+
+<div class="section">
+    <h1>CAAT.ShapeActor</h1>
+</div>
+
+<div class="section">
+    <h1>CAAT.InterpolatorActor</h1>
+</div>
+
+<div class="section">
+    <h1>CAAT.PathActor</h1>
+</div>
+
+<div class="section">
+    <h1>Defining custom actors</h1>
+</div>
+
+
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            <script type="text/javascript" src="../../build/caat.js"></script>
+        </pre>
+    </div>
+
+    <p>All the examples in this series tutorial and demos include this line at the top of the main file.</p>
+    <p>Make sure to change the path '../../build/' to your needs.</p>
+
+</div>
+
+
+
+<div class="sample" id="div_canvas2"></div>
+<script>
+    // We are not pointing any canvas in the director creation statement,
+    // so the director will create a Canvas for us.
+    var director2 = new CAAT.Director().initialize(100,100);
+
+    // add the canvas to the document:
+    document.getElementById('div_canvas2').appendChild( director2.canvas );
+
+    var scene2=     new CAAT.Scene().create();
+    var circle2=    new CAAT.ShapeActor().
+            create().
+            setLocation(20,20).
+            setSize(60,60).
+            setFillStyle('#ff00ff').
+            setStrokeStyle('#00ff00');
+
+    scene2.addChild(circle2);
+    director2.addScene(scene2);
+
+    director2.loop(1);
+</script>
+
+</body>
+</html>

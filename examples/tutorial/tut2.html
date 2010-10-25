@@ -637,7 +637,15 @@ Some facts must be noticed:
     <p>The following example will create two square shapes, a yellow one, which sets autorotate to true, and a green one
     which does not set the property. Both squares will traverse a circular path composed of two cubic bezier curves.
     Do not pay attention to the setInterpolator method, we'll see interpolators in detail in following chapters.</p>
-
+<h4>translation</h4>
+    <p>The translation parameters <strong>translateX</strong> and <strong>translate</strong> allow for
+    a finer grain control of the path traverse. By default, the path will be applied so that the (0,0) position
+    of the actor (that is, the top left corner) will be positioned on path. With these parameters, what point of
+    the Actor will be on path can be controlled.</p>
+    <p>
+    Look at the following example and see the difference of setting translateX to actor.width/2 and translateY to
+    actor.height/2 for the green actor while not setting any value for the other.
+    </p>
 <div class="code">
     <pre class="brush: js; auto-links: false; toolbar: false;">
         <script>
@@ -650,13 +658,15 @@ Some facts must be noticed:
                     setLocation( 50,50 ).
                     setSize(50,50).
                     setFillStyle('#ffff00').
-                    setStrokeStyle('#0000ff')
+                    setStrokeStyle('#0000ff').
+                    setAlpha(.75);
             var shape_c6_1= new CAAT.ShapeActor().create().
                     setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
                     setLocation( 50,50 ).
                     setSize(50,50).
                     setFillStyle('#00ff00').
-                    setStrokeStyle('#ff00ff')
+                    setStrokeStyle('#ff00ff').
+                    setAlpha(.75);
 
             // add two rectangle shapes to the scene.
             scene_6.addChild(shape_c6_0);
@@ -669,12 +679,22 @@ Some facts must be noticed:
             _path_c6.addCubicTo( 225,225,  25,225,  25,125 );
             _path_c6.endPath();
 
+            // add an actor to show the path.
+            var _pathactor_c6= new CAAT.PathActor().create();
+            _pathactor_c6.setPath(_path_c6);
+            _pathactor_c6.setBounds(0,0,director_6.width,director_6.height);
+            scene_6.addChild( _pathactor_c6 );
+
             // setup up a path traverser for the path.
             var _pathbehavior_c6_0= new CAAT.PathBehavior();
             _pathbehavior_c6_0.setPath( _path_c6 );
             _pathbehavior_c6_0.setFrameTime(0,5000);
             _pathbehavior_c6_0.setCycle(true);
             _pathbehavior_c6_0.autoRotate= true;
+
+                // set path traverse by the center of the rectangle shape.
+                _pathbehavior_c6_0.translateX= shape_c6_0.width/2;
+                _pathbehavior_c6_0.translateY= shape_c6_0.height/2;
 
             // setup up an inverse path traverser for the path.
             // ie, traverse from final path position to start position.
@@ -708,13 +728,15 @@ Some facts must be noticed:
             setLocation( 50,50 ).
             setSize(50,50).
             setFillStyle('#ffff00').
-            setStrokeStyle('#0000ff')
+            setStrokeStyle('#0000ff').
+            setAlpha(.75);
     var shape_c6_1= new CAAT.ShapeActor().create().
             setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
             setLocation( 50,50 ).
             setSize(50,50).
             setFillStyle('#00ff00').
-            setStrokeStyle('#ff00ff')
+            setStrokeStyle('#ff00ff').
+            setAlpha(.75);
 
     // add two rectangle shapes to the scene.
     scene_6.addChild(shape_c6_0);
@@ -727,12 +749,19 @@ Some facts must be noticed:
     _path_c6.addCubicTo( 225,225,  25,225,  25,125 );
     _path_c6.endPath();
 
+    var _pathactor_c6= new CAAT.PathActor().create();
+    _pathactor_c6.setPath(_path_c6);
+    _pathactor_c6.setBounds(0,0,director_6.width,director_6.height);
+    scene_6.addChild( _pathactor_c6 );
+
     // setup up a path traverser for the path.
     var _pathbehavior_c6_0= new CAAT.PathBehavior();
     _pathbehavior_c6_0.setPath( _path_c6 );
     _pathbehavior_c6_0.setFrameTime(0,5000);
     _pathbehavior_c6_0.setCycle(true);
     _pathbehavior_c6_0.autoRotate= true;
+    _pathbehavior_c6_0.translateX= shape_c6_0.width/2;
+    _pathbehavior_c6_0.translateY= shape_c6_0.height/2;
 
     // setup up an inverse path traverser for the path.
     // ie, traverse from final path position to start position.
