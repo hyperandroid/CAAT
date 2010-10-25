@@ -39,6 +39,7 @@ Behaviors are modifiers for common CAAT.Actor properties.
 <li>Translations across complex Paths
 <li>Scales
 <li>Alpha transparency
+<li>Compositions of all the other types</li>
 </ol>
 <p><small><strong>Note: the syntax of Behavior classes it kept as is to maintain consistent class definition across different CAAT library instances.</strong></small></p>
 <p>Behaviors apply to every kind of CAAT.Actor, including Scenes. Let's add some AlphaBehavior to our previous circle example:
@@ -119,7 +120,7 @@ issuing
     alpha.setCycle(true);
 </pre>
 </div>
-    
+
 <p> This way, the Behavior will be cyclic, so that it will apply forever.
 <div><canvas id='_c2'></canvas></div>
 <script>
@@ -537,9 +538,11 @@ Some facts must be noticed:
             setCycle(boolean);
         </pre>
     </div>
-
+    <p>
     with a true value. This makes the behavior to repeat continuously until after the CAAT.Scene is removed
     from the director, or until setCycle(false) is set.
+    </p>
+    
 <h4>Interpolators</h4>
     <p>Behaviour are linearly applied by default, that is, the same behavior increment is set after the same time lapse
     has passed. In example, if we set an alpha behavior to go from 0 to 1 in a second, after 250 ms. time lapse we will
@@ -556,18 +559,18 @@ Some facts must be noticed:
 
 <h3>AlphaBehavior</h3>
 <p>This Behaviour sets the alpha transparency value.</p>
-<pre>startAlpha</pre>
+<h4>startAlpha</h4>
     <p>Starting Alpha value to be set on Behaviour appliance.</p>
-<pre>endAlpha</pre>
+<h4>endAlpha</h4>
     <p>Ending Alpha value to be set on Behaviour expiration.</p>
 
 <h3>RotateBehavior</h3>
     <p>This behaviour sets rotation angle around a predefined anchor point.</p>
-<pre>startAngle</pre>
+<h4>startAngle</h4>
     <p>Starting rotation angle to be set on Behavior appliance.</p>
-<pre>endAngle</pre>
+<h4>endAngle</h4>
     <p>Ending rotation angle to be set on Behavior expiration.</p>
-<pre>anchor</pre>
+<h4>anchor</h4>
     <p>Any of the following values from CAAT.Actor.prototype:</p>
     <ul>
         <li>ANCHOR_CENTER
@@ -583,15 +586,15 @@ Some facts must be noticed:
 
 <h3>ScaleBehavior</h3>
     <p>This behavior manages scale in both axes x and y at the same time. Scale means resizing.</p>
-<pre>startScaleX</pre>
+<h4>startScaleX</h4>
     <p>Starting X axis scaling factor to be set on Behavior appliance.</p>
-<pre>startScaleY</pre>
+<h4>startScaleY</h4>
     <p>Starting Y axis scaling factor to be set on Behavior appliance.</p>
-<pre>endScaleX</pre>
+<h4>endScaleX</h4>
     <p>Ending X axis scaling factor to be set on Behaviour expiration.</p>
-<pre>endScaleY</pre>
+<h4>endScaleY</h4>
     <p>Ending Y axis scaling factor to be set on Behaviour expiration.</p>
-<pre>anchor</pre>
+<h4>anchor</h4>
     <p>Any of the following values from CAAT.Actor.prototype:</p>
     <ul>
         <li>ANCHOR_CENTER
@@ -618,9 +621,17 @@ Some facts must be noticed:
     </div>
 
     <p>Sets the path to traverse the CAAT.Actor across. The path must be an instance of CAAT.Path or an object of callback function
-    that implements a method of the form getPosition(<span class="s2">time</span>)<span class="s1">;</spap></p>
+    that implements a method of the form:
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            getPosition( time );
+        </pre>
+    </div>
+
 </div>
-<pre>autoRotate</pre>
+
+<div>
+<h4>autoRotate</h4>
     <p>Setting this flag to true, means that the actor the behavior is applied to will be rotating accordingly
     to the slope of the path at any given time.</p>
     <p>The following example will create two square shapes, a yellow one, which sets autorotate to true, and a green one
@@ -739,6 +750,7 @@ Some facts must be noticed:
     director_6.addScene(scene_6);
     director_6.loop(30);
 </script>
+</div>
 
 </body>
 </html>
