@@ -4,16 +4,22 @@
 <meta charset="UTF-8">
 <title>Tutorial 2 - Behaviors</title>
 
-<style type="text/css">
-.ln { color: rgb(0,0,0); font-weight: normal; font-style: normal; }
-.s0 { color: rgb(0,0,128); font-weight: bold; }
-.s1 { }
-.s2 { color: rgb(0,0,255); }
-.s3 { color: rgb(0,128,0); font-weight: bold; }
-</style>
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css" />
 
+    <script type="text/javascript" src="../../build/caat.js"></script>
 
-<script type="text/javascript" src="http://caat.googlecode.com/files/caat.js"></script>
+    <script type="text/javascript">
+         SyntaxHighlighter.all()
+    </script>
+
+    <style>
+        div.code {
+           font-size: .7em;
+        }
+    </style>
 
 
 </head>
@@ -37,34 +43,38 @@ Behaviors are modifiers for common CAAT.Actor properties.
 <p><small><strong>Note: the syntax of Behavior classes it kept as is to maintain consistent class definition across different CAAT library instances.</strong></small></p>
 <p>Behaviors apply to every kind of CAAT.Actor, including Scenes. Let's add some AlphaBehavior to our previous circle example:
 
-    <pre>
-    <span class="s0">
-    <a name="l75">    </span><span class="s1">var </span><span class="s0">director_1 = </span><span class="s1">new </span><span class="s0">CAAT.Director().initialize(
-    <a name="l76">            </span><span class="s2">100</span><span class="s0">,</span><span class="s2">80</span><span class="s0">,document.getElementById(</span><span class="s3">'_c1'</span><span class="s0">));
-    <a name="l77">    </span><span class="s1">var </span><span class="s0">scene_1=     </span><span class="s1">new </span><span class="s0">CAAT.Scene().create();
-    <a name="l78">    </span><span class="s1">var </span><span class="s0">rectangle_1= </span><span class="s1">new </span><span class="s0">CAAT.ShapeActor().
-    <a name="l79">            create().
-    <a name="l80">            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
-    <a name="l81">            setLocation(</span><span class="s2">10</span><span class="s0">,</span><span class="s2">10</span><span class="s0">).
-    <a name="l82">            setSize(</span><span class="s2">60</span><span class="s0">,</span><span class="s2">60</span><span class="s0">).
-    <a name="l83">            setFillStyle(</span><span class="s3">'#ff0000'</span><span class="s0">).
-    <a name="l84">            setStrokeStyle(</span><span class="s3">'#000000'</span><span class="s0">);
-    <a name="l85">
-    <a name="l86">    scene_1.addChild(rectangle_1);
-    <a name="l87">    director_1.addScene(scene_1);
-    <a name="l88">
-    <a name="l89">    </span><span class="s4">// setup a behaviour. take 5 seconds to change alpha transparency</span><span class="s0">
-    <a name="l90">    </span><span class="s4">// from 1 to .1 start fading when 2 seconds have passed from</span><span class="s0">
-    <a name="l91">    </span><span class="s4">// scene start time.</span><span class="s0">
-    <a name="l92">    </span><span class="s1">var </span><span class="s0">alpha_1= </span><span class="s1">new </span><span class="s0">CAAT.AlphaBehavior();
-    <a name="l93">    alpha_1.startAlpha= </span><span class="s2">1</span><span class="s0">;
-    <a name="l94">    alpha_1.endAlpha= </span><span class="s2">.1</span><span class="s0">;
-    <a name="l95">    alpha_1.setFrameTime( </span><span class="s2">2000</span><span class="s0">, </span><span class="s2">5000 </span><span class="s0">);
-    <a name="l96">
-    <a name="l97">    rectangle_1.addBehavior(alpha_1);
-    <a name="l98">
-    <a name="l99">    </span><span class="s4">// set animation to 10fps.</span><span class="s0">
-    <a name="l100">    director_1.loop(</span><span class="s2">10</span><span class="s0">);</span></pre>
+<div class="code">
+<pre class="brush: js; auto-links: false; toolbar: false;">
+<script>
+    var director_1 = new CAAT.Director().initialize(
+            100,80,document.getElementById('_c1'));
+    var scene_1=     new CAAT.Scene().create();
+    var rectangle_1= new CAAT.ShapeActor().
+            create().
+            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+            setLocation(10,10).
+            setSize(60,60).
+            setFillStyle('#ff0000').
+            setStrokeStyle('#000000');
+
+    scene_1.addChild(rectangle_1);
+    director_1.addScene(scene_1);
+
+    // setup a behaviour. take 5 seconds to change alpha transparency
+    // from 1 to .1 start fading when 2 seconds have passed from
+    // scene start time.
+    var alpha_1= new CAAT.AlphaBehavior();
+    alpha_1.startAlpha= 1;
+    alpha_1.endAlpha= .1;
+    alpha_1.setFrameTime( 2000, 5000 );
+
+    rectangle_1.addBehavior(alpha_1);
+
+    // set animation to 10fps.
+    director_1.loop(10);
+</script>
+</pre>
+</div>
 
 <p>
     In the example, we're setting a Behavior to manage alpha transparency. During a 5000ms. lapse, the
@@ -103,7 +113,13 @@ Behaviors are modifiers for common CAAT.Actor properties.
 </script>
 <p>As we can see in the example, the Behavior expires, and finishes applying. We can set a cyclic Behavior by
 issuing
-<pre>alpha.setCycle(<span class="s2">true</span>)<span class="s1">;</pre>
+
+<div class="code">
+<pre class="brush: js; auto-links: false; toolbar: false;">
+    alpha.setCycle(true);
+</pre>
+</div>
+    
 <p> This way, the Behavior will be cyclic, so that it will apply forever.
 <div><canvas id='_c2'></canvas></div>
 <script>
@@ -151,7 +167,11 @@ issuing
 <p>The green rectangle performs the Behavior in a slightly different way, that said, it goes from total opacity to total transparency, and then back to total opacity
 in opposition to the red rectangle which abruptly goes from total transparency to total opacity.
 This Behavior is modified by calling the method:
-<pre>alpha.setPingPong();</pre>
+<div class="code">
+<pre class="brush: js; auto-links: false; toolbar: false;">
+alpha.setPingPong();
+</pre>
+</div>
 <p>In fact, this method sets up a different kind of CAAT.Interpolator for the Behavior to get values from. More on CAAT.Interpolator
 in succesive chapters, but as an introduction, an CAAT.Interpolator is a function or CAAT.Path that will instrument the Behavior
 how it will be applied. The red rectangle is using default linear interpolator and the green one, the default PingPong'ed interpolator.
@@ -192,10 +212,17 @@ has expired, and at exactly what time. Upon Behavior expiration, the managed Beh
 That is, in first example, Actor's alpha transparency value is guaranteed to be .1 on Behavior expiration regardless the CPU power and
 needed processing time of the animation frame. In order to set the Behavior listener, we must call
 
-<pre>Behavior</span>.addListener( <span class="s1"><span class="s0">listener</span></span> );</pre>
+<div class="code">
+<pre class="brush: js; auto-links: false; toolbar: false;">
+    behavior.addListener( listener );
+</pre>
+</div>
 the 'listener' parameter is expected to be a function of the form:
 
-<pre>BehaviorExpired(</span><span class="s1"><span class="s0">Behavior,time,actor</span></span>)</pre>
+<div class="code">
+<pre class="brush: js; auto-links: false; toolbar: false;">
+    behaviorExpired( behavior,time,actor )</pre>
+</div>
 The function parameters are:
 <ol>
     <li>The CAAT.Behavior object that just expired.</li>
@@ -203,57 +230,61 @@ The function parameters are:
     <li>The CAAT.Actor the CAAT.Behavior was acting upon.</li>
 </ol>
 <p>In this example, we are switching the Behavior of an actor upon expiration or any of the applied Behaviors:</p>
-    <pre>
-    <span class="s0">
-    <a name="l249">    </span><span class="s1">var </span><span class="s0">director_4 = </span><span class="s1">new </span><span class="s0">CAAT.Director().initialize(
-    <a name="l250">            </span><span class="s2">160</span><span class="s0">,</span><span class="s2">160</span><span class="s0">,document.getElementById(</span><span class="s3">'_c4'</span><span class="s0">));
-    <a name="l251">    </span><span class="s1">var </span><span class="s0">scene_4=     </span><span class="s1">new </span><span class="s0">CAAT.Scene().create();
-    <a name="l252">
-    <a name="l253">    </span><span class="s1">var </span><span class="s0">_c4_rectangle_0= </span><span class="s1">new </span><span class="s0">CAAT.ShapeActor().create().
-    <a name="l254">            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
-    <a name="l255">            setLocation(</span><span class="s2">50</span><span class="s0">,</span><span class="s2">50</span><span class="s0">).
-    <a name="l256">            setSize(</span><span class="s2">60</span><span class="s0">,</span><span class="s2">60</span><span class="s0">).
-    <a name="l257">            setFillStyle(</span><span class="s3">'#ff0000'</span><span class="s0">).
-    <a name="l258">            setStrokeStyle(</span><span class="s3">'#000000'</span><span class="s0">);
-    <a name="l259">    scene_4.addChild(_c4_rectangle_0);
-    <a name="l260">
-    <a name="l261">    </span><span class="s1">var </span><span class="s0">_sb_c4_text_0= </span><span class="s1">new </span><span class="s0">CAAT.ScaleBehavior();
-    <a name="l262">    _sb_c4_text_0.setPingPong();
-    <a name="l263">    _sb_c4_text_0.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-    <a name="l264">    _sb_c4_text_0.startScaleX= </span><span class="s2">1</span><span class="s0">;
-    <a name="l265">    _sb_c4_text_0.endScaleX= </span><span class="s2">2</span><span class="s0">;
-    <a name="l266">    _sb_c4_text_0.startScaleY= </span><span class="s2">1</span><span class="s0">;
-    <a name="l267">    _sb_c4_text_0.endScaleY= </span><span class="s2">2</span><span class="s0">;
-    <a name="l268">    </span><span class="s4">// scale Behavior enabled by default. Start at time=2000ms, and</span><span class="s0">
-    <a name="l269">    </span><span class="s4">// last for 3000ms.</span><span class="s0">
-    <a name="l270">    _sb_c4_text_0.setFrameTime(</span><span class="s2">2000</span><span class="s0">,</span><span class="s2">3000</span><span class="s0">);
-    <a name="l271">
-    <a name="l272">    </span><span class="s4">// unless otherwise stated, Behaviors are expired by default,</span><span class="s0">
-    <a name="l273">    </span><span class="s4">// so this actor won't rotate until instrumented to do so.</span><span class="s0">
-    <a name="l274">    </span><span class="s1">var </span><span class="s0">_rb_c4_text_0= </span><span class="s1">new </span><span class="s0">CAAT.RotateBehavior();
-    <a name="l275">    _rb_c4_text_0.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-    <a name="l276">    _rb_c4_text_0.startAngle=</span><span class="s2">0</span><span class="s0">;
-    <a name="l277">    _rb_c4_text_0.endAngle=Math.PI*</span><span class="s2">2</span><span class="s0">;
-    <a name="l278">
-    <a name="l279">        _c4_rectangle_0.addBehavior(_sb_c4_text_0);
-    <a name="l280">        _c4_rectangle_0.addBehavior(_rb_c4_text_0);
-    <a name="l281">
-    <a name="l282">    </span><span class="s4">// when scale Behavior finishes, start rotation Behavior.</span><span class="s0">
-    <a name="l283">    _sb_c4_text_0.addListener( {
-    <a name="l284">        behaviorExpired : </span><span class="s1">function</span><span class="s0">(behavior, time, actor) {
-    <a name="l285">            _rb_c4_text_0.setFrameTime( time, </span><span class="s2">3000 </span><span class="s0">);
-    <a name="l286">    }});
-    <a name="l287">
-    <a name="l288">    </span><span class="s4">// when rotation Behavior finishes, start scale Behavior.</span><span class="s0">
-    <a name="l289">    _rb_c4_text_0.addListener( {
-    <a name="l290">        behaviorExpired : </span><span class="s1">function</span><span class="s0">(behavior, time, actor) {
-    <a name="l291">            _sb_c4_text_0.setFrameTime( time, </span><span class="s2">3000 </span><span class="s0">);
-    <a name="l292">    }});
-    <a name="l293">
-    <a name="l294">
-    <a name="l295">    director_4.addScene(scene_4);
-    <a name="l296">    director_4.loop(</span><span class="s2">30</span><span class="s0">);</span></pre>
 
+<div class="code">
+<pre class="brush: js; auto-links: false; toolbar: false;">
+<script>
+    var director_4 = new CAAT.Director().initialize(
+            160,160,document.getElementById('_c4'));
+    var scene_4=     new CAAT.Scene().create();
+
+    var _c4_rectangle_0= new CAAT.ShapeActor().create().
+            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+            setLocation(50,50).
+            setSize(60,60).
+            setFillStyle('#ff0000').
+            setStrokeStyle('#000000');
+	scene_4.addChild(_c4_rectangle_0);
+
+    var _sb_c4_text_0= new CAAT.ScaleBehavior();
+    _sb_c4_text_0.setPingPong();
+    _sb_c4_text_0.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
+    _sb_c4_text_0.startScaleX= 1;
+    _sb_c4_text_0.endScaleX= 2;
+    _sb_c4_text_0.startScaleY= 1;
+    _sb_c4_text_0.endScaleY= 2;
+    // scale Behavior enabled by default. Start at time=2000ms, and
+    // last for 3000ms.
+    _sb_c4_text_0.setFrameTime(2000,3000);
+
+    // unless otherwise stated, Behaviors are expired by default,
+    // so this actor won't rotate until instrumented to do so.
+    var _rb_c4_text_0= new CAAT.RotateBehavior();
+    _rb_c4_text_0.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
+    _rb_c4_text_0.startAngle=0;
+    _rb_c4_text_0.endAngle=Math.PI*2;
+
+        _c4_rectangle_0.addBehavior(_sb_c4_text_0);
+        _c4_rectangle_0.addBehavior(_rb_c4_text_0);
+
+    // when scale Behavior finishes, start rotation Behavior.
+    _sb_c4_text_0.addListener( {
+        behaviorExpired : function(behavior, time, actor) {
+            _rb_c4_text_0.setFrameTime( time, 3000 );
+    }});
+
+    // when rotation Behavior finishes, start scale Behavior.
+    _rb_c4_text_0.addListener( {
+        behaviorExpired : function(behavior, time, actor) {
+            _sb_c4_text_0.setFrameTime( time, 3000 );
+    }});
+
+
+    director_4.addScene(scene_4);
+    director_4.loop(30);
+</script>    
+</pre>
+</div>
 
 <div><canvas id="_c4"></canvas></div>
 <script>
@@ -325,59 +356,63 @@ can be accomplished by using a CAAT.BehaviorContainer. The main features of this
 </ol>
 <p>In the following example, we're going to set up a simple container behaviour:</p>
 
-    <pre>
-    <span class="s0">
-    <a name="l373">    </span><span class="s1">var </span><span class="s0">director_5 = </span><span class="s1">new </span><span class="s0">CAAT.Director().initialize(
-    <a name="l374">            </span><span class="s2">150</span><span class="s0">,</span><span class="s2">150</span><span class="s0">,document.getElementById(</span><span class="s3">'_c5'</span><span class="s0">));
-    <a name="l375">    </span><span class="s1">var </span><span class="s0">scene_5=     </span><span class="s1">new </span><span class="s0">CAAT.Scene().create();
-    <a name="l376">
-    <a name="l377">    </span><span class="s1">var </span><span class="s0">shape_5= </span><span class="s1">new </span><span class="s0">CAAT.ShapeActor().create().
-    <a name="l378">            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
-    <a name="l379">            setLocation( </span><span class="s2">50</span><span class="s0">,</span><span class="s2">50 </span><span class="s0">).
-    <a name="l380">            setSize(</span><span class="s2">50</span><span class="s0">,</span><span class="s2">50</span><span class="s0">).
-    <a name="l381">            setFillStyle(</span><span class="s3">'#ffff00'</span><span class="s0">).
-    <a name="l382">            setStrokeStyle(</span><span class="s3">'#000000'</span><span class="s0">)
-    <a name="l383">    scene_5.addChild(shape_5);
-    <a name="l384">
-    <a name="l385">    </span><span class="s4">// set a Container for behaviors up.</span><span class="s0">
-    <a name="l386">    </span><span class="s1">var </span><span class="s0">_cb_c5= </span><span class="s1">new </span><span class="s0">CAAT.ContainerBehavior();
-    <a name="l387">    _cb_c5.setCycle(</span><span class="s1">true</span><span class="s0">);
-    <a name="l388">    </span><span class="s4">// take 3 seconds to perform contained behaviors. If any</span><span class="s0">
-    <a name="l389">    </span><span class="s4">// takes more than such time, it will be truncated.</span><span class="s0">
-    <a name="l390">    _cb_c5.setFrameTime(</span><span class="s2">0</span><span class="s0">,</span><span class="s2">3000</span><span class="s0">);
-    <a name="l391">
-    <a name="l392">        </span><span class="s4">// setup an Scaling behavior. Min scale 1, Max scale 2</span><span class="s0">
-    <a name="l393">    </span><span class="s4">// (twice in size)</span><span class="s0">
-    <a name="l394">        </span><span class="s1">var </span><span class="s0">_sb_c5= </span><span class="s1">new </span><span class="s0">CAAT.ScaleBehavior();
-    <a name="l395">        _sb_c5.setPingPong();
-    <a name="l396">        _sb_c5.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-    <a name="l397">        _sb_c5.startScaleX= </span><span class="s2">1</span><span class="s0">;
-    <a name="l398">        _sb_c5.endScaleX= </span><span class="s2">2</span><span class="s0">;
-    <a name="l399">        _sb_c5.startScaleY= </span><span class="s2">1</span><span class="s0">;
-    <a name="l400">        _sb_c5.endScaleY= </span><span class="s2">2</span><span class="s0">;
-    <a name="l401">        </span><span class="s4">// takes 2 seconds to scale. time measured from parent's</span><span class="s0">
-    <a name="l402">        </span><span class="s4">// zero time.</span><span class="s0">
-    <a name="l403">        _sb_c5.setFrameTime(</span><span class="s2">0</span><span class="s0">,</span><span class="s2">2000</span><span class="s0">);
-    <a name="l404">
-    <a name="l405">        </span><span class="s4">// setup a Rotating behavior. 0-2PI, ie 360 degrees.</span><span class="s0">
-    <a name="l406">        </span><span class="s1">var </span><span class="s0">_rb_c5= </span><span class="s1">new </span><span class="s0">CAAT.RotateBehavior();
-    <a name="l407">        _rb_c5.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-    <a name="l408">        _rb_c5.startAngle=</span><span class="s2">0</span><span class="s0">;
-    <a name="l409">        _rb_c5.endAngle=Math.PI;
-    <a name="l410">        </span><span class="s4">// takes 1 second, starting half a second after parent's</span><span class="s0">
-    <a name="l411">        </span><span class="s4">// time.</span><span class="s0">
-    <a name="l412">        _rb_c5.setFrameTime(</span><span class="s2">500</span><span class="s0">,</span><span class="s2">1000</span><span class="s0">);
-    <a name="l413">
-    <a name="l414">        </span><span class="s4">// add scale and rotation to the rectangle.</span><span class="s0">
-    <a name="l415">        _cb_c5.addBehavior(_sb_c5);
-    <a name="l416">        _cb_c5.addBehavior(_rb_c5);
-    <a name="l417">
-    <a name="l418">    </span><span class="s4">// add path and conpound behavior of rotation and scale to</span><span class="s0">
-    <a name="l419">    </span><span class="s4">// the rectanble shape.</span><span class="s0">
-    <a name="l420">    shape_5.addBehavior(_cb_c5);
-    <a name="l421">
-    <a name="l422">    director_5.addScene(scene_5);
-    <a name="l423">    director_5.loop(</span><span class="s2">30</span><span class="s0">);</span></pre>
+<div class="code">
+<pre class="brush: js; auto-links: false; toolbar: false;">
+<script>
+    var director_5 = new CAAT.Director().initialize(
+            150,150,document.getElementById('_c5'));
+    var scene_5=     new CAAT.Scene().create();
+
+    var shape_5= new CAAT.ShapeActor().create().
+            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+            setLocation( 50,50 ).
+            setSize(50,50).
+            setFillStyle('#ffff00').
+            setStrokeStyle('#000000')
+    scene_5.addChild(shape_5);
+
+    // set a Container for behaviors up.
+    var _cb_c5= new CAAT.ContainerBehavior();
+    _cb_c5.setCycle(true);
+    // take 3 seconds to perform contained behaviors. If any
+    // takes more than such time, it will be truncated.
+    _cb_c5.setFrameTime(0,3000);
+
+        // setup an Scaling behavior. Min scale 1, Max scale 2
+    // (twice in size)
+        var _sb_c5= new CAAT.ScaleBehavior();
+        _sb_c5.setPingPong();
+        _sb_c5.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
+        _sb_c5.startScaleX= 1;
+        _sb_c5.endScaleX= 2;
+        _sb_c5.startScaleY= 1;
+        _sb_c5.endScaleY= 2;
+        // takes 2 seconds to scale. time measured from parent's
+        // zero time.
+        _sb_c5.setFrameTime(0,2000);
+
+        // setup a Rotating behavior. 0-2PI, ie 360 degrees.
+        var _rb_c5= new CAAT.RotateBehavior();
+        _rb_c5.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
+        _rb_c5.startAngle=0;
+        _rb_c5.endAngle=Math.PI;
+        // takes 1 second, starting half a second after parent's
+        // time.
+        _rb_c5.setFrameTime(500,1000);
+
+        // add scale and rotation to the rectangle.
+        _cb_c5.addBehavior(_sb_c5);
+        _cb_c5.addBehavior(_rb_c5);
+
+    // add path and conpound behavior of rotation and scale to
+    // the rectanble shape.
+    shape_5.addBehavior(_cb_c5);
+
+    director_5.addScene(scene_5);
+    director_5.loop(30);
+</script>
+</pre>
+</div>
 
 
 
@@ -452,21 +487,38 @@ Some facts must be noticed:
 <p>
     Every CAAT.Behavior has the following common properties:</p>
 <h4>Frame time</h4>
-    <pre>behavior.setFrameTime(<span class="s2">start_time, duration</span>)<span class="s1">;</pre>
+
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            behavior.setFrameTime( start_time, duration );
+        </pre>
+    </div>
+
     <p>Frame time are the temporal properties which determine whether the Behavior must be applied, time has not yet
     reached the time to start applying, or is expired. Frame time is defined by two values: start_time and duration.</p>
     <p>Upon behavior expiration, and only the first time it happens, The expiration listeners will be notified.</p>
 <h4>Expiration notification</h4>
-    <pre>behavior.addListener(<span class="s2">notificationCallback</span>)<span class="s1">;</pre>
+
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            behavior.addListener(notificationCallback);
+        </pre>
+    </div>
     <p>We can set as much behavior listeners as needed. Upon expiration, all of them will be sequentially notified.
     Listeners must be elements with a method of the form</p>
-    <pre>behaviorExpired(<span class="s2">behavior, time, actor</span>)<span class="s1">;</pre>
-    <p>One valid default Behavior expiration listener could be of the form:</p>
+
     <div class="code">
-        <pre>
-<a name="l291">behavior.addListener( { behaviorExpired : </span><span class="s1">function</span><span class="s0">(behavior, time, actor) {
-<a name="l292">    _sb_c4_text_0.setFrameTime( time, </span><span class="s2">3000 </span><span class="s0">);
-<a name="l293">}});
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            behaviorExpired(behavior, time, actor);
+        </pre>
+    </div>
+    <p>One valid default Behavior expiration listener could be of the form:</p>
+
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            behavior.addListener( { behaviorExpired : function(behavior, time, actor) {
+                _sb_c4_text_0.setFrameTime( time, 3000 );
+            }});
         </pre>
     </div>
     <p>like in the previous example, but any object with such a method will do.</p>
@@ -479,14 +531,26 @@ Some facts must be noticed:
 <h4>Behavior Cycling</h4>
     <p>The behavior is a one-shot action which ends after the stablished duration behaviour ends. We can set
     a cycling behavior up though by calling the method</p>
-    <pre>setCycle(<span class="s2">boolean</span>)<span class="s1">;</pre>
+
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            setCycle(boolean);
+        </pre>
+    </div>
+
     with a true value. This makes the behavior to repeat continuously until after the CAAT.Scene is removed
     from the director, or until setCycle(false) is set.
 <h4>Interpolators</h4>
     <p>Behaviour are linearly applied by default, that is, the same behavior increment is set after the same time lapse
     has passed. In example, if we set an alpha behavior to go from 0 to 1 in a second, after 250 ms. time lapse we will
     have a 0.25 alpha value and after 500 ms. time lapse, we'll get .5 as alpha value. The method</p>
-    <pre>setInterpolator(<span class="s2">interpolator</span>)<span class="s1">;</pre> can change the default
+
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            setInterpolator(interpolator);
+        </pre>
+    </div>
+        can change the default
     linear function for many more other functions i.e. accelerating, bouncing, etc.
     More on Interpolators in the interpolators chapter.
 
@@ -546,7 +610,13 @@ Some facts must be noticed:
     of different path segments, either straight lines or curves.</p>
     <p>There's one very important fact about paths, and is that the position on the path will always be the center of
     the scene actor, and not any other coord.</p>
-<pre>setPath(<span class="s2">Path</span>)<span class="s1">;</pre>
+
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            setPath( path );
+        </pre>
+    </div>
+
     <p>Sets the path to traverse the CAAT.Actor across. The path must be an instance of CAAT.Path or an object of callback function
     that implements a method of the form getPosition(<span class="s2">time</span>)<span class="s1">;</spap></p>
 </div>
@@ -557,58 +627,64 @@ Some facts must be noticed:
     which does not set the property. Both squares will traverse a circular path composed of two cubic bezier curves.
     Do not pay attention to the setInterpolator method, we'll see interpolators in detail in following chapters.</p>
 
-<pre>
-<span class="s0">
-<a name="l613">    </span><span class="s1">var </span><span class="s0">director_6 = </span><span class="s1">new </span><span class="s0">CAAT.Director().initialize(
-<a name="l614">            </span><span class="s2">250</span><span class="s0">,</span><span class="s2">250</span><span class="s0">,document.getElementById(</span><span class="s3">'_c6'</span><span class="s0">));
-<a name="l615">    </span><span class="s1">var </span><span class="s0">scene_6=     </span><span class="s1">new </span><span class="s0">CAAT.Scene().create();
-<a name="l616">
-<a name="l617">    </span><span class="s1">var </span><span class="s0">shape_c6_0= </span><span class="s1">new </span><span class="s0">CAAT.ShapeActor().create().
-<a name="l618">            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
-<a name="l619">            setLocation( </span><span class="s2">50</span><span class="s0">,</span><span class="s2">50 </span><span class="s0">).
-<a name="l620">            setSize(</span><span class="s2">50</span><span class="s0">,</span><span class="s2">50</span><span class="s0">).
-<a name="l621">            setFillStyle(</span><span class="s3">'#ffff00'</span><span class="s0">).
-<a name="l622">            setStrokeStyle(</span><span class="s3">'#0000ff'</span><span class="s0">)
-<a name="l623">    </span><span class="s1">var </span><span class="s0">shape_c6_1= </span><span class="s1">new </span><span class="s0">CAAT.ShapeActor().create().
-<a name="l624">            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
-<a name="l625">            setLocation( </span><span class="s2">50</span><span class="s0">,</span><span class="s2">50 </span><span class="s0">).
-<a name="l626">            setSize(</span><span class="s2">50</span><span class="s0">,</span><span class="s2">50</span><span class="s0">).
-<a name="l627">            setFillStyle(</span><span class="s3">'#00ff00'</span><span class="s0">).
-<a name="l628">            setStrokeStyle(</span><span class="s3">'#ff00ff'</span><span class="s0">)
-<a name="l629">
-<a name="l630">    </span><span class="s4">// add two rectangle shapes to the scene.</span><span class="s0">
-<a name="l631">    scene_6.addChild(shape_c6_0);
-<a name="l632">    scene_6.addChild(shape_c6_1);
-<a name="l633">
-<a name="l634">    </span><span class="s4">// create a circular path.</span><span class="s0">
-<a name="l635">    </span><span class="s1">var </span><span class="s0">_path_c6= </span><span class="s1">new </span><span class="s0">CAAT.Path();
-<a name="l636">    _path_c6.beginPath(</span><span class="s2">25</span><span class="s0">,</span><span class="s2">125</span><span class="s0">);
-<a name="l637">    _path_c6.addCubicTo( </span><span class="s2">25</span><span class="s0">,</span><span class="s2">25</span><span class="s0">,   </span><span class="s2">225</span><span class="s0">,</span><span class="s2">25</span><span class="s0">,   </span><span class="s2">225</span><span class="s0">,</span><span class="s2">125 </span><span class="s0">);
-<a name="l638">    _path_c6.addCubicTo( </span><span class="s2">225</span><span class="s0">,</span><span class="s2">225</span><span class="s0">,  </span><span class="s2">25</span><span class="s0">,</span><span class="s2">225</span><span class="s0">,  </span><span class="s2">25</span><span class="s0">,</span><span class="s2">125 </span><span class="s0">);
-<a name="l639">    _path_c6.endPath();
-<a name="l640">
-<a name="l641">    </span><span class="s4">// setup up a path traverser for the path.</span><span class="s0">
-<a name="l642">    </span><span class="s1">var </span><span class="s0">_pathbehavior_c6_0= </span><span class="s1">new </span><span class="s0">CAAT.PathBehavior();
-<a name="l643">    _pathbehavior_c6_0.setPath( _path_c6 );
-<a name="l644">    _pathbehavior_c6_0.setFrameTime(</span><span class="s2">0</span><span class="s0">,</span><span class="s2">5000</span><span class="s0">);
-<a name="l645">    _pathbehavior_c6_0.setCycle(</span><span class="s1">true</span><span class="s0">);
-<a name="l646">    _pathbehavior_c6_0.autoRotate= </span><span class="s1">true</span><span class="s0">;
-<a name="l647">
-<a name="l648">    </span><span class="s4">// setup up an inverse path traverser for the path.</span><span class="s0">
-<a name="l649">    </span><span class="s4">// ie, traverse from final path position to start position.</span><span class="s0">
-<a name="l650">    </span><span class="s1">var </span><span class="s0">_pathbehavior_c6_1= </span><span class="s1">new </span><span class="s0">CAAT.PathBehavior();
-<a name="l651">    _pathbehavior_c6_1.setPath( _path_c6 );
-<a name="l652">    _pathbehavior_c6_1.setFrameTime(</span><span class="s2">0</span><span class="s0">,</span><span class="s2">5000</span><span class="s0">);
-<a name="l653">    _pathbehavior_c6_1.setCycle(</span><span class="s1">true</span><span class="s0">);
-<a name="l654">    _pathbehavior_c6_1.setInterpolator(
-<a name="l655">            </span><span class="s1">new </span><span class="s0">CAAT.Interpolator().createLinearInterpolator(
-<a name="l656">                    </span><span class="s1">false</span><span class="s0">,</span><span class="s1">true</span><span class="s0">) );
-<a name="l657">
-<a name="l658">    shape_c6_0.addBehavior( _pathbehavior_c6_0 );
-<a name="l659">    shape_c6_1.addBehavior( _pathbehavior_c6_1 );
-<a name="l660">
-<a name="l661">    director_6.addScene(scene_6);
-<a name="l662">    director_6.loop(</span><span class="s2">30</span><span class="s0">);</span></pre>
+<div class="code">
+    <pre class="brush: js; auto-links: false; toolbar: false;">
+        <script>
+            var director_6 = new CAAT.Director().initialize(
+                    250,250,document.getElementById('_c6'));
+            var scene_6=     new CAAT.Scene().create();
+
+            var shape_c6_0= new CAAT.ShapeActor().create().
+                    setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+                    setLocation( 50,50 ).
+                    setSize(50,50).
+                    setFillStyle('#ffff00').
+                    setStrokeStyle('#0000ff')
+            var shape_c6_1= new CAAT.ShapeActor().create().
+                    setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+                    setLocation( 50,50 ).
+                    setSize(50,50).
+                    setFillStyle('#00ff00').
+                    setStrokeStyle('#ff00ff')
+
+            // add two rectangle shapes to the scene.
+            scene_6.addChild(shape_c6_0);
+            scene_6.addChild(shape_c6_1);
+
+            // create a circular path.
+            var _path_c6= new CAAT.Path();
+            _path_c6.beginPath(25,125);
+            _path_c6.addCubicTo( 25,25,   225,25,   225,125 );
+            _path_c6.addCubicTo( 225,225,  25,225,  25,125 );
+            _path_c6.endPath();
+
+            // setup up a path traverser for the path.
+            var _pathbehavior_c6_0= new CAAT.PathBehavior();
+            _pathbehavior_c6_0.setPath( _path_c6 );
+            _pathbehavior_c6_0.setFrameTime(0,5000);
+            _pathbehavior_c6_0.setCycle(true);
+            _pathbehavior_c6_0.autoRotate= true;
+
+            // setup up an inverse path traverser for the path.
+            // ie, traverse from final path position to start position.
+            var _pathbehavior_c6_1= new CAAT.PathBehavior();
+            _pathbehavior_c6_1.setPath( _path_c6 );
+            _pathbehavior_c6_1.setFrameTime(0,5000);
+            _pathbehavior_c6_1.setCycle(true);
+            _pathbehavior_c6_1.setInterpolator(
+                    new CAAT.Interpolator().createLinearInterpolator(
+                            false,  // no pingpong.
+                            true    // traverse the path inversely, from end to beginning.
+                            ) );
+
+            shape_c6_0.addBehavior( _pathbehavior_c6_0 );
+            shape_c6_1.addBehavior( _pathbehavior_c6_1 );
+
+            director_6.addScene(scene_6);
+            director_6.loop(30);
+        </script>
+    </pre>
+</div>
 
 <div><canvas id="_c6"></canvas></div>
 <script>
