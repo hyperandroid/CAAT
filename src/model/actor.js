@@ -485,6 +485,8 @@
 
 	extend( CAAT.ActorContainer, CAAT.Actor, {
 
+        childList : null,
+        
         drawScreenBoundingBox : function( director, time ) {
             for( var i=0; i<this.childList.length; i++ ) {
                 this.childList[i].drawScreenBoundingBox(director,time);

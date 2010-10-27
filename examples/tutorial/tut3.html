@@ -33,10 +33,14 @@
     <ol>
         <li>Set position on screen. In fact, as we've already seen on previous chapters, set position on the Director Canvas.</li>
         <li>Set Size</li>
-        <li>Set affine transforms</li>
+        <li>Set affine transforms (rotation, scale and translation)</li>
+        <li>Compose transformations. A container Actor will transform its children before they apply their own transformation.</li>
         <li>Enable clipping</li>
         <li>etc.</li>
     </ol>
+    <p>One important fact about Actors is the coordinate system. An Actor will always report local coordinates
+    despite the transformation applied to it. In example, an Actor can be scales twice in width, and rotated
+    45 degrees, and on mouseMove the received event will report local Actor coordinates as if it weren't transformed.</p>
     <p>An Actor by itself won't display on screen. The correct hierarchy to be defined is as follows:
     <ul>
         <li>Create a Director</li>
@@ -46,6 +50,36 @@
     </ul>
     <p>Let's start by understanding the elements of the hierarchy and their API from top down, that's it, from the
     Director to simple Actors.</p>
+</div>
+
+<div class="section">
+    <h1>Mouse Events</h1>
+        <p>In normal conditions an Actor has mouse events enabled by default. The mouse control methods are the following:</p>
+        <ul>
+		    <li><strong>mouseEnter</strong><br>Triggered whenever the mouse enters the rectangular area of an Actor. The Actor can
+            be transformed by rotations and scales. That means that CAAT will perform perfect pixel collision detection
+            so the mouse arrow must be inside the contour of the Actor despite the transformation applied to id.</li>
+		    <li><strong>mouseExit</strong><br>Exactly like in mouseEnter, but when leaving the Actors contour.</li>
+		    <li><strong>mouseMove</strong><br>Triggered whenever the mouse arrow traverses inside the Actor's contour.</li>
+		    <li><strong>mouseDown</strong><br>Triggered whenever we press the mouse button inside the Actor's contour.</li>
+		    <li><strong>mouseUp</strong><br>Same as mouseDown but when releasing the mouse button.</li>
+            <li><strong>mouseClick</strong><br>Triggered whenever a click has been generated on the Actor. That means
+            that previously a mouseDown and then a mouseDown have been triggered on the Actor.</li>
+            <li><strong>mouseDblClick</strong><br>Same as mouseClick but double click.</li>
+		    <li><strong>mouseDrag</strong><br>Triggered after we perform an equivalent to mouseMove after having done mouseDown.
+            After dragging, when releasing the mouse button, only mouseUp will be triggered avoiding to trigger
+            mouseClick event.</li>
+        </ul>
+        <p>All these methods receive a unique parameter of type CAAT.MouseEvent. It contains the following information:</p>
+        <ul>
+            <li><b>screenPoint</b><br>The 2D point of the screen coordinate that originated the mouse event.</li>
+            <li><b>point</b><br>The 2D point of local Actor coordinates. Remember that local coordinates are from (0,0) to actor's
+                (width,height). These 2D point is derived from the screenPoint.</li>
+            <li><b>modifiers</b><br>Modifiers will tell you whether some special keys where pressed during the mouse input. The
+            CAAT.MouseEvent class has some methods to check for these special keys.</li>
+            <li><b>time</b><br>The Scene time (more on this later) at which the event was produced.</li>
+            <li><b>source</b><br>The actor the event was produced at.</li>
+        </ul>
 </div>
 
 <div class="section">
