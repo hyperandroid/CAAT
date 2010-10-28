@@ -9,7 +9,29 @@
 <link href="sh/shCore.css" rel="stylesheet" type="text/css" />
 <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css" />    
 
-<script type="text/javascript" src="../../build/caat.js"></script>
+<script type="text/javascript" src="../../src/CAAT.js"></script>
+
+<script type="text/javascript" src="../../src/core/class.js"></script>
+<script type="text/javascript" src="../../src/core/browserdetect.js"></script>
+
+<script type="text/javascript" src="../../src/model/actor.js"></script>
+<script type="text/javascript" src="../../src/model/conpoundimage.js"></script>
+<script type="text/javascript" src="../../src/model/imagepreloader.js"></script>
+<script type="text/javascript" src="../../src/model/director.js"></script>
+<script type="text/javascript" src="../../src/model/mouseevent.js"></script>
+<script type="text/javascript" src="../../src/model/scene.js"></script>
+
+<script type="text/javascript" src="../../src/math/affinetransform2D.js"></script>
+<script type="text/javascript" src="../../src/math/point.js"></script>
+<script type="text/javascript" src="../../src/math/rectangle.js"></script>
+<script type="text/javascript" src="../../src/math/bezier.js"></script>
+
+<script type="text/javascript" src="../../src/path/path.js"></script>
+<script type="text/javascript" src="../../src/path/pathactor.js"></script>
+<script type="text/javascript" src="../../src/path/interpolator.js"></script>
+<script type="text/javascript" src="../../src/path/interpolatoractor.js"></script>
+
+<script type="text/javascript" src="../../src/behaviour/behaviour.js"></script>
 
 <script type="text/javascript">
      SyntaxHighlighter.all()
@@ -39,8 +61,8 @@
         <li>etc.</li>
     </ol>
     <p>One important fact about Actors is the coordinate system. An Actor will always report local coordinates
-    despite the transformation applied to it. In example, an Actor can be scales twice in width, and rotated
-    45 degrees, and on mouseMove the received event will report local Actor coordinates as if it weren't transformed.</p>
+    despite the transformation applied to it. In example, an Actor can be scaled twice widely, and rotated
+    45 degrees, and on mouseMove the received event will report local Actor coordinates as if the actor itself weren't transformed.</p>
     <p>An Actor by itself won't display on screen. The correct hierarchy to be defined is as follows:
     <ul>
         <li>Create a Director</li>
@@ -48,8 +70,6 @@
         <li>Add at least one Scene to the Director</li>
         <li>Add Actor instances to the Scene</li>
     </ul>
-    <p>Let's start by understanding the elements of the hierarchy and their API from top down, that's it, from the
-    Director to simple Actors.</p>
 </div>
 
 <div class="section">
@@ -80,6 +100,246 @@
             <li><b>time</b><br>The Scene time (more on this later) at which the event was produced.</li>
             <li><b>source</b><br>The actor the event was produced at.</li>
         </ul>
+</div>
+
+<div class="section">
+    <p>In this example, you can see some rectangle-shaped actors. The canvas show local coordinates on
+    mouseOver for different actors and the screen coordinate from which the Actor local coordinate was
+    derived from. It also shows how perfect pixel collision detection works.</p>
+    <p>Since a container can contain any number of Actors and hence any number of other containers,
+    you can nest as much levels as desired and CAAT will solve local/screen and parent coordinates
+    as well.</p>
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+        <script>
+            var director_1 = new CAAT.Director().initialize(
+                    600,120,
+                    document.getElementById('_c1'));
+            var scene_1=     new CAAT.Scene().create();
+
+            director_1.addScene(scene_1);
+
+            // create six actors for this scene.
+            for(var i=0; i<6; i++ ) {
+
+                // rectangle shaped actors of 80x80 pixels.
+                var s = 80;
+
+                // containers can contain other actors or containers.
+                var _c1_container = new CAAT.ActorContainer().
+                        setBounds(i*100+10, 20, s, s).
+                        create().
+                        setRotation( Math.PI*2*Math.random() ).
+                        setFillStyle('#ff3fff');
+
+                _c1_container.name = 'rectangle'+i;
+                // set container paint routine to draw an arrow
+                _c1_container.paint= function(director, time) {
+
+                    var crx= director.ctx;
+
+                    // fill actor
+                    crx.fillStyle= this.fillStyle;
+                    crx.fillRect(0,0,this.width,this.height );
+
+                    // outline it.
+                    crx.strokeStyle= 'black';
+                    crx.strokeRect(0,0,this.width,this.height );
+
+                    // draw a white arrow. just to point where position 0,0 is.
+                    crx.strokeStyle='white';
+                    crx.beginPath();
+                    crx.moveTo(5,10);
+                    crx.lineTo(20,10);
+                    crx.lineTo(15,5);
+
+                    crx.moveTo(20,10);
+                    crx.lineTo(15,15);
+
+                    crx.lineWidth=2;
+                    crx.lineJoin='round';
+                    crx.lineCap='round';
+
+                    crx.stroke();
+                };
+
+                // add actor to scene.
+                scene_1.addChild(_c1_container);
+
+                var mouseMoveHandler= function(mouseEvent) {
+                    // get the scene Actor the event was generated for.
+                    var actor= mouseEvent.source;
+
+                    // show some event info:
+                    document.getElementById('_c1_coords').innerHTML=
+                            "<b>Actor:</b>"+ actor.name+" "+
+                            "<b>Local Coord:</b> ("+
+                                // with all this stuff i'm just stripping
+                                // off any decimal beyond .99
+                                ((mouseEvent.point.x*100)>>0)/100+","+
+                                ((mouseEvent.point.y*100)>>0)/100+") "+
+                            "<b>Screen Coord:</b> ("+
+                                mouseEvent.screenPoint.x+","+
+                                mouseEvent.screenPoint.y+") "+
+                            "<b>Parent Coord:</b> ("+
+                                actor.x+","+actor.y+")";
+                };
+
+                // create a container.
+                var _c1_container_child= new CAAT.ActorContainer().
+                        create().
+                        setBounds(s/2,s/2,s/4,s/4).
+                        setRotation( Math.PI*2*Math.random() ).
+                        setFillStyle('#00ff00');
+
+                // set a custom paint function for children inside containers.
+                _c1_container_child.paint= function(director,time) {
+                    // call default container paint method.
+                    CAAT.ActorContainer.superclass.paint.call(this,director,time);
+                    var ctx= director.ctx;
+
+                    // fill a white circle of 10x10 pixels at position 2,2
+                    // just to show where 0,0 is positioned on screen.
+                    ctx.fillStyle='white';
+                    ctx.beginPath();
+                    ctx.arc(7,7,5,0,2*Math.PI,false);
+                    ctx.fill();
+                }
+
+
+                // add this container as a child of the previous created container.
+                _c1_container.addChild(_c1_container_child);
+
+                // set new mouseMove handlers.
+                _c1_container.mouseMove= mouseMoveHandler;
+                _c1_container_child.mouseMove =mouseMoveHandler;
+
+            }
+
+            // set animation to 10fps.
+            director_1.loop(10);
+        </script>
+        </pre>
+    </div>
+
+    <div class="sample">
+        <div><canvas id="_c1"></canvas></div>
+        <div><small><span id="_c1_coords"></span></small></div>
+        <script>
+            var director_1 = new CAAT.Director().initialize(
+                    600,120,
+                    document.getElementById('_c1'));
+            var scene_1=     new CAAT.Scene().create();
+
+            director_1.addScene(scene_1);
+
+            // create six actors for this scene.
+            for(var i=0; i<6; i++ ) {
+
+                // rectangle shaped actors of 80x80 pixels.
+                var s = 80;
+
+                // containers can contain other actors or containers.
+                var _c1_container = new CAAT.ActorContainer().
+                        setBounds(i*100+10, 20, s, s).
+                        create().
+                        setRotation( Math.PI*2*Math.random() ).
+                        setFillStyle('#ff3fff');
+
+                _c1_container.name = 'rectangle'+i;
+                // set container paint routine to draw an arrow
+                _c1_container.paint= function(director, time) {
+
+                    var crx= director.ctx;
+
+                    // fill actor
+                    crx.fillStyle= this.fillStyle;
+                    crx.fillRect(0,0,this.width,this.height );
+
+                    // outline it.
+                    crx.strokeStyle= 'black';
+                    crx.strokeRect(0,0,this.width,this.height );
+
+                    // draw a white arrow. just to point where position 0,0 is.
+                    crx.strokeStyle='white';
+                    crx.beginPath();
+                    crx.moveTo(5,10);
+                    crx.lineTo(20,10);
+                    crx.lineTo(15,5);
+
+                    crx.moveTo(20,10);
+                    crx.lineTo(15,15);
+
+                    crx.lineWidth=2;
+                    crx.lineJoin='round';
+                    crx.lineCap='round';
+
+                    crx.stroke();
+                };
+
+                // add actor to scene.
+                scene_1.addChild(_c1_container);
+
+                var mouseMoveHandler= function(mouseEvent) {
+                    // get the scene Actor the event was generated for.
+                    var actor= mouseEvent.source;
+
+                    // show some event info:
+                    document.getElementById('_c1_coords').innerHTML=
+                            "<b>Actor:</b>"+ actor.name+" "+
+                            "<b>Local Coord:</b> ("+
+                                // with all this stuff i'm just stripping
+                                // off any decimal beyond .99
+                                ((mouseEvent.point.x*100)>>0)/100+","+
+                                ((mouseEvent.point.y*100)>>0)/100+") "+
+                            "<b>Screen Coord:</b> ("+
+                                mouseEvent.screenPoint.x+","+
+                                mouseEvent.screenPoint.y+") "+
+                            "<b>Parent Coord:</b> ("+
+                                actor.x+","+actor.y+")";
+                };
+
+                // create a container.
+                var _c1_container_child= new CAAT.ActorContainer().
+                        create().
+                        setBounds(s/2,s/2,s/4,s/4).
+                        setRotation( Math.PI*2*Math.random() ).
+                        setFillStyle('#00ff00');
+
+                // set a custom paint function for children inside containers.
+                _c1_container_child.paint= function(director,time) {
+                    // call default container paint method.
+                    CAAT.ActorContainer.superclass.paint.call(this,director,time);
+                    var ctx= director.ctx;
+
+                    // fill a white circle of 10x10 pixels at position 2,2
+                    // just to show where 0,0 is positioned on screen.
+                    ctx.fillStyle='white';
+                    ctx.beginPath();
+                    ctx.arc(7,7,5,0,2*Math.PI,false);
+                    ctx.fill();
+                }
+
+
+                // add this container as a child of the previous created container.
+                _c1_container.addChild(_c1_container_child);
+
+                // set new mouseMove handlers.
+                _c1_container.mouseMove= mouseMoveHandler;
+                _c1_container_child.mouseMove =mouseMoveHandler;
+                
+            }
+
+            // set animation to 10fps.
+            director_1.loop(10);
+        </script>
+    </div>
+</div>
+
+
+<div class="section">
+    <p>Let's start by understanding the elements of the hierarchy and their API from top down, that's it, from the
+    Director to simple Actors.</p>
 </div>
 
 <div class="section">
@@ -121,43 +381,6 @@
 <div class="section">
     <h1>Defining custom actors</h1>
 </div>
-
-
-    <div class="code">
-        <pre class="brush: js; auto-links: false; toolbar: false;">
-            <script type="text/javascript" src="../../build/caat.js"></script>
-        </pre>
-    </div>
-
-    <p>All the examples in this series tutorial and demos include this line at the top of the main file.</p>
-    <p>Make sure to change the path '../../build/' to your needs.</p>
-
-</div>
-
-
-
-<div class="sample" id="div_canvas2"></div>
-<script>
-    // We are not pointing any canvas in the director creation statement,
-    // so the director will create a Canvas for us.
-    var director2 = new CAAT.Director().initialize(100,100);
-
-    // add the canvas to the document:
-    document.getElementById('div_canvas2').appendChild( director2.canvas );
-
-    var scene2=     new CAAT.Scene().create();
-    var circle2=    new CAAT.ShapeActor().
-            create().
-            setLocation(20,20).
-            setSize(60,60).
-            setFillStyle('#ff00ff').
-            setStrokeStyle('#00ff00');
-
-    scene2.addChild(circle2);
-    director2.addScene(scene2);
-
-    director2.loop(1);
-</script>
 
 </body>
 </html>

@@ -142,9 +142,16 @@
 			this.transformationMatrix.prepareGraphics(canvas,this);
             return this;
 		},
-		setPaint : function( paint )	{
-			this.fillStyle= paint;
+        setFillStyle : function( style ) {
+			this.fillStyle= style;
             return this;
+        },
+        /**
+         * @deprecated
+         * @param paint
+         */
+		setPaint : function( paint )	{
+            return this.setFillStyle(paint);
 		},
 		setAlpha : function( alpha )	{
 			this.alpha= alpha;
@@ -866,10 +873,6 @@
 
         setShape : function(iShape) {
             this.shape= iShape;
-            return this;
-        },
-        setFillStyle : function(fillStyle) {
-            this.fillStyle= fillStyle;
             return this;
         },
         setStrokeStyle : function(strokeStyle) {
