@@ -63,6 +63,7 @@ var __screenMousePoint=   null;
 var __mouseDown=          false;
 var __modifiers=          0;
 var __dragging=           false;
+var __targetDirector=     null;
 
 function __getCanvasCoord(point, e) {
 	var posx = 0;
@@ -79,11 +80,29 @@ function __getCanvasCoord(point, e) {
 			+ document.documentElement.scrollTop;
 	}
 
-	posx-= CAAT.director[0].canvas.offsetLeft;
-	posy-= CAAT.director[0].canvas.offsetTop;
+    var pposx;
+    var pposy;
+    var i;
 
-	point.set(posx,posy);
-	__screenMousePoint.set(posx, posy);
+    for( i=0; i<CAAT.director.length; i++ ) {
+        pposx= posx;
+        pposy= posy;
+
+    	pposx-= CAAT.director[i].canvas.offsetLeft;
+    	pposy-= CAAT.director[i].canvas.offsetTop;
+
+        if ( CAAT.director[i].contains(pposx, pposy) ) {
+            __targetDirector= CAAT.director[i];
+            point.set(pposx,pposy);
+            __screenMousePoint.set(pposx, pposy);
+            return;
+        }
+    }
+
+    __targetDirector=null;
+    
+//	point.set(posx,posy);
+//	__screenMousePoint.set(posx, posy);
 }
 
 function __GlobalEnableEvents(director) {
@@ -122,7 +141,9 @@ function __GlobalEnableEvents(director) {
                 __modifiers&=~CAAT.MouseEvent.prototype.ALT_MASK;
                 break;
             case 68:    // D
-                CAAT.director[0].debug= !CAAT.director[0].debug;
+                if ( null!=__targetDirector ) {
+                    __targetDirector.debug= !__targetDirector.debug;
+                }
                 break;
             }
         },
@@ -160,8 +181,11 @@ function __GlobalEnableEvents(director) {
 
     window.addEventListener('mousedown',
             function(e) {
+                if ( null==__targetDirector ) {
+                    return;
+                }
                 __mouseDown = true;
-                __lastSelectedActor = director.findActorAtPosition(__mousePoint);
+                __lastSelectedActor = __targetDirector.findActorAtPosition(__mousePoint);
                 if (null != __lastSelectedActor) {
                     __lastSelectedActor.mouseDown(
                             new CAAT.MouseEvent().init(
@@ -177,7 +201,12 @@ function __GlobalEnableEvents(director) {
     window.addEventListener('mouseover',
             function(e) {
                 __getCanvasCoord(__mousePoint, e);
-                __lastSelectedActor = director.findActorAtPosition(__mousePoint);
+
+                if ( null==__targetDirector ) {
+                    return;
+                }
+
+                __lastSelectedActor = __targetDirector.findActorAtPosition(__mousePoint);
                 if (null != __lastSelectedActor) {
                     __lastSelectedActor.mouseEnter(
                             new CAAT.MouseEvent().init(
@@ -204,6 +233,9 @@ function __GlobalEnableEvents(director) {
             function(e) {
 
                 __getCanvasCoord(__mousePoint, e);
+                if ( null==__targetDirector ) {
+                    return;
+                }
 
                 // drag
                 if (__mouseDown && null != __lastSelectedActor) {
@@ -221,7 +253,7 @@ function __GlobalEnableEvents(director) {
                     return;
                 }
 
-                var lactor = director.findActorAtPosition(__mousePoint);
+                var lactor = __targetDirector.findActorAtPosition(__mousePoint);
 
                 // cambiamos de actor.
                 if (lactor != __lastSelectedActor) {
