@@ -57,7 +57,8 @@
         <li>Set Size</li>
         <li>Set affine transforms (rotation, scale and translation)</li>
         <li>Compose transformations. A container Actor will transform its children before they apply their own transformation.</li>
-        <li>Enable clipping</li>
+        <li>Enable clipping.</li>
+        <li>The API is developed to allow method chaining when possible.</li>
         <li>etc.</li>
     </ol>
     <p>One important fact about Actors is the coordinate system. An Actor will always report local coordinates
@@ -344,6 +345,96 @@
 
 <div class="section">
     <h1>CAAT.Director</h1>
+    <p>The director is the root in the hierarchy of CAAT components. There can be more than one director on the same
+    page though. This element will be responsible for many key features including:</p>
+    <ul>
+        <li>Manage the Scenes.</li>
+        <li>Ellegantly switch between two given scenes.</li>
+        <li>Route input events to the properly Actor.</li>
+        <li>Manage the main timeline.</li>
+        <li>Stablish custom timelines for each Scene.</li>
+        <li>Keep reference of the associated canvas.</li>
+        <li>Expose the canvas' rendering context as an internal attribute.</li>
+        <li>Keep track of resources such as images and sounds.</li>
+    </ul>
+    <p>Besides that responsibilities, you have the opportunity of setting the desired animation quality in the form of frames
+    per second. This parameter is to set the desired smoothness of the animation though it will automatically balance to fit
+    your systems current capabilities.</p>
+    <p>The lifecycle of the director will be as follows</p>
+    <ol>
+        <li>Create the director by specifying at least its dimension.</li>
+        <li>Add at least one scene to the director.</li>
+        <li>Call the loop method to start the animation.</li>
+    </ol>
+    <p>Once this process is done, the director starts animation, and won't stop until the the document that contains the actors
+    changes.</p>
+    <div class="API">
+        <h2>API</h2>
+        <p>The exposed API methods of the director are:</p>
+        <div class="APIENTRY">
+            <h3>initialize(width,height,canvas)</h3>
+            <p>This method performs Director initialization. Must be called once. If the canvas parameter is not set, it will create
+            a Canvas itself, and the developer must explicitly add the canvas to the desired DOM position. This method will also set
+            the Canvas dimension to the specified values by width and height parameters.</p>
+        </div>
+        <div class="APIENTRY">
+            <h3>addScene( scene )</h3>
+            <p>Add a new Scene to Director's Scene list. By adding a Scene to the Director does not mean it will be immediately visible,
+            you should explictly call either <code>easeIn, easeInOut, easeInOutRandom, setScene or any of the scene switching methods</code>.</p>
+        </div>
+        <div class="APIENTRY">
+            <h3>getNumScenes()</h3>
+            <p>Gets the number of scenes contained in the Director.</p>
+        </div>
+        <div class="APIENTRY">
+            <h3>getCurrentSceneIndex()</h3>
+            <p>Gets the index of the current scene in the Director's scene list.</p>
+        </div>
+        <div class="APIENTRY">
+            <h3>getBrowserName()</h3>
+            <p>Gets the running browser name.</p>
+        </div>
+        <div class="APIENTRY">
+            <h3>getBrowserVersion()</h3>
+            <p>Gets the running browser version.</p>
+        </div>
+        <div class="APIENTRY">
+            <h3>getOSName()</h3>
+            <p>Gets the operating system name.</p>
+        </div>
+        <div class="APIENTRY">
+            <h3>getImage(resource_name)</h3>
+            <p>Gets the resource with the specified resource name. The Director hold a parameter called imagesCache where you can store a JSON of
+            the form <code>[ { id: imageId, image: imageObject } ]</code>. This structure will be used as a resources cache. There's a CAAT.ImagePreloader
+            class to preload resources and generate this structure on loading finalization.</p>
+        </div>
+        <div class="APIENTRY">
+            <h3>emptyScenes</h3>
+            <p>Removes Director scenes.</p>
+        </div>
+        <div class="APIENTRY">
+            <h3>loop function(fps)</h3>
+            <p>Starts the director animation. If no scene is explicitly selected, The current Scene will be the first scene added to the Director.
+            The fps parameter will set the animation quality. Higher values, means CAAT will try to render more frames in the same second (at the
+            expense of cpu power at least until hardware accelerated canvas rendering context are available). A value of 60 is a high frame rate and
+            should not be exceeded.</p>
+        </div>
+        <div class="APIENTRY">
+            <h3>function setScene( sceneIndex )</h3>
+            <p>Changes (or sets) the current Director scene to the index specified as parameter. There will be no transition on scene change.</p>
+        </div>
+        <div class="APIENTRY">
+            <h3>function switchToPrevScene(time, alpha, transition), function switchToNextScene(time, alpha, transition)</h3>
+            <p>These methods will switch from the current scene to the previous or the next one respectively. The supplied parameters are:</p>
+            <ul>
+                <li>time: how much time to take for the switching process. Expressed in milliseconds.</li>
+                <li>alpha: wheter alpha transparency fading should be applied to entering/exiting scenes.</li>
+                <li>transition: the type of the transition to perform for the entering and exiting scenes.</li>
+            </ul>
+        </div>
+
+
+    </div>
 </div>
 
 <div class="section">

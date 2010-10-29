@@ -105,7 +105,7 @@ function __getCanvasCoord(point, e) {
 //	__screenMousePoint.set(posx, posy);
 }
 
-function __GlobalEnableEvents(director) {
+function __GlobalEnableEvents() {
 
     __mousePoint=         new CAAT.Point();
     __screenMousePoint=   new CAAT.Point();

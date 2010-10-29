@@ -67,7 +67,7 @@
 
             if ( !CAAT.director ) {
                 CAAT.director=[];
-                __GlobalEnableEvents(this);
+                __GlobalEnableEvents();
             }
             CAAT.director.push(this);
             this.timeline= new Date().getTime();
@@ -296,7 +296,7 @@
 		},
 		mouseDrag : function(mouseEvent) {
 		},
-		/*
+		/**
 		 * Scene easing listener.
 		 */
 		easeEnd : function( scene, b_easeIn ) {
