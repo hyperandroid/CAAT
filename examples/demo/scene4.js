@@ -139,26 +139,26 @@ function __scene4(director) {
 			var actor= mouseEvent.source;
 			actor.__mouseMove.call(this,mouseEvent);
 			// bugbug, subiendo hasta scena
-			actor.parent.parent.childList[1].setText("Local Coord: ("+
+			actor.parent.parent.childrenList[1].setText("Local Coord: ("+
 					((mouseEvent.point.x*100)>>0)/100+","+
 					((mouseEvent.point.y*100)>>0)/100+")");
-			actor.parent.parent.childList[2].setText("Screen Coord: ("+
+			actor.parent.parent.childrenList[2].setText("Screen Coord: ("+
 					mouseEvent.screenPoint.x+","+
 					mouseEvent.screenPoint.y+")");
-			actor.parent.parent.childList[3].setText(
+			actor.parent.parent.childrenList[3].setText(
 					"Parent Pos: ("+((actor.x*100)>>0)/100+","+((actor.y*100)>>0)/100+")" );			
 		};
 		var mouseMoveHandler2= function(mouseEvent) {
 			var actor= mouseEvent.source;
 			actor.__mouseMove.call(this,mouseEvent);
 			// bugbug, subiendo hasta scena
-			actor.parent.parent.parent.childList[1].setText("Local Coord: ("+
+			actor.parent.parent.parent.childrenList[1].setText("Local Coord: ("+
 					((mouseEvent.point.x*100)>>0)/100+","+
 					((mouseEvent.point.y*100)>>0)/100+")");
-			actor.parent.parent.parent.childList[2].setText("Screen Coord: ("+
+			actor.parent.parent.parent.childrenList[2].setText("Screen Coord: ("+
 					mouseEvent.screenPoint.x+","+
 					mouseEvent.screenPoint.y+")");
-			actor.parent.parent.parent.childList[3].setText(
+			actor.parent.parent.parent.childrenList[3].setText(
 					"Parent Pos: ("+((actor.x*100)>>0)/100+","+((actor.y*100)>>0)/100+")" );			
 			
 		};
@@ -172,8 +172,8 @@ function __scene4(director) {
 	scene.__mouseMove= scene.mouseMove;
 	scene.mouseMove= function(mouseEvent) {
 		mouseEvent.source.__mouseMove.call(this,mouseEvent);
-		mouseEvent.source.childList[1].setText("");
-		mouseEvent.source.childList[2].setText("");
+		mouseEvent.source.childrenList[1].setText("");
+		mouseEvent.source.childrenList[2].setText("");
 	};
 	
 	var gradient= director.crc.createLinearGradient(0,0,0,50);

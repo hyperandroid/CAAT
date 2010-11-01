@@ -9,30 +9,8 @@
 <link href="sh/shCore.css" rel="stylesheet" type="text/css" />
 <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css" />    
 
-<script type="text/javascript" src="../../src/CAAT.js"></script>
-
-<script type="text/javascript" src="../../src/core/class.js"></script>
-<script type="text/javascript" src="../../src/core/browserdetect.js"></script>
-
-<script type="text/javascript" src="../../src/model/actor.js"></script>
-<script type="text/javascript" src="../../src/model/conpoundimage.js"></script>
-<script type="text/javascript" src="../../src/model/imagepreloader.js"></script>
-<script type="text/javascript" src="../../src/model/director.js"></script>
-<script type="text/javascript" src="../../src/model/mouseevent.js"></script>
-<script type="text/javascript" src="../../src/model/scene.js"></script>
-
-<script type="text/javascript" src="../../src/math/affinetransform2D.js"></script>
-<script type="text/javascript" src="../../src/math/point.js"></script>
-<script type="text/javascript" src="../../src/math/rectangle.js"></script>
-<script type="text/javascript" src="../../src/math/bezier.js"></script>
-
-<script type="text/javascript" src="../../src/path/path.js"></script>
-<script type="text/javascript" src="../../src/path/pathactor.js"></script>
-<script type="text/javascript" src="../../src/path/interpolator.js"></script>
-<script type="text/javascript" src="../../src/path/interpolatoractor.js"></script>
-
-<script type="text/javascript" src="../../src/behaviour/behaviour.js"></script>
-
+<script type="text/javascript" src="../../build/caat.js"></script>
+    
 <script type="text/javascript">
      SyntaxHighlighter.all()
 </script>
@@ -40,6 +18,9 @@
 <style>
     div.code {
        font-size: .7em;
+    }
+    div.APIENTRY {
+        background-color: #f0f0f0;
     }
 </style>
 
@@ -227,6 +208,7 @@
         <div><canvas id="_c1"></canvas></div>
         <div><small><span id="_c1_coords"></span></small></div>
         <script>
+            (function() {
             var director_1 = new CAAT.Director().initialize(
                     600,120,
                     document.getElementById('_c1'));
@@ -333,6 +315,7 @@
 
             // set animation to 10fps.
             director_1.loop(10);
+            })();
         </script>
     </div>
 </div>
@@ -345,8 +328,9 @@
 
 <div class="section">
     <h1>CAAT.Director</h1>
-    <p>The director is the root in the hierarchy of CAAT components. There can be more than one director on the same
-    page though. This element will be responsible for many key features including:</p>
+    <p>The director is the root in the hierarchy of CAAT components. In its core is an ActorContainer
+       which manages the timeline and switching between different Scene objects among other responsibilities.
+    <p>This element will be responsible for many key features including:</p>
     <ul>
         <li>Manage the Scenes.</li>
         <li>Ellegantly switch between two given scenes.</li>
@@ -356,121 +340,1727 @@
         <li>Keep reference of the associated canvas.</li>
         <li>Expose the canvas' rendering context as an internal attribute.</li>
         <li>Keep track of resources such as images and sounds.</li>
+        <li>Get rid of unneeded Actors.</li>
     </ul>
-    <p>Besides that responsibilities, you have the opportunity of setting the desired animation quality in the form of frames
+    <p>Besides that, the developer has the opportunity of setting the desired animation quality in the form of frames
     per second. This parameter is to set the desired smoothness of the animation though it will automatically balance to fit
     your systems current capabilities.</p>
     <p>The lifecycle of the director will be as follows</p>
     <ol>
-        <li>Create the director by specifying at least its dimension.</li>
-        <li>Add at least one scene to the director.</li>
-        <li>Call the loop method to start the animation.</li>
+        <li>Create the director by specifying at least its dimension. This is performed by a call to the method
+        <code>initialize(width,height,canvas)</code></li>
+        <li>Add at least one scene to the director. Call the method <code>addScene(scene)</code></li>
+        <li>Call the loop method to start the animation. Call the method <code>loop(iFPS)</code></li>
     </ol>
     <p>Once this process is done, the director starts animation, and won't stop until the the document that contains the actors
     changes.</p>
-    <div class="API">
-        <h2>API</h2>
-        <p>The exposed API methods of the director are:</p>
-        <div class="APIENTRY">
-            <h3>initialize(width,height,canvas)</h3>
-            <p>This method performs Director initialization. Must be called once. If the canvas parameter is not set, it will create
-            a Canvas itself, and the developer must explicitly add the canvas to the desired DOM position. This method will also set
-            the Canvas dimension to the specified values by width and height parameters.</p>
-        </div>
-        <div class="APIENTRY">
-            <h3>addScene( scene )</h3>
-            <p>Add a new Scene to Director's Scene list. By adding a Scene to the Director does not mean it will be immediately visible,
-            you should explictly call either <code>easeIn, easeInOut, easeInOutRandom, setScene or any of the scene switching methods</code>.</p>
-        </div>
-        <div class="APIENTRY">
-            <h3>getNumScenes()</h3>
-            <p>Gets the number of scenes contained in the Director.</p>
-        </div>
-        <div class="APIENTRY">
-            <h3>getCurrentSceneIndex()</h3>
-            <p>Gets the index of the current scene in the Director's scene list.</p>
-        </div>
-        <div class="APIENTRY">
-            <h3>getBrowserName()</h3>
-            <p>Gets the running browser name.</p>
-        </div>
-        <div class="APIENTRY">
-            <h3>getBrowserVersion()</h3>
-            <p>Gets the running browser version.</p>
-        </div>
-        <div class="APIENTRY">
-            <h3>getOSName()</h3>
-            <p>Gets the operating system name.</p>
-        </div>
-        <div class="APIENTRY">
-            <h3>getImage(resource_name)</h3>
-            <p>Gets the resource with the specified resource name. The Director hold a parameter called imagesCache where you can store a JSON of
-            the form <code>[ { id: imageId, image: imageObject } ]</code>. This structure will be used as a resources cache. There's a CAAT.ImagePreloader
-            class to preload resources and generate this structure on loading finalization.</p>
-        </div>
-        <div class="APIENTRY">
-            <h3>emptyScenes</h3>
-            <p>Removes Director scenes.</p>
-        </div>
-        <div class="APIENTRY">
-            <h3>loop function(fps)</h3>
-            <p>Starts the director animation. If no scene is explicitly selected, The current Scene will be the first scene added to the Director.
-            The fps parameter will set the animation quality. Higher values, means CAAT will try to render more frames in the same second (at the
-            expense of cpu power at least until hardware accelerated canvas rendering context are available). A value of 60 is a high frame rate and
-            should not be exceeded.</p>
-        </div>
-        <div class="APIENTRY">
-            <h3>function setScene( sceneIndex )</h3>
-            <p>Changes (or sets) the current Director scene to the index specified as parameter. There will be no transition on scene change.</p>
-        </div>
-        <div class="APIENTRY">
-            <h3>function switchToPrevScene(time, alpha, transition), function switchToNextScene(time, alpha, transition)</h3>
-            <p>These methods will switch from the current scene to the previous or the next one respectively. The supplied parameters are:</p>
-            <ul>
-                <li>time: how much time to take for the switching process. Expressed in milliseconds.</li>
-                <li>alpha: wheter alpha transparency fading should be applied to entering/exiting scenes.</li>
-                <li>transition: the type of the transition to perform for the entering and exiting scenes.</li>
-            </ul>
-        </div>
-
-
+    <p>During execution, the Director class instance exposes a lot of functionality to switch between
+    two given Scenes or to change the current Scene. The following methods will do it:</p>
+    <div class="APIENTRY">
+        <p><b>function setScene( sceneIndex )</b></p>
+        <p>Changes (or sets) the current Director scene to the index specified as parameter. There will be no transition on scene change.</p>
     </div>
+    <div class="APIENTRY">
+        <p><b>function switchToPrevScene(time, alpha, transition)<br>function switchToNextScene(time, alpha, transition)</b>
+        <p>These methods will switch from the current scene to the previous or the next one respectively. The supplied parameters are:</p>
+        <ul>
+            <li>time: how much time to take for the switching process. Expressed in milliseconds.</li>
+            <li>alpha: wheter alpha transparency fading should be applied to entering/exiting scenes.</li>
+            <li>transition: the type of the transition to perform for the entering and exiting scenes.</li>
+        </ul>
+    </div>
+    <div class="APIENTRY">
+        <p><b>function easeInOut( inSceneIndex, typein, anchorin, outSceneIndex, typeout, anchorout, time, alpha, interpolatorIn, interpolatorOut )</b>
+        <p>This method offers full control over the process of switching between any given two Scenes.</p>
+        <p>To apply this method, you must specify the type of transition to apply for each Scene and
+        the anchor to keep the Scene pinned at.</p>
+        <p>The type of transition will be one of the following values defined in CAAT.Scene.prototype:</p>
+        <ul>
+            <li>EASE_ROTATION
+            <li>EASE_SCALE
+            <li>EASE_TRANSLATION
+        </ul>
+        <p>The anchor will be any of these values defined in CAAT.Actor.prototype:</p>
+        <ul>
+            <li>ANCHOR_CENTER
+            <li>ANCHOR_TOP
+            <li>ANCHOR_BOTTOM
+            <li>ANCHOR_LEFT
+            <li>ANCHOR_RIGHT
+            <li>ANCHOR_TOP_LEFT
+            <li>ANCHOR_TOP_RIGHT
+            <li>ANCHOR_BOTTOM_LEFT
+            <li>ANCHOR_BOTTOM_RIGHT
+        </ul>
+        <p>In example, for an entering scene performing a EASE_SCALE transition, the anchor is the
+        point by which the scene will scaled.</p>
+    </div>
+    <div class="APIENTRY">
+        <p><b>function easeInOutRandom(inIndex,outIndex,time,alpha)</b>
+        <p>This method will switch between two given Scene indexes (ie, take away scene number 2,
+        and bring in scene number 5).</p>
+        <p>It will randomly choose for each Scene the type of transition to apply and the anchor
+        point of each transition type.</p>
+        <p>It will also set for different kind of transitions the following interpolators:
+        <ul>
+            <li>EASE_ROTATION    -> ExponentialInOutInterpolator, exponent 4.
+            <li>EASE_SCALE       -> ElasticOutInterpolator, 1.1 and .4
+            <li>EASE_TRANSLATION -> BounceOutInterpolator
+        </ul>
+        <p>These are the default values, and could not be changed by now.
+        This method in final instance delegates the process to easeInOutMethod.
+    </div>
+
+    <p>The director also offers methods to know in what environment it is being played. Methods such us</p>
+    <div class="APIENTRY">
+        <p><b>getBrowserName()</b>
+        <p>Gets the running browser name.</p>
+    </div>
+    <div class="APIENTRY">
+        <p><b>getBrowserVersion()</b>
+        <p>Gets the running browser version.</p>
+    </div>
+    <div class="APIENTRY">
+        <p><b>getOSName()</b>
+        <p>Gets the operating system name.</p>
+    </div>
+
+    <p>Additionally the director has a resource cache. The cache is an array of JSON objects of the form
+    <code>{ id: string, image: image_object }</code>. This JSON can be generated automatically by instrumenting
+    an instance of CAAT.ImagePreloader object.</p>
+    <div class="APIENTRY">
+        <p><b>getImage(resource_name)</b>
+        <p>Gets the resource with the specified resource name. The Director hold a parameter called imagesCache where you can store a JSON of
+        the form <code>[ { id: imageId, image: imageObject } ]</code>. This structure will be used as a resources cache. There's a CAAT.ImagePreloader
+        class to preload resources and generate this structure on loading finalization.</p>
+    </div>
+
+    <p>Finally, there can be more than one Director on the same page, and you can gain control for any of them
+       and communicate one Director instance with the others.</p>
 </div>
 
 <div class="section">
     <h1>CAAT.Scene</h1>
+    <p>The Scene class is the main container of animation Actors in a Scene. It is an advanced ActorContainer
+    which has two main responsibilities:
+    <ol>
+        <li>Knows how to remove himself elegantly from screen
+        <li>Maintain a virtual timeline for all its contained Actors.
+    </ol>
+    <p>An Scene can not contain neither other Scenes, nor any Director. The size of the scene will be
+    the same of the Director, and hence, equals to the Canvas size, that is, the values passed to
+    the initialize method of the director.</p>
+    <p>The only method you should call directly on Scene instances is</p>
+    <div class="APIENTRY">
+        <p><b>addChild(actor)</b>
+        <p>Adds a new animation Actor to the Scene. It can be any kind of ActorContainer or Actor.</p>
+    </div>
+    <p>All the other methods will called directly by the Director where the Scene is contained.
+    Developers have the opportunity to override the method <code>activated()</code> which is called
+    when the Scene instance has been brought in and is able to accept input.</p>
+    <p>There's no limitation regarding the number of elements in an Scene, but for better performance,
+       the developer better groups actors in containers, as if they where in layers. The performance is
+       strictly on event dispatching to Scene Actors, since the event bubbling will try to check for every
+       Actor in a Container (or Scene) if it is the target of a concrete event.
+    </p>
+    <p>
+        The Actors on a Scene will keep z-order equally to the same order as they were added to the
+        Scene/ActorContainer, so the last added Actor, will be behind all the other Actors.
+    </p>
+    <div class="chapter">
+        <h2>Lifecycle</h2>
+        <p>As we've said, an Scene has its own timeline. This is a virtual timeline, which is fed by
+        the Director.</p>
+        <p>An Scene will start feeding is timeline as soon as it starts to be brought in to the Director.</p>
+        <p>An Scene will stop feeding is timeline when the Director finishes changing its current Scene. </p>
+        <p>The Scene's timeline will be the reference time passed to all of its children as their current
+           animation time.</p>
+        <p>When an Scene is not anymore visible its timeline will be paused until the Scene will again be
+        elligible to feed its timeline.</p>
+    </div>
 </div>
 
 <div class="section">
     <h1>CAAT.Actor</h1>
+    <p>The Actor is the fundamental piece in CAAT. Every on-screen element is an Actor. In fact, the Director
+    and the Scene objects are an kind of Actor.</p>
+    <p>The Actor has many responsibilities:</p>
+    <ul>
+        <li>Manage and keep track of applied Behaviors.</li>
+        <li>Keep track of screen position and Actor dimension.</li>
+        <li>Define life cycle.</li>
+        <li>Manage transformation chain.</li>
+        <li>Manage alpha transparency.</li>
+        <li>Expose Actor dirtiness, ie, the actor has changed transformation, alpha, etc.</li>
+        <li>Manage life cycle expiration listeners.</li>
+    </ul>
+    <p>This class is the superclass for other Actors, so it must be specialized to
+        perform concrete operations. There some out-of-the-box Actors already available in CAAT:</p>
+    <ul>
+        <li>SpriteActor</li>
+        <li>TextActor</li>
+        <li>ShapeActor</li>
+        <li>InterpolatorActor</li>
+        <li>PathActor</li>
+    </ul>
+    <p>but as you'll see, developing a new breed of Actors will be just a few lines of code.</p>
+
+    <div class="chapter">
+        <h2>Life cycle</h2>
+        <p>An actor by default is shown in the Scene as soon as the Scene is showing, and lasts forever.
+        But the life cycle can be limited to certain range of time on the Scene timeline. The developer
+        must call the method</p>
+        <div class="APIENTRY"><pre>setFrameTime( start_time, duration )</pre></div>
+        <p>While the Scene time is less than start_time, the Actor is considered to be out of frame time.</p>
+        <p>While the Scene time is between Actor.start_time and Actor.start_time+Actor.duration, the Actor is
+        considered to be in frame time.</p>
+        <p>When the Scene time is greater than Actor.start_time+Actor.duration, the actor is considered to
+        be <b>expired</b>. An Actor will only be set as Expired once. During this expiration setting, an
+        Actor will notify its registered life cycle listeners. One of these listeners could for instance
+        reset the Actor's frame time to let the Actor be again in frame time.</p>
+        <p>An Actor can be flagged as <b>discardable</b> by doing Actor.discardable=true. By default an Actor
+           is non discardable. At the end of a Director's frame cycle, that is, when finished processing
+           and rendering a frame, every Actor that is expired, and flagged as discardable, will the
+           thrown away from the scene. This means that the Actor won't be drawn again since it is not
+           present at Scene's Actor list anymore. Upon destruction, the Actor will notify its listeners
+           about this fact by calling the listener life cycle.</p>
+        <h3>Life cycle listener</h3>
+        <p>An Actor has some methods to expose its lifecycle to third party interested entities.</p>
+        <div class="APIENTRY">
+            <pre>addListener( actor_life_cycle_listener )
+removeListener( actor_life_cycle_listener )
+fireEvent( event_type, time )</pre></div>
+        <p>The developer has only control over the add/remove methods, and it is the Director/Scene
+        animation cycle that will notify the life cycle changes to interested parties for us by calling
+        the fireEvent method.</p>
+        <p>The Actor life cycle listener must be an object with a method of the form</p>
+        <div class="APIENTRY">
+            <pre>actorLyfeCycleEvent( actor_ref, event_type, time)</pre></div>
+        <p>This method will receive on its parameters:</p>
+            <ul>
+                <li>actor_ref: A reference to the actor that is notifying its life cycle events. It is necessary
+                since the developer can reuse the same listener for different Actors, and surely would
+                like to know which of them is notifying about the event</li>
+                <li>event_type: Event type. It must be one of these string values: <b>expired or destroyed</b>.
+                The minimum action a life cycle Actor listener must perform is remove himself as listener,
+                so that all references to the destroyed Actor are removed and the garbage collector could
+                do its job properly.</li>
+                <li>time: the Scene time at which the Actor has been destroyed.</li>
+            </ul>
+        <p>Here's some sample code featuring life cycle listener. It is a gree-colored pulsating rectangle.
+        This Actor is in frame time since the Scene started, and will last for two seconds. After these two
+        seconds, the life cycle listener is notified about Actor expiration, which will stablish again
+        Actor's lifecycle to start again one second after notification and lasting for two more seconds.</p>
+        <div class="code">
+            <pre class="brush: js; auto-links: false; toolbar: false;">
+                <script>
+                     // Initialize director.
+                     var _director_2= new CAAT.Director().initialize(
+                             400,
+                             100,
+                             document.getElementById('_c2'));
+
+                     // create scene.
+                     var _scene_2=    new CAAT.Scene().create();
+
+                     _director_2.addScene(_scene_2);
+
+                     // create a simple actor. will last for two seconds on Scene.
+                     var _pulsating_actor_2= new CAAT.Actor().
+                             create().
+                             setBounds(10,10,80,80).
+                             setFillStyle('#00ff00').
+                             setFrameTime(0,2000);
+
+                     // add a life cycle listener to the actor.
+                     _pulsating_actor_2.addListener( {
+                         actorLyfeCycleEvent : function( actor, event_type, time ) {
+
+                             // on expiration notification,
+                             if ( event_type=='expired' ) {
+                                 // just make the Actor sleep for 1 second.
+                                 // After waking up, last for 2 seconds.
+                                 actor.setFrameTime( time+1000, 2000 );
+                             }
+                         }
+                     } );
+
+                     // don't forget to add the actor to the scene.
+                     _scene_2.addChild( _pulsating_actor_2 );
+
+                     // set 20 fps animation
+                     _director_2.loop(20);
+                 </script>                
+            </pre>
+        </div>
+        <div class="sample">
+            <div><canvas id="_c2"></canvas></div>
+            <script>
+                (function() {
+                // Initialize director.
+                var _director_2= new CAAT.Director().initialize(
+                        400,
+                        100,
+                        document.getElementById('_c2'));
+
+                // create scene.
+                var _scene_2=    new CAAT.Scene().create();
+
+                _director_2.addScene(_scene_2);
+
+                // create a simple actor. will last for two seconds on Scene.
+                var _pulsating_actor_2= new CAAT.Actor().
+                        create().
+                        setBounds(10,10,80,80).
+                        setFillStyle('#00ff00').
+                        setFrameTime(0,2000);
+
+                // add a life cycle listener to the actor.
+                _pulsating_actor_2.addListener( {
+                    actorLyfeCycleEvent : function( actor, event_type, time ) {
+
+                        // on expiration notification,
+                        if ( event_type=='expired' ) {
+                            // just make the Actor sleep for 1 second.
+                            // After waking up, last for 2 seconds.
+                            actor.setFrameTime( time+1000, 2000 );
+                        }
+                    }
+                } );
+
+                // don't forget to add the actor to the scene.
+                _scene_2.addChild( _pulsating_actor_2 );
+
+                // set 20 fps animation
+                _director_2.loop(20);
+                })();
+            </script>
+        </div>
+    </div>
+    <div class="chapter">
+        <h2>Transformations</h2>
+        <p>Transformations are the way an Actor can modify its appearance and still be the same Actor.
+        In example, when the developer sets a width Scaling transformation, though the actor visually
+        has a different size, it is still the same size. This may seem a little bit strange, but one
+        property of an Actor is its dimension (either set by the method setSize, setBounds, or directly
+        modifying its width and height attributes), and other property is how it is seen and managed
+        through out the Director.</p>
+        <p>An Actor has three concrete transformations applied.</p>
+        <div>
+            <p><b>Translation</b>. This is a trivial translation which does not affect the visual appearance, but
+            just position. It is not recommended to directly set Actor.x and Actor.y attributes since this will
+            prevent CAAT </p>
+        </div>
+        <div>
+            <p><b>Rotation</b>. This transformation will rotate the Actor a number of radians. There are two methods for applying
+            rotations:</p>
+            <div class="APIENTRY">
+                <pre>function setRotation( angle_in_radians );
+function setRotationAnchored( angle_in_radians, center_x, center_y )</pre></div>
+            <p>the function setRotation is a helper for setRotationAnchored, and assumes the developer
+            wants to rotate around the center of the Actor. The default rotation is 0 radians, ie, no rotation.</p>
+        </div>
+        <div>
+            <p><b>Scale</b>. This transformation will make the Actor wider and or taller. The developer
+            specifies two scale values one for width and another for height. These values are a multiplier
+            for Actors dimension. The default values for scale are both 1, meaning the resulting Actor size
+            will be width*1 and height*1, ie, no changes. The developer could specify negative values,
+            meaning that the Actor would be mirrored. The methods to set Actor's Scale are:</p>
+            <div class="APIENTRY">
+                <pre>function setScale( scale_x, scale_y );
+function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
+            <p>As with rotations, setScale is a helper method for setScaleAnchored.</p>
+            <p>The anchor parameter is the same as that of ScaleBehaviour which is any
+                of the following values from CAAT.Actor.prototype:</p>
+            <ul>
+                <li>ANCHOR_CENTER
+                <li>ANCHOR_TOP
+                <li>ANCHOR_BOTTOM
+                <li>ANCHOR_LEFT
+                <li>ANCHOR_RIGHT
+                <li>ANCHOR_TOP_LEFT
+                <li>ANCHOR_TOP_RIGHT
+                <li>ANCHOR_BOTTOM_LEFT
+                <li>ANCHOR_BOTTOM_RIGHT
+            </ul>
+        </div>
+        <div class="sample">
+            <p>In this example, we see some transformations applied to different 80x80 pixels Actors.
+               Move the mouse over the green actors, and see how the Local coord parameter varies.
+               Despite the size on screen, it will always give the correct values from 0 to 80 in width
+               and height.</p>
+            <div class="code">
+                <pre class="brush: js; auto-links: false; toolbar: false;">
+                    <script>
+                        // Initialize director.
+                        var _director_3= new CAAT.Director().initialize(
+                                400,
+                                120,
+                                document.getElementById('_c3'));
+
+                        // create scene.
+                        var _scene_3=    new CAAT.Scene().create();
+
+                        _director_3.addScene(_scene_3);
+
+                        // create a simple actor. no transformations.
+                        var _pulsating_actor_3_0= new CAAT.Actor().
+                                create().
+                                setBounds(10,20,80,80).
+                                setFillStyle('#00ff00');
+                        _pulsating_actor_3_0.name= 'no transformation';
+
+                        // rotated 30 degrees
+                        var _pulsating_actor_3_1= new CAAT.Actor().
+                                create().
+                                setBounds(120,20,80,80).
+                                setFillStyle('#00ff00').
+                                setRotation( Math.PI/6 );
+                        _pulsating_actor_3_1.name= 'rotated 30 degrees';
+
+                        // half in width
+                        var _pulsating_actor_3_2= new CAAT.Actor().
+                                create().
+                                setBounds(200,20,80,80).
+                                setFillStyle('#00ff00').
+                                setScale( .5, 1 );
+                        _pulsating_actor_3_2.name= 'scaled(.5,1)';
+
+                        // 125% width, half height
+                        var _pulsating_actor_3_3= new CAAT.Actor().
+                                create().
+                                setBounds(300,20,80,80).
+                                setFillStyle('#00ff00').
+                                setScale( 1.2, .4 );
+                        _pulsating_actor_3_3.name= 'scaled(1.25,.5)';
+
+                        // from example 1
+                        var mouseMoveHandler= function(mouseEvent) {
+                            // get the scene Actor the event was generated for.
+                            var actor= mouseEvent.source;
+
+                            // show some event info:
+                            document.getElementById('_c3_coords').innerHTML=
+                                    "<b>Actor:</b>"+ actor.name+" "+
+                                    "<b>Local Coord:</b> ("+
+                                        // with all this stuff i'm just stripping
+                                        // off any decimal beyond .99
+                                        ((mouseEvent.point.x*100)>>0)/100+", "+
+                                        ((mouseEvent.point.y*100)>>0)/100+") "+
+                                    "<b>Screen Coord:</b> ("+
+                                        mouseEvent.screenPoint.x+", "+
+                                        mouseEvent.screenPoint.y+") ";
+                        };
+
+                        // change default mouse handler to report coordinates.
+                        _pulsating_actor_3_0.mouseMove= mouseMoveHandler;
+                        _pulsating_actor_3_1.mouseMove= mouseMoveHandler;
+                        _pulsating_actor_3_2.mouseMove= mouseMoveHandler;
+                        _pulsating_actor_3_3.mouseMove= mouseMoveHandler;
+
+                        // don't forget to actors to the scene.
+                        _scene_3.addChild( _pulsating_actor_3_0 );
+                        _scene_3.addChild( _pulsating_actor_3_1 );
+                        _scene_3.addChild( _pulsating_actor_3_2 );
+                        _scene_3.addChild( _pulsating_actor_3_3 );
+
+                        // set 20 fps animation
+                        _director_3.loop(20);
+                    </script>
+                </pre>
+            </div>
+            <div><canvas id="_c3"></canvas></div>
+            <div><span id="_c3_coords"></span></div>
+            <script>
+                (function() {
+                // Initialize director.
+                var _director_3= new CAAT.Director().initialize(
+                        400,
+                        120,
+                        document.getElementById('_c3'));
+
+                // create scene.
+                var _scene_3=    new CAAT.Scene().create();
+
+                _director_3.addScene(_scene_3);
+
+                // create a simple actor. no transformations.
+                var _pulsating_actor_3_0= new CAAT.Actor().
+                        create().
+                        setBounds(10,20,80,80).
+                        setFillStyle('#00ff00');
+                _pulsating_actor_3_0.name= 'no transformation';
+
+                // rotated 30 degrees
+                var _pulsating_actor_3_1= new CAAT.Actor().
+                        create().
+                        setBounds(120,20,80,80).
+                        setFillStyle('#00ff00').
+                        setRotation( Math.PI/6 );
+                _pulsating_actor_3_1.name= 'rotated 30 degrees';
+
+                // half in width
+                var _pulsating_actor_3_2= new CAAT.Actor().
+                        create().
+                        setBounds(200,20,80,80).
+                        setFillStyle('#00ff00').
+                        setScale( .5, 1 );
+                _pulsating_actor_3_2.name= 'scaled(.5,1)';
+
+                // 125% width, half height
+                var _pulsating_actor_3_3= new CAAT.Actor().
+                        create().
+                        setBounds(300,20,80,80).
+                        setFillStyle('#00ff00').
+                        setScale( 1.2, .4 );
+                _pulsating_actor_3_3.name= 'scaled(1.25,.5)';
+
+                // from example 1
+                var mouseMoveHandler= function(mouseEvent) {
+                    // get the scene Actor the event was generated for.
+                    var actor= mouseEvent.source;
+
+                    // show some event info:
+                    document.getElementById('_c3_coords').innerHTML=
+                            "<b>Actor:</b>"+ actor.name+" "+
+                            "<b>Local Coord:</b> ("+
+                                // with all this stuff i'm just stripping
+                                // off any decimal beyond .99
+                                ((mouseEvent.point.x*100)>>0)/100+", "+
+                                ((mouseEvent.point.y*100)>>0)/100+") "+
+                            "<b>Screen Coord:</b> ("+
+                                mouseEvent.screenPoint.x+", "+
+                                mouseEvent.screenPoint.y+") ";
+                };
+
+                // change default mouse handler to report coordinates.
+                _pulsating_actor_3_0.mouseMove= mouseMoveHandler;
+                _pulsating_actor_3_1.mouseMove= mouseMoveHandler;
+                _pulsating_actor_3_2.mouseMove= mouseMoveHandler;
+                _pulsating_actor_3_3.mouseMove= mouseMoveHandler;
+
+                // don't forget to actors to the scene.
+                _scene_3.addChild( _pulsating_actor_3_0 );
+                _scene_3.addChild( _pulsating_actor_3_1 );
+                _scene_3.addChild( _pulsating_actor_3_2 );
+                _scene_3.addChild( _pulsating_actor_3_3 );
+
+                // set 20 fps animation
+                _director_3.loop(20);
+                })();
+            </script>
+        </div>
+    </div>
+    <div class="chapter">
+        <h2>Behaviors</h2>
+        <p>An Actor has the abbility to have transformations, but by itself, only one value for translation,
+        scale and rotation can be applied at the same time.</p>
+        <p>As we saw in chapter 2, Behaviours have ability to instrument an Actors affine transformations.</p>
+        <p>Here we'll just show an example of actors rotating and scaling on different anchors all that commanded
+            by behaviors:</p>
+        <div class="code">
+            <pre class="brush: js; auto-links: false; toolbar: false;">
+                <script>
+                    var _director_4= new CAAT.Director().initialize(
+                            600,
+                            200,
+                            document.getElementById('_c4') );
+
+                    var _scene_4= new CAAT.Scene().create();
+
+                    _director_4.addScene( _scene_4 );
+
+                    // these numbers correspond to anchor values:
+                    // TOP_LEFT     TOP     TOP_RIGHT
+                    // LEFT         CENTER  RIGHT
+                    // BOTTOM_LEFT  BOTTOM  BOTTOM_RIGHT
+                    var anchor= [
+                        5,1,6,
+                        3,0,4,
+                        7,2,8   ];
+
+                    var i;
+
+                    for( i=0; i<9; i++ ) {
+
+                        // background actors under rotating ones. Just to have a reference
+                        // of where the anchor is.
+                        var _scene_4_rotating_actor_background = new CAAT.Actor().
+                                create().
+                                setLocation( 50+50*(i%3), 35+50*((i/3)>>0) ).
+                                setSize( 30, 30 ).
+                                setFillStyle('#ffffff').
+                                setStrokeStyle('#000000');
+                        // do not accept mouse events.
+                        _scene_4_rotating_actor_background.mouseEnabled= false;
+                        _scene_4.addChild( _scene_4_rotating_actor_background );
+
+                        // rotating actors.
+                        var _scene_4_rotating_actor = new CAAT.Actor().
+                                create().
+                                setLocation( 50+50*(i%3), 35+50*((i/3)>>0) ).
+                                setSize( 30, 30 ).
+                                setFillStyle('#ff0000');
+                        // never ending rotating behavior
+                        var _scene_4_rotating_behavior= new CAAT.RotateBehavior().
+                                setCycle(true).
+                                setFrameTime( 0, 2000 ).
+                                setAngles(0, 2*Math.PI).
+                                setAnchor( anchor[i] );
+                        _scene_4_rotating_actor.addBehavior( _scene_4_rotating_behavior );
+                        _scene_4.addChild( _scene_4_rotating_actor );
+
+                        // scaling actors
+                        var _scene_4_scaling_actor= new CAAT.Actor().
+                                create().
+                                setLocation( 300+60*(i%3), 30+60*((i/3)>>0) ).
+                                setSize( 30, 30 ).
+                                setFillStyle('#ff00ff');
+                        // never ending scaling behavior
+                        var _scene_4_scaling_behavior= new CAAT.ScaleBehavior().
+                                setCycle(true).
+                                setFrameTime( 0, 2000 ).
+                                setValues( .5, 1.5, .5, 1.5 ).
+                                setPingPong().
+                                setAnchor( anchor[i] );
+                        _scene_4_scaling_actor.addBehavior(_scene_4_scaling_behavior);
+                        _scene_4.addChild( _scene_4_scaling_actor );
+                    }
+
+                    _director_4.loop(20);
+                </script>
+            </pre>
+        </div>
+        <div>
+            <canvas id="_c4"></canvas></div>
+            <script>
+                (function() {
+                var _director_4= new CAAT.Director().initialize(
+                        600,
+                        200,
+                        document.getElementById('_c4') );
+
+                var _scene_4= new CAAT.Scene().create();
+
+                _director_4.addScene( _scene_4 );
+
+                // these numbers correspond to anchor values:
+                // TOP_LEFT     TOP     TOP_RIGHT
+                // LEFT         CENTER  RIGHT
+                // BOTTOM_LEFT  BOTTOM  BOTTOM_RIGHT
+                var anchor= [
+                    5,1,6,
+                    3,0,4,
+                    7,2,8   ];
+
+                var i;
+
+                for( i=0; i<9; i++ ) {
+
+                    // background actors under rotating ones. Just to have a reference
+                    // of where the anchor is.
+                    var _scene_4_rotating_actor_background = new CAAT.Actor().
+                            create().
+                            setLocation( 50+50*(i%3), 35+50*((i/3)>>0) ).
+                            setSize( 30, 30 ).
+                            setFillStyle('#ffffff').
+                            setStrokeStyle('#000000');
+                    // do not accept mouse events.
+                    _scene_4_rotating_actor_background.mouseEnabled= false;
+                    _scene_4.addChild( _scene_4_rotating_actor_background );
+
+                    // rotating actors.
+                    var _scene_4_rotating_actor = new CAAT.Actor().
+                            create().
+                            setLocation( 50+50*(i%3), 35+50*((i/3)>>0) ).
+                            setSize( 30, 30 ).
+                            setFillStyle('#ff0000');
+                    // never ending rotating behavior
+                    var _scene_4_rotating_behavior= new CAAT.RotateBehavior().
+                            setCycle(true).
+                            setFrameTime( 0, 2000 ).
+                            setAngles(0, 2*Math.PI).
+                            setAnchor( anchor[i] );
+                    _scene_4_rotating_actor.addBehavior( _scene_4_rotating_behavior );
+                    _scene_4.addChild( _scene_4_rotating_actor );
+
+                    // scaling actors
+                    var _scene_4_scaling_actor= new CAAT.Actor().
+                            create().
+                            setLocation( 300+60*(i%3), 30+60*((i/3)>>0) ).
+                            setSize( 30, 30 ).
+                            setFillStyle('#ff00ff');
+                    // never ending scaling behavior
+                    var _scene_4_scaling_behavior= new CAAT.ScaleBehavior().
+                            setCycle(true).
+                            setFrameTime( 0, 2000 ).
+                            setValues( .5, 1.5, .5, 1.5 ).
+                            setPingPong().
+                            setAnchor( anchor[i] );
+                    _scene_4_scaling_actor.addBehavior(_scene_4_scaling_behavior);
+                    _scene_4.addChild( _scene_4_scaling_actor );
+                }
+                
+                _director_4.loop(20);
+                    })();
+            </script>
+        </div>
+    </div>
+    <div class="chapter">
+        <h2>Clipping</h2>
+        <p>Clipping is by default disabled on CAAT. Enabling it results in slowe performance, so it
+        must be treated carefully. It can be enabled globally by issuing:</p>
+        <div class="APIENTRY"><pre>CAAT.Actor.prototype.clip= true</pre></div>
+        <p>or optionally, the developer can enable/disable clipping for indivual actors at will by settings
+        Actor's clip attribute to true or false.</p>
+        <p>Getting back to the first example, we're going to modify is slightly. This example allows
+            dragging of its content and subcontent. Use shift+alt+control to modify default drag behavior.
+            One of the Scene Actors will have clipping enabled. You'll see that in one instance you're
+            able to drag the inner green Actor outside the Magenta one area. But after dropping it outside
+            its parent area, you won't be able to gain drag'n'drop control over the inner Actor again.
+        </p>
+        <p>
+            This is because of the way CAAT routes events to its Actors. <b>In order to send an event to an
+            Actor, the Actor must be contained into its parent area. Period.</b>
+        </p>
+        <div class="code">
+            <pre class="brush: js; auto-links: false; toolbar: false;">
+                <script>
+                    var _director_5= new CAAT.Director().initialize(
+                            600,
+                            200,
+                            document.getElementById('_c5') );
+
+                    var _scene_5= new CAAT.Scene().create().setFillStyle('#c0c0c0');
+
+                    _director_5.addScene( _scene_5 );
+
+                    for(var i=0; i<2; i++ ) {
+
+                        // rectangle shaped actors of 80x80 pixels.
+                        var s = 80;
+
+                        // containers can contain other actors or containers.
+                        var _c5_container = new CAAT.ActorContainer().
+                                setBounds(i*400+10, 20, s, s).
+                                create().
+                                setRotation( Math.PI*2*Math.random() ).
+                                setFillStyle('#ff3fff').
+                                enableDrag().
+                                setClip( i==0 );
+
+                        // set container paint routine to draw an arrow
+                        _c5_container.paint= function(director, time) {
+
+                            var crx= director.ctx;
+
+                            // fill actor
+                            crx.fillStyle= this.fillStyle;
+                            crx.fillRect(0,0,this.width,this.height );
+
+                            // outline it.
+                            crx.strokeStyle= 'black';
+                            crx.strokeRect(0,0,this.width,this.height );
+
+                            // draw a white arrow. just to point where position 0,0 is.
+                            crx.strokeStyle='white';
+                            crx.beginPath();
+                            crx.moveTo(5,10);
+                            crx.lineTo(20,10);
+                            crx.lineTo(15,5);
+
+                            crx.moveTo(20,10);
+                            crx.lineTo(15,15);
+
+                            crx.lineWidth=2;
+                            crx.lineJoin='round';
+                            crx.lineCap='round';
+
+                            crx.stroke();
+                        };
+
+                        // add actor to scene.
+                        _scene_5.addChild(_c5_container);
+
+                        // create a container.
+                        var _c5_container_child= new CAAT.ActorContainer().
+                                create().
+                                setBounds(s/2,s/2,s/4,s/4).
+                                setRotation( Math.PI*2*Math.random() ).
+                                setFillStyle('#00ff00').
+                                enableDrag();
+
+                        // set a custom paint function for children inside containers.
+                        _c5_container_child.paint= function(director,time) {
+                            // call default container paint method.
+                            CAAT.ActorContainer.superclass.paint.call(this,director,time);
+                            var ctx= director.ctx;
+
+                            // fill a white circle of 10x10 pixels at position 2,2
+                            // just to show where 0,0 is positioned on screen.
+                            ctx.fillStyle='white';
+                            ctx.beginPath();
+                            ctx.arc(7,7,5,0,2*Math.PI,false);
+                            ctx.fill();
+                        }
+
+                        // add this container as a child of the previous created container.
+                        _c5_container.addChild(_c5_container_child);
+                    }
+
+                    _director_5.loop(20);
+                </script>
+            </pre>
+        </div>
+        <div>
+            <canvas id="_c5"></canvas></div>
+            <script>
+                (function() {
+                    var _director_5= new CAAT.Director().initialize(
+                            600,
+                            200,
+                            document.getElementById('_c5') );
+
+                    var _scene_5= new CAAT.Scene().create().setFillStyle('#c0c0c0');
+
+                    _director_5.addScene( _scene_5 );
+
+                    for(var i=0; i<2; i++ ) {
+
+                        // rectangle shaped actors of 80x80 pixels.
+                        var s = 80;
+
+                        // containers can contain other actors or containers.
+                        var _c5_container = new CAAT.ActorContainer().
+                                setBounds(i*400+10, 20, s, s).
+                                create().
+                                setRotation( Math.PI*2*Math.random() ).
+                                setFillStyle('#ff3fff').
+                                enableDrag().
+                                setClip( i==0 );
+
+                        // set container paint routine to draw an arrow
+                        _c5_container.paint= function(director, time) {
+
+                            var crx= director.ctx;
+
+                            // fill actor
+                            crx.fillStyle= this.fillStyle;
+                            crx.fillRect(0,0,this.width,this.height );
+
+                            // outline it.
+                            crx.strokeStyle= 'black';
+                            crx.strokeRect(0,0,this.width,this.height );
+
+                            // draw a white arrow. just to point where position 0,0 is.
+                            crx.strokeStyle='white';
+                            crx.beginPath();
+                            crx.moveTo(5,10);
+                            crx.lineTo(20,10);
+                            crx.lineTo(15,5);
+
+                            crx.moveTo(20,10);
+                            crx.lineTo(15,15);
+
+                            crx.lineWidth=2;
+                            crx.lineJoin='round';
+                            crx.lineCap='round';
+
+                            crx.stroke();
+                        };
+
+                        // add actor to scene.
+                        _scene_5.addChild(_c5_container);
+
+                        // create a container.
+                        var _c5_container_child= new CAAT.ActorContainer().
+                                create().
+                                setBounds(s/2,s/2,s/4,s/4).
+                                setRotation( Math.PI*2*Math.random() ).
+                                setFillStyle('#00ff00').
+                                enableDrag();
+
+                        // set a custom paint function for children inside containers.
+                        _c5_container_child.paint= function(director,time) {
+                            // call default container paint method.
+                            CAAT.ActorContainer.superclass.paint.call(this,director,time);
+                            var ctx= director.ctx;
+
+                            // fill a white circle of 10x10 pixels at position 2,2
+                            // just to show where 0,0 is positioned on screen.
+                            ctx.fillStyle='white';
+                            ctx.beginPath();
+                            ctx.arc(7,7,5,0,2*Math.PI,false);
+                            ctx.fill();
+                        }
+
+                        // add this container as a child of the previous created container.
+                        _c5_container.addChild(_c5_container_child);
+                    }
+
+                    _director_5.loop(20);
+                })();
+            </script>
+        </div>
+    </div>
+    <div class="chapter">
+        <h2>Events</h2>
+        <p>By default, a CAAT Actor does nothing with the input events it receives. The
+            Director will route events to a concrete Actor following a buble scheme.</p>
+        <p>By now, an Actor can enable or disable globally its input events by calling the method</p>
+        <div class="APIENTRY"><pre>enableEvents(boolean_accept)</pre></div>
+        <p>So disabling events on an Actor, will mean that the Actor will behave as if it wasn't present
+            for event routing.</p>
+        <p>There's also the possibility to enable default Actor dragging capabilities. The method
+        <div class="APIENTRY"><pre>enableDrag()</pre></div>
+        <p>will set a drag control up. Apart of dragging, the default drag control can be modified
+        by pressing shift (to scale the actor), control (to rotate) and alt (to make the scale non-uniform
+        that is, differently scaling width and height).</p>
+    </div>
 </div>
 
 <div class="section">
     <h1>CAAT.ActorContainer</h1>
+    <p>
+        An ActorContainer, is a holder for other Actors including other ActorContainers. Its main
+        responsibility is to contain and manage other Actors.
+    </p>
+    <p>
+        That means, it will compound every operation hierarchically for itslef and its contained Actors.
+        That means, an ActorContainer will compose its transformations to all of its contained Actors,
+        and that it will animate, paint and destroy its children when necessary.
+    </p>
+    <p>
+        The most special kind of ActorContainer are the Director itself, and every Scene instance.
+        That means, you can set a transformation on the Scene and it will be applied for every contained
+        actor, as in the scene switching performed by the Director.
+    </p>
+    <p>
+        All the particularities of the CAAT.Actor class, apply and are available as well in the
+        ActorContainer.
+    </p>
+    <p>
+        While treating with ActorContainers, we'll take special attention on Alpha composition.
+        If isGlobalAlpha flag is set, the ActorContainers Alpha value will be set as the reference
+        for all of its childres. Otherwise, the alpha value will be set only for this ActorContainer and
+        won't affect any contained children.
+    </p>
+    <p>
+        In this example, we're setting up two red containers with a .25 alpha composite. Both contain
+        a green circle. The second container has globalAlpha set to true, so its Alpha value should
+        propagate downwards in the Actor hierarchy afecting their alpha as well. 
+    </p>
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            <script>
+                var _director_9= new CAAT.Director().initialize(
+                        400,
+                        200,
+                        document.getElementById('_c9'));
+
+                // create a vertical gradient to apply to text.
+                var gradient= _director_9.ctx.createLinearGradient(0,0,0,_director_9.canvas.height);
+                gradient.addColorStop(0,'#ffff00');
+                gradient.addColorStop(0.5,'#00ffff');
+                gradient.addColorStop(1,'blue');
+
+                var _scene_9= new CAAT.Scene().
+                        create().
+                        setFillStyle(gradient);
+
+                _director_9.addScene( _scene_9 );
+
+                var _c9_c0= new CAAT.ActorContainer().
+                        create().
+                        setBounds( 10,10, 180,180 ).
+                        setFillStyle( 'red' ).
+                        setAlpha(.25);
+
+                var _c9_child0= new CAAT.ShapeActor().
+                        setShape( CAAT.ShapeActor.prototype.SHAPE_CIRCLE ).
+                        create().
+                        setFillStyle( 'green' ).
+                        setBounds( 20, 20, 140, 140 );
+
+                _c9_c0.addChild( _c9_child0 );
+
+                var _c9_c1= new CAAT.ActorContainer().
+                        create().
+                        setBounds( 210,10, 180,180 ).
+                        setFillStyle( 'red' ).
+                        setAlpha(.25).
+                        setGlobalAlpha(true);
+
+                var _c9_child1= new CAAT.ShapeActor().
+                        setShape( CAAT.ShapeActor.prototype.SHAPE_CIRCLE ).
+                        create().
+                        setFillStyle( 'green' ).
+                        setBounds( 20, 20, 140, 140 );
+
+                _c9_c1.addChild( _c9_child1 );
+
+                _scene_9.addChild( _c9_c0 );
+                _scene_9.addChild( _c9_c1 );
+
+                _director_9.loop(1);
+            </script>
+        </pre>
+    </div>
+    <div>
+        <div><canvas id="_c9"></canvas></div>
+        <script>
+            (function() {
+                var _director_9= new CAAT.Director().initialize(
+                        400,
+                        200,
+                        document.getElementById('_c9'));
+
+                // create a vertical gradient to apply to text.
+                var gradient= _director_9.ctx.createLinearGradient(0,0,0,_director_9.canvas.height);
+                gradient.addColorStop(0,'#ffff00');
+                gradient.addColorStop(0.5,'#00ffff');
+                gradient.addColorStop(1,'blue');
+
+                var _scene_9= new CAAT.Scene().
+                        create().
+                        setFillStyle(gradient);
+
+                _director_9.addScene( _scene_9 );
+
+                var _c9_c0= new CAAT.ActorContainer().
+                        create().
+                        setBounds( 10,10, 180,180 ).
+                        setFillStyle( 'red' ).
+                        setAlpha(.25);
+
+                var _c9_child0= new CAAT.ShapeActor().
+                        setShape( CAAT.ShapeActor.prototype.SHAPE_CIRCLE ).
+                        create().
+                        setFillStyle( 'green' ).
+                        setBounds( 20, 20, 140, 140 );
+
+                _c9_c0.addChild( _c9_child0 );
+
+                var _c9_c1= new CAAT.ActorContainer().
+                        create().
+                        setBounds( 210,10, 180,180 ).
+                        setFillStyle( 'red' ).
+                        setAlpha(.25).
+                        setGlobalAlpha(true);
+
+                var _c9_child1= new CAAT.ShapeActor().
+                        setShape( CAAT.ShapeActor.prototype.SHAPE_CIRCLE ).
+                        create().
+                        setFillStyle( 'green' ).
+                        setBounds( 20, 20, 140, 140 );
+
+                _c9_c1.addChild( _c9_child1 );
+                
+                _scene_9.addChild( _c9_c0 );
+                _scene_9.addChild( _c9_c1 );
+
+                _director_9.loop(1);
+            })();
+        </script>
+    </div>
 </div>
 
 <div class="section">
     <h1>CAAT.SpriteActor</h1>
-</div>
+    <p>CAAT has support for simple Sprite classes. The Sprite contains an instance of CAAT.CompoundImage
+    which will be treated as an array of rows by columns subimages.</p>
+    <p>We'll be using the following image for the sprite example: <img src="res/img/anim1.png">.</p>
+    <p>Every SpriteActor must define the following attributes:</p>
+    <ul>
+        <li>animation image index. It means what subimages sequence to animate the sprite with.
+		<li>sprite image. A CAAT.CompoundImage instance. This object will manage the sample image as
+        an array of subimages.
+		<li>change time. Every how much Scene time the Sprite should change the image from the Animation index.
+        <li>transformation (optional). How to show the image. It can be mirrored horizontal and vertically.
+    </ul>
+    <p>A CAAT.SpriteActor does not need to set its dimension since it will derive it from the suplied
+    sprite image. Alpha transparency applies as well to Sprites.</p>
+    <p>Here it is an example where the four SpriteActor instances have each a different Sprite transformation.</p>
+    <p>For this example we need some images that's why i'm using the CAAT.ImagePreloader helper. This
+    object reads resources and stores them into a known structure. More about it on the Extras chapter.</p>
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            <script>
+                var _director_6= new CAAT.Director().initialize(
+                        400,
+                        150,
+                        document.getElementById('_c6') );
+
+                var _scene_6= new CAAT.Scene().create();
+
+                _director_6.addScene( _scene_6 );
+
+                // define a resource preloader.
+                new CAAT.ImagePreloader().loadImages(
+                    [ {id:'fish',     url:'res/img/anim1.png'} ],   // get only this image.
+                    function( counter, images ) {
+                        if ( counter==images.length ) {             // when it is done loading
+
+                            // save loaded resources on Director.
+                            _director_6.imagesCache= images;
+
+                            // CompoundImage, basically treates a single image as an Array
+                            // of equals sized subimages. We want in this case, one row, 3 columns.
+                            var cimage = new CAAT.CompoundImage().
+                                    initialize( _director_6.getImage('fish'), 1, 3);
+
+                            // create 4 fish positioned in a 2x2 array.
+                            // set sprite transformation to show how fish is transformed..
+                            for(var i=0; i<4; i++ ) {
+                                var fish = new CAAT.SpriteActor().
+                                        create().
+                                        setAnimationImageIndex( [0,1,2,1] ).
+                                        setSpriteImage(cimage).
+                                        setChangeFPS(350).
+                                        setLocation(20+(i%2)*(15+cimage.singleWidth), 20+(15+cimage.singleWidth)*(i>1)).
+                                        setSpriteTransformation(i);
+                                _scene_6.addChild(fish);
+                            }
+
+                            // Sprite objects are Actors, and hence can contain behaviors.
+                            var fish_scaling = new CAAT.SpriteActor().
+                                    create().
+                                    setAnimationImageIndex( [0,1,2,1] ).
+                                    setSpriteImage(cimage).
+                                    setChangeFPS(500).
+                                    setLocation(200,70).
+                                    setAlpha(.8);
+
+                            var rb_6= new CAAT.RotateBehavior().
+                                    setAngles(0, 2*Math.PI).
+                                    setFrameTime( 0, 20000 ).
+                                    setCycle(true);
+
+                            var cb_6= new CAAT.ContainerBehavior().
+                                    setFrameTime(0,2000).
+                                    setCycle(true);
+                                var sb_6_x= new CAAT.ScaleBehavior().
+                                        setValues( 2, 4, 2, 2 ).
+                                        setFrameTime( 0, 1000 ).
+                                        setPingPong();
+                                var sb_6_y= new CAAT.ScaleBehavior().
+                                        setValues( 2, 2, 2, 4 ).
+                                        setFrameTime( 1000, 1000 ).
+                                        setPingPong();
+                            cb_6.addBehavior( sb_6_x );
+                            cb_6.addBehavior( sb_6_y );
+
+                            fish_scaling.addBehavior( rb_6 );
+                            fish_scaling.addBehavior( cb_6 );
+
+                            _scene_6.addChild(fish_scaling);
+                        }
+                    });
+
+                _director_6.loop(20);
+            </script>
+        </pre>
+    </div>
+        <div>
+            <canvas id="_c6"></canvas></div>
+            <script>
+                (function() {
+
+                    var _director_6= new CAAT.Director().initialize(
+                            400,
+                            150,
+                            document.getElementById('_c6') );
+
+                    var _scene_6= new CAAT.Scene().create();
+
+                    _director_6.addScene( _scene_6 );
+
+                    // define a resource preloader.
+                    new CAAT.ImagePreloader().loadImages(
+                        [ {id:'fish',     url:'res/img/anim1.png'} ],   // get only this image.
+                        function( counter, images ) {
+                            if ( counter==images.length ) {             // when it is done loading
+
+                                // save loaded resources on Director.
+                                _director_6.imagesCache= images;
+
+                                // CompoundImage, basically treates a single image as an Array
+                                // of equals sized subimages. We want in this case, one row, 3 columns.
+                                var cimage = new CAAT.CompoundImage().
+                                        initialize( _director_6.getImage('fish'), 1, 3);
+
+                                // create 4 fish positioned in a 2x2 array.
+                                // set sprite transformation to show how fish is transformed..
+                                for(var i=0; i<4; i++ ) {
+                                    var fish = new CAAT.SpriteActor().
+                                            create().
+                                            setAnimationImageIndex( [0,1,2,1] ).
+                                            setSpriteImage(cimage).
+                                            setChangeFPS(350).
+                                            setLocation(20+(i%2)*(15+cimage.singleWidth), 20+(15+cimage.singleWidth)*(i>1)).
+                                            setSpriteTransformation(i);
+                                    _scene_6.addChild(fish);
+                                }
+
+                                // Sprite objects are Actors, and hence can contain behaviors.
+                                var fish_scaling = new CAAT.SpriteActor().
+                                        create().
+                                        setAnimationImageIndex( [0,1,2,1] ).
+                                        setSpriteImage(cimage).
+                                        setChangeFPS(500).
+                                        setLocation(200,70).
+                                        setAlpha(.8);
+
+                                var rb_6= new CAAT.RotateBehavior().
+                                        setAngles(0, 2*Math.PI).
+                                        setFrameTime( 0, 20000 ).
+                                        setCycle(true);
+
+                                var cb_6= new CAAT.ContainerBehavior().
+                                        setFrameTime(0,2000).
+                                        setCycle(true);
+                                    var sb_6_x= new CAAT.ScaleBehavior().
+                                            setValues( 2, 4, 2, 2 ).
+                                            setFrameTime( 0, 1000 ).
+                                            setPingPong();
+                                    var sb_6_y= new CAAT.ScaleBehavior().
+                                            setValues( 2, 2, 2, 4 ).
+                                            setFrameTime( 1000, 1000 ).
+                                            setPingPong();
+                                cb_6.addBehavior( sb_6_x );
+                                cb_6.addBehavior( sb_6_y );
+
+                                fish_scaling.addBehavior( rb_6 );
+                                fish_scaling.addBehavior( cb_6 );
+
+                                _scene_6.addChild(fish_scaling);
+                            }
+                        });
+
+                    _director_6.loop(20);
+                })();
+            </script>
+        </div>
+    </div>
 
 <div class="section">
     <h1>CAAT.TextActor</h1>
+    <p>CAAT can show text by exposing the TextActor class.</p>
+    <p>A text is defined, as in a Canvas rendering context, by the font, text alignment and text base line. As any
+    CAAT Actor, the developer can define any valid Canvas rendering context fillStyle, like colors, gradients,
+    other Canvas objects, or a Video object in example, and any valid stroke style</p>
+    <p><b>In CAAT, neither textAlign nor textBaseline should be used.</b></p>
+    <p>A TextActor can be modified by the following methods:</p>
+    <div class="APIENTRY">
+        <p><b>function setOutline( boolean )</b></p>
+        <p>Makes the text to be outlined or not.</p>
+    </div>
+    <div class="APIENTRY">
+        <p><b>function setOutlineColor( color )</b></p>
+        <p>Sets outline color.</p>
+    </div>
+    <div class="APIENTRY">
+        <p><b>function setFill( boolean )</b></p>
+        <p>Makes the text to be filled or not.</p>
+    </div>
+    <div class="APIENTRY">
+        <p><b>function setPath( path, interpolator, time )</b></p>
+        <p>Makes the text to travel around a path.</p>
+        <p>Interpolator can be undefined, leading to a default LinearInterpolator.</p>
+        <p>Time can be undefined, leading to a default ten seconds to traverse.</p>
+    </div>
+
+
+    <p>As any other actor, a TextActor will be modified by behaviors.</p>
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            <script>
+                var _director_7= new CAAT.Director().initialize(
+                        700,
+                        200,
+                        document.getElementById('_c7')
+                        );
+
+                var _scene_7= new CAAT.Scene().create();
+
+                _director_7.addScene( _scene_7);
+
+                // create a vertical gradient to apply to text.
+                var gradient_top= _director_7.ctx.createLinearGradient(0,0,0,40);
+                gradient_top.addColorStop(0,'#ffff00');
+                gradient_top.addColorStop(0.5,'#00ffff');
+                gradient_top.addColorStop(1,'blue');
+
+                // outline text. no fillStyle since the text will just be outlined.
+                var _text_00= new CAAT.TextActor().
+                        create().
+                        setFont("40px sans-serif").
+                        setText("CAAT").
+                        setBaseline("top").
+                        setFill(false).
+                        setLocation( 0, 30 );
+
+                // gradient text.
+                var _text_01= new CAAT.TextActor().
+                        create().
+                        setFont("40px sans-serif").
+                        setText("CAAT").
+                        setFillStyle(gradient_top).
+                        setBaseline("top").
+                        setLocation( 0, 80 );
+
+                // gradient + outlined.
+                var _text_02= new CAAT.TextActor().
+                        create().
+                        setFont("40px sans-serif").
+                        setText("CAAT").
+                        setFillStyle(gradient_top).
+                        setBaseline("top").
+                        setOutline(true).
+                        setOutlineColor('blue').
+                        setLocation( 0, 130 );
+
+                _scene_7.addChild(_text_00);
+                _scene_7.addChild(_text_01);
+                _scene_7.addChild(_text_02);
+
+                // a simple TextActor
+                var _text_10= new CAAT.TextActor().
+                        create().
+                        setFont("40px sans-serif").
+                        setText("CAAT").
+                        setFillStyle(gradient_top).
+                        setBaseline("top").
+                        setOutline(true).
+                        setOutlineColor('yellow').
+                        setLocation( 200,80 );
+
+                // rotate in 3 seconds
+                var _text_00_rb= new CAAT.RotateBehavior().
+                        setAngles(0, 2*Math.PI).
+                        setFrameTime( 0, 3000 ).
+                        setCycle(true);
+
+                // scale in 6 seconds doing pingpong
+                var _text_00_sb= new CAAT.ScaleBehavior().
+                        setValues( .5, 2, .5, 2 ).
+                        setFrameTime( 0, 6000 ).
+                        setCycle(true).
+                        setPingPong();
+
+                _text_10.addBehavior( _text_00_rb );
+                _text_10.addBehavior( _text_00_sb );
+                _scene_7.addChild( _text_10 );
+
+
+                // create a circular path.
+                var _path_c7= new CAAT.Path().
+                    beginPath(425,100).
+                    addCubicTo( 425,0,   625,0,   625,100 ).
+                    addCubicTo( 625,200,  425,200,  425,100 ).
+                    endPath();
+
+                // set an actor to be able to handle path.
+                var _pathactor_c7= new CAAT.PathActor().
+                        create().
+                        setBounds(0,0,_director_7.width,_director_7.height).
+                        setPath(_path_c7);
+                _scene_7.addChild( _pathactor_c7 );
+
+                // make text traverse over the path
+                var _text_20= new CAAT.TextActor().
+                        create().
+                        setFont("30px sans-serif").
+                        setText("CAAT").
+                        setFillStyle('green').
+                        setBaseline("bottom").      // over the path
+                        setOutline(true).
+                        setOutlineColor('red').
+                        setPath(_path_c7);          // traverse the path with defaults.
+                _scene_7.addChild( _text_20 );
+
+                // make text traverse under the path
+                var _text_21= new CAAT.TextActor().
+                        create().
+                        setFont("40px sans-serif").
+                        setText("CAAT").
+                        setFillStyle(gradient_top).
+                        setBaseline("top").         // under path
+                        setOutline(true).
+                        setOutlineColor('red').
+                        setPath( _path_c7,
+                                 new CAAT.Interpolator().createBounceInOutInterpolator(1.1, .4),
+                                 20000 );
+                _scene_7.addChild( _text_21 );
+
+                _director_7.loop(20);
+            </script>
+        </pre>
+    </div>
+    <div>
+        <canvas id="_c7"></canvas></div>
+        <script>
+            (function() {
+                var _director_7= new CAAT.Director().initialize(
+                        700,
+                        200,
+                        document.getElementById('_c7')
+                        );
+
+                var _scene_7= new CAAT.Scene().create();
+
+                _director_7.addScene( _scene_7);
+
+                // create a vertical gradient to apply to text.
+                var gradient_top= _director_7.ctx.createLinearGradient(0,0,0,40);
+                gradient_top.addColorStop(0,'#ffff00');
+                gradient_top.addColorStop(0.5,'#00ffff');
+                gradient_top.addColorStop(1,'blue');
+
+                // outline text. no fillStyle since the text will just be outlined.
+                var _text_00= new CAAT.TextActor().
+                        create().
+                        setFont("40px sans-serif").
+                        setText("CAAT").
+                        setBaseline("top").
+                        setFill(false).
+                        setLocation( 0, 30 );
+
+                // gradient text.
+                var _text_01= new CAAT.TextActor().
+                        create().
+                        setFont("40px sans-serif").
+                        setText("CAAT").
+                        setFillStyle(gradient_top).
+                        setBaseline("top").
+                        setLocation( 0, 80 );
+
+                // gradient + outlined.
+                var _text_02= new CAAT.TextActor().
+                        create().
+                        setFont("40px sans-serif").
+                        setText("CAAT").
+                        setFillStyle(gradient_top).
+                        setBaseline("top").
+                        setOutline(true).
+                        setOutlineColor('blue').
+                        setLocation( 0, 130 );
+
+                _scene_7.addChild(_text_00);
+                _scene_7.addChild(_text_01);
+                _scene_7.addChild(_text_02);
+
+                // a simple TextActor
+                var _text_10= new CAAT.TextActor().
+                        create().
+                        setFont("40px sans-serif").
+                        setText("CAAT").
+                        setFillStyle(gradient_top).
+                        setBaseline("top").
+                        setOutline(true).
+                        setOutlineColor('yellow').
+                        setLocation( 200,80 );
+
+                // rotate in 3 seconds
+                var _text_00_rb= new CAAT.RotateBehavior().
+                        setAngles(0, 2*Math.PI).
+                        setFrameTime( 0, 3000 ).
+                        setCycle(true);
+
+                // scale in 6 seconds doing pingpong
+                var _text_00_sb= new CAAT.ScaleBehavior().
+                        setValues( .5, 2, .5, 2 ).
+                        setFrameTime( 0, 6000 ).
+                        setCycle(true).
+                        setPingPong();
+
+                _text_10.addBehavior( _text_00_rb );
+                _text_10.addBehavior( _text_00_sb );
+                _scene_7.addChild( _text_10 );
+
+
+                // create a circular path.
+                var _path_c7= new CAAT.Path().
+                    beginPath(425,100).
+                    addCubicTo( 425,0,   625,0,   625,100 ).
+                    addCubicTo( 625,200,  425,200,  425,100 ).
+                    endPath();
+
+                // set an actor to be able to handle path.
+                var _pathactor_c7= new CAAT.PathActor().
+                        create().
+                        setBounds(0,0,_director_7.width,_director_7.height).
+                        setPath(_path_c7);
+                _scene_7.addChild( _pathactor_c7 );
+
+                // make text traverse over the path
+                var _text_20= new CAAT.TextActor().
+                        create().
+                        setFont("30px sans-serif").
+                        setText("CAAT").
+                        setFillStyle('green').
+                        setBaseline("bottom").      // over the path
+                        setOutline(true).
+                        setOutlineColor('red').
+                        setPath(_path_c7);          // traverse the path with defaults.
+                _scene_7.addChild( _text_20 );
+
+                // make text traverse under the path
+                var _text_21= new CAAT.TextActor().
+                        create().
+                        setFont("40px sans-serif").
+                        setText("CAAT").
+                        setFillStyle(gradient_top).
+                        setBaseline("top").         // under path
+                        setOutline(true).
+                        setOutlineColor('red').
+                        setPath( _path_c7,
+                                 new CAAT.Interpolator().createBounceInOutInterpolator(1.1, .4),
+                                 20000 );
+                _scene_7.addChild( _text_21 );
+
+                _director_7.loop(20);
+            })();
+        </script>
+    </div>
+
 </div>
 
 <div class="section">
     <h1>CAAT.ShapeActor</h1>
-</div>
+    <p>
+        CAAT also allows for simple shapes to be drawn as Scene Actors. The class ShapeActor will do.
+        By now, only two shapes are supported but more will be added soon. These shapes are: Rectangle and
+        Circle.
+    </p>
+    <div class="APIENTRY">
+        <p><b>function setShape( shape_id )</b></p>
+        <p>Sets the Shape the actor will show. Currently only SHAPE_RECTANGLE and SHAPE_CIRCLE are available.</p>
+    </div>
+    <div class="APIENTRY">
+        <p><b>function setCompositeOp( compositeOp )</b></p>
+        <p>Sets the composite operation to apply when drawing the Shape. It must be any valid canvas rendering
+            context compositeOp value.</p>
+    </div>
+    <div>
+        <p>
+            An now, for a more advanced example than just draw shapes on screen.
+        </p>
+        <p>
+            Move the mouse over the black area to see some red Circle-Shaped actors. Hold control to
+            add some blue Rectangle-Shaped actors. Upon behavior expiration (ie, elements en moving and
+            fading), the correspondent Actor is marked as expired and discardable, so it will be removed
+            from Scene.
+        </p>
+    </div>
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            <script>
+                var _director_8= new CAAT.Director().initialize(
+                        400,
+                        200,
+                        document.getElementById('_c8'));
 
-<div class="section">
-    <h1>CAAT.InterpolatorActor</h1>
-</div>
+                var _scene_8= new CAAT.Scene().create();
 
-<div class="section">
-    <h1>CAAT.PathActor</h1>
+                _director_8.addScene( _scene_8 );
+
+                // create a container, equals in size to the director.
+                var root= new CAAT.ActorContainer().
+                    create().
+                    setBounds(0,0,
+                         _director_8.canvas.width,_director_8.canvas.height).
+                    setFillStyle('#000000');
+                root.mouseEnter= function(mouseEvent) {}
+                root.mouseExit= function(mouseEvent) {}
+
+                _scene_8.addChild( root );
+
+                // on mouse move over the root Actor
+                root.mouseMove= function(mouseEvent) {
+
+                    var r= 1+10*Math.random();
+
+                    var bubble;
+
+                    // is pressing control, add a Rectangle-Shaped blue Actor
+                    if ( mouseEvent.isControlDown() ) {
+                        bubble= new CAAT.ShapeActor().
+                            create().
+                            setLocation( mouseEvent.point.x, mouseEvent.point.y ).
+                            setSize( 5+r, 5+r ).
+                            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+                            enableEvents(false).
+                            setCompositeOp('lighter').
+                            setFillStyle('blue');
+
+                    } else {
+                    // else, add a Circle-Shaped red Actor
+                        bubble= new CAAT.ShapeActor().
+                            setLocation( mouseEvent.point.x, mouseEvent.point.y ).
+                            create().
+                            setSize( 5+r, 5+r ).
+                            enableEvents(false).
+                            setCompositeOp('lighter').
+                            setFillStyle('red');
+                    }
+
+                    root.addChild(bubble);
+
+                    // Add a container behavior, to hold a fading behavior and a moving
+                    // behavior.
+                    var cb= new CAAT.ContainerBehavior().
+                        setFrameTime( _scene_8.time+2000+1000*Math.random(), 500 ).
+                        addListener(
+                            // when the container behavior is expired, expire and discard
+                            // the actor.
+                            {
+                                behaviorExpired : function(behaviour, time, actor) {
+                                    actor.
+                                        setDiscardable(true).
+                                        setExpired(true);
+                                }
+                            });
+
+                    var ab= new CAAT.AlphaBehavior().
+                        setFrameTime( 0, 500 ).
+                        setValues( 1, 0 );
+
+                    cb.addBehavior(ab);
+
+                    var tb= new CAAT.PathBehavior().
+                        setFrameTime( 0, 500 ).
+                        setPath(
+                            new CAAT.Path().setLinear(
+                                    bubble.x, bubble.y,
+                                    bubble.x, bubble.y-100-100*Math.random() ) );
+                    cb.addBehavior(tb);
+
+                    bubble.addBehavior( cb );
+                }
+
+                var span= document.getElementById('_c8_data');
+
+                // hook on endAnimate to show on document how many Actors are alive.
+                _scene_8.endAnimate= function _endAnimate(director,time) {
+                    // chain to previous method. DON'T FORGET TO DO THIS!!!.
+                    CAAT.Scene.superclass.endAnimate.call(this,director,time);
+                    if (span!=null) {
+                        span.innerText= 'Actors: '+root.childrenList.length;
+                    }
+                }
+
+                _director_8.loop(20);
+            </script>
+        </pre>
+    </div>
+    <div>
+        <canvas id="_c8"></canvas></div>
+        <div><span id="_c8_data"></span></div>
+        <script>
+            (function() {
+                var _director_8= new CAAT.Director().initialize(
+                        400,
+                        200,
+                        document.getElementById('_c8'));
+
+                var _scene_8= new CAAT.Scene().create();
+
+                _director_8.addScene( _scene_8 );
+
+                // create a container, equals in size to the director.
+                var root= new CAAT.ActorContainer().
+                    create().
+                    setBounds(0,0,
+                         _director_8.canvas.width,_director_8.canvas.height).
+                    setFillStyle('#000000');
+                root.mouseEnter= function(mouseEvent) {}
+                root.mouseExit= function(mouseEvent) {}
+
+                _scene_8.addChild( root );
+
+                // on mouse move over the root Actor
+                root.mouseMove= function(mouseEvent) {
+
+                    var r= 1+10*Math.random();
+
+                    var bubble;
+
+                    // is pressing control, add a Rectangle-Shaped blue Actor
+                    if ( mouseEvent.isControlDown() ) {
+                        bubble= new CAAT.ShapeActor().
+                            create().
+                            setLocation( mouseEvent.point.x, mouseEvent.point.y ).
+                            setSize( 5+r, 5+r ).
+                            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+                            enableEvents(false).
+                            setCompositeOp('lighter').
+                            setFillStyle('blue');
+
+                    } else {
+                    // else, add a Circle-Shaped red Actor
+                        bubble= new CAAT.ShapeActor().
+                            setLocation( mouseEvent.point.x, mouseEvent.point.y ).
+                            create().
+                            setSize( 5+r, 5+r ).
+                            enableEvents(false).
+                            setCompositeOp('lighter').
+                            setFillStyle('red');
+                    }
+
+                    root.addChild(bubble);
+
+                    // Add a container behavior, to hold a fading behavior and a moving
+                    // behavior.
+                    var cb= new CAAT.ContainerBehavior().
+                        setFrameTime( _scene_8.time+2000+1000*Math.random(), 500 ).
+                        addListener(
+                            // when the container behavior is expired, expire and discard
+                            // the actor.
+                            {
+                                behaviorExpired : function(behaviour, time, actor) {
+                                    actor.
+                                        setDiscardable(true).
+                                        setExpired(true);
+                                }
+                            });
+
+                    var ab= new CAAT.AlphaBehavior().
+                        setFrameTime( 0, 500 ).
+                        setValues( 1, 0 );
+
+                    cb.addBehavior(ab);
+
+                    var tb= new CAAT.PathBehavior().
+                        setFrameTime( 0, 500 ).
+                        setPath(
+                            new CAAT.Path().setLinear(
+                                    bubble.x, bubble.y,
+                                    bubble.x, bubble.y-100-100*Math.random() ) );
+                    cb.addBehavior(tb);
+
+                    bubble.addBehavior( cb );
+                }
+
+                var span= document.getElementById('_c8_data');
+
+                // hook on endAnimate to show on document how many Actors are alive.
+                _scene_8.endAnimate= function _endAnimate(director,time) {
+                    // chain to previous method. DON'T FORGET TO DO THIS!!!.
+                    CAAT.Scene.superclass.endAnimate.call(this,director,time);
+                    span.innerText= 'Actors: '+root.childrenList.length;
+                }
+
+                _director_8.loop(20);
+            })();
+        </script>
+    </div>
+
 </div>
 
 <div class="section">
     <h1>Defining custom actors</h1>
+    TBD
 </div>
 
 </body>

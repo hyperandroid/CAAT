@@ -16,13 +16,21 @@
 	
 	extend( CAAT.Scene, CAAT.ActorContainer, {
 		
-		easeContainerBehaviour:			null,
-		easeContainerBehaviourListener: null,
-		easeIn:							false,
-		EASE_ROTATION:					1,
-		EASE_SCALE:						2,
+		easeContainerBehaviour:			null,   // Behavior container used uniquely for Scene switching.
+		easeContainerBehaviourListener: null,   // who to notify about container behaviour events. Array.
+		easeIn:							false,  // When Scene switching, this boolean identifies whether the
+                                                // Scene is being brought in, or taken away.
+
+        EASE_ROTATION:					1,      // Constant values to identify the type of Scene transition
+		EASE_SCALE:						2,      // to perform on Scene switching by the Director.
 		EASE_TRANSLATE:					3,
 
+        /**
+         * Private.
+         * Helper method to manage alpha transparency fading on Scene switch by the Director.
+         * @param time integer indicating the time in milliseconds the fading will take.
+         * @param isIn boolean indicating whether this Scene in the switch process is being brought in.
+         */
 		createAlphaBehaviour: function(time, isIn) {
 			var ab= new CAAT.AlphaBehavior();
 			ab.setFrameTime( 0, time );
@@ -30,12 +38,43 @@
 			ab.endAlpha= isIn ? 1 : 0;
 			this.easeContainerBehaviour.addBehavior(ab);
 		},
+        /**
+         * Called from CAAT.Director to bring in an Scene.
+         * A helper method for easeTranslation.
+         * @param time integer indicating time in milliseconds for the Scene to be brought in.
+         * @param alpha boolean indicating whether fading will be applied to the Scene.
+         * @param anchor integer indicating the Scene switch anchor.
+         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         */
 		easeTranslationIn : function( time, alpha, anchor, interpolator ) {
             this.easeTranslation( time, alpha, anchor, true, interpolator );
         },
+        /**
+         * Called from CAAT.Director to bring in an Scene.
+         * A helper method for easeTranslation.
+         * @param time integer indicating time in milliseconds for the Scene to be taken away.
+         * @param alpha boolean indicating whether fading will be applied to the Scene.
+         * @param anchor integer indicating the Scene switch anchor.
+         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         */
         easeTranslationOut : function( time, alpha, anchor, interpolator ) {
             this.easeTranslation( time, alpha, anchor, false, interpolator );
         },
+        /**
+         * This method will setup Scene behaviours to switch an Scene via a translation.
+         * The anchor value can only be
+         *  <li>CAAT.Actor.prototype.ANCHOR_LEFT
+         *  <li>CAAT.Actor.prototype.ANCHOR_RIGHT
+         *  <li>CAAT.Actor.prototype.ANCHOR_TOP
+         *  <li>CAAT.Actor.prototype.ANCHOR_BOTTOM
+         * if any other value is specified, any of the previous ones will be applied.
+         *
+         * @param time integer indicating time in milliseconds for the Scene.
+         * @param alpha boolean indicating whether fading will be applied to the Scene.
+         * @param anchor integer indicating the Scene switch anchor.
+         * @param isIn boolean indicating whether the scene will be brought in.
+         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         */
 		easeTranslation : function( time, alpha, anchor, isIn, interpolator ) {
 
             this.easeContainerBehaviour= new CAAT.ContainerBehavior();
@@ -95,14 +134,41 @@
 			this.emptyBehaviorList();
 			CAAT.Scene.superclass.addBehavior.call( this, this.easeContainerBehaviour );
 		},
+        /**
+         * Called from CAAT.Director to bring in a Scene.
+         * A helper method for easeScale.
+         * @param time integer indicating time in milliseconds for the Scene to be brought in.
+         * @param alpha boolean indicating whether fading will be applied to the Scene.
+         * @param anchor integer indicating the Scene switch anchor.
+         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         * @param starttime integer indicating in milliseconds from which scene time the behavior will be applied.
+         */
 		easeScaleIn : function(starttime,time,alpha,anchor,interpolator) {
 			this.easeScale(starttime,time,alpha,anchor,true,interpolator);
 			this.easeIn= true;
 		},
+        /**
+         * Called from CAAT.Director to take away a Scene.
+         * A helper method for easeScale.
+         * @param time integer indicating time in milliseconds for the Scene to be taken away.
+         * @param alpha boolean indicating whether fading will be applied to the Scene.
+         * @param anchor integer indicating the Scene switch anchor.
+         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         * @param starttime integer indicating in milliseconds from which scene time the behavior will be applied.
+         */
 		easeScaleOut : function(starttime,time,alpha,anchor,interpolator) {
 			this.easeScale(starttime,time,alpha,anchor,false,interpolator);
 			this.easeIn= false;
 		},
+        /**
+         * Called from CAAT.Director to bring in ot take away an Scene.
+         * @param time integer indicating time in milliseconds for the Scene to be taken away.
+         * @param alpha boolean indicating whether fading will be applied to the Scene.
+         * @param anchor integer indicating the Scene switch anchor.
+         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         * @param starttime integer indicating in milliseconds from which scene time the behavior will be applied.
+         * @param isIn boolean indicating whether the Scene is being brought in.
+         */
 		easeScale : function(starttime,time,alpha,anchor,isIn,interpolator) {
 			this.easeContainerBehaviour= new CAAT.ContainerBehavior();
 
@@ -173,20 +239,46 @@
 			this.emptyBehaviorList();
 			CAAT.Scene.superclass.addBehavior.call( this, this.easeContainerBehaviour );
 		},
-		/*
+		/**
+         * Private.
+         * Overriden method to disallow default behavior.
 		 * Do not use directly.
 		 */
 		addBehavior : function(behaviour) {
 			
 		},
+        /**
+         * Called from CAAT.Director to use Rotations for bringing in.
+         * This method is a Helper for the method easeRotation.
+         * @param time integer indicating time in milliseconds for the Scene to be brought in.
+         * @param alpha boolean indicating whether fading will be applied to the Scene.
+         * @param anchor integer indicating the Scene switch anchor.
+         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         */
 		easeRotationIn : function(time,alpha,anchor,interpolator) {
 			this.easeRotation(time,alpha,anchor,true, interpolator);
 			this.easeIn= true;
 		},
+        /**
+         * Called from CAAT.Director to use Rotations for taking Scenes away.
+         * This method is a Helper for the method easeRotation.
+         * @param time integer indicating time in milliseconds for the Scene to be taken away.
+         * @param alpha boolean indicating whether fading will be applied to the Scene.
+         * @param anchor integer indicating the Scene switch anchor.
+         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         */
 		easeRotationOut : function(time,alpha,anchor,interpolator) {
 			this.easeRotation(time,alpha,anchor,false,interpolator);
 			this.easeIn= false;
 		},
+        /**
+         * Called from CAAT.Director to use Rotations for taking away or bringing Scenes in.
+         * @param time integer indicating time in milliseconds for the Scene to be taken away or brought in.
+         * @param alpha boolean indicating whether fading will be applied to the Scene.
+         * @param anchor integer indicating the Scene switch anchor.
+         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         * @param isIn boolean indicating whehter the Scene is brought in.
+         */
 		easeRotation : function(time,alpha,anchor,isIn,interpolator) {
 			this.easeContainerBehaviour= new CAAT.ContainerBehavior();
 			
@@ -239,12 +331,28 @@
 			this.emptyBehaviorList();
 			CAAT.Scene.superclass.addBehavior.call( this, this.easeContainerBehaviour );
 		},
+        /**
+         * Registers a listener for listen for transitions events.
+         * Al least, the Director registers himself as Scene easing transition listener.
+         * When the transition is done, it restores the Scene's capability of receiving events.
+         * @param listener an object which contains a method of the form <code>
+         * behaviorExpired( caat_behaviour, time, actor);
+         */
 		setEaseListener : function( listener ) {
 			this.easeContainerBehaviourListener=listener;
 		},
+        /**
+         * Private.
+         * listener for the Scene's easeContainerBehaviour.
+         * @param actor
+         */
 		behaviorExpired : function(actor) {
 			this.easeContainerBehaviourListener.easeEnd(this, this.easeIn);
 		},
+        /**
+         * This method should be overriden in case the developer wants to do some special actions when
+         * the scene has just been brought in.
+         */
         activated : function() {
         },
         /**
@@ -253,6 +361,13 @@
          */
         setExpired : function(bExpired) {
             this.expired= bExpired;
+        },
+        paint : function(director, time) {
+
+			var ctx= director.crc;
+
+            ctx.fillStyle= this.fillStyle!=null ? this.fillStyle : 'white';
+            ctx.fillRect(0,0,this.width,this.height );
         }
 	});
 })();

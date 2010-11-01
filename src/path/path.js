@@ -50,10 +50,12 @@
 			this.initialPosition.x= 	x;
 			this.initialPosition.y= 	y;
 			this.newPosition.set(x,y);
+            return this;
 		},
 		setFinalPosition : function( finalX, finalY )	{
 			this.finalPosition.x= 	finalX;
 			this.finalPosition.y=	finalY;
+            return this;
 		},
         endCurvePosition : function() {
 			return this.finalPosition;
@@ -360,6 +362,8 @@
 
                 this.pathSegments[i].endPath();
 			}
+
+            return this;
 		},
 	    getLength : function() {
 	    	return this.pathLength;
@@ -418,6 +422,7 @@
 		},
 		addPathListener : function( callback )	{
 			this.pathListener.push(callback);
+            return this;
 		},
 		firePathFinishedEvent : function(time)	{
 			for( var i=0; i<this.pathListener.length; i++ )	{

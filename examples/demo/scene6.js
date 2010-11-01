@@ -71,7 +71,7 @@ function __scene6(director) {
 		    );
 	    	
 	    
-	    	this.parent.magneticField( this.x, this.y, this.parent.childList[0] );
+	    	this.parent.magneticField( this.x, this.y, this.parent.childrenList[0] );
 	    }
 	    
 	    CAAT.Actor.prototype.animate.call(this,director,time);
@@ -80,17 +80,17 @@ function __scene6(director) {
 	
 	scene.mouseMove= function(mouseEvent) {
 		// 1 el circulo
-		mouseEvent.source.childList[1].setLocation( mouseEvent.point.x, mouseEvent.point.y );
+		mouseEvent.source.childrenList[1].setLocation( mouseEvent.point.x, mouseEvent.point.y );
 		// 0 el contenedor de peces
 		scene.magneticField(
 				mouseEvent.point.x, 
 				mouseEvent.point.y,
-				mouseEvent.source.childList[0]);
+				mouseEvent.source.childrenList[0]);
 	};
 	
 	scene.magneticField= function(x,y,pezContainer) {
-		for(var i=0; i<pezContainer.childList.length; i++ ) {
-			var actor= pezContainer.childList[i];
+		for(var i=0; i<pezContainer.childrenList.length; i++ ) {
+			var actor= pezContainer.childrenList[i];
 			var angle= 	Math.atan2( 
 					y - (actor.y + actor.height/2), 
 					x - (actor.x + actor.width/2) );

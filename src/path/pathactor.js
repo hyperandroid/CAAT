@@ -18,6 +18,7 @@
 		setPath : function(path) {
 			this.path= path;
 			this.pathBoundingRectangle= path.getBoundingBox();
+            return this;
 		},
 		paint : function(director, time) {
 

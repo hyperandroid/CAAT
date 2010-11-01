@@ -277,14 +277,13 @@ function __CAAT__loadingScene(director) {
         root.addChild(burbuja);
 
         var cb= new CAAT.ContainerBehavior();
-        cb.actor= burbuja;
 
         cb.setFrameTime( scene.time+2000+1000*Math.random(), 500 );
 		cb.addListener(
             {
-                behaviorExpired : function(behaviour, time) {
-                    behaviour.actor.discardable= true;
-                    behaviour.actor.setExpired(true);
+                behaviorExpired : function(behaviour, time, actor) {
+                    actor.discardable= true;
+                    actor.setExpired(true);
                 }
             });
 

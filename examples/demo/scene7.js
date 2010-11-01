@@ -78,7 +78,7 @@ function __scene7(director) {
 
     scene.__animate= scene.animate;
     scene.animate =function(director,time) {
-        children.setText( "Bubles: "+root.childList.length );
+        children.setText( "Bubles: "+root.childrenList.length );
         this.__animate(director,time);
     }
 

@@ -19,14 +19,14 @@
 
 (function() {
 	CAAT.Behavior= function() {
-		this.listenerList=[];
+		this.lifecycleListenerList=[];
 		this.setDefaultInterpolator();
 		return this;
 	};
 	
 	CAAT.Behavior.prototype= {
 			
-		listenerList:		null,
+		lifecycleListenerList:		null,
 		behaviorStartTime:	-1,
 		behaviorDuration:	-1,
 		cycleBehavior:		false,
@@ -36,26 +36,33 @@
 
 		setDefaultInterpolator : function() {
 			this.interpolator= new CAAT.Interpolator().createLinearInterpolator(false);
+            return this;
 		
 		},
 		setPingPong : function() {
 			this.interpolator= new CAAT.Interpolator().createLinearInterpolator(true);
+            return this;
 		},
 		setFrameTime : function( startTime, duration ) {
-			this.behaviorStartTime= 	startTime;
+			this.behaviorStartTime= startTime;
 			this.behaviorDuration= 	duration;
-			this.expired=				false;
+			this.expired=			false;
+
+            return this;
 		},
 		setInterpolator : function(interpolator) {
 			this.interpolator= interpolator;
+            return this;
 		},
 		apply : function(time, actor) {
 		},
 		setCycle : function(bool) {
 			this.cycleBehavior= bool;
+            return this;
 		},
 		addListener : function( behaviorListener ) {
-			this.listenerList.push(behaviorListener);
+			this.lifecycleListenerList.push(behaviorListener);
+            return this;
 		},
 		getStartTime : function() {
 			return this.behaviorStartTime;
@@ -86,8 +93,8 @@
 			return this.behaviorStartTime<=time && time<this.behaviorStartTime+this.behaviorDuration;
 		},
 		fireBehaviorExpiredEvent : function(actor,time)	{
-			for( var i=0; i<this.listenerList.length; i++ )	{
-				this.listenerList[i].behaviorExpired(this,time,actor);
+			for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
+				this.lifecycleListenerList[i].behaviorExpired(this,time,actor);
 			}
 		},
 		normalizeTime : function(time)	{
@@ -155,7 +162,6 @@
 			if ( this.cycleBehavior )	{
 				behavior.expired =  false;
 			} else {
-//                this.fireBehaviorExpired( this, time, actor );
                 this.fireBehaviorExpiredEvent( actor, time );
             }
 		},
@@ -194,7 +200,16 @@
 			var obj= actor.getAnchor( this.anchor );
 			actor.setRotationAnchored(angle, obj.x, obj.y);
 			
-		}
+		},
+        setAngles : function( start, end ) {
+            this.startAngle =  start;
+            this.endAngle=     end;
+            return this;
+        },
+        setAnchor : function( anchor ) {
+            this.anchor= anchor;
+            return this;
+        }
 		
 	});
 })();
@@ -233,7 +248,19 @@
             }
 
 			actor.setScaleAnchored( scaleX, scaleY, this.anchor );			
-		}
+		},
+        setValues : function( startX, endX, startY, endY ) {
+            this.startScaleX= startX;
+            this.endScaleX=   endX;
+            this.startScaleY= startY;
+            this.endScaleY=   endY;
+
+            return this;
+        },
+        setAnchor : function( anchor ) {
+            this.anchor= anchor;
+            return this;
+        }
 	});
 })();
 
@@ -256,7 +283,12 @@
 		setForTime : function(time,actor) {
 			var alpha= 	(this.startAlpha + time*(this.endAlpha-this.startAlpha));
 			actor.setAlpha( alpha );
-		}		
+        },
+        setValues : function( start, end ) {
+            this.startAlpha= start;
+            this.endAlpha= end;
+            return this;
+        }
 	});
 })();
 
@@ -284,11 +316,13 @@
 
         setPath : function(path) {
             this.path= path;
+            return this;
         },
         setFrameTime : function( startTime, duration ) {
             CAAT.PathBehavior.superclass.setFrameTime.call(this, startTime, duration );
             this.prevX= -1;
             this.prevY= -1;
+            return this;
         },
 		apply : function( time, actor )	{
 			if ( this.isBehaviorInTime(time,actor) )	{
