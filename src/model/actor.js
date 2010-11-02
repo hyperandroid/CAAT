@@ -46,6 +46,7 @@
 		rotationY:				0,      // transformation. rotation center y
 		alpha:					1,      // alpha transparency value
         isGlobalAlpha:          false,  // is this a global alpha
+        frameAlpha:             1,      // hierarchically calculated alpha for this Actor.
 		expired:				false,  // set when the actor has been expired
 		discardable:			false,  // set when you want this actor to be removed if expired
 		pointed:				false,  // is the mouse pointer inside this actor
@@ -749,7 +750,8 @@
 
             var canvas= director.crc;
 
-//            canvas.globalAlpha*= this.alpha;
+            this.frameAlpha= this.parent.frameAlpha*this.alpha;
+            canvas.globalAlpha= this.frameAlpha;
 
             this.transformationMatrix.prepareGraphics(canvas,this);
             this.setScreenBounds();
@@ -850,23 +852,14 @@
         paintActor : function(director, time ) {
             var canvas= director.crc;
 
-
             canvas.save();
-
-            var prevAlpha= canvas.globalAlpha;
-
-            if ( this.isGlobalAlpha ) {
-                canvas.globalAlpha*= this.alpha;
-            } else {
-                canvas.globalAlpha= this.alpha;
-            }
 
             if (!CAAT.ActorContainer.superclass.paintActor.call(this,director,time)) {
                 return false;
             }
 
             if ( !this.isGlobalAlpha ) {
-                canvas.globalAlpha= prevAlpha;
+                this.frameAlpha= this.parent.frameAlpha;
             }
 
             for( var i=0; i<this.childrenList.length; i++ ) {
