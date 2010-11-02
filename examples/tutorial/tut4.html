@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tutorial 4 - Interpolators</title>
+
+<script type="text/javascript" src="sh/shCore.js"></script>
+<script type="text/javascript" src="sh/shBrushJScript.js"></script>
+<link href="sh/shCore.css" rel="stylesheet" type="text/css" />
+<link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="../../src/CAAT.js"></script>
+
+<script type="text/javascript" src="../../src/core/class.js"></script>
+<script type="text/javascript" src="../../src/core/browserdetect.js"></script>
+
+<script type="text/javascript" src="../../src/model/actor.js"></script>
+<script type="text/javascript" src="../../src/model/conpoundimage.js"></script>
+<script type="text/javascript" src="../../src/model/imagepreloader.js"></script>
+<script type="text/javascript" src="../../src/model/director.js"></script>
+<script type="text/javascript" src="../../src/model/mouseevent.js"></script>
+<script type="text/javascript" src="../../src/model/scene.js"></script>
+
+<script type="text/javascript" src="../../src/math/affinetransform2D.js"></script>
+<script type="text/javascript" src="../../src/math/point.js"></script>
+<script type="text/javascript" src="../../src/math/rectangle.js"></script>
+<script type="text/javascript" src="../../src/math/bezier.js"></script>
+
+<script type="text/javascript" src="../../src/path/path.js"></script>
+<script type="text/javascript" src="../../src/path/pathactor.js"></script>
+<script type="text/javascript" src="../../src/path/interpolator.js"></script>
+<script type="text/javascript" src="../../src/path/interpolatoractor.js"></script>
+
+<script type="text/javascript" src="../../src/behaviour/behaviour.js"></script>
+
+<script type="text/javascript">
+     SyntaxHighlighter.all()
+</script>
+
+<style>
+    div.code {
+       font-size: .7em;
+    }
+    div.APIENTRY {
+        background-color: #f0f0f0;
+    }
+</style>
+
+</head>
+<body style="color:black; background:#ffffff;">
+
+<div class="section">
+    <h1>Interpolators</h1>
+    <p>Interpolator objects are used mainly in CAAT.Behavior objects to define the way they are applied.</p>
+    <p>The default interpolator applied to any Behavior is a linear ramp, that is, the Behavior is applied in regular
+    time increments.</p>
+    <p>A CAAT.Interpolator object has the abbility to modify this linearity, and apply Behaviors differently, in example
+    accelerating, exponentially, etc. but always taking the stablished time, and ending in the final target values set
+    for the concrete behavior.</p>
+    <p>Here you can see the visual representation of every defined CAAT.Interpolator:</p>
+    
+    <div>
+        <h2>Linear Interpolator</h2>
+        <div><canvas id="_c1"></canvas></div>
+        <script>
+            (function() {
+                var _director_1= new CAAT.Director().initialize(
+                        500,
+                        100,
+                        document.getElementById('_c1'));
+
+                var _scene_1= new CAAT.Scene().create();
+
+                _director_1.addScene( _scene_1 );
+
+                var lerps= [
+                        new CAAT.Interpolator().createLinearInterpolator(false, false),
+                        new CAAT.Interpolator().createLinearInterpolator(true,  false),
+                        new CAAT.Interpolator().createLinearInterpolator(false, true),
+                        new CAAT.Interpolator().createLinearInterpolator(true,  true),
+                ];
+
+                var i;
+                for( i=0; i<lerps.length; i++) {
+                    _scene_1.addChild(
+                            new CAAT.InterpolatorActor().
+                                create().
+                                setInterpolator( lerps[i] ).
+                                setBounds( 10+i*90, 10, 80, 80 ).
+                                setFillStyle('#d0d0d0') );
+                }
+
+                _director_1.loop(1);
+
+            })();
+        </script>
+    </div>
+
+    <div>
+        <h2>Exponential Interpolator</h2>
+        <div><canvas id="_c2"></canvas></div>
+        <script>
+            (function() {
+                var _director_1= new CAAT.Director().initialize(
+                        800,
+                        300,
+                        document.getElementById('_c2'));
+
+                var _scene_1= new CAAT.Scene().create();
+
+                _director_1.addScene( _scene_1 );
+
+                var lerps= [
+                    [
+                        new CAAT.Interpolator().createExponentialInInterpolator(    2, false),
+                        new CAAT.Interpolator().createExponentialOutInterpolator(   2, false),
+                        new CAAT.Interpolator().createExponentialInOutInterpolator( 2, false),
+
+                        new CAAT.Interpolator().createExponentialInInterpolator(    2, true),
+                        new CAAT.Interpolator().createExponentialOutInterpolator(   2, true),
+                        new CAAT.Interpolator().createExponentialInOutInterpolator( 2, true),
+                    ],
+                    [
+                        new CAAT.Interpolator().createExponentialInInterpolator(    4, false),
+                        new CAAT.Interpolator().createExponentialOutInterpolator(   4, false),
+                        new CAAT.Interpolator().createExponentialInOutInterpolator( 4, false),
+
+                        new CAAT.Interpolator().createExponentialInInterpolator(    4, true),
+                        new CAAT.Interpolator().createExponentialOutInterpolator(   4, true),
+                        new CAAT.Interpolator().createExponentialInOutInterpolator( 4, true),
+                    ],
+                    [
+                        new CAAT.Interpolator().createExponentialInInterpolator(    6, false),
+                        new CAAT.Interpolator().createExponentialOutInterpolator(   6, false),
+                        new CAAT.Interpolator().createExponentialInOutInterpolator( 6, false),
+
+                        new CAAT.Interpolator().createExponentialInInterpolator(    6, true),
+                        new CAAT.Interpolator().createExponentialOutInterpolator(   6, true),
+                        new CAAT.Interpolator().createExponentialInOutInterpolator( 6, true),
+                    ]
+                ];
+
+                var i, j;
+                for( j=0; j<lerps.length; j++) {
+                    for( i=0; i<lerps[j].length; i++) {
+                        _scene_1.addChild(
+                                new CAAT.InterpolatorActor().
+                                    create().
+                                    setInterpolator( lerps[j][i] ).
+                                    setBounds( (i>=3 ? 30 : 0) + 10+i*90, 10+90*j, 80, 80 ).
+                                    setFillStyle('#d0d0d0') );
+                    }
+                }
+
+                _director_1.loop(1);
+
+            })();
+        </script>
+    </div>
+
+
+<div>
+     <h2>Bounce Interpolator</h2>
+     <canvas id="_c3"></canvas></div>
+     <script>
+         (function() {
+             var _director_1= new CAAT.Director().initialize(
+                     800,
+                     100,
+                     document.getElementById('_c3'));
+
+             var _scene_1= new CAAT.Scene().create();
+
+             _director_1.addScene( _scene_1 );
+
+             var lerps= [
+                     new CAAT.Interpolator().createBounceInInterpolator(false),
+                     new CAAT.Interpolator().createBounceOutInterpolator(false),
+                     new CAAT.Interpolator().createBounceInOutInterpolator(false),
+
+                     new CAAT.Interpolator().createBounceInInterpolator(true),
+                     new CAAT.Interpolator().createBounceOutInterpolator(true),
+                     new CAAT.Interpolator().createBounceInOutInterpolator(true)
+             ];
+
+             var i;
+             for( i=0; i<lerps.length; i++) {
+                 _scene_1.addChild(
+                         new CAAT.InterpolatorActor().
+                             create().
+                             setInterpolator( lerps[i] ).
+                             setBounds( (i>=3 ? 30 : 0) + 10+i*90, 10, 80, 80 ).
+                             setFillStyle('#d0d0d0') );
+             }
+
+             _director_1.loop(1);
+
+         })();
+     </script>
+</div>
+
+<div>
+     <h2>Elastic Interpolator</h2>
+     <canvas id="_c4"></canvas></div>
+     <script>
+         (function() {
+             var _director_1= new CAAT.Director().initialize(
+                     800,
+                     160,
+                     document.getElementById('_c4'));
+
+             var _scene_1= new CAAT.Scene().create();
+
+             _director_1.addScene( _scene_1 );
+
+             var lerps= [
+                     new CAAT.Interpolator().createElasticInInterpolator(1.1, .4, false),
+                     new CAAT.Interpolator().createElasticOutInterpolator(1.1, .4, false),
+                     new CAAT.Interpolator().createElasticInOutInterpolator(1.1, .4, false),
+
+                 new CAAT.Interpolator().createElasticInInterpolator(1.1, .4, true),
+                 new CAAT.Interpolator().createElasticOutInterpolator(1.1, .4, true),
+                 new CAAT.Interpolator().createElasticInOutInterpolator(1.1, .4, true)
+             ];
+
+             var i;
+             for( i=0; i<lerps.length; i++) {
+                 _scene_1.addChild(
+                         new CAAT.InterpolatorActor().
+                             create().
+                             setInterpolator( lerps[i] ).
+                             setBounds( (i>=3 ? 30 : 0) + 10+i*90, 30, 80, 80 ).
+                             setFillStyle('#d0d0d0') );
+             }
+
+             _director_1.loop(1);
+
+         })();
+     </script>
+</div>
+
+
+
+
+</body>
+</html>

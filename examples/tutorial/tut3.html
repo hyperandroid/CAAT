@@ -2058,7 +2058,112 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
 
 <div class="section">
     <h1>Defining custom actors</h1>
-    TBD
+    <p>
+        The cycle of putting an Actor on screen for every Actor in Scene's frame time is as follows:
+    </p>
+    <ul>
+        <li>A call to the method animate(director, time). This method basically applies any Behavior registered for an
+        Actor.</li>
+        <li>If after applying the Behaviors an Actor is still in frame time, a call to the method paintActor(director, SceneTime)
+        is performed. This method sets an appropriate global alpha, prepares Actor's transformation matrix, clips the
+        canvas if set, etc.</li>
+        <li>paintActor, then calls the method paint(director,time) which finally executes the painting routine.</li>
+    </ul>
+    <p>
+        This method calls are automatically performed by the framework, starting from the Director and following every
+        running Scene on it in a recursive object orientes fashion. CAAT in fact, tries to be object oriented.
+        The Director object is in fact a special kind of ActorContainer, so it is the Scene object.
+    </p>
+    <p>
+        To define a new Actor type, the developer first must extend either CAAT.Actor or CAAT.ActorContainer as needed.
+        The extension mechanism is straightforward and performed like this:
+    </p>
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            <script>
+                (function() {
+
+                    // constructor
+                    CAAT.NewActorType= function() {
+
+                        // must chain to superclass constructor:
+                        CAAT.newActorType.superclass.constructor.call(this);
+
+                        // perform other initialization code here.
+                        // better do it overriding create method.
+
+                        return this;
+                    };
+
+                    // extension
+                    extend( CAAT.NewActorType, CAAT.Actor, {
+                        // overriden methods/attributes go here.
+                    });
+                })();
+            </script>
+        </pre>
+    </div>
+    <p>
+        has the opportunity to override the methods
+    </p>
+    <ul>
+        <li>animate(director,time) to perform extra transformations or to avoid Behaviors at all. It is convenient to chain
+        the call to the previous animate method by issuing a call to</li>
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            CAAT.NewActorType.superclass.method-to-override.call(
+                this,
+                overriden-method-parameter-list );
+        </pre>
+    </div>
+
+        <li>paint(director,time) to perform custom paint.</li>
+    </ul>
+    <p>
+        This is CAAT code to define the ShapeActor
+    </p>
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            <script>
+                (function() {
+
+                    // constructor
+                    CAAT.ShapeActor = function() {
+
+                        // chain superclass constructor
+                        CAAT.ShapeActor.superclass.constructor.call(this);
+
+                        // extra initialization code
+                        this.compositeOp= 'source-over';
+                        return this;
+                    };
+
+                    // extension
+                    extend( CAAT.ShapeActor, CAAT.Actor, {
+
+                        // overriden paint method
+                        paint: function(director,time) {
+                            var ctx= director.crc;
+
+                            ctx.globalCompositeOperation= this.compositeOp;
+                            if ( null!=this.fillStyle ) {
+                                ...
+                                ctx.arc(
+                                        this.width/2,
+                                        this.height/2,
+                                        Math.min(this.width,this.height)/2,
+                                        0,
+                                        2*Math.PI,
+                                        false );
+                                ctx.fill();
+                            }
+                            ...
+                        }
+                    };
+                })();
+            </script>
+        </pre>
+    </div>
 </div>
 
 </body>

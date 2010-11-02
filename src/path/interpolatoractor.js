@@ -18,6 +18,8 @@
         setInterpolator : function( interpolator ) {
             this.interpolator= interpolator;
             this.contour= interpolator.getContour(this.S);
+
+            return this;
         },
         paint : function( director, time ) {
 
@@ -28,7 +30,7 @@
                 var canvas= director.crc;
                 canvas.save();
                 canvas.beginPath();
-                canvas.moveTo( this.contour[0].x/this.S*this.width, this.height - this.contour[0].y/this.S*this.height );
+                canvas.moveTo( this.contour[0].x * this.width, this.height - this.contour[0].y * this.height );
 
                 for( var i=1; i<this.contour.length; i++ ) {
                     canvas.lineTo( this.contour[i].x * this.width, this.height - this.contour[i].y * this.height );
