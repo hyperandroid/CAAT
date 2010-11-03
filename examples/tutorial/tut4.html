@@ -59,58 +59,171 @@
     <p>A CAAT.Interpolator object has the abbility to modify this linearity, and apply Behaviors differently, in example
     accelerating, exponentially, etc. but always taking the stablished time, and ending in the final target values set
     for the concrete behavior.</p>
+    <p>In CAAT an interpolator will an object with two methods:</p>
+    <div class="APIENTRY">
+        <p><b>function getContour( number-of-samples )</b></p>
+        <p>This method returns an array on 'number-of-samples' objects of the form {x: float, y:float}.</p>
+    </div>
+    <div class="APIENTRY">
+        <p><b>function getPosition( time )</b></p>
+        <p>This method will return an object of the form {x: time, y: float}. The 'time' parameter will a normalized
+        value between 0 and 1. This function will evaluate the Interpolator function for the parameter, which will
+        normally return a value between 0 and 1.</p>
+    </div>
+    <p>
+        The CAAT.Interpolator implementation, defines some methods of the form create&lt;SombreDescription&gt;Interpolator
+        each of which creates a method which evaluates a function as time parameter modifier. These methods, among
+        other possible parameters, accept at least one parameters.
+    </p>
+    <ul>
+        <li>pingpong. A boolean value indicating whether the Interpolator function evaluates in two halves. One half
+        to reach the maximum function value, and the other to get back from the maximum function value, to the minimum one.</li>
+    </ul>
+
     <p>Here you can see the visual representation of every defined CAAT.Interpolator:</p>
     
     <div>
         <h2>Linear Interpolator</h2>
-        <div><canvas id="_c1"></canvas></div>
+        <div>
+            <table cellpadding="5">
+                <tr colspan="2" align="center">Inverse= <b>false</b></tr>
+                <tr>
+                    <td>Pinpong=<b>false</b></td>
+                    <td>Pinpong=<b>true</b></td>
+                </tr>
+                <tr>
+                    <td><canvas id='_linear_noinverse0'></canvas></td>
+                    <td><canvas id='_linear_noinverse1'></canvas></td>
+                </tr>
+            </table>
+        </div>
         <script>
             (function() {
-                var _director_1= new CAAT.Director().initialize(
-                        500,
-                        100,
-                        document.getElementById('_c1'));
-
-                var _scene_1= new CAAT.Scene().create();
-
-                _director_1.addScene( _scene_1 );
-
                 var lerps= [
                         new CAAT.Interpolator().createLinearInterpolator(false, false),
-                        new CAAT.Interpolator().createLinearInterpolator(true,  false),
-                        new CAAT.Interpolator().createLinearInterpolator(false, true),
-                        new CAAT.Interpolator().createLinearInterpolator(true,  true),
+                        new CAAT.Interpolator().createLinearInterpolator(true,  false)
                 ];
 
-                var i;
+                var i, count=0;
                 for( i=0; i<lerps.length; i++) {
+                    var _director_1= new CAAT.Director().initialize(
+                            100,
+                            100,
+                            document.getElementById('_linear_noinverse'+count++));
+
+                    var _scene_1= new CAAT.Scene().create();
+
+                    _director_1.addScene( _scene_1 );
+
                     _scene_1.addChild(
                             new CAAT.InterpolatorActor().
                                 create().
                                 setInterpolator( lerps[i] ).
-                                setBounds( 10+i*90, 10, 80, 80 ).
+                                setBounds( 10, 10, 80, 80 ).
                                 setFillStyle('#d0d0d0') );
+
+                    _director_1.loop(1);
                 }
-
-                _director_1.loop(1);
-
             })();
         </script>
     </div>
 
     <div>
-        <h2>Exponential Interpolator</h2>
-        <div><canvas id="_c2"></canvas></div>
+        <h2>Linear Inverse Interpolator</h2>
+        <div>
+            <table cellpadding="5">
+                <tr colspan="2" align="center">Inverse= <b>true</b></tr>
+                <tr>
+                    <td>Pinpong=<b>false</b></td>
+                    <td>Pinpong=<b>true</b></td>
+                </tr>
+                <tr>
+                    <td><canvas id='_linear_inverse0'></canvas></td>
+                    <td><canvas id='_linear_inverse1'></canvas></td>
+                </tr>
+            </table>
+        </div>
         <script>
             (function() {
-                var _director_1= new CAAT.Director().initialize(
-                        800,
-                        300,
-                        document.getElementById('_c2'));
+                var lerps= [
+                        new CAAT.Interpolator().createLinearInterpolator(false, true),
+                        new CAAT.Interpolator().createLinearInterpolator(true,  true)
+                ];
 
-                var _scene_1= new CAAT.Scene().create();
+                var i, count=0;
+                for( i=0; i<lerps.length; i++) {
+                    var _director_1= new CAAT.Director().initialize(
+                            100,
+                            100,
+                            document.getElementById('_linear_inverse'+count++));
 
-                _director_1.addScene( _scene_1 );
+                    var _scene_1= new CAAT.Scene().create();
+
+                    _director_1.addScene( _scene_1 );
+
+                    _scene_1.addChild(
+                            new CAAT.InterpolatorActor().
+                                create().
+                                setInterpolator( lerps[i] ).
+                                setBounds( 10, 10, 80, 80 ).
+                                setFillStyle('#d0d0d0') );
+
+                    _director_1.loop(1);
+                }
+            })();
+        </script>
+    </div>
+    <div>
+        <h2>Exponential Interpolator</h2>
+        <p>
+            The exponential interpolator, accepts two parameters. The exponent of the Interpolator function and the
+            previously described pingpong boolean value.</p>
+        <div>
+            <table cellpadding="5">
+                <tr>
+                    <td colspan="3" align="center">Pinpong=<b>false</b></td>
+                    <td colspan="3" align="center">Pinpong=<b>true</b></td>
+                </tr>
+                <tr>
+                    <td>Exponent</td>
+                    <td>ExponentialIn</td>
+                    <td>ExponentialOut</td>
+                    <td>ExponentialInOut</td>
+                    <td>ExponentialIn</td>
+                    <td>ExponentialOut</td>
+                    <td>ExponentialInOut</td>
+                </tr>
+                <tr>
+                    <td><span id="_exponent0"></span></td>
+                    <td><canvas id='_exp_0'></canvas></td>
+                    <td><canvas id='_exp_1'></canvas></td>
+                    <td><canvas id='_exp_2'></canvas></td>
+                    <td><canvas id='_exp_3'></canvas></td>
+                    <td><canvas id='_exp_4'></canvas></td>
+                    <td><canvas id='_exp_5'></canvas></td>
+                </tr>
+                <tr>
+                    <td><span id="_exponent1"></span></td>
+                    <td><canvas id='_exp_6'></canvas></td>
+                    <td><canvas id='_exp_7'></canvas></td>
+                    <td><canvas id='_exp_8'></canvas></td>
+                    <td><canvas id='_exp_9'></canvas></td>
+                    <td><canvas id='_exp_10'></canvas></td>
+                    <td><canvas id='_exp_11'></canvas></td>
+                </tr>
+                <tr>
+                    <td><span id="_exponent2"></span></td>
+                    <td><canvas id='_exp_12'></canvas></td>
+                    <td><canvas id='_exp_13'></canvas></td>
+                    <td><canvas id='_exp_14'></canvas></td>
+                    <td><canvas id='_exp_15'></canvas></td>
+                    <td><canvas id='_exp_16'></canvas></td>
+                    <td><canvas id='_exp_17'></canvas></td>
+                </tr>
+            </table>
+        </div>
+        <script>
+            (function() {
 
                 var lerps= [
                     [
@@ -142,119 +255,196 @@
                     ]
                 ];
 
-                var i, j;
+                var i, j, count=0;
                 for( j=0; j<lerps.length; j++) {
+                    document.getElementById('_exponent'+j).innerHTML="<span align='center'>"+(1+j)*2+"</span>";
                     for( i=0; i<lerps[j].length; i++) {
+
+                        var _director_1= new CAAT.Director().initialize(
+                                100,
+                                100,
+                                document.getElementById('_exp_'+count++));
+
+                        var _scene_1= new CAAT.Scene().create();
+
+                        _director_1.addScene( _scene_1 );
+                        
                         _scene_1.addChild(
                                 new CAAT.InterpolatorActor().
                                     create().
                                     setInterpolator( lerps[j][i] ).
-                                    setBounds( (i>=3 ? 30 : 0) + 10+i*90, 10+90*j, 80, 80 ).
+                                    setBounds( 10, 10, 80, 80 ).
                                     setFillStyle('#d0d0d0') );
+
+                        _director_1.loop(1);
                     }
                 }
-
-                _director_1.loop(1);
-
             })();
         </script>
     </div>
 
 
-<div>
-     <h2>Bounce Interpolator</h2>
-     <canvas id="_c3"></canvas></div>
-     <script>
-         (function() {
-             var _director_1= new CAAT.Director().initialize(
-                     800,
-                     100,
-                     document.getElementById('_c3'));
+    <div>
+         <h2>Bounce Interpolator</h2>
+        <div>
+            <table cellpadding="5">
+                <tr>
+                    <td colspan="3" align="center">Pinpong=<b>false</b></td>
+                    <td colspan="3" align="center">Pinpong=<b>true</b></td>
+                </tr>
+                <tr>
+                    <td>BounceIn</td>
+                    <td>BounceOut</td>
+                    <td>BounceInOut</td>
+                    <td>BounceIn</td>
+                    <td>BounceOut</td>
+                    <td>BounceInOut</td>
+                </tr>
+                <tr>
+                    <td><canvas id='_bounce_0'></canvas></td>
+                    <td><canvas id='_bounce_1'></canvas></td>
+                    <td><canvas id='_bounce_2'></canvas></td>
+                    <td><canvas id='_bounce_3'></canvas></td>
+                    <td><canvas id='_bounce_4'></canvas></td>
+                    <td><canvas id='_bounce_5'></canvas></td>
+                </tr>
+            </table>
+        </div>
+         <script>
+             (function() {
+                 var lerps= [
+                    [
+                         new CAAT.Interpolator().createBounceInInterpolator(false),
+                         new CAAT.Interpolator().createBounceOutInterpolator(false),
+                         new CAAT.Interpolator().createBounceInOutInterpolator(false),
 
-             var _scene_1= new CAAT.Scene().create();
+                         new CAAT.Interpolator().createBounceInInterpolator(true),
+                         new CAAT.Interpolator().createBounceOutInterpolator(true),
+                         new CAAT.Interpolator().createBounceInOutInterpolator(true)
+                    ]
+                 ];
 
-             _director_1.addScene( _scene_1 );
+                 var i, j, count=0;
+                 for( j=0; j<lerps.length; j++) {
+                     for( i=0; i<lerps[j].length; i++) {
 
-             var lerps= [
-                     new CAAT.Interpolator().createBounceInInterpolator(false),
-                     new CAAT.Interpolator().createBounceOutInterpolator(false),
-                     new CAAT.Interpolator().createBounceInOutInterpolator(false),
+                         var _director_1= new CAAT.Director().initialize(
+                                 100,
+                                 100,
+                                 document.getElementById('_bounce_'+count++));
 
-                     new CAAT.Interpolator().createBounceInInterpolator(true),
-                     new CAAT.Interpolator().createBounceOutInterpolator(true),
-                     new CAAT.Interpolator().createBounceInOutInterpolator(true)
-             ];
+                         var _scene_1= new CAAT.Scene().create();
 
-             var i;
-             for( i=0; i<lerps.length; i++) {
-                 _scene_1.addChild(
-                         new CAAT.InterpolatorActor().
-                             create().
-                             setInterpolator( lerps[i] ).
-                             setBounds( (i>=3 ? 30 : 0) + 10+i*90, 10, 80, 80 ).
-                             setFillStyle('#d0d0d0') );
-             }
+                         _director_1.addScene( _scene_1 );
 
-             _director_1.loop(1);
+                         _scene_1.addChild(
+                                 new CAAT.InterpolatorActor().
+                                     create().
+                                     setInterpolator( lerps[j][i] ).
+                                     setBounds( 10, 10, 80, 80 ).
+                                     setFillStyle('#d0d0d0') );
 
-         })();
-     </script>
-</div>
-
-<div>
-     <h2>Elastic Interpolator</h2>
-     <canvas id="_c4"></canvas></div>
-     <script>
-         (function() {
-             var _director_1= new CAAT.Director().initialize(
-                     800,
-                     320,
-                     document.getElementById('_c4'));
-
-             var _scene_1= new CAAT.Scene().create();
-
-             _director_1.addScene( _scene_1 );
-
-             var lerps= [
-                 [
-                    new CAAT.Interpolator().createElasticInInterpolator(    1.1, .4, false),
-                    new CAAT.Interpolator().createElasticOutInterpolator(   1.1, .4, false),
-                    new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, .4, false),
-
-                    new CAAT.Interpolator().createElasticInInterpolator(    1.1, .4, true),
-                    new CAAT.Interpolator().createElasticOutInterpolator(   1.1, .4, true),
-                    new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, .4, true)
-                 ],
-                 [
-                    new CAAT.Interpolator().createElasticInInterpolator(    1.0, .2, false),
-                    new CAAT.Interpolator().createElasticOutInterpolator(   1.0, .2, false),
-                    new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, .2, false),
-
-                    new CAAT.Interpolator().createElasticInInterpolator(    1.0, .2, true),
-                    new CAAT.Interpolator().createElasticOutInterpolator(   1.0, .2, true),
-                    new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, .2, true)
-                ]
-             ];
-
-             var i, j;
-             for( j=0; j<lerps.length; j++) {
-                 for( i=0; i<lerps[j].length; i++) {
-                     _scene_1.addChild(
-                             new CAAT.InterpolatorActor().
-                                 create().
-                                 setInterpolator( lerps[j][i] ).
-                                 setBounds( (i>=3 ? 30 : 0) + 10+i*90, 30+130*j, 80, 80 ).
-                                 setFillStyle('#d0d0d0') );
+                         _director_1.loop(1);
+                     }
                  }
-             }
 
-             _director_1.loop(1);
+             })();
+         </script>
+    </div>
 
-         })();
-     </script>
+    <div>
+         <h2>Elastic Interpolator</h2>
+        <div>
+            <table cellpadding="5">
+                <tr>
+                    <td colspan="3" align="center">Pinpong=<b>false</b></td>
+                    <td colspan="3" align="center">Pinpong=<b>true</b></td>
+                </tr>
+                <tr>
+                    <td>Parameters</td>
+                    <td>ElasticIn</td>
+                    <td>ElasticOut</td>
+                    <td>ElasticInOut</td>
+                    <td>ElasticIn</td>
+                    <td>ElasticOut</td>
+                    <td>ElasticInOut</td>
+                </tr>
+                <tr>
+                    <td><span id="_elastic_info0"></span></td>
+                    <td><canvas id='_Elastic_0'></canvas></td>
+                    <td><canvas id='_Elastic_1'></canvas></td>
+                    <td><canvas id='_Elastic_2'></canvas></td>
+                    <td><canvas id='_Elastic_3'></canvas></td>
+                    <td><canvas id='_Elastic_4'></canvas></td>
+                    <td><canvas id='_Elastic_5'></canvas></td>
+                </tr>
+                <tr>
+                    <td><span id="_elastic_info1"></span></td>
+                    <td><canvas id='_Elastic_6'></canvas></td>
+                    <td><canvas id='_Elastic_7'></canvas></td>
+                    <td><canvas id='_Elastic_8'></canvas></td>
+                    <td><canvas id='_Elastic_9'></canvas></td>
+                    <td><canvas id='_Elastic_10'></canvas></td>
+                    <td><canvas id='_Elastic_11'></canvas></td>
+                </tr>
+            </table>
+        </div>
+         <script>
+             (function() {
+                 var msgs= [
+                     'amp=1.1, liquid=.4',
+                     'amp=1.0, liquid=.2' ];
+                 var lerps= [
+                     [
+                        new CAAT.Interpolator().createElasticInInterpolator(    1.1, .4, false),
+                        new CAAT.Interpolator().createElasticOutInterpolator(   1.1, .4, false),
+                        new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, .4, false),
+
+                        new CAAT.Interpolator().createElasticInInterpolator(    1.1, .4, true),
+                        new CAAT.Interpolator().createElasticOutInterpolator(   1.1, .4, true),
+                        new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, .4, true)
+                     ],
+                     [
+                        new CAAT.Interpolator().createElasticInInterpolator(    1.0, .2, false),
+                        new CAAT.Interpolator().createElasticOutInterpolator(   1.0, .2, false),
+                        new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, .2, false),
+
+                        new CAAT.Interpolator().createElasticInInterpolator(    1.0, .2, true),
+                        new CAAT.Interpolator().createElasticOutInterpolator(   1.0, .2, true),
+                        new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, .2, true)
+                    ]
+                 ];
+
+                 var i, j, count=0;
+                 for( j=0; j<lerps.length; j++) {
+                     document.getElementById('_elastic_info'+j).innerHTML=msgs[j];
+                     for( i=0; i<lerps[j].length; i++) {
+
+                         var _director_1= new CAAT.Director().initialize(
+                                 100,
+                                 140,
+                                 document.getElementById('_Elastic_'+count++));
+
+                         var _scene_1= new CAAT.Scene().create();
+
+                         _director_1.addScene( _scene_1 );
+
+                         _scene_1.addChild(
+                                 new CAAT.InterpolatorActor().
+                                     create().
+                                     setInterpolator( lerps[j][i] ).
+                                     setBounds( 10, 30, 80, 80 ).
+                                     setFillStyle('#d0d0d0') );
+
+                         _director_1.loop(1);
+                     }
+                 }
+
+             })();
+         </script>
+    </div>
+
 </div>
-
-
 
 
 </body>

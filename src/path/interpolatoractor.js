@@ -15,9 +15,18 @@
         contour:        null,
         S:              50,
 
-        setInterpolator : function( interpolator ) {
+        /**
+         * Sets the CAAT.Interpolator instance to draw.
+         *
+         * @param interpolator a CAAT.Interpolator instance.
+         * @param size an integer indicating the number of polyline segments so draw to show the CAAT.Interpolator
+         * instance.
+         *
+         * @return this
+         */
+        setInterpolator : function( interpolator, size ) {
             this.interpolator= interpolator;
-            this.contour= interpolator.getContour(this.S);
+            this.contour= interpolator.getContour(size || this.S);
 
             return this;
         },
@@ -28,7 +37,7 @@
             if ( this.interpolator ) {
 
                 var canvas= director.crc;
-                canvas.save();
+//                canvas.save();
                 canvas.beginPath();
                 canvas.moveTo( this.contour[0].x * this.width, this.height - this.contour[0].y * this.height );
 
@@ -38,7 +47,7 @@
 
                 canvas.strokeStyle='black';
                 canvas.stroke();
-                canvas.restore();
+//                canvas.restore();
             }
         }
     });
