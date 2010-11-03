@@ -208,7 +208,7 @@
          (function() {
              var _director_1= new CAAT.Director().initialize(
                      800,
-                     160,
+                     320,
                      document.getElementById('_c4'));
 
              var _scene_1= new CAAT.Scene().create();
@@ -216,23 +216,36 @@
              _director_1.addScene( _scene_1 );
 
              var lerps= [
-                     new CAAT.Interpolator().createElasticInInterpolator(1.1, .4, false),
-                     new CAAT.Interpolator().createElasticOutInterpolator(1.1, .4, false),
-                     new CAAT.Interpolator().createElasticInOutInterpolator(1.1, .4, false),
+                 [
+                    new CAAT.Interpolator().createElasticInInterpolator(    1.1, .4, false),
+                    new CAAT.Interpolator().createElasticOutInterpolator(   1.1, .4, false),
+                    new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, .4, false),
 
-                 new CAAT.Interpolator().createElasticInInterpolator(1.1, .4, true),
-                 new CAAT.Interpolator().createElasticOutInterpolator(1.1, .4, true),
-                 new CAAT.Interpolator().createElasticInOutInterpolator(1.1, .4, true)
+                    new CAAT.Interpolator().createElasticInInterpolator(    1.1, .4, true),
+                    new CAAT.Interpolator().createElasticOutInterpolator(   1.1, .4, true),
+                    new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, .4, true)
+                 ],
+                 [
+                    new CAAT.Interpolator().createElasticInInterpolator(    1.0, .2, false),
+                    new CAAT.Interpolator().createElasticOutInterpolator(   1.0, .2, false),
+                    new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, .2, false),
+
+                    new CAAT.Interpolator().createElasticInInterpolator(    1.0, .2, true),
+                    new CAAT.Interpolator().createElasticOutInterpolator(   1.0, .2, true),
+                    new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, .2, true)
+                ]
              ];
 
-             var i;
-             for( i=0; i<lerps.length; i++) {
-                 _scene_1.addChild(
-                         new CAAT.InterpolatorActor().
-                             create().
-                             setInterpolator( lerps[i] ).
-                             setBounds( (i>=3 ? 30 : 0) + 10+i*90, 30, 80, 80 ).
-                             setFillStyle('#d0d0d0') );
+             var i, j;
+             for( j=0; j<lerps.length; j++) {
+                 for( i=0; i<lerps[j].length; i++) {
+                     _scene_1.addChild(
+                             new CAAT.InterpolatorActor().
+                                 create().
+                                 setInterpolator( lerps[j][i] ).
+                                 setBounds( (i>=3 ? 30 : 0) + 10+i*90, 30+130*j, 80, 80 ).
+                                 setFillStyle('#d0d0d0') );
+                 }
              }
 
              _director_1.loop(1);
