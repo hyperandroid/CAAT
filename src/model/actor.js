@@ -940,7 +940,8 @@
          * @return an integer indicating the Actor's z-order.
          */
 		findChild : function(child) {
-			for( var i in this.childrenList ) {
+            var i=0;
+			for( i=0; i<this.childrenList.length; i++ ) {
 				if ( this.childrenList[i]==child ) {
 					return i;
 				}
@@ -1001,6 +1002,21 @@
             CAAT.ActorContainer.superclass.destroy.call(this);
 
             return this;
+        },
+        /**
+         * Get number of Actors into this container.
+         * @return integer indicating the number of children.
+         */
+        getNumChildren : function() {
+            return this.childrenList.length;
+        },
+        /**
+         * Returns the Actor at the iPosition(th) position.
+         * @param iPosition an integer indicating the position array.
+         * @return the CAAT.Actor object at position.
+         */
+        getChildAt : function( iPosition ) {
+            return this.childrenList[ iPosition ];
         }
 	});
 
