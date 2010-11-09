@@ -14,7 +14,7 @@
  *  + add more scene change transitions (translations and flip)
  *  + expose more events.
  *  + pump keyboard events
- *  + modify event pumping: prevent default, bubling, etc.
+ *  + modify event pumping: prevent default, bubbling, etc.
  *
  **/
 
@@ -68,6 +68,11 @@
             this.timeline= new Date().getTime();
 
             return this;
+        },
+        createScene : function() {
+            var scene= new CAAT.Scene().create();
+            this.addScene(scene);
+            return scene;
         },
         /**
          * This is the entry point for the animation system of the Director.

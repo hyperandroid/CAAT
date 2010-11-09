@@ -1017,6 +1017,37 @@
          */
         getChildAt : function( iPosition ) {
             return this.childrenList[ iPosition ];
+        },
+        /**
+         * Changes an actor's ZOrder.
+         * @param actor the actor to change ZOrder for
+         * @param index an integer indicating the new ZOrder. a value greater than children list size means to be the
+         * last ZOrder Actor.
+         */
+        setZOrder : function( actor, index ) {
+            var actorPos= this.findChild(actor);
+            // the actor is present
+            if ( -1!=actorPos ) {
+
+                // trivial reject.
+                if ( index==actorPos ) {
+                    return;
+                }
+
+                if ( index>=this.childrenList.length ) {
+					this.childrenList.splice(actorPos,1);
+					this.childrenList.push(actor);
+                } else {
+                    var nActor= this.childrenList.splice(actorPos,1);
+                    if ( index<0 ) {
+                        index=0;
+                    } else if ( index>this.childrenList.length ) {
+                        index= this.childrenList.length;
+                    }
+
+                    this.childrenList.splice( index, 1, nActor );
+                }
+            }
         }
 	});
 
