@@ -1521,12 +1521,14 @@
             ctx.globalCompositeOperation= this.compositeOp;
             if ( null!=this.fillStyle ) {
                 ctx.fillStyle= this.fillStyle;
+                ctx.beginPath();
                 ctx.fillRect(0,0,this.width,this.height);
                 ctx.fill();
             }
 
             if ( null!=this.strokeStyle ) {
                 ctx.strokeStyle= this.strokeStyle;
+                ctx.beginPath();
                 ctx.strokeRect(0,0,this.width,this.height);
                 ctx.stroke();
             }

@@ -140,9 +140,9 @@
 		
 		behaviors:	null,
 		addBehavior : function(behavior)	{
-
 			this.behaviors.push(behavior);
 			behavior.addListener(this);
+            return this;
 		},
 		apply : function(time, actor) {
 			if ( this.isBehaviorInTime(time,actor) )	{

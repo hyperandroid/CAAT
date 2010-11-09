@@ -15,6 +15,8 @@
         row:        0,
         column:     0,
 
+        context:    null,
+
         /**
          *
          * @param row
@@ -22,10 +24,11 @@
          * @param context the HN.Context instance
          */
         initialize : function(row, column, context) {
-            this.row= row;
-            this.column= column;
-
-            this.color= (Math.random()*context.getNumberColors())>>0;
+            this.row=       row;
+            this.column=    column;
+            this.selected=  false;
+            this.color=     (Math.random()*context.getNumberColors())>>0;
+            this.context=   context;
 
             // favorecer los numeros 3..9
             if ( Math.random()>.3 ) {
@@ -39,6 +42,10 @@
             } else if ( this.value>8 ) {
                 this.value=8;
             }
+        },
+        changeSelection : function() {
+            this.selected= !this.selected;
+            this.context.selectionChanged(this);
         }
     };
 
@@ -138,6 +145,26 @@
         setStatus : function( status ) {
             this.status= status;
             this.fireEvent( 'context', 'status', this.status );
+        },
+        selectionChanged : function(brick) {
+
+            // si ya estaba en la lista de seleccionados, quitarlo.
+            var found= false;
+            for( var i=0; i<this.selectedList.length; i++ ) {
+                // esta en la lista.
+                if ( this.selectedList[i]==brick ) {
+                    this.selectedList.splice( i, 1 );
+                    found= true;
+                    break;
+                }
+            }
+
+            // si no, incluirlo.
+            if ( !found ) {
+                this.selectedList.push(brick);
+            }
+
+            this.fireEvent('brick','selection',brick);
         }
     };
 })();

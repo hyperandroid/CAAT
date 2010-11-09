@@ -31,6 +31,11 @@
                     0);
         },
         mouseEnter : function(mouseEvent) {
+
+            if ( this.brick.selected ) {
+                return;
+            }
+
             this.emptyBehaviorList();
 
             this.parent.setZOrder( this, Number.MAX_VALUE );
@@ -52,8 +57,116 @@
 
             this.addBehavior( sb );
 */
+        },
+        mouseClick : function(mouseEvent) {
+            this.brick.changeSelection();
         }
 
+    });
+})();
+
+(function() {
+    HN.SelectionPath= function() {
+        HN.SelectionPath.superclass.constructor.call(this);
+        this.coords= [];
+        this.particles= [];
+        this.fillStyle= null;
+        return this;
+    }
+
+    extend( HN.SelectionPath, CAAT.Actor, {
+
+        coords:                 null,   // an array of 2D positions on screen.
+        path:                   null,
+        pathMeasure:            null,
+        particles:              null,   // an array of random time to position on path.
+        particlesPerSegment:    20,
+        traversingPathTime:     3000,
+
+        initialize : function() {
+            this.coords= [];
+            this.path=           null;
+            this.pathMeasure=    null;
+        },
+        setup : function( context, numberWidth, numberHeight ) {
+
+            this.coords= [];
+
+            // no bricks, no path
+            if ( 0==context.selectedList.length ) {
+                this.initialize();
+            }
+
+            var i;
+
+            // get selected bricks screen coords.
+            for( i=0; i<context.selectedList.length; i++ )  {
+                var brick= context.selectedList[i];
+                this.coords.push(
+                    {
+                        x: brick.column*numberWidth + numberWidth/2,
+                        y: brick.row*numberHeight + numberHeight/2
+                    });
+            }
+
+            // setup a path for the coordinates.
+            this.path= new CAAT.Path();
+            this.path.beginPath( this.coords[0].x, this.coords[0].y );
+            for( i=1; i<context.selectedList.length; i++ ) {
+                this.path.addLineTo( this.coords[i].x, this.coords[i].y );
+            }
+            this.path.closePath();
+
+
+            this.pathMeasure= new CAAT.PathBehavior().
+                    setPath(this.path).
+                    setFrameTime(0, this.traversingPathTime*context.selectedList.length).
+                    setCycle(true);
+
+            var expectedParticleCount= this.particlesPerSegment*context.selectedList.length;
+            if ( this.particles.length> expectedParticleCount ) {
+                this.particles.splice( expectedParticleCount, this.particles.length-expectedParticleCount );
+            } else {
+                while( this.particles.length<expectedParticleCount ) {
+                    this.particles.push( (context.selectedList.length-1)*this.traversingPathTime + this.traversingPathTime*Math.random() );
+                }
+            }
+        },
+        paint : function(director, time)    {
+            if ( this.coords.length>0 ) {
+                var ctx= director.ctx;
+
+                ctx.beginPath();
+                for( i=0; i<this.coords.length; i++ ) {
+                    ctx.lineTo( this.coords[i].x, this.coords[i].y );
+                }
+                ctx.lineTo( this.coords[0].x, this.coords[0].y );
+                ctx.closePath();
+
+                ctx.strokeStyle=    '#ffff00';
+                ctx.lineCap=        'round';
+                ctx.lineJoin=       'round';
+
+                ctx.lineWidth=      8;
+                ctx.globalAlpha=    .33;
+                ctx.stroke();
+
+                ctx.lineWidth=      4;
+                ctx.globalAlpha=    .66;
+                ctx.stroke();
+
+                ctx.globalAlpha=    1;
+                ctx.lineWidth=      1;
+                ctx.stroke();
+
+                // draw particles.
+                var i;
+                for(i=0; i<this.particles.length; i++) {
+                    var pos= this.pathMeasure.positionOnTime(this.particles[i]+time);
+                    ctx.fillRect( pos.x, pos.y, 5, 5 );
+                }
+            }
+        }
     });
 })();
 
@@ -70,9 +183,12 @@
         gameRows:       15,
         gameColumns:    20,
 
+        gap:            2,
+
         context:        null,
         directorScene:  null,
 
+        selectionPath:  null,
         brickActors:    null,
         bricksImage:    null,
 
@@ -104,6 +220,15 @@
 
             this.brickActors= [];
 
+            var bricksRoot= new CAAT.ActorContainer().
+                    create().
+                    setBounds(
+                        0,
+                        0,
+                        this.gameColumns*this.getBrickWidth(),
+                        this.gameRows*this.getBrickHeight());
+            this.directorScene.addChild(bricksRoot);
+
             var i,j;
             for( i=0; i<this.gameRows; i++ ) {
                 this.brickActors.push([]);
@@ -115,9 +240,21 @@
 
                     this.brickActors[i].push( brick );
 
-                    this.directorScene.addChild(brick);
+                    bricksRoot.addChild(brick);
                 }
             }
+
+
+            /////////////////////// initialize selection path
+            this.selectionPath= new HN.SelectionPath().
+                    create().
+                    setBounds(
+                        0,
+                        0,
+                        this.gameColumns*this.getBrickWidth(),
+                        this.gameRows*this.getBrickHeight());
+            this.selectionPath.enableEvents(false);
+            this.directorScene.addChild(this.selectionPath);
 
             /////////////////////// initialize button
             var restart= new CAAT.ShapeActor().
@@ -134,54 +271,66 @@
 
             return this;
         },
+        getBrickWidth : function() {
+            return this.bricksImage.singleWidth + this.gap;
+        },
+        getBrickHeight : function() {
+            return this.bricksImage.singleHeight + this.gap;
+        },
         initializeActors : function() {
+
+            this.selectionPath.initialize();
+
             var i, j;
+            var radius= Math.max(this.director.canvas.width,this.director.canvas.height );
+            var angle=  Math.PI*2*Math.random();
+            var me=     this;
 
-            var radius= Math.max(
-                    this.director.canvas.width,
-                    this.director.canvas.height );
+            var p0= Math.random()*this.director.canvas.width;
+            var p1= Math.random()*this.director.canvas.height;
+            var p2= Math.random()*this.director.canvas.width;
+            var p3= Math.random()*this.director.canvas.height;
 
-            var angle= Math.PI*2*Math.random();
-
-            var me= this;
 
             for( i=0; i<this.gameRows; i++ ) {
                 for( j=0; j<this.gameColumns; j++ ) {
                     var brickActor= this.brickActors[i][j];
-                    brickActor.setFrameTime( this.directorScene.time, Number.MAX_VALUE );
+                    brickActor.
+                            setFrameTime( this.directorScene.time, Number.MAX_VALUE ).
+                            setAlpha(1);
 
 
                     var moveB= new CAAT.PathBehavior().
                             setFrameTime(this.directorScene.time , 1000+Math.random()*2000).
                             setPath(
+/*
                                 new CAAT.LinearPath().
                                     setInitialPosition(
                                         radius/2 + Math.cos(angle)*radius,
                                         radius/2 + Math.sin(angle)*radius ).
                                     setFinalPosition(
-                                        j*this.bricksImage.singleWidth + j*2,
-                                        i*this.bricksImage.singleHeight + i*2 ) ).
-/*
+                                        j*this.getBrickWidth(),
+                                        i*this.getBrickHeight() ) ).
+*/
+
                                 new CAAT.CurvePath().
                                         setCubic(
                                             radius/2 + Math.cos(angle)*radius,
                                             radius/2 + Math.sin(angle)*radius,
-                                            Math.random()*this.director.canvas.width,
-                                            Math.random()*this.director.canvas.height,
-                                        Math.random()*this.director.canvas.width,
-                                        Math.random()*this.director.canvas.height,
-                                        
+                                            p0, p1, p2, p3,
                                             j*this.bricksImage.singleWidth + j*2,
                                             i*this.bricksImage.singleHeight + i*2)
                                          ).
-*/
+
                             setInterpolator(
-                                new CAAT.Interpolator().createBounceOutInterpolator( false) );
+//                                new CAAT.Interpolator().createBounceOutInterpolator( false) );
+                                new CAAT.Interpolator().createExponentialInOutInterpolator(3,false) );
                     var sb= new CAAT.ScaleBehavior().
                             setFrameTime(this.directorScene.time , 1000+Math.random()*2000).
                             setValues( .1, 1, .1 , 1).
                             setInterpolator(
-                                new CAAT.Interpolator().createBounceOutInterpolator( false) );
+//                                new CAAT.Interpolator().createBounceOutInterpolator( false) );
+                                new CAAT.Interpolator().createExponentialInOutInterpolator(3,false) );
 
 
                     brickActor.emptyBehaviorList();
@@ -220,6 +369,45 @@
                         }
                     }
                 }
+            } else if ( event.source='brick' ) {
+                if ( event.type='selection' ) {
+
+                    var brick= event.params;
+                    var brickActor= this.brickActors[brick.row][brick.column];
+
+                    if ( brick.selected ) {
+                        brickActor.emptyBehaviorList();
+
+                        var sb= new CAAT.ScaleBehavior().
+                                setValues( 1, .5, 1, .5 ).
+                                setFrameTime( 0, 1000 ).
+                                setPingPong();
+                        var ab= new CAAT.AlphaBehavior().
+                                setValues( 1, .25 ).
+                                setFrameTime( 0, 1000 ).
+                                setPingPong();
+
+                        var cb= new CAAT.ContainerBehavior().
+                                setFrameTime( 0, 1000 ).
+                                setCycle(true).
+                                setPingPong().
+                                addBehavior( sb ).
+                                addBehavior( ab );
+
+                        brickActor.addBehavior(cb);
+                    }
+                    else {
+                        brickActor.resetTransform();
+                        brickActor.emptyBehaviorList();
+                        brickActor.alpha=1;
+                    }
+                }
+
+                // rebuild selection path
+                this.selectionPath.setup(
+                        this.context,
+                        this.getBrickWidth(),
+                        this.getBrickHeight() );
             }
         },
         startGame : function() {
