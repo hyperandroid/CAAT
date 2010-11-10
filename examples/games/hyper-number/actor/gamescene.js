@@ -233,6 +233,14 @@
 
             this.directorScene= director.createScene();
 
+            this.directorScene.addChild(
+                    new HN.Garden().
+                            create().
+                            setBounds(0,0,director.canvas.width,director.canvas.height).
+                            initialize( director.ctx, 150 )
+                    )
+
+
             this.brickActors= [];
 
             //////////////////////// Number Bricks
@@ -393,149 +401,11 @@
                 }
             } else if ( event.source=='brick' ) {
                 if ( event.event=='selection' ) {   // des/marcar un elemento.
-
-                    var brick= event.params;
-                    brickActor= this.brickActors[brick.row][brick.column];
-
-                    if ( brick.selected ) {
-                        brickActor.emptyBehaviorList();
-
-                        var sb= new CAAT.ScaleBehavior().
-                                setValues( 1, .5, 1, .5 ).
-                                setFrameTime( 0, 1000 ).
-                                setPingPong();
-                        var ab= new CAAT.AlphaBehavior().
-                                setValues( 1, .25 ).
-                                setFrameTime( 0, 1000 ).
-                                setPingPong();
-
-                        var cb= new CAAT.ContainerBehavior().
-                                setFrameTime( 0, 1000 ).
-                                setCycle(true).
-                                setPingPong().
-                                addBehavior( sb ).
-                                addBehavior( ab );
-
-                        brickActor.addBehavior(cb);
-                    }
-                    else {
-                        brickActor.reset();
-                    }
-
+                    this.brickSelectionEvent(event);
                 } else if ( event.event=='selectionoverflow') {  // seleccion error.
-                    var selectedContextBricks= event.params;
-                    for( i=0; i<selectedContextBricks.length; i++ ) {
-                        this.brickActors[ selectedContextBricks[i].row ][ selectedContextBricks[i].column ].reset();
-                    }
-
-                    this.bricksContainer.enableEvents(false);
-
-                    // get all active actors on board
-                    var activeActors= [];
-                    for( i=0; i<this.gameRows; i++ ) {
-                        for( j=0; j<this.gameColumns; j++ ) {
-                            var actor= this.brickActors[i][j];
-                            if ( !actor.brick.removed ) {
-                                activeActors.push(actor);
-                            }
-                        }
-                    }
-
-                    // define animation callback
-                    var count=0;
-                    var maxCount= activeActors.length;
-                    var me= this;
-                    var callback= {
-                        behaviorExpired : function(behavior, time, actor) {
-                            count++;
-                            if ( count==maxCount ) {
-                                me.bricksContainer.enableEvents(true);
-                            }
-                        }
-                    };
-
-                    // for each active actor, play a wrong-path.
-                    for( i=0; i<activeActors.length; i++ ) {
-                        var actor= activeActors[i];
-
-                        var signo= Math.random()<.5 ? 1: -1;
-                        actor.emptyBehaviorList().
-                            addBehavior(
-                                new CAAT.PathBehavior().
-                                    setFrameTime(this.directorScene.time, 200).
-                                    setPath(
-                                        new CAAT.Path().
-                                            beginPath( actor.x, actor.y ).
-                                            addLineTo(
-                                                actor.x + signo*(5+5*Math.random()),
-                                                actor.y ).
-                                            addLineTo(
-                                                actor.x - signo*(10+5*Math.random()),
-                                                actor.y ).
-                                            closePath() ).
-                                    addListener(callback).
-                                    setPingPong() );
-                    }
+                    this.selectionOverflowEvent(event);
                 } else if ( event.event=='selection-cleared') {  // seleccion error.
-                    var selectedContextBricks= event.params;
-                    var me= this;
-                    for( i=0; i<selectedContextBricks.length; i++ ) {
-
-                        var actor= this.brickActors[ selectedContextBricks[i].row ][ selectedContextBricks[i].column ];
-
-                        var signo= Math.random()<.5 ? 1 : -1;
-                        var offset= 50+Math.random()*30;
-                        var offsetY= 60+Math.random()*30;
-
-                        actor.parent.setZOrder(Number.MAX_VALUE);
-                        actor.enableEvents(false).
-                            emptyBehaviorList().
-                            addBehavior(
-                                new CAAT.PathBehavior().
-                                    setFrameTime( this.directorScene.time, 800 ).
-                                    setPath(
-                                        new CAAT.Path().
-                                            beginPath( actor.x, actor.y ).
-                                            addQuadricTo(
-                                                actor.x+offset*signo,   actor.y-300,
-                                                actor.x+offset*signo*2, actor.y+this.director.canvas.height+20).
-                                            endPath() ).
-                                    addListener( {
-
-                                        behaviorExpired : function(behavior, time, actor) {
-                                            actor.setExpired(true);
-                                        },
-                                        behaviorApplied : function(behavior, time, normalizedTime, actor, value) {
-                                            var colors= ['#00ff00','#ffff00','#00ffff'];
-                                            for( i=0; i<3; i++ ) {
-                                                var offset0= Math.random()*10*(Math.random()<.5?1:-1);
-                                                var offset1= Math.random()*10*(Math.random()<.5?1:-1);
-                                                me.directorScene.addChild(
-                                                    new CAAT.ShapeActor().
-                                                        create().
-                                                        setBounds( offset0+actor.x-3, offset1+actor.y-3, 6, 6 ).
-                                                        setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE).
-                                                        setFillStyle( colors[i%3] ).
-                                                        setDiscardable(true).
-                                                        setFrameTime(me.directorScene.time, 300).
-                                                        addBehavior(
-                                                            new CAAT.AlphaBehavior().
-                                                                setFrameTime(me.directorScene.time, 300).
-                                                                setValues( .6, .1 )
-                                                        ) );
-                                            }
-                                        }
-                                    })
-                            ).addBehavior(
-                                new CAAT.RotateBehavior().
-                                    setFrameTime( this.directorScene.time, 800 ).
-                                    setAngles( 0, (Math.PI + Math.random()*Math.PI*2)*(Math.random()<.5?1:-1) )
-                            ).addBehavior(
-                                new CAAT.AlphaBehavior().
-                                    setFrameTime( this.directorScene.time, 800 ).
-                                    setValues( 1, .25 )
-                            ).setScale( 1.5, 1.5 );
-                    }
+                    this.selectionClearedEvent(event);
                 }
 
                 // rebuild selection path
@@ -547,6 +417,161 @@
         },
         startGame : function() {
             this.context.initialize();
+        },
+        brickSelectionEvent : function(event) {
+            var brick= event.params;
+            var brickActor= this.brickActors[brick.row][brick.column];
+
+            if ( brick.selected ) {
+                brickActor.emptyBehaviorList();
+
+                var sb= new CAAT.ScaleBehavior().
+                        setValues( 1, .5, 1, .5 ).
+                        setFrameTime( 0, 1000 ).
+                        setPingPong();
+                var ab= new CAAT.AlphaBehavior().
+                        setValues( 1, .25 ).
+                        setFrameTime( 0, 1000 ).
+                        setPingPong();
+
+                var cb= new CAAT.ContainerBehavior().
+                        setFrameTime( 0, 1000 ).
+                        setCycle(true).
+                        setPingPong().
+                        addBehavior( sb ).
+                        addBehavior( ab );
+
+                brickActor.addBehavior(cb);
+            }
+            else {
+                brickActor.reset();
+            }
+        },
+        selectionOverflowEvent : function(event) {
+            var i,j;
+            var selectedContextBricks= event.params;
+            var actor;
+
+            for( i=0; i<selectedContextBricks.length; i++ ) {
+                this.brickActors[ selectedContextBricks[i].row ][ selectedContextBricks[i].column ].reset();
+            }
+
+            this.bricksContainer.enableEvents(false);
+
+            // get all active actors on board
+            var activeActors= [];
+            for( i=0; i<this.gameRows; i++ ) {
+                for( j=0; j<this.gameColumns; j++ ) {
+                    actor= this.brickActors[i][j];
+                    if ( !actor.brick.removed ) {
+                        activeActors.push(actor);
+                    }
+                }
+            }
+
+            // define animation callback
+            var count=0;
+            var maxCount= activeActors.length;
+            var me= this;
+            var callback= {
+                behaviorExpired : function(behavior, time, actor) {
+                    count++;
+                    if ( count==maxCount ) {
+                        me.bricksContainer.enableEvents(true);
+                    }
+                }
+            };
+
+            // for each active actor, play a wrong-path.
+            for( i=0; i<activeActors.length; i++ ) {
+                actor= activeActors[i];
+
+                var signo= Math.random()<.5 ? 1: -1;
+                actor.emptyBehaviorList().
+                    addBehavior(
+                        new CAAT.PathBehavior().
+                            setFrameTime(this.directorScene.time, 200).
+                            setPath(
+                                new CAAT.Path().
+                                    beginPath( actor.x, actor.y ).
+                                    addLineTo(
+                                        actor.x + signo*(5+5*Math.random()),
+                                        actor.y ).
+                                    addLineTo(
+                                        actor.x - signo*(10+5*Math.random()),
+                                        actor.y ).
+                                    closePath() ).
+                            addListener(callback).
+                            setPingPong() );
+            }
+        },
+        selectionClearedEvent : function(event) {
+            var selectedContextBricks= event.params;
+            var me= this;
+            var i,j;
+
+            for( i=0; i<selectedContextBricks.length; i++ ) {
+
+                var actor= this.brickActors[ selectedContextBricks[i].row ][ selectedContextBricks[i].column ];
+
+                var signo= Math.random()<.5 ? 1 : -1;
+                var offset= 50+Math.random()*30;
+                var offsetY= 60+Math.random()*30;
+
+                actor.parent.setZOrder(Number.MAX_VALUE);
+                actor.enableEvents(false).
+                    emptyBehaviorList().
+                    addBehavior(
+                        new CAAT.PathBehavior().
+                            setFrameTime( this.directorScene.time, 800 ).
+                            setPath(
+                                new CAAT.Path().
+                                    beginPath( actor.x, actor.y ).
+                                    addQuadricTo(
+                                        actor.x+offset*signo,   actor.y-300,
+                                        actor.x+offset*signo*2, actor.y+this.director.canvas.height+20).
+                                    endPath() ).
+                            addListener( {
+
+                                colors: ['#00ff00','#ffff00','#00ffff'],
+                                behaviorExpired : function(behavior, time, actor) {
+                                    actor.setExpired(true);
+                                },
+                                behaviorApplied : function(behavior, time, normalizedTime, actor, value) {
+
+                                    for( i=0; i<3; i++ ) {
+                                        var offset0= Math.random()*10*(Math.random()<.5?1:-1);
+                                        var offset1= Math.random()*10*(Math.random()<.5?1:-1);
+                                        me.directorScene.addChild(
+                                            new CAAT.ShapeActor().
+                                                create().
+                                                setBounds( offset0+actor.x-3, offset1+actor.y-3, 6, 6 ).
+                                                setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE).
+                                                setFillStyle( this.colors[i%3] ).
+                                                setDiscardable(true).
+                                                setFrameTime(me.directorScene.time, 400).
+                                                addBehavior(
+                                                    new CAAT.AlphaBehavior().
+                                                        setFrameTime(me.directorScene.time, 300).
+                                                        setValues( .6, .1 ).
+                                                        setInterpolator(
+                                                            new CAAT.Interpolator().createExponentialInInterpolator(
+                                                                    2,
+                                                                    false))
+                                                ) );
+                                    }
+                                }
+                            })
+                    ).addBehavior(
+                        new CAAT.RotateBehavior().
+                            setFrameTime( this.directorScene.time, 800 ).
+                            setAngles( 0, (Math.PI + Math.random()*Math.PI*2)*(Math.random()<.5?1:-1) )
+                    ).addBehavior(
+                        new CAAT.AlphaBehavior().
+                            setFrameTime( this.directorScene.time, 800 ).
+                            setValues( 1, .25 )
+                    ).setScale( 1.5, 1.5 );
+            }
         }
     };
 })();
