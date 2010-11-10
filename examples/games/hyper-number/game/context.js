@@ -11,6 +11,7 @@
         value:      0,
         color:      0,
         selected:   false,
+        removed:    false,
 
         row:        0,
         column:     0,
@@ -27,20 +28,21 @@
             this.row=       row;
             this.column=    column;
             this.selected=  false;
+            this.removed=   false;
             this.color=     (Math.random()*context.getNumberColors())>>0;
             this.context=   context;
 
             // favorecer los numeros 3..9
             if ( Math.random()>.3 ) {
-                this.value= (Math.random()*6+3)>>0;
+                this.value= 4 + (Math.random()*6)>>0;
             } else {
-                this.value= (Math.random()*3)>>0;
+                this.value= 1 + (Math.random()*3)>>0;
             }
 
-            if ( this.value<0 ) {
-                this.value=0;
-            } else if ( this.value>8 ) {
-                this.value=8;
+            if ( this.value<1 ) {
+                this.value=1;
+            } else if ( this.value>9 ) {
+                this.value=9;
             }
         },
         changeSelection : function() {
@@ -74,6 +76,7 @@
         selectedList:   null,   // selected bricks.
 
         status:         0,      // <-- control logic -->
+        level:          0,
 
         ST_INITIALIZING:    0,
         ST_RUNNNING:        1,
@@ -107,7 +110,9 @@
             return this.numNumberColors;
         },
         initialize : function() {
-            this.selectedList= [];
+
+            this.level=         1;
+            this.selectedList=  [];
 
             for( i=0; i<this.rows; i++ ) {
                 for( j=0; j<this.columns; j++ ) {
@@ -145,26 +150,99 @@
         setStatus : function( status ) {
             this.status= status;
             this.fireEvent( 'context', 'status', this.status );
+
+            if ( this.status==this.ST_RUNNNING ) {
+                this.setGuessNumber();
+            }
         },
         selectionChanged : function(brick) {
 
             // si ya estaba en la lista de seleccionados, quitarlo.
-            var found= false;
-            for( var i=0; i<this.selectedList.length; i++ ) {
+            var i;
+            for( i=0; i<this.selectedList.length; i++ ) {
                 // esta en la lista.
+                // eliminar y salir del metodo
                 if ( this.selectedList[i]==brick ) {
                     this.selectedList.splice( i, 1 );
-                    found= true;
-                    break;
+                    this.fireEvent('brick','selection',brick);
+                    return;
                 }
             }
 
-            // si no, incluirlo.
-            if ( !found ) {
-                this.selectedList.push(brick);
+            // chequear que la suma de los elementos seleccionados es igual al numero magico.
+            var sum=0;
+            for( i=0; i<this.selectedList.length; i++ ) {
+                sum+= this.selectedList[i].value;
             }
 
-            this.fireEvent('brick','selection',brick);
+            sum+= brick.value;
+
+            if ( sum>this.guessNumber ) {
+
+                brick.selected= false;
+                var selected= this.selectedList.slice(0);
+                for( i=0; i<this.selectedList.length; i++ ) {
+                    this.selectedList[i].selected= false;
+                }
+                this.selectedList= [];
+
+                // quitar marca de seleccion al ladrillo.
+                this.fireEvent('brick','selectionoverflow', selected );
+
+
+            } else if ( sum==this.guessNumber ) {
+                this.selectedList.push(brick);
+                var selected= this.selectedList.slice(0);
+                for( i=0; i<this.selectedList.length; i++ ) {
+                    this.selectedList[i].selected= false;
+                    this.selectedList[i].removed= true;
+                }
+                this.selectedList= [];
+
+                this.fireEvent('brick','selection-cleared', selected );
+                
+                this.setGuessNumber();
+                
+            } else {
+                // todavia podemos sumar numeros.
+                this.selectedList.push(brick);
+                this.fireEvent('brick','selection',brick);
+            }
+        },
+        setGuessNumber : function() {
+
+            // first get all available board numbers.
+            var activeBricks= [];
+            var i,j;
+            for( i=0; i<this.rows; i++ ) {
+                for( j=0; j<this.columns; j++ ) {
+                    if ( !this.data[i][j].removed ) {
+                        activeBricks.push(this.data[i][j]);
+                    }
+                }
+            }
+
+            // scramble elements.
+            if ( activeBricks.length>1 ) {
+                for( i=0; i<activeBricks.length; i++ ) {
+                    var rpos0=              (Math.random()*activeBricks.length)>>0;
+                    var tmp=                activeBricks[i];
+
+                    activeBricks[i]=        activeBricks[rpos0];
+                    activeBricks[rpos0]=    tmp;
+                }
+            }
+
+            var sum=0;
+            for( i=0; i<activeBricks.length; i++ ) {
+                if ( sum+activeBricks[i].value >= (this.level+1)*10 ) {
+                    break;
+                }
+                sum+= activeBricks[i].value;
+            }
+
+            this.guessNumber= sum;
+            this.fireEvent( 'context','guessnumber',this );
         }
     };
 })();

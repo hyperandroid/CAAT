@@ -54,7 +54,16 @@
 			this.interpolator= interpolator;
             return this;
 		},
-		apply : function(time, actor) {
+		apply : function( time, actor )	{
+            var orgTime= time;
+			if ( this.isBehaviorInTime(time,actor) )	{
+				time= this.normalizeTime(time);
+				this.fireBehaviorAppliedEvent(
+                        actor,
+                        orgTime,
+                        time,
+                        this.setForTime( time, actor ) );
+			}
 		},
 		setCycle : function(bool) {
 			this.cycleBehavior= bool;
@@ -97,6 +106,13 @@
 				this.lifecycleListenerList[i].behaviorExpired(this,time,actor);
 			}
 		},
+        fireBehaviorAppliedEvent : function(actor,time,normalizedTime,value)	{
+            for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
+                if (this.lifecycleListenerList[i].behaviorApplied) {
+                    this.lifecycleListenerList[i].behaviorApplied(this,time,normalizedTime,actor,value);
+                }
+            }
+        },
 		normalizeTime : function(time)	{
 			time= time-this.behaviorStartTime;
 			if ( this.cycleBehavior )	{
@@ -169,6 +185,8 @@
 			for( var i=0; i<this.behaviors.length; i++ ) {
 				this.behaviors[i].setForTime( time, actor );
 			}
+
+            return null;
 		}
 	});
 })();
@@ -185,20 +203,15 @@
 		startAngle:	0,
 		endAngle:	0,
 		anchor:		0,
-		
-		apply : function(time, actor) {
-			if ( this.isBehaviorInTime(time,actor) )	{
-				time= this.normalizeTime(time);
-				
-				this.setForTime(time, actor);
-			}
-		},
+
 		setForTime : function(time,actor) {
 			var angle= 
 				this.startAngle + time*(this.endAngle-this.startAngle);
 			
 			var obj= actor.getAnchor( this.anchor );
 			actor.setRotationAnchored(angle, obj.x, obj.y);
+
+            return angle;
 			
 		},
         setAngles : function( start, end ) {
@@ -227,13 +240,7 @@
 		startScaleY:	0,
 		endScaleY:	    0,
 		anchor:		    0,		
-		
-		apply : function(time, actor) {
-			if ( this.isBehaviorInTime(time,actor) )	{
-				time= this.normalizeTime(time);
-				this.setForTime(time,actor);
-			}
-		},
+
 		setForTime : function(time,actor) {
 
 			var scaleX= this.startScaleX + time*(this.endScaleX-this.startScaleX);
@@ -247,7 +254,9 @@
                 scaleY=.01;
             }
 
-			actor.setScaleAnchored( scaleX, scaleY, this.anchor );			
+			actor.setScaleAnchored( scaleX, scaleY, this.anchor );
+
+            return { scaleX: scaleX, scaleY: scaleY };
 		},
         setValues : function( startX, endX, startY, endY ) {
             this.startScaleX= startX;
@@ -274,15 +283,10 @@
 		startAlpha:	0,
 		endAlpha:	0,
 
-		apply : function( time, actor )	{
-			if ( this.isBehaviorInTime(time,actor) )	{
-				time= this.normalizeTime(time);
-				this.setForTime( time, actor );
-			}
-		},
 		setForTime : function(time,actor) {
 			var alpha= 	(this.startAlpha + time*(this.endAlpha-this.startAlpha));
 			actor.setAlpha( alpha );
+            return alpha;
         },
         setValues : function( start, end ) {
             this.startAlpha= start;
@@ -324,12 +328,6 @@
             this.prevY= -1;
             return this;
         },
-		apply : function( time, actor )	{
-			if ( this.isBehaviorInTime(time,actor) )	{
-				time= this.normalizeTime(time);
-				this.setForTime( time, actor );
-			}
-		},
 		setForTime : function(time,actor) {
 
             var point= this.path.getPosition(time);
@@ -373,7 +371,7 @@
                     point.y - this.translateY  // - actor.height/2 //+ ax*actor.height/2);
             );
 
-
+            return { x: actor.x, y: actor.y };
 		},
         positionOnTime : function(time) {
 			if ( this.isBehaviorInTime(time,null) )	{

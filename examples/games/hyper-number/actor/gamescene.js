@@ -24,9 +24,12 @@
             return this;
         },
         paint : function(director, time) {
+            // el ladrillo en el modelo es de 1 a 9
+            // la imagen tiene indices de 0 a 8.
+            // restamos 1 al valor del ladrillo para acceder a la imagen.
             this.compoundImage.paint(
                     director.ctx,
-                    this.brick.value + 9*this.brick.color, 
+                    (this.brick.value-1) + 9*this.brick.color,
                     0,
                     0);
         },
@@ -42,27 +45,41 @@
 
             var sb= new CAAT.ScaleBehavior().
                     setFrameTime( mouseEvent.source.time, 250 ).
-                    setValues( 1, 2, 1, 2 ).
+                    setValues( 1, 1.2, 1, 1.2 ).
                     setPingPong();
 
             this.addBehavior( sb );
         },
-        mouseExit : function(mouseEvent) {
-/*
-            this.emptyBehaviorList();
-
-            var sb= new CAAT.ScaleBehavior().
-                    setFrameTime( mouseEvent.source.time, 1500 ).
-                    setValues( this.scaleX, 1, this.scaleY, 1 );
-
-            this.addBehavior( sb );
-*/
-        },
-        mouseClick : function(mouseEvent) {
+        mouseDown : function(mouseEvent) {
             this.brick.changeSelection();
+        },
+        reset : function() {
+            this.resetTransform();
+            this.emptyBehaviorList();
+            this.alpha=1;
         }
 
     });
+})();
+
+(function() {
+    HN.GuessNumberActor= function() {
+        HN.GuessNumberActor.superclass.constructor.call(this);
+        return this;
+    };
+
+    extend( HN.GuessNumberActor, CAAT.TextActor, {
+
+        guessNumber:    0,
+
+        contextEvent : function( event ) {
+            if ( event.source=='context' && event.event=='guessnumber' ) {
+                this.guessNumber=   event.params.guessNumber;
+                this.setText( ''+this.guessNumber );
+            }
+        }
+    });
+
 })();
 
 (function() {
@@ -72,7 +89,7 @@
         this.particles= [];
         this.fillStyle= null;
         return this;
-    }
+    };
 
     extend( HN.SelectionPath, CAAT.Actor, {
 
@@ -95,6 +112,7 @@
             // no bricks, no path
             if ( 0==context.selectedList.length ) {
                 this.initialize();
+                return;
             }
 
             var i;
@@ -117,18 +135,17 @@
             }
             this.path.closePath();
 
-
             this.pathMeasure= new CAAT.PathBehavior().
                     setPath(this.path).
                     setFrameTime(0, this.traversingPathTime*context.selectedList.length).
                     setCycle(true);
 
-            var expectedParticleCount= this.particlesPerSegment*context.selectedList.length;
+            var expectedParticleCount= this.particlesPerSegment*(context.selectedList.length-1);
             if ( this.particles.length> expectedParticleCount ) {
                 this.particles.splice( expectedParticleCount, this.particles.length-expectedParticleCount );
             } else {
                 while( this.particles.length<expectedParticleCount ) {
-                    this.particles.push( (context.selectedList.length-1)*this.traversingPathTime + this.traversingPathTime*Math.random() );
+                    this.particles.push( (context.selectedList.length)*this.traversingPathTime + this.traversingPathTime*Math.random() );
                 }
             }
         },
@@ -137,6 +154,7 @@
                 var ctx= director.ctx;
 
                 ctx.beginPath();
+                var i;
                 for( i=0; i<this.coords.length; i++ ) {
                     ctx.lineTo( this.coords[i].x, this.coords[i].y );
                 }
@@ -147,23 +165,19 @@
                 ctx.lineCap=        'round';
                 ctx.lineJoin=       'round';
 
-                ctx.lineWidth=      8;
-                ctx.globalAlpha=    .33;
-                ctx.stroke();
+                for( i=2; i<=8; i+=2 ) {
 
-                ctx.lineWidth=      4;
-                ctx.globalAlpha=    .66;
-                ctx.stroke();
-
-                ctx.globalAlpha=    1;
-                ctx.lineWidth=      1;
-                ctx.stroke();
+                    ctx.lineWidth=  i;
+                    ctx.globalAlpha= .5 - i/8/3;
+                    ctx.stroke();
+                }
 
                 // draw particles.
-                var i;
+                ctx.fillStyle= '#ffffff';
+                var s= 8;
                 for(i=0; i<this.particles.length; i++) {
                     var pos= this.pathMeasure.positionOnTime(this.particles[i]+time);
-                    ctx.fillRect( pos.x, pos.y, 5, 5 );
+                    ctx.fillRect( pos.x-s/2, pos.y-s/2, s, s );
                 }
             }
         }
@@ -189,6 +203,7 @@
         directorScene:  null,
 
         selectionPath:  null,
+        bricksContainer:null,
         brickActors:    null,
         bricksImage:    null,
 
@@ -220,14 +235,15 @@
 
             this.brickActors= [];
 
-            var bricksRoot= new CAAT.ActorContainer().
+            //////////////////////// Number Bricks
+            this.bricksContainer= new CAAT.ActorContainer().
                     create().
                     setBounds(
                         0,
                         0,
                         this.gameColumns*this.getBrickWidth(),
                         this.gameRows*this.getBrickHeight());
-            this.directorScene.addChild(bricksRoot);
+            this.directorScene.addChild(this.bricksContainer);
 
             var i,j;
             for( i=0; i<this.gameRows; i++ ) {
@@ -240,7 +256,7 @@
 
                     this.brickActors[i].push( brick );
 
-                    bricksRoot.addChild(brick);
+                    this.bricksContainer.addChild(brick);
                 }
             }
 
@@ -266,8 +282,21 @@
             var me= this;
             restart.mouseClick= function(mouseEvent) {
                 me.context.initialize();
-            }
+            };
             this.directorScene.addChild(restart);
+
+            ///////////////////// Guess Number
+            var guess= new HN.GuessNumberActor().
+                    create().
+                    setBounds( director.canvas.width- 100, 50, 80, 30 ).
+                    setFont("80px sans-serif").
+	                setText("").
+                    setFillStyle('#000000').
+                    setOutline(true).
+                    setOutlineColor('#ffff00');
+
+            this.context.addContextListener(guess);
+            this.directorScene.addChild(guess);
 
             return this;
         },
@@ -291,28 +320,20 @@
             var p2= Math.random()*this.director.canvas.width;
             var p3= Math.random()*this.director.canvas.height;
 
-
             for( i=0; i<this.gameRows; i++ ) {
                 for( j=0; j<this.gameColumns; j++ ) {
                     var brickActor= this.brickActors[i][j];
                     brickActor.
                             setFrameTime( this.directorScene.time, Number.MAX_VALUE ).
-                            setAlpha(1);
+                            setAlpha(1).
+                            enableEvents(true).
+                            resetTransform();
 
+                    var random= Math.random()*2000;
 
                     var moveB= new CAAT.PathBehavior().
-                            setFrameTime(this.directorScene.time , 1000+Math.random()*2000).
+                            setFrameTime(this.directorScene.time, 1000+random).
                             setPath(
-/*
-                                new CAAT.LinearPath().
-                                    setInitialPosition(
-                                        radius/2 + Math.cos(angle)*radius,
-                                        radius/2 + Math.sin(angle)*radius ).
-                                    setFinalPosition(
-                                        j*this.getBrickWidth(),
-                                        i*this.getBrickHeight() ) ).
-*/
-
                                 new CAAT.CurvePath().
                                         setCubic(
                                             radius/2 + Math.cos(angle)*radius,
@@ -323,20 +344,18 @@
                                          ).
 
                             setInterpolator(
-//                                new CAAT.Interpolator().createBounceOutInterpolator( false) );
                                 new CAAT.Interpolator().createExponentialInOutInterpolator(3,false) );
                     var sb= new CAAT.ScaleBehavior().
-                            setFrameTime(this.directorScene.time , 1000+Math.random()*2000).
+                            setFrameTime(this.directorScene.time , 1000+random).
                             setValues( .1, 1, .1 , 1).
                             setInterpolator(
-//                                new CAAT.Interpolator().createBounceOutInterpolator( false) );
                                 new CAAT.Interpolator().createExponentialInOutInterpolator(3,false) );
 
 
-                    brickActor.emptyBehaviorList();
-                    brickActor.addBehavior(moveB);
-                    brickActor.addBehavior(sb);
-                    brickActor.enableEvents(false);
+                    brickActor.emptyBehaviorList().
+                        addBehavior(moveB).
+                        addBehavior(sb).
+                        enableEvents(false);
 
                     moveB.addListener( {
                         behaviorExpired : function( behavior, time, actor ) {
@@ -355,25 +374,28 @@
             }
         },
         contextEvent : function( event ) {
+
+            var i, j;
+            var brickActor;
+
             if ( event.source=='context' ) {
-                if ( event.type='status') {
+                if ( event.event=='status') {
                     if ( event.params==this.context.ST_INITIALIZING ) {
                         this.initializeActors();
                     } else if ( event.params==this.context.ST_RUNNNING) {
-                        var i, j;
                         for( i=0; i<this.gameRows; i++ ) {
                             for( j=0; j<this.gameColumns; j++ ) {
-                                var brickActor= this.brickActors[i][j];
+                                brickActor= this.brickActors[i][j];
                                 brickActor.enableEvents(true);
                             }
                         }
                     }
                 }
-            } else if ( event.source='brick' ) {
-                if ( event.type='selection' ) {
+            } else if ( event.source=='brick' ) {
+                if ( event.event=='selection' ) {   // des/marcar un elemento.
 
                     var brick= event.params;
-                    var brickActor= this.brickActors[brick.row][brick.column];
+                    brickActor= this.brickActors[brick.row][brick.column];
 
                     if ( brick.selected ) {
                         brickActor.emptyBehaviorList();
@@ -397,9 +419,122 @@
                         brickActor.addBehavior(cb);
                     }
                     else {
-                        brickActor.resetTransform();
-                        brickActor.emptyBehaviorList();
-                        brickActor.alpha=1;
+                        brickActor.reset();
+                    }
+
+                } else if ( event.event=='selectionoverflow') {  // seleccion error.
+                    var selectedContextBricks= event.params;
+                    for( i=0; i<selectedContextBricks.length; i++ ) {
+                        this.brickActors[ selectedContextBricks[i].row ][ selectedContextBricks[i].column ].reset();
+                    }
+
+                    this.bricksContainer.enableEvents(false);
+
+                    // get all active actors on board
+                    var activeActors= [];
+                    for( i=0; i<this.gameRows; i++ ) {
+                        for( j=0; j<this.gameColumns; j++ ) {
+                            var actor= this.brickActors[i][j];
+                            if ( !actor.brick.removed ) {
+                                activeActors.push(actor);
+                            }
+                        }
+                    }
+
+                    // define animation callback
+                    var count=0;
+                    var maxCount= activeActors.length;
+                    var me= this;
+                    var callback= {
+                        behaviorExpired : function(behavior, time, actor) {
+                            count++;
+                            if ( count==maxCount ) {
+                                me.bricksContainer.enableEvents(true);
+                            }
+                        }
+                    };
+
+                    // for each active actor, play a wrong-path.
+                    for( i=0; i<activeActors.length; i++ ) {
+                        var actor= activeActors[i];
+
+                        var signo= Math.random()<.5 ? 1: -1;
+                        actor.emptyBehaviorList().
+                            addBehavior(
+                                new CAAT.PathBehavior().
+                                    setFrameTime(this.directorScene.time, 200).
+                                    setPath(
+                                        new CAAT.Path().
+                                            beginPath( actor.x, actor.y ).
+                                            addLineTo(
+                                                actor.x + signo*(5+5*Math.random()),
+                                                actor.y ).
+                                            addLineTo(
+                                                actor.x - signo*(10+5*Math.random()),
+                                                actor.y ).
+                                            closePath() ).
+                                    addListener(callback).
+                                    setPingPong() );
+                    }
+                } else if ( event.event=='selection-cleared') {  // seleccion error.
+                    var selectedContextBricks= event.params;
+                    var me= this;
+                    for( i=0; i<selectedContextBricks.length; i++ ) {
+
+                        var actor= this.brickActors[ selectedContextBricks[i].row ][ selectedContextBricks[i].column ];
+
+                        var signo= Math.random()<.5 ? 1 : -1;
+                        var offset= 50+Math.random()*30;
+                        var offsetY= 60+Math.random()*30;
+
+                        actor.parent.setZOrder(Number.MAX_VALUE);
+                        actor.enableEvents(false).
+                            emptyBehaviorList().
+                            addBehavior(
+                                new CAAT.PathBehavior().
+                                    setFrameTime( this.directorScene.time, 800 ).
+                                    setPath(
+                                        new CAAT.Path().
+                                            beginPath( actor.x, actor.y ).
+                                            addQuadricTo(
+                                                actor.x+offset*signo,   actor.y-300,
+                                                actor.x+offset*signo*2, actor.y+this.director.canvas.height+20).
+                                            endPath() ).
+                                    addListener( {
+
+                                        behaviorExpired : function(behavior, time, actor) {
+                                            actor.setExpired(true);
+                                        },
+                                        behaviorApplied : function(behavior, time, normalizedTime, actor, value) {
+                                            var colors= ['#00ff00','#ffff00','#00ffff'];
+                                            for( i=0; i<3; i++ ) {
+                                                var offset0= Math.random()*10*(Math.random()<.5?1:-1);
+                                                var offset1= Math.random()*10*(Math.random()<.5?1:-1);
+                                                me.directorScene.addChild(
+                                                    new CAAT.ShapeActor().
+                                                        create().
+                                                        setBounds( offset0+actor.x-3, offset1+actor.y-3, 6, 6 ).
+                                                        setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE).
+                                                        setFillStyle( colors[i%3] ).
+                                                        setDiscardable(true).
+                                                        setFrameTime(me.directorScene.time, 300).
+                                                        addBehavior(
+                                                            new CAAT.AlphaBehavior().
+                                                                setFrameTime(me.directorScene.time, 300).
+                                                                setValues( .6, .1 )
+                                                        ) );
+                                            }
+                                        }
+                                    })
+                            ).addBehavior(
+                                new CAAT.RotateBehavior().
+                                    setFrameTime( this.directorScene.time, 800 ).
+                                    setAngles( 0, (Math.PI + Math.random()*Math.PI*2)*(Math.random()<.5?1:-1) )
+                            ).addBehavior(
+                                new CAAT.AlphaBehavior().
+                                    setFrameTime( this.directorScene.time, 800 ).
+                                    setValues( 1, .25 )
+                            ).setScale( 1.5, 1.5 );
                     }
                 }
 
