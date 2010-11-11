@@ -351,7 +351,12 @@
 			this.addChild(sin);
 			this.currentScene= sin;
 
-			sin.setFrameTime(this.time, Number.MAX_VALUE);
+            sin.setExpired(false);
+            sin.mouseEnabled= true;
+			sin.resetTransform();
+            sin.setLocation(0,0);
+            sin.alpha = 1;
+
             sin.activated();
 		},
         /**

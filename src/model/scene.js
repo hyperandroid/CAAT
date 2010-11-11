@@ -88,8 +88,12 @@
             pb.setFrameTime( 0, time );
 
             // BUGBUG anchors: 1..4
-            anchor%=4;
-            anchor++;
+            if ( anchor<1 ) {
+                anchor=1;
+            } else if ( anchor>4 ) {
+                anchor= 4;
+            }
+
 
 			switch(anchor) {
 			case CAAT.Actor.prototype.ANCHOR_TOP:

@@ -319,7 +319,18 @@
             var easy= new CAAT.Button().
                     create().
                     initialize(this.buttonImage, 0, 1, 2, 3, function() {
-                        director.switchToNextScene(2000,false,true);
+                        //director.switchToNextScene(1000,false,true);
+                        director.easeInOut(
+                                1,
+                                CAAT.Scene.EASE_TRANSLATE,
+                                CAAT.Actor.prototype.ANCHOR_RIGHT,
+                                0,
+                                CAAT.Scene.EASE_TRANSLATE,
+                                CAAT.Actor.prototype.ANCHOR_LEFT,
+                                1000,
+                                false,
+                                new CAAT.Interpolator().createExponentialInOutInterpolator(3,false),
+                                new CAAT.Interpolator().createExponentialInOutInterpolator(3,false) );
                     }).
                     setBounds( (dw-bw)/2, offsetY, bw, bh );
 

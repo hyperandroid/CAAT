@@ -242,23 +242,24 @@
 
     HN.GameScene.prototype= {
 
-        imageBricksW:   9,
-        imageBricksH:   7,
+        imageBricksW:               9,
+        imageBricksH:               7,
 
-        gameRows:       15,
-        gameColumns:    20,
+        gameRows:                   15,
+        gameColumns:                20,
 
-        gap:            2,
+        gap:                        2,
 
-        context:        null,
-        directorScene:  null,
+        context:                    null,
+        directorScene:              null,
 
-        selectionPath:  null,
-        bricksContainer:null,
-        brickActors:    null,
-        bricksImage:    null,
+        selectionPath:              null,
+        bricksContainer:            null,
+        fallingBricksContainer:     null,
+        brickActors:                null,
+        bricksImage:                null,
 
-        director:       null,
+        director:                   null,
 
         actorInitializationCount:   0,  // flag indicating how many actors have finished initializing.
 
@@ -347,7 +348,18 @@
                     setBounds( director.canvas.width-100, 10, 80, 30 );
 
             restart.mouseClick= function(mouseEvent) {
-                me.context.initialize();
+                //me.context.initialize();
+                director.easeInOut(
+                    0,
+                    CAAT.Scene.EASE_TRANSLATE,
+                    CAAT.Actor.prototype.ANCHOR_LEFT,
+                    1,
+                    CAAT.Scene.EASE_TRANSLATE,
+                    CAAT.Actor.prototype.ANCHOR_RIGHT,
+                    1000,
+                    false,
+                    new CAAT.Interpolator().createExponentialInOutInterpolator(3,false),
+                    new CAAT.Interpolator().createExponentialInOutInterpolator(3,false) );
             };
             this.directorScene.addChild(restart);
 
@@ -395,7 +407,7 @@
                             enableEvents(true).
                             resetTransform();
 
-                    var random= Math.random()*2000;
+                    var random= Math.random()*1000;
 
                     var moveB= new CAAT.PathBehavior().
                             setFrameTime(this.directorScene.time, 1000+random).
@@ -423,21 +435,20 @@
                         addBehavior(sb).
                         enableEvents(false);
 
+                    
+                    var actorCount=0;
                     moveB.addListener( {
                         behaviorExpired : function( behavior, time, actor ) {
-                            me.endInitializeActors();
+                            actorCount++;
+                            if ( actorCount==me.gameRows*me.gameColumns ) {
+                                me.context.setStatus( me.context.ST_START_LEVEL );
+                            }
                         }
                     });
                 }
             }
 
             this.actorInitializationCount=0;
-        },
-        endInitializeActors : function() {
-            this.actorInitializationCount++;
-            if ( this.actorInitializationCount==this.gameRows*this.gameColumns ) {
-                this.context.setStatus( this.context.ST_RUNNNING );
-            }
         },
         contextEvent : function( event ) {
 
@@ -455,6 +466,8 @@
                                 brickActor.enableEvents(true);
                             }
                         }
+                    } else if ( event.params==this.context.ST_START_LEVEL ) {
+                        this.showLevelInfo();
                     }
                 }
             } else if ( event.source=='brick' ) {
@@ -577,7 +590,7 @@
                 var offset= 50+Math.random()*30;
                 var offsetY= 60+Math.random()*30;
 
-                actor.parent.setZOrder(Number.MAX_VALUE);
+                actor.parent.setZOrder(actor,Number.MAX_VALUE);
                 actor.enableEvents(false).
                     emptyBehaviorList().
                     addBehavior(
@@ -631,6 +644,38 @@
                             setValues( 1, .25 )
                     ).setScale( 1.5, 1.5 );
             }
+        },
+        showLevelInfo : function() {
+            var container= new CAAT.ActorContainer().
+                    create().
+                    setBounds( this.bricksContainer.x, this.bricksContainer.y,
+                               this.bricksContainer.width, this.bricksContainer.height );
+
+	        var rb= new CAAT.RotateBehavior().
+                    setCycle(true).
+                    setFrameTime( this.directorScene.time, 3000 ).
+                    setAngles( -Math.PI/8, Math.PI/8 ).
+                    setInterpolator( new CAAT.Interpolator().createExponentialInOutInterpolator(3,true) ).
+                    setAnchor( CAAT.Actor.prototype.ANCHOR_TOP );
+
+	        var gradient= this.director.ctx.createLinearGradient(0,0,0,90);
+	        gradient.addColorStop(0,'#00ff00');
+	        gradient.addColorStop(0.5,'#ffff00');
+	        gradient.addColorStop(1,'#3f3f3f');
+
+	        var text= new CAAT.TextActor().
+                    create().
+	                setFont("90px sans-serif").
+	                setText("Level "+this.context.level).
+                    setFillStyle( gradient ).
+                    setOutline(true).
+                    addBehavior( rb ).
+                    calcTextSize(this.director);
+
+		    text.setLocation((container.width-text.textWidth)/2,40);
+	        container.addChild(text);
+
+            this.directorScene.addChild(container);
         }
     };
 })();

@@ -79,7 +79,9 @@
         level:          0,
 
         ST_INITIALIZING:    0,
+        ST_START_LEVEL:     2,
         ST_RUNNNING:        1,
+        ST_LEVEL_RESULT:    3,
 
 
         /**
