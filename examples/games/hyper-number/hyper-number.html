@@ -44,22 +44,26 @@
         function __Hypernumbers_init()   {
 
             var canvascontainer= document.createElement('div');
-            var director = new CAAT.Director().initialize(600,600);
+            var director = new CAAT.Director().initialize(960,480);
             canvascontainer.appendChild( director.canvas );
             document.body.appendChild(canvascontainer);
 
             new CAAT.ImagePreloader().loadImages(
                 [
-                    {id:'bricks', url:'res/img/nums.png'}
+                    {id:'bricks',   url:'res/img/nums.png'},
+                    {id:'buttons',  url:'res/img/buttons.png'},
+                    {id:'madewith', url:'res/img/madewith.png'}
                 ],
 
                 function( counter, images ) {
                     if ( counter==images.length ) {
                         director.imagesCache= images;
 
-                        var gameScene= new HN.GameScene().create(director, 10, 8);
+                        var gardenScene= new HN.GardenScene().create(director, 120);
+                        var gameScene= new HN.GameScene().create(director, 8, 12);
+                        gardenScene.gameScene= gameScene;
 
-                        gameScene.startGame();
+//                        gameScene.startGame();
 
 
                         director.loop(60);

@@ -264,3 +264,86 @@
 
 	});
 })();
+
+(function() {
+
+    HN.GardenScene= function() {
+        return this;
+    };
+
+    HN.GardenScene.prototype= {
+
+        gameScene:      null,
+        directorScene:  null,
+        director:       null,
+        buttonImage:    null,
+
+        /**
+         * Creates the main game Scene.
+         * @param director a CAAT.Director instance.
+         */
+        create : function(director, gardenSize) {
+            this.director= director;
+            this.directorScene= director.createScene();
+
+            var dw= director.canvas.width;
+            var dh= director.canvas.height;
+            var me= this;
+
+            // fondo. jardin.
+            this.directorScene.addChild(
+                    new HN.Garden().
+                            create().
+                            setBounds(0,0,dw,dh).
+                            initialize( director.ctx, gardenSize )
+                    );
+
+            var madeWith= new CAAT.Button().
+                    create().
+                    initialize( new CAAT.CompoundImage().initialize(director.getImage('madewith'),1,1), 0,0,0,0 ).
+                    setLocation( dw-60, 0 );
+            this.directorScene.addChild(madeWith);
+
+
+            this.buttonImage= new CAAT.CompoundImage().initialize(
+                    director.getImage('buttons'), 6,4 );
+
+            var bw=         this.buttonImage.singleWidth;
+            var bh=         this.buttonImage.singleHeight;
+            var numButtons= 4;
+            var yGap=       10;
+
+            var offsetY= (dh -((bh+yGap)*numButtons - yGap))/2;
+
+            // opciones del menu.
+            var easy= new CAAT.Button().
+                    create().
+                    initialize(this.buttonImage, 0, 1, 2, 3, function() {
+                        director.switchToNextScene(2000,false,true);
+                    }).
+                    setBounds( (dw-bw)/2, offsetY, bw, bh );
+
+            var medium= new CAAT.Button().
+                    create().
+                    initialize(this.buttonImage, 4,5,6,7).
+                    setBounds( (dw-bw)/2, offsetY + yGap+bh, bw, bh );
+
+            var hard= new CAAT.Button().
+                    create().
+                    initialize(this.buttonImage, 8,9,10,11).
+                    setBounds( (dw-bw)/2, offsetY + 2*(yGap+bh), bw, bh );
+
+            var info= new CAAT.Button().
+                    create().
+                    initialize(this.buttonImage, 16,17,18,19).
+                    setBounds( (dw-bw)/2, offsetY + 3.5*(yGap+bh), bw, bh );
+
+            this.directorScene.addChild(easy);
+            this.directorScene.addChild(medium);
+            this.directorScene.addChild(hard);
+            this.directorScene.addChild(info);
+
+            return this;
+        }
+    };
+})();

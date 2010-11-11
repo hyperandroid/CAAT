@@ -1,4 +1,55 @@
 (function() {
+    CAAT.Button= function() {
+        CAAT.Button.superclass.constructor.call(this);
+        return this;
+    };
+
+    extend( CAAT.Button, CAAT.Actor, {
+        buttonImage:    null,   // a CompoundImage object instance
+        iNormal:        0,
+        iOver:          0,
+        iPress:         0,
+        iDisabled:      0,
+        iCurrent:       0,
+        fnOnClick:      null,
+
+        initialize : function( buttonImage, iNormal, iOver, iPress, iDisabled, fn) {
+            this.buttonImage=   buttonImage;
+            this.iNormal=       iNormal || 0;
+            this.iOver=         iOver || this.iNormal;
+            this.iPress=        iPress || this.iNormal;
+            this.iDisabled=     iDisabled || this.iNormal;
+            this.iCurrent=      this.iNormal;
+            this.width=         buttonImage.singleWidth;
+            this.height=        buttonImage.singleHeight;
+            this.fnOnClick=     fn;
+            return this;
+        },
+        paint : function(director,time) {
+            this.buttonImage.paint( director.ctx,  this.iCurrent, 0, 0 );
+        },
+        mouseEnter : function(mouseEvent) {
+            this.iCurrent= this.iOver;
+        },
+        mouseExit : function(mouseEvent) {
+            this.iCurrent= this.iNormal;
+        },
+        mouseDown : function(mouseEvent) {
+            this.iCurrent= this.iPress;
+        },
+        mouseUp : function(mouseEvent) {
+            this.iCurrent= this.iNormal;
+        },
+        mouseClick : function(mouseEvent) {
+            if ( null!=this.fnOnClick ) {
+                this.fnOnClick();
+            }
+        }
+
+    });
+})();
+
+(function() {
     HN.BrickActor= function() {
         HN.BrickActor.superclass.constructor.call(this);
         return this;
@@ -217,6 +268,9 @@
          * @param director a CAAT.Director instance.
          */
         create : function(director, rows, columns) {
+
+            var me= this;
+
             this.gameRows= rows;
             this.gameColumns= columns;
 
@@ -232,13 +286,19 @@
                     addContextListener(this);
 
             this.directorScene= director.createScene();
+            this.directorScene.activated= function() {
+                me.context.initialize();
+            }
 
+            var dw= director.canvas.width;
+            var dh= director.canvas.height;            
             this.directorScene.addChild(
                     new HN.Garden().
                             create().
-                            setBounds(0,0,director.canvas.width,director.canvas.height).
-                            initialize( director.ctx, 150 )
-                    )
+                            setBounds(0,0,dw,dh).
+                            initialize( director.ctx, 120 )
+                    );
+            
 
 
             this.brickActors= [];
@@ -281,13 +341,11 @@
             this.directorScene.addChild(this.selectionPath);
 
             /////////////////////// initialize button
-            var restart= new CAAT.ShapeActor().
+            var restart= new CAAT.Button().
                     create().
-                    setBounds( director.canvas.width-100, 10, 80, 30 ).
-                    setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
-                    setFillStyle('red');
+                    initialize( this.bricksImage, 0,1,2,3 ).
+                    setBounds( director.canvas.width-100, 10, 80, 30 );
 
-            var me= this;
             restart.mouseClick= function(mouseEvent) {
                 me.context.initialize();
             };
@@ -416,7 +474,8 @@
             }
         },
         startGame : function() {
-            this.context.initialize();
+            var iNewSceneIndex= this.director.getSceneIndex(this.directorScene);
+            this.director.switchToScene( iNewSceneIndex, 2000, false, true );
         },
         brickSelectionEvent : function(event) {
             var brick= event.params;

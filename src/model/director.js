@@ -352,6 +352,7 @@
 			this.currentScene= sin;
 
 			sin.setFrameTime(this.time, Number.MAX_VALUE);
+            sin.activated();
 		},
         /**
          * This method will change the current Scene by the Scene indicated as parameter.
@@ -458,6 +459,14 @@
 			}
 			return -1;
 		},
+        /**
+         * Get a concrete director's scene.
+         * @param index an integer indicating the scene index.
+         * @return a CAAT.Scene object instance or null if the index is oob.
+         */
+        getScene : function( index ) {
+            return this.scenes[index];
+        },
         /**
          * Return the index of the current scene in the Director's scene list.
          */
