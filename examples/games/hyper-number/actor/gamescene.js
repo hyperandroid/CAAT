@@ -258,6 +258,7 @@
         fallingBricksContainer:     null,
         brickActors:                null,
         bricksImage:                null,
+        buttonImage:                null,
 
         director:                   null,
 
@@ -281,6 +282,9 @@
                     director.getImage('bricks'),
                     this.imageBricksH,
                     this.imageBricksW );
+            this.buttonImage= new CAAT.CompoundImage().initialize(
+                    director.getImage('buttons'), 6,4 );
+
 
             this.context= new HN.Context().
                     create( this.gameRows, this.gameColumns, this.imageBricksH ).
@@ -344,8 +348,8 @@
             /////////////////////// initialize button
             var restart= new CAAT.Button().
                     create().
-                    initialize( this.bricksImage, 0,1,2,3 ).
-                    setBounds( director.canvas.width-100, 10, 80, 30 );
+                    initialize( this.buttonImage, 20,21,22,23 ).
+                    setLocation( director.canvas.width-this.buttonImage.singleWidth-10, 10);
 
             restart.mouseClick= function(mouseEvent) {
                 //me.context.initialize();
@@ -441,7 +445,7 @@
                         behaviorExpired : function( behavior, time, actor ) {
                             actorCount++;
                             if ( actorCount==me.gameRows*me.gameColumns ) {
-                                me.context.setStatus( me.context.ST_START_LEVEL );
+                                me.context.setStatus( me.context.ST_RUNNNING );
                             }
                         }
                     });
