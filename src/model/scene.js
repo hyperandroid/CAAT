@@ -8,9 +8,59 @@
  *
  *
  */
+
+/**
+ * Timer notifications will be placed *BEFORE* scene loop.
+ */
+(function() {
+    CAAT.TimerTask= function() {
+        return this;
+    };
+
+    CAAT.TimerTask.prototype= {
+        startTime:          0,
+        duration:           0,
+        callback_timeout:   null,
+        callback_tick:      null,
+
+        taskId:             0,
+        remove:             false,
+
+        create: function( startTime, duration, callback_timeout, callback_tick ) {
+            this.startTime=         startTime;
+            this.duration=          duration;
+            this.callback_timeout=  callback_timeout;
+            this.callback_tick=     callback_tick;
+            return this;
+        },
+        checkTask : function(time) {
+            var ttime= time;
+            ttime-= this.startTime;
+            if ( ttime>=this.duration ) {
+                this.remove= true;
+                if( this.callback_timeout ) {
+                    this.callback_timeout( ttime, this );
+                }
+            } else {
+                if ( this.callback_tick ) {
+                    this.callback_tick( ttime, this );
+                }
+            }
+            return this;
+        },
+        reset : function( time ) {
+            this.remove= false;
+            this.startTime=  time;
+            return this;
+        }
+    };
+})();
+
+
 (function() {
 	CAAT.Scene= function() {
 		CAAT.Scene.superclass.constructor.call(this);
+        this.timerList= [];
 		return this;
 	};
 	
@@ -25,6 +75,61 @@
 		EASE_SCALE:						2,      // to perform on Scene switching by the Director.
 		EASE_TRANSLATE:					3,
 
+        timerList:                      null,
+        timerSequence:                  0,
+
+        /**
+         * Check and apply timers in frame time.
+         * @param time the current Scene time.
+         */
+        checkTimers : function(time) {
+            var i=this.timerList.length-1;
+            while( i>=0 ) {
+                this.timerList[i].checkTask(time);
+                i--;
+            }
+        },
+        /**
+         * Creates a timer task.
+         * @param duration
+         * @param callback
+         */
+        createTimer : function( startTime, duration, callback_timeout, callback_tick ) {
+
+            var tt= new CAAT.TimerTask().create(
+                        startTime,
+                        duration,
+                        callback_timeout, 
+                        callback_tick);
+
+            tt.taskId= this.timerSequence++;
+            tt.sceneTime = this.time;
+
+            this.timerList.push( tt );
+
+            return tt;
+        },
+        removeExpiredTimers : function() {
+            var i;
+            for( i=0; i<this.timerList.length; i++ ) {
+                if ( this.timerList[i].remove ) {
+                    this.timerList.splice(i,1);
+                }
+            }
+        },
+        cancelTimer : function(timerTask) {
+            for( i=0; i<this.timerList.length; i++ ) {
+                if ( this.timerList[i].taskId==timerTask.taskId ) {
+                    this.timerList.splice(i,1);
+                    return;
+                }
+            }            
+        },
+        animate : function(director, time) {
+            this.checkTimers(time);
+            CAAT.Scene.superclass.animate.call(this,director,time);
+            this.removeExpiredTimers();
+        },
         /**
          * Private.
          * Helper method to manage alpha transparency fading on Scene switch by the Director.

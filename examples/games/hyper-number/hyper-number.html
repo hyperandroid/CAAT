@@ -34,6 +34,8 @@
 
     <script type="text/javascript" src="game/namespace.js"></script>
     <script type="text/javascript" src="game/context.js"></script>
+    <script type="text/javascript" src="actor/plasmaactor.js"></script>
+    <script type="text/javascript" src="actor/rotozoom.js"></script>
     <script type="text/javascript" src="actor/garden.js"></script>
     <script type="text/javascript" src="actor/gamescene.js"></script>
 
@@ -44,7 +46,7 @@
         function __Hypernumbers_init()   {
 
             var canvascontainer= document.createElement('div');
-            var director = new CAAT.Director().initialize(960,480);
+            var director = new CAAT.Director().initialize(640,480).setClear(false);
             canvascontainer.appendChild( director.canvas );
             document.body.appendChild(canvascontainer);
 
@@ -52,7 +54,8 @@
                 [
                     {id:'bricks',   url:'res/img/nums.png'},
                     {id:'buttons',  url:'res/img/buttons.png'},
-                    {id:'madewith', url:'res/img/madewith.png'}
+                    {id:'madewith', url:'res/img/madewith.png'},
+                    {id:'space',    url:'res/img/space2.jpg'}
                 ],
 
                 function( counter, images ) {
@@ -60,11 +63,8 @@
                         director.imagesCache= images;
 
                         var gardenScene= new HN.GardenScene().create(director, 120);
-                        var gameScene= new HN.GameScene().create(director, 8, 12);
+                        var gameScene= new HN.GameScene().create(director, 8, 8);
                         gardenScene.gameScene= gameScene;
-
-//                        gameScene.startGame();
-
 
                         director.loop(60);
 

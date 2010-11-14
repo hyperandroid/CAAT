@@ -108,8 +108,9 @@
 		firefly_radius:	10,
 		num_fireflyes:	40,
 		num_stars:		512,
+        fireflyColor:   [ '#ffff00', '#7fff00', '#c0c000' ],
 
-		initialize : function(ctx,size)	{
+		initialize : function(ctx,size,maxGrassHeight)	{
 			this.grass= [];
 
 			for(var i=0; i<size; i++ ) {
@@ -118,7 +119,7 @@
 						this.width,
 						this.height,
 						50,			// min grass height
-						this.height*2/3, // max grass height
+						maxGrassHeight, // max grass height
 						20, 		// grass max initial random angle
 						40			// max random angle for animation
 						);
@@ -177,25 +178,29 @@
 			ctx.globalAlpha= 1;
 
 			// draw fireflyes
-	    	ctx.fillStyle= '#ffff00';
+
 	    	for(var i=0; i<this.num_fireflyes*2; i+=2) {
+                ctx.fillStyle= this.fireflyColor[i%3];
 		    	var angle= Math.PI*2*Math.sin(time*3E-4) + i*Math.PI/50;
 		    	var radius= this.firefly_radius*Math.cos(time*3E-4);
-		    	ctx.fillRect(
+                ctx.beginPath();
+		    	ctx.arc(
 		    			this.width/2 +
 		    			.5*this.stars[i] +
 		    			150*Math.cos(time*3E-4) +	// move horizontally with time
-		    			radius*Math.cos(angle),
+		    			(radius+20*Math.cos((i%5)*Math.PI/3600))*Math.cos(angle),
 
 		    			this.height/2 +
 		    			.5*this.stars[i+1] +
 		    			20*Math.sin(time*3E-4) +	// move vertically with time
 		    			radius*Math.sin(angle),
 
-		   			 	3,
-		   			 	3 );
+		   			 	2,
+		   			 	0,
+                        Math.PI*2,
+                        false );
+                ctx.fill();
 	    	}
-
 
 			for( var i=0; i<this.grass.length; i++ ) {
 				this.grass[i].paint(ctx,time,this.ambient);
@@ -295,7 +300,7 @@
                     new HN.Garden().
                             create().
                             setBounds(0,0,dw,dh).
-                            initialize( director.ctx, gardenSize )
+                            initialize( director.ctx, gardenSize, dh/2 )
                     );
 
             var madeWith= new CAAT.Button().
@@ -320,6 +325,8 @@
                     create().
                     initialize(this.buttonImage, 0, 1, 2, 3, function() {
                         //director.switchToNextScene(1000,false,true);
+                        me.gameScene.setDifficulty(0);
+                        me.gameScene.prepareSceneIn();
                         director.easeInOut(
                                 1,
                                 CAAT.Scene.EASE_TRANSLATE,
@@ -336,12 +343,42 @@
 
             var medium= new CAAT.Button().
                     create().
-                    initialize(this.buttonImage, 4,5,6,7).
+                    initialize(this.buttonImage, 4,5,6,7,function() {
+                        //director.switchToNextScene(1000,false,true);
+                        me.gameScene.setDifficulty(1);
+                        me.gameScene.prepareSceneIn();
+                        director.easeInOut(
+                                1,
+                                CAAT.Scene.EASE_TRANSLATE,
+                                CAAT.Actor.prototype.ANCHOR_TOP,
+                                0,
+                                CAAT.Scene.EASE_TRANSLATE,
+                                CAAT.Actor.prototype.ANCHOR_BOTTOM,
+                                1000,
+                                false,
+                                new CAAT.Interpolator().createExponentialInOutInterpolator(3,false),
+                                new CAAT.Interpolator().createExponentialInOutInterpolator(3,false) );
+                    }).
                     setBounds( (dw-bw)/2, offsetY + yGap+bh, bw, bh );
 
             var hard= new CAAT.Button().
                     create().
-                    initialize(this.buttonImage, 8,9,10,11).
+                    initialize(this.buttonImage, 8,9,10,11,function() {
+                        //director.switchToNextScene(1000,false,true);
+                        me.gameScene.setDifficulty(2);
+                        me.gameScene.prepareSceneIn();
+                        director.easeInOut(
+                                1,
+                                CAAT.Scene.EASE_TRANSLATE,
+                                CAAT.Actor.prototype.ANCHOR_BOTTOM,
+                                0,
+                                CAAT.Scene.EASE_TRANSLATE,
+                                CAAT.Actor.prototype.ANCHOR_TOP,
+                                1000,
+                                false,
+                                new CAAT.Interpolator().createExponentialInOutInterpolator(3,false),
+                                new CAAT.Interpolator().createExponentialInOutInterpolator(3,false) );
+                    }).
                     setBounds( (dw-bw)/2, offsetY + 2*(yGap+bh), bw, bh );
 
             var info= new CAAT.Button().

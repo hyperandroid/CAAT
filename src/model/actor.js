@@ -10,7 +10,6 @@
  * TODO: add more shapes to ShapeActor
  **/
 
-
 (function() {
 	CAAT.Actor = function() {
 		this.transformationMatrix= new CAAT.MatrixStack();

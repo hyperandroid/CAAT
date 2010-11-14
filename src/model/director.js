@@ -37,6 +37,7 @@
         time:           0,      // virtual actor time.
         timeline:       0,      // global director timeline.
         imagesCache:    null,   // An array of JSON elements of the form { id:string, image:Image }
+        clear:          true,
 
         /**
          * This method performs Director initialization. Must be called once.
@@ -87,7 +88,10 @@
 			this.time+= time;
 			this.crc.globalAlpha=1;
             this.crc.globalCompositeOperation='source-over';
-            this.crc.clearRect(0,0,this.width,this.height);
+
+            if ( this.clear ) {
+                this.crc.clearRect(0,0,this.width,this.height);
+            }
 
 			this.crc.setTransform(1,0,0,1,0,0);
 
@@ -548,6 +552,16 @@
             floop();
             setInterval( floop, fps);
 
+        },
+        /**
+         * This method states whether the director must clear background before rendering
+         * each frame.
+         * @param clear a boolean.
+         * @return this.
+         */
+        setClear : function(clear) {
+            this.clear= clear;
+            return this
         }
 
     });

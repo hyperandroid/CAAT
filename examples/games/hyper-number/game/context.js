@@ -78,10 +78,20 @@
         status:         0,      // <-- control logic -->
         level:          0,
 
+        score:         0,      // game points.
+
+
+        turnTime:       15000,
+
+        turnTimes:      [20000, 15000, 10000],
+        difficulty:     0,    // 0: easy, 1: hard, 2: hardcore.
+
+        ST_STARTGAME:       5,
         ST_INITIALIZING:    0,
         ST_START_LEVEL:     2,
         ST_RUNNNING:        1,
         ST_LEVEL_RESULT:    3,
+        ST_ENDGAME:         4,
 
 
         /**
@@ -112,8 +122,18 @@
             return this.numNumberColors;
         },
         initialize : function() {
+            this.setStatus( this.ST_STARTGAME );
+            this.turnTime= this.turnTimes[this.difficulty];
+            this.score=0;
+            this.level=0;
+            this.nextLevel();
+            return this;
+        },
+        nextLevel : function() {
 
-            this.level=         1;
+            this.level++;
+            this.fireEvent('context','levelchange',null);
+
             this.selectedList=  [];
 
             for( i=0; i<this.rows; i++ ) {
@@ -123,6 +143,11 @@
             }
 
             this.setStatus( this.ST_INITIALIZING );
+
+            if ( this.level>1 ) {
+                // 1 seconds less each level.
+                this.turnTime-=1000;
+            }
 
             return this;
         },
@@ -190,8 +215,6 @@
 
                 // quitar marca de seleccion al ladrillo.
                 this.fireEvent('brick','selectionoverflow', selected );
-
-
             } else if ( sum==this.guessNumber ) {
                 this.selectedList.push(brick);
                 var selected= this.selectedList.slice(0);
@@ -202,13 +225,27 @@
                 this.selectedList= [];
 
                 this.fireEvent('brick','selection-cleared', selected );
-                
-                this.setGuessNumber();
+
+                this.score+= this.multiplier * ((selected.length+1)*10)*selected.length;
+
+                this.fireEvent('context','score',this);
+
+                for( i=0; i<this.rows; i++ ) {
+                    for( j=0; j<this.columns; j++ ) {
+                        if ( !this.data[i][j].removed ) {
+                            this.setGuessNumber();
+                            return;
+                        }
+                    }
+                }
+
+                this.setStatus( this.ST_LEVEL_RESULT );
                 
             } else {
                 // todavia podemos sumar numeros.
                 this.selectedList.push(brick);
                 this.fireEvent('brick','selection',brick);
+                this.setMultipliers();
             }
         },
         setGuessNumber : function() {
@@ -245,6 +282,42 @@
 
             this.guessNumber= sum;
             this.fireEvent( 'context','guessnumber',this );
+        },
+        timeUp : function() {
+            this.setStatus( this.ST_ENDGAME );
+        },
+        /**
+         * establece multiplicadores de puntos en funcion de:
+         *  + numero de ladridllos
+         *  + distancia total entre ladrillos
+         */
+        setMultipliers : function() {
+
+            var x0= this.selectedList[0].column;
+            var y0= this.selectedList[0].row;
+            var d=  0;
+
+            for( i=1; i<this.selectedList.length; i++ ) {
+                var x1= this.selectedList[i].column;
+                var y1= this.selectedList[i].row;
+
+                d+= Math.sqrt( (x1-x0)*(x1-x0) + (y1-y0)*(y1-y0) );
+
+                x0= x1;
+                y0= y1;
+            }
+
+            d= d>>0;
+            d= 1+ (d/10)>>0;
+            if ( d<1 ) {
+                d=1;
+            } else if ( d>5 ) {
+                d=5;
+            }
+
+            this.multiplier= d;
+
+            this.fireEvent('context','multiplier',this);
         }
     };
 })();
