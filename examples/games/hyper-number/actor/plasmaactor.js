@@ -43,6 +43,8 @@
         canvas:         null,
         ctx:            null,
 
+        prevTime:       0,
+
         setB : function ()	{
             this.b1= (Math.random()>.5);
             this.b2= (Math.random()>.5);
@@ -58,6 +60,17 @@
             this.i2= Math.floor(((Math.random()*2.4+1)*((Math.random()<.5) ? 1 : -1)));
             this.i3= Math.floor(((Math.random()*2.4+1)*((Math.random()<.5) ? 1 : -1)));
             this.i4= Math.floor(((Math.random()*2.4+1)*((Math.random()<.5) ? 1 : -1)));
+
+            this.spd1>>=0;
+            this.spd2>>=0;
+            this.spd3>>=0;
+            this.spd4>>=0;
+
+            this.i1>>=0;
+            this.i2>>=0;
+            this.i3>>=0;
+            this.i4>>=0;
+
         },
         makeArray : function (size, initvalue) {
             var a= [];
@@ -244,7 +257,7 @@
             arr[pos+2]= argb&0xff;
             arr[pos+3]= 255;
         },
-        plasmaLoop : function(){
+        plasmaLoop : function(time){
 
             if ( this.mfc!=-1 ) {
                 if ( this.fc>this.mfc ) {
@@ -253,7 +266,10 @@
                 }
             }
 
-            this.plasmaStep( this.dstImageData.data );
+            if ( time-this.prevTime>0 ) {
+                this.plasmaStep( this.dstImageData.data );
+                this.prevTime= time;
+            }
             this.ctx.putImageData( this.dstImageData, 0, 0 );
             this.fc++;
 
@@ -279,7 +295,7 @@
             ctx.drawImage( this.plasma.canvas, 0, 0, this.width, this.height );
         },
         animate : function( director, time ) {
-            this.plasma.plasmaLoop();
+            this.plasma.plasmaLoop(time);
             HN.PlasmaActor.superclass.animate.call(this,director,time);
         }
     });

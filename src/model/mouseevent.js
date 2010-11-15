@@ -59,11 +59,14 @@
 // BUG: do not polute global namespace.
 var __lastSelectedActor=  null;
 var __mousePoint=         null;
+var __prevMousePoint=     null;
 var __screenMousePoint=   null;
 var __mouseDown=          false;
 var __modifiers=          0;
 var __dragging=           false;
 var __targetDirector=     null;
+var __DRAG_THRESHOLD_X=   2;
+var __DRAG_THRESHOLD_Y=   2;
 
 function __getCanvasCoord(point, e) {
 	var posx = 0;
@@ -108,6 +111,7 @@ function __getCanvasCoord(point, e) {
 function __GlobalEnableEvents() {
 
     __mousePoint=         new CAAT.Point();
+    __prevMousePoint=     new CAAT.Point();
     __screenMousePoint=   new CAAT.Point();
 
     window.addEventListener('keydown',
@@ -181,12 +185,21 @@ function __GlobalEnableEvents() {
 
     window.addEventListener('mousedown',
             function(e) {
+
+                __getCanvasCoord(__mousePoint, e);
+
                 if ( null==__targetDirector ) {
                     return;
                 }
                 __mouseDown = true;
                 __lastSelectedActor = __targetDirector.findActorAtPosition(__mousePoint);
+                var px= __mousePoint.x;
+                var py= __mousePoint.y;
+                
                 if (null != __lastSelectedActor) {
+                    // to calculate mouse drag threshold
+                    __prevMousePoint.x= px;
+                    __prevMousePoint.y= py;
                     __lastSelectedActor.mouseDown(
                             new CAAT.MouseEvent().init(
                                     __lastSelectedActor.rpoint.x,
@@ -239,6 +252,15 @@ function __GlobalEnableEvents() {
 
                 // drag
                 if (__mouseDown && null != __lastSelectedActor) {
+
+                    // check for mouse move threshold.
+                    if ( !__dragging ) {
+                        if ( Math.abs(__prevMousePoint.x-__mousePoint.x)< __DRAG_THRESHOLD_X &&
+                             Math.abs(__prevMousePoint.y-__mousePoint.y)< __DRAG_THRESHOLD_Y ) {
+                            return;
+                        }
+                    }
+
                     __dragging = true;
                     if (null != __lastSelectedActor.parent) {
                         __lastSelectedActor.parent.inverseTransformCoord(__mousePoint);

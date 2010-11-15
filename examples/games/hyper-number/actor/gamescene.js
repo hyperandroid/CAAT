@@ -44,8 +44,10 @@
             if ( null!=this.fnOnClick ) {
                 this.fnOnClick();
             }
+        },
+        toString : function() {
+            return 'CAAT.Button '+this.iNormal;
         }
-
     });
 })();
 
@@ -108,6 +110,9 @@
             this.resetTransform();
             this.emptyBehaviorList();
             this.alpha=1;
+        },
+        toString : function() {
+            return 'HN.Brick '+this.brick.row+','+this.brick.column;
         }
 
     });
@@ -163,14 +168,6 @@
                             this.width;
             
             ctx.fillRect(0,0,size,this.height);
-
-            ctx.font = '20px sans-serif';
-            var str= ''+(1+((this.maxTime-this.elapsedTime)/1000)>>0);
-            ctx.beginPath();
-            ctx.fillStyle='black';
-            ctx.fillText( str,
-                    (this.width - ctx.measureText(str).width)/2,
-                    this.height- 3 );
 
             ctx.strokeStyle='black';
             ctx.strokeRect(0,0,this.width,this.height);
@@ -282,8 +279,10 @@
                 // draw particles.
                 ctx.fillStyle= '#ffffff';
                 var s= 8;
+                var pos;
+
                 for(i=0; i<this.particles.length; i++) {
-                    var pos= this.pathMeasure.positionOnTime( (this.particles[i]+time)*(1+(i%3)*.33) );
+                    pos= this.pathMeasure.positionOnTime( (this.particles[i]+time)*(1+(i%3)*.33) );
                     ctx.beginPath();
                     ctx.arc( pos.x, pos.y, s/2, 0, Math.PI*2, false );
                     ctx.fill();
@@ -293,7 +292,7 @@
 
                 if ( this.multiplier>1 ) {
                     ctx.globalAlpha= 1;
-                    var pos= this.pathMeasure.positionOnTime( 0 );
+                    pos= this.pathMeasure.positionOnTime( 0 );
 
                     ctx.fillStyle='#ffff00';
                     ctx.beginPath();
@@ -357,7 +356,11 @@
         },
         setScore: function(director) {
             this.currentScore>>=0;
-            this.setText( ''+this.currentScore );
+            var str= ''+this.currentScore;
+            while( str.length<6 ) {
+                str='0'+str;
+            }
+            this.setText( str );
             this.calcTextSize(director);
             this.x= this.parent.width-this.textWidth;
         },
@@ -448,7 +451,7 @@
             this.directorScene.activated= function() {
                 // cada vez que la escena se prepare para empezar partida, inicializar el contexto.
                 me.context.initialize();
-            }
+            };
 
             var dw= director.canvas.width;
             var dh= director.canvas.height;
@@ -934,6 +937,7 @@
         },
         prepareSceneIn : function() {
             // setup de actores
+            var i,j;
 
                 this.bricksContainer.enableEvents(true);
 

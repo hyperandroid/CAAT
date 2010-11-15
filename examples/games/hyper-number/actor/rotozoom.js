@@ -21,6 +21,7 @@
 
             //ctx.clearRect(0,0,this.width,this.height);
 
+            ctx.beginPath();
             ctx.rect(0,0,this.width,this.height);
             ctx.clip();
 
@@ -29,7 +30,7 @@
 
             tx = this.width/2 + Math.sin(timer * 0.0001) * 256;
             ty = this.height/2 + Math.sin(timer * 0.0001) * 256;
-            scaleX = (Math.sin(timer*0.00005) + 1.1) * 3.5;
+            scaleX = (Math.sin(timer*0.00005) + 1.1) * 1.5;
             scaleY = scaleX;
             var angle=Math.PI*2 * Math.cos(timer * 0.00005);
 

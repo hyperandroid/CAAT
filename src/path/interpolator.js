@@ -41,6 +41,28 @@
 
             return this;
         },
+        createBackOutInterpolator : function(bPingPong) {
+            this.getPosition= function getPosition(time) {
+                var orgTime= time;
+
+                if ( bPingPong ) {
+                    if ( time<.5 ) {
+                        time*=2;
+                    } else {
+                        time= 1-(time-.5)*2;
+                    }
+                }
+
+                time = time - 1;
+                var overshoot= 1.70158;
+
+                return this.interpolated.set(
+                        orgTime,
+                        time * time * ((overshoot + 1) * time + overshoot) + 1);
+            }
+
+            return this;
+        },
         createExponentialInInterpolator : function(exponent, bPingPong) {
             this.getPosition= function getPosition(time) {
                 var orgTime= time;
