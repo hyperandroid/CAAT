@@ -547,7 +547,9 @@
                         controls.height - this.buttonImage.singleHeight );
 
             restart.mouseClick= function(mouseEvent) {
-                me.endGame();
+//                me.endGame();
+                // pulsar abort es igual que si se termina el tiempo de crono.
+                me.context.timeUp();
             };
             controls.addChild(restart);
 
@@ -732,7 +734,7 @@
                         behaviorExpired : function( behavior, time, actor ) {
                             actorCount++;
                             if ( actorCount==me.gameRows*me.gameColumns ) {
-                                if ( me.context==me.context.ST_INITIALIZING ) {
+                                if ( me.context.status==me.context.ST_INITIALIZING ) {
                                     me.context.setStatus( me.context.ST_RUNNNING );
                                 }
                             }
