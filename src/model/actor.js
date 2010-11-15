@@ -554,7 +554,7 @@
          * @return null if the point is not inside the Actor. The Actor otherwise.
          */
 	    findActorAtPosition : function(point) {
-			if ( !this.mouseEnabled ) {
+			if ( !this.mouseEnabled || !this.isInAnimationFrame(this.time) ) {
 				return null;
 			}
 
@@ -1176,6 +1176,97 @@
 			}
 
 		}
+	});
+})();
+
+(function() {
+	CAAT.ImageActor = function() {
+		CAAT.ImageActor.superclass.constructor.call(this);
+		return this;
+	};
+
+	extend( CAAT.ImageActor, CAAT.ActorContainer, {
+        image:                  null,
+		transformation:			0,      // any of the TR_* constants.
+
+		TR_NONE:				0,      // constants used to determine how to draw the sprite image,
+		TR_FLIP_HORIZONTAL:		1,
+		TR_FLIP_VERTICAL:		2,
+		TR_FLIP_ALL:			3,
+
+        setImage : function(image) {
+            this.image= image;
+            this.width=  image.width;
+            this.height= image.height;
+            return this;
+        },
+        /**
+         * Set the transformation to apply to the image.
+         * Any value of
+         *  <li>TR_NONE
+         *  <li>TR_FLIP_HORIZONTAL
+         *  <li>TR_FLIP_VERTICAL
+         *  <li>TR_FLIP_ALL
+         *
+         * @param transformation an integer indicating one of the previous values.
+         * @return this
+         */
+        setImageTransformation : function( transformation ) {
+            this.transformation= transformation;
+            return this;
+        },
+        /**
+         * Draws the image.
+         *
+         * @param director the CAAT.Director object instance that contains the Scene the Actor is in.
+         * @param time an integer indicating the Scene time when the bounding box is to be drawn.
+         */
+		paint : function(director, time) {
+
+			var canvas= director.crc;
+
+            // drawn at 0,0 because they're already affine-transformed.
+			switch(this.transformation)	{
+				case this.TR_FLIP_HORIZONTAL:
+					this.paintInvertedH( canvas);
+					break;
+				case this.TR_FLIP_VERTICAL:
+					this.paintInvertedV( canvas);
+					break;
+				case this.TR_FLIP_ALL:
+					this.paintInvertedHV( canvas);
+					break;
+				default:
+					this._paint( canvas);
+			}
+		},
+	    paintInvertedH : function( canvas ) {
+
+	        canvas.save();
+		        canvas.translate( x+this.width, y );
+		        canvas.scale(-1, 1);
+		        canvas.drawImage( this.image,0,0 );
+	        canvas.restore();
+	    },
+	    paintInvertedV : function( canvas, imageIndex ) {
+	        canvas.save();
+	        	canvas.translate( x, y+this.height );
+	        	canvas.scale(1, -1);
+		        canvas.drawImage( this.image, 0, 0 );
+	        canvas.restore();
+	    },
+	    paintInvertedHV : function( canvas ) {
+	        canvas.save();
+		    	canvas.translate( x, y+this.height );
+		    	canvas.scale(1, -1);
+	        	canvas.translate( this.width, 0 );
+	        	canvas.scale(-1, 1);
+		        canvas.drawImage(this.image,0,0);
+	        canvas.restore();
+	    },
+	    _paint : function( canvas ) {
+	        canvas.drawImage(this.image,0,0);
+	    }
 	});
 })();
 

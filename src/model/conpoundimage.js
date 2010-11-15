@@ -48,11 +48,11 @@
 		        canvas.translate( x+this.singleWidth, y );
 		        canvas.scale(-1, 1);
 		        
-		        try {
-		        canvas.drawImage( this.image, 
+//		        try {
+		        canvas.drawImage( this.image,
 		        				  sx0, sy0, this.singleWidth, this.singleHeight,
 		        				  0, 0, this.singleWidth, this.singleHeight );
-		        } catch(e) {}
+//		        } catch(e) {}
 	 
 	        canvas.restore();
 	    },
@@ -64,12 +64,12 @@
 	        	canvas.translate( x, y+this.singleHeight );
 	        	canvas.scale(1, -1);
 	        	
-	        	try {
+//	        	try {
 		        canvas.drawImage( 
 		        	this.image, 
 	  				sx0, sy0, this.singleWidth, this.singleHeight,
 	  				0, 0, this.singleWidth, this.singleHeight );
-	        	} catch(e) {}
+//	        	} catch(e) {}
 	        canvas.restore();
 	    },
 	    paintInvertedHV : function( canvas, imageIndex, x, y ) {
@@ -82,12 +82,12 @@
 	        	canvas.translate( this.singleWidth, 0 );
 	        	canvas.scale(-1, 1);
 	        	
-	        	try {
+//	        	try {
 		        canvas.drawImage( 
 		        		this.image, 
 		  				sx0, sy0, this.singleWidth, this.singleHeight,
 		  				0, 0, this.singleWidth, this.singleHeight );
-	        	} catch(e) {}
+//	        	} catch(e) {}
 	        	
 	        canvas.restore();
 	    },
@@ -95,13 +95,16 @@
 	
 	        var sx0= Math.floor(imageIndex%this.cols)*this.singleWidth;
 	        var sy0= Math.floor(imageIndex/this.cols)*this.singleHeight;
-	
-	        try {
+
+            if ( sx0<0 || sy0<0 ) {
+                return;
+            }
+//	        try {
 	        canvas.drawImage( 
 	        		this.image, 
 					sx0, sy0, this.singleWidth, this.singleHeight,
 					x, y, this.singleWidth, this.singleHeight );
-	        } catch(e) {}
+//	        } catch(e) {}
 	
 	    },
 	    paintScaled : function( canvas, imageIndex, x, y, w, h ) {

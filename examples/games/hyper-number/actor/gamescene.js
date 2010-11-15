@@ -30,9 +30,11 @@
         },
         mouseEnter : function(mouseEvent) {
             this.iCurrent= this.iOver;
+            document.body.style.cursor = 'hand';
         },
         mouseExit : function(mouseEvent) {
             this.iCurrent= this.iNormal;
+            document.body.style.cursor = 'default';
         },
         mouseDown : function(mouseEvent) {
             this.iCurrent= this.iPress;
@@ -77,6 +79,9 @@
             return this;
         },
         paint : function(director, time) {
+            if ( this.brick.value<=0 ) {
+                return;
+            }
             // el ladrillo en el modelo es de 1 a 9
             // la imagen tiene indices de 0 a 8.
             // restamos 1 al valor del ladrillo para acceder a la imagen.
@@ -414,6 +419,7 @@
         timer:                      null,
 
         scoreActor:                 null,
+        endGameActor:               null,
 
         director:                   null,
 
@@ -542,36 +548,6 @@
 
             restart.mouseClick= function(mouseEvent) {
                 me.endGame();
-
-                var a0;
-                var a1;
-
-                switch( me.context.difficulty ) {
-                    case 0:
-                        a0= CAAT.Actor.prototype.ANCHOR_LEFT;
-                        a1= CAAT.Actor.prototype.ANCHOR_RIGHT;
-                    break;
-                    case 1:
-                        a0= CAAT.Actor.prototype.ANCHOR_BOTTOM;
-                        a1= CAAT.Actor.prototype.ANCHOR_TOP;
-                    break;
-                    case 2:
-                        a0= CAAT.Actor.prototype.ANCHOR_TOP;
-                        a1= CAAT.Actor.prototype.ANCHOR_BOTTOM;
-                    break;
-                }
-
-                director.easeInOut(
-                    0,
-                    CAAT.Scene.EASE_TRANSLATE,
-                    a0,
-                    1,
-                    CAAT.Scene.EASE_TRANSLATE,
-                    a1,
-                    1000,
-                    false,
-                    new CAAT.Interpolator().createExponentialInOutInterpolator(3,false),
-                    new CAAT.Interpolator().createExponentialInOutInterpolator(3,false) );
             };
             controls.addChild(restart);
 
@@ -623,8 +599,75 @@
             controls.addChild( this.scoreActor );
             this.context.addContextListener(this.scoreActor);
 
+            ////////////////////////////////////////////////
+            this.create_EndGame(director);
 
             return this;
+        },
+        create_EndGame : function(director, go_to_menu_callback ) {
+            var me= this;
+
+            this.endGameActor= new CAAT.ImageActor().
+                    create().
+                    setImage( director.getImage('background') ).
+                    setAlpha( .9 ).
+                    setGlobalAlpha(false);
+
+            var menu= new CAAT.Button().
+                    create().
+                    initialize( this.buttonImage, 20,21,22,23 );
+            menu.mouseClick= function(mouseEvent) {
+                var a0;
+                var a1;
+
+                switch( me.context.difficulty ) {
+                    case 0:
+                        a0= CAAT.Actor.prototype.ANCHOR_LEFT;
+                        a1= CAAT.Actor.prototype.ANCHOR_RIGHT;
+                    break;
+                    case 1:
+                        a0= CAAT.Actor.prototype.ANCHOR_BOTTOM;
+                        a1= CAAT.Actor.prototype.ANCHOR_TOP;
+                    break;
+                    case 2:
+                        a0= CAAT.Actor.prototype.ANCHOR_TOP;
+                        a1= CAAT.Actor.prototype.ANCHOR_BOTTOM;
+                    break;
+                }
+
+                director.easeInOut(
+                    0,
+                    CAAT.Scene.EASE_TRANSLATE,
+                    a0,
+                    1,
+                    CAAT.Scene.EASE_TRANSLATE,
+                    a1,
+                    1000,
+                    false,
+                    new CAAT.Interpolator().createExponentialInOutInterpolator(3,false),
+                    new CAAT.Interpolator().createExponentialInOutInterpolator(3,false) );
+            }
+
+            var restart= new CAAT.Button().
+                    create().
+                    initialize( this.buttonImage, 0,1,2,3 );
+            restart.mouseClick= function(mouseEvent) {
+                me.prepareSceneIn();
+                me.context.initialize();
+            }
+
+            var x= (this.endGameActor.width - 2*menu.width - 30)/2;
+            var y= this.endGameActor.height-20-menu.height;
+
+            menu.setLocation( x, y );
+            restart.setLocation( x+menu.width+30, y );
+
+            this.endGameActor.addChild(menu);
+            this.endGameActor.addChild(restart);
+
+            this.endGameActor.setFrameTime(-1,0);
+
+            this.directorScene.addChild(this.endGameActor);
         },
         getBrickWidth : function() {
             return this.bricksImage.singleWidth + this.gap;
@@ -689,7 +732,9 @@
                         behaviorExpired : function( behavior, time, actor ) {
                             actorCount++;
                             if ( actorCount==me.gameRows*me.gameColumns ) {
-                                me.context.setStatus( me.context.ST_RUNNNING );
+                                if ( me.context==me.context.ST_INITIALIZING ) {
+                                    me.context.setStatus( me.context.ST_RUNNNING );
+                                }
                             }
                         }
                     });
@@ -904,36 +949,7 @@
             this.timer.reset(this.directorScene.time);
         },
         showLevelInfo : function() {
-            var container= new CAAT.ActorContainer().
-                    create().
-                    setBounds( this.bricksContainer.x, this.bricksContainer.y,
-                               this.bricksContainer.width, this.bricksContainer.height );
 
-	        var rb= new CAAT.RotateBehavior().
-                    setCycle(true).
-                    setFrameTime( this.directorScene.time, 3000 ).
-                    setAngles( -Math.PI/8, Math.PI/8 ).
-                    setInterpolator( new CAAT.Interpolator().createExponentialInOutInterpolator(3,true) ).
-                    setAnchor( CAAT.Actor.prototype.ANCHOR_TOP );
-
-	        var gradient= this.director.ctx.createLinearGradient(0,0,0,90);
-	        gradient.addColorStop(0,'#00ff00');
-	        gradient.addColorStop(0.5,'#ffff00');
-	        gradient.addColorStop(1,'#3f3f3f');
-
-	        var text= new CAAT.TextActor().
-                    create().
-	                setFont("90px sans-serif").
-	                setText("Level "+this.context.level).
-                    setFillStyle( gradient ).
-                    setOutline(true).
-                    addBehavior( rb ).
-                    calcTextSize(this.director);
-
-		    text.setLocation((container.width-text.textWidth)/2,40);
-	        container.addChild(text);
-
-            this.directorScene.addChild(container);
         },
         prepareSceneIn : function() {
             // setup de actores
@@ -952,6 +968,8 @@
 
                 this.chronoActor.tick(0,0);
                 this.scoreActor.reset();
+
+                this.endGameActor.setFrameTime(-1,0);
         },
         endGame : function() {
             // parar y eliminar cronometro.
@@ -960,42 +978,33 @@
 
             // quitar contorl de mouse.
             this.bricksContainer.enableEvents(false);
-/*
-            var i,j;
 
-            for( i=0; i<this.gameRows; i++ ) {
-                for( j=0; j<this.gameColumns; j++ ) {
+            // mostrar endgameactor.
 
-                    var actor= this.brickActors[ i ][ j ];
-                    var signo= Math.random()<.5 ? 1 : -1;
-                    var offset= 50+Math.random()*30;
-                    var offsetY= 60+Math.random()*30;
+            var x= (this.directorScene.width - this.endGameActor.width)/2;
+            var y= (this.directorScene.height - this.endGameActor.height)/2;
 
-                    if ( !actor.brick.removed ) {
-                        actor.emptyBehaviorList().
-                            addBehavior(
-                                new CAAT.PathBehavior().
-                                    setFrameTime( this.directorScene.time, 800 ).
-                                    setPath(
-                                        new CAAT.Path().
-                                            beginPath( actor.x, actor.y ).
-                                            addQuadricTo(
-                                                actor.x+offset*signo,   actor.y-300,
-                                                actor.x+offset*signo*2, actor.y+this.director.canvas.height+20).
-                                            endPath() )
-                            ).addBehavior(
-                                new CAAT.RotateBehavior().
-                                    setFrameTime( this.directorScene.time, 800 ).
-                                    setAngles( 0, (Math.PI + Math.random()*Math.PI*2)*(Math.random()<.5?1:-1) )
-                            ).addBehavior(
-                                new CAAT.AlphaBehavior().
-                                    setFrameTime( this.directorScene.time, 800 ).
-                                    setValues( 1, .25 )
-                            ).setScale( 1.5, 1.5 );
+            var me_endGameActor= this.endGameActor;
+            this.endGameActor.emptyBehaviorList().
+                setFrameTime(this.directorScene.time, Number.MAX_VALUE).
+                enableEvents(false).
+                addBehavior(
+                    new CAAT.PathBehavior().
+                        setFrameTime( this.directorScene.time, 800 ).
+                        setPath(
+                            new CAAT.LinearPath().
+                                setInitialPosition( x, this.directorScene.height ).
+                                setFinalPosition( x, y ) ).
+                setInterpolator(
+                    new CAAT.Interpolator().createBounceOutInterpolator(false) ).
+                addListener( {
+                    behaviorExpired : function(behavior, time, actor) {
+                        me_endGameActor.enableEvents(true);
+                    },
+                    behaviorApplied : function(behavior, time, normalizedTime, actor, value) {
                     }
-                }
-            }
-*/            
+                } )
+            );
         },
         setDifficulty : function(level) {
             this.context.difficulty=level;
