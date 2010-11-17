@@ -1194,10 +1194,23 @@
 		TR_FLIP_VERTICAL:		2,
 		TR_FLIP_ALL:			3,
 
+        offsetX:                0,
+        offsetY:                0,
+
+        setOffsetX : function(x) {
+            this.offsetX= x;
+            return this;
+        },
+        setOffsetY : function(y) {
+            this.offsetY= y;
+            return this;
+        },
         setImage : function(image) {
             this.image= image;
-            this.width=  image.width;
-            this.height= image.height;
+            if ( this.width==0 || this.height==0 ) {
+                this.width=  image.width;
+                this.height= image.height;
+            }
             return this;
         },
         /**
@@ -1245,14 +1258,14 @@
 	        canvas.save();
 		        canvas.translate( x+this.width, y );
 		        canvas.scale(-1, 1);
-		        canvas.drawImage( this.image,0,0 );
+		        canvas.drawImage( this.image,this.offsetX,this.offsetY );
 	        canvas.restore();
 	    },
 	    paintInvertedV : function( canvas, imageIndex ) {
 	        canvas.save();
 	        	canvas.translate( x, y+this.height );
 	        	canvas.scale(1, -1);
-		        canvas.drawImage( this.image, 0, 0 );
+		        canvas.drawImage( this.image,this.offsetX,this.offsetY );
 	        canvas.restore();
 	    },
 	    paintInvertedHV : function( canvas ) {
@@ -1261,11 +1274,11 @@
 		    	canvas.scale(1, -1);
 	        	canvas.translate( this.width, 0 );
 	        	canvas.scale(-1, 1);
-		        canvas.drawImage(this.image,0,0);
+		        canvas.drawImage(this.image,this.offsetX,this.offsetY);
 	        canvas.restore();
 	    },
 	    _paint : function( canvas ) {
-	        canvas.drawImage(this.image,0,0);
+	        canvas.drawImage(this.image,this.offsetX,this.offsetY);
 	    }
 	});
 })();

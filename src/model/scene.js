@@ -39,11 +39,11 @@
             if ( ttime>=this.duration ) {
                 this.remove= true;
                 if( this.callback_timeout ) {
-                    this.callback_timeout( ttime, this );
+                    this.callback_timeout( time, ttime, this );
                 }
             } else {
                 if ( this.callback_tick ) {
-                    this.callback_tick( ttime, this );
+                    this.callback_tick( time, ttime, this );
                 }
             }
             return this;

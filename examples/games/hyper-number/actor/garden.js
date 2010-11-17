@@ -141,10 +141,10 @@
 
 
 			var ctx= director.ctx;
-
+/*
             ctx.fillStyle= this.gradient;
             ctx.fillRect(0,0,this.width,this.height);
-
+*/
 			// draw stars if ambient below .3 -> night
 			if ( this.ambient<.3 )	{
 
@@ -294,6 +294,15 @@
             var dw= director.canvas.width;
             var dh= director.canvas.height;
             var me= this;
+
+            this.directorScene.addChild(
+                    new CAAT.ImageActor().
+                            create().
+                            setBounds(0,0,dw,dh).
+                            setImage( director.getImage('background') ).
+                            setOffsetY( -director.getImage('background').height+dh ).
+                            setClip(true)
+                    );
 
             // fondo. jardin.
             this.directorScene.addChild(

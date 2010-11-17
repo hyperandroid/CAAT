@@ -417,6 +417,7 @@
         levelActor:                 null,
         chronoActor:                null,
         timer:                      null,
+        scrollTimer:                null,
 
         scoreActor:                 null,
         endGameActor:               null,
@@ -462,26 +463,27 @@
             var dw= director.canvas.width;
             var dh= director.canvas.height;
 
-            this.backgroundContainer= new CAAT.ActorContainer().
+            this.backgroundContainer= new CAAT.ImageActor().
                     create().
-                    setBounds(0,0,dw,dh);
+                    setBounds(0,0,dw,dh).
+                    setImage( director.getImage('background') ).
+                    setOffsetY( -director.getImage('background').height+2*dh ).
+                    setClip(true);
 
-            this.backgroundContainer.addChild(
-                    new HN.Garden().
-                            create().
-                            setBounds(0,0,dw,dh).
-                            initialize( director.ctx, 120, dh/2 )
-                    );
-            this.backgroundContainer.addChild(
-                    new HN.RotoZoomActor().
-                            create().
-                            setBounds(0,0,dw,dh).
-                            initialize(director, director.getImage('space') ) );
-            this.backgroundContainer.addChild(
-                    new HN.PlasmaActor().
-                            create().
-                            setBounds(0,0,dw,dh).
-                            initialize(dw/8, dh/8) );
+            this.scrollTimer= this.directorScene.createTimer(
+                    this.directorScene.time,
+                    100,
+                    function timeout(sceneTime, time, timerTask) {
+                        me.backgroundContainer.offsetY+= .2;
+                        if ( me.backgroundContainer.offsetY>0 ) {
+                            me.backgroundContainer.offsetY=0;
+                        }
+                        timerTask.reset( me.directorScene.time );
+                    },
+                    function tick(sceneTime, time, timerTask) {
+                    } );
+
+
 
             this.directorScene.addChild(
                     this.backgroundContainer );
@@ -547,8 +549,6 @@
                         controls.height - this.buttonImage.singleHeight );
 
             restart.mouseClick= function(mouseEvent) {
-//                me.endGame();
-                // pulsar abort es igual que si se termina el tiempo de crono.
                 me.context.timeUp();
             };
             controls.addChild(restart);
@@ -611,7 +611,7 @@
 
             this.endGameActor= new CAAT.ImageActor().
                     create().
-                    setImage( director.getImage('background') ).
+                    setImage( director.getImage('background_op') ).
                     setAlpha( .9 ).
                     setGlobalAlpha(false);
 
@@ -1010,15 +1010,6 @@
         },
         setDifficulty : function(level) {
             this.context.difficulty=level;
-
-            this.backgroundContainer.childrenList[0].setExpired(true);
-            this.backgroundContainer.childrenList[1].setExpired(true);
-            this.backgroundContainer.childrenList[2].setExpired(true);
-
-            this.backgroundContainer.childrenList[level].setFrameTime(
-                    this.directorScene.time,
-                    Number.MAX_VALUE );
-
         },
         cancelTimer : function(){
             if ( this.timer!=null ) {
@@ -1032,10 +1023,10 @@
             this.timer= this.directorScene.createTimer(
                 this.directorScene.time,
                 this.context.turnTime,
-                function timeout(time, timerTask) {
+                function timeout(sceneTime, time, timerTask) {
                     me.context.timeUp();
                 },
-                function tick(time, timerTask) {
+                function tick(sceneTime, time, timerTask) {
                     me.chronoActor.tick(time, timerTask.duration);
                 });
 
