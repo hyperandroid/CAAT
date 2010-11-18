@@ -97,7 +97,7 @@
             return this;
         },
         /**
-         * Notifies the registeres Acto'r life cycle listener about some event.
+         * Notifies the registered Actor's life cycle listener about some event.
          * @param sEventType an string indicating the type of event being notified.
          * @param time an integer indicating the time related to Scene's timeline when the event
          * is being notified.
@@ -1075,7 +1075,7 @@
         /**
          * Sets the Sprite image. The image will be trrated as an array of rows by columns subimages.
          *
-         * @see CAAT.ConpoundImage
+         * @see CAAT.CompoundImage
          * @param conpoundimage a CAAT.ConpoundImage object instance.
          * @return this
          */
@@ -1256,21 +1256,21 @@
 	    paintInvertedH : function( canvas ) {
 
 	        canvas.save();
-		        canvas.translate( x+this.width, y );
+		        canvas.translate( this.width, 0 );
 		        canvas.scale(-1, 1);
 		        canvas.drawImage( this.image,this.offsetX,this.offsetY );
 	        canvas.restore();
 	    },
 	    paintInvertedV : function( canvas, imageIndex ) {
 	        canvas.save();
-	        	canvas.translate( x, y+this.height );
+	        	canvas.translate( 0, this.height );
 	        	canvas.scale(1, -1);
 		        canvas.drawImage( this.image,this.offsetX,this.offsetY );
 	        canvas.restore();
 	    },
 	    paintInvertedHV : function( canvas ) {
 	        canvas.save();
-		    	canvas.translate( x, y+this.height );
+		    	canvas.translate( 0, this.height );
 		    	canvas.scale(1, -1);
 	        	canvas.translate( this.width, 0 );
 	        	canvas.scale(-1, 1);
