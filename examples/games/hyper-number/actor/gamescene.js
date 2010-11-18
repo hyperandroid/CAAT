@@ -1,59 +1,4 @@
 (function() {
-    CAAT.Button= function() {
-        CAAT.Button.superclass.constructor.call(this);
-        return this;
-    };
-
-    extend( CAAT.Button, CAAT.Actor, {
-        buttonImage:    null,   // a CompoundImage object instance
-        iNormal:        0,
-        iOver:          0,
-        iPress:         0,
-        iDisabled:      0,
-        iCurrent:       0,
-        fnOnClick:      null,
-
-        initialize : function( buttonImage, iNormal, iOver, iPress, iDisabled, fn) {
-            this.buttonImage=   buttonImage;
-            this.iNormal=       iNormal || 0;
-            this.iOver=         iOver || this.iNormal;
-            this.iPress=        iPress || this.iNormal;
-            this.iDisabled=     iDisabled || this.iNormal;
-            this.iCurrent=      this.iNormal;
-            this.width=         buttonImage.singleWidth;
-            this.height=        buttonImage.singleHeight;
-            this.fnOnClick=     fn;
-            return this;
-        },
-        paint : function(director,time) {
-            this.buttonImage.paint( director.ctx,  this.iCurrent, 0, 0 );
-        },
-        mouseEnter : function(mouseEvent) {
-            this.iCurrent= this.iOver;
-            document.body.style.cursor = 'hand';
-        },
-        mouseExit : function(mouseEvent) {
-            this.iCurrent= this.iNormal;
-            document.body.style.cursor = 'default';
-        },
-        mouseDown : function(mouseEvent) {
-            this.iCurrent= this.iPress;
-        },
-        mouseUp : function(mouseEvent) {
-            this.iCurrent= this.iNormal;
-        },
-        mouseClick : function(mouseEvent) {
-            if ( null!=this.fnOnClick ) {
-                this.fnOnClick();
-            }
-        },
-        toString : function() {
-            return 'CAAT.Button '+this.iNormal;
-        }
-    });
-})();
-
-(function() {
     HN.BrickActor= function() {
         HN.BrickActor.superclass.constructor.call(this);
         return this;
@@ -343,7 +288,7 @@
             this.currentScore= 0;
             this.maxScore= 0;
             this.minScore= 0;
-            this.setText('');
+            this.setText('000000');
         },
         contextEvent : function( event ) {
             if ( event.source=='context' ) {
@@ -387,6 +332,53 @@
             HN.ScoreActor.superclass.animate.call(this,director,time);
         }
     });
+})();
+
+(function() {
+
+    HN.AnimatedBackground= function() {
+        HN.AnimatedBackground.superclass.constructor.call(this);
+        return this;
+    };
+
+    extend( HN.AnimatedBackground, CAAT.ImageActor, {
+        timer:  null,
+        scene:  null,
+
+        setScene : function(scene) {
+            this.scene= scene;
+            return this;
+        },
+        contextEvent : function( event ) {
+
+            var me= this;
+
+            if ( event.source=='context' ) {
+                if ( event.event=='status') {
+                    if ( event.params==HN.Context.prototype.ST_STARTGAME ) {
+                        this.timer= this.scene.createTimer(
+                            me.scene.time,
+                            100,
+                            function timeout(sceneTime, time, timerTask) {
+                                me.offsetY+= .2;
+                                if ( me.offsetY>0 ) {
+                                    me.offsetY=0;
+                                }
+                                timerTask.reset( me.scene.time );
+                            },
+                            null,
+                            null );
+                    } else if ( event.params==HN.Context.prototype.ST_ENDGAME ) {
+                        if ( this.timer!=null ) {
+                            this.timer.cancel();
+                            this.timer= null;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
 })();
 
 (function() {
@@ -463,30 +455,16 @@
             var dw= director.canvas.width;
             var dh= director.canvas.height;
 
-            this.backgroundContainer= new CAAT.ImageActor().
+            //////////////////////// animated background
+            this.backgroundContainer= new HN.AnimatedBackground().
                     create().
                     setBounds(0,0,dw,dh).
                     setImage( director.getImage('background') ).
                     setOffsetY( -director.getImage('background').height+2*dh ).
-                    setClip(true);
-
-            this.scrollTimer= this.directorScene.createTimer(
-                    this.directorScene.time,
-                    100,
-                    function timeout(sceneTime, time, timerTask) {
-                        me.backgroundContainer.offsetY+= .2;
-                        if ( me.backgroundContainer.offsetY>0 ) {
-                            me.backgroundContainer.offsetY=0;
-                        }
-                        timerTask.reset( me.directorScene.time );
-                    },
-                    function tick(sceneTime, time, timerTask) {
-                    } );
-
-
-
-            this.directorScene.addChild(
-                    this.backgroundContainer );
+                    setClip(true).
+                    setScene(this.directorScene);
+            this.directorScene.addChild( this.backgroundContainer );
+            this.context.addContextListener(this.backgroundContainer);
 
             this.brickActors= [];
 
@@ -975,8 +953,7 @@
         },
         endGame : function() {
             // parar y eliminar cronometro.
-            this.directorScene.cancelTimer( this.timer );
-            this.timer= null;
+            this.cancelTimer();
 
             // quitar contorl de mouse.
             this.bricksContainer.enableEvents(false);
@@ -1013,7 +990,7 @@
         },
         cancelTimer : function(){
             if ( this.timer!=null ) {
-                this.directorScene.cancelTimer(this.timer);
+                this.timer.cancel();
             }
             this.timer= null;
         },

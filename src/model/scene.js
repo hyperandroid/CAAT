@@ -22,11 +22,13 @@
         duration:           0,
         callback_timeout:   null,
         callback_tick:      null,
+        callback_cancel:    null,
 
+        scene:              null,
         taskId:             0,
         remove:             false,
 
-        create: function( startTime, duration, callback_timeout, callback_tick ) {
+        create: function( startTime, duration, callback_timeout, callback_tick, callback_cancel ) {
             this.startTime=         startTime;
             this.duration=          duration;
             this.callback_timeout=  callback_timeout;
@@ -52,6 +54,12 @@
             this.remove= false;
             this.startTime=  time;
             return this;
+        },
+        cancel : function() {
+            this.remove= true;
+            if ( null!=this.callback_cancel ) {
+                this.callback_cancel( this.scene.time, this.scene.time-this.startTime, this );
+            }
         }
     };
 })();
@@ -85,7 +93,9 @@
         checkTimers : function(time) {
             var i=this.timerList.length-1;
             while( i>=0 ) {
-                this.timerList[i].checkTask(time);
+                if ( !this.timerList[i].remove ) {
+                    this.timerList[i].checkTask(time);
+                }
                 i--;
             }
         },
@@ -104,6 +114,7 @@
 
             tt.taskId= this.timerSequence++;
             tt.sceneTime = this.time;
+            tt.scene= this;
 
             this.timerList.push( tt );
 
@@ -116,14 +127,6 @@
                     this.timerList.splice(i,1);
                 }
             }
-        },
-        cancelTimer : function(timerTask) {
-            for( i=0; i<this.timerList.length; i++ ) {
-                if ( this.timerList[i].taskId==timerTask.taskId ) {
-                    this.timerList.splice(i,1);
-                    return;
-                }
-            }            
         },
         animate : function(director, time) {
             this.checkTimers(time);

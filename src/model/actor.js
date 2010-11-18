@@ -1536,6 +1536,69 @@
 })();
 
 (function() {
+    CAAT.Button= function() {
+        CAAT.Button.superclass.constructor.call(this);
+        return this;
+    };
+
+    extend( CAAT.Button, CAAT.Actor, {
+        buttonImage:    null,   // a CompoundImage object instance
+        iNormal:        0,
+        iOver:          0,
+        iPress:         0,
+        iDisabled:      0,
+        iCurrent:       0,
+        fnOnClick:      null,
+        enabled:        true,
+
+        setEnabled : function( enabled ) {
+            this.enabled= enabled;
+        },
+        initialize : function( buttonImage, iNormal, iOver, iPress, iDisabled, fn) {
+            this.buttonImage=   buttonImage;
+            this.iNormal=       iNormal || 0;
+            this.iOver=         iOver || this.iNormal;
+            this.iPress=        iPress || this.iNormal;
+            this.iDisabled=     iDisabled || this.iNormal;
+            this.iCurrent=      this.iNormal;
+            this.width=         buttonImage.singleWidth;
+            this.height=        buttonImage.singleHeight;
+            this.fnOnClick=     fn;
+            return this;
+        },
+        paint : function(director,time) {
+            this.buttonImage.paint(
+                    director.ctx,
+                    (this.enabled) ? this.iCurrent : this.iDisabled,
+                    0,
+                    0 );
+        },
+        mouseEnter : function(mouseEvent) {
+            this.iCurrent= this.iOver;
+            document.body.style.cursor = 'hand';
+        },
+        mouseExit : function(mouseEvent) {
+            this.iCurrent= this.iNormal;
+            document.body.style.cursor = 'default';
+        },
+        mouseDown : function(mouseEvent) {
+            this.iCurrent= this.iPress;
+        },
+        mouseUp : function(mouseEvent) {
+            this.iCurrent= this.iNormal;
+        },
+        mouseClick : function(mouseEvent) {
+            if ( this.enabled && null!=this.fnOnClick ) {
+                this.fnOnClick();
+            }
+        },
+        toString : function() {
+            return 'CAAT.Button '+this.iNormal;
+        }
+    });
+})();
+
+(function() {
     CAAT.ShapeActor = function() {
         CAAT.ShapeActor.superclass.constructor.call(this);
         this.compositeOp= 'source-over';
