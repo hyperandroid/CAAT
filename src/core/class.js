@@ -8,8 +8,7 @@ function extend(subc, superc, overrides)
    subc.prototype = new F();
    subc.prototype.constructor = subc;
    subc.superclass = superc.prototype;
-   if (superc.prototype.constructor == Object.prototype.constructor)
-   {
+   if (superc.prototype.constructor == Object.prototype.constructor)   {
       superc.prototype.constructor = superc;
    }
    

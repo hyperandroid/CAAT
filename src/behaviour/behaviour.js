@@ -228,6 +228,26 @@
 })();
 
 (function() {
+    CAAT.GenericBehavior= function() {
+        CAAT.GenericBehavior.superclass.constructor.call(this);
+        return this;
+    };
+
+    extend( CAAT.GenericBehavior, CAAT.Behavior, {
+
+        callback: null,
+
+        setCallback : function( callback ) {
+            this.callback= callback;
+            return this;
+        },
+        setForTime : function(time, actor) {
+            return this.callback.call( actor, time );
+        }
+    });
+})();
+
+(function() {
 	CAAT.ScaleBehavior= function() {
 		CAAT.RotateBehavior.superclass.constructor.call(this);
 		this.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
