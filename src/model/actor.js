@@ -1701,3 +1701,95 @@
         }
     });
 })();
+
+/**
+ * This class aims to instrument Dom elements as if were Canvas elements.
+ * The dom element will be backed by a CAAT Actor but transformed and presented by CSS.
+ *
+ * Experimental form.
+ */
+(function() {
+    CAAT.CSSActor = function() {
+        CAAT.CSSActor.superclass.constructor.call(this);
+        return this;
+    };
+
+    extend( CAAT.CSSActor, CAAT.ActorContainer, {
+        domElement: null,
+
+        create : function() {
+            CAAT.CSSActor.superclass.create.call(this);
+            this.domElement= document.createElement('div');
+            document.body.appendChild(this.domElement);
+            this.domElement.style['position']='absolute';
+//            this.domElement.style['-webkit-transition']='all 0s';
+            this.domElement.innerHTML='<b>Ibon';
+            return this;
+        },
+        setLocation : function( x, y ) {
+            CAAT.CSSActor.superclass.setLocation.call(this,x,y);
+            this.domElement.style['left']= '0px';
+            this.domElement.style['top']= '0px';
+            return this;
+        },
+        setSize : function( w, h ) {
+            CAAT.CSSActor.superclass.setSize.call(this,w,h);
+            this.domElement.style['width']= ''+w+'px';
+            this.domElement.style['height']= ''+h+'px';
+            return this;
+        },
+        setBounds : function( x,y,w,h ) {
+            this.setLocation(x,y);
+            this.setSize(w,h);
+            return this;
+        },
+        setBackground : function( backgroundImage_Local_URL ) {
+            this.domElement.style.background= 'url('+backgroundImage_Local_URL+')';
+            return this;
+        },
+        animate : function( director, time ) {
+            CAAT.CSSActor.superclass.animate.call(this,director,time);
+
+            /*
+            var m= this.transformationMatrix.getMatrix().matrix;
+            var strMatrix= 'matrix('+
+                    m[0][0]+','+
+                    m[0][1]+','+
+                    m[1][0]+','+
+                    m[1][1]+','+
+                    m[0][2]+','+
+                    m[1][2]+
+                    ')';
+            */
+            var strMatrix='translate('+this.x+'px, '+this.y+'px)';
+            if ( this.rotationAngle!=0 ) {
+                strMatrix= strMatrix+ ' rotate('+this.rotationAngle+'rad)';
+            }
+            if ( this.scaleX!=0 ) {
+                strMatrix= strMatrix+ ' scale('+this.scaleX+')';
+            }
+
+            this.domElement.style['-webkit-transform']= strMatrix;
+            this.domElement.style['-o-transform']= strMatrix;
+            this.domElement.style['-moz-transform']= strMatrix;
+
+            this.setOpacity();
+
+            return this;
+        },
+        setOpacity : function() {
+            this.domElement.style['filter']= 'alpha(opacity='+((this.alpha*100)>>0)+')';
+            this.domElement.style['-moz-opacity']= this.alpha;
+            this.domElement.style['-khtml-opacity']= this.alpha;
+            this.domElement.style['-opacity']= this.alpha;
+        },
+        addChild : function( actor ) {
+            CAAT.CSSActor.superclass.addChild.call(this,actor);
+
+
+        },
+        paintActor : function(director, time) {
+
+        }
+    });
+})();

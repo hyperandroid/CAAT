@@ -9,7 +9,7 @@
  *  + AlphaBehavior:   controls container/actor global alpha.
  *  + RotateBehavior:  takes control of rotation affine transform.
  *  + ScaleBehavior:   takes control of scaling on x/y axis affine transform.
- *  + TODO: pathBehavior.
+ *  + PathBehavior:    takes control of translating an Actor/ActorContainer across a path [ie. pathSegment collection].
  *
  * 20101011 Hyperandroid
  *  + ScaleBehavior: if scaleX==0 || scaleY==0, FF3/4 will stop rendering.
@@ -214,10 +214,19 @@
             return angle;
 			
 		},
-        setAngles : function( start, end ) {
-            this.startAngle =  start;
-            this.endAngle=     end;
+        setValues : function( startAngle, endAngle ) {
+            this.startAngle= startAngle;
+            this.endAngle= endAngle;
             return this;
+        },
+        /**
+         * Deprecated.
+         * Use setValues instead
+         * @param start
+         * @param end
+         */
+        setAngles : function( start, end ) {
+            return this.setValues(start,end);
         },
         setAnchor : function( anchor ) {
             this.anchor= anchor;

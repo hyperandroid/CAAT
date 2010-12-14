@@ -299,6 +299,16 @@
 			}
 			
 			return point;
-		}
+		},
+        getMatrix : function() {
+            var matrix= new CAAT.Matrix();
+
+			for( var i=0; i<this.stack.length; i++ ) {
+				var matrixStack= this.stack[i];
+                matrix.multiply( matrixStack );
+            }
+
+            return matrix;
+        }
 	};
 })();
