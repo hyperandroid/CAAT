@@ -16,7 +16,10 @@
  *
  **/
 
-
+/**
+ * Behavior base class.
+ * Other Behaviors simply must supply with overriden method <code>setForTime(time, actor)</code>.
+ */
 (function() {
 	CAAT.Behavior= function() {
 		this.lifecycleListenerList=[];
