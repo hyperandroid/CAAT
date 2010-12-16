@@ -68,6 +68,14 @@
         inFrame:                false,  // boolean indicating whether this Actor was present on last frame.
 
         /**
+         * takes an element out of time line.
+         * @return this
+         */
+        setOutOfFrameTime : function() {
+            this.setFrameTime(-1,0);
+            return this;
+        },
+        /**
          * Adds an Actor's life cycle listener.
          * The developer must ensure the actorListener is not already a listener, otherwise
          * it will notified more than once.
@@ -392,6 +400,10 @@
 	    },
         /**
          * Set location and dimension of an Actor at once.
+         *
+         * as http://jsperf.com/drawimage-whole-pixels states, drawing at whole pixels rocks while at subpixels sucks.
+         * thanks @pbakaus
+         *
          * @param x a float indicating Actor's x position.
          * @param y a float indicating Actor's y position
          * @param w a float indicating Actor's width
@@ -399,8 +411,10 @@
          * @return this
          */
 	    setBounds : function(x, y, w, h)  {
-	    	this.x= x;
-	    	this.y= y;
+	    	//this.x= x;
+	    	//this.y= y;
+            this.x= x>>0;
+            this.y= y>>0;
 	    	this.width= w;
 	    	this.height= h;
 
@@ -408,13 +422,19 @@
 	    },
         /**
          * This method sets the position of an Actor inside its parent.
+         *
+         * as http://jsperf.com/drawimage-whole-pixels states, drawing at whole pixels rocks while at subpixels sucks.
+         * thanks @pbakaus
+         *
          * @param x a float indicating Actor's x position
          * @param y a float indicating Actor's y position
          * @return this
          */
 	    setLocation : function( x, y ) {
-	        this.x= x;
-	        this.y= y;
+	        //this.x= x;
+	        //this.y= y;
+            this.x= x>>0;
+            this.y= y>>0;
 
             return this;
 	    },

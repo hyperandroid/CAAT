@@ -394,10 +394,10 @@
                 ax/=modulo;
                 ay/=modulo;
             }
-            
+
             actor.setLocation(
-                    point.x - this.translateX, // - actor.width/2,  //- ay*actor.height/2,
-                    point.y - this.translateY  // - actor.height/2 //+ ax*actor.height/2);
+                    point.x - this.translateX,
+                    point.y - this.translateY
             );
 
             return { x: actor.x, y: actor.y };
