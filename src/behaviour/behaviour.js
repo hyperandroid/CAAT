@@ -18,7 +18,7 @@
 
 /**
  * Behavior base class.
- * Other Behaviors simply must supply with overriden method <code>setForTime(time, actor)</code>.
+ * Other Behaviors simply must supply with the method <code>setForTime(time, actor)</code> overriden.
  */
 (function() {
 	CAAT.Behavior= function() {
