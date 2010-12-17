@@ -55,17 +55,46 @@
 	};
 })();
 
-CAAT.lastSelectedActor=  null;
-CAAT.mousePoint=         null;
-CAAT.prevMousePoint=     null;
-CAAT.screenMousePoint=   null;
-CAAT.mouseDown=          false;
-CAAT.modifiers=          0;
-CAAT.dragging=           false;
-CAAT.targetDirector=     null;
-CAAT.DRAG_THRESHOLD_X=   5;
-CAAT.DRAG_THRESHOLD_Y=   5;
-CAAT.DEBUG=              false;
+/**
+ * Flag to signal whether events are enabled for CAAT.
+ */
+CAAT.GlobalEventsEnabled=   false;
+
+/**
+ * Global event function listeners.
+ */
+CAAT.keyDownFunc=           null;
+CAAT.keyUpFunc=             null;
+CAAT.mouseDownFunc=         null;
+CAAT.mouseUpFunc=           null;
+CAAT.mouseOverFunc=         null;
+CAAT.mouseOutFunc=          null;
+CAAT.mouseMoveFunc=         null;
+CAAT.dblClickFunc=          null;
+
+/**
+ * Generic eventing attributes.
+ */
+CAAT.lastSelectedActor=     null;
+CAAT.mousePoint=            null;
+CAAT.prevMousePoint=        null;
+CAAT.screenMousePoint=      null;
+CAAT.mouseDown=             false;
+CAAT.modifiers=             0;
+CAAT.dragging=              false;
+CAAT.targetDirector=        null;
+
+/**
+ * Do not consider mouse drag gesture at least until you have dragged
+ *
+ */
+CAAT.DRAG_THRESHOLD_X=      5;
+CAAT.DRAG_THRESHOLD_Y=      5;
+
+/**
+ * Allow visual debugging artifacts.
+ */
+CAAT.DEBUG=                 false;
 
 CAAT.getCanvasCoord= function __getCanvasCoord(point, e) {
 	var posx = 0;
@@ -108,23 +137,29 @@ CAAT.log= function(msg) {
     if (console) {
         console.log(msg);
     }
-}
+};
 
 CAAT.GlobalDisableEvents= function __GlobalDisableEvents()
 {
     CAAT.log("(CAAT.MouseEvent) Disabling CAAT event capture");
 
-    window.removeEventListener('keydown', CAAT.MouseEvent.prototype.keyDownFunc);
-    window.removeEventListener('keyup', CAAT.MouseEvent.prototype.keyUpFunc);
-    window.removeEventListener('mousedown', CAAT.MouseEvent.prototype.mouseDownFunc);
-    window.removeEventListener('mouseup', CAAT.MouseEvent.prototype.mouseUpFunc);
-    window.removeEventListener('mousemove', CAAT.MouseEvent.prototype.mouseMoveFunc);
-    window.removeEventListener('mouseover', CAAT.MouseEvent.prototype.mouseOverFunc);
-    window.removeEventListener('mouseout', CAAT.MouseEvent.prototype.mouseOutFunc);
-    window.removeEventListener('dblclick', CAAT.MouseEvent.prototype.dblClickFunc);
-}
+    window.removeEventListener('keydown',   CAAT.keyDownFunc);
+    window.removeEventListener('keyup',     CAAT.keyUpFunc);
+    window.removeEventListener('mousedown', CAAT.mouseDownFunc);
+    window.removeEventListener('mouseup',   CAAT.mouseUpFunc);
+    window.removeEventListener('mousemove', CAAT.mouseMoveFunc);
+    window.removeEventListener('mouseover', CAAT.mouseOverFunc);
+    window.removeEventListener('mouseout',  CAAT.mouseOutFunc);
+    window.removeEventListener('dblclick',  CAAT.dblClickFunc);
+
+    CAAT.GlobalEventsEnabled= false;
+};
 
 CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
+
+    if (CAAT.GlobalEventsEnabled) {
+        return;
+    }
 
     CAAT.log("(CAAT.MouseEvent) Enabling CAAT event capture")
 
@@ -133,7 +168,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
     CAAT.screenMousePoint=   new CAAT.Point();
 
     window.addEventListener('keydown',
-        function(evt,c) {
+        CAAT.keyDownFunc= function(evt,c) {
             var key = (evt.which) ? evt.which : event.keyCode;
             switch( key ) {
             case CAAT.MouseEvent.prototype.SHIFT:
@@ -150,7 +185,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
         false);
 
     window.addEventListener('keyup',
-        function(evt,c) {
+        CAAT.keyUpFunc= function(evt,c) {
             var key = (evt.which) ? evt.which : event.keyCode;
             switch( key ) {
             case CAAT.MouseEvent.prototype.SHIFT:
@@ -175,7 +210,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
 
 
     window.addEventListener('mouseup',
-            function(e) {
+            CAAT.mouseUpFunc= function(e) {
                 CAAT.mouseDown = false;
                 if (null != CAAT.lastSelectedActor) {
                     CAAT.lastSelectedActor.mouseUp(
@@ -204,7 +239,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
             false);
 
     window.addEventListener('mousedown',
-            function(e) {
+            CAAT.mouseDownFunc= function(e) {
 
                 CAAT.getCanvasCoord(CAAT.mousePoint, e);
 
@@ -232,7 +267,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
             false);
 
     window.addEventListener('mouseover',
-            function(e) {
+            CAAT.mouseOverFunc= function(e) {
                 CAAT.getCanvasCoord(CAAT.mousePoint, e);
 
                 if ( null==CAAT.targetDirector ) {
@@ -253,7 +288,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
             false);
 
     window.addEventListener('mouseout',
-            function(e) {
+            CAAT.mouseOutFunc= function(e) {
                 if (null != CAAT.lastSelectedActor) {
                     CAAT.lastSelectedActor.mouseExit(new CAAT.MouseEvent().init(0, 0, CAAT.modifiers, CAAT.lastSelectedActor, CAAT.screenMousePoint));
                     CAAT.lastSelectedActor = null;
@@ -263,7 +298,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
             false);
 
     window.addEventListener('mousemove',
-            function(e) {
+            CAAT.mouseMoveFunc= function(e) {
 
                 CAAT.getCanvasCoord(CAAT.mousePoint, e);
                 if ( null==CAAT.targetDirector ) {
@@ -331,16 +366,18 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
             },
             false);
 
-    window.addEventListener("dblclick", function(e) {
-        CAAT.getCanvasCoord(CAAT.mousePoint, e);
-        if (null != CAAT.lastSelectedActor) {
-            CAAT.lastSelectedActor.mouseDblClick(
-                    new CAAT.MouseEvent().init(
-                            CAAT.lastSelectedActor.rpoint.x,
-                            CAAT.lastSelectedActor.rpoint.y,
-                            CAAT.modifiers,
-                            CAAT.lastSelectedActor,
-                            CAAT.screenMousePoint));
-        }
-    }, false);
+    window.addEventListener("dblclick",
+            CAAT.dblClickFunc= function(e) {
+                CAAT.getCanvasCoord(CAAT.mousePoint, e);
+                if (null != CAAT.lastSelectedActor) {
+                    CAAT.lastSelectedActor.mouseDblClick(
+                            new CAAT.MouseEvent().init(
+                                    CAAT.lastSelectedActor.rpoint.x,
+                                    CAAT.lastSelectedActor.rpoint.y,
+                                    CAAT.modifiers,
+                                    CAAT.lastSelectedActor,
+                                    CAAT.screenMousePoint));
+                }
+            },
+            false);
 };
