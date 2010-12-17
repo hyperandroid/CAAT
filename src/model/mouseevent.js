@@ -104,6 +104,20 @@ CAAT.getCanvasCoord= function __getCanvasCoord(point, e) {
     CAAT.targetDirector=null;
 };
 
+CAAT.GlobalDisableEvents= function __GlobalDisableEvents()
+{
+    //console.log("(CAAT.MouseEvent) Disabling CAAT event capture");
+
+    window.removeEventListener('keydown', CAAT.MouseEvent.prototype.keyDownFunc);
+    window.removeEventListener('keyup', CAAT.MouseEvent.prototype.keyUpFunc);
+    window.removeEventListener('mousedown', CAAT.MouseEvent.prototype.mouseDownFunc);
+    window.removeEventListener('mouseup', CAAT.MouseEvent.prototype.mouseUpFunc);
+    window.removeEventListener('mousemove', CAAT.MouseEvent.prototype.mouseMoveFunc);
+    window.removeEventListener('mouseover', CAAT.MouseEvent.prototype.mouseOverFunc);
+    window.removeEventListener('mouseout', CAAT.MouseEvent.prototype.mouseOutFunc);
+    window.removeEventListener('dblclick', CAAT.MouseEvent.prototype.dblClickFunc);
+}
+
 CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
 
     CAAT.mousePoint=      new CAAT.Point();
