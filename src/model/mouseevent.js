@@ -51,7 +51,17 @@
 		},
 		isShiftDown : function() {
 			return this.modifiers&this.SHIFT_MASK;
-		}
+		},
+        
+        // Store references
+        keyDownFunc: null,
+        keyUpFunc: null,
+        mouseDownFunc: null,
+        mouseUpFunc: null,
+        mouseOverFunc: null,
+        mouseOutFunc: null,
+        mouseMoveFunc: null,
+        dblClickFunc: null
 	};
 })();
 
@@ -108,14 +118,31 @@ function __getCanvasCoord(point, e) {
 //	__screenMousePoint.set(posx, posy);
 }
 
+function __GlobalDisableEvents()
+{
+    console.log("(CAAT.MouseEvent) Disabling CAAT event capture");
+    
+    window.removeEventListener('keydown', CAAT.MouseEvent.prototype.keyDownFunc);
+    window.removeEventListener('keyup', CAAT.MouseEvent.prototype.keyUpFunc);
+    window.removeEventListener('mousedown', CAAT.MouseEvent.prototype.mouseDownFunc);
+    window.removeEventListener('mouseup', CAAT.MouseEvent.prototype.mouseUpFunc);
+    window.removeEventListener('mousemove', CAAT.MouseEvent.prototype.mouseMoveFunc);
+    window.removeEventListener('mouseover', CAAT.MouseEvent.prototype.mouseOverFunc);
+    window.removeEventListener('mouseout', CAAT.MouseEvent.prototype.mouseOutFunc);
+    window.removeEventListener('dblclick', CAAT.MouseEvent.prototype.dblClickFunc);
+}
+
+
 function __GlobalEnableEvents() {
 
+    console.log("(CAAT.MouseEvent) Enabling CAAT event capture");
+    
     __mousePoint=         new CAAT.Point();
     __prevMousePoint=     new CAAT.Point();
     __screenMousePoint=   new CAAT.Point();
 
     window.addEventListener('keydown',
-        function(evt,c) {
+        CAAT.MouseEvent.prototype.keyDownFunc = function(evt,c) {
             var key = (evt.which) ? evt.which : event.keyCode;
             switch( key ) {
             case CAAT.MouseEvent.prototype.SHIFT:
@@ -132,7 +159,7 @@ function __GlobalEnableEvents() {
         false);
 
     window.addEventListener('keyup',
-        function(evt,c) {
+        CAAT.MouseEvent.prototype.keyUpFunc = function(evt,c) {
             var key = (evt.which) ? evt.which : event.keyCode;
             switch( key ) {
             case CAAT.MouseEvent.prototype.SHIFT:
@@ -155,7 +182,7 @@ function __GlobalEnableEvents() {
 
 
     window.addEventListener('mouseup',
-            function(e) {
+            CAAT.MouseEvent.prototype.mouseUpFunc = function(e) {
                 __mouseDown = false;
                 if (null != __lastSelectedActor) {
                     __lastSelectedActor.mouseUp(
@@ -184,7 +211,7 @@ function __GlobalEnableEvents() {
             false);
 
     window.addEventListener('mousedown',
-            function(e) {
+            CAAT.MouseEvent.prototype.mouseDownFunc = function(e) {
 
                 __getCanvasCoord(__mousePoint, e);
 
@@ -212,7 +239,7 @@ function __GlobalEnableEvents() {
             false);
 
     window.addEventListener('mouseover',
-            function(e) {
+              CAAT.MouseEvent.prototype.mouseOverFunc = function(e) {
                 __getCanvasCoord(__mousePoint, e);
 
                 if ( null==__targetDirector ) {
@@ -233,7 +260,7 @@ function __GlobalEnableEvents() {
             false);
 
     window.addEventListener('mouseout',
-            function(e) {
+            CAAT.MouseEvent.prototype.mouseOutFunc = function(e) {
                 if (null != __lastSelectedActor) {
                     __lastSelectedActor.mouseExit(new CAAT.MouseEvent().init(0, 0, __modifiers, __lastSelectedActor, __screenMousePoint));
                     __lastSelectedActor = null;
@@ -243,8 +270,8 @@ function __GlobalEnableEvents() {
             false);
 
     window.addEventListener('mousemove',
-            function(e) {
-
+            CAAT.MouseEvent.prototype.mouseMoveFunc = function(e) {
+        
                 __getCanvasCoord(__mousePoint, e);
                 if ( null==__targetDirector ) {
                     return;
@@ -311,7 +338,8 @@ function __GlobalEnableEvents() {
             },
             false);
 
-    window.addEventListener("dblclick", function(e) {
+    window.addEventListener("dblclick", 
+        CAAT.MouseEvent.prototype.dblClickFunc = function(e) {
         __getCanvasCoord(__mousePoint, e);
         if (null != __lastSelectedActor) {
             __lastSelectedActor.mouseDblClick(
