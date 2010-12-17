@@ -102,7 +102,7 @@ CAAT.getCanvasCoord= function __getCanvasCoord(point, e) {
     }
 
     CAAT.targetDirector=null;
-}
+};
 
 CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
 
@@ -321,4 +321,4 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
                             CAAT.screenMousePoint));
         }
     }, false);
-}
+};
