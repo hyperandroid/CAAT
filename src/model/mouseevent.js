@@ -55,20 +55,19 @@
 	};
 })();
 
+CAAT.lastSelectedActor=  null;
+CAAT.mousePoint=         null;
+CAAT.prevMousePoint=     null;
+CAAT.screenMousePoint=   null;
+CAAT.mouseDown=          false;
+CAAT.modifiers=          0;
+CAAT.dragging=           false;
+CAAT.targetDirector=     null;
+CAAT.DRAG_THRESHOLD_X=   5;
+CAAT.DRAG_THRESHOLD_Y=   5;
+CAAT.DEBUG=              false;
 
-// BUG: do not polute global namespace.
-var __lastSelectedActor=  null;
-var __mousePoint=         null;
-var __prevMousePoint=     null;
-var __screenMousePoint=   null;
-var __mouseDown=          false;
-var __modifiers=          0;
-var __dragging=           false;
-var __targetDirector=     null;
-var __DRAG_THRESHOLD_X=   2;
-var __DRAG_THRESHOLD_Y=   2;
-
-function __getCanvasCoord(point, e) {
+CAAT.getCanvasCoord= function __getCanvasCoord(point, e) {
 	var posx = 0;
 	var posy = 0;
 	if (!e) e = window.event;
@@ -95,37 +94,34 @@ function __getCanvasCoord(point, e) {
     	pposy-= CAAT.director[i].canvas.offsetTop;
 
         if ( CAAT.director[i].contains(pposx, pposy) ) {
-            __targetDirector= CAAT.director[i];
+            CAAT.targetDirector= CAAT.director[i];
             point.set(pposx,pposy);
-            __screenMousePoint.set(pposx, pposy);
+            CAAT.screenMousePoint.set(pposx, pposy);
             return;
         }
     }
 
-    __targetDirector=null;
-    
-//	point.set(posx,posy);
-//	__screenMousePoint.set(posx, posy);
+    CAAT.targetDirector=null;
 }
 
-function __GlobalEnableEvents() {
+CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
 
-    __mousePoint=         new CAAT.Point();
-    __prevMousePoint=     new CAAT.Point();
-    __screenMousePoint=   new CAAT.Point();
+    CAAT.mousePoint=      new CAAT.Point();
+    CAAT.prevMousePoint=     new CAAT.Point();
+    CAAT.screenMousePoint=   new CAAT.Point();
 
     window.addEventListener('keydown',
         function(evt,c) {
             var key = (evt.which) ? evt.which : event.keyCode;
             switch( key ) {
             case CAAT.MouseEvent.prototype.SHIFT:
-                __modifiers|=CAAT.MouseEvent.prototype.SHIFT_MASK;
+                CAAT.modifiers|=CAAT.MouseEvent.prototype.SHIFT_MASK;
                 break;
             case CAAT.MouseEvent.prototype.CONTROL:
-                __modifiers|=CAAT.MouseEvent.prototype.CONTROL_MASK;
+                CAAT.modifiers|=CAAT.MouseEvent.prototype.CONTROL_MASK;
                 break;
             case CAAT.MouseEvent.prototype.ALT:
-                __modifiers|=CAAT.MouseEvent.prototype.ALT_MASK;
+                CAAT.modifiers|=CAAT.MouseEvent.prototype.ALT_MASK;
                 break;
             }
         },
@@ -136,17 +132,19 @@ function __GlobalEnableEvents() {
             var key = (evt.which) ? evt.which : event.keyCode;
             switch( key ) {
             case CAAT.MouseEvent.prototype.SHIFT:
-                __modifiers&=~CAAT.MouseEvent.prototype.SHIFT_MASK;
+                CAAT.modifiers&=~CAAT.MouseEvent.prototype.SHIFT_MASK;
                 break;
             case CAAT.MouseEvent.prototype.CONTROL:
-                __modifiers&=~CAAT.MouseEvent.prototype.CONTROL_MASK;
+                CAAT.modifiers&=~CAAT.MouseEvent.prototype.CONTROL_MASK;
                 break;
             case CAAT.MouseEvent.prototype.ALT:
-                __modifiers&=~CAAT.MouseEvent.prototype.ALT_MASK;
+                CAAT.modifiers&=~CAAT.MouseEvent.prototype.ALT_MASK;
                 break;
             case 68:    // D
-                if ( null!=__targetDirector ) {
-                    __targetDirector.debug= !__targetDirector.debug;
+                if ( CAAT.DEBUG ) {
+                    if ( null!=CAAT.targetDirector ) {
+                        CAAT.targetDirector.debug= !CAAT.targetDirector.debug;
+                    }
                 }
                 break;
             }
@@ -156,29 +154,29 @@ function __GlobalEnableEvents() {
 
     window.addEventListener('mouseup',
             function(e) {
-                __mouseDown = false;
-                if (null != __lastSelectedActor) {
-                    __lastSelectedActor.mouseUp(
+                CAAT.mouseDown = false;
+                if (null != CAAT.lastSelectedActor) {
+                    CAAT.lastSelectedActor.mouseUp(
                             new CAAT.MouseEvent().init(
-                                    __lastSelectedActor.rpoint.x,
-                                    __lastSelectedActor.rpoint.y,
-                                    __modifiers,
-                                    __lastSelectedActor,
-                                    __screenMousePoint));
+                                    CAAT.lastSelectedActor.rpoint.x,
+                                    CAAT.lastSelectedActor.rpoint.y,
+                                    CAAT.modifiers,
+                                    CAAT.lastSelectedActor,
+                                    CAAT.screenMousePoint));
                 }
 
-                if (!__dragging) {
-                    if (null != __lastSelectedActor) {
-                        __lastSelectedActor.mouseClick(
+                if (!CAAT.dragging) {
+                    if (null != CAAT.lastSelectedActor) {
+                        CAAT.lastSelectedActor.mouseClick(
                                 new CAAT.MouseEvent().init(
-                                        __lastSelectedActor.rpoint.x,
-                                        __lastSelectedActor.rpoint.y,
-                                        __modifiers,
-                                        __lastSelectedActor,
-                                        __screenMousePoint));
+                                        CAAT.lastSelectedActor.rpoint.x,
+                                        CAAT.lastSelectedActor.rpoint.y,
+                                        CAAT.modifiers,
+                                        CAAT.lastSelectedActor,
+                                        CAAT.screenMousePoint));
                     }
                 } else {
-                    __dragging = false;
+                    CAAT.dragging = false;
                 }
             },
             false);
@@ -186,141 +184,141 @@ function __GlobalEnableEvents() {
     window.addEventListener('mousedown',
             function(e) {
 
-                __getCanvasCoord(__mousePoint, e);
+                CAAT.getCanvasCoord(CAAT.mousePoint, e);
 
-                if ( null==__targetDirector ) {
+                if ( null==CAAT.targetDirector ) {
                     return;
                 }
-                __mouseDown = true;
-                __lastSelectedActor = __targetDirector.findActorAtPosition(__mousePoint);
-                var px= __mousePoint.x;
-                var py= __mousePoint.y;
+                CAAT.mouseDown = true;
+                CAAT.lastSelectedActor = CAAT.targetDirector.findActorAtPosition(CAAT.mousePoint);
+                var px= CAAT.mousePoint.x;
+                var py= CAAT.mousePoint.y;
                 
-                if (null != __lastSelectedActor) {
+                if (null != CAAT.lastSelectedActor) {
                     // to calculate mouse drag threshold
-                    __prevMousePoint.x= px;
-                    __prevMousePoint.y= py;
-                    __lastSelectedActor.mouseDown(
+                    CAAT.prevMousePoint.x= px;
+                    CAAT.prevMousePoint.y= py;
+                    CAAT.lastSelectedActor.mouseDown(
                             new CAAT.MouseEvent().init(
-                                    __lastSelectedActor.rpoint.x,
-                                    __lastSelectedActor.rpoint.y,
-                                    __modifiers,
-                                    __lastSelectedActor,
-                                    __screenMousePoint));
+                                    CAAT.lastSelectedActor.rpoint.x,
+                                    CAAT.lastSelectedActor.rpoint.y,
+                                    CAAT.modifiers,
+                                    CAAT.lastSelectedActor,
+                                    CAAT.screenMousePoint));
                 }
             },
             false);
 
     window.addEventListener('mouseover',
             function(e) {
-                __getCanvasCoord(__mousePoint, e);
+                CAAT.getCanvasCoord(CAAT.mousePoint, e);
 
-                if ( null==__targetDirector ) {
+                if ( null==CAAT.targetDirector ) {
                     return;
                 }
 
-                __lastSelectedActor = __targetDirector.findActorAtPosition(__mousePoint);
-                if (null != __lastSelectedActor) {
-                    __lastSelectedActor.mouseEnter(
+                CAAT.lastSelectedActor = CAAT.targetDirector.findActorAtPosition(CAAT.mousePoint);
+                if (null != CAAT.lastSelectedActor) {
+                    CAAT.lastSelectedActor.mouseEnter(
                             new CAAT.MouseEvent().init(
-                                    __lastSelectedActor.rpoint.x,
-                                    __lastSelectedActor.rpoint.y,
-                                    __modifiers,
-                                    __lastSelectedActor,
-                                    __screenMousePoint));
+                                    CAAT.lastSelectedActor.rpoint.x,
+                                    CAAT.lastSelectedActor.rpoint.y,
+                                    CAAT.modifiers,
+                                    CAAT.lastSelectedActor,
+                                    CAAT.screenMousePoint));
                 }
             },
             false);
 
     window.addEventListener('mouseout',
             function(e) {
-                if (null != __lastSelectedActor) {
-                    __lastSelectedActor.mouseExit(new CAAT.MouseEvent().init(0, 0, __modifiers, __lastSelectedActor, __screenMousePoint));
-                    __lastSelectedActor = null;
+                if (null != CAAT.lastSelectedActor) {
+                    CAAT.lastSelectedActor.mouseExit(new CAAT.MouseEvent().init(0, 0, CAAT.modifiers, CAAT.lastSelectedActor, CAAT.screenMousePoint));
+                    CAAT.lastSelectedActor = null;
                 }
-                __mouseDown = false;
+                CAAT.mouseDown = false;
             },
             false);
 
     window.addEventListener('mousemove',
             function(e) {
 
-                __getCanvasCoord(__mousePoint, e);
-                if ( null==__targetDirector ) {
+                CAAT.getCanvasCoord(CAAT.mousePoint, e);
+                if ( null==CAAT.targetDirector ) {
                     return;
                 }
 
                 // drag
-                if (__mouseDown && null != __lastSelectedActor) {
+                if (CAAT.mouseDown && null != CAAT.lastSelectedActor) {
 
                     // check for mouse move threshold.
-                    if ( !__dragging ) {
-                        if ( Math.abs(__prevMousePoint.x-__mousePoint.x)< __DRAG_THRESHOLD_X &&
-                             Math.abs(__prevMousePoint.y-__mousePoint.y)< __DRAG_THRESHOLD_Y ) {
+                    if ( !CAAT.dragging ) {
+                        if ( Math.abs(CAAT.prevMousePoint.x-CAAT.mousePoint.x)< CAAT.DRAG_THRESHOLD_X &&
+                             Math.abs(CAAT.prevMousePoint.y-CAAT.mousePoint.y)< CAAT.DRAG_THRESHOLD_Y ) {
                             return;
                         }
                     }
 
-                    __dragging = true;
-                    if (null != __lastSelectedActor.parent) {
-                        __lastSelectedActor.parent.inverseTransformCoord(__mousePoint);
+                    CAAT.dragging = true;
+                    if (null != CAAT.lastSelectedActor.parent) {
+                        CAAT.lastSelectedActor.parent.inverseTransformCoord(CAAT.mousePoint);
                     }
-                    __lastSelectedActor.mouseDrag(
+                    CAAT.lastSelectedActor.mouseDrag(
                             new CAAT.MouseEvent().init(
-                                    __mousePoint.x,
-                                    __mousePoint.y,
-                                    __modifiers,
-                                    __lastSelectedActor,
-                                    __screenMousePoint));
+                                    CAAT.mousePoint.x,
+                                    CAAT.mousePoint.y,
+                                    CAAT.modifiers,
+                                    CAAT.lastSelectedActor,
+                                    CAAT.screenMousePoint));
                     return;
                 }
 
-                var lactor = __targetDirector.findActorAtPosition(__mousePoint);
+                var lactor = CAAT.targetDirector.findActorAtPosition(CAAT.mousePoint);
 
                 // cambiamos de actor.
-                if (lactor != __lastSelectedActor) {
-                    if (null != __lastSelectedActor) {
-                        __lastSelectedActor.mouseExit(
+                if (lactor != CAAT.lastSelectedActor) {
+                    if (null != CAAT.lastSelectedActor) {
+                        CAAT.lastSelectedActor.mouseExit(
                                 new CAAT.MouseEvent().init(
-                                        __mousePoint.x,
-                                        __mousePoint.y,
-                                        __modifiers,
-                                        __lastSelectedActor,
-                                        __screenMousePoint));
+                                        CAAT.mousePoint.x,
+                                        CAAT.mousePoint.y,
+                                        CAAT.modifiers,
+                                        CAAT.lastSelectedActor,
+                                        CAAT.screenMousePoint));
                     }
                     if (null != lactor) {
                         lactor.mouseEnter(
                                 new CAAT.MouseEvent().init(
                                         lactor.rpoint.x,
                                         lactor.rpoint.y,
-                                        __modifiers,
+                                        CAAT.modifiers,
                                         lactor,
-                                        __screenMousePoint));
+                                        CAAT.screenMousePoint));
                     }
                 }
-                __lastSelectedActor = lactor;
+                CAAT.lastSelectedActor = lactor;
                 if (null != lactor) {
-                    __lastSelectedActor.mouseMove(
+                    CAAT.lastSelectedActor.mouseMove(
                             new CAAT.MouseEvent().init(
-                                    __lastSelectedActor.rpoint.x,
-                                    __lastSelectedActor.rpoint.y,
-                                    __modifiers,
-                                    __lastSelectedActor,
-                                    __screenMousePoint));
+                                    CAAT.lastSelectedActor.rpoint.x,
+                                    CAAT.lastSelectedActor.rpoint.y,
+                                    CAAT.modifiers,
+                                    CAAT.lastSelectedActor,
+                                    CAAT.screenMousePoint));
                 }
             },
             false);
 
     window.addEventListener("dblclick", function(e) {
-        __getCanvasCoord(__mousePoint, e);
-        if (null != __lastSelectedActor) {
-            __lastSelectedActor.mouseDblClick(
+        CAAT.getCanvasCoord(CAAT.mousePoint, e);
+        if (null != CAAT.lastSelectedActor) {
+            CAAT.lastSelectedActor.mouseDblClick(
                     new CAAT.MouseEvent().init(
-                            __lastSelectedActor.rpoint.x,
-                            __lastSelectedActor.rpoint.y,
-                            __modifiers,
-                            __lastSelectedActor,
-                            __screenMousePoint));
+                            CAAT.lastSelectedActor.rpoint.x,
+                            CAAT.lastSelectedActor.rpoint.y,
+                            CAAT.modifiers,
+                            CAAT.lastSelectedActor,
+                            CAAT.screenMousePoint));
         }
     }, false);
 }

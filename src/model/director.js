@@ -63,7 +63,7 @@
 
             if ( !CAAT.director ) {
                 CAAT.director=[];
-                __GlobalEnableEvents();
+                CAAT.GlobalEnableEvents();
             }
             CAAT.director.push(this);
             this.timeline= new Date().getTime();
