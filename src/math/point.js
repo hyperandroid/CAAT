@@ -6,7 +6,9 @@
  *
  **/
 (function() {
-	CAAT.Point= function() {
+	CAAT.Point= function(xpos, ypos) {
+		this.x = xpos || 0;
+		this.y = ypos || 0;
 		return this;
 	};
 	

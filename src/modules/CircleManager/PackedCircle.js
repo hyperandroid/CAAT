@@ -36,6 +36,7 @@
 		this.collisionMask = 0;
 		this.collisionGroup = 0;
 
+		this.boundsRule = CAAT.modules.CircleManager.PackedCircle.BOUNDS_RULE_IGNORE;
 		return this;
 	};
 
@@ -47,8 +48,14 @@
 		targetPosition:	null,	// Where it wants to go
 
 		isFixed:		false,
+		boundsRule:		0,
 		collisionMask:	0,
 		collisionGroup:	0,
+
+		BOUNDS_RULE_WRAP:		1,      // Wrap to otherside
+		BOUNDS_RULE_CONSTRAINT:	2,      // Constrain within bounds
+		BOUNDS_RULE_DESTROY:	4,      // Destroy when it reaches the edge
+		BOUNDS_RULE_IGNORE:		8,		// Ignore when reaching bounds
 
 		containsPoint: function(aPoint)
 		{
@@ -56,9 +63,9 @@
 			return distanceSquared < this.radiusSquared;
 		},
 
-		distanceSquaredFromTargetPosition: function()
+		getDistanceSquaredFromPosition: function(aPosition)
 		{
-			var distanceSquared = this.position.getDistanceSquared(this.targetPosition);
+			var distanceSquared = this.position.getDistanceSquared(aPosition);
 			// if it's shorter than either radius, we intersect
 			return distanceSquared < this.radiusSquared;
 		},
@@ -124,6 +131,14 @@
 			}
 
 			return this;
+		},
+
+		dealloc: function()
+		{
+			this.position = null;
+			this.offset = null;
+			this.delegate = null;
+			this.targetPosition = null;
 		}
 	};
 })();

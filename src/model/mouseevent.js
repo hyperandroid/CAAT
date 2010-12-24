@@ -115,20 +115,20 @@ CAAT.getCanvasCoord= function __getCanvasCoord(point, e) {
     var pposy;
     var i;
 
-    for( i=0; i<CAAT.director.length; i++ ) {
-        pposx= posx;
-        pposy= posy;
-
-    	pposx-= CAAT.director[i].canvas.offsetLeft;
-    	pposy-= CAAT.director[i].canvas.offsetTop;
-
-        if ( CAAT.director[i].contains(pposx, pposy) ) {
-            CAAT.targetDirector= CAAT.director[i];
-            point.set(pposx,pposy);
-            CAAT.screenMousePoint.set(pposx, pposy);
-            return;
-        }
-    }
+//    for( i=0; i<CAAT.director.length; i++ ) {
+//        pposx= posx;
+//        pposy= posy;
+//
+//    	pposx-= CAAT.director[i].canvas.offsetLeft;
+//    	pposy-= CAAT.director[i].canvas.offsetTop;
+//
+//        if ( CAAT.director[i].contains(pposx, pposy) ) {
+//            CAAT.targetDirector= CAAT.director[i];
+//            point.set(pposx,pposy);
+//            CAAT.screenMousePoint.set(pposx, pposy);
+//            return;
+//        }
+//    }
 
     CAAT.targetDirector=null;
 };
