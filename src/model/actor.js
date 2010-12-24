@@ -60,6 +60,7 @@
 		ANCHOR_TOP_RIGHT:		6,
 		ANCHOR_BOTTOM_LEFT:		7,
 		ANCHOR_BOTTOM_RIGHT:	8,
+        ANCHOR_CUSTOM:          9,
 
 		fillStyle:				null,   // any canvas rendering valid fill style.
         strokeStyle:            null,   // any canvas rendering valid stroke style.
@@ -454,7 +455,7 @@
 	    		return this.start_time<=time;
 	    	}
 
-			if ( time>this.start_time+this.duration )	{
+			if ( time>=this.start_time+this.duration )	{
 				if ( !this.expired )	{
 					this.setExpired(time);
 				}
@@ -825,6 +826,7 @@
 	CAAT.ActorContainer= function() {
 		CAAT.ActorContainer.superclass.constructor.call(this);
 		this.childrenList= [];
+        this.pendingChildrenList= [];
 		return this;
 	};
 
@@ -832,6 +834,7 @@
 	extend( CAAT.ActorContainer, CAAT.Actor, {
 
         childrenList : null,       // the list of children contained.
+        pendingChildrenList : null,
 
         /**
          * Draws this ActorContainer and all of its children screen bounding box.
@@ -936,17 +939,41 @@
                 }
             }
 
+            for( i=0; i<this.pendingChildrenList.length; i++ ) {
+                var child= this.pendingChildrenList[i];
+                child.parent =  this;
+                this.childrenList.push(child);
+            }
+            this.pendingChildrenList= [];
+        },
+        /**
+         * Adds an Actor to this Container.
+         * The Actor will be added ON METHOD CALL, despite the rendering pipeline stage being executed at
+         * the time of method call.
+         *
+         * This method is only used by CAAT.Director's transitionScene.
+         *
+         * @param child a CAAT.Actor instance.
+         * @return this.
+         */
+        addChildImmediately : function(child) {
+            child.parent= this;
+            this.childrenList.push(child);
+            return this;
         },
         /**
          * Adds an Actor to this ActorContainer.
+         * The Actor will be added to the container AFTER frame animation, and not on method call time.
+         * Except the Director and in orther to avoid visual artifacts, the developer SHOULD NOT call this
+         * method directly.
          *
          * @param child a CAAT.Actor object instance.
-         *
          * @return this
          */
 		addChild : function(child) {
-			child.parent= this;
-			this.childrenList.push(child);
+			//child.parent= this;
+			//this.childrenList.push(child);
+            this.pendingChildrenList.push(child);
 
             return this;
 		},

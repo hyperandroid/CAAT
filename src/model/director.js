@@ -37,7 +37,9 @@
         time:           0,      // virtual actor time.
         timeline:       0,      // global director timeline.
         imagesCache:    null,   // An array of JSON elements of the form { id:string, image:Image }
-        clear:          true,
+        clear:          true,   // clear background before drawing scenes ??
+
+        transitionScene:null,
 
         /**
          * This method performs Director initialization. Must be called once.
@@ -67,6 +69,17 @@
             }
             CAAT.director.push(this);
             this.timeline= new Date().getTime();
+
+
+            // transition scene
+            this.transitionScene= new CAAT.Scene().create().setBounds(0,0,width,height);
+            var transitionCanvas= document.createElement('canvas');
+            transitionCanvas.width= width;
+            transitionCanvas.height=height;
+            var transitionImageActor= new CAAT.ImageActor().create().setImage(transitionCanvas);
+            this.transitionScene.ctx = transitionCanvas.getContext('2d');
+            this.transitionScene.addChildImmediately(transitionImageActor);
+            this.transitionScene.setEaseListener(this);
 
             return this;
         },
@@ -123,9 +136,53 @@
 				}
 			}
 
-            this.endAnimate();
+            this.endAnimate(this,time);
 
 		},
+        /**
+         * This method draws an Scene to an offscreen canvas. This offscreen canvas is also a child of
+         * another Scene (transitionScene).
+         * So instead of drawing two scenes while transitioning from one to another, first of all an
+         * scene is drawn to offscreen, and that image is translated.
+         * Until the creation of this method, both scenes where drawn while transitioning with its performance
+         * penalty since drawing two scenes could be twice as expensive than drawing only one.
+         *
+         * Though a high performance increase, we should keep an eye on memory consumption.
+         *
+         * @param ctx a <code>canvas.getContext('2d')</code> instnce.
+         * @param scene the scene to draw offscreen.
+         */
+        renderToContext : function( ctx, scene ) {
+            ctx.globalAlpha=1;
+            ctx.globalCompositeOperation='source-over';
+
+            ctx.clearRect(0,0,this.width,this.height);
+
+            ctx.setTransform(1,0,0,1,0,0);
+
+            if (scene.isInAnimationFrame(this.time)) {
+                tt= scene.time - scene.start_time;
+                scene.animate(this, tt);
+            }
+
+            var octx= this.ctx;
+            var ocrc= this.crc;
+
+            this.ctx= this.crc= ctx;
+            
+            /**
+             * draw actors on scene.
+             */
+            if (scene.isInAnimationFrame(this.time)) {
+                ctx.save();
+                tt= scene.time - scene.start_time;
+                scene.paintActor(this, tt);
+                ctx.restore();
+            }
+
+            this.ctx= octx;
+            this.crc= ocrc;
+        },
         /**
          * Add a new Scene to Director's Scene list. By adding a Scene to the Director
          * does not mean it will be immediately visible, you should explicitly call either
@@ -140,9 +197,6 @@
 			scene.setBounds(0,0,this.width,this.height);
 			this.scenes.push(scene);
 			scene.setEaseListener(this);
-            if ( null==this.currentScene ) {
-                this.setScene(0);
-            }
 		},
         /**
          * return the number of scenes contained in the Director.
@@ -194,8 +248,14 @@
                 return;
             }
 
+
+
 			var ssin=this.scenes[ inSceneIndex ];
 			var sout=this.scenes[ outSceneIndex ];
+
+            this.renderToContext( this.transitionScene.ctx, sout );
+
+            sout=this.transitionScene;
 
             ssin.setExpired(false);
             sout.setExpired(false);
@@ -525,6 +585,14 @@
             this.scenes= [];
         },
         /**
+         * The Director makes children addition synchronously.
+         * @param scene
+         */
+        addChild : function(scene) {
+            scene.parent= this;
+            this.childrenList.push(scene);
+        },
+        /**
          * Starts the director animation.
          * If no scene is explicitly selected, the current Scene will
          * be the first scene added to the Director.
@@ -539,6 +607,7 @@
          * the animation at.
          */
         loop : function(fps) {
+            
             fps= fps || 30;
             fps= 1000/fps;
 

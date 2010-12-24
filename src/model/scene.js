@@ -10,7 +10,17 @@
  */
 
 /**
- * Timer notifications will be placed *BEFORE* scene loop.
+ * This class defines a timer action.
+ * These actions are constrained to Scene time, so every Scene has the abbility to create its own TimerTask objects.
+ * A TimerTask is defined at least by:
+ *  + startTime: since when the timer will be active
+ *  + duration:  from startTime to startTime+duration, the timerTask will be notifying (if set) the callback callback_tick.
+ *
+ * Upon TimerTask expiration, the TimerTask will notify (if set) the callback function callback_timeout.
+ * Upon a call to the method cancel, the timer will be set expired, and (if set) the callback to callback_cancel will be
+ * invoked.
+ *
+ * Timer notifications will be performed *BEFORE* scene loop.
  */
 (function() {
     CAAT.TimerTask= function() {
@@ -28,6 +38,15 @@
         taskId:             0,
         remove:             false,
 
+        /**
+         * Create a TimerTask.
+         * The taskId will be set by the scene.
+         * @param startTime an integer indicating TimerTask enable time.
+         * @param duration an integer indicating TimerTask duration.
+         * @param callback_timeout on timeout callback function.
+         * @param callback_tick on tick callback function.
+         * @param callback_cancel on cancel callback function.
+         */
         create: function( startTime, duration, callback_timeout, callback_tick, callback_cancel ) {
             this.startTime=         startTime;
             this.duration=          duration;
@@ -35,6 +54,11 @@
             this.callback_tick=     callback_tick;
             return this;
         },
+        /**
+         * Performs TimerTask operation.
+         * The task will check whether it is in frame time, and will either notify callback_timeout or callback_tick.
+         * @param time an integer indicating scene time.
+         */
         checkTask : function(time) {
             var ttime= time;
             ttime-= this.startTime;
@@ -50,16 +74,25 @@
             }
             return this;
         },
+        /**
+         * Reschedules this TimerTask by changing its startTime to current scene's time.
+         * @param time an integer indicating scene time.
+         */
         reset : function( time ) {
             this.remove= false;
             this.startTime=  time;
             return this;
         },
+        /**
+         * Cancels this timer by removing it on scene's next frame.
+         * The function callback_cancel will be called.
+         */
         cancel : function() {
             this.remove= true;
             if ( null!=this.callback_cancel ) {
                 this.callback_cancel( this.scene.time, this.scene.time-this.startTime, this );
             }
+            return this;
         }
     };
 })();
@@ -83,8 +116,8 @@
 		EASE_SCALE:						2,      // to perform on Scene switching by the Director.
 		EASE_TRANSLATE:					3,
 
-        timerList:                      null,
-        timerSequence:                  0,
+        timerList:                      null,   // collection of CAAT.TimerTask objects.
+        timerSequence:                  0,      // incremental CAAT.TimerTask id.
 
         /**
          * Check and apply timers in frame time.
@@ -100,17 +133,23 @@
             }
         },
         /**
-         * Creates a timer task.
-         * @param duration
-         * @param callback
+         * Creates a timer task. Timertask live and are related to scene's time.
+         * @param startTime an integer indicating the scene time this task must start executing at.
+         * @param duration an integer indicating the timerTask duration.
+         * @param callback_timeout timer on timeout callback function.
+         * @param callback_tick timer on tick callback function.
+         * @param callback_cancel timer on cancel callback function.
+         *
+         * @return a CAAT.TimerTask class instance.
          */
-        createTimer : function( startTime, duration, callback_timeout, callback_tick ) {
+        createTimer : function( startTime, duration, callback_timeout, callback_tick, callback_cancel ) {
 
             var tt= new CAAT.TimerTask().create(
                         startTime,
                         duration,
                         callback_timeout, 
-                        callback_tick);
+                        callback_tick,
+                        callback_cancel );
 
             tt.taskId= this.timerSequence++;
             tt.sceneTime = this.time;
@@ -120,6 +159,9 @@
 
             return tt;
         },
+        /**
+         * Removes expired timers. This method must not be called directly.
+         */
         removeExpiredTimers : function() {
             var i;
             for( i=0; i<this.timerList.length; i++ ) {
@@ -128,6 +170,12 @@
                 }
             }
         },
+        /**
+         * Scene animation method.
+         * It extends Container's base behavior by adding timer control.
+         * @param director a CAAT.Director instance.
+         * @param time an integer indicating the Scene time the animation is being performed at.
+         */
         animate : function(director, time) {
             this.checkTimers(time);
             CAAT.Scene.superclass.animate.call(this,director,time);

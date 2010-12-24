@@ -3,12 +3,31 @@
  *
  * Image/Resource preloader.
  *
- * 20101010 Hyperandroid
- *  + Added images loading callback
- *  + Removed unnecessary methods 
- *
  *
  **/
+
+
+/**
+ * This class is a image resource loader. It accepts an object of the form:
+ *
+ * {
+ *   id1: string_url1,
+ *   id2: string_url2,
+ *   id3: string_url3,
+ *   ...
+ * }
+ *
+ * and on resources loaded correctly, will return an object of the form:
+ *
+ * {
+ *   id1: image1,
+ *   id2: image2,
+ *   id3: image3,
+ *   ...
+ * }
+ *
+ *
+ */
 (function() {
 
     CAAT.ImagePreloader = function()   {
@@ -18,9 +37,9 @@
 
     CAAT.ImagePreloader.prototype =   {
 
-        images: null,
-        notificationCallback: null,
-        imageCounter: 0,
+        images:                 null,   // a list of elements to load
+        notificationCallback:   null,   // notification callback invoked for each image loaded.
+        imageCounter:           0,      // elements counter.
 
         loadImages: function( aImages, callback ) {
             var me= this;

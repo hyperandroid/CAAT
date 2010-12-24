@@ -9,6 +9,9 @@
  *
  **/
 
+/**
+ * This class represents a 2D affine transformation matrix.
+ */
 (function() {
 	CAAT.Matrix = function() {
 		this.matrix= [ [1,0,0],

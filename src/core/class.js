@@ -12,12 +12,9 @@ function extend(subc, superc, overrides)
       superc.prototype.constructor = superc;
    }
    
-   if (overrides)
-   {
-      for (i in overrides)
-      {
-         if (overrides.hasOwnProperty(i))
-         {
+   if (overrides) {
+      for (i in overrides) {
+         if (overrides.hasOwnProperty(i)) {
             subc.prototype[i] = overrides[i];
          }
       }

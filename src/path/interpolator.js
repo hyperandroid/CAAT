@@ -8,6 +8,24 @@
  *
  *
  **/
+
+/**
+ * a CAAT.Interpolator is a function which transforms a value into another.
+ * It has some constraints:
+ *
+ * <ul>
+ * <li>The input values must be between 0 and 1.
+ * <li>Output values will be between 0 and 1.
+ * <li>Every Interpolator has at least an entering boolean parameter called pingpong. if set to true, the Interpolator
+ * will set values from 0..1 and back from 1..0. So half the time for each range.
+ * </ul>
+ *
+ * CAAt.Interpolator is defined by a createXXXX method which sets up an internal getPosition(time) function.
+ * You could set as an Interpolator up any object which exposes a method getPosition(time) and returns a CAAT.Point or
+ * an object of the form {x:float, y:float}. x value will be the same value as that of the time parameter, and y will hold
+ * a value between 0 and 1 indicating the resulting value for the parameter time.
+ *
+ */
 (function() {
     CAAT.Interpolator = function() {
         this.interpolated= new CAAT.Point();
@@ -16,9 +34,13 @@
 
     CAAT.Interpolator.prototype= {
 
-        interpolated:   null,
-        paintScale:     90,
+        interpolated:   null,   // a coordinate holder for not building a new CAAT.Point for each interpolation call.
+        paintScale:     90,     // the size of the interpolation draw on screen in pixels.
 
+        /**
+         * @param bPingPong
+         * @param bInverse values will be from 1 to 0.
+         */
         createLinearInterpolator : function(bPingPong, bInverse) {
             this.getPosition= function getPosition(time) {
 
@@ -59,7 +81,7 @@
                 return this.interpolated.set(
                         orgTime,
                         time * time * ((overshoot + 1) * time + overshoot) + 1);
-            }
+            };
 
             return this;
         },
@@ -237,6 +259,10 @@
 
             return this;
         },
+        /**
+         * Private method.
+         * @param time
+         */
         bounce : function(time) {
             if ((time /= 1) < (1 / 2.75)) {
                 return {x:time, y:7.5625 * time * time};
@@ -303,6 +329,11 @@
 
             return this;
         },
+        /**
+         * Paints an interpolator on screen.
+         * @param director a CAAT.Director instance.
+         * @param time an integer indicating the scene time the Interpolator will be drawn at. This value is useless.
+         */
         paint : function(director,time) {
 
             var canvas= director.crc;
@@ -319,6 +350,12 @@
             canvas.stroke();
             canvas.restore();
         },
+        /**
+         * Gets an array of coordinates which define the polyline of intepolator's curve contour.
+         * Values for both coordinates range from 0 to 1. 
+         * @param iSize an integer indicating the number of contour segments.
+         * @return array of object of the form {x:float, y:float}.
+         */
         getContour : function(iSize) {
             var contour=[];
             for( var i=0; i<=iSize; i++ ) {

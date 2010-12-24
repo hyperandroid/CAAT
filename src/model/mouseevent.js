@@ -94,7 +94,7 @@ CAAT.DRAG_THRESHOLD_Y=      5;
 /**
  * Allow visual debugging artifacts.
  */
-CAAT.DEBUG=                 false;
+CAAT.DEBUG=                 true;
 
 CAAT.getCanvasCoord= function __getCanvasCoord(point, e) {
 	var posx = 0;

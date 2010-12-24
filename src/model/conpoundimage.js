@@ -8,7 +8,18 @@
  *
  **/
 
-
+/**
+ * A CompoundImage is an sprite sheet.
+ * This class encapsulates an Image and treates and references it as an array of row x columns sub-images.
+ * Apart from that, it is able to draw the image in the following ways:
+ *      + no transformed (default)
+ *      + flipped horizontally
+ *      + flipped vertically
+ *      + flipped both vertical and horizontally
+ *
+ * This class won't handle empty data image, so you can't set properly subimages position.
+ *
+ */
 (function() {
 	 
 	CAAT.CompoundImage= function() {
@@ -20,7 +31,7 @@
 		NORMAL: 					1,
     	INV_VERTICAL: 				2,
     	INV_HORIZONTAL: 			4,
-    	INV_VERTICAL_AND_HORIZONTAL: 8,
+    	INV_VERTICAL_AND_HORIZONTAL:8,
     
     	image:						null,
     	rows:						0,
