@@ -950,6 +950,26 @@
 
             return this;
 		},
+
+        /**
+         * Adds an Actor to this ActorContainer.
+         *
+         * @param child a CAAT.Actor object instance.
+         *
+         * @return this
+         */
+		addChildAt : function(child, index) {
+
+			if( index < 0 || index > this.childrenList.length )
+				return this;
+
+			child.parent= this;
+			this.childrenList.unshift(child);
+
+            return this;
+		},
+
+
         /**
          * Private
          * Gets a contained Actor z-index on this ActorContainer.
@@ -959,8 +979,9 @@
          * @return an integer indicating the Actor's z-order.
          */
 		findChild : function(child) {
-            var i=0;
-			for( i=0; i<this.childrenList.length; i++ ) {
+            var i=0,
+				len = this.childrenList.length;
+			for( i=0; i<len; i++ ) {
 				if ( this.childrenList[i]==child ) {
 					return i;
 				}
