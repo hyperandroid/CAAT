@@ -38,7 +38,7 @@
         timeline:       0,      // global director timeline.
         imagesCache:    null,   // An array of JSON elements of the form { id:string, image:Image }
         clear:          true,
-
+		onRenderCallback: null,
         /**
          * This method performs Director initialization. Must be called once.
          * If the canvas parameter is not set, it will create a Canvas itself,
@@ -538,15 +538,21 @@
          * @param fps integer value indicating the target frames per second to run
          * the animation at.
          */
-        loop : function(fps) {
+        loop : function(fps, callback) {
             fps= fps || 30;
             fps= 1000/fps;
 
             var me= this;
             var floop= function loop() {
-                var t= new Date().getTime();
-                me.render( t - me.timeline );
+                var t= new Date().getTime(),
+					delta = t - me.timeline;
+
+                me.render( delta );
                 me.timeline= t;
+
+				if(callback) {
+					callback(me, delta);
+				}
             };
 
             floop();

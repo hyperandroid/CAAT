@@ -22,30 +22,21 @@
 
 	CAAT.modules.CircleManager.PackedCircle= function()
 	{
-		this.delegate = null;
-		this.position = null;
-		this.offset = null;
-
-		this.targetPosition = null;
-
-		this.radius = 0;
-		this.radiusSquared = 0;
-
-		// Collision properties
-		this.isFixed = 0;
-		this.collisionMask = 0;
-		this.collisionGroup = 0;
-
 		this.boundsRule = CAAT.modules.CircleManager.PackedCircle.BOUNDS_RULE_IGNORE;
+		this.position = new CAAT.Point(0,0);
+		this.offset = new CAAT.Point(0,0);
+		this.targetPosition = new CAAT.Point(0,0);
 		return this;
 	};
 
 	CAAT.modules.CircleManager.PackedCircle.prototype = {
+		id: 			0,
 		delegate:		null,
-		position:		null,
-		offset:			null,	// Offset from delegates position by this much
+		position:		new CAAT.Point(0,0),
+		offset:			new CAAT.Point(0,0),	// Offset from delegates position by this much
 
 		targetPosition:	null,	// Where it wants to go
+		targetChaseSpeed: 0.02,
 
 		isFixed:		false,
 		boundsRule:		0,
@@ -82,42 +73,56 @@
 		setPosition: function(aPosition)
 		{
 			this.position = aPosition;
+			return this;
 		},
 
 		setDelegate: function(aDelegate)
 		{
 			this.delegate = aDelegate;
+			return this;
 		},
 
 		setOffset: function(aPosition)
 		{
-		  this.offset = aPosition;
+			this.offset = aPosition;
+			return this;
 		},
 
 		setTargetPosition: function(aTargetPosition)
 		{
 			this.targetPosition = aTargetPosition;
+			return this;
+		},
+
+		setTargetChaseSpeed: function(aTargetChaseSpeed)
+		{
+			this.targetChaseSpeed = aTargetChaseSpeed;
+			return this;
 		},
 
 		setIsFixed: function(value)
 		{
 			this.isFixed = value;
+			return this;
 		},
 
 		setCollisionMask: function(aCollisionMask)
 		{
 			this.collisionMask = aCollisionMask;
+			return this;
 		},
 
 		setCollisionGroup: function(aCollisionGroup)
 		{
 			this.collisionGroup = aCollisionGroup;
+			return this;
 		},
 
 		setRadius: function(aRadius)
 		{
 			this.radius = aRadius;
 			this.radiusSquared = this.radius*this.radius;
+			return this;
 		},
 
 		initialize : function(overrides)

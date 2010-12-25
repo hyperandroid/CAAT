@@ -22,20 +22,6 @@
 
 	CAAT.modules.CircleManager.PackedCircleManager= function()
 	{
-		this.allCircles = [];
-		this.position = null;
-		this.offset = null;
-
-		this.targetPosition = null;
-
-		this.radius = 0;
-		this.radiusSquared = 0;
-
-		// Collision properties
-		this.isFixed = 0;
-		this.collisionMask = 0;
-		this.collisionGroup = 0;
-
 		return this;
 	};
 
@@ -45,13 +31,19 @@
 		numberOfTargetingPasses:	0,
 		bounds:						new CAAT.Rectangle(),
 
+		/**
+		 * Adds a circle to the simulation
+		 * @param aCircle
+		 */
 		addCircle: function(aCircle)
 		{
+			aCircle.id = this.allCircles.length;
 			this.allCircles.push(aCircle);
+			return this;
 		},
 
 		/**
-		 * Removes a circle
+		 * Removes a circle from the simulations
 		 * @param aCircle	Circle to remove
 		 */
 		removeCircle: function(aCircle)
@@ -79,13 +71,15 @@
 			// Remove
 			this.allCircles[index].dealloc();
 			this.allCircles[index] = null;
+
+			return this;
 		},
 
 		/**
-		 * Forces all circles to move to where their target's position is
+		 * Forces all circles to move to where their delegate position is
 		 * Assumes all targets have a 'position' property!
 		 */
-		forceCirclesToMatchViewPositions: function()
+		forceCirclesToMatchDelegatePositions: function()
 		{
 			var len = this.allCircles.length;
 
@@ -93,12 +87,12 @@
 			for(var n = 0; n < len; n++)
 			{
 				var aCircle = this.allCircles[n];
-				if(!aCircle || !aCircle.view) {
+				if(!aCircle || !aCircle.delegate) {
 					continue;
 				}
 
-				aCircle.position.x = aCircle.view.position.x + aCircle.offset.x;
-				aCircle.position.y = aCircle.view.position.y + aCircle.offset.y;
+				aCircle.position.set(aCircle.delegate.x + aCircle.offset.x,
+						aCircle.delegate.y + aCircle.offset.y);
 			}
 		},
 
@@ -111,30 +105,19 @@
 			// push toward target position
 			for(var n = 0; n < this.numberOfTargetingPasses; n++)
 			{
-				var damping = 0.03;
 				for(var i = 0; i < len; i++)
 				{
 					var c = circleList[i];
 
 					if(c.isFixed) continue;
 
-					v.x = c.position.x - aTarget.x;
-					v.y = c.position.y - aTarget.y;
-					v.multiply(damping);
+					v.x = c.position.x - (c.targetPosition.x+c.offset.x);
+					v.y = c.position.y - (c.targetPosition.y+c.offset.y);
+					v.multiply(c.targetChaseSpeed);
 
 					c.position.x -= v.x;
 					c.position.y -= v.y;
 				}
-			}
-		},
-
-
-		removeExpiredElements: function()
-		{
-			// remove null elements
-			for (var k = this.allCircles.length; k >= 0; k--) {
-				if (this.allCircles[k] === null)
-					this.allCircles.splice(k, 1);
 			}
 		},
 
@@ -164,7 +147,6 @@
 
 						if( !this.circlesCanCollide(ci, cj) ) continue;   // It's us!
 
-
 						var dx = cj.position.x - ci.position.x,
 							dy = cj.position.y - ci.position.y;
 
@@ -187,19 +169,21 @@
 							// Move cj opposite of the collision as long as its not fixed
 							if(!cj.isFixed)
 							{
-								if(ci.isFixed) v.multiply(2.2);	// Double inverse force to make up for the fact that the other object is fixed
+								if(ci.isFixed)
+									v.multiply(2.2);	// Double inverse force to make up for the fact that the other object is fixed
 
 								// ADD the velocity
-								(cj.view) ? cj.view.position.add(v) : cj.position.add(v);
+								cj.position.translatePoint(v);
 							}
 
 							// Move ci opposite of the collision as long as its not fixed
 							if(!ci.isFixed)
 							{
-								if(cj.isFixed) v.multiply(2.2);	// Double inverse force to make up for the fact that the other object is fixed
+								if(cj.isFixed)
+									v.multiply(2.2);	// Double inverse force to make up for the fact that the other object is fixed
 
 								 // SUBTRACT the velocity
-								(ci.view) ? ci.view.position.sub(v) : ci.position.sub(v);
+								ci.position.subtract(v);
 							}
 
 							// Emit the collision event from each circle, with itself as the first parameter
@@ -238,27 +222,27 @@
 	//		boundsRule = wrapXMask | wrapYMask; // Wrap both X and Y axis
 			boundsRule = wrapYMask | constrainXMask;  // Wrap Y axis, but constrain horizontally
 
-//			Wrap X
+			// Wrap X
 			if(boundsRule & wrapXMask && xpos-diameter > this.bounds.right) {
 				aCircle.position.x = this.bounds.left + radius;
 			} else if(boundsRule & wrapXMask && xpos+diameter < this.bounds.left) {
 				aCircle.position.x = this.bounds.right - radius;
 			}
-//			Wrap Y
+			// Wrap Y
 			if(boundsRule & wrapYMask && ypos-diameter > this.bounds.bottom) {
 				aCircle.position.y = this.bounds.top - radius;
 			} else if(boundsRule & wrapYMask && ypos+diameter < this.bounds.top) {
 				aCircle.position.y = this.bounds.bottom + radius;
 			}
 
-//			Constrain X
+			// Constrain X
 			if(boundsRule & constrainXMask && xpos+radius >= this.bounds.right) {
 				aCircle.position.x = aCircle.position.x = this.bounds.right-radius;
 			} else if(boundsRule & constrainXMask && xpos-radius < this.bounds.left) {
 				aCircle.position.x = this.bounds.left + radius;
 			}
 
-//			  Constrain Y
+			// Constrain Y
 			if(boundsRule & constrainYMask && ypos+radius > this.bounds.bottom) {
 				aCircle.position.y = this.bounds.bottom - radius;
 			} else if(boundsRule & constrainYMask && ypos-radius < this.bounds.top) {
@@ -268,9 +252,9 @@
 
 		/**
 		 * Given an x,y position finds circle underneath and sets it to the currently grabbed circle
-		 * @param xpos
-		 * @param ypos
-		 * @param buffer	A radiusSquared around the point in question where something is considered to match
+		 * @param {Number} xpos		An x position
+		 * @param {Number} ypos		A y position
+		 * @param {Number} buffer	A radiusSquared around the point in question where something is considered to match
 		 */
 		getCircleAt: function(xpos, ypos, buffer)
 		{
@@ -299,7 +283,47 @@
 			return closestCircle;
 		},
 
-		sortOnDistanceToCenter: function(circleA, circleB)
+		circlesCanCollide: function(circleA, circleB)
+		{
+			if(!circleA || !circleB || circleA === circleB) return false; 					// one is null (will be deleted next loop), or both point to same obj.
+//			if(circleA.delegate == null || circleB.delegate == null) return false;					// This circle will be removed next loop, it's entity is already removed
+
+//			if(circleA.isFixed & circleB.isFixed) return false;
+//			if(circleA.delegate .clientID === circleB.delegate.clientID) return false; 				// Don't let something collide with stuff it owns
+
+			// They dont want to collide
+//			if((circleA.collisionGroup & circleB.collisionMask) == 0) return false;
+//			if((circleB.collisionGroup & circleA.collisionMask) == 0) return false;
+
+			return true;
+		},
+/**
+ * Accessors
+ */
+		setBounds: function(x, y, w, h)
+		{
+			this.bounds.x = x;
+			this.bounds.y = y;
+			this.bounds.width = w;
+			this.bounds.height = h;
+		},
+
+		setNumberOfCollisionPasses: function(value)
+		{
+			this.numberOfCollisionPasses = value;
+			return this;
+		},
+
+		setNumberOfTargetingPasses: function(value)
+		{
+			this.numberOfTargetingPasses = value;
+			return this;
+		},
+
+/**
+ * Helpers
+ */
+		sortOnDistanceToTarget: function(circleA, circleB)
 		{
 			var valueA = circleA.getDistanceSquaredFromPosition(circleA.targetPosition);
 			var valueB = circleB.getDistanceSquaredFromPosition(circleA.targetPosition);
@@ -311,82 +335,16 @@
 			return comparisonResult;
 		},
 
-		circlesCanCollide: function(circleA, circleB)
-		{
-			if(!circleA || !circleB || circleA === circleB) return false; 					// one is null (will be deleted next loop), or both point to same obj.
-			if(circleA.view == null || circleB.view == null) return false;					// This circle will be removed next loop, it's entity is already removed
-
-			if(circleA.isFixed & circleB.isFixed) return false;
-//			if(circleA.view.clientID === circleB.view.clientID) return false; 				// Don't let something collide with stuff it owns
-
-			// They dont want to collide
-			if((circleA.collisionGroup & circleB.collisionMask) == 0) return false;
-			if((circleB.collisionGroup & circleA.collisionMask) == 0) return false;
-
-			return true;
-		},
-
-
-		setBounds: function(aRect)
-		{
-			this.bounds = aRect;
-		},
-
-		distanceSquaredFromTargetPosition: function()
-		{
-			var distanceSquared = this.position.getDistanceSquared(this.targetPosition);
-			// if it's shorter than either radius, we intersect
-			return distanceSquared < this.radiusSquared;
-		},
-
-		intersects: function(aCircle)
-		{
-			var distanceSquared = this.position.getDistanceSquared(aCircle.position);
-			return (distanceSquared < this.radiusSquared || distanceSquared < aCircle.radiusSquared);
-		},
-
 /**
- * ACCESSORS
+ * Memory Management
  */
-		setPosition: function(aPosition)
+		removeExpiredElements: function()
 		{
-			this.position = aPosition;
-		},
-
-		setDelegate: function(aDelegate)
-		{
-			this.delegate = aDelegate;
-		},
-
-		setOffset: function(aPosition)
-		{
-		  this.offset = aPosition;
-		},
-
-		setTargetPosition: function(aTargetPosition)
-		{
-			this.targetPosition = aTargetPosition;
-		},
-
-		setIsFixed: function(value)
-		{
-			this.isFixed = value;
-		},
-
-		setCollisionMask: function(aCollisionMask)
-		{
-			this.collisionMask = aCollisionMask;
-		},
-
-		setCollisionGroup: function(aCollisionGroup)
-		{
-			this.collisionGroup = aCollisionGroup;
-		},
-
-		setRadius: function(aRadius)
-		{
-			this.radius = aRadius;
-			this.radiusSquared = this.radius*this.radius;
+			// remove null elements
+			for (var k = this.allCircles.length; k >= 0; k--) {
+				if (this.allCircles[k] === null)
+					this.allCircles.splice(k, 1);
+			}
 		},
 
 		initialize : function(overrides)
