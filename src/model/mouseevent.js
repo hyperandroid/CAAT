@@ -143,14 +143,14 @@ CAAT.GlobalDisableEvents= function __GlobalDisableEvents()
 {
     CAAT.log("(CAAT.MouseEvent) Disabling CAAT event capture");
 
-    window.removeEventListener('keydown',   CAAT.keyDownFunc);
-    window.removeEventListener('keyup',     CAAT.keyUpFunc);
-    window.removeEventListener('mousedown', CAAT.mouseDownFunc);
-    window.removeEventListener('mouseup',   CAAT.mouseUpFunc);
-    window.removeEventListener('mousemove', CAAT.mouseMoveFunc);
-    window.removeEventListener('mouseover', CAAT.mouseOverFunc);
-    window.removeEventListener('mouseout',  CAAT.mouseOutFunc);
-    window.removeEventListener('dblclick',  CAAT.dblClickFunc);
+    window.removeEventListener('keydown',   CAAT.keyDownFunc, false);
+    window.removeEventListener('keyup',     CAAT.keyUpFunc, false);
+    window.removeEventListener('mousedown', CAAT.mouseDownFunc, false);
+    window.removeEventListener('mouseup',   CAAT.mouseUpFunc, false);
+    window.removeEventListener('mousemove', CAAT.mouseMoveFunc, false);
+    window.removeEventListener('mouseover', CAAT.mouseOverFunc, false);
+    window.removeEventListener('mouseout',  CAAT.mouseOutFunc, false);
+    window.removeEventListener('dblclick',  CAAT.dblClickFunc, false);
 
     CAAT.GlobalEventsEnabled= false;
 };
