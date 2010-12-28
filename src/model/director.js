@@ -160,23 +160,17 @@
 
             ctx.setTransform(1,0,0,1,0,0);
 
-            if (scene.isInAnimationFrame(this.time)) {
-                tt= scene.time - scene.start_time;
-                scene.animate(this, tt);
-            }
-
             var octx= this.ctx;
             var ocrc= this.crc;
 
             this.ctx= this.crc= ctx;
-            
+
             /**
              * draw actors on scene.
              */
             if (scene.isInAnimationFrame(this.time)) {
                 ctx.save();
-                tt= scene.time - scene.start_time;
-                scene.paintActor(this, tt);
+                scene.paintActor(this, scene.time - scene.start_time);
                 ctx.restore();
             }
 
@@ -197,6 +191,9 @@
 			scene.setBounds(0,0,this.width,this.height);
 			this.scenes.push(scene);
 			scene.setEaseListener(this);
+            if ( null==this.currentScene ) {
+                this.setScene(0);
+            }
 		},
         /**
          * return the number of scenes contained in the Director.
@@ -606,16 +603,21 @@
          * @param fps integer value indicating the target frames per second to run
          * the animation at.
          */
-        loop : function(fps) {
-            
+        loop : function(fps, callback) {
             fps= fps || 30;
             fps= 1000/fps;
 
             var me= this;
             var floop= function loop() {
-                var t= new Date().getTime();
-                me.render( t - me.timeline );
+                var t= new Date().getTime(),
+					delta = t - me.timeline;
+
+                me.render( delta );
                 me.timeline= t;
+
+				if(callback) {
+					callback(me, delta);
+				}
             };
 
             floop();
