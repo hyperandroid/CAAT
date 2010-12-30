@@ -56,8 +56,7 @@ function __scene4(director) {
 		}
 
 		var parent= actor.parent;
-		parent.removeChild(actor);
-		parent.addChild(actor);
+        parent.setZOrder(actor,Number.MAX_VALUE);
 	};
 	
 	var np = 20;

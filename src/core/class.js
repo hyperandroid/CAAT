@@ -3,7 +3,9 @@
  */
 function extend(subc, superc, overrides)
 {
-   var F = function() {}, i;
+   var F = function() {};
+   var i;
+
    F.prototype = superc.prototype;
    subc.prototype = new F();
    subc.prototype.constructor = subc;

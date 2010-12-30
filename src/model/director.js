@@ -22,6 +22,7 @@
 (function() {
 	CAAT.Director= function() {
 		CAAT.Director.superclass.constructor.call(this);
+        this.browserInfo= new CAAT.BrowserDetect();
         this.scenes= [];
 	};
 
@@ -40,6 +41,8 @@
         clear:          true,   // clear background before drawing scenes ??
 
         transitionScene:null,
+
+        browserInfo:    null,
 
         /**
          * This method performs Director initialization. Must be called once.
@@ -111,7 +114,9 @@
             /**
              * calculate animable elements and their bbox.
              */
-            var i,tt;
+            var i;
+            var tt;
+
 			for( i=0; i<this.childrenList.length; i++ ) {
 				if (this.childrenList[i].isInAnimationFrame(this.time)) {
                     tt= this.childrenList[i].time - this.childrenList[i].start_time;
@@ -543,19 +548,19 @@
          * Return the running browser name.
          */
 		getBrowserName : function() {
-			return BrowserDetect.browser;
+			return this.browserInfo.browser;
 		},
         /**
          * Return the running browser version.
          */
 		getBrowserVersion : function() {
-			return BrowserDetect.version;
+			return this.browserInfo.version;
 		},
         /**
          * Return the operating system name.
          */
 		getOSName : function() {
-			return BrowserDetect.OS;
+			return this.browserInfo.OS;
 		},
         /**
          * Gets the resource with the specified resource name.

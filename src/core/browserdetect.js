@@ -8,11 +8,12 @@
  */
 (function() {
 
-	var BrowserDetect = function() {
+	CAAT.BrowserDetect = function() {
 		this.init();
+        return this;
 	};
 
-	BrowserDetect.prototype = {
+	CAAT.BrowserDetect.prototype = {
 		browser: '',
 		version: 0,
 		OS: '',

@@ -147,6 +147,7 @@ function __CAAT_director_initialize(director) {
 	director.addScene( __scene5(director) );
 	director.addScene( __scene6(director) );
     director.addScene( __scene7(director) );
+    director.addScene( __scene8(director) );
 
 	director.easeIn(
             0,

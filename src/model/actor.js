@@ -41,9 +41,9 @@
 		scaleTY:				0,      // transformation. scale anchor y position
 		scaleAnchor:			0,      // transformation. scale anchor
 		rotationAngle:			0,      // transformation. rotation angle in radians
-		rotationX:				0,      // transformation. rotation center x
 		rotationY:				0,      // transformation. rotation center y
-		alpha:					1,      // alpha transparency value
+        alpha:					1,      // alpha transparency value
+        rotationX:				0,      // transformation. rotation center x
         isGlobalAlpha:          false,  // is this a global alpha
         frameAlpha:             1,      // hierarchically calculated alpha for this Actor.
 		expired:				false,  // set when the actor has been expired
@@ -1463,7 +1463,7 @@
             try {
                 var pos= this.font.indexOf("px");
                 var s =  this.font.substring(0, pos );
-                this.textHeight= parseInt(s);
+                this.textHeight= parseInt(s,10);
             } catch(e) {
                 this.textHeight=20; // default height;
             }
@@ -1595,7 +1595,13 @@
 			this.path= path;
             this.pathInterpolator= interpolator || new CAAT.Interpolator().createLinearInterpolator();
             this.pathDuration= duration || 10000;
-			this.setBounds(0,0,parent.width,parent.height);
+
+            /*
+            parent could not be set by the time this method is called.
+            so the actors bounds set is removed.
+            the developer must ensure to call setbounds properly on actor.
+             */
+//			this.setBounds(0,0,this.parent.width,this.parent.height);
 			this.mouseEnabled= false;
 
             return this;
@@ -1673,7 +1679,7 @@
         return this;
     };
 
-    extend( CAAT.ShapeActor, CAAT.Actor, {
+    extend( CAAT.ShapeActor, CAAT.ActorContainer, {
 
         shape:          0,      // shape type. One of the constant SHAPE_* values
         compositeOp:    null,   // a valid canvas rendering context string describing compositeOps.
@@ -1829,7 +1835,7 @@
                     m[1][2]+
                     ')';
             */
-            var strMatrix='translate('+this.x+'px, '+this.y+'px)';
+            var strMatrix='translate3d('+this.x+'px, '+this.y+'px, 0px)';
             if ( this.rotationAngle!=0 ) {
                 strMatrix= strMatrix+ ' rotate('+this.rotationAngle+'rad)';
             }
