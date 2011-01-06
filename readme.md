@@ -3,7 +3,7 @@
 ## HOW TO ##
 Tutorials can be found here [http://labs.hyperandroid.com/caat-tutorial-1-getting-started](http://labs.hyperandroid.com/caat-tutorial-1-getting-started)
 
-Samples can be found at
+## Examples and sample code ##
 
 [http://labs.hyperandroid.com/animation](http://labs.hyperandroid.com/animation)
 
