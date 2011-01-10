@@ -68,7 +68,17 @@
 		expired:			true,           // indicates whether the behavior is expired.
 		interpolator:		null,           // behavior application function. linear by default.
         actor:              null,           // actor the Behavior acts on.
+        id:                 0,              // an integer id suitable to identify this behavior by number.
 
+        /**
+         * Sets this behavior id.
+         * @param id an integer.
+         *
+         */
+        setId : function( id ) {
+            this.id= id;
+            return this;
+        },
         /**
          * Sets the default interpolator to a linear ramp, that is, behavior will be applied linearly.
          * @return this
@@ -463,13 +473,27 @@
     extend( CAAT.GenericBehavior, CAAT.Behavior, {
 
         callback: null,
-
+        start:      0,
+        end:        0,
+        target:     null,
+        property:   null,
+/*
         setCallback : function( callback ) {
             this.callback= callback;
             return this;
         },
+*/
         setForTime : function(time, actor) {
-            return this.callback.call( actor, time );
+//            return this.callback.call( actor, time );
+            var value= this.start+ time*(this.end-this.start);
+            this.target[this.property]= value;
+        },
+        setValues : function( start, end, target, property ) {
+            this.start= start;
+            this.end= end;
+            this.target= target;
+            this.property= property;
+            return this;
         }
     });
 })();
@@ -574,6 +598,10 @@
         translateX:     0,
         translateY:     0,
 
+        setAutoRotate : function( autorotate ) {
+            this.autoRotate= autorotate;
+            return this;
+        },
         /**
          * Set the behavior path.
          * The path can be any length, and will take behaviorDuration time to be traversed.
@@ -602,6 +630,7 @@
         setTranslation : function( tx, ty ) {
             this.translateX= tx;
             this.translateY= ty;
+            return this;
         },
         /**
          * Translates the Actor to the correspoing time path position.

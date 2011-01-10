@@ -111,3 +111,41 @@
 		}
 	};
 })();
+
+(function() {
+    CAAT.ColorUtils= function() {
+        return this;
+    };
+
+    CAAT.ColorUtils.prototype= {
+        interpolate : function( r0, g0, b0, r1, g1, b1, nsteps, step) {
+            if ( step<=0 ) {
+                return {
+                    r:r0,
+                    g:g0,
+                    b:b0
+                };
+            } else if ( step>=nsteps ) {
+                return {
+                    r:r1,
+                    g:g1,
+                    b:b1
+                };
+            }
+            
+            var r= (r0+ (r1-r0)/nsteps*step)>>0;
+            var g= (g0+ (g1-g0)/nsteps*step)>>0;
+            var b= (b0+ (b1-b0)/nsteps*step)>>0;
+
+            if ( r>255 ) {r=255;} else if (r<0) {r=0;}
+            if ( g>255 ) {g=255;} else if (g<0) {g=0;}
+            if ( b>255 ) {b=255;} else if (b<0) {b=0;}
+
+            return {
+                r:r,
+                g:g,
+                b:b
+            };
+        }
+    }
+})();

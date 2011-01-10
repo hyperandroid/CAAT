@@ -23,6 +23,14 @@
     };
 
     CAAT.PathSegment.prototype =  {
+        color:  'black',
+
+        setColor : function(color) {
+            if ( color ) {
+                this.color= color;
+            }
+            return this;
+        },
         /**
          * Get path's last coordinate.
          */
@@ -49,7 +57,7 @@
         getLength : function() { },
 
         /**
-         * Gets the path bounding box (or the rectangle that containes the whole path).
+         * Gets the path bounding box (or the rectangle that contains the whole path).
          * @param rectangle a CAAT.Rectangle instance with the bounding box.
          */
 		getBoundingBox : function(rectangle) { },
@@ -77,7 +85,13 @@
          * Gets a polyline describing the path contour. The contour will be defined by as mush as iSize segments.
          * @param iSize an integer indicating the number of segments of the contour polyline.
          */
-        getContour : function(iSize) {}
+        getContour : function(iSize) {},
+
+        /**
+         * 
+         */
+        updatePath : function() {}
+
     }
 
 })();
@@ -142,18 +156,40 @@
 		finalPositionX : function() {
 			return this.finalPosition.x;
 		},
-		paint : function(director) {
+		paint : function(director, bDrawHandles) {
 			
 			var canvas= director.crc;
-			
+
+            canvas.save();
+
+            canvas.strokeStyle= this.color;
 			canvas.beginPath();
 			canvas.moveTo( this.initialPosition.x, this.initialPosition.y );
 			canvas.lineTo( this.finalPosition.x, this.finalPosition.y );
 			canvas.stroke();
-			
-			canvas.fillStyle='black';
-			canvas.fillRect( this.initialPosition.x-3, this.initialPosition.y-3, 6, 6 );
-			canvas.fillRect( this.finalPosition.x-3, this.finalPosition.y-3, 6, 6 );
+
+            if ( bDrawHandles ) {
+                canvas.globalAlpha=.5;
+                canvas.fillStyle='#7f7f00';
+                canvas.beginPath();
+                canvas.arc(
+                        this.initialPosition.x,
+                        this.initialPosition.y,
+                        CAAT.Curve.prototype.HANDLE_SIZE/2,
+                        0,
+                        2*Math.PI,
+                        false) ;
+                canvas.arc(
+                        this.finalPosition.x,
+                        this.finalPosition.y,
+                        CAAT.Curve.prototype.HANDLE_SIZE/2,
+                        0,
+                        2*Math.PI,
+                        false) ;
+                canvas.fill();
+            }
+
+            canvas.restore();
 		},
 		getBoundingBox : function(rectangle) {
 			rectangle.union( this.initialPosition.x, this.initialPosition.y );
@@ -275,7 +311,9 @@
 		getLength : function() {
 			return this.curve.getLength();
 		},
-		paint : function( director ) {
+		paint : function( director,bDrawHandles ) {
+            this.curve.drawHandles= bDrawHandles;
+            director.ctx.strokeStyle= this.color;
 			this.curve.paint(director);
 		},
 		getBoundingBox : function(rectangle) {
@@ -329,7 +367,7 @@
 	CAAT.Path= function()	{
 		this.newPosition= new CAAT.Point();
 		this.pathSegments= [];
-		this.pathListener= [];
+//		this.pathListener= [];
 		return this;
 	};
 	
@@ -362,6 +400,12 @@
 		ay:                         -1,
 		point:                      [],
 
+        interactive:                true,
+
+        setInteractive : function(interactive) {
+            this.interactive= interactive;
+            return this;
+        },
         endCurvePosition : function() {
             return this.pathSegments[ this.pathSegments.length-1 ].endCurvePosition();
         },
@@ -424,33 +468,67 @@
 			this.pathSegments.push(pathSegment);
             return this;
 		},
-		addQuadricTo : function( px1,py1, px2,py2 ) {
+        /**
+         * Adds a Quadric Bezier segment to the path.
+         * The segment starts in the current last path coordinate.
+         * @param px1
+         * @param py1
+         * @param px2
+         * @param py2
+         * @param color. optional parameter. determines the color to draw the segment with (if
+         *         being drawn by a CAAT.PathActor).
+         */
+		addQuadricTo : function( px1,py1, px2,py2, color ) {
 			var bezier= new CAAT.Bezier();
 			bezier.setQuadric(this.trackPathX,this.trackPathY, px1,py1, px2,py2);
 			this.trackPathX= px2;
 			this.trackPathY= py2;
 			
-			var segment= new CAAT.CurvePath();
+			var segment= new CAAT.CurvePath().setColor(color);
 			segment.curve= bezier;
 
 			this.pathSegments.push(segment);
 
             return this;
 		},
-		addCubicTo : function( px1,py1, px2,py2, px3,py3 ) {
+        /**
+         * Adds a Cubic Bezier segment to the path.
+         * The segment starts in the current last path coordinate.
+         * @param px1
+         * @param py1
+         * @param px2
+         * @param py2
+         * @param px3
+         * @param py3
+         * @param color. optional parameter. determines the color to draw the segment with (if
+         *         being drawn by a CAAT.PathActor).
+         */
+		addCubicTo : function( px1,py1, px2,py2, px3,py3, color ) {
 			var bezier= new CAAT.Bezier();
 			bezier.setCubic(this.trackPathX,this.trackPathY, px1,py1, px2,py2, px3,py3);
 			this.trackPathX= px3;
 			this.trackPathY= py3;
 			
-			var segment= new CAAT.CurvePath();
+			var segment= new CAAT.CurvePath().setColor(color);
 			segment.curve= bezier;
 
 			this.pathSegments.push(segment);
             return this;
 		},
-		addCatmullTo : function( px1,py1, px2,py2, px3,py3 ) {
-			var curve= new CAAT.CatmullRom();
+        /**
+         * Adds a Catmull-Rom segment to the path.
+         * The segment starts in the current last path coordinate.
+         * @param px1
+         * @param py1
+         * @param px2
+         * @param py2
+         * @param px3
+         * @param py3
+         * @param color. optional parameter. determines the color to draw the segment with (if
+         *         being drawn by a CAAT.PathActor).
+         */
+		addCatmullTo : function( px1,py1, px2,py2, px3,py3, color ) {
+			var curve= new CAAT.CatmullRom().setColor(color);
 			curve.setCurve(this.trackPathX,this.trackPathY, px1,py1, px2,py2, px3,py3);
 			this.trackPathX= px3;
 			this.trackPathY= py3;
@@ -460,9 +538,17 @@
 
 			this.pathSegments.push(segment);
             return this;
-		},		
-		addLineTo : function( px1, py1 ) {
-			var segment= new CAAT.LinearPath();
+		},
+        /**
+         * Adds a line segment to the path.
+         * The segment starts in the current last path coordinate.
+         * @param px1
+         * @param py1
+         * @param color. optional parameter. determines the color to draw the segment with (if
+         *         being drawn by a CAAT.PathActor).
+         */
+		addLineTo : function( px1,py1, color ) {
+			var segment= new CAAT.LinearPath().setColor(color);
 			segment.setInitialPosition(this.trackPathX, this.trackPathY);
 			segment.setFinalPosition(px1, py1);
 
@@ -472,6 +558,12 @@
 			this.pathSegments.push(segment);
             return this;
 		},
+        /**
+         * Sets the path's starting point.
+         * The method startCurvePosition will return this coordinate.
+         * @param px0
+         * @param py0
+         */
 		beginPath : function( px0, py0 ) {
 			this.trackPathX= px0;
 			this.trackPathY= py0;
@@ -479,6 +571,10 @@
 			this.beginPathY= py0;
             return this;
 		},
+        /**
+         * Closes the path by adding a line path segment to the path from the current last path
+         * coordinate to startCurvePosition coordinate.
+         */
 		closePath : function()	{
 			this.addLineTo( this.beginPathX, this.beginPathY );
 			this.trackPathX= this.beginPathX;
@@ -487,6 +583,15 @@
 			this.endPath();
             return this;
 		},
+        /**
+         * Finishes the process of building the path.
+         * This process involves calculating each path segments length and proportional duration
+         * related to a normalized path length of 1.
+         * It also sets current paths length.
+         * These calculi are needed to traverse the path appropriately.
+         * This method must be called explicitly, except when closing a path (that is, calling the
+         * method closePath) which calls this method as well.
+         */
 		endPath : function() {
 
 			this.pathSegmentStartTime=[];
@@ -513,12 +618,25 @@
 
             return this;
 		},
+        /**
+         * Returns a number indicating the path length.
+         */
 	    getLength : function() {
 	    	return this.pathLength;
 	    },
         /**
-         * time 0..1
-         * @param time
+         * The parameter time must be a value ranging 0..1.
+         * If not constrained to these values, the parameter will be modulus 1, and then, if less
+         * than 0, be normalized to 1+time, so that the value always ranges from 0 to 1.
+         *
+         * This method, returns a CAAT.Point instance indicating a coordinate in the path.
+         * The returned coordinate is the corresponding to normalizing the path's length to 1,
+         * and then finding what path segment and what coordinate in that path segment corresponds
+         * to the input parameter.
+         *
+         * This method is needed when traversing the path throughout a CAAT.Interpolator instance.
+         * @param time a value between 0 and 1 both inclusive. 0 will return path's starting coordinate.
+         * 1 will return path's end coordinate.
          */
 		getPosition : function(time) {
 
@@ -541,6 +659,13 @@
 
 			return this.newPosition;
 		},
+        /**
+         * Analogously to the method getPosition, this method return a CAAT.Point instance with
+         * the coordinate on the path that corresponds to the given length. The input length is
+         * related to path's length.
+         *
+         * @param iLength a float with the target length.
+         */
 		getPositionFromLength : function(iLength) {
 			
 			iLength%=this.getLength();
@@ -563,11 +688,20 @@
 			
 			return this.newPosition;
 		},
+        /**
+         * Paints the path.
+         * This method is called by CAAT.PathActor instances.
+         * If the path is set as interactive (by default) path segment will draw curve modification
+         * handles as well.
+         *
+         * @param director a CAAT.Director instance.
+         */
 		paint : function( director ) {
 			for( var i=0; i<this.pathSegments.length; i++ ) {
-				this.pathSegments[i].paint(director);
+				this.pathSegments[i].paint(director,this.interactive);
 			}
 		},
+/*
 		addPathListener : function( callback )	{
 			this.pathListener.push(callback);
             return this;
@@ -577,6 +711,11 @@
 				this.pathListener[i](this, time);
 			}
 		},
+*/
+        /**
+         * Returns a path's calculated bounding box.
+         * @param rectangle a CAAT.Rectangle object instance.
+         */
 		getBoundingBox : function(rectangle) {
 			if ( null==rectangle ) {
 				rectangle=new CAAT.Rectangle();
@@ -588,23 +727,46 @@
 			
 			return rectangle;
 		},
+        /**
+         * Method invoked when a PathActor stops dragging a control point.
+         */
 		release : function() {
 			this.ax= -1;
 			this.ay= -1;
 		},
+        /**
+         * Returns an integer with the number of path segments that conform this path.
+         */
         getNumSegments : function() {
             return this.pathSegments.length;
         },
+        /**
+         * Gets a CAAT.PathSegment instance.
+         * @param index the index of the desired CAAT.PathSegment.
+         */
 		getSegment : function(index) {
 			return this.pathSegments[index];
 		},
+        /**
+         * Indicates that some path control point has changed, and that the path must recalculate
+         * its internal data.
+         */
 		updatePath : function() {
 			for( var i=0; i<this.pathSegments.length; i++ ) {
 				this.pathSegments[i].updatePath();
 			}
 			this.endPath();
 		},
+        /**
+         * Sent by a CAAT.PathActor instance object to try to drag a path's control point.
+         * @param x
+         * @param y
+         */
 		press: function(x,y) {
+            if (!this.interactive) {
+                return;
+            }
+
             var HS= CAAT.Curve.prototype.HANDLE_SIZE/2;
 			for( var i=0; i<this.pathSegments.length; i++ ) {
 				for( var j=0; j<this.pathSegments[i].numControlPoints(); j++ ) {
@@ -633,7 +795,18 @@
 			}
 			this.point= null;
 		},
+        /**
+         * Drags a path's control point.
+         * If the method press has not set needed internal data to drag a control point, this
+         * method will do nothing, regardless the user is dragging on the CAAT.PathActor delegate.
+         * @param x
+         * @param y
+         */
 		drag : function(x,y) {
+            if (!this.interactive) {
+                return;
+            }
+
 			if ( null==this.point ) {
 				return;
 			}
@@ -653,10 +826,14 @@
 
 			this.updatePath();
 		},
+        /**
+         * Returns a collection of CAAT.Point objects which conform a path's contour.
+         * @param iSize
+         */
         getContour : function(iSize) {
             var contour=[];
             for( var i=0; i<=iSize; i++ ) {
-                contour.push( {x: i/iSize, y: this.getPosition(i/iSize).y} );
+                contour.push( new CAAT.Point().set( i/iSize, this.getPosition(i/iSize).y ) );
             }
 
             return contour;

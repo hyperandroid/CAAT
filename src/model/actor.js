@@ -269,10 +269,12 @@
 				ctx.fillRect(0,0,this.width,this.height );
 			}
 
+            /*
             if ( null!=this.strokeStyle ) {
                 ctx.strokeStyle= this.strokeStyle;
                 ctx.strokeRect(0,0,this.width,this.height);
             }
+            */
 		},
         /**
          * A helper method to setScaleAnchored with an anchor of ANCHOR_CENTER
@@ -508,13 +510,32 @@
          * @param behavior a CAAT.Behavior instance.
          */
         removeBehaviour : function( behavior ) {
-            var n= this.behaviorList.length;
-            while(n--) {
+            var n= this.behaviorList.length-1;
+            while(n) {
                 if ( this.behaviorList[n]==behavior ) {
                     this.behaviorList.splice(n,1);
-                    return;
+                    return this;
                 }
             }
+
+            return this;
+        },
+        /**
+         * Remove a Behavior with id param as behavior identifier from this actor.
+         * This function will remove ALL behavior instances with the given id.
+         *
+         * @param id an integer.
+         * return this;
+         */
+        removeBehavior : function( id ) {
+            for( var n=0; n<this.behaviorList.length; n++ ) {
+                if ( this.behaviorList[n].id==id) {
+                    this.behaviorList.splice(n,1);
+                }
+            }
+
+            return this;
+
         },
         /**
          * Set discardable property.
@@ -1127,7 +1148,7 @@
 		return this;
 	};
 
-	extend( CAAT.SpriteActor, CAAT.Actor, {
+	extend( CAAT.SpriteActor, CAAT.ActorContainer, {
 		compoundbitmap:			null,   // CAAT.CompoundBitmap instance
 		animationImageIndex:	null,   // an Array defining the sprite frame sequence
 		prevAnimationTime:		-1,
@@ -1368,7 +1389,7 @@
 		return this;
 	};
 
-	extend( CAAT.TextActor, CAAT.Actor, {
+	extend( CAAT.TextActor, CAAT.ActorContainer, {
 		font:			    null,   // a valid canvas rendering context font description. Default font
                                     // will be "10px sans-serif".
 		textAlign:		    null,	// a valid canvas rendering context textAlign string. Any of:
@@ -1615,7 +1636,7 @@
         return this;
     };
 
-    extend( CAAT.Button, CAAT.Actor, {
+    extend( CAAT.Button, CAAT.ActorContainer, {
         buttonImage:    null,   // a CompoundImage object instance
         iNormal:        0,
         iOver:          0,

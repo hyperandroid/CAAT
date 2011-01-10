@@ -23,7 +23,10 @@
 		drawHandles:	true,
 
 		paint: function(director) {
-		
+            if ( false==this.drawHandles ) {
+                return;
+            }
+
 			var canvas= director.crc;
 		
 			// control points
@@ -40,22 +43,20 @@
 				canvas.stroke();
 			} 
 			
-			if ( this.drawHandles ) {
-				canvas.globalAlpha=.5;
-				for( var i=0; i<this.coordlist.length; i++ ) {
-					canvas.fillStyle='#7f7f00';
-					canvas.beginPath();
-					canvas.arc( 
-							this.coordlist[i].x, 
-							this.coordlist[i].y, 
-							this.HANDLE_SIZE/2, 
-							0,
-							2*Math.PI,
-							false) ;
-					canvas.fill();
-				}
-			}
-	
+            canvas.globalAlpha=.5;
+            for( var i=0; i<this.coordlist.length; i++ ) {
+                canvas.fillStyle='#7f7f00';
+                canvas.beginPath();
+                canvas.arc(
+                        this.coordlist[i].x,
+                        this.coordlist[i].y,
+                        this.HANDLE_SIZE/2,
+                        0,
+                        2*Math.PI,
+                        false) ;
+                canvas.fill();
+            }
+
 			canvas.restore();
 		},
 		update : function() {
@@ -150,7 +151,7 @@
 
 		},
 		paintCuadric : function( director ) {
-			var x1,x2,y1,y2;
+			var x1,y1;
 			x1 = this.coordlist[0].x;
 			y1 = this.coordlist[0].y;
 			
@@ -172,7 +173,7 @@
 		},
 		paintCubic : function( director ) {
 
-			var x1,x2,y1,y2;
+			var x1,y1;
 			x1 = this.coordlist[0].x;
 			y1 = this.coordlist[0].y;
 			

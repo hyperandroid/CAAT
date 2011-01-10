@@ -275,7 +275,7 @@ function __CAAT__loadingScene(director) {
 
         burbuja.fillStyle="rgba("+r+","+g+","+b+","+a+")";
 
-        root.addChild(burbuja);
+        root.addChildImmediately(burbuja);
 
         var cb= new CAAT.ContainerBehavior();
 

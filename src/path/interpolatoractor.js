@@ -11,11 +11,15 @@
     };
 
     extend( CAAT.InterpolatorActor, CAAT.Actor, {
-        interpolator:   null,
-        contour:        null,
-        S:              50,
-        gap:            0,
+        interpolator:   null,   // CAAT.Interpolator instance.
+        contour:        null,   // interpolator contour cache
+        S:              50,     // contour samples.
+        gap:            5,      // border size in pixels.
 
+        setGap : function( gap ) {
+            this.gap= gap;
+            return this;
+        },
         /**
          * Sets the CAAT.Interpolator instance to draw.
          *
@@ -33,19 +37,27 @@
         },
         paint : function( director, time ) {
 
-            CAAT.InterpolatorActor.superclass.paint.call(this,director,time);
+            CAAT.InterpolatorActor.superclass.paint.call(this,director,time);            
 
             if ( this.interpolator ) {
 
                 var canvas= director.crc;
+
+                var xs= (this.width-2*this.gap);
+                var ys= (this.height-2*this.gap);
+
                 canvas.beginPath();
-                canvas.moveTo( this.gap + this.contour[0].x * (this.width-2*this.gap), -this.gap + this.height - this.contour[0].y * (this.height-2*this.gap) );
+                canvas.moveTo(
+                        this.gap +  xs*this.contour[0].x,
+                        -this.gap + this.height - ys*this.contour[0].y);
 
                 for( var i=1; i<this.contour.length; i++ ) {
-                    canvas.lineTo( this.gap + this.contour[i].x * (this.width-2*this.gap), -this.gap + this.height - this.contour[i].y * (this.height-2*this.gap) );
+                    canvas.lineTo(
+                             this.gap + xs*this.contour[i].x,
+                            -this.gap + this.height - ys*this.contour[i].y);
                 }
 
-                canvas.strokeStyle='black';
+                canvas.strokeStyle= this.strokeStyle;
                 canvas.stroke();
             }
         },

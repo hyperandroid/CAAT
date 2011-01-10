@@ -1,0 +1,601 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Tutorial 5 - Paths</title>
+
+<script type="text/javascript" src="sh/shCore.js"></script>
+<script type="text/javascript" src="sh/shBrushJScript.js"></script>
+<link href="sh/shCore.css" rel="stylesheet" type="text/css" />
+<link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="../../build/caat.js"></script>
+
+<script type="text/javascript">
+     SyntaxHighlighter.all()
+</script>
+
+<style>
+    div.code {
+       font-size: .7em;
+    }
+    div.APIENTRY {
+        background-color: #f0f0f0;
+    }
+</style>
+
+    
+</head>
+<body style="color:black; background:#ffffff;">
+
+<div class="section">
+    <h1>Paths</h1>
+    <p>CAAT toolkit has advanced path capabilities. In its basic definition, a path is defined by the
+    class CAAT.PathSegment. This class does not define any method implementation but is referred to as
+    an interface, that is, just definition, no implementation. PathSegment has the following methods:</p>
+
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+
+        CAAT.PathSegment.prototype =  {
+        /**
+         * Get path's last coordinate.
+         */
+		endCurvePosition : function() { },
+
+        /**
+         * Get path's starting coordinate.
+         */
+		startCurvePosition : function() { },
+
+        /**
+         * Get a coordinate on path.
+         * The parameter time is normalized, that is, its values range from zero to one.
+         * zero will mean <code>startCurvePosition</code> and one will be <code>endCurvePosition</code>. Other values
+         * will be a position on the path relative to the path length. if the value is greater that 1, if will be set
+         * to modulus 1.
+         * @param time a float with a value between zero and 1 inclusive both.
+         */
+        getPosition : function(time) { },
+
+        /**
+         * Gets Path length.
+         */
+        getLength : function() { },
+
+        /**
+         * Gets the path bounding box (or the rectangle that contains the whole path).
+         * @param rectangle a CAAT.Rectangle instance with the bounding box.
+         */
+		getBoundingBox : function(rectangle) { },
+
+        /**
+         * Gets the number of control points needed to create the path.
+         * Each PathSegment type can have different control points.
+         * @return an integer with the number of control points.
+         */
+		numControlPoints : function() { },
+
+        /**
+         * Gets CAAT.Point instance with the 2d position of a control point.
+         * @param index an integer indicating the desired control point coordinate.
+         */
+		getControlPoint: function(index) { },
+
+        /**
+         * Instruments the path has finished building, and that no more segments will be added to it.
+         * You could later add more PathSegments and <code>endPath</code> must be called again.
+         */
+        endPath : function() {},
+
+        /**
+         * Gets a polyline describing the path contour. The contour will be defined by as mush as iSize segments.
+         * @param iSize an integer indicating the number of segments of the contour polyline.
+         */
+        getContour : function(iSize) {}
+    }
+            </pre>
+
+    </div>
+</div>
+
+<div class="section">
+    <h1>Path Types</h1>
+    <p>With the definition of CAAT.PathSegment, CAAT offers the following types of paths:</p>
+    <div class="chapter">
+        <h2>LinearPath</h2>
+        <p>This path describes a line path segment.</p>
+    </div>
+    <div class="chapter">
+        <h2>CurvePath</h2>
+        <p>This path describes any kind of curve segment. Supported types of curves are Bezier quadric
+            and Cubic, but it is expected to be adding more curve types such as Catmull-Rom curves.</p>
+    </div>
+    <div class="chapter">
+        <h2>Path</h2>
+        <p>This is the real utility class. Despite you can define directly <code>CAAT.LinearPath</code>
+            and <code>CAAT.CurvePath</code> I suggest you using always an instance of CAAT.Path.</p>
+        <p>This class defines a compound path made of an unlimited number of path segments. The segments
+        are referred as PathSegment instances, so that you can build a CAAT.Path of any kind of the
+        out-of-the-box PathSegments available.</p>
+        <p>The syntax is pretty straightforward:</p>
+        <div class="code">
+            <pre class="brush: js; auto-links: false; toolbar: false;">
+
+    var p= new CAAT.Path().
+                    beginPath(20,20).
+                    addCubicTo( 30,80, 90,30, 50,70, 'red' ).
+                    addQuadricTo( 80,60, 65,85, 'blue' ).
+                    addLineTo( 99,40, 'rgb(0,255,255)' ).
+                    endPath().
+                    setInteractive(false);
+                
+            </pre>
+        </div>
+        <p>The color parameters are optional, but since I want you to show the different path
+            segments, i've included them. This block of code defines the following path:</p>
+        <div class="sample">
+            <div><canvas id="_tut5_1"></canvas></div>
+            <script>
+                (function() {
+                // Initialize director.
+                var _director= new CAAT.Director().initialize(
+                        200,
+                        200,
+                        document.getElementById('_tut5_1'));
+
+                // create scene.
+                var _scene= new CAAT.Scene().create();
+
+                _director.addScene(_scene);
+
+                var p= new CAAT.Path().
+                    beginPath(40,40).
+                    addCubicTo( 60,160, 180,60, 100,140, 'red' ).
+                    addQuadricTo( 160,120, 130,170, 'blue' ).
+                    addLineTo( 199,80, 'rgb(0,255,255)' ).
+                    endPath().
+                    setInteractive(false);
+
+                var path= new CAAT.PathActor().
+                        create().
+                        setBounds(0,0,100,100).
+                        setPath(p);
+
+                _scene.addChild( path );
+
+                _director.loop(1);
+                })();
+            </script>
+        </div>
+        <p>You have the possibility of closing the path, in which case there's no need to
+        call <code>endPath</code>. <code>closePath</code> method calls <code>endPath</code>
+            internally. The result of changing the previous example will be an extra segment:</p>
+        <div class="code">
+            <pre class="brush: js; auto-links: false; toolbar: false;">
+
+            var p= new CAAT.Path().
+                    beginPath(20,20).
+                    addCubicTo( 30,80, 90,30, 50,70, 'red' ).
+                    addQuadricTo( 80,60, 65,85, 'blue' ).
+                    addLineTo( 99,40, 'rgb(0,255,255)' ).
+                    closePath().
+                    setInteractive(false);
+
+            </pre>
+        </div>
+        <div class="sample">
+            <div><canvas id="_tut5_2"></canvas></div>
+            <script>
+                (function() {
+                // Initialize director.
+                var _director= new CAAT.Director().initialize(
+                        200,
+                        200,
+                        document.getElementById('_tut5_2'));
+
+                // create scene.
+                var _scene= new CAAT.Scene().create();
+
+                _director.addScene(_scene);
+
+                var p= new CAAT.Path().
+                    beginPath(40,40).
+                    addCubicTo( 60,160, 180,60, 100,140, 'red' ).
+                    addQuadricTo( 160,120, 130,170, 'blue' ).
+                    addLineTo( 199,80, 'rgb(0,255,255)' ).
+                    closePath().
+                    setInteractive(false);
+
+                var path= new CAAT.PathActor().
+                        create().
+                        setBounds(0,0,100,100).
+                        setPath(p);
+
+                _scene.addChild( path );
+
+                _director.loop(1);
+                })();
+            </script>
+        </div>
+    </div>
+
+    <div class="chapter">
+        <h2>Simplified CAAT.Path instances</h2>
+        <p>To set a CAAT.Path class instance as a simple segment use the following methods:</p>
+        <div class="APIENTRY">
+            <p><b>function setLinear( x0,y0, x1,y1 )<br>
+                  function setQuadric(x0,y0, x1,y1, x2,y2)<br>
+                  function setCubic(x0,y0, x1,y1, x2,y2)</b></p>
+            <p>These methods make the CAAT.Path object to be defined as a single segment path. In fact,
+            internally these methods perform the same method chain call as the previous example:
+            <code>beginPath(...).addLineTo(...).endPath()</code></p>
+        </div>
+    </div>
+
+    <div class="chapter">
+        <p>Despite CAAT.Path instances are almost of no use by themselves their usefulness
+           is leveraged when assigning the path to a CAAT.PathBehavior. As we saw in chapter 2, a CAAT.Behavior
+           instance is able to traverse a path in an fixed amount of time.
+        </p>
+        <div class="APIENTRY">
+            <p><b>function setTranslation(offsetX,offsetY)</b></p>
+            <p>This method applies an extra displacement to the position calculated on path at any given time.
+            As we already saw, an actor's 0,0, position is located at its top left corner. And by default an actor
+            will traverse the path by locating this top left corner over the path. This method gets handy when we
+            want in example, our Actor instances to traverse the path from its center, and not the top left right.
+            So by calling setTranslation( actor.width/2, actor.height/2 ) on a CAAT.PathBehavior instance will solve
+            that matter.</p>
+        </div>
+        <div class="APIENTRY">
+            <p><b>function setAutoRotate( boolean )</b></p>
+            <p>This method will set the exact rotation angle needed to head from one point in the path to the next
+               one. The CAAT.PathBehavior target Actor should not apply other rotations to make this method work
+               properly.</p>
+        </div>
+        <div class="sample">
+            <div><canvas id="_tut5_3"></canvas></div>
+            <script>
+                (function() {
+                    var director_6 = new CAAT.Director().initialize(
+                            300,250,document.getElementById('_tut5_3'));
+
+                    var scene_6=     new CAAT.Scene().create();
+
+                    // create an almost circular path.
+                    var _path_c6= new CAAT.Path().
+                        beginPath(25,125).
+                        addCubicTo( 25,25,   225,25,   225,125 ).
+                        addCubicTo( 225,225,  25,225,  25,125 ).
+                        endPath().
+                        setInteractive(false);
+
+                    var shape_c6_0= new CAAT.ShapeActor().
+                            create().
+                            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+                            setLocation( 50,50 ).
+                            setSize(50,50).
+                            setFillStyle('#ffff00').
+                            setStrokeStyle('#0000ff').
+                            setAlpha(.75).
+                            addBehavior(
+                                new CAAT.PathBehavior().
+                                        setPath( _path_c6 ).
+                                        setFrameTime(0,5000).
+                                        setCycle(true).
+                                        setAutoRotate( true ).
+                                        setTranslation( 25,25 )
+
+                            );
+                    var shape_c6_1= new CAAT.ShapeActor().
+                            create().
+                            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+                            setLocation( 50,50 ).
+                            setSize(50,50).
+                            setFillStyle('#00ff00').
+                            setStrokeStyle('#ff00ff').
+                            setAlpha(.75).
+                            addBehavior(
+                                new CAAT.PathBehavior().
+                                        setPath( _path_c6 ).
+                                        setFrameTime(0,5000).
+                                        setCycle(true).
+                                        setTranslation(25,25).
+                                        setInterpolator(
+                                            new CAAT.Interpolator().createLinearInterpolator(
+                                                    false,true)
+                                        )
+                            ).
+                            addBehavior(
+                                new CAAT.RotateBehavior().
+                                        setValues( 0, 2*Math.PI ).
+                                        setCycle(true).
+                                        setFrameTime(0,5000)
+                            );
+
+                    // add two rectangle shapes to the scene.
+                    scene_6.addChild(shape_c6_0);
+                    scene_6.addChild(shape_c6_1);
+
+                    var _pathactor_c6= new CAAT.PathActor().
+                            create().
+                            setPath(_path_c6).
+                            setBounds(0,0,director_6.width,director_6.height);
+                    scene_6.addChild( _pathactor_c6 );
+
+                    // setup up a path traverser for the path.
+                    director_6.addScene(scene_6);
+                    director_6.loop(10);
+
+                })();
+            </script>
+        </div>
+    </div>
+
+    <div class="chapter">
+        <h2>Path and Interpolators.</h2>
+        <p>This example show an interactively editable path and all the out-of-the-box CAAT.Interpolators present
+        currently in the toolkit. The PathBehavior is set autoRotate=true and setTranslation to the center of the
+        fish.</p>
+        <div class="sample">
+            <div><canvas id="_tut5_4"></canvas></div>
+            <script>
+                (function() {
+                    function __scene1_generateInterpolators(director, scene, pathBehavior) {
+                        var lerps= CAAT.Interpolator.prototype.enumerateInterpolators();
+
+                        var cols= 20;
+                        var j=0, i=0;
+                        var rows= lerps.length/2/cols;
+                        var min= 20;
+                        var max= 45;
+                        var selectedInterpolatorActor= null;
+
+                        // generate interpolator actors.
+                        for( j=0; j<rows; j++ ) {
+
+                            var root= new CAAT.Dock().
+                                    create().
+                                    setBounds(
+                                        director.canvas.width-(j+1)*max,
+                                        0,
+                                        max,
+                                        director.canvas.height).
+                                    setSizes(min, max).
+                                    setApplicationRange( 3 ).
+                                    setLayoutOp( CAAT.Dock.prototype.OP_LAYOUT_RIGHT );
+                            root.scene= scene;
+
+                            scene.addChildImmediately(root);
+
+                            for( i=0; i<cols; i++ ) {
+
+                                if ( j*cols+i>=lerps.length ) {
+                                    break;
+                                }
+
+                                var actor= new CAAT.InterpolatorActor().
+                                     create().
+                                     setInterpolator( lerps[(j*cols+i)*2] ).
+                                     setBounds( 0, 0, min, min ).
+                                     setStrokeStyle( 'blue' );
+
+                                actor.mouseMove= function(mouseEvent) {
+                                    mouseEvent.source.parent.actorPointed( mouseEvent.point.x, mouseEvent.point.y, mouseEvent.source );
+                                }
+                                actor.mouseExit= function(mouseEvent) {
+
+                                    if ( mouseEvent.source!=selectedInterpolatorActor ) {
+                                        mouseEvent.source.setFillStyle(null);
+                                    }
+
+                                    mouseEvent.source.parent.actorMouseExit(mouseEvent);
+                                }
+                                actor.mouseEnter= function(mouseEvent) {
+
+                                    mouseEvent.source.parent.actorMouseEnter(mouseEvent);
+
+                                    if ( mouseEvent.source!=selectedInterpolatorActor ) {
+                                        mouseEvent.source.setFillStyle('#f0f0f0');
+                                    }
+                                }
+                                actor.mouseClick= function(mouseEvent) {
+                                    if ( null!=selectedInterpolatorActor ) {
+                                        selectedInterpolatorActor.setFillStyle(null);
+                                    }
+                                    selectedInterpolatorActor= mouseEvent.source;
+                                    mouseEvent.source.setFillStyle('#00ff00');
+                                    selectedInterpolatorActor= mouseEvent.source;
+
+                                    pathBehavior.setInterpolator( mouseEvent.source.getInterpolator() );
+                                }
+
+                                root.addChildImmediately( actor );
+                            }
+
+                            root.layout();
+                        }
+                    };
+
+                    var director = new CAAT.Director().initialize(
+                            700,500,document.getElementById('_tut5_4'));
+
+                    var scene= new CAAT.Scene().create();
+
+                    // path actor. to show the path and manipulate its control points.
+                    var pa= new CAAT.PathActor().
+                        setBounds(0,0,600,director.canvas.height).
+                        create().
+                        setPath(
+                            new CAAT.Path().
+                                beginPath(200,200).
+                                addCubicTo( 300,15, 400,10, 500,200 ).
+                                addQuadricTo( 550,300, 450,350 ).
+                                addQuadricTo( 400,400, 350,200 ).
+                                addCubicTo( 100,300, 300,450, 10,400).
+                                addQuadricTo( 40,200, 200,200 ).
+                                endPath() );
+
+
+                    var fish = new CAAT.ShapeActor().
+                            create().
+                            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+                            setLocation( 50,50 ).
+                            setSize(50,50).
+                            setFillStyle('#00ff00').
+                            setStrokeStyle('#ff00ff').
+                            setAlpha(.75).
+                            enableEvents(false);
+
+                    // path measurer behaviour
+                    var pb= new CAAT.PathBehavior().
+                        setPath(pa.getPath()).
+                        setFrameTime(0,10000).
+                        setCycle(true).
+                        setTranslation( fish.width/2, fish.height/2 );
+
+                    fish.addBehavior( pb );
+
+                    scene.addChildImmediately(pa);
+                    scene.addChildImmediately(fish);
+
+                    __scene1_generateInterpolators(director, scene, pb);
+
+                    director.addScene(scene);
+                    director.loop(33);
+
+                })();
+            </script>
+        </div>
+    </div>
+
+
+    <div class="chapter">
+        <h2>Paths as Interpolators.</h2>
+        <p>One last feature of CAAT.Path instances (CAAT.PathSegment actually) is that they can be used as interpolators.
+        There's are some special interpolator types out-of-the-box:</p>
+        <div class="APIENTRY">
+            <p><strong>function createQuadricBezierInterpolator(p0,p1,p2,pingpong)</strong></p>
+            <p>This method creates a CAAT.Interpolator based on a QuadricBezier curve. The point parameters must be normalized
+            (i.e. coordinate values ranging from 0 to 1).</p>
+        </div>
+        <div class="APIENTRY">
+            <p><strong>function createCubicBezierInterpolator(p0,p1,p2,p3,pingpong)</strong></p>
+            <p>This method creates a CAAT.Interpolator based on a CubicBezier curve. The point parameters must be normalized
+            (i.e. coordinate values ranging from 0 to 1).</p>
+        </div>
+        <div class="APIENTRY">
+            <p><strong>function createPathInterpolator(path,pingpong)</strong></p>
+            <p>This method creates a CAAT.Interpolator based on a CAAT.Path instance.</p>
+        </div>
+
+        <div><p>The following code creates two CAAT.Interpolator intances from a Quadric and a Cubic Bezier curves.</p></div>
+        <div class="code">
+            <pre class="brush: js; auto-links: false; toolbar: false;">
+
+                    // locate canvas element.
+                    var _director_1= new CAAT.Director().initialize(
+                            200,
+                            100,
+                            document.getElementById('_tut5_5')
+                    );
+
+                    // create and add Scene to director
+                    var _scene_1= new CAAT.Scene().create();
+                    _director_1.addScene( _scene_1 );
+
+                    // add a CAAT.InterpolatorActor instance
+                    _scene_1.addChild(
+                            new CAAT.InterpolatorActor().
+                                create().
+                                setInterpolator(
+                                    new CAAT.Interpolator().createQuadricBezierInterpolator( // for the curve
+                                            {x:0, y:0},
+                                            {x:1, y:0},
+                                            {x:1, y:1},
+                                            false
+                                            )
+                                ).
+                                setBounds( 10, 10, 80, 80 ).
+                                setFillStyle('#d0d0d0').
+                                setGap(0)                                                   // avoid actor padding.
+                    );
+
+                    _scene_1.addChild(
+                            new CAAT.InterpolatorActor().
+                                create().
+                                setInterpolator(
+                                    new CAAT.Interpolator().createCubicBezierInterpolator(  // for the curve
+                                            {x:0, y:0},
+                                            {x:0, y:1},
+                                            {x:1, y:0},
+                                            {x:1, y:1},
+                                            true                                            // pingpong = true
+                                            )
+                                ).
+                                setBounds( 100, 10, 80, 80 ).
+                                setFillStyle('#d0d0d0').
+                                setGap(0)                                                   // avoid actor padding
+                    );
+
+                    _director_1.loop(1);
+            </pre>
+        </div>
+        <div class="sample">
+            <canvas id='_tut5_5'></canvas>
+            <script>
+                (function() {
+                    var _director_1= new CAAT.Director().initialize(
+                            200,
+                            100,
+                            document.getElementById('_tut5_5')
+                    );
+
+                    var _scene_1= new CAAT.Scene().create();
+
+                    _director_1.addScene( _scene_1 );
+
+                    _scene_1.addChild(
+                            new CAAT.InterpolatorActor().
+                                create().
+                                setInterpolator(
+                                    new CAAT.Interpolator().createQuadricBezierInterpolator(
+                                            {x:0, y:0},
+                                            {x:1, y:0},
+                                            {x:1, y:1},
+                                            false
+                                            )
+                                ).
+                                setBounds( 10, 10, 80, 80 ).
+                                setFillStyle('#d0d0d0').
+                                setGap(0)
+                    );
+
+                    _scene_1.addChild(
+                            new CAAT.InterpolatorActor().
+                                create().
+                                setInterpolator(
+                                    new CAAT.Interpolator().createCubicBezierInterpolator(
+                                            {x:0, y:0},
+                                            {x:0, y:1},
+                                            {x:1, y:0},
+                                            {x:1, y:1},
+                                            true
+                                            )
+                                ).
+                                setBounds( 100, 10, 80, 80 ).
+                                setFillStyle('#d0d0d0').
+                                setGap(0)
+                    );
+
+                    _director_1.loop(1);
+                })();
+            </script>
+        </div>
+
+    </div>
+</div>
+
+
+</body>
+</html>

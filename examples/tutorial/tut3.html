@@ -93,7 +93,6 @@
     as well.</p>
     <div class="code">
         <pre class="brush: js; auto-links: false; toolbar: false;">
-        <script>
             var director_1 = new CAAT.Director().initialize(
                     600,120,
                     document.getElementById('_c1'));
@@ -200,7 +199,6 @@
 
             // set animation to 10fps.
             director_1.loop(10);
-        </script>
         </pre>
     </div>
 
@@ -553,7 +551,6 @@ fireEvent( event_type, time )</pre></div>
         Actor's lifecycle to start again one second after notification and lasting for two more seconds.</p>
         <div class="code">
             <pre class="brush: js; auto-links: false; toolbar: false;">
-                <script>
                      // Initialize director.
                      var _director_2= new CAAT.Director().initialize(
                              400,
@@ -590,7 +587,6 @@ fireEvent( event_type, time )</pre></div>
 
                      // set 20 fps animation
                      _director_2.loop(20);
-                 </script>                
             </pre>
         </div>
         <div class="sample">
@@ -691,7 +687,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                and height.</p>
             <div class="code">
                 <pre class="brush: js; auto-links: false; toolbar: false;">
-                    <script>
+
                         // Initialize director.
                         var _director_3= new CAAT.Director().initialize(
                                 400,
@@ -766,7 +762,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
 
                         // set 20 fps animation
                         _director_3.loop(20);
-                    </script>
+
                 </pre>
             </div>
             <div><canvas id="_c3"></canvas></div>
@@ -860,7 +856,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
             by behaviors:</p>
         <div class="code">
             <pre class="brush: js; auto-links: false; toolbar: false;">
-                <script>
+
                     var _director_4= new CAAT.Director().initialize(
                             600,
                             200,
@@ -928,7 +924,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                     }
 
                     _director_4.loop(20);
-                </script>
+
             </pre>
         </div>
         <div><canvas id="_c4"></canvas></div>
@@ -1024,7 +1020,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
         </p>
         <div class="code">
             <pre class="brush: js; auto-links: false; toolbar: false;">
-                <script>
+
                     var _director_5= new CAAT.Director().initialize(
                             600,
                             200,
@@ -1108,7 +1104,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                     }
 
                     _director_5.loop(20);
-                </script>
+
             </pre>
         </div>
         <div>
@@ -1251,7 +1247,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
     </p>
     <div class="code">
         <pre class="brush: js; auto-links: false; toolbar: false;">
-            <script>
+
                 var _director_9= new CAAT.Director().initialize(
                         400,
                         200,
@@ -1302,7 +1298,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                 _scene_9.addChild( _c9_c1 );
 
                 _director_9.loop(1);
-            </script>
+
         </pre>
     </div>
     <div>
@@ -1362,6 +1358,112 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
             })();
         </script>
     </div>
+
+<div class="chapter">
+        <h2>Containers</h2>
+        <p>In CAAT, every out-of-the-box is a CAAT.ActorContainer instance except the CAAT.Actor class itself.
+        Despite it could seem odd adding ther Actor instance to (for instance) a circle CAAT.Shape it makes sense to do
+        so when you need to link hierarchycally other actors to the shape. A good example could be when trying to do an
+        elbow like relationshiop between two given actors. Look at scene8.js in the technical demo for a complete running
+        example.</p>
+        <div class="sample">
+            <canvas id="_tut3_100"></canvas>
+            <script>
+                (function() {
+                    function __createArm( root, angle, segments, armSegmentSizeW, armSegmentSizeH, maxAngle ) {
+
+                        var i;
+                        var segment= root;
+
+                        for( i=0; i<segments; i++ ) {
+
+                            var color= CAAT.ColorUtils.prototype.interpolate(
+                                    255,255,0,
+                                    255,128,0,
+                                    segments,
+                                    i
+                            );
+
+                            var newSegment= new CAAT.ShapeActor().
+                                    create().
+                                    setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+                                    setSize( armSegmentSizeW, armSegmentSizeH ).
+                                    setFillStyle( 'rgb('+color.r+","+color.g+","+color.b+")" ).
+                                    setLocation( 0,-armSegmentSizeH );
+                            if ( segment==root ) {
+                                newSegment.setRotationAnchored(angle, armSegmentSizeW/2, armSegmentSizeH);
+                                newSegment.oldAngle= angle;
+                            } else {
+                                newSegment.oldAngle= 0;
+                                newSegment.animate= function(director,time) {
+                                    CAAT.ActorContainer.prototype.animate.call(this,director,time);
+                                    this.setRotationAnchored(
+                                            this.oldAngle+
+                                            maxAngle*Math.sin(new Date().getTime()*.0005
+                                            ),
+                                            armSegmentSizeW/2,
+                                            armSegmentSizeH
+                                    );
+                                };
+                            }
+
+                            segment.addChild(newSegment);
+                            segment= newSegment;
+                        }
+                    }
+
+                var _director_9= new CAAT.Director().initialize(
+                        200,
+                        200,
+                        document.getElementById('_tut3_100'));
+
+                var _scene_9= new CAAT.Scene().
+                        create();
+
+                _director_9.addScene( _scene_9 );
+
+                var root= new CAAT.ShapeActor().
+                        create().
+                        setShape( CAAT.ShapeActor.prototype.SHAPE_CIRCLE ).
+                        setBounds( _director_9.width/2, _director_9.height/2, 1, 1 ).
+                        setFillStyle( 'yellow' ).
+                        addBehavior(
+                            new CAAT.RotateBehavior().
+                                setFrameTime(0,20000).
+                                setValues(0,2*Math.PI).
+                                setCycle(true)
+                        );
+
+                var segments=10;
+                var arms= 10;
+
+                for( i=0; i<arms; i++ ) {
+                    __createArm(root, 2*Math.PI/arms * i,segments,2,10,Math.PI/segments/2);
+                }
+                _scene_9.addChild(root);
+                _director_9.loop(15);
+                })();
+            </script>
+        </div>
+    </div>
+    <div class="chapter">
+        <h2>Adding Actors to a Container.</h2>
+        <p>There're two methods to add Actors to a Container.</p>
+        <div class="APIENTRY">
+            <p><strong>function addActor(actor)</strong></p>
+            <p>This method adds an actor, but the actor is not added until the current CAAT.Director frame is processed.
+            When adding actors to a container in example in response to behavior events, the frame current frame is being
+            processed, and adding new Actors could lead to visual artifacts. The reason is that the newly added actors
+            have not yet executed their animation stage when being drawn.</p>
+        </div>
+        <div class="APIENTRY">
+            <p><strong>function addActorImmediately(actor)</strong></p>
+            <p>In opposition to <code>addActor</code> method, this method adds immediately an actor to the rendereing
+            pipeline, and could cause such visual artifacts.</p>
+        </div>
+        <p>It is up to the developer to choose the appropriate method that better copes with his needs.</p>
+    </div>
+
 </div>
 
 <div class="section">
@@ -1384,7 +1486,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
     object reads resources and stores them into a known structure. More about it on the Extras chapter.</p>
     <div class="code">
         <pre class="brush: js; auto-links: false; toolbar: false;">
-            <script>
+
                 var _director_6= new CAAT.Director().initialize(
                         400,
                         150,
@@ -1457,7 +1559,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                     });
 
                 _director_6.loop(20);
-            </script>
+
         </pre>
     </div>
         <div>
@@ -1573,7 +1675,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
     <p>As any other actor, a TextActor will be modified by behaviors.</p>
     <div class="code">
         <pre class="brush: js; auto-links: false; toolbar: false;">
-            <script>
+
                 var _director_7= new CAAT.Director().initialize(
                         700,
                         200,
@@ -1693,7 +1795,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                 _scene_7.addChild( _text_21 );
 
                 _director_7.loop(20);
-            </script>
+
         </pre>
     </div>
     <div>
@@ -1854,7 +1956,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
     </div>
     <div class="code">
         <pre class="brush: js; auto-links: false; toolbar: false;">
-            <script>
+
                 var _director_8= new CAAT.Director().initialize(
                         400,
                         200,
@@ -1950,7 +2052,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                 }
 
                 _director_8.loop(20);
-            </script>
+
         </pre>
     </div>
     <div>
@@ -2080,7 +2182,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
     </p>
     <div class="code">
         <pre class="brush: js; auto-links: false; toolbar: false;">
-            <script>
+
                 (function() {
 
                     // constructor
@@ -2100,7 +2202,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                         // overriden methods/attributes go here.
                     });
                 })();
-            </script>
+
         </pre>
     </div>
     <p>
@@ -2124,7 +2226,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
     </p>
     <div class="code">
         <pre class="brush: js; auto-links: false; toolbar: false;">
-            <script>
+
                 (function() {
 
                     // constructor
@@ -2161,7 +2263,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                         }
                     };
                 })();
-            </script>
+
         </pre>
     </div>
 </div>

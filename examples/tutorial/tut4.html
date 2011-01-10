@@ -13,7 +13,6 @@
 
 <script type="text/javascript" src="../../build/caat.js"></script>
 
-
 <script type="text/javascript">
      SyntaxHighlighter.all()
 </script>
@@ -471,97 +470,6 @@
     <script type="text/javascript">
 
         (function() {
-            CAAT.Dock = function() {
-                CAAT.Dock.superclass.constructor.call(this);
-                return this;
-            };
-
-            extend( CAAT.Dock, CAAT.ActorContainer, {
-
-                elementsX:      0,
-                elementsWidth:  0,
-                minSize:        0,
-                maxSize:        0,
-                range:          2,
-
-                setSizes : function( min, max ) {
-                    this.minSize= min;
-                    this.maxSize= max;
-                    return this;
-                },
-                layout : function() {
-                    var i, currentWidth=0, currentX=0;
-
-                    for( i=0; i<this.getNumChildren(); i++ ) {
-                        currentWidth+= this.getChildAt(i).width;
-                    }
-
-                    this.elementsX= (this.width-currentWidth)/2;
-                    currentX= this.elementsX;
-
-                    for( i=0; i<this.getNumChildren(); i++ ) {
-                        var actor= this.getChildAt(i);
-                        actor.x= currentX;
-                        currentX+= actor.width;
-                        actor.y= this.maxSize- actor.height;
-                    }
-
-                    this.elementsWidth= currentWidth;
-                },
-                mouseMove : function(mouseEvent) {
-                    this.actorNotPointed();
-                },
-                actorNotPointed : function() {
-                    var i;
-
-                    for( i=0; i<this.getNumChildren(); i++ ) {
-                        var actor= this.getChildAt(i);
-                        actor.width= this.minSize;
-                        actor.height= actor.width;
-                    }
-
-                    this.layout();
-
-                    document.getElementById('interpolator_name').innerHTML='<code>No interpolator selected.</code>';
-                },
-                actorPointed : function(x, pointedActor) {
-
-                    var index= this.findChild(pointedActor);
-
-                    var across= x / pointedActor.width;
-                    var i;
-
-                    for( i=0; i<this.childrenList.length; i++ ) {
-                        var actor= this.childrenList[i];
-
-                        if (i < index - this.range || i > index + this.range) {
-                            actor.width = this.minSize;
-                        } else if (i == index) {
-                            actor.width = this.maxSize;
-                        } else if (i < index) {
-                            actor.width=
-                                this.minSize + Math.round(
-                                            (this.maxSize - this.minSize - 1)
-                                                    * (Math.cos((i - index - across + 1) / this.range * Math.PI) + 1)
-                                                    / 2);
-                        } else {
-                            actor.width=
-                                    this.minSize + Math.round(
-                                            (this.maxSize - this.minSize - 1)
-                                                    * (Math.cos( (i - index - across) / this.range * Math.PI) + 1)
-                                                    / 2);
-
-                        }
-                        actor.height= actor.width;
-                    }
-
-                    this.layout();
-                }
-            });
-        })();
-
-
-        (function() {
             var director= new CAAT.Director().initialize(
                     680,
                     600,
@@ -571,55 +479,7 @@
 
             director.addScene(scene);
 
-            var lerps=[
-                new CAAT.Interpolator().createLinearInterpolator(false, false), 'Linear pingpong=false, inverse=false',
-                new CAAT.Interpolator().createLinearInterpolator(true,  false), 'Linear pingpong=true, inverse=false',
-
-                new CAAT.Interpolator().createLinearInterpolator(false, true), 'Linear pingpong=false, inverse=true',
-                new CAAT.Interpolator().createLinearInterpolator(true,  true), 'Linear pingpong=true, inverse=true',
-
-                    new CAAT.Interpolator().createExponentialInInterpolator(    2, false), 'ExponentialIn pingpong=false, exponent=2',
-                    new CAAT.Interpolator().createExponentialOutInterpolator(   2, false), 'ExponentialOut pingpong=false, exponent=2',
-                    new CAAT.Interpolator().createExponentialInOutInterpolator( 2, false), 'ExponentialInOut pingpong=false, exponent=2',
-                    new CAAT.Interpolator().createExponentialInInterpolator(    2, true), 'ExponentialIn pingpong=true, exponent=2',
-                    new CAAT.Interpolator().createExponentialOutInterpolator(   2, true), 'ExponentialOut pingpong=true, exponent=2',
-                    new CAAT.Interpolator().createExponentialInOutInterpolator( 2, true), 'ExponentialInOut pingpong=true, exponent=2',
-
-                    new CAAT.Interpolator().createExponentialInInterpolator(    4, false), 'ExponentialIn pingpong=false, exponent=4',
-                    new CAAT.Interpolator().createExponentialOutInterpolator(   4, false), 'ExponentialOut pingpong=false, exponent=4',
-                    new CAAT.Interpolator().createExponentialInOutInterpolator( 4, false), 'ExponentialInOut pingpong=false, exponent=4',
-                    new CAAT.Interpolator().createExponentialInInterpolator(    4, true), 'ExponentialIn pingpong=true, exponent=4',
-                    new CAAT.Interpolator().createExponentialOutInterpolator(   4, true), 'ExponentialOut pingpong=true, exponent=4',
-                    new CAAT.Interpolator().createExponentialInOutInterpolator( 4, true), 'ExponentialInOut pingpong=true, exponent=4',
-
-                    new CAAT.Interpolator().createExponentialInInterpolator(    6, false), 'ExponentialIn pingpong=false, exponent=6',
-                    new CAAT.Interpolator().createExponentialOutInterpolator(   6, false), 'ExponentialOut pingpong=false, exponent=6',
-                    new CAAT.Interpolator().createExponentialInOutInterpolator( 6, false), 'ExponentialInOut pingpong=false, exponent=6',
-                    new CAAT.Interpolator().createExponentialInInterpolator(    6, true), 'ExponentialIn pingpong=true, exponent=6',
-                    new CAAT.Interpolator().createExponentialOutInterpolator(   6, true), 'ExponentialOut pingpong=true, exponent=6',
-                    new CAAT.Interpolator().createExponentialInOutInterpolator( 6, true), 'ExponentialInOut pingpong=true, exponent=6',
-
-                new CAAT.Interpolator().createBounceInInterpolator(false), 'BounceIn pingpong=false',
-                new CAAT.Interpolator().createBounceOutInterpolator(false), 'BounceOut pingpong=false',
-                new CAAT.Interpolator().createBounceInOutInterpolator(false), 'BounceInOut pingpong=false',
-                new CAAT.Interpolator().createBounceInInterpolator(true), 'BounceIn pingpong=true',
-                new CAAT.Interpolator().createBounceOutInterpolator(true), 'BounceOut pingpong=true',
-                new CAAT.Interpolator().createBounceInOutInterpolator(true), 'BounceInOut pingpong=true',
-
-                    new CAAT.Interpolator().createElasticInInterpolator(    1.1, .4, false), 'ElasticIn pingpong=false, amp=1.1, d=.4',
-                    new CAAT.Interpolator().createElasticOutInterpolator(   1.1, .4, false), 'ElasticOut pingpong=false, amp=1.1, d=.4',
-                    new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, .4, false), 'ElasticInOut pingpong=false, amp=1.1, d=.4',
-                    new CAAT.Interpolator().createElasticInInterpolator(    1.1, .4, true), 'ElasticIn pingpong=true, amp=1.1, d=.4',
-                    new CAAT.Interpolator().createElasticOutInterpolator(   1.1, .4, true), 'ElasticOut pingpong=true, amp=1.1, d=.4',
-                    new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, .4, true), 'ElasticInOut pingpong=true, amp=1.1, d=.4',
-
-                    new CAAT.Interpolator().createElasticInInterpolator(    1.0, .2, false), 'ElasticIn pingpong=false, amp=1.0, d=.2',
-                    new CAAT.Interpolator().createElasticOutInterpolator(   1.0, .2, false), 'ElasticOut pingpong=false, amp=1.0, d=.2',
-                    new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, .2, false), 'ElasticInOut pingpong=false, amp=1.0, d=.2',
-                    new CAAT.Interpolator().createElasticInInterpolator(    1.0, .2, true), 'ElasticIn pingpong=true, amp=1.0, d=.2',
-                    new CAAT.Interpolator().createElasticOutInterpolator(   1.0, .2, true), 'ElasticOut pingpong=true, amp=1.0, d=.2',
-                    new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, .2, true), 'ElasticInOut pingpong=true, amp=1.0, d=.2',
-            ];
+            var lerps= CAAT.Interpolator.prototype.enumerateInterpolators();
 
             var cols= 20;
             var j=0, i=0;
@@ -634,9 +494,11 @@
                 var root= new CAAT.Dock().
                         create().
                         setBounds(0,director.canvas.height-(j+1)*max, director.canvas.width, max).
-                        setSizes(min, max);
+                        setSizes(min, max).
+                        setLayoutOp( CAAT.Dock.prototype.OP_LAYOUT_BOTTOM );
+                root.scene= scene;
 
-                scene.addChild(root);
+                scene.addChildImmediately(root);
 
                 for( i=0; i<cols; i++ ) {
 
@@ -652,14 +514,19 @@
 
                     actor.mouseMove= function(mouseEvent) {
                         document.getElementById('interpolator_name').innerHTML= '<code>'+mouseEvent.source.name+'</code>';
-                        mouseEvent.source.parent.actorPointed( mouseEvent.point.x, mouseEvent.source );
+                        mouseEvent.source.parent.actorPointed( mouseEvent.point.x, mouseEvent.point.y, mouseEvent.source );
                     }
                     actor.mouseExit= function(mouseEvent) {
                         if ( mouseEvent.source!=selectedInterpolatorActor ) {
                             mouseEvent.source.setFillStyle(null);
                         }
+
+                        mouseEvent.source.parent.actorMouseExit(mouseEvent);
                     }
                     actor.mouseEnter= function(mouseEvent) {
+
+                        mouseEvent.source.parent.actorMouseEnter(mouseEvent);
+
                         if ( mouseEvent.source!=selectedInterpolatorActor ) {
                             mouseEvent.source.setFillStyle('#f0f0f0');
                         }
@@ -673,7 +540,7 @@
                         selectedInterpolatorActor= mouseEvent.source;
                     }
 
-                    root.addChild( actor );
+                    root.addChildImmediately( actor );
                 }
 
                 root.layout();

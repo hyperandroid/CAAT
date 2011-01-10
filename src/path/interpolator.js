@@ -137,7 +137,12 @@
 
             return this;
         },
-
+        /**
+         * Creates a Quadric bezier curbe as interpolator.
+         *
+         * @param p0,p1,p2 CAAT.Point instances.
+         * @param bPingPong a boolean indicating if the interpolator must ping-pong.
+         */
         createQuadricBezierInterpolator : function(p0,p1,p2,bPingPong) {
             this.getPosition= function getPosition(time) {
                 var orgTime= time;
@@ -157,7 +162,13 @@
 
             return this;
         },
-        createQubicBezierInterpolator : function(p0,p1,p2,p3,bPingPong) {
+        /**
+         * Creates a Cubic bezier curbe as interpolator.
+         *
+         * @param p0,p1,p2,p3 CAAT.Point instances.
+         * @param bPingPong a boolean indicating if the interpolator must ping-pong.
+         */
+        createCubicBezierInterpolator : function(p0,p1,p2,p3,bPingPong) {
             this.getPosition= function getPosition(time) {
                 var orgTime= time;
 
@@ -363,6 +374,57 @@
             }
 
             return contour;
+        },
+        enumerateInterpolators : function() {
+            return [
+                new CAAT.Interpolator().createLinearInterpolator(false, false), 'Linear pingpong=false, inverse=false',
+                new CAAT.Interpolator().createLinearInterpolator(true,  false), 'Linear pingpong=true, inverse=false',
+
+                new CAAT.Interpolator().createLinearInterpolator(false, true), 'Linear pingpong=false, inverse=true',
+                new CAAT.Interpolator().createLinearInterpolator(true,  true), 'Linear pingpong=true, inverse=true',
+
+                new CAAT.Interpolator().createExponentialInInterpolator(    2, false), 'ExponentialIn pingpong=false, exponent=2',
+                new CAAT.Interpolator().createExponentialOutInterpolator(   2, false), 'ExponentialOut pingpong=false, exponent=2',
+                new CAAT.Interpolator().createExponentialInOutInterpolator( 2, false), 'ExponentialInOut pingpong=false, exponent=2',
+                new CAAT.Interpolator().createExponentialInInterpolator(    2, true), 'ExponentialIn pingpong=true, exponent=2',
+                new CAAT.Interpolator().createExponentialOutInterpolator(   2, true), 'ExponentialOut pingpong=true, exponent=2',
+                new CAAT.Interpolator().createExponentialInOutInterpolator( 2, true), 'ExponentialInOut pingpong=true, exponent=2',
+
+                new CAAT.Interpolator().createExponentialInInterpolator(    4, false), 'ExponentialIn pingpong=false, exponent=4',
+                new CAAT.Interpolator().createExponentialOutInterpolator(   4, false), 'ExponentialOut pingpong=false, exponent=4',
+                new CAAT.Interpolator().createExponentialInOutInterpolator( 4, false), 'ExponentialInOut pingpong=false, exponent=4',
+                new CAAT.Interpolator().createExponentialInInterpolator(    4, true), 'ExponentialIn pingpong=true, exponent=4',
+                new CAAT.Interpolator().createExponentialOutInterpolator(   4, true), 'ExponentialOut pingpong=true, exponent=4',
+                new CAAT.Interpolator().createExponentialInOutInterpolator( 4, true), 'ExponentialInOut pingpong=true, exponent=4',
+
+                new CAAT.Interpolator().createExponentialInInterpolator(    6, false), 'ExponentialIn pingpong=false, exponent=6',
+                new CAAT.Interpolator().createExponentialOutInterpolator(   6, false), 'ExponentialOut pingpong=false, exponent=6',
+                new CAAT.Interpolator().createExponentialInOutInterpolator( 6, false), 'ExponentialInOut pingpong=false, exponent=6',
+                new CAAT.Interpolator().createExponentialInInterpolator(    6, true), 'ExponentialIn pingpong=true, exponent=6',
+                new CAAT.Interpolator().createExponentialOutInterpolator(   6, true), 'ExponentialOut pingpong=true, exponent=6',
+                new CAAT.Interpolator().createExponentialInOutInterpolator( 6, true), 'ExponentialInOut pingpong=true, exponent=6',
+
+                new CAAT.Interpolator().createBounceInInterpolator(false), 'BounceIn pingpong=false',
+                new CAAT.Interpolator().createBounceOutInterpolator(false), 'BounceOut pingpong=false',
+                new CAAT.Interpolator().createBounceInOutInterpolator(false), 'BounceInOut pingpong=false',
+                new CAAT.Interpolator().createBounceInInterpolator(true), 'BounceIn pingpong=true',
+                new CAAT.Interpolator().createBounceOutInterpolator(true), 'BounceOut pingpong=true',
+                new CAAT.Interpolator().createBounceInOutInterpolator(true), 'BounceInOut pingpong=true',
+
+                new CAAT.Interpolator().createElasticInInterpolator(    1.1, .4, false), 'ElasticIn pingpong=false, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticOutInterpolator(   1.1, .4, false), 'ElasticOut pingpong=false, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, .4, false), 'ElasticInOut pingpong=false, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticInInterpolator(    1.1, .4, true), 'ElasticIn pingpong=true, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticOutInterpolator(   1.1, .4, true), 'ElasticOut pingpong=true, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, .4, true), 'ElasticInOut pingpong=true, amp=1.1, d=.4',
+
+                new CAAT.Interpolator().createElasticInInterpolator(    1.0, .2, false), 'ElasticIn pingpong=false, amp=1.0, d=.2',
+                new CAAT.Interpolator().createElasticOutInterpolator(   1.0, .2, false), 'ElasticOut pingpong=false, amp=1.0, d=.2',
+                new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, .2, false), 'ElasticInOut pingpong=false, amp=1.0, d=.2',
+                new CAAT.Interpolator().createElasticInInterpolator(    1.0, .2, true), 'ElasticIn pingpong=true, amp=1.0, d=.2',
+                new CAAT.Interpolator().createElasticOutInterpolator(   1.0, .2, true), 'ElasticOut pingpong=true, amp=1.0, d=.2',
+                new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, .2, true), 'ElasticInOut pingpong=true, amp=1.0, d=.2'
+            ];
         }
     };
 })();

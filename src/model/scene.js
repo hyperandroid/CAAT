@@ -102,6 +102,7 @@
 	CAAT.Scene= function() {
 		CAAT.Scene.superclass.constructor.call(this);
         this.timerList= [];
+        this.fillStyle= null;
 		return this;
 	};
 	
@@ -522,12 +523,18 @@
         setExpired : function(bExpired) {
             this.expired= bExpired;
         },
+        /**
+         * An scene by default does not paint anything because has not fillStyle set.
+         * @param director
+         * @param time
+         */
         paint : function(director, time) {
 
-			var ctx= director.crc;
-
-            ctx.fillStyle= this.fillStyle!=null ? this.fillStyle : 'white';
-            ctx.fillRect(0,0,this.width,this.height );
+            if ( this.fillStyle ) {
+                var ctx= director.crc;
+                ctx.fillStyle= this.fillStyle;
+                ctx.fillRect(0,0,this.width,this.height );
+            }
         }
 	});
 })();

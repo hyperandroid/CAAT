@@ -14,7 +14,10 @@
 		path:					null,
 		pathBoundingRectangle:	null,
 		bOutline:				false,
-		
+
+        getPath : function() {
+            return this.path;
+        },
 		setPath : function(path) {
 			this.path= path;
 			this.pathBoundingRectangle= path.getBoundingBox();

@@ -3,6 +3,9 @@
  */
 function extend(subc, superc, overrides)
 {
+   /**
+    * @constructor
+    */
    var F = function() {};
    var i;
 

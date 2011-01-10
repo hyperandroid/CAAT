@@ -2,51 +2,81 @@
  * @author  Hyperandroid  ||  http://hyperandroid.com/
  *
  **/
-function __scene1_makePath(interpolator) {
-	var p= new CAAT.Path();
-	p.interpolator= interpolator;
-	p.beginPath(200,200);
-	p.addCubicTo( 300,15, 400,10, 500,200 );
-	p.addQuadricTo( 550,300, 450,350 );
-	p.addQuadricTo( 400,400, 350,200 );
-	p.addCubicTo( 100,300, 300,450, 10,400);
-	p.addQuadricTo( 40,200, 200,200 );
-/*
-    p.addCubicTo( 100,100, 300,100, 300,200 );
-    p.addCubicTo( 300,300, 500,300, 500,200 );
-    p.addCubicTo( 500,100, 200,100, 200,200 );
-*/
-	p.endPath();
 
-	return p;
-}
+function __scene1_generateInterpolators(director, scene, pathBehavior) {
+    var lerps= CAAT.Interpolator.prototype.enumerateInterpolators();
 
-function __scene1_makeInterpolatorActor(scene, x, y, S, interpolatorReal, pez) {
+    var cols= 20;
+    var j=0, i=0;
+    var rows= lerps.length/2/cols;
+    var min= 20;
+    var max= 45;
+    var selectedInterpolatorActor= null;
 
-    // here i'm using paths (concretely curvepath with cubic bezier) as an interpolator.
-    // as far as the target object has a method getContour(numSamples), this will work.
-    var ia= new CAAT.InterpolatorActor();
-    ia.create();
-    ia.setInterpolator( interpolatorReal );
-    ia.setBounds( x, y, S, S );
-    ia.fillStyle= '#c0c0c0';
+    // generate interpolator actors.
+    for( j=0; j<rows; j++ ) {
 
-    ia.interpolatorReal= interpolatorReal;
+        var root= new CAAT.Dock().
+                create().
+                setBounds(
+                    director.canvas.width-(j+1)*max,
+                    0,
+                    max,
+                    director.canvas.height).
+                setSizes(min, max).
+                setApplicationRange( 3 ).
+                setLayoutOp( CAAT.Dock.prototype.OP_LAYOUT_RIGHT );
+        root.scene= scene;
 
-    ia.mouseDblClick= function(mouseEvent) {
-        pez.pathMeasure.interpolator= this.interpolatorReal;
-    };
+        scene.addChildImmediately(root);
 
-    ia.oldPaint= ia.paint;
-    ia.paint= function( director, time ) {
-        this.fillStyle= ( pez.pathMeasure.interpolator==this.interpolatorReal ) ? '#00ff7f' : '#c0c0c0';
-        this.oldPaint(director,time);
-    };
-    
-    ia.mouseDown= ia.mouseUp= ia.mouseDrag= function(mouseEvent) {};
+        for( i=0; i<cols; i++ ) {
 
-    scene.addChild(ia);
+            if ( j*cols+i>=lerps.length ) {
+                break;
+            }
 
+            var actor= new CAAT.InterpolatorActor().
+                 create().
+                 setInterpolator( lerps[(j*cols+i)*2] ).
+                 setBounds( 0, 0, min, min ).
+                 setStrokeStyle( 'blue' );
+
+            actor.mouseMove= function(mouseEvent) {
+                mouseEvent.source.parent.actorPointed( mouseEvent.point.x, mouseEvent.point.y, mouseEvent.source );
+            }
+            actor.mouseExit= function(mouseEvent) {
+
+                if ( mouseEvent.source!=selectedInterpolatorActor ) {
+                    mouseEvent.source.setFillStyle(null);
+                }
+
+                mouseEvent.source.parent.actorMouseExit(mouseEvent);
+            }
+            actor.mouseEnter= function(mouseEvent) {
+
+                mouseEvent.source.parent.actorMouseEnter(mouseEvent);
+
+                if ( mouseEvent.source!=selectedInterpolatorActor ) {
+                    mouseEvent.source.setFillStyle('#f0f0f0');
+                }
+            }
+            actor.mouseClick= function(mouseEvent) {
+                if ( null!=selectedInterpolatorActor ) {
+                    selectedInterpolatorActor.setFillStyle(null);
+                }
+                selectedInterpolatorActor= mouseEvent.source;
+                mouseEvent.source.setFillStyle('#00ff00');
+                selectedInterpolatorActor= mouseEvent.source;
+
+                pathBehavior.setInterpolator( mouseEvent.source.getInterpolator() );
+            }
+
+            root.addChildImmediately( actor );
+        }
+
+        root.layout();
+    }
 }
 
 function __scene1(director) {
@@ -54,98 +84,84 @@ function __scene1(director) {
 	var scene= new CAAT.Scene();
 	scene.create();
 
-    var lerps= [
-        new CAAT.Interpolator().createLinearInterpolator(true),
-        new CAAT.Interpolator().createQubicBezierInterpolator({x:0,y:0}, {x:0,y:0}, {x:1,y:0}, {x:1,y:1} ),
-        new CAAT.Interpolator().createQubicBezierInterpolator({x:0,y:0}, {x:0,y:1}, {x:1,y:0}, {x:1,y:1} ),
-        new CAAT.Interpolator().createQubicBezierInterpolator({x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1} ),
-        new CAAT.Interpolator().createQubicBezierInterpolator({x:0,y:0}, {x:0,y:1}, {x:0,y:1}, {x:1,y:1} ),
-        new CAAT.Interpolator().createExponentialInOutInterpolator(3),
-        new CAAT.Interpolator().createBounceInOutInterpolator()
-    ];
-
-	// camino del pez unico
-	var path = __scene1_makePath(lerps[0]);
-
 	// path actor. to show the path and manipulate its control points.
-	var pa= new CAAT.PathActor();
-	pa.setBounds(0,0,director.canvas.width,director.canvas.height);
-	pa.create();
-    pa.setPath(path);
-	scene.addChild(pa);
+	var pa= new CAAT.PathActor().
+	    setBounds(0,0,600,director.canvas.height).
+	    create().
+        setPath(
+            new CAAT.Path().
+                beginPath(200,200).
+                addCubicTo( 300,15, 400,10, 500,200 ).
+                addQuadricTo( 550,300, 450,350 ).
+                addQuadricTo( 400,400, 350,200 ).
+                addCubicTo( 100,300, 300,450, 10,400).
+                addQuadricTo( 40,200, 200,200 ).
+                endPath() );
 
-    // sprites images
-	conpoundimage = new CAAT.CompoundImage();
-	conpoundimage.initialize( director.getImage('fish'), 1, 3);
 
-    var fish = new CAAT.SpriteActor();
-    fish.create();
-    fish.setAnimationImageIndex( [0,1,2,1] );
-    fish.changeFPS= 300;
-    fish.setSpriteImage(conpoundimage);
-    fish.mouseEnabled= false;
-    scene.addChild(fish);
+
+    var fish = new CAAT.SpriteActor().
+        create().
+        setAnimationImageIndex( [0,1,2,1] ).
+        setChangeFPS(300).
+        setSpriteImage(
+            new CAAT.CompoundImage().
+	            initialize( director.getImage('fish'), 1, 3) ).
+        enableEvents(false);
+
 
     // path measurer behaviour
-    var pb= new CAAT.PathBehavior();
-    pb.setPath(path);
-    pb.setInterpolator( lerps[0] );
-    pb.setFrameTime(0,10000);
-    pb.setCycle(true);
-    pb.autoRotate= true;
+    var pb= new CAAT.PathBehavior().
+        setPath(pa.getPath()).
+        setFrameTime(0,10000).
+        setCycle(true).
+        setAutoRotate(true).
+        setTranslation( fish.width/2, fish.height/2 );
 
-    // set pathbehavior to be traversed by the center of the fish
-    pb.translateX= fish.width/2;
-    pb.translateY= fish.height/2;
-
-    fish.pathMeasure= pb;
     fish.addBehavior( pb );
 
-    for( var i=0; i<lerps.length; i++ ) {
-	    __scene1_makeInterpolatorActor(
-                scene,
-                director.canvas.width-90,
-                10+i*65 ,
-                60,
-                lerps[i],
-                fish);
-    }
 
+    scene.addChildImmediately(pa);
 	scene1_text(director,scene);
-	
+    scene.addChildImmediately(fish);
+
+    __scene1_generateInterpolators(director, scene, pb);
+    
+
 	return scene; 
 }
 
 function scene1_text(director,scene) {
-	var cc1= new CAAT.ActorContainer();
-	cc1.setBounds( 0,30, 280, 110 );
-	cc1.create();
-	cc1.mouseEnabled= false;
+	var cc1= new CAAT.ActorContainer().
+	    setBounds( 0,30, 280, 110 ).
+	    create().
+	    enableEvents(false);
 	scene.addChild(cc1);
-	
-	var rb= new CAAT.RotateBehavior();
-	rb.cycleBehavior= true;
-	rb.setFrameTime( 0, 4000 );
-	rb.startAngle= -Math.PI/8;
-	rb.endAngle= Math.PI/8;
-	rb.setInterpolator( new CAAT.Interpolator().createExponentialInOutInterpolator(3,true) );
-	rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
-	cc1.addBehavior(rb);
+
+    cc1.addBehavior(
+	    new CAAT.RotateBehavior().
+            setCycle(true).
+	        setFrameTime( 0, 4000 ).
+            setValues( -Math.PI/8, Math.PI/8 ).
+	        setInterpolator(
+                new CAAT.Interpolator().createExponentialInOutInterpolator(3,true) ).
+            setAnchor( CAAT.Actor.prototype.ANCHOR_TOP )
+	);
 	
 	var gradient= director.crc.createLinearGradient(0,0,0,30);
 	gradient.addColorStop(0,'#00ff00');
 	gradient.addColorStop(0.5,'red');
 	gradient.addColorStop(1,'blue');	
 	
-	var text= new CAAT.TextActor();
-	text.setFont("20px sans-serif");
-	text.setText("Conpound Path");
-    text.calcTextSize(director);
-	text.textAlign="center";
+	var text= new CAAT.TextActor().
+	    setFont("20px sans-serif").
+	    setText("Conpound Path").
+        calcTextSize(director).
+	    setAlign( "center" ).
+        create().
+        setFillStyle(gradient).
+        setOutline(true);
 	text.setLocation((cc1.width-text.textWidth)/2,0);
-	text.create();
-	text.fillStyle=gradient;
-	text.outline= true;
 	cc1.addChild(text);
 
 	var text2= new CAAT.TextActor();
