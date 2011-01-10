@@ -13,7 +13,7 @@ function __scene7(director) {
     scene.addChild( root );
     
 
-    conpoundimagefish = [];
+    var conpoundimagefish = [];
     conpoundimagefish.push( new CAAT.CompoundImage().initialize( director.getImage('fish'),  1, 3) );
     conpoundimagefish.push( new CAAT.CompoundImage().initialize( director.getImage('fish2'), 1, 3) );
     conpoundimagefish.push( new CAAT.CompoundImage().initialize( director.getImage('fish3'), 1, 3) );

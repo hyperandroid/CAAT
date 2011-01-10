@@ -72,20 +72,20 @@ function setupTRButtonPaint(prev) {
 		
 		var canvas= director.crc;
 		
-		if ( null!=this.parent && null!=this.fillStyle ) {
+		if ( null!=prev.parent && null!=prev.fillStyle ) {
 			canvas.beginPath();
-			canvas.fillStyle= this.pointed ? 'orange' : (this.fillStyle!=null ? this.fillStyle : 'white'); //'white';
+			canvas.fillStyle= prev.pointed ? 'orange' : (prev.fillStyle!=null ? prev.fillStyle : 'white'); //'white';
 			canvas.arc(10,10,10,0,Math.PI*2,false );
 			canvas.fill();
 		}
 
-		if ( this.clip ) {
+		if ( prev.clip ) {
 			canvas.beginPath();
-			canvas.rect(0,0,this.width,this.height);
+			canvas.rect(0,0,prev.width,prev.height);
 			canvas.clip();
 		}
 			
-		canvas.strokeStyle= this.pointed ? 'green' : '#ffff00';
+		canvas.strokeStyle= prev.pointed ? 'green' : '#ffff00';
 		canvas.beginPath();
 
 		canvas.moveTo(3,10);
@@ -109,23 +109,23 @@ function setupTRButtonPaintIndex(prev, index) {
 		
 		var canvas= director.crc;
 		
-		if ( null!=this.parent && null!=this.fillStyle ) {
+		if ( null!=prev.parent && null!=prev.fillStyle ) {
 			canvas.beginPath();
-			canvas.fillStyle= this.pointed ? 'orange' : (this.fillStyle!=null ? this.fillStyle : 'white'); //'white';
+			canvas.fillStyle= prev.pointed ? 'orange' : (prev.fillStyle!=null ? prev.fillStyle : 'white'); //'white';
 			canvas.arc(10,10,10,0,Math.PI*2,false );
 			canvas.fill();
 		}
 
-		if ( this.clip ) {
+		if ( prev.clip ) {
 			canvas.beginPath();
-			canvas.rect(0,0,this.width,this.height);
+			canvas.rect(0,0,prev.width,prev.height);
 			canvas.clip();
 		}
 			
 		canvas.fillStyle= '#ffff00';
 		canvas.textBaseline='top';
 		canvas.font= "18px sans-serif";
-		var str= ""+(this.__sceneIndex+1);
+		var str= ""+(prev.__sceneIndex+1);
 		var w= canvas.measureText(str).width;
 		canvas.fillText( str, (this.width-w)/2, 0 );
 
@@ -254,7 +254,7 @@ function __CAAT__loadingScene(director) {
     rb.setFrameTime( 0, 5000 );
     rb.startAngle= -Math.PI/4;
     rb.endAngle= Math.PI/4;
-    rb.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
+    rb.setInterpolator( new CAAT.Interpolator().createCubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
     rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
     textLoading.addBehavior(rb);
 

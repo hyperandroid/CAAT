@@ -7,7 +7,7 @@ function __scene2(director) {
 	var scene= new CAAT.Scene();
 	scene.create();
 	
-	conpoundimage = new CAAT.CompoundImage();
+	var conpoundimage = new CAAT.CompoundImage();
 	conpoundimage.initialize( director.getImage('chapas'), 6, 6);
 	var __index=0;
 	
@@ -125,7 +125,7 @@ function __scene2(director) {
 	rb1.setFrameTime( 0, 4000 );
 	rb1.startAngle= -Math.PI/8;
 	rb1.endAngle= Math.PI/8;
-	rb1.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
+	rb1.setInterpolator( new CAAT.Interpolator().createCubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
 	rb1.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
 	cc1.addBehavior(rb1);
 	

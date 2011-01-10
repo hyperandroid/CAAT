@@ -23,7 +23,7 @@ function __scene3(director) {
 	rb.setFrameTime( 0, 4000 );
 	rb.startAngle= -Math.PI/8;
 	rb.endAngle= Math.PI/8;
-	rb.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
+	rb.setInterpolator( new CAAT.Interpolator().createCubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
 	rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
 	cc.addBehavior(rb);
 	
