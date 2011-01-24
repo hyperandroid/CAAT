@@ -368,10 +368,11 @@
                     var ggg=0;
                     var bbb=0;
 
-                    var lx= 100;
-                    var ly= 110;
-
                     for( k=0; k<this.m_lightcolor.length; k++ ) {
+
+                        var lx= this.lightPosition[k].x;
+                        var ly= this.lightPosition[k].y;
+
                         var dx=Math.floor(Math.abs(this.m_avgX[i][j]-j+lx));
                         var dy=Math.floor(Math.abs(this.m_avgY[i][j]-i+ly));
 
@@ -439,7 +440,9 @@
             this.m_lightcolor= colors_rgb_array;
             this.lightPosition= [];
             for( var i=0; i<this.m_lightcolor.length; i++ ) {
-                this.lightPosition.push( new CAAT.Point() );
+                var x= this.width*Math.random();
+                var y= this.height*Math.random();
+                this.lightPosition.push( new CAAT.Point().set(x,y) );
             }
             return this;
         },
@@ -448,8 +451,8 @@
 
             this.setLightColors(
                     [
-                        [255,0,0],
-                        [255,0,255]
+                        [255,128,0],
+                        [0,0,255]
                     ]);
 
             this.prepareBump(image,radius);

@@ -3,6 +3,7 @@
  *
  * Scene 9.
  * Shows some image processing actors.
+ * Heavy processor intensive.
  *
  */
 
@@ -48,10 +49,38 @@ function __scene9(director) {
                 new CAAT.IMBump().
                         initialize( director.getImage('bump'), 48 )
             );
+    ip3.mouseMove= function(mouseEvent) {
+        ip3.imageProcessor.lightPosition[0].x= mouseEvent.point.x;
+        ip3.imageProcessor.lightPosition[0].y= mouseEvent.point.y;
+    };
+
+    var timer= __scene9_createtimer(scene, ip3);
+
+    ip3.mouseEnter= function(mouseEvent) {
+        timer.cancel();
+    }
+    ip3.mouseExit= function(mouseEvent) {
+        timer= __scene9_createtimer(scene, ip3);
+    }
+
     scene.addChild(ip3);
 
-
     return scene;
+}
+
+function __scene9_createtimer(scene,ip3) {
+    return scene.createTimer(scene.time,Number.MAX_VALUE,
+            null,
+            function(time,ttime,timertask) {
+
+                var r= ip3.imageProcessor.width-10;
+                r/=2;
+
+                ip3.imageProcessor.lightPosition[0].x= ip3.imageProcessor.width/2 + r*Math.cos(ttime*.001);
+                ip3.imageProcessor.lightPosition[0].y= ip3.imageProcessor.height/2 - r*Math.sin(ttime*.001);
+
+            },
+            null);
 }
 
 function __scene9_text(director,scene) {

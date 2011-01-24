@@ -1,8 +1,8 @@
 /**
  * @author  Hyperandroid  ||  http://hyperandroid.com/
  *
- * Scene 9.
- * Shows some image processing actors.
+ * Scene 11.
+ * Shows some accelerometer based demo.
  *
  */
 

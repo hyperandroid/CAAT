@@ -1,4 +1,10 @@
-
+/**
+ * @author  Hyperandroid  ||  http://hyperandroid.com/
+ *
+ * Scene 10.
+ * Shows some collision management. Thanks to Mario Gonzalez @onedayitwillmake.
+ *
+ */
 
 function __scene10(director) {
 
