@@ -22,8 +22,12 @@
 (function() {
 	CAAT.Director= function() {
 		CAAT.Director.superclass.constructor.call(this);
-        this.browserInfo= new CAAT.BrowserDetect();
-        this.scenes= [];
+
+        this.browserInfo=   new CAAT.BrowserDetect();
+        this.audioManager=  new CAAT.AudioManager().initialize(8);
+        this.scenes=        [];
+
+        return this;
 	};
 
 	extend( CAAT.Director, CAAT.ActorContainer, {
@@ -38,6 +42,7 @@
         time:           0,      // virtual actor time.
         timeline:       0,      // global director timeline.
         imagesCache:    null,   // An array of JSON elements of the form { id:string, image:Image }
+        audioManager:   null,
         clear:          true,   // clear background before drawing scenes ??
 
         transitionScene:null,
@@ -579,6 +584,23 @@
                     return this.imagesCache[i].image;
                 }
             }
+
+            return null;
+        },
+        /**
+         *
+         */
+        addAudio : function( id, url ) {
+
+            this.audioManager.addAudio(id,url);
+
+            return this;
+        },
+        audioPlay : function( id ) {
+            this.audioManager.play(id);
+        },
+        audioLoop : function( id ) {
+            this.audioManager.loop(id);
         },
         /**
          * Removes Director scenes.
@@ -638,6 +660,9 @@
         setClear : function(clear) {
             this.clear= clear;
             return this
+        },
+        getAudioManager : function() {
+            return this.audioManager;
         }
 
     });

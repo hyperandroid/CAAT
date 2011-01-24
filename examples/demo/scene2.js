@@ -76,10 +76,7 @@ function __scene2(director) {
 				}
 				
 				if ( behaviour.expired ) {
-					// remove from parent.
-					actor.parent.removeChild(actor);
-					// add last on parent
-					actor.parent.addChild(actor);
+                    actor.parent.setZOrder(Number.MAX_VALUE);
 					actor.behaviorList[0].setFrameTime(	mouseEvent.source.time,	1000 );
 				}				
 			};
@@ -97,11 +94,7 @@ function __scene2(director) {
 				if ( behaviour.expired ) {
 
                     actor.parent.setZOrder(actor, Number.MAX_VALUE);
-					// remove from parent.
-					//actor.parent.removeChild(actor);
-					// add last on parent
-					//actor.parent.addChild(actor);
-					
+
 					actor.behaviorList[0].setFrameTime(	mouseEvent.source.time,	500 );
 					actor.behaviorList[1].setFrameTime(	mouseEvent.source.time,	500 );
 				}

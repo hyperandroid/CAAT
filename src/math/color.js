@@ -118,6 +118,13 @@
     };
 
     CAAT.ColorUtils.prototype= {
+        RAMP_RGBA:              0,
+        RAMP_RGB:               1,
+        RAMP_CHANNEL_RGB:       2,
+        RAMP_CHANNEL_RGBA:      3,
+        RAMP_CHANNEL_RGB_ARRAY: 4,
+        RAMP_CHANNEL_RGBA_ARRAY:5,
+
         interpolate : function( r0, g0, b0, r1, g1, b1, nsteps, step) {
             if ( step<=0 ) {
                 return {
@@ -146,6 +153,67 @@
                 g:g,
                 b:b
             };
+        },
+        /**
+         * Creates an array of colors, ie, rgb
+         * @param fromColorsArray
+         * @param rampSize
+         */
+        makeRGBColorRamp : function( fromColorsArray, rampSize, returnType ) {
+
+            var ramp=   [];
+            var nc=     fromColorsArray.length-1;
+            var chunk=  rampSize/nc;
+
+            for( var i=0; i<nc; i++ ) {
+                var c= fromColorsArray[i];
+                var a0= (c>>24)&0xff;
+                var r0= (c&0xff0000)>>16;
+                var g0= (c&0xff00)>>8;
+                var b0= c&0xff;
+
+                var c1= fromColorsArray[i+1];
+                var a1= (c1>>24)&0xff;
+                var r1= (c1&0xff0000)>>16;
+                var g1= (c1&0xff00)>>8;
+                var b1= c1&0xff;
+
+                var da= (a1-a0)/chunk;
+                var dr= (r1-r0)/chunk;
+                var dg= (g1-g0)/chunk;
+                var db= (b1-b0)/chunk;
+
+                for( var j=0; j<chunk; j++ ) {
+                    var na= (a0+da*j)>>0;
+                    var nr= (r0+dr*j)>>0;
+                    var ng= (g0+dg*j)>>0;
+                    var nb= (b0+db*j)>>0;
+                    
+                    switch( returnType ) {
+                        case this.RAMP_RGBA:
+                            ramp.push( 'argb('+na+','+nr+','+ng+','+nb+')' );
+                            break;
+                        case this.RAMP_RGB:
+                            ramp.push( 'rgb('+nr+','+ng+','+nb+')' );
+                            break;
+                        case this.RAMP_CHANNEL_RGB:
+                            ramp.push( 0xff000000 | nr<<16 | ng<<8 | nb );
+                            break;
+                        case this.RAMP_CHANNEL_RGBA:
+                            ramp.push( na<<24 | nr<<16 | ng<<8 | nb );
+                            break;
+                        case this.RAMP_CHANNEL_RGBA_ARRAY:
+                            ramp.push([ nr, ng, nb, na ]);
+                            break;
+                        case this.RAMP_CHANNEL_RGB_ARRAY:
+                            ramp.push([ nr, ng, nb ]);
+                            break;
+                    }
+                }
+            }
+
+            return ramp;
+
         }
     }
 })();

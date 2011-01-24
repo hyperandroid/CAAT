@@ -68,6 +68,8 @@
         screenBounds:           null,   // CAAT.Rectangle
         inFrame:                false,  // boolean indicating whether this Actor was present on last frame.
 
+        dirty:                  true,
+
         /**
          * takes an element out of time line.
          * @return this
@@ -237,6 +239,7 @@
 			this.scaleTX=0;
 			this.scaleTY=0;
 			this.scaleAnchor=0;
+            this.dirty= true;
 
             return this;
 		},
@@ -251,6 +254,7 @@
 			this.start_time= startTime;
 			this.duration= duration;
 			this.expired= false;
+            this.dirty= true;
 
             return this;
 		},
@@ -287,6 +291,7 @@
          */
 		setScale : function( sx, sy )    {
 			this.setScaleAnchored( sx, sy, this.ANCHOR_CENTER );
+            this.dirty= true;
             return this;
 		},
         /**
@@ -361,6 +366,8 @@
 			this.scaleX=sx;
 			this.scaleY=sy;
 
+            this.dirty= true;
+
             return this;
 		},
         /**
@@ -387,6 +394,8 @@
 	    	this.rotationX= rx?rx:0;
 	    	this.rotationY= ry?ry:0;
 
+            this.dirty= true;
+
             return this;
 	    },
         /**
@@ -396,8 +405,8 @@
          * @return this
          */
 	    setSize : function( w, h )   {
-	    	this.width= w;
-	    	this.height= h;
+	    	this.width= w>>0;
+	    	this.height= h>>0;
 
             return this;
 	    },
@@ -418,8 +427,8 @@
 	    	//this.y= y;
             this.x= x>>0;
             this.y= y>>0;
-	    	this.width= w;
-	    	this.height= h;
+	    	this.width= w>>0;
+	    	this.height= h>>0;
 
             return this;
 	    },
@@ -978,9 +987,7 @@
          * @return this.
          */
         addChildImmediately : function(child) {
-            child.parent= this;
-            this.childrenList.push(child);
-            return this;
+            this.addChild(child);
         },
         /**
          * Adds an Actor to this ActorContainer.
@@ -992,13 +999,14 @@
          * @return this
          */
 		addChild : function(child) {
-			//child.parent= this;
-			//this.childrenList.push(child);
-            this.pendingChildrenList.push(child);
-
+            child.parent= this;
+            this.childrenList.push(child);
             return this;
 		},
-
+        addChildDelayed : function(child) {
+            this.pendingChildrenList.push(child);
+            return this;
+        },
         /**
          * Adds an Actor to this ActorContainer.
          *
@@ -1797,6 +1805,115 @@
     });
 })();
 
+(function() {
+    CAAT.StarActor= function() {
+        CAAT.StarActor.superclass.constructor.call(this);
+        return this;
+    };
+
+    extend(CAAT.StarActor, CAAT.ActorContainer, {
+        nPeaks:         0,
+        maxRadius:      0,
+        minRadius:      0,
+        initialAngle:   0,
+        outlined:       false,
+        filled:         true,
+
+        setFilled : function( filled ) {
+            this.filled= filled;
+            return this;
+        },
+        setOutlined : function( outlined ) {
+            this.outlined= outlined;
+            return this;
+        },
+        initialize : function(nPeaks, maxRadius, minRadius) {
+            this.setSize( maxRadius, maxRadius );
+
+            this.nPeaks= nPeaks;
+            this.maxRadius= maxRadius;
+            this.minRadius= minRadius;
+
+            return this;
+        },
+        paint : function(director, timer) {
+
+            var ctx=        director.ctx;
+            var centerX=    this.width/2;
+            var centerY=    this.height/2;
+            var r1=         this.maxRadius;
+            var r2=         this.minRadius;
+            var ix=         centerX + r1*Math.cos(this.initialAngle);
+            var iy=         centerY + r1*Math.sin(this.initialAngle);
+
+            ctx.moveTo(ix,iy);
+
+            for( var i=1; i<this.nPeaks*2; i++ )   {
+                var angleStar= Math.PI/this.nPeaks * i + this.initialAngle;
+                var rr= (i%2==0) ? r1 : r2;
+                var x= centerX + rr*Math.cos(angleStar);
+                var y= centerY + rr*Math.sin(angleStar);
+                ctx.lineTo(x,y);
+            }
+            ctx.closePath();
+
+            ctx.lineTo(
+                this.centerX + r1*Math.cos(this.initialAngle),
+                this.centerY + r1*Math.sin(this.initialAngle) );
+
+            if ( this.filled ) {
+                ctx.fillStyle= this.fillStyle;
+                ctx.fill();
+            }
+
+            if ( this.outlined && this.strokeStyle ) {
+                ctx.strokeStyle= this.strokeStyle;
+                ctx.stroke();
+            }
+        }
+    });
+
+})();
+
+/**
+ * An actor suitable to draw an ImageProcessor instance.
+ */
+(function() {
+    CAAT.IMActor= function() {
+        CAAT.IMActor.superclass.constructor.call(this);
+        return this;
+    };
+
+    extend( CAAT.IMActor, CAAT.ActorContainer, {
+
+        imageProcessor:         null,
+        changeTime:             100,
+        lastApplicationTime:    -1,
+
+        setImageProcessor : function(im) {
+            this.imageProcessor= im;
+            return this;
+        },
+        /**
+         * Call image processor to update image every time milliseconds.
+         * @param time an integer indicating milliseconds to elapse before updating the frame.
+         */
+        setImageProcessingTime : function( time ) {
+            this.changeTime= time;
+            return this;
+        },
+        paint : function( director, time ) {
+            if ( time-this.lastApplicationTime>this.changeTime ) {
+                this.imageProcessor.apply( director, time );
+                this.lastApplicationTime= time;
+            }
+
+            var ctx= director.ctx;
+            ctx.drawImage( this.imageProcessor.getCanvas(), 0, 0 );
+        }
+    });
+})();
+
 /**
  * This class aims to instrument Dom elements as if were Canvas elements.
  * The dom element will be backed by a CAAT Actor but transformed and presented by CSS.
@@ -1806,25 +1923,34 @@
 (function() {
     CAAT.CSSActor = function() {
         CAAT.CSSActor.superclass.constructor.call(this);
+        this.setFillStyle(null);
+        this.setStrokeStyle(null);
         return this;
     };
 
     extend( CAAT.CSSActor, CAAT.ActorContainer, {
         domElement: null,
+        dirty: true,
+        oldX:   -1,
+        oldY:   -1,
 
+        setInnerHTML : function(innerHTML) {
+            this.domElement.innerHTML= innerHTML;
+            return this;
+        },
         create : function() {
             CAAT.CSSActor.superclass.create.call(this);
             this.domElement= document.createElement('div');
             document.body.appendChild(this.domElement);
             this.domElement.style['position']='absolute';
-//            this.domElement.style['-webkit-transition']='all 0s';
-            this.domElement.innerHTML='<b>Ibon';
+            this.domElement.style['-webkit-transition']='all 0s linear';
+            this.domElement.style['border']='top:1px';
             return this;
         },
         setLocation : function( x, y ) {
             CAAT.CSSActor.superclass.setLocation.call(this,x,y);
-            this.domElement.style['left']= '0px';
-            this.domElement.style['top']= '0px';
+            this.domElement.style['left']= x+'px';
+            this.domElement.style['top']=  y+'px';
             return this;
         },
         setSize : function( w, h ) {
@@ -1842,36 +1968,6 @@
             this.domElement.style.background= 'url('+backgroundImage_Local_URL+')';
             return this;
         },
-        animate : function( director, time ) {
-            CAAT.CSSActor.superclass.animate.call(this,director,time);
-
-            /*
-            var m= this.transformationMatrix.getMatrix().matrix;
-            var strMatrix= 'matrix('+
-                    m[0][0]+','+
-                    m[0][1]+','+
-                    m[1][0]+','+
-                    m[1][1]+','+
-                    m[0][2]+','+
-                    m[1][2]+
-                    ')';
-            */
-            var strMatrix='translate3d('+this.x+'px, '+this.y+'px, 0px)';
-            if ( this.rotationAngle!=0 ) {
-                strMatrix= strMatrix+ ' rotate('+this.rotationAngle+'rad)';
-            }
-            if ( this.scaleX!=0 ) {
-                strMatrix= strMatrix+ ' scale('+this.scaleX+')';
-            }
-
-            this.domElement.style['-webkit-transform']= strMatrix;
-            this.domElement.style['-o-transform']= strMatrix;
-            this.domElement.style['-moz-transform']= strMatrix;
-
-            this.setOpacity();
-
-            return this;
-        },
         setOpacity : function() {
             this.domElement.style['filter']= 'alpha(opacity='+((this.alpha*100)>>0)+')';
             this.domElement.style['-moz-opacity']= this.alpha;
@@ -1879,12 +1975,52 @@
             this.domElement.style['-opacity']= this.alpha;
         },
         addChild : function( actor ) {
-            CAAT.CSSActor.superclass.addChild.call(this,actor);
-
-
+            if ( actor instanceof CAAT.CSSActor ) {
+                this.domElement.appendChild(actor.domElement);
+                CAAT.CSSActor.superclass.addChild.call(this,actor);
+            }
         },
         paintActor : function(director, time) {
 
+            if ( !this.isInAnimationFrame(time) ) {
+                this.inFrame= false;
+                return false;
+            }
+
+            if ( (this.oldX!=this.x) || (this.oldY!=this.y) ) {
+                this.domElement.style['top']= this.y+'px';
+                this.domElement.style['left']= this.x+'px';
+                this.oldX= this.x;
+                this.oldY= this.y;
+            }
+
+            if ( this.dirty ) {
+
+                var strMatrix='translateZ(0px)';
+                if ( this.rotationAngle!=0 ) {
+                    strMatrix= strMatrix+ ' rotate('+this.rotationAngle+'rad)';
+                }
+                if ( this.scaleX!=1 ) {
+                    strMatrix= strMatrix+ ' scale('+this.scaleX+')';
+                }
+
+                this.domElement.style['-webkit-transform']= strMatrix;
+                this.domElement.style['-o-transform']= strMatrix;
+                this.domElement.style['-moz-transform']= strMatrix;
+
+                this.dirty= false;
+            }
+
+            for( var i=0; i<this.childrenList.length; i++ ) {
+                this.childrenList[i].paintActor(director,time);
+            }
+            
+            this.inFrame= true;
+
+            return true;
+        },
+        paint : function(director,time) {
+            
         }
     });
 })();

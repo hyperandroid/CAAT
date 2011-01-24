@@ -250,28 +250,39 @@
 			}
 		},		
 		prepareGraphics : function(canvas, actor) {
-			this.stack= [];
-			
-			this.pushMatrix( CAAT.Matrix.prototype.translate( actor.x, actor.y) );
-			
-			if ( actor.rotationAngle!=0 ) {
-				this.pushMatrix( CAAT.Matrix.prototype.translate( actor.rotationX, actor.rotationY) );
-				this.pushMatrix( CAAT.Matrix.prototype.rotate( actor.rotationAngle ) );
-				this.pushMatrix( CAAT.Matrix.prototype.translate( -actor.rotationX, -actor.rotationY) );
-			}
-			
-			if ( actor.scaleX!=1 || actor.scaleY!=1 ) {
-				if ( actor.scaleX!=0 && actor.scaleY!=0 ) {
-					this.pushMatrix( CAAT.Matrix.prototype.translate( actor.scaleTX-actor.width , actor.scaleTY-actor.height ) );
-					this.pushMatrix( CAAT.Matrix.prototype.scale( actor.scaleX, actor.scaleY ) );
-					this.pushMatrix( CAAT.Matrix.prototype.translate(
-							-(actor.scaleTX - actor.width / actor.scaleX),
-							-(actor.scaleTY - actor.height / actor.scaleY) ) ) ;
-				} else {
-					this.pushMatrix( CAAT.Matrix.prototype.scale( 0,0 ) );
-				}
-			}
-			
+
+            this.stack= [];
+
+            if ( actor.dirty ) {
+                this.pushMatrix( CAAT.Matrix.prototype.translate( actor.x, actor.y) );
+
+                if ( actor.rotationAngle!=0 ) {
+                    this.pushMatrix( CAAT.Matrix.prototype.translate( actor.rotationX, actor.rotationY) );
+                    this.pushMatrix( CAAT.Matrix.prototype.rotate( actor.rotationAngle ) );
+                    this.pushMatrix( CAAT.Matrix.prototype.translate( -actor.rotationX, -actor.rotationY) );
+                }
+
+                if ( actor.scaleX!=1 || actor.scaleY!=1 ) {
+                    if ( actor.scaleX!=0 && actor.scaleY!=0 ) {
+                        this.pushMatrix( CAAT.Matrix.prototype.translate( actor.scaleTX-actor.width , actor.scaleTY-actor.height ) );
+                        this.pushMatrix( CAAT.Matrix.prototype.scale( actor.scaleX, actor.scaleY ) );
+                        this.pushMatrix( CAAT.Matrix.prototype.translate(
+                                -(actor.scaleTX - actor.width / actor.scaleX),
+                                -(actor.scaleTY - actor.height / actor.scaleY) ) ) ;
+                    } else {
+                        this.pushMatrix( CAAT.Matrix.prototype.scale( 0.01,0.01 ) );
+                    }
+                }
+            }
+
+            if ( this.oldX!=actor.x || this.oldY!=actor.y ) {
+                this.stack[0].matrix[0][2]= actor.x;
+                this.stack[0].matrix[1][2]= actor.y;
+            }
+
+            this.oldX= actor.x;
+            this.oldY= actor.y;
+
 			this.transform(canvas);
 		},
 		transformCoord : function(point) {

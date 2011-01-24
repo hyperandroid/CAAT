@@ -140,14 +140,17 @@ function __CAAT_director_initialize(director) {
 
     director.emptyScenes();
 
-	director.addScene( __scene1(director) );
-	director.addScene( __scene2(director) );
-	director.addScene( __scene3(director) );
-	director.addScene( __scene4(director) );
-	director.addScene( __scene5(director) );
-	director.addScene( __scene6(director) );
-    director.addScene( __scene7(director) );
-    director.addScene( __scene8(director) );
+	director.addScene(  __scene1(director) );
+	director.addScene(  __scene2(director) );
+	director.addScene(  __scene3(director) );
+	director.addScene(  __scene4(director) );
+	director.addScene(  __scene5(director) );
+	director.addScene(  __scene6(director) );
+    director.addScene(  __scene7(director) );
+    director.addScene(  __scene8(director) );
+    director.addScene(  __scene9(director) );
+    __scene10(director);
+    director.addScene(  __scene11(director) );
 
 	director.easeIn(
             0,
@@ -275,7 +278,7 @@ function __CAAT__loadingScene(director) {
 
         burbuja.fillStyle="rgba("+r+","+g+","+b+","+a+")";
 
-        root.addChildImmediately(burbuja);
+        root.addChild(burbuja);
 
         var cb= new CAAT.ContainerBehavior();
 
@@ -333,9 +336,9 @@ function __CAAT__loadingScene(director) {
         this.loading.addBehavior(sb);
 
         // after changing the from 'loading' to 'start', set mouseclick function to initialize demo.
-        this.loading.mouseClick= function(event) {
+//        this.loading.mouseClick= function(event) {
             __CAAT_director_initialize(director);
-        }
+//        }
     };
 
 	return scene;
@@ -367,7 +370,8 @@ function __CAAT_init() {
             {id:'buble2',   url:'res/img/burbu2.png'},
             {id:'buble3',   url:'res/img/burbu3.png'},
             {id:'buble4',   url:'res/img/burbu4.png'},
-            {id:'plants',   url:'res/img/plants.jpg'}
+            {id:'plants',   url:'res/img/plants.jpg'},
+            {id:'bump',     url:'res/img/3.jpg'}
         ],
 
         function( counter, images ) {

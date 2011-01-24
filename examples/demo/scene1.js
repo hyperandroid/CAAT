@@ -28,7 +28,7 @@ function __scene1_generateInterpolators(director, scene, pathBehavior) {
                 setLayoutOp( CAAT.Dock.prototype.OP_LAYOUT_RIGHT );
         root.scene= scene;
 
-        scene.addChildImmediately(root);
+        scene.addChild(root);
 
         for( i=0; i<cols; i++ ) {
 
@@ -72,7 +72,7 @@ function __scene1_generateInterpolators(director, scene, pathBehavior) {
                 pathBehavior.setInterpolator( mouseEvent.source.getInterpolator() );
             }
 
-            root.addChildImmediately( actor );
+            root.addChild( actor );
         }
 
         root.layout();
@@ -121,12 +121,11 @@ function __scene1(director) {
     fish.addBehavior( pb );
 
 
-    scene.addChildImmediately(pa);
+    scene.addChild(pa);
 	scene1_text(director,scene);
-    scene.addChildImmediately(fish);
+    scene.addChild(fish);
 
     __scene1_generateInterpolators(director, scene, pb);
-    
 
 	return scene; 
 }

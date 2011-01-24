@@ -85,8 +85,16 @@ CAAT.dragging=              false;
 CAAT.targetDirector=        null;
 
 /**
+ * Accelerometer related data.
+ */
+CAAT.prevOnDeviceMotion=    null;   // previous accelerometer callback function.
+CAAT.onDeviceMotion=        null;   // current accelerometer callback set for CAAT.
+CAAT.accelerationIncludingGravity= { x:0, y:0, z:0 };   // acceleration data.
+CAAT.rotationRate= { alpha: 0, beta:0, gamma: 0 };      // angles data.
+
+/**
  * Do not consider mouse drag gesture at least until you have dragged
- *
+ * 5 pixels in any direction.
  */
 CAAT.DRAG_THRESHOLD_X=      5;
 CAAT.DRAG_THRESHOLD_Y=      5;
@@ -151,6 +159,7 @@ CAAT.GlobalDisableEvents= function __GlobalDisableEvents()
     window.removeEventListener('mouseover', CAAT.mouseOverFunc, false);
     window.removeEventListener('mouseout',  CAAT.mouseOutFunc, false);
     window.removeEventListener('dblclick',  CAAT.dblClickFunc, false);
+    window.ondevicemotion= CAAT.prevOnDeviceMotion;
 
     CAAT.GlobalEventsEnabled= false;
 };
@@ -166,6 +175,29 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
     CAAT.mousePoint=      new CAAT.Point();
     CAAT.prevMousePoint=     new CAAT.Point();
     CAAT.screenMousePoint=   new CAAT.Point();
+
+    try {
+        if (window.DeviceMotionEvent != undefined) {
+            CAAT.prevOnDeviceMotion= window.ondevicemotion;
+            window.ondevicemotion = CAAT.onDeviceMotion= function(e) {
+                CAAT.accelerationIncludingGravity= {
+                    x: e.accelerationIncludingGravity.x,
+                    y: e.accelerationIncludingGravity.y,
+                    z: e.accelerationIncludingGravity.z
+                };
+
+                if ( e.rotationRate ) {
+                    CAAT.rotationRate= {
+                        alpha : e.rotationRate.alpha,
+                        beta  : e.rotationRate.beta,
+                        gamma : e.rotationRate.gamma
+                    };
+                }
+            }
+        }
+    } catch (e) {
+        // eat it.
+    }
 
     window.addEventListener('keydown',
         CAAT.keyDownFunc= function(evt,c) {
@@ -316,7 +348,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
                         }
                     }
 
-                    CAAT.dragging = true;
+                    CAAT.dragging= true;
                     if (null != CAAT.lastSelectedActor.parent) {
                         CAAT.lastSelectedActor.parent.inverseTransformCoord(CAAT.mousePoint);
                     }
@@ -380,4 +412,48 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
                 }
             },
             false);
+
+    function touchHandler(event) {
+        var touches = event.changedTouches,
+            first = touches[0],
+            type = "";
+
+        switch (event.type) {
+            case "touchstart": type = "mousedown"; break;
+            case "touchmove":  type = "mousemove"; break;
+            case "touchend":   type = "mouseup"; break;
+            default: return;
+        }
+
+        //initMouseEvent(type, canBubble, cancelable, view, clickCount,
+        //           screenX, screenY, clientX, clientY, ctrlKey,
+        //           altKey, shiftKey, metaKey, button, relatedTarget);
+
+        var simulatedEvent = document.createEvent("MouseEvent");
+        simulatedEvent.initMouseEvent(
+                type,
+                true,
+                true,
+                window,
+                1,
+                first.screenX,
+                first.screenY,
+                first.clientX,
+                first.clientY,
+                false,
+                false,
+                false,
+                false,
+                0/*left*/,
+                null);
+
+        window.dispatchEvent(simulatedEvent);
+        //first.target.dispatchEvent(simulatedEvent);
+        event.preventDefault();
+    }
+
+    window.addEventListener("touchstart", touchHandler, true);
+    window.addEventListener("touchmove", touchHandler, true);
+    window.addEventListener("touchend", touchHandler, true);
+    window.addEventListener("touchcancel", touchHandler, true);
 };
