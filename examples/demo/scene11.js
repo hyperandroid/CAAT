@@ -25,6 +25,44 @@ function __scene11(director) {
             (director.canvas.height-text.height)/2);
 	scene.addChild(text);
 
+    var tx= new CAAT.TextActor().
+            setFont("15px sans-serif").
+            setText("Acceleration X:").
+            create().
+            setLocation(10,20);
+    var ty= new CAAT.TextActor().
+            setFont("15px sans-serif").
+            setText("Acceleration Y:").
+            create().
+            setLocation(10,40);
+    var tz= new CAAT.TextActor().
+            setFont("15px sans-serif").
+            setText("Acceleration Z:").
+            create().
+            setLocation(10,60);
+    var alpha= new CAAT.TextActor().
+            setFont("15px sans-serif").
+            setText("Alpha: ").
+            create().
+            setLocation(10,80);
+    var beta= new CAAT.TextActor().
+            setFont("15px sans-serif").
+            setText("Beta: ").
+            create().
+            setLocation(10,100);
+    var gamma= new CAAT.TextActor().
+            setFont("15px sans-serif").
+            setText("Gamma: ").
+            create().
+            setLocation(10,120);
+    scene.addChild(tx);
+    scene.addChild(ty);
+    scene.addChild(tz);
+    scene.addChild(alpha);
+    scene.addChild(beta);
+    scene.addChild(gamma);
+
+
     scene.endAnimate= function(director, time) {
         var rx= window.innerWidth/window.innerHeight > 1 ? CAAT.accelerationIncludingGravity.y : CAAT.accelerationIncludingGravity.x;
 
@@ -32,7 +70,16 @@ function __scene11(director) {
         rx/=10; // 9.8 m/s^2
 
         text.setRotation( -rx*Math.PI/3.3 );
+
+        tx.setText('Acceleration X: '+CAAT.accelerationIncludingGravity.x);
+        ty.setText('Acceleration Y: '+CAAT.accelerationIncludingGravity.y);
+        tz.setText('Acceleration Z: '+CAAT.accelerationIncludingGravity.z);
+
+        alpha.setText('Alpha: '+CAAT.rotationRate.alpha);
+        beta.setText( 'Beta:  '+CAAT.rotationRate.beta);
+        gamma.setText('Gamma: '+CAAT.rotationRate.gamma);
     };
+
 
     return scene;
 }
