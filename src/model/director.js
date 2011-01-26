@@ -661,6 +661,9 @@
             this.clear= clear;
             return this
         },
+        /**
+         * Returns this Director's AudioManager instance.
+         */
         getAudioManager : function() {
             return this.audioManager;
         }

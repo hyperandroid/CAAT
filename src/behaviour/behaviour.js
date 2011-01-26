@@ -10,9 +10,8 @@
  *  + RotateBehavior:  takes control of rotation affine transform.
  *  + ScaleBehavior:   takes control of scaling on x/y axis affine transform.
  *  + PathBehavior:    takes control of translating an Actor/ActorContainer across a path [ie. pathSegment collection].
+ *  + GenericBehavior: applies a behavior to any given target object's property, or notifies a callback.
  *
- * 20101011 Hyperandroid
- *  + ScaleBehavior: if scaleX==0 || scaleY==0, FF3/4 will stop rendering.
  *
  **/
 
@@ -477,6 +476,7 @@
         end:        0,
         target:     null,
         property:   null,
+        callback:   null,
 /*
         setCallback : function( callback ) {
             this.callback= callback;
@@ -484,15 +484,19 @@
         },
 */
         setForTime : function(time, actor) {
-//            return this.callback.call( actor, time );
             var value= this.start+ time*(this.end-this.start);
-            this.target[this.property]= value;
+            if ( this.callback ) {
+                this.callback( value, this.target );
+            } else {
+                this.target[this.property]= value;
+            }
         },
-        setValues : function( start, end, target, property ) {
+        setValues : function( start, end, target, property, callback ) {
             this.start= start;
             this.end= end;
             this.target= target;
             this.property= property;
+            this.callback= callback;
             return this;
         }
     });

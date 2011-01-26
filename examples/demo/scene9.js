@@ -42,6 +42,15 @@ function __scene9(director) {
             );
     scene.addChild(ip2);
 
+    var ip4= new CAAT.IMActor().
+            create().
+            setBounds( 400, 150, 250, 250 ).
+            setImageProcessor(
+                new CAAT.IMRotoZoom().
+                        initialize( 250,250, director.getImage('bump') )
+            );
+    scene.addChild(ip4);
+
     var ip3= new CAAT.IMActor().
             create().
             setBounds( 250,150, 128, 128 ).

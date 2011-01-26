@@ -1,9 +1,7 @@
 /**
  * @author  Hyperandroid  ||  http://hyperandroid.com/
  *
- * Rectangle Class.
- * Needed to compute Curve bounding box.
- * Needed to compute Actor affected area on change.
+ * Helper classes for color manipulation.
  *
  **/
 (function() {

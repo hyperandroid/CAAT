@@ -64,12 +64,11 @@ function __scene11(director) {
 
 
     scene.endAnimate= function(director, time) {
-        var rx= window.innerWidth/window.innerHeight > 1 ? CAAT.accelerationIncludingGravity.y : CAAT.accelerationIncludingGravity.x;
+        var rx= window.innerWidth>window.innerHeight ? CAAT.accelerationIncludingGravity.y : CAAT.accelerationIncludingGravity.x;
 
-        var signo= rx<0 ? 1 : -1;
         rx/=10; // 9.8 m/s^2
 
-        text.setRotation( -rx*Math.PI/3.3 );
+        text.setRotation( rx*Math.PI/3.3 );
 
         tx.setText('Acceleration X: '+CAAT.accelerationIncludingGravity.x);
         ty.setText('Acceleration Y: '+CAAT.accelerationIncludingGravity.y);
@@ -79,7 +78,6 @@ function __scene11(director) {
         beta.setText( 'Beta:  '+CAAT.rotationRate.beta);
         gamma.setText('Gamma: '+CAAT.rotationRate.gamma);
     };
-
 
     return scene;
 }

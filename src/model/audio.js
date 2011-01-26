@@ -11,6 +11,9 @@
  * Available sounds to be played must be supplied to every CAAT.Director instance by calling <code>addSound</code>
  * method.
  *
+ * Be aware of Audio.canPlay, is able to return 'yes', 'no', 'maybe', ..., so anything different from
+ * '' and 'no' will do.
+ *
  */
 
 (function() {
@@ -21,10 +24,10 @@
 
     CAAT.AudioManager.prototype= {
 
-        audioCache:         null,
-        channels:           null,
-        workingChannels:    null,
-        audioTypes: {
+        audioCache:         null,   // audio elements.
+        channels:           null,   // available playing channels.
+        workingChannels:    null,   // currently playing channels.
+        audioTypes: {               // supported audio formats. Don't remember where i took them from :S
 	        'mp3': 'audio/mpeg;',
             'ogg': 'audio/ogg; codecs="vorbis"',
             'wav': 'audio/wav; codecs="1"',
@@ -38,29 +41,33 @@
             this.workingChannels= [];
 
             for( var i=0; i<numChannels; i++ ) {
-                var channel= new Audio();
-                channel.finished= -1;
-                this.channels.push( channel );
-                var me= this;
-                channel.addEventListener(
-                        'ended',
-                        // on sound end, set channel to available channels list.
-                        function(audioEvent) {
-                            var target= audioEvent.target;
-                            var i;
+                var channel= document.createElement('audio');
 
-                            // remove from workingChannels
-                            for( i=0; i<me.workingChannels.length; i++ ) {
-                                if (me.workingChannels[i]==target ) {
-                                    me.workingChannels.splice(i,1);
-                                    break;
+                if ( null!=channel ) {
+                    channel.finished= -1;
+                    this.channels.push( channel );
+                    var me= this;
+                    channel.addEventListener(
+                            'ended',
+                            // on sound end, set channel to available channels list.
+                            function(audioEvent) {
+                                var target= audioEvent.target;
+                                var i;
+
+                                // remove from workingChannels
+                                for( i=0; i<me.workingChannels.length; i++ ) {
+                                    if (me.workingChannels[i]==target ) {
+                                        me.workingChannels.splice(i,1);
+                                        break;
+                                    }
                                 }
-                            }
 
-                            // set back to channels.
-                            me.channels.push(target);
-                        },
-                        false);
+                                // set back to channels.
+                                me.channels.push(target);
+                            },
+                            false
+                    );
+                }
             }
 
             return this;
@@ -73,20 +80,42 @@
          * @param url an url pointing to an audio resource.
          */
         addAudio : function( id, url ) {
-            var audio= new Audio();
-            if(!audio.canPlayType) {
-                return;
+            var audio= null;
+
+            if ( typeof url == "string" ) {
+
+                audio= document.createElement('audio');
+                if ( null!=audio ) {
+
+                    if(!audio.canPlayType) {
+                        return;
+                    }
+
+                    var extension= url.substr(url.lastIndexOf('.')+1);
+                    var canplay= audio.canPlayType(this.audioTypes[extension]);
+
+                    if(canplay!=="" && canplay!=="no") {
+                        audio.src= url;
+                        audio.preload = "auto";
+                        audio.load();
+                        this.audioCache.push( { id:id, audio:audio } );
+                    }
+                }
+            } else {
+                try {
+                    if ( url instanceof HTMLAudioElement ) {
+                        var audio= url;
+                        var extension= audio.src.substr(audio.src.lastIndexOf('.')+1);
+                        if ( audio.canPlayType(this.audioTypes[extension]) ) {
+                            this.audioCache.push( { id:id, audio:audio } );
+                        }
+                    }
+                }
+                catch(e) {
+                    
+                }
             }
 
-            var extension= url.substr(url.lastIndexOf('.')+1);
-            var canplay= audio.canPlayType(this.audioTypes[extension]);
-
-            if(canplay!=="" && canplay!=="no") {
-                audio.src= url;
-                audio.preload = "auto";
-                audio.load();
-                this.audioCache.push( { id:id, audio:audio } );
-            }
 
             return this;
         },
@@ -113,6 +142,13 @@
 
             return null;
         },
+        /**
+         * Plays an audio file from the cache if any sound channel is available.
+         * The playing sound will occupy a sound channel and when ends playing will leave
+         * the channel free for any other sound to be played in.
+         * @param id an object identifying a sound in the sound cache.
+         * @return this.
+         */
         play : function( id ) {
             var audio= this.getAudio(id);
             // existe el audio, y ademas hay un canal de audio disponible.
@@ -137,13 +173,15 @@
             var audio_in_cache= this.getAudio(id);
             // existe el audio, y ademas hay un canal de audio disponible.
             if ( null!=audio_in_cache ) {
-                var audio= new Audio();
-                audio.src= audio_in_cache.src;
-                audio.preload = "auto";
-                audio.loop= true;
-                audio.load();
-                audio.play();
-                return audio;
+                var audio= document.createElement('audio');
+                if ( null!=audio ) {
+                    audio.src= audio_in_cache.src;
+                    audio.preload = "auto";
+                    audio.loop= true;
+                    audio.load();
+                    audio.play();
+                    return audio;
+                }
             }
 
             return null;

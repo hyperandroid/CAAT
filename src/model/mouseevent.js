@@ -108,15 +108,15 @@ CAAT.getCanvasCoord= function __getCanvasCoord(point, e) {
 	var posx = 0;
 	var posy = 0;
 	if (!e) e = window.event;
-	if (e.pageX || e.pageY) 	{
+
+    if (e.pageX || e.pageY) 	{
 		posx = e.pageX;
 		posy = e.pageY;
 	}
+
 	else if (e.clientX || e.clientY) 	{
-		posx = e.clientX + document.body.scrollLeft
-			+ document.documentElement.scrollLeft;
-		posy = e.clientY + document.body.scrollTop
-			+ document.documentElement.scrollTop;
+		posx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+		posy = e.clientY + document.body.scrollTop  + document.documentElement.scrollTop;
 	}
 
     var pposx;
@@ -147,8 +147,7 @@ CAAT.log= function(msg) {
     }
 };
 
-CAAT.GlobalDisableEvents= function __GlobalDisableEvents()
-{
+CAAT.GlobalDisableEvents= function __GlobalDisableEvents()  {
     CAAT.log("(CAAT.MouseEvent) Disabling CAAT event capture");
 
     window.removeEventListener('keydown',   CAAT.keyDownFunc, false);
@@ -176,6 +175,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
     CAAT.prevMousePoint=     new CAAT.Point();
     CAAT.screenMousePoint=   new CAAT.Point();
 
+    //----------- Test for Accelerometer enabled functions.
     try {
         if (window.DeviceMotionEvent != undefined) {
             CAAT.prevOnDeviceMotion= window.ondevicemotion;
