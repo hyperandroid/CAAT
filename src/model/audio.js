@@ -26,11 +26,13 @@
      *
      */
     CAAT.AudioManager= function() {
+        this.browserInfo= new CAAT.BrowserDetect();
         return this;
     };
 
     CAAT.AudioManager.prototype= {
 
+        browserInfo:        null,
         musicEnabled:       true,
         fxEnabled:          true,
         audioCache:         null,   // audio elements.
@@ -199,6 +201,9 @@
          * This method creates a new AudioChannel to loop the sound with.
          * It returns an Audio object so that the developer can cancel the sound loop at will.
          * The user must call <code>pause()</code> method to stop playing a loop.
+         * <p>
+         * Firefox does not honor the loop property, so looping is performed by attending end playing
+         * event on audio elements.
          *
          * @return {HTMLElement|null} an Audio instance if a valid sound id is supplied. Null otherwise
          */
@@ -215,7 +220,20 @@
                 if ( null!=audio ) {
                     audio.src= audio_in_cache.src;
                     audio.preload = "auto";
-                    audio.loop= true;
+
+                    if ( this.browserInfo.browser=='Firefox') {
+                        audio.addEventListener(
+                            'ended',
+                            // on sound end, set channel to available channels list.
+                            function(audioEvent) {
+                                var target= audioEvent.target;
+                                target.currentTime=0;
+                            },
+                            false
+                        );
+                    } else {
+                        audio.loop= true;
+                    }
                     audio.load();
                     audio.play();
                     this.loopingChannels.push(audio);
