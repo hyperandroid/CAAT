@@ -498,7 +498,7 @@
                         setLayoutOp( CAAT.Dock.prototype.OP_LAYOUT_BOTTOM );
                 root.scene= scene;
 
-                scene.addChildImmediately(root);
+                scene.addChild(root);
 
                 for( i=0; i<cols; i++ ) {
 
@@ -514,19 +514,14 @@
 
                     actor.mouseMove= function(mouseEvent) {
                         document.getElementById('interpolator_name').innerHTML= '<code>'+mouseEvent.source.name+'</code>';
-                        mouseEvent.source.parent.actorPointed( mouseEvent.point.x, mouseEvent.point.y, mouseEvent.source );
                     }
                     actor.mouseExit= function(mouseEvent) {
                         if ( mouseEvent.source!=selectedInterpolatorActor ) {
                             mouseEvent.source.setFillStyle(null);
                         }
 
-                        mouseEvent.source.parent.actorMouseExit(mouseEvent);
                     }
                     actor.mouseEnter= function(mouseEvent) {
-
-                        mouseEvent.source.parent.actorMouseEnter(mouseEvent);
-
                         if ( mouseEvent.source!=selectedInterpolatorActor ) {
                             mouseEvent.source.setFillStyle('#f0f0f0');
                         }
@@ -540,7 +535,7 @@
                         selectedInterpolatorActor= mouseEvent.source;
                     }
 
-                    root.addChildImmediately( actor );
+                    root.addChild( actor );
                 }
 
                 root.layout();
