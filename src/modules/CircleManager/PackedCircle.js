@@ -16,16 +16,6 @@
 	http://onedayitwillmake.com/CirclePackJS/
 */
 
-/**
- * @namespace
- */
-CAAT.modules = CAAT.modules || {};
-
-/**
- * @namespace
- */
-CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};
-
 (function() {
 
     /**

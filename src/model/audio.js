@@ -31,9 +31,12 @@
 
     CAAT.AudioManager.prototype= {
 
+        musicEnabled:       true,
+        fxEnabled:          true,
         audioCache:         null,   // audio elements.
         channels:           null,   // available playing channels.
         workingChannels:    null,   // currently playing channels.
+        loopingChannels:    [],
         audioTypes: {               // supported audio formats. Don't remember where i took them from :S
 	        'mp3': 'audio/mpeg;',
             'ogg': 'audio/ogg; codecs="vorbis"',
@@ -176,6 +179,10 @@
          * @return this.
          */
         play : function( id ) {
+            if ( !this.fxEnabled ) {
+                return this;
+            }
+
             var audio= this.getAudio(id);
             // existe el audio, y ademas hay un canal de audio disponible.
             if ( null!=audio && this.channels.length>0 ) {
@@ -196,6 +203,11 @@
          * @return {HTMLElement|null} an Audio instance if a valid sound id is supplied. Null otherwise
          */
         loop : function( id ) {
+
+            if (!this.musicEnabled) {
+                return this;
+            }
+
             var audio_in_cache= this.getAudio(id);
             // existe el audio, y ademas hay un canal de audio disponible.
             if ( null!=audio_in_cache ) {
@@ -206,6 +218,7 @@
                     audio.loop= true;
                     audio.load();
                     audio.play();
+                    this.loopingChannels.push(audio);
                     return audio;
                 }
             }
@@ -225,6 +238,27 @@
             }
 
             return this;
+        },
+        setSoundEffectsEnabled : function( enable ) {
+            this.fxEnabled= enable;
+            return this;
+        },
+        isSoundEffectsEnabled : function() {
+            return this.fxEnabled;
+        },
+        setMusicEnabled : function( enable ) {
+            this.musicEnabled= enable;
+            for( var i=0; i<this.loopingChannels.length; i++ ) {
+                if ( enable ) {
+                    this.loopingChannels[i].play();
+                } else {
+                    this.loopingChannels[i].pause();
+                }
+            }
+            return this;
+        },
+        isMusicEnabled : function() {
+            return this.musicEnabled;
         }
     };
 })();
