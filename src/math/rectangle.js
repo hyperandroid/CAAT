@@ -9,6 +9,11 @@
 
 
 (function() {
+    /**
+     * A Rectangle implementation, which defines an area positioned somewhere.
+     *
+     * @constructor
+     */
 	CAAT.Rectangle= function() {
 		return this;
 	};
@@ -20,13 +25,53 @@
 		y1:		0,
 		width:	0,
 		height:	0,
-		
+
+        /**
+         * Set this rectangle's location.
+         * @param x {number}
+         * @param y {number}
+         */
+        setLocation: function( x,y ) {
+            this.x= x;
+            this.y= y;
+            this.x1= this.x+this.width;
+            this.y1= this.y+this.height;
+            return this;
+        },
+        /**
+         * Set this rectangle's dimension.
+         * @param w {number}
+         * @param h {number}
+         */
+        setDimension : function( w,h ) {
+            this.width= w;
+            this.height= h;
+            this.x1= this.x+this.width;
+            this.y1= this.y+this.height;
+            return this;
+        },
+        /**
+         * Return whether the coordinate is inside this rectangle.
+         * @param px {number}
+         * @param py {number}
+         *
+         * @return {boolean}
+         */
 		contains : function(px,py) {
 			return px>=0 && px<this.width && py>=0 && py<this.height; 
 		},
+        /**
+         * Return whether this rectangle is empty, that is, has zero dimension.
+         * @return {boolean}
+         */
 		isEmpty : function() {
-			return this.width==0 && this.height==0;
+			return this.width===0 && this.height===0;
 		},
+        /**
+         * Set this rectangle as the union of this rectangle and the given point.
+         * @param px {number}
+         * @param py {number}
+         */
 		union : function(px,py) {
 			
 			if ( this.isEmpty() && this.x==0 && this.y==0 ) {

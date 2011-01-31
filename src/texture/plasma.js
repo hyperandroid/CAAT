@@ -14,6 +14,16 @@
  */
 
 (function() {
+    /**
+     * ImageProcessor is a class to encapsulate image processing operations. These image processing
+     * manipulates individual image pixels and from an array of pixels builds an image which can
+     * be used as a pattern or image.
+     * <p>
+     * This class pre-creates a canvas of the given dimensions and extracts an imageData object to
+     * hold the pixel manipulation.
+     *
+     * @constructor
+     */
     CAAT.ImageProcessor= function() {
         return this;
     };
@@ -29,7 +39,11 @@
         /**
          * Grabs an image pixels.
          *
-         * @param image
+         * @param image {HTMLImageElement}
+         * @return {ImageData} returns an ImageData object with the image representation or null in
+         * case the pixels can not be grabbed.
+         *
+         * @static
          */
         grabPixels : function(image) {
             var canvas= document.createElement('canvas');
@@ -52,8 +66,12 @@
         /**
          * Helper method to create an array.
          *
-         * @param size number of elements in the array.
-         * @param initValue initial array values.
+         * @param size {number} integer number of elements in the array.
+         * @param initValue {number} initial array values.
+         *
+         * @return {[]} an array of 'initialValue' elements.
+         *
+         * @static
          */
         makeArray : function(size, initValue) {
             var a= [];
@@ -67,9 +85,14 @@
         /**
          * Helper method to create a bidimensional array.
          *
-         * @param size number of array rows.
-         * @param size2 number of array columns.
+         * @param size {number} number of array rows.
+         * @param size2 {number} number of array columns.
          * @param initvalue array initial values.
+         *
+         * @return {[]} a bidimensional array of 'initvalue' elements.
+         *
+         * @static
+         *
          */
         makeArray2D : function (size, size2, initvalue)  {
             var a= [];
@@ -81,9 +104,11 @@
             return a;
         },
         /**
-         * Initializes and creates an offscreen Canvas object.
-         * @param width canvas width.
-         * @param height canvas height.
+         * Initializes and creates an offscreen Canvas object. It also creates an ImageData object and
+         * initializes the internal bufferImage attribute to imageData's data.
+         * @param width {number} canvas width.
+         * @param height {number} canvas height.
+         * @return this
          */
         initialize : function(width,height) {
 
@@ -101,7 +126,18 @@
 
             return this;
         },
+        /**
+         * Clear this ImageData object to the given color components.
+         * @param r {number} red color component 0..255.
+         * @param g {number} green color component 0..255.
+         * @param b {number} blue color component 0..255.
+         * @param a {number} alpha color component 0..255.
+         * @return this
+         */
         clear : function( r,g,b,a ) {
+            if ( null==this.imageData ) {
+                return this;
+            }
             var data= this.imageData.data;
             for( var i=0; i<this.width*this.height; i++ ) {
                 data[i*4+0]= r;
@@ -109,21 +145,32 @@
                 data[i*4+2]= b;
                 data[i*4+3]= a;
             }
+
+            return this;
         },
+        /**
+         * Get this ImageData.
+         * @return {ImageData}
+         */
         getImageData : function() {
             return this.ctx.getImageData(0,0,this.width,this.height);
         },
         /**
-         * Sets canvas pixels to be the applied effect.
-         * @param director
-         * @param time
+         * Sets canvas pixels to be the applied effect. After process pixels, this method must be called
+         * to show the result of such processing.
+         * @param director {CAAT.Director}
+         * @param time {number}
+         * @return this
          */
         apply : function(director, time) {
-            this.ctx.putImageData(this.imageData, 0, 0);
+            if ( null!=this.imageData ) {
+                this.ctx.putImageData(this.imageData, 0, 0);
+            }
             return this;
         },
         /**
          * Returns the offscreen canvas.
+         * @return {HTMLCanvasElement}
          */
         getCanvas : function() {
             return this.canvas;
@@ -131,10 +178,22 @@
         /**
          * Creates a pattern that will make this ImageProcessor object suitable as a fillStyle value.
          * This effect can be drawn too as an image by calling: canvas_context.drawImage methods.
-         * @param type the pattern type. if no value is supplied 'repeat' will be used.
+         * @param type {string} the pattern type. if no value is supplied 'repeat' will be used.
+         * @return CanvasPattern.
          */
         createPattern : function( type ) {
             return this.ctx.createPattern(this.canvas,type ? type : 'repeat');
+        },
+        /**
+         * Paint this ImageProcessor object result.
+         * @param director {CAAT.Director}.
+         * @param time {number} scene time.
+         */
+        paint : function( director, time ) {
+            if ( null!=this.canvas ) {
+                var ctx= director.ctx;
+                ctx.drawImage( this.getCanvas(), 0, 0 );
+            }
         }
     };
 
@@ -142,12 +201,19 @@
 
 (function() {
 
+    /**
+     * Creates an additive plasma wave image.
+     *
+     * @constructor
+     * @extends CAAT.ImageProcessor
+     *
+     */
     CAAT.IMPlasma= function() {
         CAAT.IMPlasma.superclass.constructor.call(this);
         return this;
     };
 
-    extend( CAAT.IMPlasma, CAAT.ImageProcessor, {
+    CAAT.IMPlasma.prototype= {
         wavetable: null,
         m_colorMap: null,
         spd1: 1,
@@ -174,6 +240,18 @@
 
         color: [0xffffffff, 0xffff00ff, 0xffffff00, 0xff00ff00, 0xffff0000, 0xff0000ff, 0xff000000],
 
+        /**
+         * Initialize the plasma image processor.
+         * <p>
+         * This image processor creates a color ramp of 256 elements from the colors of the parameter 'colors'.
+         * Be aware of color definition since the alpha values count to create the ramp.
+         *
+         * @param width {number}
+         * @param height {number}
+         * @param colors {Array.<number>} an array of color values.
+         *
+         * @return this
+         */
         initialize : function(width,height,colors) {
             CAAT.IMPlasma.superclass.initialize.call(this,width,height);
 
@@ -187,15 +265,19 @@
             this.pos3=Math.floor(255*Math.random());
             this.pos4=Math.floor(255*Math.random());
 
-            this.m_colorMap= CAAT.ColorUtils.prototype.makeRGBColorRamp(
+            this.m_colorMap= CAAT.Color.prototype.makeRGBColorRamp(
                     colors!=null ? colors : this.color,
                     256,
-                    CAAT.ColorUtils.prototype.RAMP_CHANNEL_RGBA_ARRAY );
+                    CAAT.Color.prototype.RampEnumeration.RAMP_CHANNEL_RGBA_ARRAY );
 
             this.setB();
 
             return this;
         },
+        /**
+         * Initialize internal plasma structures. Calling repeatedly this method will make the plasma
+         * look different.
+         */
         setB : function() {
 
             this.b1= Math.random()>.5;
@@ -213,6 +295,14 @@
             this.i3= Math.floor((Math.random()*2.4+1)*(Math.random()<.5?1:-1));
             this.i4= Math.floor((Math.random()*2.4+1)*(Math.random()<.5?1:-1));
         },
+        /**
+         * Apply image processing to create the plasma and call superclass's apply to make the result
+         * visible.
+         * @param director {CAAT.Director}
+         * @param time {number}
+         *
+         * @return this
+         */
         apply : function(director,time) {
 
             var v = 0;
@@ -270,17 +360,28 @@
 
             return CAAT.IMPlasma.superclass.apply.call(this,director,time);
         }
-    });
+    };
+
+    extend( CAAT.IMPlasma, CAAT.ImageProcessor, null);
 
 })();
 
 (function() {
+
+    /**
+     * This class creates a bumpy effect from a given image. The effect can be applied by different lights
+     * each of which can bump the image with a different color. The lights will have an additive color
+     * effect on affected pixels.
+     *
+     * @constructor
+     * @extends CAAT.ImageProcessor
+     */
     CAAT.IMBump=function() {
         CAAT.IMBump.superclass.constructor.call(this);
         return this;
     };
 
-    extend( CAAT.IMBump, CAAT.ImageProcessor, {
+    CAAT.IMBump.prototype= {
 
         // bump
         m_avgX:         null,
@@ -294,7 +395,14 @@
         bcolor:         false,
         lightPosition:  [],
 
-
+        /**
+         * Initializes internal bump effect data.
+         *
+         * @param image {HTMLImageElement}
+         * @param radius {number} lights radius.
+         *
+         * @private
+         */
         prepareBump : function(image, radius) {
             var i,j;
 
@@ -339,6 +447,11 @@
 
             bump=null;
         },
+        /**
+         * Soften source images extracted data on prepareBump method.
+         * @param bump bidimensional array of black and white source image version.
+         * @return bidimensional array with softened version of source image's b&w representation.
+         */
         soften : function( bump ) {
             var temp;
             var sbump=this.makeArray2D( this.height,this.width, 0);
@@ -361,6 +474,10 @@
 
             return sbump;
         },
+        /**
+         * Create a phong image to apply bump effect.
+         * @private
+         */
         calculatePhong : function( ) {
             this.phong= this.makeArray2D(this.m_radius,this.m_radius,0);
 
@@ -377,6 +494,10 @@
                 }
             }
         },
+        /**
+         * Generates a bump image.
+         * @param dstPixels {ImageData.data} destinarion pixel array to store the calculated image.
+         */
         drawColored : function(dstPixels)	{
             var i,j,k;
             for( i=0; i<this.height; i++ ) {
@@ -453,6 +574,7 @@
          *     [ 255,0,0 ],
          *     [ 0,255,0 ]
          *  ]
+         * @return this
          */
         setLightColors : function( colors_rgb_array ) {
             this.m_lightcolor= colors_rgb_array;
@@ -464,6 +586,11 @@
             }
             return this;
         },
+        /**
+         * Initialize the bump image processor.
+         * @param image {HTMLImageElement} source image to bump.
+         * @param radius {number} light radius.
+         */
         initialize : function(image,radius) {
             CAAT.IMBump.superclass.initialize.call(this,image.width,image.height);
 
@@ -478,24 +605,45 @@
 
             return this;
         },
+        /**
+         * Set a light position.
+         * @param lightIndex {number} light index to position.
+         * @param x {number} light x coordinate.
+         * @param y {number} light y coordinate.
+         * @return this
+         */
         setLightPosition : function( lightIndex, x, y ) {
             this.lightPosition[lightIndex].set(x,y);
             return this;
         },
+        /**
+         * Applies the bump effect and makes it visible on the canvas surface.
+         * @param director {CAAT.Director}
+         * @param time {number}
+         */
         apply : function(director,time) {
             this.drawColored(this.bufferImage);
             return CAAT.IMBump.superclass.apply.call(this,director,time);
         }
-    });
+    };
+
+    extend( CAAT.IMBump, CAAT.ImageProcessor, null);
 })();
 
 (function() {
+
+    /**
+     * This class creates an image processing Rotozoom effect.
+     *
+     * @constructor
+     * @extends CAAT.ImageProcessor
+     */
     CAAT.IMRotoZoom= function() {
         CAAT.IMRotoZoom.superclass.constructor.call(this);
         return this;
     };
 
-    extend( CAAT.IMRotoZoom, CAAT.ImageProcessor, {
+    CAAT.IMRotoZoom.prototype= {
         m_alignv:       1,
         m_alignh:       1,
         distortion:     2,
@@ -503,8 +651,16 @@
         shift:          0,
         sourceImageData:null,   // pattern to fill area with.
 
+        /**
+         * Initialize the rotozoom.
+         * @param width {number}
+         * @param height {number}
+         * @param patternImage {HTMLImageElement} image to tile with.
+         *
+         * @return this
+         */
         initialize : function( width, height, patternImage ) {
-            CAAT.IMRotoZoom.superclass.initialize(width,height);
+            CAAT.IMRotoZoom.superclass.initialize.call(this,width,height);
 
             this.clear( 255,128,0, 255 );
 
@@ -552,7 +708,13 @@
 
             return this;
         },
-
+        /**
+         * Performs the process of tiling rotozoom.
+         * @param director {CAAT.Director}
+         * @param time {number}
+         *
+         * @private
+         */
         rotoZoom: function(director,time)  {
 
             var timer = new Date().getTime();
@@ -622,12 +784,22 @@
                 j += ddx - dist;
             }
         },
+        /**
+         * Perform and apply the rotozoom effect.
+         * @param director {CAAT.Director}
+         * @param time {number}
+         * @return this
+         */
         apply : function(director,time) {
             if ( null!=this.sourceImageData ) {
                 this.rotoZoom(director,time);
             }
             return CAAT.IMRotoZoom.superclass.apply.call(this,director,time);
         },
+        /**
+         * Change the effect's rotation anchor. Call this method repeatedly to make the effect look
+         * different.
+         */
         setCenter: function() {
             var d = Math.random();
             if (d < .33) {
@@ -648,6 +820,8 @@
             }
         }
 
-    });
+    };
+
+    extend( CAAT.IMRotoZoom, CAAT.ImageProcessor, null);
 
 })();

@@ -10,6 +10,12 @@
  **/
 
 (function() {
+    /**
+     *
+     * Curve class is the base for all curve solvers available in CAAT.
+     *
+     * @constructor
+     */
 	CAAT.Curve= function() {
 		return this;
 	};
@@ -22,6 +28,10 @@
 		HANDLE_SIZE:	20,
 		drawHandles:	true,
 
+        /**
+         * Paint the curve control points.
+         * @param director {CAAT.Director}
+         */
 		paint: function(director) {
             if ( false==this.drawHandles ) {
                 return;
@@ -59,11 +69,27 @@
 
 			canvas.restore();
 		},
+        /**
+         * Signal the curve has been modified and recalculate curve length.
+         */
 		update : function() {
 			this.calcLength();
 		},
+        /**
+         * This method must be overriden by subclasses. It is called whenever the curve must be solved for some time=t.
+         * The t parameter must be in the range 0..1
+         * @param point {CAAT.Point} to store curve solution for t.
+         * @param t {number}
+         * @return {CAAT.Point} the point parameter.
+         */
 		solve: function(point,t) {
 		},
+        /**
+         * Calculates a curve bounding box.
+         *
+         * @param rectangle {CAAT.Rectangle} a rectangle to hold the bounding box.
+         * @return {CAAT.Rectangle} the rectangle parameter.
+         */
 		getBoundingBox : function(rectangle) {
 			if ( !rectangle ) {
 				rectangle= new CAAT.Rectangle();
@@ -77,6 +103,12 @@
 			
 			return rectangle;
 		},
+        /**
+         * Calculate the curve length by incrementally solving the curve every substep=CAAT.Curve.k. This value defaults
+         * to .05 so at least 20 iterations will be performed.
+         *
+         * @return {number} the approximate curve length.
+         */
 		calcLength : function() {
 			var x1,x2,y1,y2;
 			x1 = this.coordlist[0].x;
@@ -93,12 +125,26 @@
 			this.length= llength;
 			return llength;
 		},
+        /**
+         * Return the cached curve length.
+         * @return {number} the cached curve length.
+         */
 		getLength : function() {
 			return this.length;
 		},
+        /**
+         * Return the first curve control point.
+         * @param point {CAAT.Point}
+         * @return {CAAT.Point}
+         */
 		endCurvePosition : function(point) {
 			return this.coordlist[ this.coordlist.length-1 ];
 		},
+        /**
+         * Return the last curve control point.
+         * @param point {CAAT.Point}
+         * @return {CAAT.Point}
+         */
 		startCurvePosition : function(point) {
 			return this.coordlist[ 0 ];
 		}
@@ -107,16 +153,33 @@
 
 
 (function() {
-	
+
+    /**
+     * Bezier quadric and cubic curves implementation.
+     *
+     * @constructor
+     * @extends CAAT.Curve
+     */
 	CAAT.Bezier= function() {
 		CAAT.Bezier.superclass.constructor.call(this);
 		return this;
 	};
 	
-	extend(CAAT.Bezier, CAAT.Curve, {
+	CAAT.Bezier.prototype= {
 		
 		cubic:		false,
-		
+
+        /**
+         * Set this curve as a cubic bezier defined by the given four control points.
+         * @param cp0x {number}
+         * @param cp0y {number}
+         * @param cp1x {number}
+         * @param cp1y {number}
+         * @param cp2x {number}
+         * @param cp2y {number}
+         * @param cp3x {number}
+         * @param cp3y {number}
+         */
 		setCubic : function( cp0x,cp0y, cp1x,cp1y, cp2x,cp2y, cp3x,cp3y ) {
 		
 			this.coordlist= [];
@@ -129,6 +192,15 @@
 			this.cubic= true;
 			this.update();
 		},
+        /**
+         * Set this curve as a quadric bezier defined by the three control points.
+         * @param cp0x {number}
+         * @param cp0y {number}
+         * @param cp1x {number}
+         * @param cp1y {number}
+         * @param cp2x {number}
+         * @param cp2y {number}
+         */
 		setQuadric : function(cp0x,cp0y, cp1x,cp1y, cp2x,cp2y ) {
 		
 			this.coordlist= [];
@@ -140,6 +212,10 @@
 			this.cubic= false;
 			this.update();
 		},
+        /**
+         * Paint this curve.
+         * @param director {CAAT.Director}
+         */
 		paint : function( director ) {
 			if ( this.cubic ) {
 				this.paintCubic(director);
@@ -150,6 +226,13 @@
 			CAAT.Bezier.superclass.paint.call(this,director);
 
 		},
+        /**
+         * Paint this quadric Bezier curve. Each time the curve is drawn it will be solved again from 0 to 1 with
+         * CAAT.Bezier.k increments.
+         *
+         * @param director {CAAT.Director}
+         * @private
+         */
 		paintCuadric : function( director ) {
 			var x1,y1;
 			x1 = this.coordlist[0].x;
@@ -171,6 +254,13 @@
 			canvas.restore();
 		
 		},
+        /**
+         * Paint this cubic Bezier curve. Each time the curve is drawn it will be solved again from 0 to 1 with
+         * CAAT.Bezier.k increments.
+         *
+         * @param director {CAAT.Director}
+         * @private
+         */
 		paintCubic : function( director ) {
 
 			var x1,y1;
@@ -192,6 +282,11 @@
 			canvas.stroke();
 			canvas.restore();
 		},
+        /**
+         * Solves the curve for any given parameter t.
+         * @param point {CAAT.Point} the point to store the solved value on the curve.
+         * @param t {number} a number in the range 0..1
+         */
 		solve : function(point,t) {
 			if ( this.cubic ) {
 				return this.solveCubic(point,t);
@@ -199,6 +294,11 @@
 				return this.solveQuadric(point,t);
 			}
 		},
+        /**
+         * Solves a cubic Bezier.
+         * @param point {CAAT.Point} the point to store the solved value on the curve.
+         * @param t {number} the value to solve the curve for.
+         */
 		solveCubic : function(point,t) {
 			
 			var t2= t*t;
@@ -216,24 +316,51 @@
 			
 			return point;
 		},
+        /**
+         * Solves a quadric Bezier.
+         * @param point {CAAT.Point} the point to store the solved value on the curve.
+         * @param t {number} the value to solve the curve for.
+         */
 		solveQuadric : function(point,t) {
 			point.x= (1-t)*(1-t)*this.coordlist[0].x + 2*(1-t)*t*this.coordlist[1].x + t*t*this.coordlist[2].x;
 			point.y= (1-t)*(1-t)*this.coordlist[0].y + 2*(1-t)*t*this.coordlist[1].y + t*t*this.coordlist[2].y;
 			
 			return point;
 		}
-	});
+	};
+
+    extend(CAAT.Bezier, CAAT.Curve, null);
 	
 })();
 
 (function() {
+
+    /**
+     * CatmullRom curves solver implementation.
+     * <p>
+     * <strong>Incomplete class, do not use.</strong>
+     *
+     * @constructor
+     * @extends CAAT.Curve
+     */
 	CAAT.CatmullRom = function() {
 		CAAT.CatmullRom.superclass.constructor.call(this);
 		return this;
 	};
 	
-	extend(CAAT.CatmullRom, CAAT.Curve, {
-	
+	CAAT.CatmullRom.prototype= {
+
+        /**
+         * Set curve control points.
+         * @param cp0x {number}
+         * @param cp0y {number}
+         * @param cp1x {number}
+         * @param cp1y {number}
+         * @param cp2x {number}
+         * @param cp2y {number}
+         * @param cp3x {number}
+         * @param cp3y {number}
+         */
 		setCurve : function( cp0x,cp0y, cp1x,cp1y, cp2x,cp2y, cp3x,cp3y ) {
 		
 			this.coordlist= [];
@@ -245,7 +372,11 @@
 			
 			this.cubic= true;
 			this.update();
-		},		
+		},
+        /**
+         * Paint the contour by solving again the entire curve.
+         * @param director {CAAT.Director}
+         */
 		paint: function(director) {
 			
 			var x1,x2,y1,y2;
@@ -270,6 +401,11 @@
 			
 			CAAT.CatmullRom.superclass.paint.call(this,director);
 		},
+        /**
+         * Solves the curve for any given parameter t.
+         * @param point {CAAT.Point} the point to store the solved value on the curve.
+         * @param t {number} a number in the range 0..1
+         */
 		solve: function(point,t) {
 			var t2= t*t;
 			var t3= t*t2;
@@ -287,5 +423,7 @@
 			return point;
 
 		}
-	});
+	};
+
+    extend(CAAT.CatmullRom, CAAT.Curve, null);
 })();

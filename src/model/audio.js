@@ -2,22 +2,29 @@
  * @author  Hyperandroid  ||  http://hyperandroid.com/
  *
  * Sound implementation.
- * This class is a sound manager which can play at least 'numChannels' sounds at the same time.
- * CAAT.Director instances will set eight channels to play sound.
- *
- * If more than 'numChannels' sounds want to be played at the same time the requests will be dropped,
- * so no more than 'numChannels' sounds can be concurrently played.
- *
- * Available sounds to be played must be supplied to every CAAT.Director instance by calling <code>addSound</code>
- * method.
- *
- * Be aware of Audio.canPlay, is able to return 'yes', 'no', 'maybe', ..., so anything different from
- * '' and 'no' will do.
- *
  */
 
 (function() {
 
+    /**
+     * This class is a sound manager implementation which can play at least 'numChannels' sounds at the same time.
+     * By default, CAAT.Director instances will set eight channels to play sound.
+     * <p>
+     * If more than 'numChannels' sounds want to be played at the same time the requests will be dropped,
+     * so no more than 'numChannels' sounds can be concurrently played.
+     * <p>
+     * Available sounds to be played must be supplied to every CAAT.Director instance by calling <code>addSound</code>
+     * method. The default implementation will accept a URL/URI or a HTMLAudioElement as source.
+     * <p>
+     * The cached elements can be played, or looped. The <code>loop</code> method will return a handler to
+     * give the opportunity of cancelling the sound.
+     * <p>
+     * Be aware of Audio.canPlay, is able to return 'yes', 'no', 'maybe', ..., so anything different from
+     * '' and 'no' will do.
+     *
+     * @constructor
+     *
+     */
     CAAT.AudioManager= function() {
         return this;
     };
@@ -34,6 +41,15 @@
             'mp4': 'audio/mp4; codecs="mp4a.40.2"'
 		},
 
+        /**
+         * Initializes the sound subsystem by creating a fixed number of Audio channels.
+         * Every channel registers a handler for sound playing finalization. If a callback is set, the
+         * callback function will be called with the associated sound id in the cache.
+         *
+         * @param numChannels {number} number of channels to pre-create. 8 by default.
+         *
+         * @return this.
+         */
         initialize : function(numChannels) {
 
             this.audioCache=      [];
@@ -62,6 +78,10 @@
                                     }
                                 }
 
+                                if ( target.caat_callback ) {
+                                    target.caat_callback(target.caat_id);
+                                }
+
                                 // set back to channels.
                                 me.channels.push(target);
                             },
@@ -76,11 +96,18 @@
          * creates an Audio object and adds it to the audio cache in case the url points to a
          * suitable audio file to be played.
          *
-         * @param id an object to reference the audio object
-         * @param url an url pointing to an audio resource.
+         * @param id {object} an object to reference the audio object. Tipically a string.
+         * @param url {string|HTMLElement} an url pointing to an audio resource or an HTMLAudioElement
+         * object.
+         * @param endplaying_callback {function} a callback function to notify on audio finalization. The
+         * function is of the form <code>function(id{string})</code>. The id parameter is the associated id
+         * in the cache.
+         *
+         * @return this
          */
-        addAudio : function( id, url ) {
+        addAudio : function( id, url, endplaying_callback ) {
             var audio= null;
+            var extension= null;
 
             if ( typeof url == "string" ) {
 
@@ -88,25 +115,33 @@
                 if ( null!=audio ) {
 
                     if(!audio.canPlayType) {
-                        return;
+                        return this;
                     }
 
-                    var extension= url.substr(url.lastIndexOf('.')+1);
+                    extension= url.substr(url.lastIndexOf('.')+1);
                     var canplay= audio.canPlayType(this.audioTypes[extension]);
 
                     if(canplay!=="" && canplay!=="no") {
                         audio.src= url;
                         audio.preload = "auto";
                         audio.load();
+                        if ( endplaying_callback ) {
+                            audio.caat_callback= endplaying_callback;
+                            audio.caat_id= id;
+                        }
                         this.audioCache.push( { id:id, audio:audio } );
                     }
                 }
             } else {
                 try {
                     if ( url instanceof HTMLAudioElement ) {
-                        var audio= url;
-                        var extension= audio.src.substr(audio.src.lastIndexOf('.')+1);
+                        audio= url;
+                        extension= audio.src.substr(audio.src.lastIndexOf('.')+1);
                         if ( audio.canPlayType(this.audioTypes[extension]) ) {
+                            if ( endplaying_callback ) {
+                                audio.caat_callback= endplaying_callback;
+                                audio.caat_id= id;
+                            }
                             this.audioCache.push( { id:id, audio:audio } );
                         }
                     }
@@ -120,18 +155,9 @@
             return this;
         },
         /**
-         * Adds a preloaded audio element from DOM. audioElement Referencies an <audio> tag in the html
-         * file.
-         *
-         * @param id an object to reference the audio object
-         * @param audioElement a DOM <audio> element.        
-         */
-        addAudioFromDOM : function( id, audioElement ) {
-            this.audioCache.push( {id:id, audio:audioElement} );
-        },
-        /**
          * Returns an audio object.
-         * @param aId the id associated to the target Audio object.
+         * @param aId {object} the id associated to the target Audio object.
+         * @return {object} the HTMLAudioElement addociated to the given id.
          */
         getAudio : function(aId) {
             for( var i=0; i<this.audioCache.length; i++ ) {
@@ -146,7 +172,7 @@
          * Plays an audio file from the cache if any sound channel is available.
          * The playing sound will occupy a sound channel and when ends playing will leave
          * the channel free for any other sound to be played in.
-         * @param id an object identifying a sound in the sound cache.
+         * @param id {object} an object identifying a sound in the sound cache.
          * @return this.
          */
         play : function( id ) {
@@ -167,7 +193,7 @@
          * It returns an Audio object so that the developer can cancel the sound loop at will.
          * The user must call <code>pause()</code> method to stop playing a loop.
          *
-         * @return an Audio instance if a valid sound id is supplied. Null otherwise
+         * @return {HTMLElement|null} an Audio instance if a valid sound id is supplied. Null otherwise
          */
         loop : function( id ) {
             var audio_in_cache= this.getAudio(id);
@@ -189,6 +215,8 @@
         /**
          * Cancel all playing audio channels
          * Get back the playing channels to available channel list.
+         *
+         * @return this
          */
         endSound : function() {
             for( var i=0; i<this.workingChannels.length; i++ ) {

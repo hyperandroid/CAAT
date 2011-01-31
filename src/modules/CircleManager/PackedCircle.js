@@ -15,11 +15,22 @@
  Basic Usage:
 	http://onedayitwillmake.com/CirclePackJS/
 */
-(function()
-{
-	CAAT.modules = CAAT.modules || {};
-	CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};
 
+/**
+ * @namespace
+ */
+CAAT.modules = CAAT.modules || {};
+
+/**
+ * @namespace
+ */
+CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};
+
+(function() {
+
+    /**
+     * @constructor
+     */
 	CAAT.modules.CircleManager.PackedCircle= function()
 	{
 		this.boundsRule = CAAT.modules.CircleManager.PackedCircle.BOUNDS_RULE_IGNORE;

@@ -5,17 +5,28 @@
  *
  **/
 (function() {
+    /**
+     * This actor class draws an interpolator function by caching an interpolator contour as a polyline.
+     *
+     * @constructor
+     * @extends CAAT.ActorContainer
+     */
     CAAT.InterpolatorActor = function() {
         CAAT.InterpolatorActor.superclass.constructor.call(this);
         return this;
     };
 
-    extend( CAAT.InterpolatorActor, CAAT.Actor, {
+    CAAT.InterpolatorActor.prototype= {
         interpolator:   null,   // CAAT.Interpolator instance.
         contour:        null,   // interpolator contour cache
         S:              50,     // contour samples.
         gap:            5,      // border size in pixels.
 
+        /**
+         * Sets a padding border size. By default is 5 pixels.
+         * @param gap {number} border size in pixels.
+         * @return this
+         */
         setGap : function( gap ) {
             this.gap= gap;
             return this;
@@ -35,6 +46,11 @@
 
             return this;
         },
+        /**
+         * Paint this actor.
+         * @param director {CAAT.Director}
+         * @param time {number} scene time.
+         */
         paint : function( director, time ) {
 
             CAAT.InterpolatorActor.superclass.paint.call(this,director,time);            
@@ -61,8 +77,14 @@
                 canvas.stroke();
             }
         },
+        /**
+         * Return the represented interpolator.
+         * @return {CAAT.Interpolator}
+         */
         getInterpolator : function() {
             return this.interpolator;
         }
-    });
+    };
+
+    extend( CAAT.InterpolatorActor, CAAT.ActorContainer, null);
 })();

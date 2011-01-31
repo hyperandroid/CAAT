@@ -17,9 +17,9 @@
 */
 (function()
 {
-	CAAT.modules = CAAT.modules || {};
-	CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};
-
+    /**
+     * @constructor
+     */
 	CAAT.modules.CircleManager.PackedCircleManager= function()
 	{
 		return this;

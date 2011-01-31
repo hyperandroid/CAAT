@@ -15,44 +15,49 @@
  *
  **/
 
-/**
- * Behavior base class.
- *
- * A behavior is defined by a frame time (behavior duration) and a behavior application function called interpolator.
- * In its default form, a behaviour is applied linearly, that is, the same amount of behavior is applied every same
- * time interval.
- * A concrete Behavior, a rotateBehavior in example, will change a concrete Actor's rotationAngle during the specified
- * period.
- * A behavior is guaranteed to notify (if any observer is registered) on behavior expiration.
- *
- * A behavior can keep an unlimited observers. Observers are objects of the form:
- *
- * <code>
- * {
- *      behaviorExpired : function( behavior, time, actor);
- *      behaviorApplied : function( behavior, time, normalizedTime, actor, value);
- * }
- * </code>
- *
- * behaviorExpired : function( behavior, time, actor). This method will be called for any registered observer when
- * the scene time is greater than behavior's startTime+duration. This method will be called regardless of the time
- * granurality.
- *
- * behaviorApplied : function( behavior, time, normalizedTime, actor, value). This method will be called once per
- * frame while the behavior is not expired and is in frame time (behavior startTime>=scene time). This method can be
- * called multiple times.
- *
- * Every behavior is applied to a concrete Actor.
- * Every actor must at least define an start and end value. The behavior will set start-value at behaviorStartTime and
- * is guaranteed to apply end-value when scene time= behaviorStartTime+behaviorDuration.
- *
- * You can set behaviors to apply forever that is cyclically. When a behavior is cycle=true, won't notify
- * behaviorExpired to its registered observers.
- *
- * Other Behaviors simply must supply with the method <code>setForTime(time, actor)</code> overriden.
- */
 (function() {
-	CAAT.Behavior= function() {
+    /**
+     * Behavior base class.
+     *
+     * <p>
+     * A behavior is defined by a frame time (behavior duration) and a behavior application function called interpolator.
+     * In its default form, a behaviour is applied linearly, that is, the same amount of behavior is applied every same
+     * time interval.
+     * <p>
+     * A concrete Behavior, a rotateBehavior in example, will change a concrete Actor's rotationAngle during the specified
+     * period.
+     * <p>
+     * A behavior is guaranteed to notify (if any observer is registered) on behavior expiration.
+     * <p>
+     * A behavior can keep an unlimited observers. Observers are objects of the form:
+     * <p>
+     * <code>
+     * {
+     *      behaviorExpired : function( behavior, time, actor);
+     *      behaviorApplied : function( behavior, time, normalizedTime, actor, value);
+     * }
+     * </code>
+     * <p>
+     * <strong>behaviorExpired</strong>: function( behavior, time, actor). This method will be called for any registered observer when
+     * the scene time is greater than behavior's startTime+duration. This method will be called regardless of the time
+     * granurality.
+     * <p>
+     * <strong>behaviorApplied</strong> : function( behavior, time, normalizedTime, actor, value). This method will be called once per
+     * frame while the behavior is not expired and is in frame time (behavior startTime>=scene time). This method can be
+     * called multiple times.
+     * <p>
+     * Every behavior is applied to a concrete Actor.
+     * Every actor must at least define an start and end value. The behavior will set start-value at behaviorStartTime and
+     * is guaranteed to apply end-value when scene time= behaviorStartTime+behaviorDuration.
+     * <p>
+     * You can set behaviors to apply forever that is cyclically. When a behavior is cycle=true, won't notify
+     * behaviorExpired to its registered observers.
+     * <p>
+     * Other Behaviors simply must supply with the method <code>setForTime(time, actor)</code> overriden.
+     *
+     * @constructor
+     */
+    CAAT.Behavior= function() {
 		this.lifecycleListenerList=[];
 		this.setDefaultInterpolator();
 		return this;
@@ -247,8 +252,8 @@
          * private
          * This method must be overriden for every Behavior breed.
          * Must not be called directly.
-         * @param actor a CAAT.Actor instance.
-         * @param time an integer with the scene time.
+         * @param actor {CAAT.Actor} a CAAT.Actor instance.
+         * @param time {number} an integer with the scene time.
          */
 		setForTime : function( time, actor ) {
 			
@@ -268,43 +273,51 @@
 	};
 })();
 
-/**
- *
- * A ContainerBehavior is a holder to sum up different behaviors.
- * It imposes some constraints to contained Behaviors:
- * <ul>
- * <li>The time of every contained behavior will be zero based, so the frame time set for each behavior will
- * be referred to the container's behaviorStartTime and not scene time as usual.
- * <li>Cycling a ContainerBehavior means cycling every contained behavior.
- * <li>The container will not impose any Interpolator, so calling the method <code>setInterpolator(CAAT.Interpolator)
- * </code> will be useless.
- * <li>The Behavior application time will be bounded to the Container's frame time. I.E. if we set a container duration
- * to 10 seconds, setting a contained behavior's duration to 15 seconds will be useless since the container will stop
- * applying the behavior after 10 seconds have elapsed.
- * <li>Every ContainerBehavior adds itself as an observer for its contained Behaviors. The main reason is because
- * ContainerBehaviors modify cycling properties of its contained Behaviors. When a contained
- * Behavior is expired, if the Container has isCycle=true, will unexpire the contained Behavior, otherwise, it won't be
- * applied in the next frame. It is left up to the developer to manage correctly the logic of other posible contained
- * behaviors observers.
- * </ul>
- *
- * A ContainerBehavior can contain other ContainerBehaviors at will.
- * A ContainerBehavior will not apply any CAAT.Actor property change by itself, but will instrument its contained
- * Behaviors to do so.
- */
 (function() {
-	CAAT.ContainerBehavior= function() {
+    /**
+     * <p>
+     * A ContainerBehavior is a holder to sum up different behaviors.
+     * <p>
+     * It imposes some constraints to contained Behaviors:
+     * <ul>
+     * <li>The time of every contained behavior will be zero based, so the frame time set for each behavior will
+     * be referred to the container's behaviorStartTime and not scene time as usual.
+     * <li>Cycling a ContainerBehavior means cycling every contained behavior.
+     * <li>The container will not impose any Interpolator, so calling the method <code>setInterpolator(CAAT.Interpolator)
+     * </code> will be useless.
+     * <li>The Behavior application time will be bounded to the Container's frame time. I.E. if we set a container duration
+     * to 10 seconds, setting a contained behavior's duration to 15 seconds will be useless since the container will stop
+     * applying the behavior after 10 seconds have elapsed.
+     * <li>Every ContainerBehavior adds itself as an observer for its contained Behaviors. The main reason is because
+     * ContainerBehaviors modify cycling properties of its contained Behaviors. When a contained
+     * Behavior is expired, if the Container has isCycle=true, will unexpire the contained Behavior, otherwise, it won't be
+     * applied in the next frame. It is left up to the developer to manage correctly the logic of other posible contained
+     * behaviors observers.
+     * </ul>
+     *
+     * <p>
+     * A ContainerBehavior can contain other ContainerBehaviors at will.
+     * <p>
+     * A ContainerBehavior will not apply any CAAT.Actor property change by itself, but will instrument its contained
+     * Behaviors to do so.
+     *
+     * @constructor
+     * @extends CAAT.Behavior
+     */
+    CAAT.ContainerBehavior= function() {
 		CAAT.ContainerBehavior.superclass.constructor.call(this);
 		this.behaviors= [];
 		return this;
 	};
-	
-	extend( CAAT.ContainerBehavior, CAAT.Behavior, {
-		
+
+    CAAT.ContainerBehavior.prototype= {
+
 		behaviors:	null,   // contained behaviors array
         /**
          * Adds a new behavior to the container.
          * @param behavior
+         *
+         * @override
          */
 		addBehavior : function(behavior)	{
 			this.behaviors.push(behavior);
@@ -365,30 +378,36 @@
 
             return null;
 		}
-	});
+	};
+
+    extend( CAAT.ContainerBehavior, CAAT.Behavior, null );
 })();
 
-/**
- * This class applies a rotation to a CAAt.Actor instance.
- * StartAngle, EndAngle must be supplied. Angles are in radians.
- * The RotationAnchor, if not supplied, will be ANCHOR_CENTER.
- *
- * An example os use will be
- *
- * var rb= new CAAT.RotateBehavior().
- *      setValues(0,2*Math.PI).
- *      setFrameTime(0,2500);
- *
- * @see CAAT.Actor.
- */
 (function() {
-	CAAT.RotateBehavior= function() {
+    /**
+     * This class applies a rotation to a CAAt.Actor instance.
+     * StartAngle, EndAngle must be supplied. Angles are in radians.
+     * The RotationAnchor, if not supplied, will be ANCHOR_CENTER.
+     *
+     * An example os use will be
+     *
+     * var rb= new CAAT.RotateBehavior().
+     *      setValues(0,2*Math.PI).
+     *      setFrameTime(0,2500);
+     *
+     * @see CAAT.Actor.
+     *
+     * @constructor
+     * @extends CAAT.Behavior
+     *
+     */
+    CAAT.RotateBehavior= function() {
 		CAAT.RotateBehavior.superclass.constructor.call(this);
 		this.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
 		return this;
 	};
 	
-	extend( CAAT.RotateBehavior, CAAT.Behavior, {
+	CAAT.RotateBehavior.prototype= {
 	
 		startAngle:	0,  // behavior start angle
 		endAngle:	0,  // behavior end angle
@@ -428,7 +447,7 @@
             return this;
         },
         /**
-         * Deprecated.
+         * @deprecated
          * Use setValues instead
          * @param start
          * @param end
@@ -455,42 +474,87 @@
             return this;
         }
 		
-	});
+	};
+
+    extend( CAAT.RotateBehavior, CAAT.Behavior, null);
+    
 })();
 
-/**
- * The generic behavior is a common implementation.
- * It is a more javascript-friendly way of defining behaviors, but since CAAT is targeted at Android development as
- * well, it is easyer for me to keep the code more OO, so that's the reason of the behaviors implementations way.
- */
 (function() {
+    /**
+     * <p>
+     * A generic behavior is supposed to be extended to create new behaviors when the out-of-the-box
+     * ones are not sufficient. It applies the behavior result to a given target object in two ways:
+     *
+     * <ol>
+     * <li>defining the property parameter: the toolkit will perform target_object[property]= calculated_value_for_time.
+     * <li>defining a callback function. Sometimes setting of a property is not enough. In example,
+     * for a give property in a DOM element, it is needed to set object.style['left']= '70px';
+     * With the property approach, you won't be able to add de 'px' suffix to the value, and hence won't
+     * work correctly. The function callback will allow to take control by receiving as parameters the
+     * target object, and the calculated value to apply by the behavior for the given time.
+     * </ol>
+     *
+     * <p>
+     * For example, this code will move a dom element from 0 to 400 px on x during 1 second:
+     * <code>
+     * <p>
+     * var enterBehavior= new CAAT.GenericBehavior(). <br>
+     * &nbsp;&nbsp;setFrameTime( scene.time, 1000 ). <br>
+     * &nbsp;&nbsp;setValues( <br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;0, <br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;400, <br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;domElement, <br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;null, <br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;function( currentValue, target ) { <br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;target.style['left']= currentValue+'px'; <br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;} <br>
+     * &nbsp;&nbsp;); <br>
+     * </code>
+     *
+     * @constructor
+     * @extends CAAT.Behavior
+     *
+     */
     CAAT.GenericBehavior= function() {
         CAAT.GenericBehavior.superclass.constructor.call(this);
         return this;
     };
 
-    extend( CAAT.GenericBehavior, CAAT.Behavior, {
+    CAAT.GenericBehavior.prototype= {
 
-        callback: null,
         start:      0,
         end:        0,
         target:     null,
         property:   null,
         callback:   null,
-/*
-        setCallback : function( callback ) {
-            this.callback= callback;
-            return this;
-        },
-*/
+
+        /**
+         * Sets the target objects property to the corresponding value for the given time.
+         * If a callback function is defined, it is called as well.
+         *
+         * @param time {number} the scene time to apply the behavior at.
+         * @param actor {CAAT.Actor} a CAAT.Actor object instance.
+         */
         setForTime : function(time, actor) {
             var value= this.start+ time*(this.end-this.start);
             if ( this.callback ) {
                 this.callback( value, this.target );
-            } else {
+            }
+
+            if ( this.property ) {
                 this.target[this.property]= value;
             }
         },
+        /**
+         * Defines the values to apply this behavior.
+         *
+         * @param start {number} initial behavior value.
+         * @param end {number} final behavior value.
+         * @param target {object} an object. Usually a CAAT.Actor.
+         * @param property {string} target object's property to set value to.
+         * @param callback {function} a function of the form <code>function( target, value )</code>.
+         */
         setValues : function( start, end, target, property, callback ) {
             this.start= start;
             this.end= end;
@@ -499,28 +563,42 @@
             this.callback= callback;
             return this;
         }
-    });
+    };
+
+    extend( CAAT.GenericBehavior, CAAT.Behavior, null);
 })();
 
-/**
- * ScaleBehavior applies scale affine transforms in both axis.
- * StartScale and EndScale must be supplied for each axis. This method takes care of a FF bug in which if a Scale is
- * set to 0, the animation will fail playing.
- */
 (function() {
+
+    /**
+     * ScaleBehavior applies scale affine transforms in both axis.
+     * StartScale and EndScale must be supplied for each axis. This method takes care of a FF bug in which if a Scale is
+     * set to 0, the animation will fail playing.
+     *
+     * @constructor
+     * @extends CAAT.Behavior
+     *
+     */
 	CAAT.ScaleBehavior= function() {
 		CAAT.RotateBehavior.superclass.constructor.call(this);
 		this.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
 		return this;		
 	};
 	
-	extend( CAAT.ScaleBehavior, CAAT.Behavior, {
+	CAAT.ScaleBehavior.prototype= {
 		startScaleX: 	0,
 		endScaleX:      0,
 		startScaleY:	0,
 		endScaleY:	    0,
-		anchor:		    0,		
+		anchor:		    0,
 
+        /**
+         * Applies corresponding scale values for a given time.
+         * 
+         * @param time the time to apply the scale for.
+         * @param actor the target actor to Scale.
+         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}Ê}</code>
+         */
 		setForTime : function(time,actor) {
 
 			var scaleX= this.startScaleX + time*(this.endScaleX-this.startScaleX);
@@ -538,6 +616,16 @@
 
             return { scaleX: scaleX, scaleY: scaleY };
 		},
+        /**
+         * Define this scale behaviors values.
+         *
+         * @param startX {number} initial X axis scale value.
+         * @param endX {number} final X axis scale value.
+         * @param startY {number} initial Y axis scale value.
+         * @param endY {number} final Y axis scale value.
+         *
+         * @return this.
+         */
         setValues : function( startX, endX, startY, endY ) {
             this.startScaleX= startX;
             this.endScaleX=   endX;
@@ -546,54 +634,86 @@
 
             return this;
         },
+        /**
+         * <p>
+         * Defines scale application anchor.
+         * <p>
+         * Any of CAAT.Actor.ANCHOR_xxxx values.
+         *
+         * @param anchor {number} any of CAAT.Actor.ANCHOR_xxxx constant values.
+         *
+         * @return this.
+         */
         setAnchor : function( anchor ) {
             this.anchor= anchor;
             return this;
         }
-	});
+	};
+
+    extend( CAAT.ScaleBehavior, CAAT.Behavior, null);
 })();
 
-/**
- * AlphaBehavior modifies alpha composition property for an actor.
- */
+
 (function() {
+    /**
+     * AlphaBehavior modifies alpha composition property for an actor.
+     *
+     * @constructor
+     * @extends CAAT.Behavior
+     */
 	CAAT.AlphaBehavior= function() {
 		CAAT.AlphaBehavior.superclass.constructor.call(this);
 		return this;
 	};
 	
-	extend( CAAT.AlphaBehavior, CAAT.Behavior, {
+	CAAT.AlphaBehavior.prototype= {
 		startAlpha:	0,
 		endAlpha:	0,
 
+        /**
+         * Applies corresponding alpha transparency value for a given time.
+         *
+         * @param time the time to apply the scale for.
+         * @param actor the target actor to set transparency for.
+         * @return {number} the alpha value set. Normalized from 0 (total transparency) to 1 (total opacity)
+         */
 		setForTime : function(time,actor) {
 			var alpha= 	(this.startAlpha + time*(this.endAlpha-this.startAlpha));
 			actor.setAlpha( alpha );
             return alpha;
         },
+        /**
+         * Set alpha transparency minimum and maximum value.
+         * This value can be coerced by Actor's property isGloblAlpha.
+         *
+         * @param start {number} a float indicating the starting alpha value.
+         * @param end {number} a float indicating the ending alpha value.
+         */
         setValues : function( start, end ) {
             this.startAlpha= start;
             this.endAlpha= end;
             return this;
         }
-	});
+	};
+
+    extend( CAAT.AlphaBehavior, CAAT.Behavior, null);
 })();
 
-/**
- * CAAT.PathBehavior modifies the position of a CAAT.Actor along the path represented by an instance of CAAT.Path.
- *
- * autoRotate:  sets actor rotation to be heading from past to current path point.
- *              take into account that this will be incompatible with rotation Behaviors
- *              since they will set their own rotation configuration.
- *
- */
 (function() {
+    /**
+     * CAAT.PathBehavior modifies the position of a CAAT.Actor along the path represented by an
+     * instance of <code>CAAT.Path</code>.
+     *
+     * @constructor
+     * @extends CAAT.Behavior
+     *
+     */
 	CAAT.PathBehavior= function() {
 		CAAT.PathBehavior.superclass.constructor.call(this);
 		return this;
 	};
 
-	extend( CAAT.PathBehavior, CAAT.Behavior, {
+	CAAT.PathBehavior.prototype= {
 		path:           null,   // the path to traverse
         autoRotate :    false,  // set whether the actor must be rotated tangentially to the path.
         prevX:          -1,     // private, do not use.
@@ -602,6 +722,13 @@
         translateX:     0,
         translateY:     0,
 
+        /**
+         * Sets an actor rotation to be heading from past to current path's point.
+         * Take into account that this will be incompatible with rotation Behaviors
+         * since they will set their own rotation configuration.
+         * @param autorotate {boolean}
+         * @return this.
+         */
         setAutoRotate : function( autorotate ) {
             this.autoRotate= autorotate;
             return this;
@@ -615,6 +742,7 @@
             this.path= path;
             return this;
         },
+
         setFrameTime : function( startTime, duration ) {
             CAAT.PathBehavior.superclass.setFrameTime.call(this, startTime, duration );
             this.prevX= -1;
@@ -637,10 +765,11 @@
             return this;
         },
         /**
-         * Translates the Actor to the correspoing time path position.
+         * Translates the Actor to the corresponding time path position.
          * If autoRotate=true, the actor is rotated as well. The rotation anchor will (if set) always be ANCHOR_CENTER.
          * @param time an integer indicating the time the behavior is being applied at.
          * @param actor a CAAT.Actor instance to be translated.
+         * @return {object} an object of the form <code>{ x: {float}, y: {float}Ê}</code>.
          */
 		setForTime : function(time,actor) {
 
@@ -657,7 +786,7 @@
                 var ay= point.y-this.prevY;
 
                 if ( ax==0 && ay==0 ) {
-                    return;
+                    return {x:ax, y:ay};
                 }
 
                 var angle= Math.atan2( ay, ax );
@@ -689,8 +818,8 @@
          * If the time to get the point at is in behaviors frame time, a point on the path will be returned, otherwise
          * a default {x:-1, y:-1} point will be returned.
          *
-         * @param time the time at which the point will be taken from the path.
-         * @return an object of the form {x:float y:float}
+         * @param time {number} the time at which the point will be taken from the path.
+         * @return {object} an object of the form {x:float y:float}
          */
         positionOnTime : function(time) {
 			if ( this.isBehaviorInTime(time,null) )	{
@@ -701,5 +830,7 @@
             return {x:-1, y:-1};
 
         }
-	});
+	};
+
+    extend( CAAT.PathBehavior, CAAT.Behavior, null);
 })();

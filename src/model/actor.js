@@ -11,6 +11,25 @@
  **/
 
 (function() {
+
+    /**
+     * This class is the base for all animable entities in CAAT.
+     * It defines an entity able to:
+     *
+     * <ul>
+     * <li>Position itself on screen.
+     * <li>Able to modify its presentation aspect via affine transforms.
+     * <li>Take control of parent/child relationship.
+     * <li>Take track of behaviors (@see CAAT.Behavior).
+     * <li>Define a region on screen.
+     * <li>Define alpha composition scope.
+     * <li>Expose lifecycle.
+     * <li>Manage itself in/out scene time.
+     * <li>etc.
+     * </ul>
+     *
+     * @constructor
+     */
 	CAAT.Actor = function() {
 		this.transformationMatrix= new CAAT.MatrixStack();
 		this.rpoint= new CAAT.Point();
@@ -71,7 +90,7 @@
         dirty:                  true,
 
         /**
-         * takes an element out of time line.
+         * Puts an Actor out of time line, that is, won't be transformed nor rendered.
          * @return this
          */
         setOutOfFrameTime : function() {
@@ -82,8 +101,8 @@
          * Adds an Actor's life cycle listener.
          * The developer must ensure the actorListener is not already a listener, otherwise
          * it will notified more than once.
-         * @param actorListener an object with at least a method of the form:
-         * actorLyfeCycleEvent( actor, string_event_type, long_time )
+         * @param actorListener {object} an object with at least a method of the form:
+         * <code>actorLyfeCycleEvent( actor, string_event_type, long_time )</code>
          */
 		addListener : function( actorListener ) {
 			this.lifecycleListenerList.push(actorListener);
@@ -91,7 +110,7 @@
         /**
          * Removes an Actor's life cycle listener.
          * It will only remove the first occurrence of the given actorListener.
-         * @param actorListener an Actor's life cycle listener.
+         * @param actorListener {object} an Actor's life cycle listener.
          */
         removeListener : function( actorListener ) {
             var n= this.lifecycleListenerList.length;
@@ -103,6 +122,11 @@
                 }
             }
         },
+        /**
+         * Set alpha composition scope. global will mean this alpha value will be its children maximum.
+         * If set to false, only this actor will have this alpha value.
+         * @param global {boolean} whether the alpha value should be propagated to children.
+         */
         setGlobalAlpha : function( global ) {
             this.isGlobalAlpha= global;
             return this;
@@ -122,6 +146,9 @@
          * Calculates the 2D bounding box in canvas coordinates of the Actor.
          * This bounding box takes into account the transformations applied hierarchically for
          * each Scene Actor.
+         *
+         * @private
+         *
          */
         setScreenBounds : function() {
 
@@ -164,7 +191,7 @@
          * Sets this Actor as Expired.
          * If this is a Container, all the contained Actors won't be nor drawn nor will receive
          * any event. That is, expiring an Actor means totally taking it out the Scene's timeline.
-         * @param time an integer indicating the time the Actor was expired at.
+         * @param time {number} an integer indicating the time the Actor was expired at.
          * @return this.
          */
         setExpired : function(time) {
@@ -174,7 +201,7 @@
         },
         /**
          * Enable or disable the event bubbling for this Actor.
-         * @param enable a boolean indicating whether the event bubbling is enabled.
+         * @param enable {boolean} a boolean indicating whether the event bubbling is enabled.
          * @return this
          */
         enableEvents : function( enable ) {
@@ -451,11 +478,13 @@
             return this;
 	    },
         /**
-         * Private.
          * This method is called by the Director to know whether the actor is on Scene time.
          * In case it was necessary, this method will notify any life cycle behaviors about
          * an Actor expiration.
          * @param time an integer indicating the Scene time.
+         *
+         * @private
+         *
          */
 	    isInAnimationFrame : function(time)    {
             if ( this.expired )	{
@@ -478,8 +507,8 @@
 	    },
         /**
          * Checks whether a coordinate is inside the Actor's bounding box.
-         * @param x a float
-         * @param y a float
+         * @param x {number} a float
+         * @param y {number} a float
          *
          * @return boolean indicating whether it is inside.
          */
@@ -505,7 +534,7 @@
          * Add a Behavior to the Actor.
          * An Actor accepts an undefined number of Behaviors.
          *
-         * @param behavior a CAAT.Behavior instance
+         * @param behavior {CAAT.Behavior} a CAAT.Behavior instance
          * @return this
          */
 		addBehavior : function( behavior )	{
@@ -516,7 +545,7 @@
          * Remove a Behavior from the Actor.
          * If the Behavior is not present at the actor behavior collection nothing happends.
          *
-         * @param behavior a CAAT.Behavior instance.
+         * @param behavior {CAAT.Behavior} a CAAT.Behavior instance.
          */
         removeBehaviour : function( behavior ) {
             var n= this.behaviorList.length-1;
@@ -533,7 +562,7 @@
          * Remove a Behavior with id param as behavior identifier from this actor.
          * This function will remove ALL behavior instances with the given id.
          *
-         * @param id an integer.
+         * @param id {number} an integer.
          * return this;
          */
         removeBehavior : function( id ) {
@@ -547,8 +576,9 @@
 
         },
         /**
-         * Set discardable property.
-         * @param discardable a boolean indicating whether the Actor is discardable.
+         * Set discardable property. If an actor is discardable, upon expiration will be removed from
+         * scene graph and hence deleted.
+         * @param discardable {boolbean} a boolean indicating whether the Actor is discardable.
          * @return this
          */
         setDiscardable : function( discardable ) {
@@ -561,15 +591,20 @@
          * It notifies the Actor life cycle listeners about the destruction event.
          *
          * @param time an integer indicating the time at wich the Actor has been destroyed.
+         *
+         * @private
+         *
          */
 		destroy : function(time)	{
             this.fireEvent('destroyed',time);
 		},
         /**
-         * Private.
-         * @param point an object of the form {x : float, y: float}
+         * @param point {CAAT.Point} an object of the form {x : float, y: float}
          *
          * @return the source point object
+         *
+         * @private
+         *
          */
         transformCoord : function(point) {
             var tthis= this;
@@ -582,10 +617,12 @@
             return point;
         },
         /**
-         * Private.
          * @param point an object of the form {x : float, y: float}
          *
          * @return the source point object
+         *
+         * @private
+         *
          */
 		inverseTransformCoord : function(point) {
 			var tthis= this;
@@ -634,6 +671,12 @@
 			this.screenx=0;
 			this.screeny=0;
 
+            /**
+             * Mouse enter handler for default drag behavior.
+             * @param mouseEvent {CAAT.MouseEvent}
+             *
+             * @inner
+             */
 	    	this.mouseEnter= function(mouseEvent) {
 				this.ax= -1;
 				this.ay= -1;
@@ -641,6 +684,12 @@
 		    	document.body.style.cursor = 'move';
 	    	};
 
+            /**
+             * Mouse exit handler for default drag behavior.
+             * @param mouseEvent {CAAT.MouseEvent}
+             *
+             * @inner
+             */
 	    	this.mouseExit= function(mouseEvent) {
 				this.ax= -1;
 				this.ay= -1;
@@ -648,16 +697,34 @@
 				document.body.style.cursor = 'default';
 	    	};
 
+            /**
+             * Mouse move handler for default drag behavior.
+             * @param mouseEvent {CAAT.MouseEvent}
+             *
+             * @inner
+             */
 	    	this.mouseMove= function(mouseEvent) {
 				this.mx= mouseEvent.point.x;
 				this.my= mouseEvent.point.y;
 	    	};
 
+            /**
+             * Mouse up handler for default drag behavior.
+             * @param mouseEvent {CAAT.MouseEvent}
+             *
+             * @inner
+             */
 	    	this.mouseUp= function( mouseEvent) {
 				this.ax= -1;
 				this.ay= -1;
 	    	};
 
+            /**
+             * Mouse drag handler for default drag behavior.
+             * @param mouseEvent {CAAT.MouseEvent}
+             *
+             * @inner
+             */
 	    	this.mouseDrag= function(mouseEvent) {
 
 				if ( this.ax==-1 || this.ay==-1 ) {
@@ -827,6 +894,7 @@
          * @return this
          */
         endAnimate : function(director,time) {
+            return this;
         },
         initialize : function(overrides) {
             if (overrides) {
@@ -853,6 +921,18 @@
 
 
 (function() {
+
+    /**
+     * This class is a general container of CAAT.Actor instances. It extends the concept of an Actor
+     * from a single entity on screen to a set of entities with a parent/children relationship among
+     * them.
+     * <p>
+     * This mainly overrides default behavior of a single entity and exposes methods to manage its children
+     * collection.
+     *
+     * @constructor
+     * @extends CAAT.Actor
+     */
 	CAAT.ActorContainer= function() {
 		CAAT.ActorContainer.superclass.constructor.call(this);
 		this.childrenList= [];
@@ -861,7 +941,7 @@
 	};
 
 
-	extend( CAAT.ActorContainer, CAAT.Actor, {
+	CAAT.ActorContainer.prototype= {
 
         childrenList : null,       // the list of children contained.
         pendingChildrenList : null,
@@ -987,7 +1067,7 @@
          * @return this.
          */
         addChildImmediately : function(child) {
-            this.addChild(child);
+            return this.addChild(child);
         },
         /**
          * Adds an Actor to this ActorContainer.
@@ -1024,8 +1104,6 @@
 
             return this;
 		},
-
-
         /**
          * Private
          * Gets a contained Actor z-index on this ActorContainer.
@@ -1145,18 +1223,49 @@
                 }
             }
         }
-	});
+	};
+
+    extend( CAAT.ActorContainer, CAAT.Actor, null);
 
 })();
 
 
 (function() {
+
+    /**
+     *
+     * <p>
+     * This class defines a simple Sprite sheet. A Sprite sheet is given by an instance of CAAT.CompoundImage,
+     * which given a single image, you can define rows by columns sub-images contained in it. Then an array
+     * of values indicating indexes to these sub-images is used to draw the sprite.
+     *
+     * <p>
+     * The following is a valid example of CAAT.SpriteActor declaration:
+     * <p>
+     * <code>
+     *  // define a compound image as 1 row by 3 columns.<br>
+     *  var conpoundimage = new CAAT.CompoundImage().initialize( director.getImage('fish'), 1, 3);<br>
+     *  <br>
+     *  // create a fish instance<br>
+     *  var fish = new CAAT.SpriteActor().<br>
+     *              create().<br>
+     *              setAnimationImageIndex( [0,1,2,1] ).// rotating from subimages 0,1,2,1<br>
+	 *              setSpriteImage(conpoundimage).      // throughtout this compound image<br>
+     *              setChangeFPS(350).                  // and change from image on the sheet every 350ms.<br>
+     *              setLocation(10,10);                 // btw, the fish actor will be at 10,10 on screen.<br>
+     * <br>
+     * </code><br>
+     *
+     * @constructor
+     * @extends CAAT.ActorContainer
+     *
+     */
 	CAAT.SpriteActor = function() {
 		CAAT.SpriteActor.superclass.constructor.call(this);
 		return this;
 	};
 
-	extend( CAAT.SpriteActor, CAAT.ActorContainer, {
+	CAAT.SpriteActor.prototype= {
 		compoundbitmap:			null,   // CAAT.CompoundBitmap instance
 		animationImageIndex:	null,   // an Array defining the sprite frame sequence
 		prevAnimationTime:		-1,
@@ -1273,16 +1382,29 @@
 			}
 
 		}
-	});
+	};
+
+    extend( CAAT.SpriteActor, CAAT.ActorContainer, null);
 })();
 
 (function() {
+
+    /**
+     *
+     * This class shows a simple image on screen. It can be flipped by calling the method <code>
+     * setImageTransformation</code>, and offseted, that is, translated from actors 0,0 position by
+     * calling the methods <code>setOffsetX( {float} ) and setOffsetY( {float} )</code>.
+     *
+     * @constructor
+     * @extends CAAT.ActorContainer
+     *
+     */
 	CAAT.ImageActor = function() {
 		CAAT.ImageActor.superclass.constructor.call(this);
 		return this;
 	};
 
-	extend( CAAT.ImageActor, CAAT.ActorContainer, {
+	CAAT.ImageActor.prototype= {
         image:                  null,
 		transformation:			0,      // any of the TR_* constants.
 
@@ -1294,14 +1416,32 @@
         offsetX:                0,
         offsetY:                0,
 
+        /**
+         * Set horizontal displacement to draw image. Positive values means drawing the image more to the
+         * right.
+         * @param x {number}
+         * @return this
+         */
         setOffsetX : function(x) {
             this.offsetX= x;
             return this;
         },
+        /**
+         * Set vertical displacement to draw image. Positive values means drawing the image more to the
+         * bottom.
+         * @param y {number}
+         * @return this
+         */
         setOffsetY : function(y) {
             this.offsetY= y;
             return this;
         },
+        /**
+         * Set the image to draw. If this CAAT.ImageActor has not set dimension, the actor will be equal
+         * size to the image.
+         * @param image {HTMLImageElement}
+         * @return this
+         */
         setImage : function(image) {
             this.image= image;
             if ( this.width==0 || this.height==0 ) {
@@ -1313,12 +1453,14 @@
         /**
          * Set the transformation to apply to the image.
          * Any value of
+         * <ul>
          *  <li>TR_NONE
          *  <li>TR_FLIP_HORIZONTAL
          *  <li>TR_FLIP_VERTICAL
          *  <li>TR_FLIP_ALL
+         * </ul>
          *
-         * @param transformation an integer indicating one of the previous values.
+         * @param transformation {number} an integer indicating one of the previous values.
          * @return this
          */
         setImageTransformation : function( transformation ) {
@@ -1333,61 +1475,70 @@
          */
 		paint : function(director, time) {
 
-			var canvas= director.crc;
-
+			var ctx= director.crc;
             // drawn at 0,0 because they're already affine-transformed.
 			switch(this.transformation)	{
 				case this.TR_FLIP_HORIZONTAL:
-					this.paintInvertedH( canvas);
+					this.paintInvertedH( ctx);
 					break;
 				case this.TR_FLIP_VERTICAL:
-					this.paintInvertedV( canvas);
+					this.paintInvertedV( ctx);
 					break;
 				case this.TR_FLIP_ALL:
-					this.paintInvertedHV( canvas);
+					this.paintInvertedHV( ctx);
 					break;
 				default:
-					this._paint( canvas);
+					this._paint( ctx);
 			}
 		},
-	    paintInvertedH : function( canvas ) {
-
-	        canvas.save();
-		        canvas.translate( this.width, 0 );
-		        canvas.scale(-1, 1);
-		        canvas.drawImage( this.image,this.offsetX,this.offsetY );
-	        canvas.restore();
+	    paintInvertedH : function( ctx ) {
+	        ctx.save();
+		        ctx.translate( this.width, 0 );
+		        ctx.scale(-1, 1);
+		        ctx.drawImage( this.image,this.offsetX,this.offsetY );
+	        ctx.restore();
 	    },
-	    paintInvertedV : function( canvas, imageIndex ) {
-	        canvas.save();
-	        	canvas.translate( 0, this.height );
-	        	canvas.scale(1, -1);
-		        canvas.drawImage( this.image,this.offsetX,this.offsetY );
-	        canvas.restore();
+	    paintInvertedV : function( ctx ) {
+	        ctx.save();
+	        	ctx.translate( 0, this.height );
+	        	ctx.scale(1, -1);
+		        ctx.drawImage( this.image,this.offsetX,this.offsetY );
+	        ctx.restore();
 	    },
-	    paintInvertedHV : function( canvas ) {
-	        canvas.save();
-		    	canvas.translate( 0, this.height );
-		    	canvas.scale(1, -1);
-	        	canvas.translate( this.width, 0 );
-	        	canvas.scale(-1, 1);
-		        canvas.drawImage(this.image,this.offsetX,this.offsetY);
-	        canvas.restore();
+	    paintInvertedHV : function( ctx ) {
+	        ctx.save();
+		    	ctx.translate( 0, this.height );
+		    	ctx.scale(1, -1);
+	        	ctx.translate( this.width, 0 );
+	        	ctx.scale(-1, 1);
+		        ctx.drawImage(this.image,this.offsetX,this.offsetY);
+	        ctx.restore();
 	    },
-	    _paint : function( canvas ) {
-	        canvas.drawImage(this.image,this.offsetX,this.offsetY);
+        /**
+         *
+         * @param ctx
+         * @private
+         */
+	    _paint : function( ctx ) {
+	        ctx.drawImage(this.image,this.offsetX,this.offsetY);
 	    }
-	});
+	};
+
+    extend( CAAT.ImageActor, CAAT.ActorContainer, null);
 })();
 
-/**
- * TextActor draws text on screen.
- */
 (function() {
+
+    /**
+     * TextActor draws text on screen. The text can be drawn directly on screen or make if follow a
+     * path defined by an instance of <code>CAAT.Path</code>.
+     *
+     * @constructor
+     * @extends CAAT.ActorContainer
+     *
+     */
 	CAAT.TextActor = function() {
-
 		CAAT.TextActor.superclass.constructor.call(this);
-
 		this.font= "10px sans-serif";
 		this.textAlign= "left";
 		this.textBaseline= "top";
@@ -1397,7 +1548,7 @@
 		return this;
 	};
 
-	extend( CAAT.TextActor, CAAT.ActorContainer, {
+	CAAT.TextActor.prototype= {
 		font:			    null,   // a valid canvas rendering context font description. Default font
                                     // will be "10px sans-serif".
 		textAlign:		    null,	// a valid canvas rendering context textAlign string. Any of:
@@ -1419,14 +1570,31 @@
         pathDuration:       10000,  // an integer indicating the time to be taken to traverse the path. ms.
 		sign:			    1,      // traverse the path forward or backwards.
 
+        /**
+         * Set the text to be filled. The default Filling style will be set by calling setFillStyle method.
+         * Default value is true.
+         * @param fill {boolean} a boolean indicating whether the text will be filled.
+         * @return this;
+         */
         setFill : function( fill ) {
             this.fill= fill;
             return this;
         },
+        /**
+         * Sets whether the text will be outlined.
+         * @param outline {boolean} a boolean indicating whether the text will be outlined.
+         * @return this;
+         */
         setOutline : function( outline ) {
             this.outline= outline;
             return this;
         },
+        /**
+         * Defines text's outline color.
+         *
+         * @param color {string} sets a valid canvas context color.
+         * @return this.
+         */
         setOutlineColor : function( color ) {
             this.outlineColor= color;
             return this;
@@ -1450,6 +1618,10 @@
             this.textAlign= align;
             return this;
         },
+        /**
+         * Set text baseline.
+         * @param baseline
+         */
         setBaseline : function( baseline ) {
             this.textBaseline= baseline;
             return this;
@@ -1635,16 +1807,39 @@
 
             return this;
 		}
-	});
+	};
+
+    extend( CAAT.TextActor, CAAT.ActorContainer, null);
 })();
 
 (function() {
+
+    /**
+     * This class works as a UI Button.
+     * <p>
+     * To fully define the button, four images should be supplied as well as a callback function.
+     * The images define different button states:
+     * <ul>
+     *  <li>Normal state
+     *  <li>Pointed
+     *  <li>Pressed
+     *  <li>Disabled
+     * </ul>
+     *
+     * <p>
+     * It is only compulsory to supply an image for the normal state. All images must be supplied in
+     * a single image strip which containes all button states, concretely in a CAAT.CompoundImage
+     * instance.
+     *
+     * @constructor
+     * @extends CAAT.ActorContainer
+     */
     CAAT.Button= function() {
         CAAT.Button.superclass.constructor.call(this);
         return this;
     };
 
-    extend( CAAT.Button, CAAT.ActorContainer, {
+    CAAT.Button.prototype= {
         buttonImage:    null,   // a CompoundImage object instance
         iNormal:        0,
         iOver:          0,
@@ -1654,9 +1849,29 @@
         fnOnClick:      null,
         enabled:        true,
 
+        /**
+         * Set enabled state for the button.
+         * If the button is disabled, it will only show the disabled state and will discard mouse input.
+         * @param enabled {boolean}
+         */
         setEnabled : function( enabled ) {
             this.enabled= enabled;
         },
+        /**
+         * Initialize the button with the given values. The button size will be set to the size of the
+         * subimages contained in the buttonImage.
+         *
+         * @param buttonImage {CAAT.CompoundImage} an image used as a strip of button state images.
+         * @param iNormal {number} an integer indicating which image index of the buttonImage corresponds
+         * with the normal state.
+         * @param iOver {number} an integer indicating which image index of the buttonImage corresponds
+         * with the pointed state.
+         * @param iPress {number} an integer indicating which image index of the buttonImage corresponds
+         * with the pressed state.
+         * @param iDisabled {number} an integer indicating which image index of the buttonImage corresponds
+         * with the disabled state.
+         * @param fn {function} callback function to call on mouse release inside the button actor.
+         */
         initialize : function( buttonImage, iNormal, iOver, iPress, iDisabled, fn) {
             this.buttonImage=   buttonImage;
             this.iNormal=       iNormal || 0;
@@ -1669,6 +1884,11 @@
             this.fnOnClick=     fn;
             return this;
         },
+        /**
+         * Paint the button.
+         * @param director {CAAT.Director}
+         * @param time {number}
+         */
         paint : function(director,time) {
             this.buttonImage.paint(
                     director.ctx,
@@ -1678,7 +1898,7 @@
         },
         mouseEnter : function(mouseEvent) {
             this.iCurrent= this.iOver;
-            document.body.style.cursor = 'hand';
+            document.body.style.cursor = 'pointer';
         },
         mouseExit : function(mouseEvent) {
             this.iCurrent= this.iNormal;
@@ -1698,17 +1918,26 @@
         toString : function() {
             return 'CAAT.Button '+this.iNormal;
         }
-    });
+    };
+
+    extend( CAAT.Button, CAAT.ActorContainer, null);
 })();
 
 (function() {
+
+    /**
+     * This Actor draws common shapes, concretely Circles and rectangles.
+     *
+     * @constructor
+     * @extends CAAT.ActorContainer
+     */
     CAAT.ShapeActor = function() {
         CAAT.ShapeActor.superclass.constructor.call(this);
         this.compositeOp= 'source-over';
         return this;
     };
 
-    extend( CAAT.ShapeActor, CAAT.ActorContainer, {
+    CAAT.ShapeActor.prototype= {
 
         shape:          0,      // shape type. One of the constant SHAPE_* values
         compositeOp:    null,   // a valid canvas rendering context string describing compositeOps.
@@ -1802,16 +2031,25 @@
                 ctx.stroke();
             }
         }
-    });
+    };
+
+    extend( CAAT.ShapeActor, CAAT.ActorContainer, null);
 })();
 
 (function() {
+
+    /**
+     * This actor draws stars.
+     *
+     * @constructor
+     * @extends CAAT.ActorContainer
+     */
     CAAT.StarActor= function() {
         CAAT.StarActor.superclass.constructor.call(this);
         return this;
     };
 
-    extend(CAAT.StarActor, CAAT.ActorContainer, {
+    CAAT.StarActor.prototype= {
         nPeaks:         0,
         maxRadius:      0,
         minRadius:      0,
@@ -1819,16 +2057,35 @@
         outlined:       false,
         filled:         true,
 
+        /**
+         * Sets whether the star will be color filled.
+         * @param filled {boolean}
+         */
         setFilled : function( filled ) {
             this.filled= filled;
             return this;
         },
+        /**
+         * Sets whether the star will be outlined.
+         * @param outlined {boolean}
+         */
         setOutlined : function( outlined ) {
             this.outlined= outlined;
             return this;
         },
+        /**
+         * Initialize the star values.
+         * <p>
+         * The star actor will be of size 2*maxRadius.
+         *
+         * @param nPeaks {number} number of star points.
+         * @param maxRadius {number} maximum star radius
+         * @param minRadius {number} minimum star radius
+         *
+         * @return this
+         */
         initialize : function(nPeaks, maxRadius, minRadius) {
-            this.setSize( maxRadius, maxRadius );
+            this.setSize( 2*maxRadius, 2*maxRadius );
 
             this.nPeaks= nPeaks;
             this.maxRadius= maxRadius;
@@ -1836,6 +2093,12 @@
 
             return this;
         },
+        /**
+         * Paint the star.
+         *
+         * @param director {CAAT.Director}
+         * @param timer {number}
+         */
         paint : function(director, timer) {
 
             var ctx=        director.ctx;
@@ -1871,7 +2134,9 @@
                 ctx.stroke();
             }
         }
-    });
+    };
+
+    extend(CAAT.StarActor, CAAT.ActorContainer, null);
 
 })();
 
@@ -1879,17 +2144,29 @@
  * An actor suitable to draw an ImageProcessor instance.
  */
 (function() {
+
+    /**
+     * This Actor will show the result of an image processing operation.
+     *
+     * @constructor
+     * @extends CAAT.ActorContainer
+     */
     CAAT.IMActor= function() {
         CAAT.IMActor.superclass.constructor.call(this);
         return this;
     };
 
-    extend( CAAT.IMActor, CAAT.ActorContainer, {
+    CAAT.IMActor.prototype= {
 
         imageProcessor:         null,
         changeTime:             100,
         lastApplicationTime:    -1,
 
+        /**
+         * Set the image processor.
+         *
+         * @param im {CAAT.ImageProcessor} a CAAT.ImageProcessor instance.
+         */
         setImageProcessor : function(im) {
             this.imageProcessor= im;
             return this;
@@ -1909,18 +2186,28 @@
             }
 
             var ctx= director.ctx;
-            ctx.drawImage( this.imageProcessor.getCanvas(), 0, 0 );
+            this.imageProcessor.paint( director, time );
         }
-    });
+    };
+
+    extend( CAAT.IMActor, CAAT.ActorContainer, null);
 })();
 
-/**
- * This class aims to instrument Dom elements as if were Canvas elements.
- * The dom element will be backed by a CAAT Actor but transformed and presented by CSS.
- *
- * Experimental form.
- */
 (function() {
+
+    /**
+     * This class aims to instrument Dom elements as if were Canvas elements.
+     * <p>
+     * It will create and add a div elemento to the dom which will be transformed and presented by CSS.
+     * The parent/child relationship inherent to every CAAT animable element will be held by containing
+     * div elements inside of other div elements.
+     *
+     * <p>
+     * Experimental form.
+     *
+     * @constructor
+     * @extends CAAT.ActorContainer
+     */
     CAAT.CSSActor = function() {
         CAAT.CSSActor.superclass.constructor.call(this);
         this.setFillStyle(null);
@@ -1928,12 +2215,17 @@
         return this;
     };
 
-    extend( CAAT.CSSActor, CAAT.ActorContainer, {
+    CAAT.CSSActor.prototype= {
         domElement: null,
         dirty: true,
         oldX:   -1,
         oldY:   -1,
 
+        /**
+         * Set CSS div's inner HTML.
+         * @param innerHTML {string} a valid html block.
+         * @return this;
+         */
         setInnerHTML : function(innerHTML) {
             this.domElement.innerHTML= innerHTML;
             return this;
@@ -2022,5 +2314,7 @@
         paint : function(director,time) {
             
         }
-    });
+    };
+
+    extend( CAAT.CSSActor, CAAT.ActorContainer, null);
 })();

@@ -1,28 +1,31 @@
 /**
  * @author  Hyperandroid  ||  http://hyperandroid.com/
  *
- * Scene is the top level ActorContainer of the Director at any given time.
- * The only time when 2 scenes could be active will be during scene change.
- * An scene controls the way it enters/exits the scene graph.
- *
- *
- *
  */
 
-/**
- * This class defines a timer action.
- * These actions are constrained to Scene time, so every Scene has the abbility to create its own TimerTask objects.
- * A TimerTask is defined at least by:
- *  + startTime: since when the timer will be active
- *  + duration:  from startTime to startTime+duration, the timerTask will be notifying (if set) the callback callback_tick.
- *
- * Upon TimerTask expiration, the TimerTask will notify (if set) the callback function callback_timeout.
- * Upon a call to the method cancel, the timer will be set expired, and (if set) the callback to callback_cancel will be
- * invoked.
- *
- * Timer notifications will be performed *BEFORE* scene loop.
- */
+
 (function() {
+    /**
+     * This class defines a timer action which is constrained to Scene time, so every Scene has the
+     * abbility to create its own TimerTask objects. They must not be created by calling scene's
+     * createTime method.
+     *
+     * <p>
+     * A TimerTask is defined at least by:
+     * <ul>
+     *  <li>startTime: since when the timer will be active
+     *  <li>duration:  from startTime to startTime+duration, the timerTask will be notifying (if set) the callback callback_tick.
+     * </ul>
+     * <p>
+     * Upon TimerTask expiration, the TimerTask will notify (if set) the callback function callback_timeout.
+     * Upon a call to the method cancel, the timer will be set expired, and (if set) the callback to callback_cancel will be
+     * invoked.
+     * <p>
+     * Timer notifications will be performed <strong>BEFORE<strong> scene loop.
+     *
+     * @constructor
+     *
+     */
     CAAT.TimerTask= function() {
         return this;
     };
@@ -41,23 +44,31 @@
         /**
          * Create a TimerTask.
          * The taskId will be set by the scene.
-         * @param startTime an integer indicating TimerTask enable time.
-         * @param duration an integer indicating TimerTask duration.
-         * @param callback_timeout on timeout callback function.
-         * @param callback_tick on tick callback function.
-         * @param callback_cancel on cancel callback function.
+         * @param startTime {number} an integer indicating TimerTask enable time.
+         * @param duration {number} an integer indicating TimerTask duration.
+         * @param callback_timeout {function( sceneTime {number}, timertaskTime{number}, timertask {CAAT.TimerTask} )} on timeout callback function.
+         * @param callback_tick {function( sceneTime {number}, timertaskTime{number}, timertask {CAAT.TimerTask} )} on tick callback function.
+         * @param callback_cancel {function( sceneTime {number}, timertaskTime{number}, timertask {CAAT.TimerTask} )} on cancel callback function.
+         *
+         * @return this
          */
         create: function( startTime, duration, callback_timeout, callback_tick, callback_cancel ) {
             this.startTime=         startTime;
             this.duration=          duration;
             this.callback_timeout=  callback_timeout;
             this.callback_tick=     callback_tick;
+            this.callback_cancel=   callback_cancel;
             return this;
         },
         /**
-         * Performs TimerTask operation.
-         * The task will check whether it is in frame time, and will either notify callback_timeout or callback_tick.
-         * @param time an integer indicating scene time.
+         * Performs TimerTask operation. The task will check whether it is in frame time, and will
+         * either notify callback_timeout or callback_tick.
+         *
+         * @param time {number} an integer indicating scene time.
+         * @return this
+         *
+         * @protected
+         *
          */
         checkTask : function(time) {
             var ttime= time;
@@ -76,16 +87,19 @@
         },
         /**
          * Reschedules this TimerTask by changing its startTime to current scene's time.
-         * @param time an integer indicating scene time.
+         * @param time {number} an integer indicating scene time.
+         * @return this
          */
         reset : function( time ) {
             this.remove= false;
             this.startTime=  time;
+            this.scene.ensureTimerTask(this);
             return this;
         },
         /**
-         * Cancels this timer by removing it on scene's next frame.
-         * The function callback_cancel will be called.
+         * Cancels this timer by removing it on scene's next frame. The function callback_cancel will
+         * be called.
+         * @return this
          */
         cancel : function() {
             this.remove= true;
@@ -99,6 +113,16 @@
 
 
 (function() {
+    /**
+     * Scene is the top level ActorContainer of the Director at any given time.
+     * The only time when 2 scenes could be active will be during scene change.
+     * An scene controls the way it enters/exits the scene graph. It is also the entry point for all
+     * input related and timed related events to every actor on screen.
+     *
+     * @constructor
+     * @extends CAAT.ActorContainer
+     *
+     */
 	CAAT.Scene= function() {
 		CAAT.Scene.superclass.constructor.call(this);
         this.timerList= [];
@@ -106,7 +130,7 @@
 		return this;
 	};
 	
-	extend( CAAT.Scene, CAAT.ActorContainer, {
+	CAAT.Scene.prototype= {
 		
 		easeContainerBehaviour:			null,   // Behavior container used uniquely for Scene switching.
 		easeContainerBehaviourListener: null,   // who to notify about container behaviour events. Array.
@@ -122,7 +146,7 @@
 
         /**
          * Check and apply timers in frame time.
-         * @param time the current Scene time.
+         * @param time {number} the current Scene time.
          */
         checkTimers : function(time) {
             var i=this.timerList.length-1;
@@ -134,14 +158,44 @@
             }
         },
         /**
-         * Creates a timer task. Timertask live and are related to scene's time.
-         * @param startTime an integer indicating the scene time this task must start executing at.
-         * @param duration an integer indicating the timerTask duration.
-         * @param callback_timeout timer on timeout callback function.
-         * @param callback_tick timer on tick callback function.
-         * @param callback_cancel timer on cancel callback function.
+         * Make sure the timertask is contained in the timer task list by adding it to the list in case it
+         * is not contained.
+         * @param timertask {CAAT.TimerTask} a CAAT.TimerTask object.
+         * @return this
+         */
+        ensureTimerTask : function( timertask ) {
+            if ( !this.hasTimer(timertask) ) {
+                this.timerList.push(timertask);
+            }
+            return this;
+        },
+        /**
+         * Check whether the timertask is in this scene's timer task list.
+         * @param timertask {CAAT.TimerTask} a CAAT.TimerTask object.
+         * @return {boolean} a boolean indicating whether the timertask is in this scene or not.
+         */
+        hasTimer : function( timertask ) {
+            var i=this.timerList.length-1;
+            while( i>=0 ) {
+                if ( this.timerList[i]==timertask ) {
+                    return true;
+                }
+                i--;
+            }
+
+            return false;
+        },
+        /**
+         * Creates a timer task. Timertask object live and are related to scene's time, so when an Scene
+         * is taken out of the Director the timer task is paused, and resumed on Scene restoration.
          *
-         * @return a CAAT.TimerTask class instance.
+         * @param startTime {number} an integer indicating the scene time this task must start executing at.
+         * @param duration {number} an integer indicating the timerTask duration.
+         * @param callback_timeout {function} timer on timeout callback function.
+         * @param callback_tick {function} timer on tick callback function.
+         * @param callback_cancel {function} timer on cancel callback function.
+         *
+         * @return {CAAT.TimerTask} a CAAT.TimerTask class instance.
          */
         createTimer : function( startTime, duration, callback_timeout, callback_tick, callback_cancel ) {
 
@@ -174,8 +228,8 @@
         /**
          * Scene animation method.
          * It extends Container's base behavior by adding timer control.
-         * @param director a CAAT.Director instance.
-         * @param time an integer indicating the Scene time the animation is being performed at.
+         * @param director {CAAT.Director} a CAAT.Director instance.
+         * @param time {number} an integer indicating the Scene time the animation is being performed at.
          */
         animate : function(director, time) {
             this.checkTimers(time);
@@ -183,10 +237,12 @@
             this.removeExpiredTimers();
         },
         /**
-         * Private.
          * Helper method to manage alpha transparency fading on Scene switch by the Director.
-         * @param time integer indicating the time in milliseconds the fading will take.
-         * @param isIn boolean indicating whether this Scene in the switch process is being brought in.
+         * @param time {number} integer indicating the time in milliseconds the fading will take.
+         * @param isIn {boolean} boolean indicating whether this Scene in the switch process is
+         * being brought in.
+         *
+         * @private
          */
 		createAlphaBehaviour: function(time, isIn) {
 			var ab= new CAAT.AlphaBehavior();
@@ -230,7 +286,7 @@
          * @param alpha boolean indicating whether fading will be applied to the Scene.
          * @param anchor integer indicating the Scene switch anchor.
          * @param isIn boolean indicating whether the scene will be brought in.
-         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         * @param interpolator {CAAT.Interpolator} a CAAT.Interpolator to apply to the Scene transition.
          */
 		easeTranslation : function( time, alpha, anchor, isIn, interpolator ) {
 
@@ -301,7 +357,7 @@
          * @param time integer indicating time in milliseconds for the Scene to be brought in.
          * @param alpha boolean indicating whether fading will be applied to the Scene.
          * @param anchor integer indicating the Scene switch anchor.
-         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         * @param interpolator {CAAT.Interpolator} a CAAT.Interpolator to apply to the Scene transition.
          * @param starttime integer indicating in milliseconds from which scene time the behavior will be applied.
          */
 		easeScaleIn : function(starttime,time,alpha,anchor,interpolator) {
@@ -314,7 +370,7 @@
          * @param time integer indicating time in milliseconds for the Scene to be taken away.
          * @param alpha boolean indicating whether fading will be applied to the Scene.
          * @param anchor integer indicating the Scene switch anchor.
-         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         * @param interpolator {CAAT.Interpolator} a CAAT.Interpolator instance to apply to the Scene transition.
          * @param starttime integer indicating in milliseconds from which scene time the behavior will be applied.
          */
 		easeScaleOut : function(starttime,time,alpha,anchor,interpolator) {
@@ -326,7 +382,7 @@
          * @param time integer indicating time in milliseconds for the Scene to be taken away.
          * @param alpha boolean indicating whether fading will be applied to the Scene.
          * @param anchor integer indicating the Scene switch anchor.
-         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         * @param interpolator {CAAT.Interpolator} a CAAT.Interpolator to apply to the Scene transition.
          * @param starttime integer indicating in milliseconds from which scene time the behavior will be applied.
          * @param isIn boolean indicating whether the Scene is being brought in.
          */
@@ -401,12 +457,11 @@
 			CAAT.Scene.superclass.addBehavior.call( this, this.easeContainerBehaviour );
 		},
 		/**
-         * Private.
          * Overriden method to disallow default behavior.
 		 * Do not use directly.
 		 */
 		addBehavior : function(behaviour) {
-			
+			return this;
 		},
         /**
          * Called from CAAT.Director to use Rotations for bringing in.
@@ -414,7 +469,7 @@
          * @param time integer indicating time in milliseconds for the Scene to be brought in.
          * @param alpha boolean indicating whether fading will be applied to the Scene.
          * @param anchor integer indicating the Scene switch anchor.
-         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         * @param interpolator {CAAT.Interpolator} a CAAT.Interpolator to apply to the Scene transition.
          */
 		easeRotationIn : function(time,alpha,anchor,interpolator) {
 			this.easeRotation(time,alpha,anchor,true, interpolator);
@@ -426,7 +481,7 @@
          * @param time integer indicating time in milliseconds for the Scene to be taken away.
          * @param alpha boolean indicating whether fading will be applied to the Scene.
          * @param anchor integer indicating the Scene switch anchor.
-         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         * @param interpolator {CAAT.Interpolator} a CAAT.Interpolator to apply to the Scene transition.
          */
 		easeRotationOut : function(time,alpha,anchor,interpolator) {
 			this.easeRotation(time,alpha,anchor,false,interpolator);
@@ -437,7 +492,7 @@
          * @param time integer indicating time in milliseconds for the Scene to be taken away or brought in.
          * @param alpha boolean indicating whether fading will be applied to the Scene.
          * @param anchor integer indicating the Scene switch anchor.
-         * @param interpolator CAAT.Interpolator to apply to the Scene transition.
+         * @param interpolator {CAAT.Interpolator} a CAAT.Interpolator to apply to the Scene transition.
          * @param isIn boolean indicating whehter the Scene is brought in.
          */
 		easeRotation : function(time,alpha,anchor,isIn,interpolator) {
@@ -496,7 +551,7 @@
          * Registers a listener for listen for transitions events.
          * Al least, the Director registers himself as Scene easing transition listener.
          * When the transition is done, it restores the Scene's capability of receiving events.
-         * @param listener an object which contains a method of the form <code>
+         * @param listener {function(caat_behavior,time,actor)} an object which contains a method of the form <code>
          * behaviorExpired( caat_behaviour, time, actor);
          */
 		setEaseListener : function( listener ) {
@@ -536,5 +591,7 @@
                 ctx.fillRect(0,0,this.width,this.height );
             }
         }
-	});
+	};
+
+    extend( CAAT.Scene, CAAT.ActorContainer, null);
 })();

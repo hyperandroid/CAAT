@@ -127,8 +127,26 @@ CAAT.getCanvasCoord= function __getCanvasCoord(point, e) {
         pposx= posx;
         pposy= posy;
 
-    	pposx-= CAAT.director[i].canvas.offsetLeft;
-    	pposy-= CAAT.director[i].canvas.offsetTop;
+        var node= CAAT.director[i].canvas;
+
+        /**
+         * traverse throught the hierarchy of contained html elements to get the correct coordinates offset
+         * on screen.
+         */
+        var px= -1, py=-1;
+
+        while( false==node instanceof HTMLBodyElement ) {
+
+            if ( px!=node.offsetLeft && py!=node.offsetTop ) {
+    	        pposx-= node.offsetLeft;
+    	        pposy-= node.offsetTop;
+                px= node.offsetLeft;
+                py= node.offsetTop;
+            }
+            node= node.parentNode ? node.parentNode : node.parentElement;
+        }
+
+//        console.log('enter ('+posx+','+posy+')  related ('+pposx+','+pposy+')');
 
         if ( CAAT.director[i].contains(pposx, pposy) ) {
             CAAT.targetDirector= CAAT.director[i];

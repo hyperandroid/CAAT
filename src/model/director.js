@@ -1,25 +1,33 @@
 /**
  * @author  Hyperandroid  ||  http://hyperandroid.com/
  *
- * Director is the animator scene graph manager.
- * The director elements is an ActorContainer itself. It manages different Scenes.
- * It is responsible for:
- *  + scene changes.
- *  + route input to the appropriate scene graph actor.
- *  + be the central point for resource caching.
- *  + manage the timeline.
- *
- *
- * TODO:
- *  + add more scene change transitions (translations and flip)
- *  + expose more events.
- *  + pump keyboard events
- *  + modify event pumping: prevent default, bubbling, etc.
- *
  **/
 
 
 (function() {
+    /**
+     * Director is the animator scene graph manager.
+     * <p>
+     * The director elements is an ActorContainer itself with the main responsibility of managing
+     * different Scenes.
+     * <p>
+     * It is responsible for:
+     * <ul>
+     * <li>scene changes.
+     * <li>route input to the appropriate scene graph actor.
+     * <li>be the central point for resource caching.
+     * <li>manage the timeline.
+     * <li>manage frame rate.
+     * <li>etc.
+     * </ul>
+     *
+     * <p>
+     * One document can contain different CAAT.Director instances which will be kept together in CAAT
+     * function.
+     *
+     * @constructor
+     * @extends CAAT.ActorContainer
+     */
 	CAAT.Director= function() {
 		CAAT.Director.superclass.constructor.call(this);
 
@@ -30,7 +38,7 @@
         return this;
 	};
 
-	extend( CAAT.Director, CAAT.ActorContainer, {
+	CAAT.Director.prototype= {
 
         debug:          false,  // flag indicating debug mode. It will draw affedted screen areas.
 
@@ -55,9 +63,12 @@
          * and the developer must explicitly add the canvas to the desired DOM position.
          * This method will also set the Canvas dimension to the specified values
          * by width and height parameters.
-         * @param width canvas width
-         * @param height canvas height
-         * @param canvas optional. A Canvas object.
+         *
+         * @param width {number} a canvas width
+         * @param height {number} a canvas height
+         * @param canvas {Canvas=} An optional Canvas object.
+         *
+         * @return this
          */
         initialize : function(width,height,canvas) {
 
@@ -91,6 +102,10 @@
 
             return this;
         },
+        /**
+         * Creates an initializes a Scene object.
+         * @return {CAAT.Scene}
+         */
         createScene : function() {
             var scene= new CAAT.Scene().create();
             this.addScene(scene);
@@ -102,7 +117,7 @@
          * This virtual timeline will provide each Scene with its own virtual timeline, and will only
          * feed time when the Scene is the current Scene, or is being switched.
          *
-         * @param time integer indicating the elapsed time between two consecutive frames of the
+         * @param time {number} integer indicating the elapsed time between two consecutive frames of the
          * Director.
          */
         render : function(time) {
@@ -151,16 +166,16 @@
 		},
         /**
          * This method draws an Scene to an offscreen canvas. This offscreen canvas is also a child of
-         * another Scene (transitionScene).
-         * So instead of drawing two scenes while transitioning from one to another, first of all an
-         * scene is drawn to offscreen, and that image is translated.
+         * another Scene (transitionScene). So instead of drawing two scenes while transitioning from one to another,
+         * first of all an scene is drawn to offscreen, and that image is translated.
+         * <p>
          * Until the creation of this method, both scenes where drawn while transitioning with its performance
          * penalty since drawing two scenes could be twice as expensive than drawing only one.
-         *
+         * <p>
          * Though a high performance increase, we should keep an eye on memory consumption.
          *
          * @param ctx a <code>canvas.getContext('2d')</code> instnce.
-         * @param scene the scene to draw offscreen.
+         * @param scene {CAAT.Scene} the scene to draw offscreen.
          */
         renderToContext : function( ctx, scene ) {
             ctx.globalAlpha=1;
@@ -190,12 +205,15 @@
         /**
          * Add a new Scene to Director's Scene list. By adding a Scene to the Director
          * does not mean it will be immediately visible, you should explicitly call either
+         * <ul>
          *  <li>easeIn
          *  <li>easeInOut
          *  <li>easeInOutRandom
          *  <li>setScene
          *  <li>or any of the scene switching methods
-         * @param scene an CAAT.Scene object.
+         * </ul>
+         *
+         * @param scene {CAAT.Scene} an CAAT.Scene object.
          */
 		addScene : function( scene ) {
 			scene.setBounds(0,0,this.width,this.height);
@@ -206,23 +224,27 @@
             }
 		},
         /**
-         * return the number of scenes contained in the Director.
+         * Get the number of scenes contained in the Director.
+         * @return {number} the number of scenes contained in the Director.
          */
 		getNumScenes : function() {
 			return this.scenes.length;
 		},
         /**
          * This method offers full control over the process of switching between any given two Scenes.
-         *
          * To apply this method, you must specify the type of transition to apply for each Scene and
          * the anchor to keep the Scene pinned at.
-         *
+         * <p>
          * The type of transition will be one of the following values defined in CAAT.Scene.prototype:
+         * <ul>
          *  <li>EASE_ROTATION
          *  <li>EASE_SCALE
          *  <li>EASE_TRANSLATION
+         * </ul>
          *
+         * <p>
          * The anchor will be any of these values defined in CAAT.Actor.prototype:
+         * <ul>
          *  <li>ANCHOR_CENTER
 		 *  <li>ANCHOR_TOP
 		 *  <li>ANCHOR_BOTTOM
@@ -232,7 +254,9 @@
 		 *  <li>ANCHOR_TOP_RIGHT
 		 *  <li>ANCHOR_BOTTOM_LEFT
 		 *  <li>ANCHOR_BOTTOM_RIGHT
+         * </ul>
          *
+         * <p>
          * In example, for an entering scene performing a EASE_SCALE transition, the anchor is the
          * point by which the scene will scaled.
          *
@@ -303,15 +327,18 @@
         /**
          * This method will switch between two given Scene indexes (ie, take away scene number 2,
          * and bring in scene number 5).
-         *
+         * <p>
          * It will randomly choose for each Scene the type of transition to apply and the anchor
          * point of each transition type.
-         *
+         * <p>
          * It will also set for different kind of transitions the following interpolators:
-         * EASE_ROTATION    -> ExponentialInOutInterpolator, exponent 4.
-         * EASE_SCALE       -> ElasticOutInterpolator, 1.1 and .4
-         * EASE_TRANSLATION -> BounceOutInterpolator
+         * <ul>
+         * <li>EASE_ROTATION    -> ExponentialInOutInterpolator, exponent 4.
+         * <li>EASE_SCALE       -> ElasticOutInterpolator, 1.1 and .4
+         * <li>EASE_TRANSLATION -> BounceOutInterpolator
+         * </ul>
          *
+         * <p>
          * These are the default values, and could not be changed by now.
          * This method in final instance delegates the process to easeInOutMethod.
          *
@@ -373,12 +400,11 @@
 		},
         /**
          * This method changes Director's current Scene to the scene index indicated by
-         * inSceneIndex parameter.
-         * The Scene running in the director won't be eased out.
+         * inSceneIndex parameter. The Scene running in the director won't be eased out.
          *
-         * @see CAAT.Interpolator
-         * @see CAAT.Actor
-         * @see CAAT.Scene
+         * @see {CAAT.Interpolator}
+         * @see {CAAT.Actor}
+         * @see {CAAT.Scene}
          *
          * @param inSceneIndex integer indicating the new Scene to set as current.
          * @param type integer indicating the type of transition to apply to bring the new current
@@ -413,7 +439,7 @@
         /**
          * Changes (or sets) the current Director scene to the index
          * parameter. There will be no transition on scene change.
-         * @param sceneIndex an integer indicating the index of the target Scene
+         * @param sceneIndex {number} an integer indicating the index of the target Scene
          * to be shown.
          */
 		setScene : function( sceneIndex ) {
@@ -435,10 +461,10 @@
          * It will apply random values for anchor and transition type.
          * @see easeInOutRandom
          *
-         * @param iNewSceneIndex integer indicating the index of the new scene to run on the Director.
-         * @param time integer indicating the time the Scene transition will take.
-         * @param alpha boolean indicating whether Scene transition should be fading.
-         * @param transition boolean indicating whether the scene change must smoothly animated.
+         * @param iNewSceneIndex {number} an integer indicating the index of the new scene to run on the Director.
+         * @param time {number} an integer indicating the time the Scene transition will take.
+         * @param alpha {boolean} a boolean indicating whether Scene transition should be fading.
+         * @param transition {boolean} a boolean indicating whether the scene change must smoothly animated.
          */
 		switchToScene : function( iNewSceneIndex, time, alpha, transition ) {
 			var currentSceneIndex= this.getSceneIndex(this.currentScene);
@@ -454,9 +480,9 @@
          * Sets the previous Scene in sequence as the current Scene.
          * @see switchToScene.
          *
-         * @param time integer indicating the time the Scene transition will take.
-         * @param alpha boolean indicating whether Scene transition should be fading.
-         * @param transition boolean indicating whether the scene change must smoothly animated.
+         * @param time {number} integer indicating the time the Scene transition will take.
+         * @param alpha {boolean} a boolean indicating whether Scene transition should be fading.
+         * @param transition {boolean} a boolean indicating whether the scene change must smoothly animated.
          */
 		switchToPrevScene : function(time, alpha, transition) {
 
@@ -477,9 +503,9 @@
          * Sets the previous Scene in sequence as the current Scene.
          * @see switchToScene.
          *
-         * @param time integer indicating the time the Scene transition will take.
-         * @param alpha boolean indicating whether Scene transition should be fading.
-         * @param transition boolean indicating whether the scene change must smoothly animated.
+         * @param time {number} integer indicating the time the Scene transition will take.
+         * @param alpha {boolean} a boolean indicating whether Scene transition should be fading.
+         * @param transition {boolean} a boolean indicating whether the scene change must smoothly animated.
          */
 		switchToNextScene: function(time, alpha, transition) {
 
@@ -508,9 +534,13 @@
 		},
 		mouseDrag : function(mouseEvent) {
 		},
-		/**
-		 * Scene easing listener.
-		 */
+        /**
+		 * Scene easing listener. Notifies scenes when they're about to be activated (set as current
+         * director's scene).
+         *
+         * @param scene {CAAT.Scene} the scene that has just been brought in or taken out of the director.
+         * @param b_easeIn {boolean} scene enters or exits ?
+         */
 		easeEnd : function( scene, b_easeIn ) {
 			// scene is going out
 			if ( !b_easeIn ) {
@@ -525,58 +555,62 @@
 		},
         /**
          * Return the index for a given Scene object contained in the Director.
-         * @param scene
+         * @param scene {CAAT.Scene}
          */
 		getSceneIndex : function( scene ) {
-			for( var i in this.scenes ) {
+			for( i=0; i<this.scenes.length; i++ ) {
 				if ( this.scenes[i]==scene ) {
-					return i>>0;
+					return i;
 				}
 			}
 			return -1;
 		},
         /**
          * Get a concrete director's scene.
-         * @param index an integer indicating the scene index.
-         * @return a CAAT.Scene object instance or null if the index is oob.
+         * @param index {number} an integer indicating the scene index.
+         * @return {CAAT.Scene} a CAAT.Scene object instance or null if the index is oob.
          */
         getScene : function( index ) {
             return this.scenes[index];
         },
         /**
          * Return the index of the current scene in the Director's scene list.
+         * @return {number} the current scene's index.
          */
 		getCurrentSceneIndex : function() {
 			return this.getSceneIndex(this.currentScene);
 		},
         /**
          * Return the running browser name.
+         * @return {string} the browser name.
          */
 		getBrowserName : function() {
 			return this.browserInfo.browser;
 		},
         /**
          * Return the running browser version.
+         * @return {string} the browser version.
          */
 		getBrowserVersion : function() {
 			return this.browserInfo.version;
 		},
         /**
          * Return the operating system name.
+         * @return {string} the os name.
          */
 		getOSName : function() {
 			return this.browserInfo.OS;
 		},
         /**
          * Gets the resource with the specified resource name.
-         * The Director holds a parameter called <code>imagesCache</code>
+         * The Director holds a collection called <code>imagesCache</code>
          * where you can store a JSON of the form
          *  <code>[ { id: imageId, image: imageObject } ]</code>.
          * This structure will be used as a resources cache.
          * There's a CAAT.ImagePreloader class to preload resources and
          * generate this structure on loading finalization.
          *
-         * @param sId an String identifying a resource.
+         * @param sId {object} an String identifying a resource.
          */
         getImage : function(sId) {
             for( var i=0; i<this.imagesCache.length; i++ ) {
@@ -588,7 +622,10 @@
             return null;
         },
         /**
+         * Adds an audio to the cache.
          *
+         * @see CAAT.AudioManager.addAudio
+         * @return this
          */
         addAudio : function( id, url ) {
 
@@ -596,38 +633,46 @@
 
             return this;
         },
+        /**
+         * Plays the audio instance identified by the id.
+         * @param id {object} the object used to store a sound in the audioCache.
+         */
         audioPlay : function( id ) {
             this.audioManager.play(id);
         },
+        /**
+         * Loops an audio instance identified by the id.
+         * @param id {object} the object used to store a sound in the audioCache.
+         *
+         * @return {HTMLElement|null} the value from audioManager.loop
+         */
         audioLoop : function( id ) {
-            this.audioManager.loop(id);
+            return this.audioManager.loop(id);
         },
         /**
-         * Removes Director scenes.
+         * Removes Director's scenes.
          */
         emptyScenes : function() {
             this.scenes= [];
         },
         /**
-         * The Director makes children addition synchronously.
-         * @param scene
+         * Adds an scene to this Director.
+         * @param scene {CAAT.Scene} a scene object.
          */
         addChild : function(scene) {
             scene.parent= this;
             this.childrenList.push(scene);
         },
         /**
-         * Starts the director animation.
-         * If no scene is explicitly selected, the current Scene will
+         * Starts the director animation.If no scene is explicitly selected, the current Scene will
          * be the first scene added to the Director.
+         * <p>
          * The fps parameter will set the animation quality. Higher values,
          * means CAAT will try to render more frames in the same second (at the
          * expense of cpu power at least until hardware accelerated canvas rendering
-         * context are available).
+         * context are available). A value of 60 is a high frame rate and should not be exceeded.
          *
-         * A value of 60 is a high frame rate and should not be exceeded.
-         *
-         * @param fps integer value indicating the target frames per second to run
+         * @param fps {number} integer value indicating the target frames per second to run
          * the animation at.
          */
         loop : function(fps, callback) {
@@ -654,7 +699,7 @@
         /**
          * This method states whether the director must clear background before rendering
          * each frame.
-         * @param clear a boolean.
+         * @param clear {boolean} a boolean indicating whether to clear the screen before scene draw.
          * @return this.
          */
         setClear : function(clear) {
@@ -662,13 +707,16 @@
             return this
         },
         /**
-         * Returns this Director's AudioManager instance.
+         * Get this Director's AudioManager instance.
+         * @return {CAAT.AudioManager} the AudioManager instance.
          */
         getAudioManager : function() {
             return this.audioManager;
         }
 
-    });
+    };
+
+    extend( CAAT.Director, CAAT.ActorContainer, null);
 })();
 
 // TODO: ease in out flip.

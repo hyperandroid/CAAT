@@ -9,24 +9,40 @@
  *
  **/
 
-/**
- * a CAAT.Interpolator is a function which transforms a value into another.
- * It has some constraints:
- *
- * <ul>
- * <li>The input values must be between 0 and 1.
- * <li>Output values will be between 0 and 1.
- * <li>Every Interpolator has at least an entering boolean parameter called pingpong. if set to true, the Interpolator
- * will set values from 0..1 and back from 1..0. So half the time for each range.
- * </ul>
- *
- * CAAt.Interpolator is defined by a createXXXX method which sets up an internal getPosition(time) function.
- * You could set as an Interpolator up any object which exposes a method getPosition(time) and returns a CAAT.Point or
- * an object of the form {x:float, y:float}. x value will be the same value as that of the time parameter, and y will hold
- * a value between 0 and 1 indicating the resulting value for the parameter time.
- *
- */
+
 (function() {
+    /**
+     * a CAAT.Interpolator is a function which transforms a value into another but with some constraints:
+     *
+     * <ul>
+     * <li>The input values must be between 0 and 1.
+     * <li>Output values will be between 0 and 1.
+     * <li>Every Interpolator has at least an entering boolean parameter called pingpong. if set to true, the Interpolator
+     * will set values from 0..1 and back from 1..0. So half the time for each range.
+     * </ul>
+     *
+     * <p>
+     * CAAt.Interpolator is defined by a createXXXX method which sets up an internal getPosition(time)
+     * function. You could set as an Interpolator up any object which exposes a method getPosition(time)
+     * and returns a CAAT.Point or an object of the form {x:{number}, y:{number}}.
+     * <p>
+     * In the return value, the x attribute's value will be the same value as that of the time parameter,
+     * and y attribute will hold a value between 0 and 1 with the resulting value of applying the
+     * interpolation function for the time parameter.
+     *
+     * <p>
+     * For am exponential interpolation, the getPosition function would look like this:
+     * <code>function getPosition(time) { return { x:time, y: Math.pow(time,2) }Ê}</code>.
+     * meaning that for time=0.5, a value of 0,5*0,5 should use instead.
+     *
+     * <p>
+     * For a visual understanding of interpolators see tutorial 4 interpolators, or play with technical
+     * demo 1 where a SpriteActor moves along a path and the way it does can be modified by every
+     * out-of-the-box interpolator.
+     *
+     * @constructor
+     *
+     */
     CAAT.Interpolator = function() {
         this.interpolated= new CAAT.Point();
         return this;
@@ -38,10 +54,16 @@
         paintScale:     90,     // the size of the interpolation draw on screen in pixels.
 
         /**
-         * @param bPingPong
-         * @param bInverse values will be from 1 to 0.
+         * Set a linear interpolation function.
+         *
+         * @param bPingPong {boolean}
+         * @param bInverse {boolean} will values will be from 1 to 0 instead of 0 to 1 ?.
          */
         createLinearInterpolator : function(bPingPong, bInverse) {
+            /**
+             * Linear and inverse linear interpolation function.
+             * @param time {number}
+             */
             this.getPosition= function getPosition(time) {
 
                 var orgTime= time;
@@ -85,6 +107,13 @@
 
             return this;
         },
+        /**
+         * Set an exponential interpolator function. The function to apply will be Math.pow(time,exponent).
+         * This function starts with 0 and ends in values of 1.
+         *
+         * @param exponent {number} exponent of the function.
+         * @param bPingPong {boolean}
+         */
         createExponentialInInterpolator : function(exponent, bPingPong) {
             this.getPosition= function getPosition(time) {
                 var orgTime= time;
@@ -101,6 +130,13 @@
 
             return this;
         },
+        /**
+         * Set an exponential interpolator function. The function to apply will be 1-Math.pow(time,exponent).
+         * This function starts with 1 and ends in values of 0.
+         *
+         * @param exponent {number} exponent of the function.
+         * @param bPingPong {boolean}
+         */
         createExponentialOutInterpolator : function(exponent, bPingPong) {
             this.getPosition= function getPosition(time) {
                 var orgTime= time;
@@ -117,6 +153,15 @@
 
             return this;
         },
+        /**
+         * Set an exponential interpolator function. Two functions will apply:
+         * Math.pow(time*2,exponent)/2 for the first half of the function (t<0.5) and
+         * 1-Math.abs(Math.pow(time*2-2,exponent))/2 for the second half (t>=.5)
+         * This function starts with 0 and goes to values of 1 and ends with values of 0.
+         *
+         * @param exponent {number} exponent of the function.
+         * @param bPingPong {boolean}
+         */
         createExponentialInOutInterpolator : function(exponent, bPingPong) {
             this.getPosition= function getPosition(time) {
                 var orgTime= time;
@@ -140,8 +185,10 @@
         /**
          * Creates a Quadric bezier curbe as interpolator.
          *
-         * @param p0,p1,p2 CAAT.Point instances.
-         * @param bPingPong a boolean indicating if the interpolator must ping-pong.
+         * @param p0 {CAAT.Point} a CAAT.Point instance.
+         * @param p1 {CAAT.Point} a CAAT.Point instance.
+         * @param p2 {CAAT.Point} a CAAT.Point instance.
+         * @param bPingPong {boolean} a boolean indicating if the interpolator must ping-pong.
          */
         createQuadricBezierInterpolator : function(p0,p1,p2,bPingPong) {
             this.getPosition= function getPosition(time) {
@@ -165,8 +212,11 @@
         /**
          * Creates a Cubic bezier curbe as interpolator.
          *
-         * @param p0,p1,p2,p3 CAAT.Point instances.
-         * @param bPingPong a boolean indicating if the interpolator must ping-pong.
+         * @param p0 {CAAT.Point} a CAAT.Point instance.
+         * @param p1 {CAAT.Point} a CAAT.Point instance.
+         * @param p2 {CAAT.Point} a CAAT.Point instance.
+         * @param p3 {CAAT.Point} a CAAT.Point instance.
+         * @param bPingPong {boolean} a boolean indicating if the interpolator must ping-pong.
          */
         createCubicBezierInterpolator : function(p0,p1,p2,p3,bPingPong) {
             this.getPosition= function getPosition(time) {
@@ -271,8 +321,8 @@
             return this;
         },
         /**
-         * Private method.
-         * @param time
+         * @param time {number}
+         * @private
          */
         bounce : function(time) {
             if ((time /= 1) < (1 / 2.75)) {
@@ -342,8 +392,8 @@
         },
         /**
          * Paints an interpolator on screen.
-         * @param director a CAAT.Director instance.
-         * @param time an integer indicating the scene time the Interpolator will be drawn at. This value is useless.
+         * @param director {CAAT.Director} a CAAT.Director instance.
+         * @param time {number} an integer indicating the scene time the Interpolator will be drawn at. This value is useless.
          */
         paint : function(director,time) {
 
@@ -362,10 +412,10 @@
             canvas.restore();
         },
         /**
-         * Gets an array of coordinates which define the polyline of intepolator's curve contour.
+         * Gets an array of coordinates which define the polyline of the intepolator's curve contour.
          * Values for both coordinates range from 0 to 1. 
-         * @param iSize an integer indicating the number of contour segments.
-         * @return array of object of the form {x:float, y:float}.
+         * @param iSize {number} an integer indicating the number of contour segments.
+         * @return array {[CAAT.Point]} of object of the form {x:float, y:float}.
          */
         getContour : function(iSize) {
             var contour=[];
@@ -375,6 +425,9 @@
 
             return contour;
         },
+        /**
+         *
+         */
         enumerateInterpolators : function() {
             return [
                 new CAAT.Interpolator().createLinearInterpolator(false, false), 'Linear pingpong=false, inverse=false',

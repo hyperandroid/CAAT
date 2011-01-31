@@ -42,21 +42,12 @@ function __scene1_generateInterpolators(director, scene, pathBehavior) {
                  setBounds( 0, 0, min, min ).
                  setStrokeStyle( 'blue' );
 
-            actor.mouseMove= function(mouseEvent) {
-                mouseEvent.source.parent.actorPointed( mouseEvent.point.x, mouseEvent.point.y, mouseEvent.source );
-            }
             actor.mouseExit= function(mouseEvent) {
-
                 if ( mouseEvent.source!=selectedInterpolatorActor ) {
                     mouseEvent.source.setFillStyle(null);
                 }
-
-                mouseEvent.source.parent.actorMouseExit(mouseEvent);
             }
             actor.mouseEnter= function(mouseEvent) {
-
-                mouseEvent.source.parent.actorMouseEnter(mouseEvent);
-
                 if ( mouseEvent.source!=selectedInterpolatorActor ) {
                     mouseEvent.source.setFillStyle('#f0f0f0');
                 }

@@ -97,7 +97,7 @@ function __createArm( root, angle, segments, armSegmentSizeW, armSegmentSizeH, a
 
     for( i=0; i<segments; i++ ) {
 
-        var color= CAAT.ColorUtils.prototype.interpolate(
+        var color= CAAT.Color.prototype.interpolate(
                 255,255,0,
                 255,128,0,
                 segments,
