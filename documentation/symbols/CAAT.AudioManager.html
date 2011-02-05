@@ -357,10 +357,36 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.AudioManager.html#addAudio">addAudio</a></b>(id, url, endplaying_callback)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.AudioManager.html#addAudio">addAudio</a></b>(id, array_of_url_or_domnodes, endplaying_callback)
 								</div>
-								<div class="description">creates an Audio object and adds it to the audio cache in case the url points to a
-suitable audio file to be played.</div>
+								<div class="description">creates an Audio object and adds it to the audio cache.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.AudioManager.html#addAudioElement">addAudioElement</a></b>(id, element, endplaying_callback)
+								</div>
+								<div class="description">Adds an elements to the audio cache.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.AudioManager.html#addAudioFromDomNode">addAudioFromDomNode</a></b>(id, audio, endplaying_callback)
+								</div>
+								<div class="description">Tries to add an audio tag to the available list of valid audios.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.AudioManager.html#addAudioFromURL">addAudioFromURL</a></b>(id, url, endplaying_callback)
+								</div>
+								<div class="description">Tries to add an audio tag to the available list of valid audios.</div>
 							</td>
 						</tr>
 					
@@ -511,12 +537,44 @@ Be aware of Audio.canPlay, is able to return 'yes', 'no', 'maybe', ..., so anyth
 					<div class="fixedFont">
 					
 					
-					<b>addAudio</b>(id, url, endplaying_callback)
+					<b>addAudio</b>(id, array_of_url_or_domnodes, endplaying_callback)
 					
 					</div>
 					<div class="description">
-						creates an Audio object and adds it to the audio cache in case the url points to a
-suitable audio file to be played.
+						creates an Audio object and adds it to the audio cache.
+This function expects audio data described by two elements, an id and an object which will
+describe an audio element to be associated with the id. The object will be of the form
+array, dom node or a url string.
+
+<p>
+The audio element can be one of the two forms:
+
+<ol>
+ <li>Either an HTMLAudioElement/Audio object or a string url.
+ <li>An array of elements of the previous form.
+</ol>
+
+<p>
+When the audio attribute is an array, this function will iterate throught the array elements
+until a suitable audio element to be played is found. When this is the case, the other array
+elements won't be taken into account. The valid form of using this addAudio method will be:
+
+<p>
+1.<br>
+addAudio( id, url } ). In this case, if the resource pointed by url is
+not suitable to be played (i.e. a call to the Audio element's canPlayType method return 'no')
+no resource will be added under such id, so no sound will be played when invoking the play(id)
+method.
+<p>
+2.<br>
+addAudio( id, dom_audio_tag ). In this case, the same logic than previous case is applied, but
+this time, the parameter url is expected to be an audio tag present in the html file.
+<p>
+3.<br>
+addAudio( id, [array_of_url_or_domaudiotag] ). In this case, the function tries to locate a valid
+resource to be played in any of the elements contained in the array. The array element's can
+be any type of case 1 and 2. As soon as a valid resource is found, it will be associated to the
+id in the valid audio resources to be played list.
 						
 						
 					</div>
@@ -531,22 +589,19 @@ suitable audio file to be played.
 									<b>id</b>
 									
 								</dt>
-								<dd>{object} an object to reference the audio object. Tipically a string.</dd>
+								<dd></dd>
 							
 								<dt>
-									<b>url</b>
+									<b>array_of_url_or_domnodes</b>
 									
 								</dt>
-								<dd>{string|HTMLElement} an url pointing to an audio resource or an HTMLAudioElement
-object.</dd>
+								<dd></dd>
 							
 								<dt>
 									<b>endplaying_callback</b>
 									
 								</dt>
-								<dd>{function} a callback function to notify on audio finalization. The
-function is of the form <code>function(id{string})</code>. The id parameter is the associated id
-in the cache.</dd>
+								<dd></dd>
 							
 							</dl>
 						
@@ -558,6 +613,172 @@ in the cache.</dd>
 							<dt class="heading">Returns:</dt>
 							
 								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="addAudioElement"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					<span class="light">{boolean}</span>
+					<b>addAudioElement</b>(id, element, endplaying_callback)
+					
+					</div>
+					<div class="description">
+						Adds an elements to the audio cache.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>id</b>
+									
+								</dt>
+								<dd>{object} an object to associate the audio element (if suitable to be played).</dd>
+							
+								<dt>
+									<b>element</b>
+									
+								</dt>
+								<dd>{URL|HTMLElement} an url or html audio tag.</dd>
+							
+								<dt>
+									<b>endplaying_callback</b>
+									
+								</dt>
+								<dd>{function} callback to be called upon sound end.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{boolean}</span> a boolean indicating whether the browser can play this resource.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="addAudioFromDomNode"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					<span class="light">{boolean}</span>
+					<b>addAudioFromDomNode</b>(id, audio, endplaying_callback)
+					
+					</div>
+					<div class="description">
+						Tries to add an audio tag to the available list of valid audios. The audio element comes from
+an HTMLAudioElement.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>id</b>
+									
+								</dt>
+								<dd>{object} an object to associate the audio element (if suitable to be played).</dd>
+							
+								<dt>
+									<b>audio</b>
+									
+								</dt>
+								<dd>{HTMLAudioElement} a DOM audio node.</dd>
+							
+								<dt>
+									<b>endplaying_callback</b>
+									
+								</dt>
+								<dd>{function} callback to be called upon sound end.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{boolean}</span> a boolean indicating whether the browser can play this resource.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="addAudioFromURL"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					<span class="light">{boolean}</span>
+					<b>addAudioFromURL</b>(id, url, endplaying_callback)
+					
+					</div>
+					<div class="description">
+						Tries to add an audio tag to the available list of valid audios. The audio is described by a url.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>id</b>
+									
+								</dt>
+								<dd>{object} an object to associate the audio element (if suitable to be played).</dd>
+							
+								<dt>
+									<b>url</b>
+									
+								</dt>
+								<dd>{string} a string describing an url.</dd>
+							
+								<dt>
+									<b>endplaying_callback</b>
+									
+								</dt>
+								<dd>{function} callback to be called upon sound end.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{boolean}</span> a boolean indicating whether the browser can play this resource.</dd>
 							
 							</dl>
 						
@@ -740,7 +961,7 @@ callback function will be called with the associated sound id in the cache.
 					<a name="loop"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{HTMLElement|null}</span>
+					<span class="light">{HTMLElement}</span>
 					<b>loop</b>(id)
 					
 					</div>
@@ -748,6 +969,9 @@ callback function will be called with the associated sound id in the cache.
 						This method creates a new AudioChannel to loop the sound with.
 It returns an Audio object so that the developer can cancel the sound loop at will.
 The user must call <code>pause()</code> method to stop playing a loop.
+<p>
+Firefox does not honor the loop property, so looping is performed by attending end playing
+event on audio elements.
 						
 						
 					</div>
@@ -773,7 +997,7 @@ The user must call <code>pause()</code> method to stop playing a loop.
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{HTMLElement|null}</span> an Audio instance if a valid sound id is supplied. Null otherwise</dd>
+								<dd><span class="light fixedFont">{HTMLElement}</span> an Audio instance if a valid sound id is supplied. Null otherwise</dd>
 							
 							</dl>
 						
@@ -911,7 +1135,7 @@ the channel free for any other sound to be played in.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Mon Jan 31 2011 21:59:13 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Sat Feb 05 2011 19:44:43 GMT+0100 (CET)
 		</div>
 	</body>
 </html>
