@@ -22,7 +22,11 @@
          * @static
          */
         save : function( key, data ) {
-            localStorage.setItem( key, JSON.stringify(data) );
+            try {
+                localStorage.setItem( key, JSON.stringify(data) );
+            } catch(e) {
+                // eat it
+            }
             return this;
         },
         /**
@@ -33,7 +37,11 @@
          * @static
          */
         load : function( key ) {
-            return JSON.parse(localStorage.getItem( key ));
+            try {
+                return JSON.parse(localStorage.getItem( key ));
+            } catch(e) {
+                return null;
+            }
         },
         /**
          * Removes a value stored in local storage.
@@ -43,7 +51,11 @@
          * @static
          */
         remove : function( key ) {
-            localStorage.removeItem(key);
+            try {
+                localStorage.removeItem(key);
+            } catch(e) {
+                // eat it
+            }
             return this;
         }
     };

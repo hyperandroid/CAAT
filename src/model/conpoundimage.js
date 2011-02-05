@@ -79,11 +79,11 @@
          * @return this
          */
 	    paintInvertedH : function( canvas, imageIndex, x, y ) {
-	    	var sx0= Math.floor(imageIndex%this.cols)*this.singleWidth;
-	        var sy0= Math.floor(imageIndex/this.cols)*this.singleHeight;
+	    	var sx0= ((imageIndex%this.cols)|0)*this.singleWidth;
+	        var sy0= ((imageIndex/this.cols)|0)*this.singleHeight;
 	       
 	        canvas.save();
-		        canvas.translate( x+this.singleWidth, y );
+		        canvas.translate( ((.5+x)|0)+this.singleWidth, (.5+y)|0 );
 		        canvas.scale(-1, 1);
 		        
 		        canvas.drawImage( this.image,
@@ -104,11 +104,11 @@
          * @return this
          */
 	    paintInvertedV : function( canvas, imageIndex, x, y ) {
-	    	var sx0= Math.floor(imageIndex%this.cols)*this.singleWidth;
-	        var sy0= Math.floor(imageIndex/this.cols)*this.singleHeight;
+	    	var sx0= ((imageIndex%this.cols)|0)*this.singleWidth;
+	        var sy0= ((imageIndex/this.cols)|0)*this.singleHeight;
 	    	
 	        canvas.save();
-	        	canvas.translate( x, y+this.singleHeight );
+	        	canvas.translate( (x+.5)|0, (.5+y+this.singleHeight)|0 );
 	        	canvas.scale(1, -1);
 	        	
 		        canvas.drawImage(
@@ -130,11 +130,11 @@
          * @return this
          */
 	    paintInvertedHV : function( canvas, imageIndex, x, y ) {
-	    	var sx0= Math.floor(imageIndex%this.cols)*this.singleWidth;
-	        var sy0= Math.floor(imageIndex/this.cols)*this.singleHeight;
+	    	var sx0= ((imageIndex%this.cols)|0)*this.singleWidth;
+	        var sy0= ((imageIndex/this.cols)|0)*this.singleHeight;
 	    	
 	        canvas.save();
-		    	canvas.translate( x, y+this.singleHeight );
+		    	canvas.translate( (x+.5)|0, (.5+y+this.singleHeight)|0 );
 		    	canvas.scale(1, -1);
 	        	canvas.translate( this.singleWidth, 0 );
 	        	canvas.scale(-1, 1);
@@ -159,8 +159,8 @@
          */
 	    paint : function( canvas, imageIndex, x, y ) {
 	
-	        var sx0= Math.floor(imageIndex%this.cols)*this.singleWidth;
-	        var sy0= Math.floor(imageIndex/this.cols)*this.singleHeight;
+	        var sx0= ((imageIndex%this.cols)|0)*this.singleWidth;
+	        var sy0= ((imageIndex/this.cols)|0)*this.singleHeight;
 
             if ( sx0<0 || sy0<0 ) {
                 return this;
@@ -168,7 +168,7 @@
 	        canvas.drawImage(
 	        		this.image, 
 					sx0, sy0, this.singleWidth, this.singleHeight,
-					x, y, this.singleWidth, this.singleHeight );
+					(x+.5)|0, (y+.5)|0, this.singleWidth, this.singleHeight );
 
             return this;
 	    },
@@ -184,12 +184,12 @@
          * @return this
          */
 	    paintScaled : function( canvas, imageIndex, x, y, w, h ) {
-	        var sx0= Math.floor(imageIndex%this.cols)*this.singleWidth;
-	        var sy0= Math.floor(imageIndex/this.cols)*this.singleHeight;
+	        var sx0= ((imageIndex%this.cols)|0)*this.singleWidth;
+	        var sy0= ((imageIndex/this.cols)|0)*this.singleHeight;
 	        canvas.drawImage( 
 	        		this.image, 
 					sx0, sy0, this.singleWidth, this.singleHeight,
-					x, y, w, h );
+					(x+.5)|0, (y+.5)|0, w, h );
 
             return this;
 	    },

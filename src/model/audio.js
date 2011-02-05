@@ -98,64 +98,147 @@
             return this;
         },
         /**
-         * creates an Audio object and adds it to the audio cache in case the url points to a
-         * suitable audio file to be played.
+         * Tries to add an audio tag to the available list of valid audios. The audio is described by a url.
+         * @param id {object} an object to associate the audio element (if suitable to be played).
+         * @param url {string} a string describing an url.
+         * @param endplaying_callback {function} callback to be called upon sound end.
          *
-         * @param id {object} an object to reference the audio object. Tipically a string.
-         * @param url {string|HTMLElement} an url pointing to an audio resource or an HTMLAudioElement
-         * object.
-         * @param endplaying_callback {function} a callback function to notify on audio finalization. The
-         * function is of the form <code>function(id{string})</code>. The id parameter is the associated id
-         * in the cache.
+         * @return {boolean} a boolean indicating whether the browser can play this resource.
          *
-         * @return this
+         * @private
          */
-        addAudio : function( id, url, endplaying_callback ) {
-            var audio= null;
+        addAudioFromURL : function( id, url, endplaying_callback ) {
             var extension= null;
+            var audio= document.createElement('audio');
 
-            if ( typeof url == "string" ) {
+            if ( null!=audio ) {
 
-                audio= document.createElement('audio');
-                if ( null!=audio ) {
-
-                    if(!audio.canPlayType) {
-                        return this;
-                    }
-
-                    extension= url.substr(url.lastIndexOf('.')+1);
-                    var canplay= audio.canPlayType(this.audioTypes[extension]);
-
-                    if(canplay!=="" && canplay!=="no") {
-                        audio.src= url;
-                        audio.preload = "auto";
-                        audio.load();
-                        if ( endplaying_callback ) {
-                            audio.caat_callback= endplaying_callback;
-                            audio.caat_id= id;
-                        }
-                        this.audioCache.push( { id:id, audio:audio } );
-                    }
+                if(!audio.canPlayType) {
+                    return false;
                 }
-            } else {
-                try {
-                    if ( url instanceof HTMLAudioElement ) {
-                        audio= url;
-                        extension= audio.src.substr(audio.src.lastIndexOf('.')+1);
-                        if ( audio.canPlayType(this.audioTypes[extension]) ) {
-                            if ( endplaying_callback ) {
-                                audio.caat_callback= endplaying_callback;
-                                audio.caat_id= id;
-                            }
-                            this.audioCache.push( { id:id, audio:audio } );
-                        }
+
+                extension= url.substr(url.lastIndexOf('.')+1);
+                var canplay= audio.canPlayType(this.audioTypes[extension]);
+
+                if(canplay!=="" && canplay!=="no") {
+                    audio.src= url;
+                    audio.preload = "auto";
+                    audio.load();
+                    if ( endplaying_callback ) {
+                        audio.caat_callback= endplaying_callback;
+                        audio.caat_id= id;
                     }
-                }
-                catch(e) {
-                    
+                    this.audioCache.push( { id:id, audio:audio } );
+
+                    return true;
                 }
             }
 
+            return false;
+        },
+        /**
+         * Tries to add an audio tag to the available list of valid audios. The audio element comes from
+         * an HTMLAudioElement.
+         * @param id {object} an object to associate the audio element (if suitable to be played).
+         * @param audio {HTMLAudioElement} a DOM audio node.
+         * @param endplaying_callback {function} callback to be called upon sound end.
+         *
+         * @return {boolean} a boolean indicating whether the browser can play this resource.
+         *
+         * @private
+         */
+        addAudioFromDomNode : function( id, audio, endplaying_callback ) {
+
+            var extension= audio.src.substr(audio.src.lastIndexOf('.')+1);
+            if ( audio.canPlayType(this.audioTypes[extension]) ) {
+                if ( endplaying_callback ) {
+                    audio.caat_callback= endplaying_callback;
+                    audio.caat_id= id;
+                }
+                this.audioCache.push( { id:id, audio:audio } );
+
+                return true;
+            }
+
+            return false;
+        },
+        /**
+         * Adds an elements to the audio cache.
+         * @param id {object} an object to associate the audio element (if suitable to be played).
+         * @param element {URL|HTMLElement} an url or html audio tag.
+         * @param endplaying_callback {function} callback to be called upon sound end.
+         *
+         * @return {boolean} a boolean indicating whether the browser can play this resource.
+         *
+         * @private
+         */
+        addAudioElement : function( id, element, endplaying_callback ) {
+            if ( typeof element == "string" ) {
+                return this.addAudioFromURL( id, element, endplaying_callback );
+            } else {
+                try {
+                    if ( element instanceof HTMLAudioElement ) {
+                        return this.addAudioFromDomNode( id, element, endplaying_callback );
+                    }
+                }
+                catch(e) {
+                }
+            }
+
+            return false;
+        },
+        /**
+         * creates an Audio object and adds it to the audio cache.
+         * This function expects audio data described by two elements, an id and an object which will
+         * describe an audio element to be associated with the id. The object will be of the form
+         * array, dom node or a url string.
+         *
+         * <p>
+         * The audio element can be one of the two forms:
+         *
+         * <ol>
+         *  <li>Either an HTMLAudioElement/Audio object or a string url.
+         *  <li>An array of elements of the previous form.
+         * </ol>
+         *
+         * <p>
+         * When the audio attribute is an array, this function will iterate throught the array elements
+         * until a suitable audio element to be played is found. When this is the case, the other array
+         * elements won't be taken into account. The valid form of using this addAudio method will be:
+         *
+         * <p>
+         * 1.<br>
+         * addAudio( id, url } ). In this case, if the resource pointed by url is
+         * not suitable to be played (i.e. a call to the Audio element's canPlayType method return 'no')
+         * no resource will be added under such id, so no sound will be played when invoking the play(id)
+         * method.
+         * <p>
+         * 2.<br>
+         * addAudio( id, dom_audio_tag ). In this case, the same logic than previous case is applied, but
+         * this time, the parameter url is expected to be an audio tag present in the html file.
+         * <p>
+         * 3.<br>
+         * addAudio( id, [array_of_url_or_domaudiotag] ). In this case, the function tries to locate a valid
+         * resource to be played in any of the elements contained in the array. The array element's can
+         * be any type of case 1 and 2. As soon as a valid resource is found, it will be associated to the
+         * id in the valid audio resources to be played list.
+         *
+         * @return this
+         */
+        addAudio : function( id, array_of_url_or_domnodes, endplaying_callback ) {
+
+            if ( array_of_url_or_domnodes instanceof Array ) {
+                /*
+                 iterate throught array elements until we can safely add an audio element.
+                 */
+                for( var i=0; i<array_of_url_or_domnodes.length; i++ ) {
+                    if ( this.addAudioElement(id, array_of_url_or_domnodes[i], endplaying_callback) ) {
+                        break;
+                    }
+                }
+            } else {
+                this.addAudioElement(id, array_of_url_or_domnodes, endplaying_callback);
+            }
 
             return this;
         },
@@ -205,7 +288,7 @@
          * Firefox does not honor the loop property, so looping is performed by attending end playing
          * event on audio elements.
          *
-         * @return {HTMLElement|null} an Audio instance if a valid sound id is supplied. Null otherwise
+         * @return {HTMLElement} an Audio instance if a valid sound id is supplied. Null otherwise
          */
         loop : function( id ) {
 
@@ -250,9 +333,14 @@
          * @return this
          */
         endSound : function() {
-            for( var i=0; i<this.workingChannels.length; i++ ) {
+            var i;
+            for( i=0; i<this.workingChannels.length; i++ ) {
                 this.workingChannels[i].pause();
                 this.channels.push( this.workingChannels[i] );
+            }
+
+            for( i=0; i<this.loopingChannels.length; i++ ) {
+                this.loopingChannels[i].pause();
             }
 
             return this;

@@ -452,10 +452,10 @@
 	    setBounds : function(x, y, w, h)  {
 	    	//this.x= x;
 	    	//this.y= y;
-            this.x= x>>0;
-            this.y= y>>0;
-	    	this.width= w>>0;
-	    	this.height= h>>0;
+            this.x= x|0;
+            this.y= y|0;
+	    	this.width= w|0;
+	    	this.height= h|0;
 
             return this;
 	    },
@@ -472,8 +472,8 @@
 	    setLocation : function( x, y ) {
 	        //this.x= x;
 	        //this.y= y;
-            this.x= x>>0;
-            this.y= y>>0;
+            this.x= x|0;
+            this.y= y|0;
 
             return this;
 	    },
@@ -1423,7 +1423,7 @@
          * @return this
          */
         setOffsetX : function(x) {
-            this.offsetX= x;
+            this.offsetX= x|0;
             return this;
         },
         /**
@@ -1433,7 +1433,7 @@
          * @return this
          */
         setOffsetY : function(y) {
-            this.offsetY= y;
+            this.offsetY= y|0;
             return this;
         },
         /**
@@ -1488,7 +1488,7 @@
 					this.paintInvertedHV( ctx);
 					break;
 				default:
-					this._paint( ctx);
+					ctx.drawImage(this.image,this.offsetX,this.offsetY);
 			}
 		},
 	    paintInvertedH : function( ctx ) {
@@ -1513,14 +1513,6 @@
 	        	ctx.scale(-1, 1);
 		        ctx.drawImage(this.image,this.offsetX,this.offsetY);
 	        ctx.restore();
-	    },
-        /**
-         *
-         * @param ctx
-         * @private
-         */
-	    _paint : function( ctx ) {
-	        ctx.drawImage(this.image,this.offsetX,this.offsetY);
 	    }
 	};
 
@@ -1713,7 +1705,7 @@
 
                 var tx=0;
                 if ( this.textAlign=='center') {
-                    tx= this.width/2;
+                    tx= (this.width/2)|0;
                 } else if ( this.textAlign=='right' ) {
                     tx= this.width;
                 }
@@ -1770,7 +1762,7 @@
 
 				canvas.save();
 
-					canvas.translate( p0.x, p0.y );
+					canvas.translate( (.5+p0.x)|0, (.5+p0.y)|0 );
 					canvas.rotate( angle );
                     if ( this.fill ) {
 					    canvas.fillText(caracter,0,0);
