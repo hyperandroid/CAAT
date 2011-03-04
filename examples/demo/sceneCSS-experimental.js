@@ -6,7 +6,7 @@
  *
  */
 
-function __scene10(director) {
+function __scene12(director) {
 
     var i, j;
     var scene= new CAAT.Scene();
@@ -85,12 +85,12 @@ function __scene10(director) {
         }
     }
 
-    __scene10_text(director,scene);
+    __scene12_text(director,scene);
 
     return scene;
 }
 
-function __scene10_text(director,scene) {
+function __scene12_text(director,scene) {
 
 	var cc= new CAAT.CSSActor().
             create().

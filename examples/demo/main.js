@@ -140,6 +140,7 @@ function __CAAT_director_initialize(director) {
 
     director.emptyScenes();
 
+    
 	director.addScene(  __scene1(director) );
 	director.addScene(  __scene2(director) );
 	director.addScene(  __scene3(director) );
@@ -350,8 +351,18 @@ function __CAAT__loadingScene(director) {
  */
 function __CAAT_init() {
 
+    var m= new CAAT.Matrix().setRotation(Math.PI/4).multiply(
+            CAAT.Matrix.prototype.scale(2,2) );
+
     var canvascontainer= document.createElement('div');
 	var director = new CAAT.Director().initialize(680,500);
+
+    CAAT.registerKeyListener( function(key,action) {
+        if ( key==68 && action=='up') {
+            director.debug= !director.debug;
+        }
+    });
+
     canvascontainer.appendChild( director.canvas );
     document.body.appendChild(canvascontainer);
 
@@ -375,11 +386,13 @@ function __CAAT_init() {
         ],
 
         function( counter, images ) {
-            scene_loading.loadedImage(counter, images.length);
+
             if ( counter==images.length ) {
                 director.imagesCache= images;
                 scene_loading.finishedLoading();
             }
+
+            scene_loading.loadedImage(counter, images.length);
         }
     );
 
@@ -387,4 +400,3 @@ function __CAAT_init() {
 }
 
 window.addEventListener('load', __CAAT_init, false);
-

@@ -56,7 +56,7 @@
                     var imageData= ctx.getImageData(0,0,canvas.width,canvas.height);
                 }
                 catch(e) {
-                    CAAT.log('error pixelgrabbing.');
+                    CAAT.log('error pixelgrabbing.', image);
                     return null;
                 }
                 return imageData;

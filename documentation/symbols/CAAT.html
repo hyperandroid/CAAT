@@ -247,6 +247,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.LinearPath.html">CAAT.LinearPath</a></li>
 	
+	<li><a href="../symbols/CAAT.Matrix3.html">CAAT.Matrix3</a></li>
+	
 	<li><a href="../symbols/CAAT.MatrixStack.html">CAAT.MatrixStack</a></li>
 	
 	<li><a href="../symbols/CAAT.modules.html">CAAT.modules</a></li>
@@ -386,6 +388,16 @@ ul.inheritsList
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
+								CAAT.<b><a href="../symbols/CAAT.html#.keyListeners">keyListeners</a></b>
+								</div>
+								<div class="description">Pressed key codes.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
 								CAAT.<b><a href="../symbols/CAAT.html#.prevOnDeviceMotion">prevOnDeviceMotion</a></b>
 								</div>
 								<div class="description">Accelerometer related data.</div>
@@ -445,9 +457,18 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">CAAT.<b><a href="../symbols/CAAT.html#.log">log</a></b>(msg)
+								<div class="fixedFont">CAAT.<b><a href="../symbols/CAAT.html#.GLTexturePage">GLTexturePage</a></b>()
 								</div>
 								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">CAAT.<b><a href="../symbols/CAAT.html#.log">log</a></b>()
+								</div>
+								<div class="description">Log function which deals with window's Console object.</div>
 							</td>
 						</tr>
 					
@@ -484,6 +505,15 @@ ul.inheritsList
 								<div class="fixedFont">CAAT.<b><a href="../symbols/CAAT.html#.RegisterDirector">RegisterDirector</a></b>(director)
 								</div>
 								<div class="description">Register and keep track of every CAAT.Director instance in the document.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">CAAT.<b><a href="../symbols/CAAT.html#.registerKeyListener">registerKeyListener</a></b>(f)
+								</div>
+								<div class="description">Register key events notification function.</div>
 							</td>
 						</tr>
 					
@@ -542,9 +572,6 @@ ul.inheritsList
 					<div class="description">
 						Allow visual debugging artifacts.
 						
-							<br />
-							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_mouseevent.js.html">mouseevent.js</a>.
-						
 						
 					</div>
 					
@@ -592,6 +619,31 @@ ul.inheritsList
 					</div>
 					<div class="description">
 						Flag to signal whether events are enabled for CAAT.
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_mouseevent.js.html">mouseevent.js</a>.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".keyListeners"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">CAAT.</span><b>keyListeners</b>
+					
+					</div>
+					<div class="description">
+						Pressed key codes.
 						
 							<br />
 							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_mouseevent.js.html">mouseevent.js</a>.
@@ -740,18 +792,18 @@ Every contained actor will be laid out in a row in the desired orientation.
 
 					<hr />
 				
-					<a name=".log"> </a>
+					<a name=".GLTexturePage"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">CAAT.</span><b>log</b>(msg)
+					<span class="light">CAAT.</span><b>GLTexturePage</b>()
 					
 					</div>
 					<div class="description">
 						
 						
 							<br />
-							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_mouseevent.js.html">mouseevent.js</a>.
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_webgl_glTexturePage.js.html">glTexturePage.js</a>.
 						
 						
 					</div>
@@ -759,16 +811,30 @@ Every contained actor will be laid out in a row in the desired orientation.
 					
 					
 						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>msg</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".log"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">CAAT.</span><b>log</b>()
+					
+					</div>
+					<div class="description">
+						Log function which deals with window's Console object.
+						
+						
+					</div>
+					
+					
+					
 						
 						
 						
@@ -932,6 +998,45 @@ TODO: add events for event pumping:
 						
 						
 
+					<hr />
+				
+					<a name=".registerKeyListener"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">CAAT.</span><b>registerKeyListener</b>(f)
+					
+					</div>
+					<div class="description">
+						Register key events notification function.
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_mouseevent.js.html">mouseevent.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>f</b>
+									
+								</dt>
+								<dd>{function(key {integer}, action {'down'|'up'})}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
 					
 				
 			
@@ -946,7 +1051,7 @@ TODO: add events for event pumping:
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Sat Feb 05 2011 19:44:42 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Fri Mar 04 2011 21:10:09 GMT+0100 (CET)
 		</div>
 	</body>
 </html>

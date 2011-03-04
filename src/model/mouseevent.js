@@ -24,34 +24,42 @@
 	CAAT.MouseEvent.prototype= {
 		screenPoint:	null,
 		point:			null,
-		modifiers:		0,
 		time:			0,
 		source:			null,
-		
-		SHIFT:			16,
-		CONTROL:		17,
-		ALT:			18,
 
-		SHIFT_MASK:		1,
-		CONTROL_MASK:	2,
-		ALT_MASK:		4,
-		
-		init : function( x,y,modifiers,source,screenPoint ) {
+        shift:          false,
+        control:        false,
+        alt:            false,
+        meta:           false,
+
+        sourceEvent:    null,
+
+		init : function( x,y,sourceEvent,source,screenPoint ) {
 			this.point.set(x,y);
-			this.modifiers= modifiers;
-			this.source= source;
-			this.screenPoint= screenPoint;
+			this.source=        source;
+			this.screenPoint=   screenPoint;
+            this.alt =          sourceEvent.altKey;
+            this.control =      sourceEvent.ctrlKey;
+            this.shift =        sourceEvent.shiftKey;
+            this.meta =         sourceEvent.metaKey;
+            this.sourceEvent=   sourceEvent;
 			return this;
 		},
 		isAltDown : function() {
-			return this.modifiers&this.ALT_MASK;
+			return this.alt;
 		},
 		isControlDown : function() {
-			return this.modifiers&this.CONTROL_MASK;
+			return this.control;
 		},
 		isShiftDown : function() {
-			return this.modifiers&this.SHIFT_MASK;
-		}
+			return this.shift;
+		},
+        isMetaDown: function() {
+            return this.meta;
+        },
+        getSourceEvent : function() {
+            return this.sourceEvent;
+        }
 	};
 })();
 
@@ -76,21 +84,46 @@ CAAT.DRAG_THRESHOLD_X=      5;
 CAAT.DRAG_THRESHOLD_Y=      5;
 
 /**
- * Allow visual debugging artifacts.
+ * Pressed key codes.
  */
-CAAT.DEBUG=                 true;
-
-CAAT.log= function(msg) {
-    if (window.console) {
-        window.console.log(msg);
-    }
-};
+CAAT.keyListeners= [];
 
 /**
- * @deprecated
- * @param director {CAAT.Director}
+ * Register key events notification function.
+ * @param f {function(key {integer}, action {'down'|'up'})}
+ */
+CAAT.registerKeyListener= function(f) {
+    CAAT.keyListeners.push(f);
+}
+
+/**
+  * @param director {CAAT.Director}
  */
 CAAT.GlobalEnableEvents= function __GlobalEnableEvents(director) {
+
+    if ( CAAT.GlobalEventsEnabled ) {
+        return;
+    }
+
+    this.GlobalEventsEnabled= true;
+
+    window.addEventListener('keydown',
+        function(evt,c) {
+            var key = (evt.which) ? evt.which : evt.keyCode;
+            for( var i=0; i<CAAT.keyListeners.length; i++ ) {
+                CAAT.keyListeners[i](key,'down');
+            }
+        },
+        false);
+
+    window.addEventListener('keyup',
+        function(evt,c) {
+            var key = (evt.which) ? evt.which : evt.keyCode;
+            for( var i=0; i<CAAT.keyListeners.length; i++ ) {
+                CAAT.keyListeners[i](key,'up');
+            }
+        },
+        false );
 };
 
 /**
@@ -102,6 +135,8 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
         CAAT.director=[];
     }
     CAAT.director.push(this);
+
+    CAAT.GlobalEnableEvents();
 };
 
 /**

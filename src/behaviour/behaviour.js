@@ -580,7 +580,7 @@
      *
      */
 	CAAT.ScaleBehavior= function() {
-		CAAT.RotateBehavior.superclass.constructor.call(this);
+		CAAT.ScaleBehavior.superclass.constructor.call(this);
 		this.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
 		return this;		
 	};

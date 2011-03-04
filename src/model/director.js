@@ -42,8 +42,6 @@
         this.isMouseDown=       false;
         this.lastSelectedActor= null;
         this.dragging=          false;
-        this.modifiers=         0;
-
 
         return this;
 	};
@@ -59,7 +57,6 @@
         isMouseDown:        false,  // is the left mouse button pressed ?
         lastSelectedActor:  null,   // director's last actor receiving input.
         dragging:           false,  // is in drag mode ?
-        modifiers:          0,      // input event modifiers.
 
         // other attributes
 
@@ -77,6 +74,19 @@
         transitionScene:    null,
 
         browserInfo:        null,
+
+        gl:                 null,
+        glEnabled:          false,
+        vertexPositionBuffer:   null,
+        vertexUVBuffer:     null,
+        vertexIndexBuffer:  null,
+
+        pMatrix:            null,       // projection matrix
+        shaderProgram:      null,       // shader texturing
+        glTexture:          null,
+        coords:             null,       // Float32Array
+        coordsIndex:        0,
+
 
         /**
          * This method performs Director initialization. Must be called once.
@@ -121,6 +131,110 @@
             return this;
         },
         /**
+         * Experimental.
+         * Initialize a gl enabled director.
+         * @param width
+         * @param height
+         * @param canvas
+         */
+        initializeGL : function( width, height, canvas ) {
+
+            var me= this, i;
+
+            function createGeometry(gl) {
+
+                var maxTris=8192;
+
+                // vertices info
+                me.vertexPositionBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, me.vertexPositionBuffer );
+
+                me.coords= new Float32Array(maxTris*12);
+                gl.bufferData(gl.ARRAY_BUFFER, me.coords, gl.STATIC_DRAW);
+                gl.vertexAttribPointer(me.shaderProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+
+                // uv info
+                me.vertexUVBuffer= gl.createBuffer();
+                gl.bindBuffer(gl.ARRAY_BUFFER, me.vertexUVBuffer);
+                var textureCoords = [];
+
+                for( i=0; i<maxTris; i++ ) {
+                    textureCoords.push(0);
+                    textureCoords.push(1.0);
+
+                    textureCoords.push(1.0);
+                    textureCoords.push(1.0);
+
+                    textureCoords.push(1.0);
+                    textureCoords.push(0);
+
+                    textureCoords.push(0);
+                    textureCoords.push(0);
+                }
+                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoords), gl.STATIC_DRAW);
+                gl.vertexAttribPointer(me.shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+
+                // vertex index
+                me.vertexIndexBuffer = gl.createBuffer();
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, me.vertexIndexBuffer);
+                var vertexIndex = [];
+                for( i=0; i<maxTris; i++ ) {
+                    vertexIndex.push(0 + i*4);
+                    vertexIndex.push(1 + i*4);
+                    vertexIndex.push(2 + i*4);
+
+                    vertexIndex.push(0 + i*4);
+                    vertexIndex.push(2 + i*4);
+                    vertexIndex.push(3 + i*4);
+                }
+                gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertexIndex), gl.STATIC_DRAW);
+
+
+            };
+
+            canvas= canvas || document.createElement('canvas');
+            canvas.width= width;
+            canvas.height=height;
+
+            try {
+                this.gl = canvas.getContext("experimental-webgl");
+                this.gl.viewportWidth = canvas.width;
+                this.gl.viewportHeight = canvas.height;
+            } catch(e) {
+            }
+
+            if (this.gl) {
+                this.setBounds(0, 0, canvas.width, canvas.height);
+                this.create();
+                this.canvas= canvas;
+                this.crc= this.ctx;
+                this.enableEvents();
+                this.timeline= new Date().getTime();
+
+                this.shaderProgram= initShaders(this.gl);
+                createGeometry(this.gl);
+
+                this.pMatrix = makePerspective(90, width / height, 0.1, 3000.0, height );
+                this.gl.uniformMatrix4fv(
+                        this.shaderProgram.pMatrixUniform,
+                        false,
+                        new Float32Array(
+                                this.pMatrix.flatten()));
+
+                this.gl.clearColor(0.0, 0.0, 0.0, 1.0);
+                this.gl.clearDepth(1.0);
+                this.gl.enable(this.gl.DEPTH_TEST);
+                this.gl.depthFunc(this.gl.LESS);
+//                this.gl.disable(this.gl.BLEND);
+                this.glEnabled= true;
+            } else {
+                // fallback to non gl enabled canvas.
+                return this.initialize(width,height,canvas);    
+            }
+
+            return this;
+        },
+        /**
          * Creates an initializes a Scene object.
          * @return {CAAT.Scene}
          */
@@ -128,6 +242,69 @@
             var scene= new CAAT.Scene().create();
             this.addScene(scene);
             return scene;
+        },
+        /**
+         * Render elements.
+         * <p>
+         * Los elementos deberian estar ordenados por shader y geometria.
+         * @param coords {Array} cuad coordinates array. .
+         */
+        glRender : function() {
+
+            var gl= this.gl;
+            
+//            gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer );
+                    gl.bufferData(gl.ARRAY_BUFFER, this.coords, gl.STATIC_DRAW);
+                var numtris= 6*this.coordsIndex/12;
+//            gl.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, 3, gl.FLOAT, false, 0, 0);
+
+
+//            gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexUVBuffer );
+//            gl.vertexAttribPointer(this.shaderProgram.textureCoordAttribute, 2, gl.FLOAT, false, 0, 0);
+
+//            gl.activeTexture(gl.TEXTURE0);
+//            gl.bindTexture(gl.TEXTURE_2D, this.glTexture);
+//            gl.uniform1i(this.shaderProgram.samplerUniform, 0);
+
+//            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vertexIndexBuffer );
+            gl.drawElements(gl.TRIANGLES, numtris, gl.UNSIGNED_SHORT, 0);
+
+
+        },
+        glExtractCoords : function(actor) {
+            if ( false==actor instanceof CAAT.Actor ) {
+                var i= actor.getNumChildren()-1;
+                while( i>=0 ) {
+                    this.glExtractCoords(actor.childrenList[i]);
+                    i--;
+                }
+            }
+
+            var vv= actor.viewVertices;
+            var z=  -this.canvas.height/2;
+
+            this.coords[this.coordsIndex++]= vv[0].x;
+            this.coords[this.coordsIndex++]= vv[0].y;
+            this.coords[this.coordsIndex++]= z;
+
+            this.coords[this.coordsIndex++]= vv[1].x;
+            this.coords[this.coordsIndex++]= vv[1].y;
+            this.coords[this.coordsIndex++]= z;
+
+            this.coords[this.coordsIndex++]= vv[2].x;
+            this.coords[this.coordsIndex++]= vv[2].y;
+            this.coords[this.coordsIndex++]= z;
+
+            this.coords[this.coordsIndex++]= vv[3].x;
+            this.coords[this.coordsIndex++]= vv[3].y;
+            this.coords[this.coordsIndex++]= z;
+
+            return this;
+
         },
         /**
          * This is the entry point for the animation system of the Director.
@@ -139,49 +316,80 @@
          * Director.
          */
         render : function(time) {
+
 			this.time+= time;
-			this.crc.globalAlpha=1;
-            this.crc.globalCompositeOperation='source-over';
 
-            if ( this.clear ) {
-                this.crc.clearRect(0,0,this.width,this.height);
-            }
-
-			this.crc.setTransform(1,0,0,1,0,0);
+            this.setupRender(time);
 
             /**
-             * calculate animable elements and their bbox.
+             * draw director active scenes.
              */
-            var i;
-            var tt;
+            var ne= this.childrenList.length;
+            if ( this.glEnabled ) {
 
-			for( i=0; i<this.childrenList.length; i++ ) {
-				if (this.childrenList[i].isInAnimationFrame(this.time)) {
-                    tt= this.childrenList[i].time - this.childrenList[i].start_time;
-					this.childrenList[i].animate(this, tt);
-				}
-			}
+                this.coordsIndex= 0;
 
-            /**
-             * draw actors on scene.
-             */
-			for( i=0; i<this.childrenList.length; i++ ) {
-				if (this.childrenList[i].isInAnimationFrame(this.time)) {
-					this.crc.save();
-                    tt= this.childrenList[i].time - this.childrenList[i].start_time;
-					this.childrenList[i].paintActor(this, tt);
-                    this.childrenList[i].time+= time;
-					this.crc.restore();
-
-                    if ( this.debug ) {
-                        this.childrenList[i].drawScreenBoundingBox(this, tt);
+                ne--;
+                while( ne>=0 ) {
+                    var actor= this.childrenList[ne];
+                    if (actor.isInAnimationFrame(this.time)) {
+                        actor.wdirty= false;
+                        this.glExtractCoords( actor );
                     }
-				}
-			}
+                    actor.time+= time;
+
+                    ne--;
+                }
+
+                this.glRender();
+
+            } else {
+                this.ctx.globalAlpha=1;
+                this.ctx.globalCompositeOperation='source-over';
+
+                if ( this.clear ) {
+                    this.ctx.clearRect(0,0,this.width,this.height);
+                }
+
+
+                for( var i=0; i<ne; i++ ) {
+                    if (this.childrenList[i].isInAnimationFrame(this.time)) {
+
+                        var tt= this.childrenList[i].time - this.childrenList[i].start_time;
+
+                        this.ctx.save();
+                        this.childrenList[i].paintActor(this, tt);
+                        this.ctx.restore();
+                        if ( this.debug ) {
+                            this.ctx.strokeStyle='red';
+                            this.childrenList[i].drawScreenBoundingBox(this, tt);
+                        }
+
+                        this.childrenList[i].time+= time;
+                    }
+                }
+            }
 
             this.endAnimate(this,time);
 
 		},
+        /**
+         * calculate and keep track of animable elements.
+         * model view matrices and world model view matrices are already set up.
+         * AABB are set up.
+         *
+         * @param time {number} director time
+         * @return this
+         */
+        setupRender : function(time) {
+
+			for( var i=0; i<this.childrenList.length; i++ ) {
+                var tt= this.childrenList[i].time - this.childrenList[i].start_time;
+                this.childrenList[i].animate(this, tt);
+			}
+
+            return this;
+        },
         /**
          * This method draws an Scene to an offscreen canvas. This offscreen canvas is also a child of
          * another Scene (transitionScene). So instead of drawing two scenes while transitioning from one to another,
@@ -779,55 +987,21 @@
             var canvas= this.canvas;
             var me= this;
 
-            canvas.addEventListener('keydown',
-                function(evt,c) {
-                    var key = (evt.which) ? evt.which : evt.keyCode;
-                    switch( key ) {
-                    case CAAT.MouseEvent.prototype.SHIFT:
-                        me.modifiers|=CAAT.MouseEvent.prototype.SHIFT_MASK;
-                        break;
-                    case CAAT.MouseEvent.prototype.CONTROL:
-                        me.modifiers|=CAAT.MouseEvent.prototype.CONTROL_MASK;
-                        break;
-                    case CAAT.MouseEvent.prototype.ALT:
-                        me.modifiers|=CAAT.MouseEvent.prototype.ALT_MASK;
-                        break;
-                    }
-                },
-                false);
-
-            canvas.addEventListener('keyup',
-                function(evt,c) {
-                    var key = (evt.which) ? evt.which : evt.keyCode;
-                    switch( key ) {
-                    case CAAT.MouseEvent.prototype.SHIFT:
-                        me.modifiers&=~CAAT.MouseEvent.prototype.SHIFT_MASK;
-                        break;
-                    case CAAT.MouseEvent.prototype.CONTROL:
-                        me.modifiers&=~CAAT.MouseEvent.prototype.CONTROL_MASK;
-                        break;
-                    case CAAT.MouseEvent.prototype.ALT:
-                        me.modifiers&=~CAAT.MouseEvent.prototype.ALT_MASK;
-                        break;
-                    case 68:    // D
-                        if ( CAAT.DEBUG ) {
-                            me.debug= !me.debug;
-                        }
-                        break;
-                    }
-                },
-                false );
-
-
             canvas.addEventListener('mouseup',
                     function(e) {
                         me.isMouseDown = false;
+                        me.getCanvasCoord(me.mousePoint, e);
+
+                        var pos;
+
                         if (null != me.lastSelectedActor) {
+                            pos= me.lastSelectedActor.viewToModel(new CAAT.Point( me.mousePoint.x, me.mousePoint.y ));
+
                             me.lastSelectedActor.mouseUp(
                                     new CAAT.MouseEvent().init(
-                                            me.lastSelectedActor.rpoint.x,
-                                            me.lastSelectedActor.rpoint.y,
-                                            me.modifiers,
+                                            pos.x,
+                                            pos.y,
+                                            e,
                                             me.lastSelectedActor,
                                             me.screenMousePoint));
                         }
@@ -836,9 +1010,9 @@
                             if (null != me.lastSelectedActor) {
                                 me.lastSelectedActor.mouseClick(
                                         new CAAT.MouseEvent().init(
-                                                me.lastSelectedActor.rpoint.x,
-                                                me.lastSelectedActor.rpoint.y,
-                                                me.modifiers,
+                                                pos.x,
+                                                pos.y,
+                                                e,
                                                 me.lastSelectedActor,
                                                 me.screenMousePoint));
                             }
@@ -854,19 +1028,22 @@
                         me.getCanvasCoord(me.mousePoint, e);
 
                         me.isMouseDown = true;
-                        me.lastSelectedActor = me.findActorAtPosition(me.mousePoint);
+                        me.lastSelectedActor = me.findActorAtPosition(me.mousePoint, new CAAT.Point(me.mousePoint.x,me.mousePoint.y));
                         var px= me.mousePoint.x;
                         var py= me.mousePoint.y;
 
                         if (null != me.lastSelectedActor) {
+
+                            me.lastSelectedActor.viewToModel( me.mousePoint );
+
                             // to calculate mouse drag threshold
                             me.prevMousePoint.x= px;
                             me.prevMousePoint.y= py;
                             me.lastSelectedActor.mouseDown(
                                     new CAAT.MouseEvent().init(
-                                            me.lastSelectedActor.rpoint.x,
-                                            me.lastSelectedActor.rpoint.y,
-                                            me.modifiers,
+                                            me.mousePoint.x,
+                                            me.mousePoint.y,
+                                            e,
                                             me.lastSelectedActor,
                                             me.screenMousePoint));
                         }
@@ -877,13 +1054,17 @@
                     function(e) {
                         me.getCanvasCoord(me.mousePoint, e);
 
-                        me.lastSelectedActor = me.findActorAtPosition(me.mousePoint);
+                        me.lastSelectedActor = me.findActorAtPosition(me.mousePoint, new CAAT.Point(me.mousePoint.x,me.mousePoint.y));
                         if (null != me.lastSelectedActor) {
+
+                            var pos= new CAAT.Point( me.mousePoint.x, me.mousePoint.y );
+                            me.lastSelectedActor.viewToModel(pos);
+
                             me.lastSelectedActor.mouseEnter(
                                     new CAAT.MouseEvent().init(
-                                            me.lastSelectedActor.rpoint.x,
-                                            me.lastSelectedActor.rpoint.y,
-                                            me.modifiers,
+                                            pos.x,
+                                            pos.y,
+                                            e,
                                             me.lastSelectedActor,
                                             me.screenMousePoint));
                         }
@@ -893,11 +1074,16 @@
             canvas.addEventListener('mouseout',
                     function(e) {
                         if (null != me.lastSelectedActor) {
+
+                            me.getCanvasCoord(me.mousePoint, e);
+                            var pos= new CAAT.Point( me.mousePoint.x, me.mousePoint.y );
+                            me.lastSelectedActor.viewToModel(pos);
+
                             me.lastSelectedActor.mouseExit(
                                     new CAAT.MouseEvent().init(
-                                            0,
-                                            0,
-                                            me.modifiers,
+                                            pos.x,
+                                            pos.y,
+                                            e,
                                             me.lastSelectedActor,
                                             me.screenMousePoint));
                             me.lastSelectedActor = null;
@@ -923,37 +1109,39 @@
 
                             me.dragging= true;
                             if (null != me.lastSelectedActor.parent) {
-                                me.lastSelectedActor.parent.inverseTransformCoord(me.mousePoint);
+                                me.lastSelectedActor.parent.viewToModel(me.mousePoint);
                             }
                             me.lastSelectedActor.mouseDrag(
                                     new CAAT.MouseEvent().init(
                                             me.mousePoint.x,
                                             me.mousePoint.y,
-                                            me.modifiers,
+                                            e,
                                             me.lastSelectedActor,
                                             me.screenMousePoint));
                             return;
                         }
 
-                        var lactor = me.findActorAtPosition(me.mousePoint);
+                        var lactor = me.findActorAtPosition(me.mousePoint, new CAAT.Point(me.mousePoint.x,me.mousePoint.y));
+                        var pos= lactor.viewToModel( new CAAT.Point(me.mousePoint.x, me.mousePoint.y) );
 
                         // cambiamos de actor.
                         if (lactor != me.lastSelectedActor) {
                             if (null != me.lastSelectedActor) {
+                                var posExit= me.lastSelectedActor.viewToModel( new CAAT.Point(me.mousePoint.x, me.mousePoint.y) );
                                 me.lastSelectedActor.mouseExit(
                                         new CAAT.MouseEvent().init(
-                                                me.mousePoint.x,
-                                                me.mousePoint.y,
-                                                me.modifiers,
+                                                posExit.x,
+                                                posExit.y,
+                                                e,
                                                 me.lastSelectedActor,
                                                 me.screenMousePoint));
                             }
                             if (null != lactor) {
                                 lactor.mouseEnter(
                                         new CAAT.MouseEvent().init(
-                                                lactor.rpoint.x,
-                                                lactor.rpoint.y,
-                                                me.modifiers,
+                                                pos.x,
+                                                pos.y,
+                                                e,
                                                 lactor,
                                                 me.screenMousePoint));
                             }
@@ -962,9 +1150,9 @@
                         if (null != lactor) {
                             me.lastSelectedActor.mouseMove(
                                     new CAAT.MouseEvent().init(
-                                            me.lastSelectedActor.rpoint.x,
-                                            me.lastSelectedActor.rpoint.y,
-                                            me.modifiers,
+                                            pos.x,
+                                            pos.y,
+                                            e,
                                             me.lastSelectedActor,
                                             me.screenMousePoint));
                         }
@@ -975,11 +1163,14 @@
                     function(e) {
                         me.getCanvasCoord(me.mousePoint, e);
                         if (null != me.lastSelectedActor) {
+
+                            me.lastSelectedActor.viewToModel(me.mousePoint.x, me.mousePoint.y);
+
                             me.lastSelectedActor.mouseDblClick(
                                     new CAAT.MouseEvent().init(
-                                            me.lastSelectedActor.rpoint.x,
-                                            me.lastSelectedActor.rpoint.y,
-                                            me.modifiers,
+                                            me.mousePoint.x,
+                                            me.mousePoint.y,
+                                            e,
                                             me.lastSelectedActor,
                                             me.screenMousePoint));
                         }

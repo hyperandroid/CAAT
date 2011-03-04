@@ -16,15 +16,17 @@
      *
      * @constructor
      */
-	CAAT.Point= function(xpos, ypos) {
-		this.x = xpos || 0;
-		this.y = ypos || 0;
+	CAAT.Point= function(xpos, ypos, zpos) {
+		this.x= xpos || 0;
+		this.y= ypos || 0;
+        this.z= zpos || 0;
 		return this;
 	};
 	
 	CAAT.Point.prototype= {
 		x:	0,
 		y: 	0,
+        z: 0,
 
         /**
          * Sets this point coordinates.
@@ -33,9 +35,10 @@
          *
          * @return this
          */
-		set : function(x,y) {
-			this.x= x;
-			this.y= y;
+		set : function(x,y,z) {
+			this.x= x||0;
+			this.y= y||0;
+            this.z= z||0;
 			return this;
 		},
         /**
@@ -44,7 +47,7 @@
          */
         clone : function() {
             var p= new CAAT.Point();
-            p.set( this.x, this.y );
+            p.set( this.x, this.y, this.z );
             return p;
         },
         /**
@@ -54,9 +57,10 @@
          *
          * @return this
          */
-        translate : function(x,y) {
+        translate : function(x,y,z) {
             this.x+= x;
             this.y+= y;
+            this.z+= z||0;
 
             return this;
         },
@@ -68,6 +72,7 @@
 		translatePoint: function(aPoint) {
 		    this.x += aPoint.x;
 		    this.y += aPoint.y;
+            this.z += aPoint.z;
 		    return this;
 		},
         /**
@@ -78,6 +83,7 @@
 		subtract: function(aPoint) {
 			this.x -= aPoint.x;
 			this.y -= aPoint.y;
+            this.z -= aPoint.z;
 			return this;
 		},
         /**
@@ -88,6 +94,7 @@
 		multiply: function(factor) {
 			this.x *= factor;
 			this.y *= factor;
+            this.z *= factor;
 			return this;
 		},
         /**
@@ -131,6 +138,7 @@
 		    var len = this.getLength();
 		    this.x /= len;
 		    this.y /= len;
+            this.z /= len;
 		    return this;
 		},
         /**
@@ -150,8 +158,9 @@
 			if(aLenthSquared+0.01 > max*max)
 			{
 				var aLength = Math.sqrt(aLenthSquared);
-				this.x = (this.x/aLength) * max;
-				this.y = (this.y/aLength) * max;
+				this.x= (this.x/aLength) * max;
+				this.y= (this.y/aLength) * max;
+                this.z= (this.z/aLength) * max;
 			}
             return this;
 		},
@@ -160,7 +169,7 @@
          * @return {number}
          */
 		getLength: function() {
-		    var length = Math.sqrt(this.x * this.x + this.y * this.y);
+		    var length = Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
 		    if ( length < 0.005 && length > -0.005) return 0.000001;
 		    return length;
 
@@ -170,7 +179,7 @@
          * @return {number}
          */
 		getLengthSquared: function() {
-		    var lengthSquared = this.x * this.x + this.y * this.y;
+		    var lengthSquared = this.x*this.x + this.y*this.y + this.z*this.z;
 		    if ( lengthSquared < 0.005 && lengthSquared > -0.005) return 0;
 		    return lengthSquared;
 		},
@@ -182,7 +191,8 @@
 		getDistance: function(point) {
 			var deltaX = this.x - point.x;
 			var deltaY = this.y - point.y;
-			return Math.sqrt( (deltaX * deltaX) + (deltaY * deltaY) );
+            var deltaZ = this.z - point.z;
+			return Math.sqrt( deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ );
 		},
         /**
          * Get the squared distance between two points.
@@ -192,7 +202,8 @@
 		getDistanceSquared: function(point) {
 			var deltaX = this.x - point.x;
 			var deltaY = this.y - point.y;
-			return (deltaX * deltaX) + (deltaY * deltaY);
+            var deltaZ = this.z - point.z;
+			return deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ;
 		},
         /**
          * Get a string representation.
@@ -200,8 +211,9 @@
          */
 		toString: function() {
 			return "(CAAT.Point)" +
-                    " x:'" + String(Math.round(Math.floor(this.x*10))/10) +
-                    " y:" + String(Math.round(Math.floor(this.y*10))/10);
+                    " x:" + String(Math.round(Math.floor(this.x*10))/10) +
+                    " y:" + String(Math.round(Math.floor(this.y*10))/10) +
+                    " z:" + String(Math.round(Math.floor(this.z*10))/10);
 		}
 	};
 })();

@@ -80,6 +80,7 @@ function __scene7(director) {
     scene.animate =function(director,time) {
         children.setText( "Bubles: "+root.childrenList.length );
         this.__animate(director,time);
+        return true;
     }
 
     root.mouseMove= function(mouseEvent) {

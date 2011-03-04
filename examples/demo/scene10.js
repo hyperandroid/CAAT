@@ -100,14 +100,16 @@ function __scene10_text(director,scene) {
 				var aRadius = Math.random() * 25 + 9;
 
 				// color it
-				var	hue = (360-((i/total) * 90) ), // HSV uses 0 - 360
+				var	hue = (360-((i/total) * 360) ), // HSV uses 0 - 360
 					hex = colorHelper.hsvToRgb(hue, 80, 99).toHex(); // Convert to hex value
 
-				var circleActor = new CAAT.ShapeActor().create()
+				var circleActor = new CAAT.ShapeActor()
+                    .create()
 					.setShape( CAAT.ShapeActor.prototype.SHAPE_CIRCLE )
 					.setLocation( Math.random() * director.canvas.width, Math.random() * director.canvas.height)
 					.setSize(aRadius*2, aRadius*2) // Size is in diameters
 					.setFillStyle('#' + hex );
+
 
 				// The 'packedCircle' in the simulation is considered completely separate entity than the circleActor itself
 				var packedCircle = new CAAT.modules.CircleManager.PackedCircle()

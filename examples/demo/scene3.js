@@ -123,7 +123,7 @@ function __scene3(director) {
 
 		var sb= new CAAT.ScaleBehavior();
 		sb.setPingPong();
-		sb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
+//		sb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
 		sb.startScaleX= 1;
 		sb.endScaleX= 3;
 		sb.startScaleY= 1;

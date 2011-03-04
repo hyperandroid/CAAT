@@ -247,6 +247,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.LinearPath.html">CAAT.LinearPath</a></li>
 	
+	<li><a href="../symbols/CAAT.Matrix3.html">CAAT.Matrix3</a></li>
+	
 	<li><a href="../symbols/CAAT.MatrixStack.html">CAAT.MatrixStack</a></li>
 	
 	<li><a href="../symbols/CAAT.modules.html">CAAT.modules</a></li>
@@ -452,14 +454,14 @@ applied to the Actor.</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#endAnimate">endAnimate</a></b>(director, time)
 								</div>
-								<div class="description">Private.</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#findActorAtPosition">findActorAtPosition</a></b>(point)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#findActorAtPosition">findActorAtPosition</a></b>(point, screenPoint)
 								</div>
 								<div class="description">Private
 This method does the needed point transformations across an Actor hierarchy to devise
@@ -497,18 +499,18 @@ whether the parameter point coordinate lies inside the Actor.</div>
 						<tr>
 							<td class="attributes">&lt;private&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#inverseTransformCoord">inverseTransformCoord</a></b>(point)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#isInAnimationFrame">isInAnimationFrame</a></b>(time)
 								</div>
-								<div class="description"></div>
+								<div class="description">This method is called by the Director to know whether the actor is on Scene time.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&lt;private&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#isInAnimationFrame">isInAnimationFrame</a></b>(time)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#modelToView">modelToView</a></b>(point)
 								</div>
-								<div class="description">This method is called by the Director to know whether the actor is on Scene time.</div>
+								<div class="description">Transform a point or array of points in model space to view space.</div>
 							</td>
 						</tr>
 					
@@ -598,7 +600,7 @@ whether the parameter point coordinate lies inside the Actor.</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#paintActor">paintActor</a></b>(director, time)
 								</div>
-								<div class="description">Private.</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -722,6 +724,15 @@ whether the parameter point coordinate lies inside the Actor.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setModelViewMatrix">setModelViewMatrix</a></b>()
+								</div>
+								<div class="description">Set this model view matrix if the actor is Dirty.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setOutOfFrameTime">setOutOfFrameTime</a></b>()
 								</div>
 								<div class="description">Puts an Actor out of time line, that is, won't be transformed nor rendered.</div>
@@ -801,11 +812,11 @@ whether the parameter point coordinate lies inside the Actor.</div>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#transformCoord">transformCoord</a></b>(point)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#viewToModel">viewToModel</a></b>(point)
 								</div>
-								<div class="description"></div>
+								<div class="description">Transform a point from model to view space.</div>
 							</td>
 						</tr>
 					
@@ -1279,8 +1290,7 @@ This default dragging routine allows to:
 					
 					</div>
 					<div class="description">
-						Private.
-This method is called after the Director has transformed and drawn a whole frame.
+						
 						
 						
 					</div>
@@ -1325,7 +1335,7 @@ This method is called after the Director has transformed and drawn a whole frame
 					<div class="fixedFont">
 					
 					
-					<b>findActorAtPosition</b>(point)
+					<b>findActorAtPosition</b>(point, screenPoint)
 					
 					</div>
 					<div class="description">
@@ -1347,6 +1357,12 @@ whether the parameter point coordinate lies inside the Actor.
 									
 								</dt>
 								<dd>an object of the form { x: float, y: float }</dd>
+							
+								<dt>
+									<b>screenPoint</b>
+									
+								</dt>
+								<dd></dd>
 							
 							</dl>
 						
@@ -1489,49 +1505,6 @@ Gets a given anchor position referred to the Actor.
 
 					<hr />
 				
-					<a name="inverseTransformCoord"> </a>
-					<div class="fixedFont">&lt;private&gt; 
-					
-					
-					<b>inverseTransformCoord</b>(point)
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>point</b>
-									
-								</dt>
-								<dd>an object of the form {x : float, y: float}</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd>the source point object</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
 					<a name="isInAnimationFrame"> </a>
 					<div class="fixedFont">&lt;private&gt; 
 					
@@ -1564,6 +1537,49 @@ an Actor expiration.
 						
 						
 						
+						
+						
+						
+
+					<hr />
+				
+					<a name="modelToView"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>modelToView</b>(point)
+					
+					</div>
+					<div class="description">
+						Transform a point or array of points in model space to view space.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>point</b>
+									
+								</dt>
+								<dd>{CAAT.Point|Array} an object of the form {x : float, y: float}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>the source transformed elements.</dd>
+							
+							</dl>
 						
 						
 						
@@ -1910,8 +1926,7 @@ It will be the drawing routine called by the Director to show every Actor.
 					
 					</div>
 					<div class="description">
-						Private.
-This method will be called by the Director to set the whole Actor pre-render process.
+						
 						
 						
 					</div>
@@ -2272,7 +2287,7 @@ scene graph and hence deleted.
 									<b>discardable</b>
 									
 								</dt>
-								<dd>{boolbean} a boolean indicating whether the Actor is discardable.</dd>
+								<dd>{boolean} a boolean indicating whether the Actor is discardable.</dd>
 							
 							</dl>
 						
@@ -2502,6 +2517,38 @@ thanks @pbakaus
 								<dd>a float indicating Actor's y position</dd>
 							
 							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setModelViewMatrix"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setModelViewMatrix</b>()
+					
+					</div>
+					<div class="description">
+						Set this model view matrix if the actor is Dirty.
+						
+						
+					</div>
+					
+					
+					
 						
 						
 						
@@ -2918,15 +2965,18 @@ each Scene Actor.
 
 					<hr />
 				
-					<a name="transformCoord"> </a>
-					<div class="fixedFont">&lt;private&gt; 
+					<a name="viewToModel"> </a>
+					<div class="fixedFont">
 					
 					
-					<b>transformCoord</b>(point)
+					<b>viewToModel</b>(point)
 					
 					</div>
 					<div class="description">
-						
+						Transform a point from model to view space.
+<p>
+WARNING: every call to this method calculates
+actor's world model view matrix.
 						
 						
 					</div>
@@ -2941,7 +2991,7 @@ each Scene Actor.
 									<b>point</b>
 									
 								</dt>
-								<dd>{CAAT.Point} an object of the form {x : float, y: float}</dd>
+								<dd>{CAAT.Point} a point in screen space to be transformed to model space.</dd>
 							
 							</dl>
 						
@@ -2973,7 +3023,7 @@ each Scene Actor.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Sat Feb 05 2011 19:44:43 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Fri Mar 04 2011 21:10:10 GMT+0100 (CET)
 		</div>
 	</body>
 </html>

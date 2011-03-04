@@ -74,7 +74,7 @@ function __scene6(director) {
 	    	this.parent.magneticField( this.x, this.y, this.parent.childrenList[0] );
 	    }
 	    
-	    CAAT.Actor.prototype.animate.call(this,director,time);
+	    return CAAT.Actor.prototype.animate.call(this,director,time);
 	};
 	scene.addChild(circle);
 	

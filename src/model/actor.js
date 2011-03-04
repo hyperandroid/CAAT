@@ -31,11 +31,15 @@
      * @constructor
      */
 	CAAT.Actor = function() {
-		this.transformationMatrix= new CAAT.MatrixStack();
-		this.rpoint= new CAAT.Point();
 		this.behaviorList= [];
         this.lifecycleListenerList= [];
-        this.screenBounds= new CAAT.Rectangle();
+        this.AABB= new CAAT.Rectangle();
+        this.viewVertices= [
+                new CAAT.Point(),
+                new CAAT.Point(),
+                new CAAT.Point(),
+                new CAAT.Point()
+        ];
 
 		return this;
 	};
@@ -50,8 +54,6 @@
 		height:					0,      // Actor's height. In parent's local coord. system.
 		start_time:				0,      // Start time in Scene time.
 		duration:				Number.MAX_VALUE,   // Actor duration in Scene time
-		transformationMatrix:	null,   // Compound transformation matrix stack.
-		rpoint:					null,   // Cache for rotation when calculating coordinates transformations.
 		clip:					false,  // should clip the Actor's content against its contour.
 
         scaleX:					0,      // transformation. width scale parameter
@@ -84,10 +86,19 @@
 		fillStyle:				null,   // any canvas rendering valid fill style.
         strokeStyle:            null,   // any canvas rendering valid stroke style.
         time:                   0,      // Cache Scene time.
-        screenBounds:           null,   // CAAT.Rectangle
+        AABB:                   null,   // CAAT.Rectangle
+        viewVertices:           null,   // model to view transformed vertices.
         inFrame:                false,  // boolean indicating whether this Actor was present on last frame.
 
-        dirty:                  true,
+        dirty:                  true,   // model view is dirty ?
+        wdirty:                 true,   // world model view is dirty ?
+        oldX:                   -1,
+        oldY:                   -1,
+        
+        modelViewMatrix:        null,   // model view matrix.
+        worldModelViewMatrix:   null,   // world model view matrix.
+        modelViewMatrixI:       null,   // model view matrix.
+        worldModelViewMatrixI:  null,   // world model view matrix.
 
         /**
          * Puts an Actor out of time line, that is, won't be transformed nor rendered.
@@ -152,40 +163,37 @@
          */
         setScreenBounds : function() {
 
-            var p=[];
-            p.push( new CAAT.Point().set(0,0) );
-            p.push( new CAAT.Point().set(this.width, this.height) );
-            p.push( new CAAT.Point().set(0,            this.height) );
-            p.push( new CAAT.Point().set(this.width, 0) );
+            this.viewVertices[0].set(0,          0);
+            this.viewVertices[1].set(this.width, 0);
+            this.viewVertices[2].set(this.width, this.height);
+            this.viewVertices[3].set(0,          this.height);
 
-            for( var k=0; k<p.length; k++ ) {
-                this.transformCoord( p[k] );
-            }
+            this.modelToView( this.viewVertices );
 
             var xmin= Number.MAX_VALUE, xmax=Number.MIN_VALUE;
             var ymin= Number.MAX_VALUE, ymax=Number.MIN_VALUE;
 
-            for( var i=0; i<p.length; i++ ) {
-                if ( p[i].x < xmin ) {
-                    xmin=p[i].x;
+            for( var i=0; i<4; i++ ) {
+                if ( this.viewVertices[i].x < xmin ) {
+                    xmin=this.viewVertices[i].x;
                 }
-                if ( p[i].x > xmax ) {
-                    xmax=p[i].x;
+                if ( this.viewVertices[i].x > xmax ) {
+                    xmax=this.viewVertices[i].x;
                 }
-
-                if ( p[i].y < ymin ) {
-                    ymin=p[i].y;
+                if ( this.viewVertices[i].y < ymin ) {
+                    ymin=this.viewVertices[i].y;
                 }
-                if ( p[i].y > ymax ) {
-                    ymax=p[i].y;
+                if ( this.viewVertices[i].y > ymax ) {
+                    ymax=this.viewVertices[i].y;
                 }
             }
 
-            this.screenBounds.x= xmin;
-            this.screenBounds.y= ymin;
-            this.screenBounds.width=  xmax-xmin;
-            this.screenBounds.height= ymax-ymin;
+            this.AABB.x= xmin;
+            this.AABB.y= ymin;
+            this.AABB.width=  (xmax-xmin);
+            this.AABB.height= (ymax-ymin);
 
+            return this;
         },
         /**
          * Sets this Actor as Expired.
@@ -475,6 +483,11 @@
             this.x= x|0;
             this.y= y|0;
 
+            this.oldX= x;
+            this.oldY= y;
+
+            this.dirty= true;
+
             return this;
 	    },
         /**
@@ -522,11 +535,18 @@
          * @return this
          */
 		create : function()	{
+            var i;
+            
 	    	this.scaleAnchor= this.ANCHOR_CENTER;
 	    	this.rotateAnchor= this.ANCHOR_CENTER;
 	    	this.setScale(1,1);
 	    	this.setRotation(0);
 	        this.behaviorList= [];
+            this.modelViewMatrix= new CAAT.Matrix();
+            this.worldModelViewMatrix= new CAAT.Matrix();
+            this.modelViewMatrixI= new CAAT.Matrix();
+            this.worldModelViewMatrixI= new CAAT.Matrix();
+
 
             return this;
 		},
@@ -578,7 +598,7 @@
         /**
          * Set discardable property. If an actor is discardable, upon expiration will be removed from
          * scene graph and hence deleted.
-         * @param discardable {boolbean} a boolean indicating whether the Actor is discardable.
+         * @param discardable {boolean} a boolean indicating whether the Actor is discardable.
          * @return this
          */
         setDiscardable : function( discardable ) {
@@ -599,38 +619,43 @@
             this.fireEvent('destroyed',time);
 		},
         /**
-         * @param point {CAAT.Point} an object of the form {x : float, y: float}
+         * Transform a point or array of points in model space to view space.
          *
-         * @return the source point object
+         * @param point {CAAT.Point|Array} an object of the form {x : float, y: float}
+         *
+         * @return the source transformed elements.
          *
          * @private
          *
          */
-        transformCoord : function(point) {
-            var tthis= this;
-
-            while( !(tthis instanceof CAAT.Director) ) {
-                tthis.transformationMatrix.transformCoord(point);
-                tthis= tthis.parent;
+        modelToView : function(point) {
+            if ( point instanceof Array ) {
+                for( var i=0; i<point.length; i++ ) {
+                    this.worldModelViewMatrix.transformCoord(point[i]);
+                }
             }
+            else {
+                this.worldModelViewMatrix.transformCoord(point);
+            }
+
 
             return point;
         },
         /**
-         * @param point an object of the form {x : float, y: float}
+         * Transform a point from model to view space.
+         * <p>
+         * WARNING: every call to this method calculates
+         * actor's world model view matrix.
+         *
+         * @param point {CAAT.Point} a point in screen space to be transformed to model space.
          *
          * @return the source point object
          *
-         * @private
          *
          */
-		inverseTransformCoord : function(point) {
-			var tthis= this;
-			while( tthis) {
-				tthis.transformationMatrix.inverseTransformCoord(point);
-				tthis= tthis.parent;
-			}
-
+		viewToModel : function(point) {
+            this.worldModelViewMatrixI= this.worldModelViewMatrix.getInverse();
+            this.worldModelViewMatrixI.transformCoord(point);
 			return point;
 		},
         /**
@@ -641,14 +666,14 @@
          *
          * @return null if the point is not inside the Actor. The Actor otherwise.
          */
-	    findActorAtPosition : function(point) {
+	    findActorAtPosition : function(point,screenPoint) {
 			if ( !this.mouseEnabled || !this.isInAnimationFrame(this.time) ) {
 				return null;
 			}
 
-			this.rpoint.set( point.x, point.y );
-	    	this.transformationMatrix.inverseTransformCoord(this.rpoint);
-	    	return this.contains(this.rpoint.x, this.rpoint.y) ? this :null;
+            this.modelViewMatrixI= this.modelViewMatrix.getInverse();
+            this.modelViewMatrixI.transformCoord(point);
+	    	return this.contains(point.x, point.y) ? this :null;
 	    },
         /**
          * Enables a default dragging routine for the Actor.
@@ -829,11 +854,9 @@
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          */
         drawScreenBoundingBox : function( director, time ) {
-            if ( this.inFrame && null!=this.screenBounds ) {
-                director.crc.strokeStyle='red';
-                director.crc.strokeRect(
-                    this.screenBounds.x, this.screenBounds.y,
-                    this.screenBounds.width, this.screenBounds.height );
+            if ( this.inFrame && null!=this.AABB ) {
+                var s= this.AABB;
+                director.ctx.strokeRect( s.x, s.y, s.width, s.height );
             }
         },
         /**
@@ -845,12 +868,73 @@
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          */
 		animate : function(director, time) {
+            if ( !this.isInAnimationFrame(time) ) {
+                this.inFrame= false;
+                this.dirty= true;
+                return false;
+            }
+
 			for( var i=0; i<this.behaviorList.length; i++ )	{
 				this.behaviorList[i].apply(time,this);
 			}
+
+            if ( this.x!=this.oldX || this.y!=this.oldY ) {
+                this.dirty= true;
+                this.oldX= this.x;
+                this.oldY= this.y;
+            }
+
+            this.setModelViewMatrix();
+
+            this.inFrame= true;
+
+            return true;
 		},
         /**
-         * Private.
+         * Set this model view matrix if the actor is Dirty.
+         * 
+         * @return this
+         */
+        setModelViewMatrix : function() {
+            if ( this.dirty ) {
+                this.modelViewMatrix.identity();
+
+                var m= new CAAT.Matrix();
+
+                this.modelViewMatrix.multiply( m.setTranslate( this.x, this.y ) );
+                this.modelViewMatrix.multiply( m.setTranslate( this.rotationX, this.rotationY) );
+                this.modelViewMatrix.multiply( m.setRotation( this.rotationAngle ) );
+                this.modelViewMatrix.multiply( m.setTranslate( -this.rotationX, -this.rotationY) );
+                this.modelViewMatrix.multiply( m.setTranslate( this.scaleTX , this.scaleTY ) );
+                this.modelViewMatrix.multiply( m.setScale( this.scaleX, this.scaleY ) );
+                this.modelViewMatrix.multiply( m.setTranslate( -this.scaleTX , -this.scaleTY ) );
+
+//                this.modelViewMatrixI= this.modelViewMatrix.getInverse();
+            }
+
+
+            if ( this.parent ) {
+                if ( this.dirty || this.parent.wdirty ) {
+                    this.worldModelViewMatrix.copy( this.parent.worldModelViewMatrix );
+                    this.worldModelViewMatrix.multiply( this.modelViewMatrix );
+//                    this.worldModelViewMatrixI= this.worldModelViewMatrix.getInverse();
+                    this.wdirty= true;
+                }
+            } else {
+                this.worldModelViewMatrix.copy( this.modelViewMatrix );
+            }
+            
+            // FIX: optimizar las coordenadas proyectadas: solo calcular si cambia mi matrix o la del parent.
+            if ( this.dirty || this.wdirty ) {
+                this.setScreenBounds();
+            }
+
+            this.dirty= false;
+
+            return this;
+        },
+        /**
+         * @private.
          * This method will be called by the Director to set the whole Actor pre-render process.
          *
          * @param director the CAAT.Director object instance that contains the Scene the Actor is in.
@@ -860,18 +944,13 @@
          */
         paintActor : function(director, time) {
 
-            if ( !this.isInAnimationFrame(time) ) {
-                this.inFrame= false;
-                return false;
-            }
-
             var canvas= director.crc;
 
             this.frameAlpha= this.parent.frameAlpha*this.alpha;
             canvas.globalAlpha= this.frameAlpha;
 
-            this.transformationMatrix.prepareGraphics(canvas,this);
-            this.setScreenBounds();
+            //this.modelViewMatrix.transformRenderingContext(director.ctx);
+            this.worldModelViewMatrix.transformRenderingContext(director.ctx);
 
             if ( this.clip ) {
                 canvas.beginPath();
@@ -881,12 +960,10 @@
 
             this.paint(director, time);
 
-            this.inFrame= true;
-
             return true;
         },
         /**
-         * Private.
+         * @private.
          * This method is called after the Director has transformed and drawn a whole frame.
          *
          * @param director the CAAT.Director object instance that contains the Scene the Actor is in.
@@ -944,6 +1021,7 @@
 	CAAT.ActorContainer.prototype= {
 
         childrenList : null,       // the list of children contained.
+        activeChildren: null,
         pendingChildrenList : null,
 
         /**
@@ -986,17 +1064,15 @@
 
             canvas.save();
 
-            if (!CAAT.ActorContainer.superclass.paintActor.call(this,director,time)) {
-                return false;
-            }
+            CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
 
             if ( !this.isGlobalAlpha ) {
                 this.frameAlpha= this.parent.frameAlpha;
             }
 
-            for( var i=0; i<this.childrenList.length; i++ ) {
+            for( var i=0; i<this.activeChildren.length; i++ ) {
                 canvas.save();
-                this.childrenList[i].paintActor(director,time);
+                this.activeChildren[i].paintActor(director,time);
                 canvas.restore();
             }
             canvas.restore();
@@ -1010,22 +1086,26 @@
          * @param director the CAAT.Director object instance that contains the Scene the Actor is in.
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          *
-         * @return this
+         * @return {boolean} is this actor in active children list ??
          */
 		animate : function(director,time) {
 
-            CAAT.ActorContainer.superclass.animate.call(this,director,time);
+            this.activeChildren= [];
+
+            if (false==CAAT.ActorContainer.superclass.animate.call(this,director,time)) {
+                return false;
+            }
 
             var i;
 
             for( i=0; i<this.childrenList.length; i++ ) {
-                if (this.childrenList[i].isInAnimationFrame(time)) {
-                    this.childrenList[i].time= time;
-                    this.childrenList[i].animate(director, time);
+                this.childrenList[i].time= time;
+                if ( this.childrenList[i].animate(director, time) ) {
+                    this.activeChildren.push( this.childrenList[i] );
                 }
             }
 
-            return this;
+            return true;
 		},
         /**
          * Removes Actors from this ActorContainer which are expired and flagged as Discardable.
@@ -1083,6 +1163,10 @@
             this.childrenList.push(child);
             return this;
 		},
+        /**
+         * Add a child element and make it active in the next frame.
+         * @param child {CAAT.Actor}
+         */
         addChildDelayed : function(child) {
             this.pendingChildrenList.push(child);
             return this;
@@ -1139,7 +1223,7 @@
             return this;
 		},
         /**
-         * Private
+         * @private
          *
          * Gets the Actor inside this ActorContainer at a given Screen coordinate.
          *
@@ -1147,18 +1231,32 @@
          *
          * @return the Actor contained inside this ActorContainer if found, or the ActorContainer itself.
          */
-		findActorAtPosition : function(point) {
+		findActorAtPosition : function(point, screenPoint) {
 
-			if( null==CAAT.ActorContainer.superclass.findActorAtPosition.call(this,point) ) {
+			if( null==CAAT.ActorContainer.superclass.findActorAtPosition.call(this,point,screenPoint) ) {
 				return null;
 			}
 
 			// z-order
 			for( var i=this.childrenList.length-1; i>=0; i-- ) {
-				var contained= this.childrenList[i].findActorAtPosition( this.rpoint );
-				if ( null!=contained ) {
-					return contained;
-				}
+
+                var child= this.childrenList[i];
+
+                var np= new CAAT.Point( point.x, point.y );
+                var aabb= child.AABB;
+
+                // if the coordinate is not in the AABB, can't be actor's shape either.
+                if ( screenPoint.x>=aabb.x &&
+                     screenPoint.y>=aabb.y &&
+                     screenPoint.x<=aabb.x+aabb.width &&
+                     screenPoint.y<=aabb.y+aabb.height ) {
+
+                    var contained= child.findActorAtPosition( np, screenPoint );
+                    if ( null!=contained ) {
+                        return contained;
+                    }
+                }
+
 			}
 
 			return this;
@@ -1248,11 +1346,11 @@
      *  <br>
      *  // create a fish instance<br>
      *  var fish = new CAAT.SpriteActor().<br>
-     *              create().<br>
-     *              setAnimationImageIndex( [0,1,2,1] ).// rotating from subimages 0,1,2,1<br>
-	 *              setSpriteImage(conpoundimage).      // throughtout this compound image<br>
-     *              setChangeFPS(350).                  // and change from image on the sheet every 350ms.<br>
-     *              setLocation(10,10);                 // btw, the fish actor will be at 10,10 on screen.<br>
+     *  &nbsp;&nbsp;create().<br>
+     *  &nbsp;&nbsp;setAnimationImageIndex( [0,1,2,1] ).// rotating from subimages 0,1,2,1<br>
+	 *  &nbsp;&nbsp;setSpriteImage(conpoundimage).      // throughtout this compound image<br>
+     *  &nbsp;&nbsp;setChangeFPS(350).                  // and change from image on the sheet every 350ms.<br>
+     *  &nbsp;&nbsp;setLocation(10,10);                 // btw, the fish actor will be at 10,10 on screen.<br>
      * <br>
      * </code><br>
      *
@@ -1279,7 +1377,7 @@
 		TR_FLIP_ALL:			3,
 
         /**
-         * Sets the Sprite image. The image will be trrated as an array of rows by columns subimages.
+         * Sets the Sprite image. The image will be treated as an array of rows by columns sub-images.
          *
          * @see CAAT.CompoundImage
          * @param conpoundimage a CAAT.ConpoundImage object instance.
@@ -1335,6 +1433,8 @@
          *
          * @param director the CAAT.Director object instance that contains the Scene the Actor is in.
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
+         *
+         * @return boolean
          */
 		animate : function( director, time )	{
 
@@ -1353,8 +1453,10 @@
 					}
 				}
 
-				CAAT.SpriteActor.superclass.animate.call(this, director, time);
+				return CAAT.SpriteActor.superclass.animate.call(this, director, time);
 			}
+
+            return false;
 		},
         /**
          * Draws the sprite image calculated and stored in spriteIndex.
@@ -1743,7 +1845,8 @@
 
 			var canvas= director.crc;
 
-			var textWidth=this.sign * this.pathInterpolator.getPosition( (time%this.pathDuration)/this.pathDuration ).y * this.path.getLength() ;
+			var textWidth=this.sign * this.pathInterpolator.getPosition(
+                    (time%this.pathDuration)/this.pathDuration ).y * this.path.getLength() ;
 			var p0= new CAAT.Point();
 			var p1= new CAAT.Point();
 
@@ -1790,11 +1893,10 @@
             this.pathDuration= duration || 10000;
 
             /*
-            parent could not be set by the time this method is called.
-            so the actors bounds set is removed.
-            the developer must ensure to call setbounds properly on actor.
+                parent could not be set by the time this method is called.
+                so the actors bounds set is removed.
+                the developer must ensure to call setbounds properly on actor.
              */
-//			this.setBounds(0,0,this.parent.width,this.parent.height);
 			this.mouseEnabled= false;
 
             return this;
@@ -1974,7 +2076,7 @@
             }
         },
         /**
-         * Private
+         * @private
          * Draws a circle.
          * @param director a valid CAAT.Director instance.
          * @param time an integer with the Scene time the Actor is being drawn.
@@ -2280,7 +2382,7 @@
 
             if ( this.dirty ) {
 
-                var strMatrix='translateZ(0px)';
+                var strMatrix='translate3d(0,0,0)';
                 if ( this.rotationAngle!=0 ) {
                     strMatrix= strMatrix+ ' rotate('+this.rotationAngle+'rad)';
                 }

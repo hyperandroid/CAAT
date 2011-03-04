@@ -37,7 +37,6 @@ function __scene8(director) {
     var scene= new CAAT.Scene();
     scene.create();
 
-    __scene8_text(director,scene);    
 
     var sun= __createShape( 50, 50 ).
             setFillStyle( 'yellow' ).
@@ -60,6 +59,9 @@ function __scene8(director) {
             __addPlanet( moon, 6000+4000*Math.random(), 12, 4, 'rgb(0,255,255)', Math.random()*2*Math.PI );
 
     scene.addChild(sun);
+
+    __scene8_text(director,scene);
+
 
     return scene;
 }
@@ -110,13 +112,13 @@ function __createArm( root, angle, segments, armSegmentSizeW, armSegmentSizeH, a
                 setSize( armSegmentSizeW, armSegmentSizeH ).
                 setFillStyle( 'rgb('+color.r+","+color.g+","+color.b+")" ).
                 setLocation( 0,-armSegmentSizeH );
+        
         if ( segment==root ) {
             newSegment.setRotationAnchored(angle, armSegmentSizeW/2, armSegmentSizeH);
             newSegment.oldAngle= angle;
         } else {
             newSegment.oldAngle= 0;
             newSegment.animate= function(director,time) {
-                CAAT.ActorContainer.prototype.animate.call(this,director,time);
                 this.setRotationAnchored(
                         this.oldAngle+
                         maxAngle*Math.sin(new Date().getTime()*.0005 + armIndex*Math.PI/segments/2
@@ -124,6 +126,8 @@ function __createArm( root, angle, segments, armSegmentSizeW, armSegmentSizeH, a
                         armSegmentSizeW/2,
                         armSegmentSizeH
                 );
+                return CAAT.ActorContainer.prototype.animate.call(this,director,time);
+
             };
         }
         

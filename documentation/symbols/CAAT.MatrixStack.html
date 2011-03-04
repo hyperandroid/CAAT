@@ -247,6 +247,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.LinearPath.html">CAAT.LinearPath</a></li>
 	
+	<li><a href="../symbols/CAAT.Matrix3.html">CAAT.Matrix3</a></li>
+	
 	<li><a href="../symbols/CAAT.MatrixStack.html">CAAT.MatrixStack</a></li>
 	
 	<li><a href="../symbols/CAAT.modules.html">CAAT.modules</a></li>
@@ -366,27 +368,9 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.MatrixStack.html#inverseTransformCoord">inverseTransformCoord</a></b>(point)
-								</div>
-								<div class="description">Transform a coordinate by this matrix stack but in inverse order.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.MatrixStack.html#popMatrix">popMatrix</a></b>()
 								</div>
 								<div class="description">Remove the last matrix from this stack.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.MatrixStack.html#prepareGraphics">prepareGraphics</a></b>(canvas, actor)
-								</div>
-								<div class="description">Set a canvas rendering context up for the transformations an actor has set.</div>
 							</td>
 						</tr>
 					
@@ -414,42 +398,6 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/CAAT.MatrixStack.html#save">save</a></b>()
 								</div>
 								<div class="description">Create a restoration point of pushed matrices.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.MatrixStack.html#transform">transform</a></b>(ctx)
-								</div>
-								<div class="description">Set the canvas rendering context up with the transformations held in this matrix stack.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.MatrixStack.html#transformCoord">transformCoord</a></b>(point)
-								</div>
-								<div class="description">Transform a coordinate by this matrix stack.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.MatrixStack.html#transformCoordNoTranslate">transformCoordNoTranslate</a></b>(point)
-								</div>
-								<div class="description">Transform a coordinate by this matrix stack but not applying translation.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.MatrixStack.html#transformInverse">transformInverse</a></b>(ctx)
-								</div>
-								<div class="description">Set the canvas rendering context up with the transformation held in this matrix stack but in inverse order.</div>
 							</td>
 						</tr>
 					
@@ -535,50 +483,6 @@ transformation process.
 
 					<hr />
 				
-					<a name="inverseTransformCoord"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span>
-					<b>inverseTransformCoord</b>(point)
-					
-					</div>
-					<div class="description">
-						Transform a coordinate by this matrix stack but in inverse order.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>point</b>
-									
-								</dt>
-								<dd>{CAAT.Point} a coordinate to transform. The point value will be overwritten by the transformation
-result.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span> </dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
 					<a name="popMatrix"> </a>
 					<div class="fixedFont">
 					
@@ -603,55 +507,6 @@ result.</dd>
 							<dt class="heading">Returns:</dt>
 							
 								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.html#.Matrix">CAAT.Matrix</a>}</span> the poped matrix.</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="prepareGraphics"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>prepareGraphics</b>(canvas, actor)
-					
-					</div>
-					<div class="description">
-						Set a canvas rendering context up for the transformations an actor has set.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>canvas</b>
-									
-								</dt>
-								<dd>a canvas rendering context</dd>
-							
-								<dt>
-									<b>actor</b>
-									
-								</dt>
-								<dd>{CAAT.Actor} an scene graph actor.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd>this</dd>
 							
 							</dl>
 						
@@ -765,180 +620,6 @@ result.</dd>
 						
 						
 
-					<hr />
-				
-					<a name="transform"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>transform</b>(ctx)
-					
-					</div>
-					<div class="description">
-						Set the canvas rendering context up with the transformations held in this matrix stack.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>ctx</b>
-									
-								</dt>
-								<dd>a canvas rendering context.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd>this</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="transformCoord"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span>
-					<b>transformCoord</b>(point)
-					
-					</div>
-					<div class="description">
-						Transform a coordinate by this matrix stack.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>point</b>
-									
-								</dt>
-								<dd>{CAAT.Point} a coordinate to transform. The point value will be overwritten by the transformation
-result.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span> </dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="transformCoordNoTranslate"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span>
-					<b>transformCoordNoTranslate</b>(point)
-					
-					</div>
-					<div class="description">
-						Transform a coordinate by this matrix stack but not applying translation.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>point</b>
-									
-								</dt>
-								<dd>{CAAT.Point} a coordinate to transform. The point value will be overwritten by the transformation
-result.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span> </dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="transformInverse"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>transformInverse</b>(ctx)
-					
-					</div>
-					<div class="description">
-						Set the canvas rendering context up with the transformation held in this matrix stack but in inverse order.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>ctx</b>
-									
-								</dt>
-								<dd>a canvas rendering context</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd>this</dd>
-							
-							</dl>
-						
-						
-						
-
 					
 				
 			
@@ -953,7 +634,7 @@ result.</dd>
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Sat Feb 05 2011 19:44:44 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Fri Mar 04 2011 21:10:12 GMT+0100 (CET)
 		</div>
 	</body>
 </html>
