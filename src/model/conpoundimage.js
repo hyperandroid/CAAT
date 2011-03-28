@@ -51,6 +51,8 @@
     	singleWidth:				0,
     	singleHeight:				0,
 
+        xyCache:                    null,
+
         /**
          * Initialize a grid of subimages out of a given image.
          * @param image {HTMLImageElement|Image} an image object.
@@ -67,6 +69,74 @@
         	this.height=image.height;
         	this.singleWidth=  	Math.floor(this.width/cols);
         	this.singleHeight= 	Math.floor(this.height/rows);
+            this.xyCache= [];
+
+            var i,sx0,sy0;
+            if ( image.__texturePage ) {
+                image.__du= this.singleWidth/image.__texturePage.width;
+                image.__dv= this.singleHeight/image.__texturePage.height;
+
+
+                var w= this.singleWidth;
+                var h= this.singleHeight;
+                var mod= this.cols;
+                if ( image.inverted) {
+                    var t= w;
+                    w= h;
+                    h= t;
+                    mod= this.rows;
+                }
+
+                var xt= this.image.__tx;
+                var yt= this.image.__ty;
+
+                var tp= this.image.__texturePage;
+
+                for( i=0; i<rows*cols; i++ ) {
+
+
+                    var c= ((i%mod)>>0);
+                    var r= ((i/mod)>>0);
+
+                    var u= xt+c*w;  // esquina izq x
+                    var v= yt+r*h;
+
+                    var u1= u+w;
+                    var v1= v+h;
+
+                    /*
+                    var du= image.__du;
+                    var dv= image.__dv;
+                    var mod= this.cols;
+                    if ( image.inverted) {
+                        var t= du;
+                        du= dv;
+                        dv= t;
+                        mod= this.rows;
+                    }
+
+                    sx0= ((i%mod)>>0)*du;
+                    sy0= ((i/mod)>>0)*dv;
+
+                    var u= image.__u+sx0;
+                    var v= image.__v+sy0;
+
+                    var u1= u+du;
+                    var v1= v+dv;
+                    */
+
+                    this.xyCache.push([u/tp.width,v/tp.height,u1/tp.width,v1/tp.height,u,v,u1,v1]);
+                }
+
+            } else {
+                for( i=0; i<rows*cols; i++ ) {
+                    sx0= ((i%this.cols)|0)*this.singleWidth;
+                    sy0= ((i/this.cols)|0)*this.singleHeight;
+
+                    this.xyCache.push([sx0,sy0]);
+                }
+            }
+
             return this;
     	},
         /**
@@ -79,16 +149,15 @@
          * @return this
          */
 	    paintInvertedH : function( canvas, imageIndex, x, y ) {
-	    	var sx0= ((imageIndex%this.cols)|0)*this.singleWidth;
-	        var sy0= ((imageIndex/this.cols)|0)*this.singleHeight;
-	       
+
 	        canvas.save();
 		        canvas.translate( ((.5+x)|0)+this.singleWidth, (.5+y)|0 );
 		        canvas.scale(-1, 1);
 		        
 		        canvas.drawImage( this.image,
-		        				  sx0, sy0, this.singleWidth, this.singleHeight,
-		        				  0, 0, this.singleWidth, this.singleHeight );
+                    this.xyCache[imageIndex][0], this.xyCache[imageIndex][1],
+                    this.singleWidth, this.singleHeight,
+                    0, 0, this.singleWidth, this.singleHeight );
 
 	        canvas.restore();
 
@@ -104,16 +173,15 @@
          * @return this
          */
 	    paintInvertedV : function( canvas, imageIndex, x, y ) {
-	    	var sx0= ((imageIndex%this.cols)|0)*this.singleWidth;
-	        var sy0= ((imageIndex/this.cols)|0)*this.singleHeight;
-	    	
+
 	        canvas.save();
 	        	canvas.translate( (x+.5)|0, (.5+y+this.singleHeight)|0 );
 	        	canvas.scale(1, -1);
 	        	
 		        canvas.drawImage(
 		        	this.image, 
-	  				sx0, sy0, this.singleWidth, this.singleHeight,
+	  				this.xyCache[imageIndex][0], this.xyCache[imageIndex][1],
+                    this.singleWidth, this.singleHeight,
 	  				0, 0, this.singleWidth, this.singleHeight );
 
 	        canvas.restore();
@@ -130,9 +198,7 @@
          * @return this
          */
 	    paintInvertedHV : function( canvas, imageIndex, x, y ) {
-	    	var sx0= ((imageIndex%this.cols)|0)*this.singleWidth;
-	        var sy0= ((imageIndex/this.cols)|0)*this.singleHeight;
-	    	
+
 	        canvas.save();
 		    	canvas.translate( (x+.5)|0, (.5+y+this.singleHeight)|0 );
 		    	canvas.scale(1, -1);
@@ -141,7 +207,8 @@
 	        	
 		        canvas.drawImage(
 		        		this.image, 
-		  				sx0, sy0, this.singleWidth, this.singleHeight,
+		  				this.xyCache[imageIndex][0], this.xyCache[imageIndex][1],
+                        this.singleWidth, this.singleHeight,
 		  				0, 0, this.singleWidth, this.singleHeight );
 
 	        canvas.restore();
@@ -159,15 +226,10 @@
          */
 	    paint : function( canvas, imageIndex, x, y ) {
 	
-	        var sx0= ((imageIndex%this.cols)|0)*this.singleWidth;
-	        var sy0= ((imageIndex/this.cols)|0)*this.singleHeight;
-
-            if ( sx0<0 || sy0<0 ) {
-                return this;
-            }
 	        canvas.drawImage(
 	        		this.image, 
-					sx0, sy0, this.singleWidth, this.singleHeight,
+					this.xyCache[imageIndex][0], this.xyCache[imageIndex][1],
+                    this.singleWidth, this.singleHeight,
 					(x+.5)|0, (y+.5)|0, this.singleWidth, this.singleHeight );
 
             return this;
@@ -184,11 +246,10 @@
          * @return this
          */
 	    paintScaled : function( canvas, imageIndex, x, y, w, h ) {
-	        var sx0= ((imageIndex%this.cols)|0)*this.singleWidth;
-	        var sy0= ((imageIndex/this.cols)|0)*this.singleHeight;
-	        canvas.drawImage( 
+	        canvas.drawImage(
 	        		this.image, 
-					sx0, sy0, this.singleWidth, this.singleHeight,
+					this.xyCache[imageIndex][0], this.xyCache[imageIndex][1],
+                    this.singleWidth, this.singleHeight,
 					(x+.5)|0, (y+.5)|0, w, h );
 
             return this;
@@ -199,6 +260,43 @@
          */
 	    getNumImages : function() {
 	    	return this.rows*this.cols;
-	    }
+	    },
+        setUV : function( imageIndex, uvBuffer, uvIndex ) {
+            var im= this.image;
+
+            if ( !im.__texturePage ) {
+                return;
+            }
+
+            var index= uvIndex;
+
+            if ( im.inverted ) {
+                uvBuffer[index++]= this.xyCache[imageIndex][2];
+                uvBuffer[index++]= this.xyCache[imageIndex][1];
+
+                uvBuffer[index++]= this.xyCache[imageIndex][2];
+                uvBuffer[index++]= this.xyCache[imageIndex][3];
+
+                uvBuffer[index++]= this.xyCache[imageIndex][0];
+                uvBuffer[index++]= this.xyCache[imageIndex][3];
+
+                uvBuffer[index++]= this.xyCache[imageIndex][0];
+                uvBuffer[index++]= this.xyCache[imageIndex][1];
+            } else {
+                uvBuffer[index++]= this.xyCache[imageIndex][0];
+                uvBuffer[index++]= this.xyCache[imageIndex][1];
+
+                uvBuffer[index++]= this.xyCache[imageIndex][2];
+                uvBuffer[index++]= this.xyCache[imageIndex][1];
+
+                uvBuffer[index++]= this.xyCache[imageIndex][2];
+                uvBuffer[index++]= this.xyCache[imageIndex][3];
+
+                uvBuffer[index++]= this.xyCache[imageIndex][0];
+                uvBuffer[index++]= this.xyCache[imageIndex][3];
+            }
+
+            //director.uvIndex= index;
+        }
 	};
 })();

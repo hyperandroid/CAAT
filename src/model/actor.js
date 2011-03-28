@@ -72,6 +72,8 @@
 		pointed:				false,  // is the mouse pointer inside this actor
 		mouseEnabled:			true,   // events enabled ?
 
+        visible:                true,
+
 		ANCHOR_CENTER:			0,      // constant values to determine different affine transform
 		ANCHOR_TOP:				1,      // anchors.
 		ANCHOR_BOTTOM:			2,
@@ -100,6 +102,20 @@
         modelViewMatrixI:       null,   // model view matrix.
         worldModelViewMatrixI:  null,   // world model view matrix.
 
+        glEnabled:              false,
+
+        /**
+         * Set this actor invisible.
+         * The actor is animated but not visible.
+         * A container won't show any of its children if set visible to false.
+         *
+         * @param visible {boolean} set this actor visible or not.
+         * @return this
+         */
+        setVisible : function(visible) {
+            this.visible= visible;
+            return this;
+        },
         /**
          * Puts an Actor out of time line, that is, won't be transformed nor rendered.
          * @return this
@@ -902,13 +918,16 @@
                 var m= new CAAT.Matrix();
 
                 this.modelViewMatrix.multiply( m.setTranslate( this.x, this.y ) );
-                this.modelViewMatrix.multiply( m.setTranslate( this.rotationX, this.rotationY) );
-                this.modelViewMatrix.multiply( m.setRotation( this.rotationAngle ) );
-                this.modelViewMatrix.multiply( m.setTranslate( -this.rotationX, -this.rotationY) );
-                this.modelViewMatrix.multiply( m.setTranslate( this.scaleTX , this.scaleTY ) );
-                this.modelViewMatrix.multiply( m.setScale( this.scaleX, this.scaleY ) );
-                this.modelViewMatrix.multiply( m.setTranslate( -this.scaleTX , -this.scaleTY ) );
-
+                if ( this.rotationAngle ) {
+                    this.modelViewMatrix.multiply( m.setTranslate( this.rotationX, this.rotationY) );
+                    this.modelViewMatrix.multiply( m.setRotation( this.rotationAngle ) );
+                    this.modelViewMatrix.multiply( m.setTranslate( -this.rotationX, -this.rotationY) );
+                }
+                if ( this.scaleX || this.scaleY && (this.scaleTX || this.scaleTY )) {
+                    this.modelViewMatrix.multiply( m.setTranslate( this.scaleTX , this.scaleTY ) );
+                    this.modelViewMatrix.multiply( m.setScale( this.scaleX, this.scaleY ) );
+                    this.modelViewMatrix.multiply( m.setTranslate( -this.scaleTX , -this.scaleTY ) );
+                }
 //                this.modelViewMatrixI= this.modelViewMatrix.getInverse();
             }
 
@@ -944,6 +963,10 @@
          */
         paintActor : function(director, time) {
 
+            if (!this.visible) {
+                return true;
+            }
+
             var canvas= director.crc;
 
             this.frameAlpha= this.parent.frameAlpha*this.alpha;
@@ -961,6 +984,95 @@
             this.paint(director, time);
 
             return true;
+        },
+        /**
+         * Set coordinates and uv values for this actor.
+         * This function uses Director's coords and indexCoords values.
+         * @param director
+         * @param time
+         */
+        paintActorGL : function(director,time) {
+
+            this.frameAlpha= this.parent.frameAlpha*this.alpha;
+
+            if ( !this.glEnabled || !this.visible) {
+                return;
+            }
+
+            if ( this.glNeedsFlush(director) ) {
+                director.glFlush();
+                this.glSetShader(director);
+
+                if ( !this.__uv ) {
+                    this.__uv= new Float32Array(8);
+                }
+                if ( !this.__vv ) {
+                    this.__vv= new Float32Array(12);
+                }
+
+                this.setGLCoords( this.__vv, 0, -director.canvas.height/2 );
+                this.setUV( this.__uv, 0 );
+                director.glRender(this.__vv, 12, this.__uv);
+
+                return;
+            }
+
+            var glCoords=       director.coords;
+            var glCoordsIndex=  director.coordsIndex;
+
+            ////////////////// XYZ
+            this.setGLCoords(glCoords, glCoordsIndex, -director.canvas.height/2);
+            director.coordsIndex= glCoordsIndex+12;
+
+            ////////////////// UV
+            this.setUV( director.uv, director.uvIndex );
+            director.uvIndex+= 8;
+        },
+        setGLCoords : function( glCoords, glCoordsIndex, z ) {
+
+            var vv=             this.viewVertices;
+            glCoords[glCoordsIndex++]= vv[0].x;
+            glCoords[glCoordsIndex++]= vv[0].y;
+            glCoords[glCoordsIndex++]= z;
+
+            glCoords[glCoordsIndex++]= vv[1].x;
+            glCoords[glCoordsIndex++]= vv[1].y;
+            glCoords[glCoordsIndex++]= z;
+
+            glCoords[glCoordsIndex++]= vv[2].x;
+            glCoords[glCoordsIndex++]= vv[2].y;
+            glCoords[glCoordsIndex++]= z;
+
+            glCoords[glCoordsIndex++]= vv[3].x;
+            glCoords[glCoordsIndex++]= vv[3].y;
+            glCoords[glCoordsIndex++]= z;
+
+        },
+        /**
+         *
+         * @param director
+         */
+        setUV : function( uvBuffer, uvIndex ) {
+
+        },
+        /**
+         * Test for compulsory gl flushing:
+         *  1.- opacity has changed.
+         *  2.- texture page has changed.
+         *
+         */
+        glNeedsFlush : function(director) {
+            return false;
+        },
+        /**
+         * Change texture shader program parameters.
+         * @param director
+         */
+        glSetShader : function(director) {
+            // BUGBUG BUGBUG BUGBUG change texture page if needed.
+            if ( this.frameAlpha!=director.currentOpacity ) {
+                director.setGLCurrentOpacity(this.frameAlpha);
+            }
         },
         /**
          * @private.
@@ -1060,6 +1172,11 @@
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          */
         paintActor : function(director, time ) {
+
+            if (!this.visible) {
+                return true;
+            }
+
             var canvas= director.crc;
 
             canvas.save();
@@ -1078,6 +1195,36 @@
             canvas.restore();
 
             return true;
+        },
+        paintActorGL : function(director,time) {
+
+            if (!this.visible) {
+                return true;
+            }
+            
+            if ( director.front_to_back ) {
+                var i= this.getNumChildren()-1;
+                while( i>=0 ) {
+                    var c= this.childrenList[i];
+                    c.paintActorGL(director,time);
+                    i--;
+                }
+            }
+            
+            CAAT.ActorContainer.superclass.paintActorGL.call(this,director,time);
+
+            if ( !this.isGlobalAlpha ) {
+                this.frameAlpha= this.parent.frameAlpha;
+            }
+            
+            if ( !director.front_to_back ) {
+                var n= this.getNumChildren();
+                for( var i=0; i<n; i++ ) {
+                    var c= this.childrenList[i];
+                    c.paintActorGL(director,time);
+                }
+            }
+
         },
         /**
          * Private.
@@ -1360,6 +1507,7 @@
      */
 	CAAT.SpriteActor = function() {
 		CAAT.SpriteActor.superclass.constructor.call(this);
+        this.glEnabled= true;
 		return this;
 	};
 
@@ -1466,6 +1614,10 @@
          */
 		paint : function(director, time) {
 
+            if ( -1==this.spriteIndex ) {
+                return;
+            }
+
 			var canvas= director.crc;
 
             // drawn at 0,0 because they're already affine-transformed.
@@ -1483,8 +1635,32 @@
 					this.compoundbitmap.paint( canvas, this.spriteIndex, 0, 0);
 			}
 
-		}
-	};
+		},
+        paintActorGL : function(director,time) {
+            if ( -1==this.spriteIndex ) {
+                return;
+            }
+
+            CAAT.SpriteActor.superclass.paintActorGL.call(this,director,time);
+        },
+        /**
+         *
+         * @param uvBuffer {Float32Array}
+         * @param index {Number}
+         */
+        setUV : function( uv, uvIndex ) {
+            this.compoundbitmap.setUV(this.spriteIndex, uv, uvIndex);
+        },
+        glNeedsFlush : function(director) {
+            if ( this.compoundbitmap.image.__texturePage!=director.currentTexturePage ) {
+                return true;
+            }
+            if ( this.frameAlpha!=director.currentOpacity ) {
+                return true;
+            }
+            return false;
+        }
+    };
 
     extend( CAAT.SpriteActor, CAAT.ActorContainer, null);
 })();
@@ -1503,6 +1679,7 @@
      */
 	CAAT.ImageActor = function() {
 		CAAT.ImageActor.superclass.constructor.call(this);
+        this.glEnabled= true;
 		return this;
 	};
 
@@ -1593,6 +1770,13 @@
 					ctx.drawImage(this.image,this.offsetX,this.offsetY);
 			}
 		},
+        paintActorGL : function(director,time) {
+            if ( null==this.image ) {
+                return;
+            }
+
+            CAAT.ImageActor.superclass.paintActorGL.call(this,director,time);
+        },
 	    paintInvertedH : function( ctx ) {
 	        ctx.save();
 		        ctx.translate( this.width, 0 );
@@ -1615,7 +1799,74 @@
 	        	ctx.scale(-1, 1);
 		        ctx.drawImage(this.image,this.offsetX,this.offsetY);
 	        ctx.restore();
-	    }
+	    },
+        /**
+         *
+         * @param uvBuffer {Float32Array}
+         * @param index {Number}
+         */
+        setUV : function( uvBuffer, uvIndex ) {
+
+            var index= uvIndex;
+
+            var im= this.image;
+
+            if ( !im.__texturePage ) {
+                return;
+            }
+
+            var u= im.__u;
+            var v= im.__v;
+            var u1= im.__u1;
+            var v1= im.__v1;
+            if ( this.offsetX || this.offsetY ) {
+                var w= this.width;
+                var h= this.height;
+
+                var tp= im.__texturePage;
+                u= (im.__tx - this.offsetX) / tp.width;
+                v= (im.__ty - this.offsetY) / tp.height;
+                u1= u + w/tp.width;
+                v1= v + h/tp.height;
+            }
+
+            if ( im.inverted ) {
+                uvBuffer[index++]= u1;
+                uvBuffer[index++]= v;
+
+                uvBuffer[index++]= u1;
+                uvBuffer[index++]= v1;
+
+                uvBuffer[index++]= u;
+                uvBuffer[index++]= v1;
+
+                uvBuffer[index++]= u;
+                uvBuffer[index++]= v;
+            } else {
+                uvBuffer[index++]= u;
+                uvBuffer[index++]= v;
+
+                uvBuffer[index++]= u1;
+                uvBuffer[index++]= v;
+
+                uvBuffer[index++]= u1;
+                uvBuffer[index++]= v1;
+
+                uvBuffer[index++]= u;
+                uvBuffer[index++]= v1;
+            }
+
+            //director.uvIndex= index;
+        },
+        glNeedsFlush : function(director) {
+            if ( this.image.__texturePage!=director.currentTexturePage ) {
+                return true;
+            }
+            if ( this.frameAlpha!=director.currentOpacity ) {
+                return true;
+            }
+            return false;
+        }
 	};
 
     extend( CAAT.ImageActor, CAAT.ActorContainer, null);
@@ -1747,8 +1998,13 @@
          * @return this
          */
         calcTextSize : function(director) {
-            director.crc.save();
-            director.crc.font= this.font;
+
+            if ( director.glEnabled ) {
+                return this;
+            }
+
+            director.ctx.save();
+            director.ctx.font= this.font;
 
             this.textWidth= director.crc.measureText( this.text ).width;
             if (this.width==0) {
@@ -1930,11 +2186,11 @@
      */
     CAAT.Button= function() {
         CAAT.Button.superclass.constructor.call(this);
+        this.glEnabled= true;
         return this;
     };
 
     CAAT.Button.prototype= {
-        buttonImage:    null,   // a CompoundImage object instance
         iNormal:        0,
         iOver:          0,
         iPress:         0,
@@ -1967,7 +2223,7 @@
          * @param fn {function} callback function to call on mouse release inside the button actor.
          */
         initialize : function( buttonImage, iNormal, iOver, iPress, iDisabled, fn) {
-            this.buttonImage=   buttonImage;
+            this.setSpriteImage(buttonImage);
             this.iNormal=       iNormal || 0;
             this.iOver=         iOver || this.iNormal;
             this.iPress=        iPress || this.iNormal;
@@ -1976,33 +2232,22 @@
             this.width=         buttonImage.singleWidth;
             this.height=        buttonImage.singleHeight;
             this.fnOnClick=     fn;
+            this.spriteIndex=   iNormal;
             return this;
         },
-        /**
-         * Paint the button.
-         * @param director {CAAT.Director}
-         * @param time {number}
-         */
-        paint : function(director,time) {
-            this.buttonImage.paint(
-                    director.ctx,
-                    (this.enabled) ? this.iCurrent : this.iDisabled,
-                    0,
-                    0 );
-        },
         mouseEnter : function(mouseEvent) {
-            this.iCurrent= this.iOver;
+            this.spriteIndex= this.iOver;
             document.body.style.cursor = 'pointer';
         },
         mouseExit : function(mouseEvent) {
-            this.iCurrent= this.iNormal;
+            this.spriteIndex= this.iNormal;
             document.body.style.cursor = 'default';
         },
         mouseDown : function(mouseEvent) {
-            this.iCurrent= this.iPress;
+            this.spriteIndex= this.iPress;
         },
         mouseUp : function(mouseEvent) {
-            this.iCurrent= this.iNormal;
+            this.spriteIndex= this.iNormal;
         },
         mouseClick : function(mouseEvent) {
             if ( this.enabled && null!=this.fnOnClick ) {
@@ -2014,7 +2259,7 @@
         }
     };
 
-    extend( CAAT.Button, CAAT.ActorContainer, null);
+    extend( CAAT.Button, CAAT.SpriteActor, null);
 })();
 
 (function() {
@@ -2306,6 +2551,7 @@
         CAAT.CSSActor.superclass.constructor.call(this);
         this.setFillStyle(null);
         this.setStrokeStyle(null);
+        this.DOMParent= document.body;
         return this;
     };
 
@@ -2314,6 +2560,7 @@
         dirty: true,
         oldX:   -1,
         oldY:   -1,
+        DOMParent: null,
 
         /**
          * Set CSS div's inner HTML.
@@ -2327,10 +2574,13 @@
         create : function() {
             CAAT.CSSActor.superclass.create.call(this);
             this.domElement= document.createElement('div');
-            document.body.appendChild(this.domElement);
+            this.DOMParent.appendChild(this.domElement);
             this.domElement.style['position']='absolute';
             this.domElement.style['-webkit-transition']='all 0s linear';
-            this.domElement.style['border']='top:1px';
+            return this;
+        },
+        setDOMParent : function(dom) {
+            this.DOMParent= dom;
             return this;
         },
         setLocation : function( x, y ) {

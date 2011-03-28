@@ -539,7 +539,7 @@
         setForTime : function(time, actor) {
             var value= this.start+ time*(this.end-this.start);
             if ( this.callback ) {
-                this.callback( value, this.target );
+                this.callback( value, this.target, actor );
             }
 
             if ( this.property ) {
