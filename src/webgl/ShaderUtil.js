@@ -210,6 +210,13 @@
 
         linesBuffer:            null,
 
+        prevAlpha:              -1,
+        prevR:                  -1,
+        prevG:                  -1,
+        prevB:                  -1,
+        prevA:                  -1,
+        prevTexture:            null,
+
         getFragmentShader : function() {
             return this.getShader( this.gl, "x-shader/x-fragment",
                     "#ifdef GL_ES \n"+
@@ -259,6 +266,14 @@
         initialize : function() {
 
             this.linesBuffer= this.gl.createBuffer();
+            this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.linesBuffer );
+            var arr= [];
+            for( var i=0; i<1024; i++ ) {
+                arr[i]= i;
+            }
+            this.linesBufferArray= new Uint16Array(arr);
+            this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, this.linesBufferArray, this.gl.DYNAMIC_DRAW);
+
 
             this.shaderProgram.vertexPositionAttribute =
                     this.gl.getAttribLocation(this.shaderProgram, "aVertexPosition");
@@ -314,18 +329,25 @@
         setUseColor : function( use,r,g,b,a ) {
             this.gl.uniform1i(this.shaderProgram.useColor, use?1:0);
             if ( use ) {
-//                this.gl.disableVertexAttribArray( this.textureCoordAttribute );
-                this.gl.uniform4f(this.shaderProgram.color, r,g,b,a );
-            } else {
-//                this.gl.enableVertexAttribArray( this.textureCoordAttribute );                
+                if ( this.prevA!=a || this.prevR!=r || this.prevG!=g || this.prevB!=b ) {
+                    this.gl.uniform4f(this.shaderProgram.color, r,g,b,a );
+                    this.prevA= a;
+                    this.prevR= r;
+                    this.prevG= g;
+                    this.prevB= b;
+                }
             }
         },
         setTexture : function( glTexture ) {
-            var gl= this.gl;
+            if ( this.prevTexture!=glTexture ) {
+                var gl= this.gl;
 
-            gl.activeTexture(gl.TEXTURE0);
-            gl.bindTexture(gl.TEXTURE_2D, glTexture);
-            gl.uniform1i(this.shaderProgram.samplerUniform, 0);
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, glTexture);
+                gl.uniform1i(this.shaderProgram.samplerUniform, 0);
+
+                this.prevTexture= glTexture;
+            }
 
             return this;
         },
@@ -340,8 +362,11 @@
             return this;
         },
         setAlpha : function(alpha) {
-            this.gl.uniform1f(
+            if ( this.prevAlpha != alpha ) {
+                this.gl.uniform1f(
                     this.shaderProgram.alphaUniform, alpha);
+                this.prevAlpha= alpha;
+            }
             return this;
         },
         /**
@@ -355,18 +380,11 @@
          * @param lineSize {number} drawing line size.
          */
         drawLines : function( lines_data, size, r,g,b,a, lineWidth ) {
-
-            var linesBufferArray= new Uint16Array( size );
-            for( var i=0; i<size; i++ ) {
-                linesBufferArray[i]= i;
-            }
-
             var gl= this.gl;
 
             this.setAlpha( a );
+
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.linesBuffer );
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, linesBufferArray, gl.STATIC_DRAW);
-            
             gl.lineWidth(lineWidth);
 
             this.updateVertexBuffer(lines_data);
@@ -380,15 +398,9 @@
             
         },
         drawPolylines : function( polyline_data, size, r,g,b,a, lineWidth ) {
-
-            var linesBufferArray= new Uint16Array( size );
-            for( var i=0; i<size; i++ ) {
-                linesBufferArray[i]= i;
-            }
-
             var gl= this.gl;
+
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.linesBuffer );
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, linesBufferArray, gl.STATIC_DRAW);
             gl.lineWidth(lineWidth);
 
             this.setAlpha(a);

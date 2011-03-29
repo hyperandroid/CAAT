@@ -490,6 +490,25 @@ whether the parameter point coordinate lies inside the Actor.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#glNeedsFlush">glNeedsFlush</a></b>(director)
+								</div>
+								<div class="description">Test for compulsory gl flushing:
+ 1.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#glSetShader">glSetShader</a></b>(director)
+								</div>
+								<div class="description">Change texture shader program parameters.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#initialize">initialize</a></b>(overrides)
 								</div>
 								<div class="description"></div>
@@ -607,6 +626,15 @@ whether the parameter point coordinate lies inside the Actor.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#paintActorGL">paintActorGL</a></b>(director, time)
+								</div>
+								<div class="description">Set coordinates and uv values for this actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#removeBehavior">removeBehavior</a></b>(id)
 								</div>
 								<div class="description">Remove a Behavior with id param as behavior identifier from this actor.</div>
@@ -700,6 +728,15 @@ whether the parameter point coordinate lies inside the Actor.</div>
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setFrameTime">setFrameTime</a></b>(startTime, duration)
 								</div>
 								<div class="description">Sets the time life cycle for an Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setGLCoords">setGLCoords</a></b>(glCoords, glCoordsIndex, z)
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -808,6 +845,24 @@ whether the parameter point coordinate lies inside the Actor.</div>
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setStrokeStyle">setStrokeStyle</a></b>(style)
 								</div>
 								<div class="description">Caches a stroke style in the Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setUV">setUV</a></b>(director, uvIndex)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setVisible">setVisible</a></b>(visible)
+								</div>
+								<div class="description">Set this actor invisible.</div>
 							</td>
 						</tr>
 					
@@ -1469,6 +1524,80 @@ Gets a given anchor position referred to the Actor.
 
 					<hr />
 				
+					<a name="glNeedsFlush"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>glNeedsFlush</b>(director)
+					
+					</div>
+					<div class="description">
+						Test for compulsory gl flushing:
+ 1.- opacity has changed.
+ 2.- texture page has changed.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>director</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="glSetShader"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>glSetShader</b>(director)
+					
+					</div>
+					<div class="description">
+						Change texture shader program parameters.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>director</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="initialize"> </a>
 					<div class="fixedFont">
 					
@@ -1967,6 +2096,49 @@ It will be the drawing routine called by the Director to show every Actor.
 
 					<hr />
 				
+					<a name="paintActorGL"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>paintActorGL</b>(director, time)
+					
+					</div>
+					<div class="description">
+						Set coordinates and uv values for this actor.
+This function uses Director's coords and indexCoords values.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>director</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="removeBehavior"> </a>
 					<div class="fixedFont">
 					
@@ -2439,6 +2611,54 @@ These values are related to Scene time.
 								<dd>this</dd>
 							
 							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setGLCoords"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setGLCoords</b>(glCoords, glCoordsIndex, z)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>glCoords</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>glCoordsIndex</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>z</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
 						
 						
 						
@@ -2965,6 +3185,93 @@ each Scene Actor.
 
 					<hr />
 				
+					<a name="setUV"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setUV</b>(director, uvIndex)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>director</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>uvIndex</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setVisible"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setVisible</b>(visible)
+					
+					</div>
+					<div class="description">
+						Set this actor invisible.
+The actor is animated but not visible.
+A container won't show any of its children if set visible to false.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>visible</b>
+									
+								</dt>
+								<dd>{boolean} set this actor visible or not.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name="viewToModel"> </a>
 					<div class="fixedFont">
 					
@@ -3023,7 +3330,7 @@ actor's world model view matrix.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Fri Mar 04 2011 21:10:10 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Tue Mar 29 2011 16:32:20 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>

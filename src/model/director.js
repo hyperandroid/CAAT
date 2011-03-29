@@ -153,7 +153,7 @@
             canvas.height=height;
 
             try {
-                this.gl = canvas.getContext("experimental-webgl");
+                this.gl = canvas.getContext("experimental-webgl"/*, {antialias: false}*/);
                 this.gl.viewportWidth = canvas.width;
                 this.gl.viewportHeight = canvas.height;
             } catch(e) {
