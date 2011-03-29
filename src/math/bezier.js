@@ -85,6 +85,21 @@
 		solve: function(point,t) {
 		},
         /**
+         * Get an array of points defining the curve contour.
+         * @param numSamples {number} number of segments to get.
+         */
+        getContour : function(numSamples) {
+            var contour= [];
+
+            for( i=0; i<=numSamples; i++ ) {
+                var point= new CAAT.Point();
+                this.solve( point, i/numSamples );
+                contour.push(point);
+            }
+
+            return contour;
+        },
+        /**
          * Calculates a curve bounding box.
          *
          * @param rectangle {CAAT.Rectangle} a rectangle to hold the bounding box.
@@ -191,6 +206,8 @@
 			
 			this.cubic= true;
 			this.update();
+
+            return this;
 		},
         /**
          * Set this curve as a quadric bezier defined by the three control points.
@@ -211,6 +228,8 @@
 			
 			this.cubic= false;
 			this.update();
+
+            return this;
 		},
         /**
          * Paint this curve.
