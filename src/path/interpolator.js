@@ -44,7 +44,7 @@
      *
      */
     CAAT.Interpolator = function() {
-        this.interpolated= new CAAT.Point();
+        this.interpolated= new CAAT.Point(0,0,0);
         return this;
     };
 

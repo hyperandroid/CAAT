@@ -46,8 +46,7 @@
          * @return {CAAT.Point}
          */
         clone : function() {
-            var p= new CAAT.Point();
-            p.set( this.x, this.y, this.z );
+            var p= new CAAT.Point(this.x, this.y, this.z );
             return p;
         },
         /**

@@ -35,10 +35,10 @@
         this.lifecycleListenerList= [];
         this.AABB= new CAAT.Rectangle();
         this.viewVertices= [
-                new CAAT.Point(),
-                new CAAT.Point(),
-                new CAAT.Point(),
-                new CAAT.Point()
+                new CAAT.Point(0,0,0),
+                new CAAT.Point(0,0,0),
+                new CAAT.Point(0,0,0),
+                new CAAT.Point(0,0,0)
         ];
 
 		return this;
@@ -1050,10 +1050,10 @@
         },
         /**
          *
-         * @param director
+         * @param uvBuffer {Float32Array}
+         * @param uvIndex {number}
          */
         setUV : function( uvBuffer, uvIndex ) {
-
         },
         /**
          * Test for compulsory gl flushing:
@@ -1389,7 +1389,7 @@
 
                 var child= this.childrenList[i];
 
-                var np= new CAAT.Point( point.x, point.y );
+                var np= new CAAT.Point( point.x, point.y, 0 );
                 var aabb= child.AABB;
 
                 // if the coordinate is not in the AABB, can't be actor's shape either.
@@ -1645,8 +1645,8 @@
         },
         /**
          *
-         * @param uvBuffer {Float32Array}
-         * @param index {Number}
+         * @param uv {Float32Array}
+         * @param uvIndex {Number}
          */
         setUV : function( uv, uvIndex ) {
             this.compoundbitmap.setUV(this.spriteIndex, uv, uvIndex);
@@ -1803,7 +1803,7 @@
         /**
          *
          * @param uvBuffer {Float32Array}
-         * @param index {Number}
+         * @param uvIndex {Number}
          */
         setUV : function( uvBuffer, uvIndex ) {
 
@@ -2103,8 +2103,8 @@
 
 			var textWidth=this.sign * this.pathInterpolator.getPosition(
                     (time%this.pathDuration)/this.pathDuration ).y * this.path.getLength() ;
-			var p0= new CAAT.Point();
-			var p1= new CAAT.Point();
+			var p0= new CAAT.Point(0,0,0);
+			var p1= new CAAT.Point(0,0,0);
 
 			for( var i=0; i<this.text.length; i++ ) {
 				var caracter= this.text[i].toString();
@@ -2460,8 +2460,8 @@
             ctx.closePath();
 
             ctx.lineTo(
-                this.centerX + r1*Math.cos(this.initialAngle),
-                this.centerY + r1*Math.sin(this.initialAngle) );
+                centerX + r1*Math.cos(this.initialAngle),
+                centerY + r1*Math.sin(this.initialAngle) );
 
             if ( this.filled ) {
                 ctx.fillStyle= this.fillStyle;

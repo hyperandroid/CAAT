@@ -98,7 +98,7 @@
 
 		pushAllCirclesTowardTarget: function(aTarget)
 		{
-			var v = new CAAT.Point().set(0,0),
+			var v = new CAAT.Point(0,0,0),
 				circleList = this.allCircles,
 				len = circleList.length;
 
@@ -129,7 +129,7 @@
 		{
 			this.removeExpiredElements();
 
-			var v = new CAAT.Point().set(0, 0),
+			var v = new CAAT.Point(0,0, 0),
 				circleList = this.allCircles,
 				len = circleList.length;
 
@@ -260,7 +260,7 @@
 		{
 			var circleList = this.allCircles;
 			var len = circleList.length;
-			var grabVector = new CAAT.Point(xpos, ypos);
+			var grabVector = new CAAT.Point(xpos, ypos, 0);
 
 			// These are set every time a better match i found
 			var closestCircle = null;

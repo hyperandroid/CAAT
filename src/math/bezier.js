@@ -89,7 +89,7 @@
          * @param numSamples {number} number of segments to get.
          */
         getContour : function(numSamples) {
-            var contour= [];
+            var contour= [], i;
 
             for( i=0; i<=numSamples; i++ ) {
                 var point= new CAAT.Point();

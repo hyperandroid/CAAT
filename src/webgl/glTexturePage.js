@@ -344,7 +344,7 @@
                 image.inverted= false;
                 return image;
             //}
-
+/* Take into account when rotating images for TexturePacking algorithm
             var canvas= document.createElement("canvas");
             canvas.width= image.height;
             canvas.height= image.width;
@@ -364,13 +364,13 @@
             canvas.inverted= true;
 
             return canvas;
+*/
         },
         endCreation : function() {
             var gl= this.gl;
 
 //            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
 //            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST );
-
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
             gl.generateMipmap(gl.TEXTURE_2D);

@@ -24,17 +24,17 @@
 	CAAT.modules.CircleManager.PackedCircle= function()
 	{
 		this.boundsRule = CAAT.modules.CircleManager.PackedCircle.BOUNDS_RULE_IGNORE;
-		this.position = new CAAT.Point(0,0);
-		this.offset = new CAAT.Point(0,0);
-		this.targetPosition = new CAAT.Point(0,0);
+		this.position = new CAAT.Point(0,0,0);
+		this.offset = new CAAT.Point(0,0,0);
+		this.targetPosition = new CAAT.Point(0,0,0);
 		return this;
 	};
 
 	CAAT.modules.CircleManager.PackedCircle.prototype = {
 		id: 			0,
 		delegate:		null,
-		position:		new CAAT.Point(0,0),
-		offset:			new CAAT.Point(0,0),	// Offset from delegates position by this much
+		position:		new CAAT.Point(0,0,0),
+		offset:			new CAAT.Point(0,0,0),	// Offset from delegates position by this much
 
 		targetPosition:	null,	// Where it wants to go
 		targetChaseSpeed: 0.02,

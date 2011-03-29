@@ -24,7 +24,6 @@
      * </ul>
      *
      * @constructor
-     * @interface
      */
     CAAT.PathSegment = function() {
         return this;
@@ -120,12 +119,11 @@
      *
      * @constructor
      * @extends CAAT.PathSegment
-     * @implements CAAT.PathSegment
      */
 	CAAT.LinearPath = function() {
-		this.initialPosition= 	new CAAT.Point();
-		this.finalPosition=   	new CAAT.Point();
-		this.newPosition=   	new CAAT.Point();
+		this.initialPosition= 	new CAAT.Point(0,0,0);
+		this.finalPosition=   	new CAAT.Point(0,0,0);
+		this.newPosition=   	new CAAT.Point(0,0,0);
 		return this;
 	};
 	
@@ -299,10 +297,9 @@
      *
      * @constructor
      * @extends CAAT.PathSegment
-     * @implements CAAT.PathSegment
      */
 	CAAT.CurvePath = function() {
-		this.newPosition= new CAAT.Point();
+		this.newPosition= new CAAT.Point(0,0,0);
 		return this;
 	};
 	
@@ -492,10 +489,9 @@
      *
      * @constructor
      * @extends CAAT.PathSegment
-     * @implements CAAT.PathSegment
      */
 	CAAT.Path= function()	{
-		this.newPosition= new CAAT.Point();
+		this.newPosition= new CAAT.Point(0,0,0);
 		this.pathSegments= [];
 		return this;
 	};
@@ -992,7 +988,7 @@
         getContour : function(iSize) {
             var contour=[];
             for( var i=0; i<=iSize; i++ ) {
-                contour.push( new CAAT.Point().set( i/iSize, this.getPosition(i/iSize).y ) );
+                contour.push( new CAAT.Point().set( i/iSize, this.getPosition(i/iSize).y, 0 ) );
             }
 
             return contour;

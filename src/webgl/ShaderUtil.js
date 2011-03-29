@@ -377,7 +377,7 @@
          * @param g
          * @param b
          * @param a
-         * @param lineSize {number} drawing line size.
+         * @param lineWidth {number} drawing line size.
          */
         drawLines : function( lines_data, size, r,g,b,a, lineWidth ) {
             var gl= this.gl;
@@ -397,6 +397,16 @@
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vertexIndexBuffer);
             
         },
+        /**
+         * 
+         * @param polyline_data
+         * @param size
+         * @param r
+         * @param g
+         * @param b
+         * @param a
+         * @param lineWidth
+         */
         drawPolylines : function( polyline_data, size, r,g,b,a, lineWidth ) {
             var gl= this.gl;
 

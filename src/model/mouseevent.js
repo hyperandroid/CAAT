@@ -16,8 +16,8 @@
  **/
 (function() {
 	CAAT.MouseEvent = function() {
-		this.point= new CAAT.Point();
-		this.screenPoint= new CAAT.Point();
+		this.point= new CAAT.Point(0,0,0);
+		this.screenPoint= new CAAT.Point(0,0,0);
 		return this;
 	};
 	
@@ -99,7 +99,7 @@ CAAT.registerKeyListener= function(f) {
 /**
   * @param director {CAAT.Director}
  */
-CAAT.GlobalEnableEvents= function __GlobalEnableEvents(director) {
+CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
 
     if ( CAAT.GlobalEventsEnabled ) {
         return;

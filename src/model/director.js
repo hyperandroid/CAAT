@@ -36,9 +36,9 @@
         this.scenes=            [];
 
         // input related variables initialization
-        this.mousePoint=        new CAAT.Point();
-        this.prevMousePoint=    new CAAT.Point();
-        this.screenMousePoint=  new CAAT.Point();
+        this.mousePoint=        new CAAT.Point(0,0,0);
+        this.prevMousePoint=    new CAAT.Point(0,0,0);
+        this.screenMousePoint=  new CAAT.Point(0,0,0);
         this.isMouseDown=       false;
         this.lastSelectedActor= null;
         this.dragging=          false;
@@ -238,10 +238,10 @@
             this.glTextureProgram.setAlpha(opacity);
         },
         /**
-         * Render elements.
-         * <p>
-         * Los elementos deberian estar ordenados por shader y geometria.
-         * @param coords {Array} cuad coordinates array. .
+         * Render buffered elements.
+         * @param vertex
+         * @param coordsIndex
+         * @param uv
          */
         glRender : function(vertex, coordsIndex, uv) {
 
@@ -965,7 +965,7 @@
 
                         if (null != me.lastSelectedActor) {
                             pos= me.lastSelectedActor.viewToModel(
-                                    new CAAT.Point( me.mousePoint.x, me.mousePoint.y ));
+                                    new CAAT.Point( me.mousePoint.x, me.mousePoint.y, 0 ));
 
                             me.lastSelectedActor.mouseUp(
                                     new CAAT.MouseEvent().init(
@@ -1000,7 +1000,7 @@
                         me.isMouseDown = true;
                         me.lastSelectedActor = me.findActorAtPosition(
                                 me.mousePoint,
-                                new CAAT.Point(me.mousePoint.x,me.mousePoint.y));
+                                new CAAT.Point(me.mousePoint.x,me.mousePoint.y, 0));
                         var px= me.mousePoint.x;
                         var py= me.mousePoint.y;
 
@@ -1028,10 +1028,10 @@
 
                         me.lastSelectedActor = me.findActorAtPosition(
                                 me.mousePoint,
-                                new CAAT.Point(me.mousePoint.x,me.mousePoint.y));
+                                new CAAT.Point(me.mousePoint.x,me.mousePoint.y, 0));
                         if (null != me.lastSelectedActor) {
 
-                            var pos= new CAAT.Point( me.mousePoint.x, me.mousePoint.y );
+                            var pos= new CAAT.Point( me.mousePoint.x, me.mousePoint.y, 0 );
                             me.lastSelectedActor.viewToModel(pos);
 
                             me.lastSelectedActor.mouseEnter(
@@ -1050,7 +1050,7 @@
                         if (null != me.lastSelectedActor) {
 
                             me.getCanvasCoord(me.mousePoint, e);
-                            var pos= new CAAT.Point( me.mousePoint.x, me.mousePoint.y );
+                            var pos= new CAAT.Point( me.mousePoint.x, me.mousePoint.y, 0 );
                             me.lastSelectedActor.viewToModel(pos);
 
                             me.lastSelectedActor.mouseExit(
@@ -1097,14 +1097,14 @@
 
                         var lactor = me.findActorAtPosition(
                                 me.mousePoint,
-                                new CAAT.Point(me.mousePoint.x,me.mousePoint.y));
-                        var pos= lactor.viewToModel( new CAAT.Point(me.mousePoint.x, me.mousePoint.y) );
+                                new CAAT.Point(me.mousePoint.x,me.mousePoint.y, 0));
+                        var pos= lactor.viewToModel( new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0) );
 
                         // cambiamos de actor.
                         if (lactor != me.lastSelectedActor) {
                             if (null != me.lastSelectedActor) {
                                 var posExit= me.lastSelectedActor.viewToModel(
-                                        new CAAT.Point(me.mousePoint.x, me.mousePoint.y) );
+                                        new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0) );
                                 me.lastSelectedActor.mouseExit(
                                         new CAAT.MouseEvent().init(
                                                 posExit.x,
