@@ -84,6 +84,24 @@ CAAT.DRAG_THRESHOLD_X=      5;
 CAAT.DRAG_THRESHOLD_Y=      5;
 
 /**
+ * On resize event listener
+ */
+CAAT.windowResizeListeners= [];
+
+CAAT.registerResizeListener= function(f) {
+    CAAT.windowResizeListeners.push(f);
+};
+
+CAAT.unregisterResizeListener= function(director) {
+    for( var i=0; i<CAAT.windowResizeListeners.length; i++ ) {
+        if ( director==CAAT.windowResizeListeners[i] ) {
+            CAAT.windowResizeListeners.splice(i,1);
+            return;
+        }
+    }
+};
+
+/**
  * Pressed key codes.
  */
 CAAT.keyListeners= [];
@@ -94,10 +112,9 @@ CAAT.keyListeners= [];
  */
 CAAT.registerKeyListener= function(f) {
     CAAT.keyListeners.push(f);
-}
+};
 
 /**
-  * @param director {CAAT.Director}
  */
 CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
 
@@ -108,7 +125,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
     this.GlobalEventsEnabled= true;
 
     window.addEventListener('keydown',
-        function(evt,c) {
+        function(evt) {
             var key = (evt.which) ? evt.which : evt.keyCode;
             for( var i=0; i<CAAT.keyListeners.length; i++ ) {
                 CAAT.keyListeners[i](key,'down');
@@ -117,13 +134,23 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
         false);
 
     window.addEventListener('keyup',
-        function(evt,c) {
+        function(evt) {
             var key = (evt.which) ? evt.which : evt.keyCode;
             for( var i=0; i<CAAT.keyListeners.length; i++ ) {
                 CAAT.keyListeners[i](key,'up');
             }
         },
         false );
+
+    window.addEventListener('resize',
+        function(evt) {
+            for( var i=0; i<CAAT.windowResizeListeners.length; i++ ) {
+                CAAT.windowResizeListeners[i].windowResized(
+                        window.innerWidth,
+                        window.innerHeight);
+            }
+        },
+        false);
 };
 
 /**
@@ -134,8 +161,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
     if ( !CAAT.director ) {
         CAAT.director=[];
     }
-    CAAT.director.push(this);
-
+    CAAT.director.push(director);
     CAAT.GlobalEnableEvents();
 };
 

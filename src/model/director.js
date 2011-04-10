@@ -95,6 +95,59 @@
 
         frameCounter:       0,
 
+        RESIZE_NONE:        1,
+        RESIZE_WIDTH:       2,
+        RESIZE_HEIGHT:      4,
+        RESIZE_BOTH:        8,
+        resize:             1,
+
+        windowResized : function(w,h) {
+            switch( this.resize ) {
+                case this.RESIZE_WIDTH:
+                    this.setBounds(0,0,w,this.height);
+                    break;
+                case this.RESIZE_HEIGHT:
+                    this.setBounds(0,0,this.width,h);
+                    break;
+                case this.RESIZE_BOTH:
+                    this.setBounds(0,0,w,h);
+                    break;
+            }
+        },
+        /**
+         * Enable window resize events and set redimension policy.
+         * @param mode {number}  RESIZE_BOTH, RESIZE_WIDTH, RESIZE_HEIGHT, RESIZE_NONE.
+         */
+        enableResizeEvents : function(mode) {
+            if ( mode==this.RESIZE_BOTH || mode==this.RESIZE_WIDTH || mode==this.RESIZE_HEIGHT ) {
+                this.resize= mode;
+                CAAT.registerResizeListener(this);
+            } else {
+                CAAT.unregisterResizeListener(this);
+            }
+        },
+        /**
+         * Set this director's bounds as well as its contained scenes.
+         * @param x {number} ignored, will be 0.
+         * @param y {number} ignored, will be 0.
+         * @param w {number} director width.
+         * @param h {number} director height.
+         *
+         * @return this
+         */
+        setBounds : function(x,y,w,h) {
+            CAAT.Director.superclass.setBounds.call(this,x,y,w,h);
+            this.canvas.width= w;
+            this.canvas.height=h;
+            this.ctx= this.canvas.getContext('2d');
+            this.crc= this.ctx;
+
+            for( var i=0; i<this.scenes.length; i++ ) {
+                this.scenes[i].setBounds(0,0,w,h);
+            }
+
+            return this;
+        },
         /**
          * This method performs Director initialization. Must be called once.
          * If the canvas parameter is not set, it will create a Canvas itself,
@@ -111,19 +164,13 @@
         initialize : function(width,height,canvas) {
 
             canvas= canvas || document.createElement('canvas');
-            canvas.width= width;
-            canvas.height=height;
-
-            this.setBounds(0, 0, canvas.width, canvas.height);
-            this.create();
             this.canvas= canvas;
-            this.ctx= canvas.getContext('2d');
-            this.crc= this.ctx;
 
+            this.setBounds(0, 0, width, height);
+            this.create();
             this.enableEvents();
 
             this.timeline= new Date().getTime();
-
 
             // transition scene
             this.transitionScene= new CAAT.Scene().create().setBounds(0,0,width,height);
