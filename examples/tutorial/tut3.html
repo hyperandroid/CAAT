@@ -299,7 +299,7 @@
                     ctx.beginPath();
                     ctx.arc(7,7,5,0,2*Math.PI,false);
                     ctx.fill();
-                }
+                };
 
 
                 // add this container as a child of the previous created container.
@@ -1187,7 +1187,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                             ctx.beginPath();
                             ctx.arc(7,7,5,0,2*Math.PI,false);
                             ctx.fill();
-                        }
+                        };
 
                         // add this container as a child of the previous created container.
                         _c5_container.addChild(_c5_container_child);
@@ -1437,7 +1437,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                 var segments=10;
                 var arms= 10;
 
-                for( i=0; i<arms; i++ ) {
+                for( var i=0; i<arms; i++ ) {
                     __createArm(root, 2*Math.PI/arms * i,segments,2,10,Math.PI/segments/2);
                 }
                 _scene_9.addChild(root);
@@ -2075,8 +2075,8 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                     setBounds(0,0,
                          _director_8.canvas.width,_director_8.canvas.height).
                     setFillStyle('#000000');
-                root.mouseEnter= function(mouseEvent) {}
-                root.mouseExit= function(mouseEvent) {}
+                root.mouseEnter= function(mouseEvent) {};
+                root.mouseExit= function(mouseEvent) {};
 
                 _scene_8.addChild( root );
 
@@ -2141,7 +2141,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                     cb.addBehavior(tb);
 
                     bubble.addBehavior( cb );
-                }
+                };
 
                 var span= document.getElementById('_c8_data');
 
@@ -2150,7 +2150,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                     // chain to previous method. DON'T FORGET TO DO THIS!!!.
                     CAAT.Scene.superclass.endAnimate.call(this,director,time);
                     span.innerText= 'Actors: '+root.childrenList.length;
-                }
+                };
 
                 _director_8.loop(20);
             })();

@@ -969,7 +969,7 @@
 
             var canvas= director.crc;
 
-            this.frameAlpha= this.parent.frameAlpha*this.alpha;
+            this.frameAlpha= this.parent ? this.parent.frameAlpha*this.alpha : 1;
             canvas.globalAlpha= this.frameAlpha;
 
             //this.modelViewMatrix.transformRenderingContext(director.ctx);
@@ -1103,6 +1103,25 @@
         setClip : function( clip ) {
             this.clip= clip;
             return this;
+        },
+        /**
+         *
+         * @param time {Number=}
+         * @return canvas
+         */
+        cacheAsBitmap : function(time) {
+            time= time||0;
+            var canvas= document.createElement('canvas');
+            canvas.width= this.width;
+            canvas.height= this.height;
+            var ctx= canvas.getContext('2d');
+            var director= {
+                ctx: ctx,
+                crc: ctx
+            };
+
+            this.paintActor(director,time);
+            return canvas;
         }
 	};
 
@@ -1126,6 +1145,7 @@
 		CAAT.ActorContainer.superclass.constructor.call(this);
 		this.childrenList= [];
         this.pendingChildrenList= [];
+        this.activeChildren= [];
 		return this;
 	};
 
@@ -1184,7 +1204,7 @@
             CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
 
             if ( !this.isGlobalAlpha ) {
-                this.frameAlpha= this.parent.frameAlpha;
+                this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
             }
 
             for( var i=0; i<this.activeChildren.length; i++ ) {

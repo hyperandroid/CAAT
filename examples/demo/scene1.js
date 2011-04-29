@@ -151,51 +151,66 @@ function scene1_text(director,scene) {
         create().
         setFillStyle(gradient).
         setOutline(true);
-	text.setLocation((cc1.width-text.textWidth)/2,0);
-	cc1.addChild(text);
+
+    var aimg= new CAAT.ImageActor().create().
+            setImage(text.cacheAsBitmap()).
+            setLocation((cc1.width-text.textWidth)/2,0);
+	cc1.addChild(aimg);
 
 	var text2= new CAAT.TextActor();
 	text2.setFont("20px sans-serif");
 	text2.textAlign="center";
 	text2.setText("Quadric,Cubic,Line segments");
     text2.calcTextSize(director);
-	text2.setLocation((cc1.width-text2.textWidth)/2,20);
 	text2.create();
 	text2.fillStyle=gradient;
 	text2.outline= true;
-	cc1.addChild(text2);
+
+    var aimg2= new CAAT.ImageActor().create().
+            setImage( text2.cacheAsBitmap() ).
+            setLocation((cc1.width-text2.textWidth)/2,20);
+	cc1.addChild(aimg2);
 
 	var text4= new CAAT.TextActor();
 	text4.setFont("20px sans-serif");
 	text4.textAlign="center";
 	text4.setText("Fish Path");
     text4.calcTextSize(director);
-	text4.setLocation((cc1.width-text4.textWidth)/2,50);
 	text4.create();
 	text4.fillStyle=gradient;
 	text4.outline= true;
-	cc1.addChild(text4);
+
+    var aimg4= new CAAT.ImageActor().create().
+            setImage( text4.cacheAsBitmap() ).
+            setLocation((cc1.width-text4.textWidth)/2,50);
+	cc1.addChild(aimg4);
 	
 	var text3= new CAAT.TextActor();
 	text3.setFont("20px sans-serif");
 	text3.textAlign="center";
 	text3.setText("Interpolators");
     text3.calcTextSize(director);
-	text3.setLocation((cc1.width-text3.textWidth)/2,70);
 	text3.create();
 	text3.fillStyle=gradient;
 	text3.outline= true;
-	cc1.addChild(text3);
+
+    var aimg3= new CAAT.ImageActor().create().
+            setImage( text3.cacheAsBitmap() ).
+            setLocation((cc1.width-text3.textWidth)/2,70);
+	cc1.addChild(aimg3);
 
 	var text5= new CAAT.TextActor();
 	text5.setFont("20px sans-serif");
 	text5.textAlign="center";
 	text5.setText("DblClick to Select");
     text5.calcTextSize(director);
-	text5.setLocation((cc1.width-text5.textWidth)/2,90);
 	text5.create();
 	text5.fillStyle=gradient;
 	text5.outline= true;
-	cc1.addChild(text5);
+
+    var aimg5= new CAAT.ImageActor().create().
+            setImage( text5.cacheAsBitmap() ).
+            setLocation((cc1.width-text5.textWidth)/2,90);
+	cc1.addChild(aimg5);
 	
 }

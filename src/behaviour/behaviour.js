@@ -102,8 +102,8 @@
         /**
          * Sets behavior start time and duration.
          * Scene time will be the time of the scene the behavior actor is bound to.
-         * @param startTime an integer indicating behavior start time in scene time in ms..
-         * @param duration an integer indicating behavior duration in ms.
+         * @param startTime {number} an integer indicating behavior start time in scene time in ms..
+         * @param duration {number} an integer indicating behavior duration in ms.
          */
 		setFrameTime : function( startTime, duration ) {
 			this.behaviorStartTime= startTime;
