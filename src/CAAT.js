@@ -49,3 +49,4 @@ CAAT.log= function() {
         window.console.log( Array.prototype.slice.call(arguments) );
     }
 };
+

@@ -3,6 +3,8 @@
  *
  **/
 
+
+
 function __scene1_generateInterpolators(director, scene, pathBehavior) {
     var lerps= CAAT.Interpolator.prototype.enumerateInterpolators();
 
@@ -89,8 +91,6 @@ function __scene1(director) {
                 addQuadricTo( 40,200, 200,200 ).
                 endPath() );
 
-
-
     var fish = new CAAT.SpriteActor().
         create().
         setAnimationImageIndex( [0,1,2,1] ).
@@ -100,11 +100,10 @@ function __scene1(director) {
 	            initialize( director.getImage('fish'), 1, 3) ).
         enableEvents(false);
 
-
     // path measurer behaviour
     var pb= new CAAT.PathBehavior().
         setPath(pa.getPath()).
-        setFrameTime(0,10000).
+        setFrameTime(0,20000).
         setCycle(true).
         setAutoRotate(true).
         setTranslation( fish.width/2, fish.height/2 );
@@ -113,10 +112,10 @@ function __scene1(director) {
 
 
     scene.addChild(pa);
-	scene1_text(director,scene);
-    scene.addChild(fish);
+//	scene1_text(director,scene);
+//    scene.addChild(fish);
 
-    __scene1_generateInterpolators(director, scene, pb);
+//    __scene1_generateInterpolators(director, scene, pb);
 
 	return scene; 
 }

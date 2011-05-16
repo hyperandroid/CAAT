@@ -41,6 +41,16 @@
                 new CAAT.Point(0,0,0)
         ];
 
+        this.scaleAnchor= this.ANCHOR_CENTER;
+        this.rotateAnchor= this.ANCHOR_CENTER;
+        this.setScale(1,1);
+        this.setRotation(0);
+        this.behaviorList= [];
+        this.modelViewMatrix= new CAAT.Matrix();
+        this.worldModelViewMatrix= new CAAT.Matrix();
+        this.modelViewMatrixI= new CAAT.Matrix();
+        this.worldModelViewMatrixI= new CAAT.Matrix();
+        
 		return this;
 	};
 
@@ -319,7 +329,7 @@
 
 			var ctx= director.crc;
 
-			if ( null!=this.parent && null!=this.fillStyle ) {
+			if ( null!=this.fillStyle ) {
 				ctx.fillStyle= this.pointed ? 'orange' : (this.fillStyle!=null ? this.fillStyle : 'white'); //'white';
 				ctx.fillRect(0,0,this.width,this.height );
 			}
@@ -551,19 +561,6 @@
          * @return this
          */
 		create : function()	{
-            var i;
-            
-	    	this.scaleAnchor= this.ANCHOR_CENTER;
-	    	this.rotateAnchor= this.ANCHOR_CENTER;
-	    	this.setScale(1,1);
-	    	this.setRotation(0);
-	        this.behaviorList= [];
-            this.modelViewMatrix= new CAAT.Matrix();
-            this.worldModelViewMatrix= new CAAT.Matrix();
-            this.modelViewMatrixI= new CAAT.Matrix();
-            this.worldModelViewMatrixI= new CAAT.Matrix();
-
-
             return this;
 		},
         /**
@@ -1223,9 +1220,9 @@
             }
             
             if ( director.front_to_back ) {
-                var i= this.getNumChildren()-1;
+                var i= this.activeChildren.length-1;
                 while( i>=0 ) {
-                    var c= this.childrenList[i];
+                    var c= this.activeChildren[i];
                     c.paintActorGL(director,time);
                     i--;
                 }
@@ -1238,9 +1235,9 @@
             }
             
             if ( !director.front_to_back ) {
-                var n= this.getNumChildren();
+                var n= this.activeChildren.length;
                 for( var i=0; i<n; i++ ) {
-                    var c= this.childrenList[i];
+                    var c= this.activeChildren[i];
                     c.paintActorGL(director,time);
                 }
             }
@@ -1406,8 +1403,10 @@
 
 			// z-order
 			for( var i=this.childrenList.length-1; i>=0; i-- ) {
-
+            //for( var i=this.activeChildren.length-1; i>=0; i-- ) {
                 var child= this.childrenList[i];
+
+            //    var child= this.activeChildren[i];
 
                 var np= new CAAT.Point( point.x, point.y, 0 );
                 var aabb= child.AABB;
@@ -1448,6 +1447,9 @@
          */
         getNumChildren : function() {
             return this.childrenList.length;
+        },
+        getNumActiveChildren : function() {
+            return this.activeChildren.length;
         },
         /**
          * Returns the Actor at the iPosition(th) position.
@@ -2307,11 +2309,15 @@
         /**
          * Sets shape type.
          * No check for parameter validity is performed.
+         * Set paint method according to the shape.
          * @param iShape an integer with any of the SHAPE_* constants.
          * @return this
          */
         setShape : function(iShape) {
             this.shape= iShape;
+            this.paint= this.shape==this.SHAPE_CIRCLE ?
+                    this.paintCircle :
+                    this.paintRectangle;
             return this;
         },
         /**
@@ -2331,14 +2337,6 @@
          * @param time an integer with the Scene time the Actor is being drawn.
          */
         paint : function(director,time) {
-            switch(this.shape) {
-                case 0:
-                    this.paintCircle(director,time);
-                    break;
-                case 1:
-                    this.paintRectangle(director,time);
-                    break;
-            }
         },
         /**
          * @private

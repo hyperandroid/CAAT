@@ -193,23 +193,23 @@
          */
         initializeGL : function( width, height, canvas ) {
 
-            var i;
-
             canvas= canvas || document.createElement('canvas');
             canvas.width= width;
-            canvas.height=height;
+            canvas.height= height;
+            var i;
 
             try {
                 this.gl = canvas.getContext("experimental-webgl"/*, {antialias: false}*/);
-                this.gl.viewportWidth = canvas.width;
-                this.gl.viewportHeight = canvas.height;
+                this.gl.viewportWidth =  width;
+                this.gl.viewportHeight = height;
             } catch(e) {
             }
 
             if (this.gl) {
-                this.setBounds(0, 0, canvas.width, canvas.height);
-                this.create();
                 this.canvas= canvas;
+                this.create();
+                this.setBounds(0, 0, width, height);
+
                 this.crc= this.ctx;
                 this.enableEvents();
                 this.timeline= new Date().getTime();
@@ -919,7 +919,12 @@
             fps= 1000/fps;
 
             var me= this;
-            var floop= function loop() {
+            var floop= function _loop() {
+/*
+                if ( me.fnAnimationFrame ) {
+                    me.fnAnimationFrame(_loop, me.canvas);
+                }
+*/
                 var t= new Date().getTime(),
 					delta = t - me.timeline;
 
@@ -929,11 +934,25 @@
 				if(callback) {
 					callback(me, delta);
 				}
+
+
             };
 
-            floop();
-            this.interval= setInterval( floop, fps);
+            /*
+            this.fnAnimationFrame=
+                    window.requestAnimationFrame       ||
+                    window.webkitRequestAnimationFrame ||
+                    window.mozRequestAnimationFrame    ||
+                    window.oRequestAnimationFrame      ||
+                    window.msRequestAnimationFrame;
 
+            if ( null==this.fnAnimationFrame ) {
+                this.interval= setInterval( floop, fps);
+            } else {
+                floop();
+            }*/
+
+            this.interval= setInterval( floop, fps);
         },
         endLoop : function () {
             clearInterval(this.interval);

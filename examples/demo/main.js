@@ -140,7 +140,7 @@ function __CAAT_director_initialize(director) {
 
     director.emptyScenes();
 
-    
+    director.addScene(  __scene12(director) );
 	director.addScene(  __scene1(director) );
 	director.addScene(  __scene2(director) );
 	director.addScene(  __scene3(director) );
@@ -215,7 +215,7 @@ function __CAAT_director_initialize(director) {
 					
 		}
 	}
-	
+
 
 }
 

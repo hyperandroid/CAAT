@@ -190,7 +190,16 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                 }
             }
         }
+
+        window.addEventListener( 'deviceorientation', function(e) {
+            CAAT.rotationRate= {
+                alpha : e.alpha,
+                beta  : e.beta,
+                gamma : e.gamma
+            }
+        });
     } catch (e) {
+        alert(e);
         // eat it.
     }
 

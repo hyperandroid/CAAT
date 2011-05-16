@@ -55,6 +55,9 @@
             this.images= [];
             for( var i=0; i<aImages.length; i++ ) {
                 this.images.push( {id:aImages[i].id, image: new Image() } );
+            }
+
+            for( var i=0; i<aImages.length; i++ ) {
                 this.images[i].image.onload = function imageLoaded() {
                     me.imageCounter++;
                     me.notificationCallback.call(this, me.imageCounter, me.images);

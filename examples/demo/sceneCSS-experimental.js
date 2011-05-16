@@ -6,7 +6,7 @@
  *
  */
 
-function __scene12(director) {
+function __scene12css(director) {
 
     var i, j;
     var scene= new CAAT.Scene();

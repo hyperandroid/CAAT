@@ -108,10 +108,16 @@
 		setFrameTime : function( startTime, duration ) {
 			this.behaviorStartTime= startTime;
 			this.behaviorDuration= 	duration;
-			this.expired=			false;
+            this.expired=			false;
 
             return this;
 		},
+        setOutOfFrameTime : function() {
+            this.expired= true;
+            this.behaviorStartTime= Number.MAX_VALUE;
+            this.behaviorDuration= 0;
+            return this;
+        },
         /**
          * Changes behavior default interpolator to another instance of CAAT.Interpolator.
          * If the behavior is not defined by CAAT.Interpolator factory methods, the interpolation function must return
@@ -156,6 +162,13 @@
             return this;
 		},
         /**
+         * Remove all registered listeners to the behavior.
+         */
+        emptyListenerList : function() {
+            this.lifecycleListenerList= [];
+            return this;
+        },
+        /**
          * @return an integer indicating the behavior start time in ms..
          */
 		getStartTime : function() {
@@ -177,12 +190,12 @@
          * @return a boolean indicating whether the behavior is in scene time.
          */
 		isBehaviorInTime : function(time,actor) {
-			if ( this.expired )	{
+			if ( this.expired || this.behaviorStartTime<0 )	{
 				return false;
 			}
 			
 			if ( this.cycleBehavior )	{
-				if ( time>this.behaviorStartTime )	{
+				if ( time>=this.behaviorStartTime )	{
 					time= (time-this.behaviorStartTime)%this.behaviorDuration + this.behaviorStartTime;
 				}
 			}
@@ -241,6 +254,8 @@
          * This method must not be called directly. It is an auxiliary method to isBehaviorInTime method.
          * @param actor a CAAT.Actor instance.
          * @param time an integer with the scene time.
+         *
+         * @private
          */
 		setExpired : function(actor,time) {
             // set for final interpolator value.
@@ -249,11 +264,12 @@
 			this.fireBehaviorExpiredEvent(actor,time);
 		},
         /**
-         * private
          * This method must be overriden for every Behavior breed.
          * Must not be called directly.
          * @param actor {CAAT.Actor} a CAAT.Actor instance.
          * @param time {number} an integer with the scene time.
+         *
+         * @private
          */
 		setForTime : function( time, actor ) {
 			
@@ -736,7 +752,7 @@
         /**
          * Set the behavior path.
          * The path can be any length, and will take behaviorDuration time to be traversed.
-         * @param path a CAAT.Path instance.
+         * @param {CAAT.Path}
          */
         setPath : function(path) {
             this.path= path;
@@ -773,6 +789,13 @@
          */
 		setForTime : function(time,actor) {
 
+            if ( !this.path ) {
+                return {
+                    x: actor.x,
+                    y: actor.y
+                };
+            }
+
             var point= this.path.getPosition(time);
 
             if ( this.autoRotate ) {
@@ -786,17 +809,19 @@
                 var ay= point.y-this.prevY;
 
                 if ( ax==0 && ay==0 ) {
-                    return {x:ax, y:ay};
+                    actor.setLocation( point.x-this.translateX, point.y-this.translateY );
+                    return { x: actor.x, y: actor.y };
                 }
 
                 var angle= Math.atan2( ay, ax );
 
                 if ( this.prevX<=point.x )	{
-                    actor.transformation= CAAT.SpriteActor.prototype.TR_NONE;
+                    //actor.transformation= CAAT.SpriteActor.prototype.TR_NONE;
                 }
                 else	{
-                    actor.transformation= CAAT.SpriteActor.prototype.TR_FLIP_HORIZONTAL;
-                    angle+=Math.PI;
+                    //actor.transformation= CAAT.SpriteActor.prototype.TR_FLIP_HORIZONTAL;
+                    //angle+=Math.PI;
+                    
                 }
 
                 actor.setRotation(angle);
