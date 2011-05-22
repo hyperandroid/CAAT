@@ -36,7 +36,11 @@ function __scene3(director) {
 	text.create();
 	text.fillStyle=gradient;
 	text.outline= true;
-	cc.addChild(text);
+
+    var aimg= new CAAT.ImageActor().create().
+            setImage(text.cacheAsBitmap()).
+            setLocation((cc.width-text.textWidth)/2,0);
+	cc.addChild(aimg);
 	
 	var text2= new CAAT.TextActor();
 	text2.setFont("50px sans-serif");
@@ -47,7 +51,12 @@ function __scene3(director) {
 	text2.create();
 	text2.fillStyle=gradient;
 	text2.outline= true;
-	cc.addChild(text2);
+
+    var aimg2= new CAAT.ImageActor().create().
+            setImage(text2.cacheAsBitmap()).
+            setLocation((cc.width-text2.textWidth)/2,50);
+	cc.addChild(aimg2);
+
 
 	var text3= new CAAT.TextActor();
 	text3.setFont("50px sans-serif");
@@ -58,9 +67,12 @@ function __scene3(director) {
 	text3.create();
 	text3.fillStyle=gradient;
 	text3.outline= true;
-	cc.addChild(text3);
-	
-	
+
+    var aimg3= new CAAT.ImageActor().create().
+            setImage(text3.cacheAsBitmap()).
+            setLocation((cc.width-text3.textWidth)/2,100);
+	cc.addChild(aimg3);
+
 	var conpoundimage = new CAAT.CompoundImage();
 	conpoundimage.initialize( director.getImage('fish'), 1, 3);
 	

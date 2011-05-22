@@ -62,7 +62,7 @@
 
 <script type="text/javascript" src="../../src/webgl/ShaderUtil.js"></script>
 <script type="text/javascript" src="../../src/webgl/glu.js"></script>
-<script type="text/javascript" src="../../src/webgl/gpTexturePage.js"></script>
+<script type="text/javascript" src="../../src/webgl/glTexturePage.js"></script>
 
 
 
@@ -84,7 +84,7 @@
 	stats.domElement.style.position = 'absolute';
 	stats.domElement.style.left = '0px';
 	stats.domElement.style.top = '0px';
-	//document.getElementById('container').appendChild(stats.domElement);
+	document.getElementById('container').appendChild(stats.domElement);
     setInterval( function () {
         stats.update();
     }, 1000 / 60 );

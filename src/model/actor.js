@@ -2037,6 +2037,10 @@
                 var pos= this.font.indexOf("px");
                 var s =  this.font.substring(0, pos );
                 this.textHeight= parseInt(s,10);
+
+                // needed to calculate the descent.
+                // no context.getDescent(font) WTF !!!
+                this.textHeight+= (this.textHeight/4)>>0;
             } catch(e) {
                 this.textHeight=20; // default height;
             }

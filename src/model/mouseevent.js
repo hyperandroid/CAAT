@@ -170,6 +170,29 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
  */
 (function() {
 
+    function tilt(data) {
+        CAAT.rotationRate= {
+                alpha : 0,
+                beta  : data[0],
+                gamma : data[1]
+            }
+    }
+
+    if (window.DeviceOrientationEvent) {
+        window.addEventListener("deviceorientation", function () {
+            tilt([event.beta, event.gamma]);
+        }, true);
+    } else if (window.DeviceMotionEvent) {
+        window.addEventListener('devicemotion', function () {
+            tilt([event.acceleration.x * 2, event.acceleration.y * 2]);
+        }, true);
+    } else {
+        window.addEventListener("MozOrientation", function () {
+            tilt([orientation.x * 50, orientation.y * 50]);
+        }, true);
+    }
+
+/*
     //----------- Test for Accelerometer enabled functions.
     try {
         if (window.DeviceMotionEvent != undefined) {
@@ -202,5 +225,5 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
         alert(e);
         // eat it.
     }
-
+*/
 })();

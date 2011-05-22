@@ -23,23 +23,13 @@ function __scene11(director) {
             calcTextSize(director);
     text.setLocation((director.canvas.width-text.width)/2,
             (director.canvas.height-text.height)/2);
-	scene.addChild(text);
 
-    var tx= new CAAT.TextActor().
-            setFont("15px sans-serif").
-            setText("Acceleration X:").
-            create().
-            setLocation(10,20);
-    var ty= new CAAT.TextActor().
-            setFont("15px sans-serif").
-            setText("Acceleration Y:").
-            create().
-            setLocation(10,40);
-    var tz= new CAAT.TextActor().
-            setFont("15px sans-serif").
-            setText("Acceleration Z:").
-            create().
-            setLocation(10,60);
+    var aimg= new CAAT.ImageActor().create().
+            setImage(text.cacheAsBitmap()).
+            setLocation((director.canvas.width-text.width)/2,
+                        (director.canvas.height-text.height)/2);
+	scene.addChild(aimg);
+
     var alpha= new CAAT.TextActor().
             setFont("15px sans-serif").
             setText("Alpha: ").
@@ -55,24 +45,17 @@ function __scene11(director) {
             setText("Gamma: ").
             create().
             setLocation(10,120);
-    scene.addChild(tx);
-    scene.addChild(ty);
-    scene.addChild(tz);
     scene.addChild(alpha);
     scene.addChild(beta);
     scene.addChild(gamma);
 
 
     scene.endAnimate= function(director, time) {
-        var rx= window.innerWidth>window.innerHeight ? CAAT.accelerationIncludingGravity.y : CAAT.accelerationIncludingGravity.x;
+        var rx= CAAT.rotationRate.gamma;
 
-        rx/=10; // 9.8 m/s^2
+        //rx/=10; // 9.8 m/s^2
 
-        text.setRotation( rx*Math.PI/3.3 );
-
-        tx.setText('Acceleration X: '+CAAT.accelerationIncludingGravity.x);
-        ty.setText('Acceleration Y: '+CAAT.accelerationIncludingGravity.y);
-        tz.setText('Acceleration Z: '+CAAT.accelerationIncludingGravity.z);
+        aimg.setRotation( -rx*Math.PI/180 );
 
         alpha.setText('Alpha: '+CAAT.rotationRate.alpha);
         beta.setText( 'Beta:  '+CAAT.rotationRate.beta);
@@ -112,7 +95,11 @@ function __scene11_text(director,scene) {
             setOutline(true).
             calcTextSize(director);
     text.setLocation((cc.width-text.width)/2,0);
-	cc.addChild(text);
+    var aimg= new CAAT.ImageActor().create().
+            setImage(text.cacheAsBitmap()).
+            setLocation((cc.width-text.textWidth)/2,0);
+	cc.addChild(aimg);
+
 
 	var text2= new CAAT.TextActor().
 	        setFont("50px sans-serif").
@@ -122,7 +109,11 @@ function __scene11_text(director,scene) {
             setFillStyle(gradient).
 	        setOutline(true);
     text2.setLocation((cc.width-text2.width)/2,50);
-	cc.addChild(text2);
+    var aimg2= new CAAT.ImageActor().create().
+            setImage(text2.cacheAsBitmap()).
+            setLocation((cc.width-text2.textWidth)/2,50);
+	cc.addChild(aimg2);
+
 
 	scene.addChild(cc);
 }

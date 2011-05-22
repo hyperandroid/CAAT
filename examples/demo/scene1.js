@@ -112,10 +112,10 @@ function __scene1(director) {
 
 
     scene.addChild(pa);
-//	scene1_text(director,scene);
-//    scene.addChild(fish);
+	scene1_text(director,scene);
+    scene.addChild(fish);
 
-//    __scene1_generateInterpolators(director, scene, pb);
+    __scene1_generateInterpolators(director, scene, pb);
 
 	return scene; 
 }

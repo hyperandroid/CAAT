@@ -132,7 +132,12 @@ function __scene6_text(director,scene) {
 	text.create();
 	text.fillStyle=gradient;
 	text.outline= true;
-	cc.addChild(text);
+
+    var aimg= new CAAT.ImageActor().create().
+            setImage(text.cacheAsBitmap()).
+            setLocation((cc.width-text.textWidth)/2,0);
+	cc.addChild(aimg);
+
 	
 	var text2= new CAAT.TextActor();
 	text2.setFont("50px sans-serif");
@@ -143,7 +148,12 @@ function __scene6_text(director,scene) {
 	text2.create();
 	text2.fillStyle=gradient;
 	text2.outline= true;
-	cc.addChild(text2);	
+
+    var aimg2= new CAAT.ImageActor().create().
+            setImage(text2.cacheAsBitmap()).
+            setLocation((cc.width-text2.textWidth)/2,50);
+	cc.addChild(aimg2);
+
 	
 	scene.addChild(cc);
 }
