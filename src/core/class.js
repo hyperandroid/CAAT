@@ -1,41 +1,9 @@
 /**
- * based on http://www.kevs3d.co.uk/dev/canvask3d/scripts/mathlib.js 
-
-function extend(subc, superc, overrides)
-{
-   var F = function() {};
-   var i;
-
-    if (overrides) {
-        F.prototype = superc.prototype;
-        subc.prototype = new F();
-        subc.prototype.constructor = subc;
-        subc.superclass = superc.prototype;
-        if (superc.prototype.constructor == Object.prototype.constructor)   {
-           superc.prototype.constructor = superc;
-        }
-       for (i in overrides) {
-          if (overrides.hasOwnProperty(i)) {
-             subc.prototype[i] = overrides[i];
-          }
-       }
-    } else {
-
-        subc.prototype.constructor = subc;
-        subc.superclass= superc.prototype;
-        if (superc.prototype.constructor == Object.prototype.constructor)   {
-           superc.prototype.constructor = superc;
-        }
-        for( i in superc.prototype ) {
-            if ( false==subc.prototype.hasOwnProperty(i)) {
-                subc.prototype[i]= superc.prototype[i];
-            }
-        }
-
-    }
-}
+ * Extend a prototype with another to form a classical OOP inheritance procedure.
+ *
+ * @param subc Prototype to define the base class
+ * @param superc Prototype to be extended (derived class).
  */
-
 function extend(subc, superc) {
     var subcp = subc.prototype;
 
@@ -58,8 +26,7 @@ function extend(subc, superc) {
             subc.prototype[method] = subcp[method];
 
             // tenemos en super un metodo con igual nombre.
-            if ( superc.prototype[method] &&
-                    superc.prototype[method].length==subcp[method].length ) {
+            if ( superc.prototype[method]) {
                 subc.prototype[method]= (function(fn, fnsuper) {
                     return function() {
                         var prevMethod= this.__super;
@@ -78,16 +45,74 @@ function extend(subc, superc) {
             }
         }
     }
-}
+};
 
+/**
+ * Proxy an object or wrap/decorate a function.
+ *
+ * @param object
+ * @param preMethod
+ * @param postMethod
+ * @param errorMethod
+ */
 function proxy(object, preMethod, postMethod, errorMethod) {
 
+    // proxy a function
+    if ( typeof object=='function' ) {
+
+        if ( object.__isProxy ) {
+            return object;
+        }
+
+        return (function(fn) {
+            var proxyfn= function() {
+                if ( preMethod ) {
+                    preMethod({
+                            fn: fn,
+                            arguments:  Array.prototype.slice.call(arguments)} );
+                }
+                var retValue= null;
+                try {
+                    // apply original function call with itself as context
+                    retValue= fn.apply(fn, Array.prototype.slice.call(arguments));
+                    // everything went right on function call, then call
+                    // post-method hook if present
+                    if ( postMethod ) {
+                        postMethod({
+                                fn: fn,
+                                arguments:  Array.prototype.slice.call(arguments)} );
+                    }
+                } catch(e) {
+                    // an exeception was thrown, call exception-method hook if
+                    // present and return its result as execution result.
+                    if( errorMethod ) {
+                        retValue= errorMethod({
+                            fn: fn,
+                            arguments:  Array.prototype.slice.call(arguments),
+                            exception:  e} );
+                    } else {
+                        // since there's no error hook, just throw the exception
+                        throw e;
+                    }
+                }
+
+                // return original returned value to the caller.
+                return retValue;
+            }
+            proxyfn.__isProxy= true;
+            return proxyfn;
+
+        })(object);
+    }
+
     /**
-     * Only objects can be proxied. And not primitive ones!!!.
+     * If not a function then only non privitive objects can be proxied.
+     * If it is a previously created proxy, return the proxy itself.
      */
     if ( !typeof object=='object' ||
             object.constructor==Array ||
-            object.constructor==String ) {
+            object.constructor==String ||
+            object.__isProxy ) {
 
         return object;
     }
@@ -99,6 +124,7 @@ function proxy(object, preMethod, postMethod, errorMethod) {
     // hold the proxied object as member. Needed to assign proper
     // context on proxy method call.
     proxy.__object= object;
+    proxy.__isProxy= true;
 
     // For every element in the object to be proxied
     for( var method in object ) {
@@ -153,7 +179,7 @@ function proxy(object, preMethod, postMethod, errorMethod) {
 
     // return our newly created and populated of functions proxy object.
     return proxy;
-}
+};
 
 /** proxy sample usage
 

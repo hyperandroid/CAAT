@@ -289,8 +289,6 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.TimerTask.html">CAAT.TimerTask</a></li>
 	
-	<li><a href="../symbols/extend-F.html">extend-F</a></li>
-	
 </ul>
 <hr />
 			<!-- end publish.classesIndex -->
@@ -377,6 +375,15 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#emptyListenerList">emptyListenerList</a></b>()
+								</div>
+								<div class="description">Remove all registered listeners to the behavior.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#fireBehaviorAppliedEvent">fireBehaviorAppliedEvent</a></b>(actor, time, normalizedTime, value)
 								</div>
 								<div class="description">Notify observers about behavior being applied.</div>
@@ -456,7 +463,7 @@ ul.inheritsList
 						</tr>
 					
 						<tr>
-							<td class="attributes">&nbsp;</td>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#setExpired">setExpired</a></b>(actor, time)
 								</div>
@@ -465,12 +472,11 @@ ul.inheritsList
 						</tr>
 					
 						<tr>
-							<td class="attributes">&nbsp;</td>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#setForTime">setForTime</a></b>(actor, time)
 								</div>
-								<div class="description">private
-This method must be overriden for every Behavior breed.</div>
+								<div class="description">This method must be overriden for every Behavior breed.</div>
 							</td>
 						</tr>
 					
@@ -498,6 +504,15 @@ This method must be overriden for every Behavior breed.</div>
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#setInterpolator">setInterpolator</a></b>(interpolator)
 								</div>
 								<div class="description">Changes behavior default interpolator to another instance of CAAT.Interpolator.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#setOutOfFrameTime">setOutOfFrameTime</a></b>()
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -663,6 +678,31 @@ The director loop will call this method in orther to apply actor behaviors.
 								<dd>a CAAT.Actor instance the behavior is being applied to.</dd>
 							
 							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="emptyListenerList"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>emptyListenerList</b>()
+					
+					</div>
+					<div class="description">
+						Remove all registered listeners to the behavior.
+						
+						
+					</div>
+					
+					
+					
 						
 						
 						
@@ -1028,7 +1068,7 @@ the time parameter will be proportional to those values.
 					<hr />
 				
 					<a name="setExpired"> </a>
-					<div class="fixedFont">
+					<div class="fixedFont">&lt;private&gt; 
 					
 					
 					<b>setExpired</b>(actor, time)
@@ -1072,15 +1112,14 @@ This method must not be called directly. It is an auxiliary method to isBehavior
 					<hr />
 				
 					<a name="setForTime"> </a>
-					<div class="fixedFont">
+					<div class="fixedFont">&lt;private&gt; 
 					
 					
 					<b>setForTime</b>(actor, time)
 					
 					</div>
 					<div class="description">
-						private
-This method must be overriden for every Behavior breed.
+						This method must be overriden for every Behavior breed.
 Must not be called directly.
 						
 						
@@ -1139,13 +1178,13 @@ Scene time will be the time of the scene the behavior actor is bound to.
 									<b>startTime</b>
 									
 								</dt>
-								<dd>an integer indicating behavior start time in scene time in ms..</dd>
+								<dd>{number} an integer indicating behavior start time in scene time in ms..</dd>
 							
 								<dt>
 									<b>duration</b>
 									
 								</dt>
-								<dd>an integer indicating behavior duration in ms.</dd>
+								<dd>{number} an integer indicating behavior duration in ms.</dd>
 							
 							</dl>
 						
@@ -1232,6 +1271,31 @@ its values in the range 0..1. The behavior will only apply for such value range.
 
 					<hr />
 				
+					<a name="setOutOfFrameTime"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setOutOfFrameTime</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="setPingPong"> </a>
 					<div class="fixedFont">
 					
@@ -1276,7 +1340,7 @@ its values in the range 0..1. The behavior will only apply for such value range.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Tue Mar 29 2011 16:32:21 GMT+0200 (CEST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Wed Jun 01 2011 15:57:52 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>

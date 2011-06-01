@@ -289,8 +289,6 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.TimerTask.html">CAAT.TimerTask</a></li>
 	
-	<li><a href="../symbols/extend-F.html">extend-F</a></li>
-	
 </ul>
 <hr />
 			<!-- end publish.classesIndex -->
@@ -336,9 +334,9 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/_global_.html#extend">extend</a></b>(subc, superc, overrides)
+								<div class="fixedFont"><b><a href="../symbols/_global_.html#extend">extend</a></b>(subc, superc)
 								</div>
-								<div class="description">based on http://www.kevs3d.co.uk/dev/canvask3d/scripts/mathlib.js</div>
+								<div class="description">Extend a prototype with another to form a classical OOP inheritance procedure.</div>
 							</td>
 						</tr>
 					
@@ -372,9 +370,45 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_global_.html#proxy">proxy</a></b>(object, preMethod, postMethod, errorMethod)
+								</div>
+								<div class="description">Proxy an object or wrap/decorate a function.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/_global_.html#Stats">Stats</a></b>()
 								</div>
-								<div class="description"></div>
+								<div class="description">proxy sample usage
+
+var c0= new Meetup.C1(5);
+
+var cp1= proxy(
+        c1,
+        function() {
+            console.log('pre method on object: ',
+                    arguments[0].object.toString(),
+                    arguments[0].method,
+                    arguments[0].arguments );
+        },
+        function() {
+            console.log('post method on object: ',
+                    arguments[0].object.toString(),
+                    arguments[0].method,
+                    arguments[0].arguments );
+
+        },
+        function() {
+            console.log('exception on object: ',
+                    arguments[0].object.toString(),
+                    arguments[0].method,
+                    arguments[0].arguments,
+                    arguments[0].exception);
+
+            return -1;
+        });</div>
 							</td>
 						</tr>
 					
@@ -403,11 +437,11 @@ ul.inheritsList
 					<div class="fixedFont">
 					
 					
-					<b>extend</b>(subc, superc, overrides)
+					<b>extend</b>(subc, superc)
 					
 					</div>
 					<div class="description">
-						based on http://www.kevs3d.co.uk/dev/canvask3d/scripts/mathlib.js
+						Extend a prototype with another to form a classical OOP inheritance procedure.
 						
 							<br />
 							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_core_class.js.html">class.js</a>.
@@ -425,19 +459,13 @@ ul.inheritsList
 									<b>subc</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>Prototype to define the base class</dd>
 							
 								<dt>
 									<b>superc</b>
 									
 								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>overrides</b>
-									
-								</dt>
-								<dd></dd>
+								<dd>Prototype to be extended (derived class).</dd>
 							
 							</dl>
 						
@@ -663,6 +691,63 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="proxy"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>proxy</b>(object, preMethod, postMethod, errorMethod)
+					
+					</div>
+					<div class="description">
+						Proxy an object or wrap/decorate a function.
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_core_class.js.html">class.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>object</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>preMethod</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>postMethod</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>errorMethod</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="Stats"> </a>
 					<div class="fixedFont">
 					
@@ -671,7 +756,34 @@ ul.inheritsList
 					
 					</div>
 					<div class="description">
-						
+						proxy sample usage
+
+var c0= new Meetup.C1(5);
+
+var cp1= proxy(
+        c1,
+        function() {
+            console.log('pre method on object: ',
+                    arguments[0].object.toString(),
+                    arguments[0].method,
+                    arguments[0].arguments );
+        },
+        function() {
+            console.log('post method on object: ',
+                    arguments[0].object.toString(),
+                    arguments[0].method,
+                    arguments[0].arguments );
+
+        },
+        function() {
+            console.log('exception on object: ',
+                    arguments[0].object.toString(),
+                    arguments[0].method,
+                    arguments[0].arguments,
+                    arguments[0].exception);
+
+            return -1;
+        });
 						
 							<br />
 							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_lib_stats.js.html">stats.js</a>.
@@ -703,7 +815,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Tue Mar 29 2011 16:32:20 GMT+0200 (CEST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Wed Jun 01 2011 15:57:51 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>

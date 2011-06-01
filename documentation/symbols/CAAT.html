@@ -289,8 +289,6 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.TimerTask.html">CAAT.TimerTask</a></li>
 	
-	<li><a href="../symbols/extend-F.html">extend-F</a></li>
-	
 </ul>
 <hr />
 			<!-- end publish.classesIndex -->
@@ -404,6 +402,16 @@ ul.inheritsList
 							</td>
 						</tr>
 					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								CAAT.<b><a href="../symbols/CAAT.html#.windowResizeListeners">windowResizeListeners</a></b>
+								</div>
+								<div class="description">On resize event listener</div>
+							</td>
+						</tr>
+					
 					</tbody>
 				</table>
 				
@@ -457,7 +465,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">CAAT.<b><a href="../symbols/CAAT.html#.GlobalEnableEvents">GlobalEnableEvents</a></b>(director)
+								<div class="fixedFont">CAAT.<b><a href="../symbols/CAAT.html#.GlobalEnableEvents">GlobalEnableEvents</a></b>()
 								</div>
 								<div class="description"></div>
 							</td>
@@ -538,15 +546,6 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont">CAAT.<b><a href="../symbols/CAAT.html#.onDeviceMotion">onDeviceMotion</a></b>(e)
-								</div>
-								<div class="description"></div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont">CAAT.<b><a href="../symbols/CAAT.html#.Program">Program</a></b>(gl)
 								</div>
 								<div class="description"></div>
@@ -574,7 +573,25 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont">CAAT.<b><a href="../symbols/CAAT.html#.registerResizeListener">registerResizeListener</a></b>(f)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont">CAAT.<b><a href="../symbols/CAAT.html#.TextureProgram">TextureProgram</a></b>(gl)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">CAAT.<b><a href="../symbols/CAAT.html#.unregisterResizeListener">unregisterResizeListener</a></b>(director)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -746,6 +763,31 @@ ul.inheritsList
 						
 						
 
+					<hr />
+				
+					<a name=".windowResizeListeners"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">CAAT.</span><b>windowResizeListeners</b>
+					
+					</div>
+					<div class="description">
+						On resize event listener
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_mouseevent.js.html">mouseevent.js</a>.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
 					
 				
 			
@@ -859,7 +901,7 @@ Every contained actor will be laid out in a row in the desired orientation.
 					<div class="fixedFont">&lt;static&gt; 
 					
 					
-					<span class="light">CAAT.</span><b>GlobalEnableEvents</b>(director)
+					<span class="light">CAAT.</span><b>GlobalEnableEvents</b>()
 					
 					</div>
 					<div class="description">
@@ -873,17 +915,6 @@ Every contained actor will be laid out in a row in the desired orientation.
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>director</b>
-									
-								</dt>
-								<dd>{CAAT.Director}</dd>
-							
-							</dl>
 						
 						
 						
@@ -1181,45 +1212,6 @@ TODO: add events for event pumping:
 
 					<hr />
 				
-					<a name=".onDeviceMotion"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">CAAT.</span><b>onDeviceMotion</b>(e)
-					
-					</div>
-					<div class="description">
-						
-						
-							<br />
-							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_mouseevent.js.html">mouseevent.js</a>.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>e</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name=".Program"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -1337,6 +1329,45 @@ TODO: add events for event pumping:
 
 					<hr />
 				
+					<a name=".registerResizeListener"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">CAAT.</span><b>registerResizeListener</b>(f)
+					
+					</div>
+					<div class="description">
+						
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_mouseevent.js.html">mouseevent.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>f</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name=".TextureProgram"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -1374,6 +1405,45 @@ TODO: add events for event pumping:
 						
 						
 
+					<hr />
+				
+					<a name=".unregisterResizeListener"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">CAAT.</span><b>unregisterResizeListener</b>(director)
+					
+					</div>
+					<div class="description">
+						
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_mouseevent.js.html">mouseevent.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>director</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
 					
 				
 			
@@ -1388,7 +1458,7 @@ TODO: add events for event pumping:
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Tue Mar 29 2011 16:32:20 GMT+0200 (CEST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Wed Jun 01 2011 15:57:51 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>
