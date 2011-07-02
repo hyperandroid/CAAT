@@ -869,7 +869,7 @@
          * @return {CAAT.Rectangle}
          */
 		getBoundingBox : function(rectangle) {
-			if ( null===rectangle ) {
+			if ( !rectangle ) {
 				rectangle=new CAAT.Rectangle();
 			}
 			
