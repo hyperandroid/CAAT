@@ -6,10 +6,15 @@ function __scene7(director) {
 
 	var scene= new CAAT.Scene();
 	scene.create();
-
+/*    scene.activated= function() {
+        director.setClear(false);
+    }
+*/
     var root= new CAAT.ActorContainer();
     root.create();
     root.setBounds(0,0,director.canvas.width,director.canvas.height);
+    //root.setImage( director.getImage('plants') );
+    root.fillStyle=null;
     scene.addChild( root );
     
 
@@ -19,13 +24,12 @@ function __scene7(director) {
     conpoundimagefish.push( new CAAT.CompoundImage().initialize( director.getImage('fish3'), 1, 3) );
     conpoundimagefish.push( new CAAT.CompoundImage().initialize( director.getImage('fish4'), 1, 3) );
 
-    for( var j=0; j<20; j++ ) {
+    for( var j=0; j<200; j++ ) {
         var fish = new CAAT.SpriteActor();
         fish.create();
         fish.setAnimationImageIndex( [0,1,2,1] );
         fish.changeFPS= 300;
         fish.setSpriteImage(conpoundimagefish[j%4]);
-        fish.mouseEnabled= false;
         scene.addChild(fish);
 
         var pbfish= new CAAT.PathBehavior();
@@ -58,9 +62,6 @@ function __scene7(director) {
         fish.addBehavior( pbfish );
     }
 
-    root.paint= function( director, time ) {
-        director.crc.drawImage( director.getImage('plants'), 0, 0, this.width, this.height );
-    }
     root.mouseEnter= function(mouseEvent) {}
     root.mouseExit= function(mouseEvent) {}
 

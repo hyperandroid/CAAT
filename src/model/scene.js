@@ -177,7 +177,7 @@
         hasTimer : function( timertask ) {
             var i=this.timerList.length-1;
             while( i>=0 ) {
-                if ( this.timerList[i]==timertask ) {
+                if ( this.timerList[i]===timertask ) {
                     return true;
                 }
                 i--;
@@ -500,26 +500,29 @@
 			
 			var start=0;
 			var end=0;
+
+            if (anchor==CAAT.Actor.prototype.ANCHOR_CENTER ) {
+                anchor= CAAT.Actor.prototype.ANCHOR_TOP;
+            }
+
 			switch(anchor) {
-			case CAAT.Actor.prototype.ANCHOR_CENTER:
-				anchor= CAAT.Actor.prototype.ANCHOR_TOP;
 			case CAAT.Actor.prototype.ANCHOR_TOP:
 			case CAAT.Actor.prototype.ANCHOR_BOTTOM:
 			case CAAT.Actor.prototype.ANCHOR_LEFT:
 			case CAAT.Actor.prototype.ANCHOR_RIGHT:
-				start= Math.PI * (Math.random()<.5 ? 1 : -1);
+				start= Math.PI * (Math.random()<0.5 ? 1 : -1);
 				break;
 			case CAAT.Actor.prototype.ANCHOR_TOP_LEFT:
 			case CAAT.Actor.prototype.ANCHOR_TOP_RIGHT:
 			case CAAT.Actor.prototype.ANCHOR_BOTTOM_LEFT:
 			case CAAT.Actor.prototype.ANCHOR_BOTTOM_RIGHT:
-				start= Math.PI/2 * (Math.random()<.5 ? 1 : -1);
+				start= Math.PI/2 * (Math.random()<0.5 ? 1 : -1);
 				break;
 			default:
 				alert('rot anchor ?? '+anchor);
 			}
 
-			if ( false==isIn ) {
+			if ( false===isIn ) {
 				var tmp= start;
 				start=end;
 				end= tmp;

@@ -78,9 +78,9 @@
          * @private
          */
         layout : function() {
-            var i;
+            var i,actor;
 
-            if ( this.layoutOp==this.OP_LAYOUT_BOTTOM || this.layoutOp==this.OP_LAYOUT_TOP ) {
+            if ( this.layoutOp===this.OP_LAYOUT_BOTTOM || this.layoutOp===this.OP_LAYOUT_TOP ) {
 
                 var currentWidth=0, currentX=0;
 
@@ -91,11 +91,11 @@
                 currentX= (this.width-currentWidth)/2;
 
                 for( i=0; i<this.getNumChildren(); i++ ) {
-                    var actor= this.getChildAt(i);
+                    actor= this.getChildAt(i);
                     actor.x= currentX;
                     currentX+= actor.width;
 
-                    if ( this.layoutOp==this.OP_LAYOUT_BOTTOM ) {
+                    if ( this.layoutOp===this.OP_LAYOUT_BOTTOM ) {
                         actor.y= this.maxSize- actor.height;
                     } else {
                         actor.y= 0;
@@ -112,11 +112,11 @@
                 currentY= (this.height-currentHeight)/2;
 
                 for( i=0; i<this.getNumChildren(); i++ ) {
-                    var actor= this.getChildAt(i);
+                    actor= this.getChildAt(i);
                     actor.y= currentY;
                     currentY+= actor.height;
 
-                    if ( this.layoutOp==this.OP_LAYOUT_LEFT ) {
+                    if ( this.layoutOp===this.OP_LAYOUT_LEFT ) {
                         actor.x= 0;
                     } else {
                         actor.x= this.width - actor.width;
@@ -154,7 +154,7 @@
                             setValues( actor.height, this.minSize, actor, 'height' ).
                             setFrameTime( this.scene.time, 250 ) );
 
-                if ( i==this.getNumChildren()-1 ) {
+                if ( i===this.getNumChildren()-1 ) {
                     actor.behaviorList[0].addListener(
                     {
                         behaviorApplied : function(behavior,time,normalizedTime,targetActor,value) {
@@ -187,7 +187,7 @@
             var index= this.findChild(pointedActor);
 
             var across= 0;
-            if ( this.layoutOp==this.OP_LAYOUT_BOTTOM || this.layoutOp==this.OP_LAYOUT_TOP ) {
+            if ( this.layoutOp===this.OP_LAYOUT_BOTTOM || this.layoutOp===this.OP_LAYOUT_TOP ) {
                 across= x / pointedActor.width;
             } else {
                 across= y / pointedActor.height;
@@ -201,7 +201,7 @@
                 var wwidth=0;
                 if (i < index - this.range || i > index + this.range) {
                     wwidth = this.minSize;
-                } else if (i == index) {
+                } else if (i === index) {
                     wwidth = this.maxSize;
                 } else if (i < index) {
                     wwidth=
@@ -232,7 +232,7 @@
          * @private
          */
         actorMouseExit : function(mouseEvent) {
-            if ( null!=this.ttask ) {
+            if ( null!==this.ttask ) {
                 this.ttask.cancel();
             }
 
@@ -252,7 +252,7 @@
          * @private
          */
         actorMouseEnter : function(mouseEvent) {
-            if ( null!=this.ttask ) {
+            if ( null!==this.ttask ) {
                 this.ttask.cancel();
                 this.ttask= null;
             }
@@ -278,15 +278,15 @@
             actor.mouseEnter= function(mouseEvent) {
                 me.actorMouseEnter(mouseEvent);
                 mouseEvent.source.__Dock_mouseEnter(mouseEvent);
-            }
+            };
             actor.mouseExit= function(mouseEvent) {
                 me.actorMouseExit(mouseEvent);
                 mouseEvent.source.__Dock_mouseExit(mouseEvent);
-            }
+            };
             actor.mouseMove= function(mouseEvent) {
                 me.actorPointed( mouseEvent.point.x, mouseEvent.point.y, mouseEvent.source );
                 mouseEvent.source.__Dock_mouseMove(mouseEvent);
-            }
+            };
 
             return CAAT.Dock.superclass.addChild.call(this,actor);
         }

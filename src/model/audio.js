@@ -64,7 +64,7 @@
             for( var i=0; i<numChannels; i++ ) {
                 var channel= document.createElement('audio');
 
-                if ( null!=channel ) {
+                if ( null!==channel ) {
                     channel.finished= -1;
                     this.channels.push( channel );
                     var me= this;
@@ -77,7 +77,7 @@
 
                                 // remove from workingChannels
                                 for( i=0; i<me.workingChannels.length; i++ ) {
-                                    if (me.workingChannels[i]==target ) {
+                                    if (me.workingChannels[i]===target ) {
                                         me.workingChannels.splice(i,1);
                                         break;
                                     }
@@ -111,7 +111,7 @@
             var extension= null;
             var audio= document.createElement('audio');
 
-            if ( null!=audio ) {
+            if ( null!==audio ) {
 
                 if(!audio.canPlayType) {
                     return false;
@@ -173,7 +173,7 @@
          * @private
          */
         addAudioElement : function( id, element, endplaying_callback ) {
-            if ( typeof element == "string" ) {
+            if ( typeof element === "string" ) {
                 return this.addAudioFromURL( id, element, endplaying_callback );
             } else {
                 try {
@@ -249,7 +249,7 @@
          */
         getAudio : function(aId) {
             for( var i=0; i<this.audioCache.length; i++ ) {
-                if ( this.audioCache[i].id==aId ) {
+                if ( this.audioCache[i].id===aId ) {
                     return this.audioCache[i].audio;
                 }
             }
@@ -270,7 +270,7 @@
 
             var audio= this.getAudio(id);
             // existe el audio, y ademas hay un canal de audio disponible.
-            if ( null!=audio && this.channels.length>0 ) {
+            if ( null!==audio && this.channels.length>0 ) {
                 var channel= this.channels.shift();
                 channel.src= audio.src;
                 channel.load();
@@ -298,13 +298,13 @@
 
             var audio_in_cache= this.getAudio(id);
             // existe el audio, y ademas hay un canal de audio disponible.
-            if ( null!=audio_in_cache ) {
+            if ( null!==audio_in_cache ) {
                 var audio= document.createElement('audio');
-                if ( null!=audio ) {
+                if ( null!==audio ) {
                     audio.src= audio_in_cache.src;
                     audio.preload = "auto";
 
-                    if ( this.browserInfo.browser=='Firefox') {
+                    if ( this.browserInfo.browser==='Firefox') {
                         audio.addEventListener(
                             'ended',
                             // on sound end, set channel to available channels list.

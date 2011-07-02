@@ -108,7 +108,7 @@
          */
         updatePath : function() {}
 
-    }
+    };
 
 })();
 
@@ -121,9 +121,9 @@
      * @extends CAAT.PathSegment
      */
 	CAAT.LinearPath = function() {
-		this.initialPosition= 	new CAAT.Point(0,0,0);
-		this.finalPosition=   	new CAAT.Point(0,0,0);
-		this.newPosition=   	new CAAT.Point(0,0,0);
+		this.initialPosition=   new CAAT.Point(0,0,0);
+		this.finalPosition=     new CAAT.Point(0,0,0);
+		this.newPosition=       new CAAT.Point(0,0,0);
 		return this;
 	};
 	
@@ -138,8 +138,8 @@
          * @param y {number}
          */
 		setInitialPosition : function( x, y )	{
-			this.initialPosition.x= 	x;
-			this.initialPosition.y= 	y;
+			this.initialPosition.x= x;
+			this.initialPosition.y= y;
 			this.newPosition.set(x,y);
             return this;
 		},
@@ -149,8 +149,8 @@
          * @param finalY {number}
          */
 		setFinalPosition : function( finalX, finalY )	{
-			this.finalPosition.x= 	finalX;
-			this.finalPosition.y=	finalY;
+			this.finalPosition.x= finalX;
+			this.finalPosition.y= finalY;
             return this;
 		},
         /**
@@ -224,7 +224,7 @@
 			canvas.stroke();
 
             if ( bDrawHandles ) {
-                canvas.globalAlpha=.5;
+                canvas.globalAlpha=0.5;
                 canvas.fillStyle='#7f7f00';
                 canvas.beginPath();
                 canvas.arc(
@@ -269,9 +269,9 @@
          * @inheritsDoc
          */
 		getControlPoint: function(index) {
-			if ( 0==index ) {
+			if ( 0===index ) {
 				return this.initialPosition;
-			} else if (1==index) {
+			} else if (1===index) {
 				return this.finalPosition;
 			}
 		},
@@ -780,7 +780,7 @@
          * @return {number}
          */
 	    getLength : function() {
-	    	return this.pathLength;
+	        return this.pathLength;
 	    },
         /**
          * This method, returns a CAAT.Point instance indicating a coordinate in the path.
@@ -869,7 +869,7 @@
          * @return {CAAT.Rectangle}
          */
 		getBoundingBox : function(rectangle) {
-			if ( null==rectangle ) {
+			if ( null===rectangle ) {
 				rectangle=new CAAT.Rectangle();
 			}
 			
@@ -933,13 +933,13 @@
 						this.point= [];
 						this.point.push(point);
 						// no es punto de control, existe este mismo punto en la curva, o bien siguiente o anterior.
-                        if ( j==0 ) {
+                        if ( j===0 ) {
                             var xx= i-1;
                             if ( xx<0 ) {
                                 xx= this.pathSegments.length-1;
                             }
                             this.point.push( this.pathSegments[xx].endCurvePosition() );
-                        } else if ( j==this.pathSegments[i].numControlPoints()-1 ) {
+                        } else if ( j===this.pathSegments[i].numControlPoints()-1 ) {
                             this.point.push( this.pathSegments[(i+1)%this.pathSegments.length].startCurvePosition() );
                         }
 
@@ -961,11 +961,11 @@
                 return;
             }
 
-			if ( null==this.point ) {
+			if ( null===this.point ) {
 				return;
 			}
 			
-			if ( -1==this.ax || -1==this.ay ) {
+			if ( -1===this.ax || -1===this.ay ) {
 				this.ax= x;
 				this.ay= y;
 			}

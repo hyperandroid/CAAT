@@ -31,7 +31,7 @@
 	};
 
 	CAAT.modules.CircleManager.PackedCircle.prototype = {
-		id: 			0,
+		id:             0,
 		delegate:		null,
 		position:		new CAAT.Point(0,0,0),
 		offset:			new CAAT.Point(0,0,0),	// Offset from delegates position by this much

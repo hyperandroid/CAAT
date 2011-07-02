@@ -106,12 +106,17 @@ function __createArm( root, angle, segments, armSegmentSizeW, armSegmentSizeH, a
                 i
         );
 
-        var newSegment= new CAAT.ShapeActor().
-                create().
-                setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
-                setSize( armSegmentSizeW, armSegmentSizeH ).
-                setFillStyle( 'rgb('+color.r+","+color.g+","+color.b+")" ).
-                setLocation( 0,-armSegmentSizeH );
+
+
+        var img= new CAAT.ShapeActor().
+            create().
+            setShape( CAAT.ShapeActor.prototype.SHAPE_CIRCLE ).
+            setSize( armSegmentSizeH-4, armSegmentSizeH-4 ).
+            setFillStyle( 'rgb('+color.r+","+color.g+","+color.b+")" );
+
+        var newSegment= new CAAT.ImageActor().create().
+            setImage(img.cacheAsBitmap()).
+            setLocation( 0,-armSegmentSizeH );
         
         if ( segment==root ) {
             newSegment.setRotationAnchored(angle, armSegmentSizeW/2, armSegmentSizeH);

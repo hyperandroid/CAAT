@@ -47,19 +47,19 @@
          */
         grabPixels : function(image) {
             var canvas= document.createElement('canvas');
-            if ( canvas!=null ) {
+            if ( canvas!==null ) {
                 canvas.width= image.width;
                 canvas.height= image.height;
                 var ctx= canvas.getContext('2d');
                 ctx.drawImage(image,0,0);
                 try {
                     var imageData= ctx.getImageData(0,0,canvas.width,canvas.height);
+                    return imageData;
                 }
                 catch(e) {
                     CAAT.log('error pixelgrabbing.', image);
                     return null;
                 }
-                return imageData;
             }
             return null;
         },
@@ -116,7 +116,7 @@
             this.height= height;
 
             this.canvas= document.createElement('canvas');
-            if ( this.canvas!=null ) {
+            if ( this.canvas!==null ) {
                 this.canvas.width= width;
                 this.canvas.height= height;
                 this.ctx= this.canvas.getContext('2d');
@@ -135,7 +135,7 @@
          * @return this
          */
         clear : function( r,g,b,a ) {
-            if ( null==this.imageData ) {
+            if ( null===this.imageData ) {
                 return this;
             }
             var data= this.imageData.data;
@@ -163,7 +163,7 @@
          * @return this
          */
         apply : function(director, time) {
-            if ( null!=this.imageData ) {
+            if ( null!==this.imageData ) {
                 this.ctx.putImageData(this.imageData, 0, 0);
             }
             return this;
@@ -190,7 +190,7 @@
          * @param time {number} scene time.
          */
         paint : function( director, time ) {
-            if ( null!=this.canvas ) {
+            if ( null!==this.canvas ) {
                 var ctx= director.ctx;
                 ctx.drawImage( this.getCanvas(), 0, 0 );
             }
@@ -266,7 +266,7 @@
             this.pos4=Math.floor(255*Math.random());
 
             this.m_colorMap= CAAT.Color.prototype.makeRGBColorRamp(
-                    colors!=null ? colors : this.color,
+                    colors!==null ? colors : this.color,
                     256,
                     CAAT.Color.prototype.RampEnumeration.RAMP_CHANNEL_RGBA_ARRAY );
 
@@ -280,20 +280,20 @@
          */
         setB : function() {
 
-            this.b1= Math.random()>.5;
-            this.b2= Math.random()>.5;
-            this.b3= Math.random()>.5;
-            this.b4= Math.random()>.5;
+            this.b1= Math.random()>0.5;
+            this.b2= Math.random()>0.5;
+            this.b3= Math.random()>0.5;
+            this.b4= Math.random()>0.5;
 
-            this.spd1= Math.floor((Math.random()*3+1)*(Math.random()<.5?1:-1));
-            this.spd2= Math.floor((Math.random()*3+1)*(Math.random()<.5?1:-1));
-            this.spd3= Math.floor((Math.random()*3+1)*(Math.random()<.5?1:-1));
-            this.spd4= Math.floor((Math.random()*3+1)*(Math.random()<.5?1:-1));
+            this.spd1= Math.floor((Math.random()*3+1)*(Math.random()<0.5?1:-1));
+            this.spd2= Math.floor((Math.random()*3+1)*(Math.random()<0.5?1:-1));
+            this.spd3= Math.floor((Math.random()*3+1)*(Math.random()<0.5?1:-1));
+            this.spd4= Math.floor((Math.random()*3+1)*(Math.random()<0.5?1:-1));
 
-            this.i1= Math.floor((Math.random()*2.4+1)*(Math.random()<.5?1:-1));
-            this.i2= Math.floor((Math.random()*2.4+1)*(Math.random()<.5?1:-1));
-            this.i3= Math.floor((Math.random()*2.4+1)*(Math.random()<.5?1:-1));
-            this.i4= Math.floor((Math.random()*2.4+1)*(Math.random()<.5?1:-1));
+            this.i1= Math.floor((Math.random()*2.4+1)*(Math.random()<0.5?1:-1));
+            this.i2= Math.floor((Math.random()*2.4+1)*(Math.random()<0.5?1:-1));
+            this.i3= Math.floor((Math.random()*2.4+1)*(Math.random()<0.5?1:-1));
+            this.i4= Math.floor((Math.random()*2.4+1)*(Math.random()<0.5?1:-1));
         },
         /**
          * Apply image processing to create the plasma and call superclass's apply to make the result
@@ -420,7 +420,7 @@
 
             var bump=this.makeArray2D(this.height,this.width,0);
 
-            if ( null==imageData ) {
+            if ( null===imageData ) {
                 return;
             }
             
@@ -486,7 +486,7 @@
                 for( j=0; j<this.m_radius; j++ ) {
                     var x= j/this.m_radius;
                     var y= i/this.m_radius;
-                    z= (1-Math.sqrt(x*x+y*y))*.8;
+                    z= (1-Math.sqrt(x*x+y*y))*0.8;
                     if ( z<0 ) {
                         z=0;
                     }
@@ -666,7 +666,7 @@
 
             this.sourceImageData= this.grabPixels(patternImage);
 
-            if ( null!=this.sourceImageData ) {
+            if ( null!==this.sourceImageData ) {
                 // patternImage must be 2^n sized.
                 switch( this.sourceImageData.width ) {
                     case 1024:
@@ -791,7 +791,7 @@
          * @return this
          */
         apply : function(director,time) {
-            if ( null!=this.sourceImageData ) {
+            if ( null!==this.sourceImageData ) {
                 this.rotoZoom(director,time);
             }
             return CAAT.IMRotoZoom.superclass.apply.call(this,director,time);
@@ -802,18 +802,18 @@
          */
         setCenter: function() {
             var d = Math.random();
-            if (d < .33) {
+            if (d < 0.33) {
                 this.m_alignv = 0;
-            } else if (d < .66) {
+            } else if (d < 0.66) {
                 this.m_alignv = 1;
             } else {
                 this.m_alignv = 2;
             }
 
             d = Math.random();
-            if (d < .33) {
+            if (d < 0.33) {
                 this.m_alignh = 0;
-            } else if (d < .66) {
+            } else if (d < 0.66) {
                 this.m_alignh = 1;
             } else {
                 this.m_alignh = 2;

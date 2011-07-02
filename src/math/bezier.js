@@ -33,7 +33,7 @@
          * @param director {CAAT.Director}
          */
 		paint: function(director) {
-            if ( false==this.drawHandles ) {
+            if ( false===this.drawHandles ) {
                 return;
             }
 
@@ -53,7 +53,7 @@
 				canvas.stroke();
 			} 
 			
-            canvas.globalAlpha=.5;
+            canvas.globalAlpha=0.5;
             for( var i=0; i<this.coordlist.length; i++ ) {
                 canvas.fillStyle='#7f7f00';
                 canvas.beginPath();
@@ -436,8 +436,8 @@
 //				(2*P0 - 5*P1 + 4*P2 - P3) * t2 +
 //				(-P0 + 3*P1- 3*P2 + P3) * t3)
 
-			point.x= .5*( (2*c[1].x) + (-c[0].x+c[2].x)*t + (2*c[0].x - 5*c[1].x + 4*c[2].x - c[3].x)*t2 + (-c[0].x + 3*c[1].x - 3*c[2].x + c[3].x)*t3 );
-			point.y= .5*( (2*c[1].y) + (-c[0].y+c[2].y)*t + (2*c[0].y - 5*c[1].y + 4*c[2].y - c[3].y)*t2 + (-c[0].y + 3*c[1].y - 3*c[2].y + c[3].y)*t3 );
+			point.x= 0.5*( (2*c[1].x) + (-c[0].x+c[2].x)*t + (2*c[0].x - 5*c[1].x + 4*c[2].x - c[3].x)*t2 + (-c[0].x + 3*c[1].x - 3*c[2].x + c[3].x)*t3 );
+			point.y= 0.5*( (2*c[1].y) + (-c[0].y+c[2].y)*t + (2*c[0].y - 5*c[1].y + 4*c[2].y - c[3].y)*t2 + (-c[0].y + 3*c[1].y - 3*c[2].y + c[3].y)*t3 );
 			
 			return point;
 

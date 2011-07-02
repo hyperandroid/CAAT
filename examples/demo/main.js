@@ -147,7 +147,9 @@ function __CAAT_director_initialize(director) {
 	director.addScene(  __scene4(director) );
 	director.addScene(  __scene5(director) );
 	director.addScene(  __scene6(director) );
+
     director.addScene(  __scene7(director) );
+
     director.addScene(  __scene8(director) );
     director.addScene(  __scene9(director) );
     __scene10(director);
@@ -388,7 +390,7 @@ function __CAAT_init() {
         function( counter, images ) {
 
             if ( counter==images.length ) {
-                director.imagesCache= images;
+                director.setImagesCache(images);
                 scene_loading.finishedLoading();
             }
 

@@ -107,8 +107,8 @@
          */
 		setFrameTime : function( startTime, duration ) {
 			this.behaviorStartTime= startTime;
-			this.behaviorDuration= 	duration;
-            this.expired=			false;
+			this.behaviorDuration=  duration;
+            this.expired=           false;
 
             return this;
 		},
@@ -442,7 +442,7 @@
 			var angle= 
 				this.startAngle + time*(this.endAngle-this.startAngle);
 
-            if ( this.anchor==CAAT.Actor.prototype.ANCHOR_CUSTOM ) {
+            if ( this.anchor===CAAT.Actor.prototype.ANCHOR_CUSTOM ) {
                 actor.setRotationAnchored(angle, this.rx, this.ry);
             } else {
 			    var obj= actor.getAnchor( this.anchor );
@@ -483,7 +483,7 @@
          */
         setAnchor : function( anchor, rx, ry ) {
             this.anchor= anchor;
-            if ( anchor==CAAT.Actor.prototype.ANCHOR_CUSTOM ) {
+            if ( anchor===CAAT.Actor.prototype.ANCHOR_CUSTOM ) {
                 this.rx= rx;
                 this.ry= ry;
             }
@@ -602,11 +602,11 @@
 	};
 	
 	CAAT.ScaleBehavior.prototype= {
-		startScaleX: 	0,
-		endScaleX:      0,
-		startScaleY:	0,
-		endScaleY:	    0,
-		anchor:		    0,
+        startScaleX:    0,
+        endScaleX:      0,
+        startScaleY:    0,
+        endScaleY:	    0,
+        anchor:		    0,
 
         /**
          * Applies corresponding scale values for a given time.
@@ -621,11 +621,11 @@
 			var scaleY= this.startScaleY + time*(this.endScaleY-this.startScaleY);
 
             // Firefox 3.x & 4, will crash animation if either scaleX or scaleY equals 0.
-            if (0==scaleX ) {
-                scaleX=.01;
+            if (0===scaleX ) {
+                scaleX=0.01;
             }
-            if (0==scaleY ) {
-                scaleY=.01;
+            if (0===scaleY ) {
+                scaleY=0.01;
             }
 
 			actor.setScaleAnchored( scaleX, scaleY, this.anchor );
@@ -694,8 +694,8 @@
          * @return {number} the alpha value set. Normalized from 0 (total transparency) to 1 (total opacity)
          */
 		setForTime : function(time,actor) {
-			var alpha= 	(this.startAlpha + time*(this.endAlpha-this.startAlpha));
-			actor.setAlpha( alpha );
+            var alpha= (this.startAlpha+time*(this.endAlpha-this.startAlpha));
+            actor.setAlpha( alpha );
             return alpha;
         },
         /**
@@ -800,7 +800,7 @@
 
             if ( this.autoRotate ) {
 
-                if ( -1==this.prevX && -1==this.prevY )	{
+                if ( -1===this.prevX && -1===this.prevY )	{
                     this.prevX= point.x;
                     this.prevY= point.y;
                 }
@@ -808,7 +808,7 @@
                 var ax= point.x-this.prevX;
                 var ay= point.y-this.prevY;
 
-                if ( ax==0 && ay==0 ) {
+                if ( ax===0 && ay===0 ) {
                     actor.setLocation( point.x-this.translateX, point.y-this.translateY );
                     return { x: actor.x, y: actor.y };
                 }

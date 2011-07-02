@@ -74,7 +74,7 @@
          */
 		union : function(px,py) {
 			
-			if ( this.isEmpty() && this.x==0 && this.y==0 ) {
+			if ( this.isEmpty() && this.x===0 && this.y===0 ) {
 				this.x= px;
 				this.y= py;
 				return;

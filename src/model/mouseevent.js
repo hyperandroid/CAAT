@@ -83,6 +83,10 @@ CAAT.rotationRate= { alpha: 0, beta:0, gamma: 0 };      // angles data.
 CAAT.DRAG_THRESHOLD_X=      5;
 CAAT.DRAG_THRESHOLD_Y=      5;
 
+// has the animation loop began ?
+CAAT.renderEnabled= false;
+CAAT.FPS=           60;
+
 /**
  * On resize event listener
  */
@@ -94,7 +98,7 @@ CAAT.registerResizeListener= function(f) {
 
 CAAT.unregisterResizeListener= function(director) {
     for( var i=0; i<CAAT.windowResizeListeners.length; i++ ) {
-        if ( director==CAAT.windowResizeListeners[i] ) {
+        if ( director===CAAT.windowResizeListeners[i] ) {
             CAAT.windowResizeListeners.splice(i,1);
             return;
         }
@@ -153,6 +157,35 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
         false);
 };
 
+window.requestAnimFrame = (function(){
+  return  window.requestAnimationFrame       ||
+          window.webkitRequestAnimationFrame ||
+          window.mozRequestAnimationFrame    ||
+          window.oRequestAnimationFrame      ||
+          window.msRequestAnimationFrame     ||
+          function(/* function */ callback, /* DOMElement */ element){
+            window.setTimeout(callback, 1000 / CAAT.FPS);
+          };
+})();
+
+CAAT.loop= function(fps) {
+    if (CAAT.renderEnabled) {
+        return;
+    }
+
+    CAAT.FPS= fps || 30;
+    CAAT.renderEnabled= true;
+    CAAT.renderFrame();
+}
+
+CAAT.renderFrame= function() {
+    for( var i=0, l=CAAT.director.length; i<l; i++ ) {
+        CAAT.director[i].renderFrame();
+    }
+
+    window.requestAnimFrame(CAAT.renderFrame, 0 )
+}
+
 /**
  * Register and keep track of every CAAT.Director instance in the document.
  */
@@ -175,20 +208,20 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                 alpha : 0,
                 beta  : data[0],
                 gamma : data[1]
-            }
+            };
     }
 
     if (window.DeviceOrientationEvent) {
-        window.addEventListener("deviceorientation", function () {
+        window.addEventListener("deviceorientation", function (event) {
             tilt([event.beta, event.gamma]);
         }, true);
     } else if (window.DeviceMotionEvent) {
-        window.addEventListener('devicemotion', function () {
+        window.addEventListener('devicemotion', function (event) {
             tilt([event.acceleration.x * 2, event.acceleration.y * 2]);
         }, true);
     } else {
-        window.addEventListener("MozOrientation", function () {
-            tilt([orientation.x * 50, orientation.y * 50]);
+        window.addEventListener("MozOrientation", function (event) {
+            tilt([-event.y * 45, event.x * 45]);
         }, true);
     }
 

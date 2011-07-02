@@ -98,7 +98,7 @@
 	    identity : function() {
 		    for( var i=0; i<4; i++ ) {
 			    for( var j=0; j<4; j++ ) {
-				    this.matrix[i][j]= (i==j) ? 1.0 : 0.0;
+				    this.matrix[i][j]= (i===j) ? 1.0 : 0.0;
                 }
             }
 
@@ -167,7 +167,7 @@
 		    var res=new CAAT.Matrix3();
 		    var s,c,m;
 
-		    if (xy!=0) {
+		    if (xy!==0) {
 			    m =new CAAT.Matrix3( );
 			    s=Math.sin(xy);
 			    c=Math.cos(xy);
@@ -178,7 +178,7 @@
 			    res.multiply(m);
 		    }
 
-		    if (xz!=0) {
+		    if (xz!==0) {
 			    m =new CAAT.Matrix3( );
 			    s=Math.sin(xz);
 			    c=Math.cos(xz);
@@ -189,7 +189,7 @@
 			    res.multiply(m);
 		    }
 
-		    if (yz!=0) {
+		    if (yz!==0) {
 			    m =new CAAT.Matrix3( );
 			    s=Math.sin(yz);
 			    c=Math.cos(yz);
@@ -206,7 +206,7 @@
          * Creates a new matrix being a copy of this matrix.
          * @return {CAAT.Matrix3} a newly allocated matrix object.
          */
-    	getClone : function()	{
+        getClone : function() {
 		    var m= new CAAT.Matrix3( );
             m.copy(this);
 		    return m;
@@ -286,7 +286,7 @@
          *
          * @return this
          */
-    	premultiply : function( m )	{
+        premultiply : function(m) {
 		    var n= this.getClone( );
 
             var nm= n.matrix;
@@ -355,7 +355,7 @@
          *
          * @return this
          */
-    	setTranslate : function( x,y,z ) {
+        setTranslate : function(x,y,z) {
             this.identity();
 		    this.matrix[0][3]=x;
 		    this.matrix[1][3]=y;
@@ -435,7 +435,7 @@
             }
 
             return this;
-    	},
+        },
         /**
          * Calculate this matrix's determinant.
          * @return {number} matrix determinant.
@@ -914,7 +914,7 @@
             var newMatrix= new CAAT.Matrix();
 
             var determinant= m00* (m11*m22 - m21*m12) - m10*(m01*m22 - m21*m02) + m20 * (m01*m12 - m11*m02);
-            if ( determinant==0 ) {
+            if ( determinant===0 ) {
                 return null;
             }
 
@@ -1009,7 +1009,7 @@
          */
 		save : function() {
 			this.saved.push(this.stack.length);
-            return this
+            return this;
 		},
         /**
          * Restore from the last restoration point set.
@@ -1017,7 +1017,7 @@
          */
 		restore : function() {
 			var pos= this.saved.pop();
-			while( this.stack.length!=pos ) {
+			while( this.stack.length!==pos ) {
 				this.popMatrix();
 			}
             return this;

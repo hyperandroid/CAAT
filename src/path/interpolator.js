@@ -69,14 +69,14 @@
                 var orgTime= time;
 
                 if ( bPingPong ) {
-                    if ( time<.5 ) {
+                    if ( time<0.5 ) {
                         time*=2;
                     } else {
-                        time= 1-(time-.5)*2;
+                        time= 1-(time-0.5)*2;
                     }
                 }
 
-                if ( bInverse!=null && bInverse ) {
+                if ( bInverse!==null && bInverse ) {
                     time= 1-time;
                 }
 
@@ -90,10 +90,10 @@
                 var orgTime= time;
 
                 if ( bPingPong ) {
-                    if ( time<.5 ) {
+                    if ( time<0.5 ) {
                         time*=2;
                     } else {
-                        time= 1-(time-.5)*2;
+                        time= 1-(time-0.5)*2;
                     }
                 }
 
@@ -119,10 +119,10 @@
                 var orgTime= time;
 
                 if ( bPingPong ) {
-                    if ( time<.5 ) {
+                    if ( time<0.5 ) {
                         time*=2;
                     } else {
-                        time= 1-(time-.5)*2;
+                        time= 1-(time-0.5)*2;
                     }
                 }
                 return this.interpolated.set(orgTime,Math.pow(time,exponent));
@@ -142,10 +142,10 @@
                 var orgTime= time;
 
                 if ( bPingPong ) {
-                    if ( time<.5 ) {
+                    if ( time<0.5 ) {
                         time*=2;
                     } else {
-                        time= 1-(time-.5)*2;
+                        time= 1-(time-0.5)*2;
                     }
                 }
                 return this.interpolated.set(orgTime,1-Math.pow(1-time,exponent));
@@ -167,10 +167,10 @@
                 var orgTime= time;
 
                 if ( bPingPong ) {
-                    if ( time<.5 ) {
+                    if ( time<0.5 ) {
                         time*=2;
                     } else {
-                        time= 1-(time-.5)*2;
+                        time= 1-(time-0.5)*2;
                     }
                 }
                 if ( time*2<1 ) {
@@ -195,10 +195,10 @@
                 var orgTime= time;
 
                 if ( bPingPong ) {
-                    if ( time<.5 ) {
+                    if ( time<0.5 ) {
                         time*=2;
                     } else {
-                        time= 1-(time-.5)*2;
+                        time= 1-(time-0.5)*2;
                     }
                 }
 
@@ -223,10 +223,10 @@
                 var orgTime= time;
 
                 if ( bPingPong ) {
-                    if ( time<.5 ) {
+                    if ( time<0.5 ) {
                         time*=2;
                     } else {
-                        time= 1-(time-.5)*2;
+                        time= 1-(time-0.5)*2;
                     }
                 }
 
@@ -247,17 +247,17 @@
             this.getPosition= function getPosition(time) {
 
             if ( bPingPong ) {
-                if ( time<.5 ) {
+                if ( time<0.5 ) {
                     time*=2;
                 } else {
-                    time= 1-(time-.5)*2;
+                    time= 1-(time-0.5)*2;
                 }
             }
 
-            if (time == 0) {
+            if (time === 0) {
                 return {x:0,y:0};
             }
-            if (time == 1) {
+            if (time === 1) {
                 return {x:1,y:1};
             }
 
@@ -272,17 +272,17 @@
             this.getPosition= function getPosition(time) {
 
             if ( bPingPong ) {
-                if ( time<.5 ) {
+                if ( time<0.5 ) {
                     time*=2;
                 } else {
-                    time= 1-(time-.5)*2;
+                    time= 1-(time-0.5)*2;
                 }
             }
 
-            if (time == 0) {
+            if (time === 0) {
                 return {x:0,y:0};
             }
-            if (time == 1) {
+            if (time === 1) {
                 return {x:1,y:1};
             }
 
@@ -298,10 +298,10 @@
             this.getPosition= function getPosition(time) {
 
             if ( bPingPong ) {
-                if ( time<.5 ) {
+                if ( time<0.5 ) {
                     time*=2;
                 } else {
-                    time= 1-(time-.5)*2;
+                    time= 1-(time-0.5)*2;
                 }
             }
 
@@ -310,12 +310,12 @@
             if ( time<=1 ) {
                 return this.interpolated.set(
                         time,
-                        -.5*(amplitude*Math.pow(2,10*(time-=1)) * Math.sin( (time-s)*(2*Math.PI)/p )));
+                        -0.5*(amplitude*Math.pow(2,10*(time-=1)) * Math.sin( (time-s)*(2*Math.PI)/p )));
             }
 
             return this.interpolated.set(
                     time,
-                    1+.5*(amplitude*Math.pow(2,-10*(time-=1)) * Math.sin( (time-s)*(2*Math.PI)/p )));
+                    1+0.5*(amplitude*Math.pow(2,-10*(time-=1)) * Math.sin( (time-s)*(2*Math.PI)/p )));
             };
 
             return this;
@@ -338,10 +338,10 @@
         createBounceOutInterpolator : function(bPingPong) {
             this.getPosition= function getPosition(time) {
                 if ( bPingPong ) {
-                    if ( time<.5 ) {
+                    if ( time<0.5 ) {
                         time*=2;
                     } else {
-                        time= 1-(time-.5)*2;
+                        time= 1-(time-0.5)*2;
                     }
                 }
                 return this.bounce(time);
@@ -353,10 +353,10 @@
 
             this.getPosition= function getPosition(time) {
                 if ( bPingPong ) {
-                    if ( time<.5 ) {
+                    if ( time<0.5 ) {
                         time*=2;
                     } else {
-                        time= 1-(time-.5)*2;
+                        time= 1-(time-0.5)*2;
                     }
                 }
                 var r= this.bounce(1-time);
@@ -370,10 +370,10 @@
 
             this.getPosition= function getPosition(time) {
                 if ( bPingPong ) {
-                    if ( time<.5 ) {
+                    if ( time<0.5 ) {
                         time*=2;
                     } else {
-                        time= 1-(time-.5)*2;
+                        time= 1-(time-0.5)*2;
                     }
                 }
 
@@ -464,19 +464,19 @@
                 new CAAT.Interpolator().createBounceOutInterpolator(true), 'BounceOut pingpong=true',
                 new CAAT.Interpolator().createBounceInOutInterpolator(true), 'BounceInOut pingpong=true',
 
-                new CAAT.Interpolator().createElasticInInterpolator(    1.1, .4, false), 'ElasticIn pingpong=false, amp=1.1, d=.4',
-                new CAAT.Interpolator().createElasticOutInterpolator(   1.1, .4, false), 'ElasticOut pingpong=false, amp=1.1, d=.4',
-                new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, .4, false), 'ElasticInOut pingpong=false, amp=1.1, d=.4',
-                new CAAT.Interpolator().createElasticInInterpolator(    1.1, .4, true), 'ElasticIn pingpong=true, amp=1.1, d=.4',
-                new CAAT.Interpolator().createElasticOutInterpolator(   1.1, .4, true), 'ElasticOut pingpong=true, amp=1.1, d=.4',
-                new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, .4, true), 'ElasticInOut pingpong=true, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticInInterpolator(    1.1, 0.4, false), 'ElasticIn pingpong=false, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticOutInterpolator(   1.1, 0.4, false), 'ElasticOut pingpong=false, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, 0.4, false), 'ElasticInOut pingpong=false, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticInInterpolator(    1.1, 0.4, true), 'ElasticIn pingpong=true, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticOutInterpolator(   1.1, 0.4, true), 'ElasticOut pingpong=true, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, 0.4, true), 'ElasticInOut pingpong=true, amp=1.1, d=.4',
 
-                new CAAT.Interpolator().createElasticInInterpolator(    1.0, .2, false), 'ElasticIn pingpong=false, amp=1.0, d=.2',
-                new CAAT.Interpolator().createElasticOutInterpolator(   1.0, .2, false), 'ElasticOut pingpong=false, amp=1.0, d=.2',
-                new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, .2, false), 'ElasticInOut pingpong=false, amp=1.0, d=.2',
-                new CAAT.Interpolator().createElasticInInterpolator(    1.0, .2, true), 'ElasticIn pingpong=true, amp=1.0, d=.2',
-                new CAAT.Interpolator().createElasticOutInterpolator(   1.0, .2, true), 'ElasticOut pingpong=true, amp=1.0, d=.2',
-                new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, .2, true), 'ElasticInOut pingpong=true, amp=1.0, d=.2'
+                new CAAT.Interpolator().createElasticInInterpolator(    1.0, 0.2, false), 'ElasticIn pingpong=false, amp=1.0, d=.2',
+                new CAAT.Interpolator().createElasticOutInterpolator(   1.0, 0.2, false), 'ElasticOut pingpong=false, amp=1.0, d=.2',
+                new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, 0.2, false), 'ElasticInOut pingpong=false, amp=1.0, d=.2',
+                new CAAT.Interpolator().createElasticInInterpolator(    1.0, 0.2, true), 'ElasticIn pingpong=true, amp=1.0, d=.2',
+                new CAAT.Interpolator().createElasticOutInterpolator(   1.0, 0.2, true), 'ElasticOut pingpong=true, amp=1.0, d=.2',
+                new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, 0.2, true), 'ElasticInOut pingpong=true, amp=1.0, d=.2'
             ];
         }
     };

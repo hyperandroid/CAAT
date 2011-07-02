@@ -53,7 +53,7 @@
 				len = this.allCircles.length;
 
 			if(len === 0) {
-				throw "Error: (PackedCircleManager) attempting to remove circle, and allCircles.length === 0!!"
+				throw "Error: (PackedCircleManager) attempting to remove circle, and allCircles.length === 0!!";
 			}
 
 			while (len--) {
@@ -65,7 +65,7 @@
 			}
 
 			if(!found) {
-				throw "Could not locate circle in allCircles array!"
+				throw "Could not locate circle in allCircles array!";
 			}
 
 			// Remove
@@ -285,7 +285,7 @@
 
 		circlesCanCollide: function(circleA, circleB)
 		{
-			if(!circleA || !circleB || circleA === circleB) return false; 					// one is null (will be deleted next loop), or both point to same obj.
+		    if(!circleA || !circleB || circleA===circleB) return false; 					// one is null (will be deleted next loop), or both point to same obj.
 //			if(circleA.delegate == null || circleB.delegate == null) return false;					// This circle will be removed next loop, it's entity is already removed
 
 //			if(circleA.isFixed & circleB.isFixed) return false;

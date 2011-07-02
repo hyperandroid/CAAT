@@ -193,7 +193,11 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.html">CAAT</a></li>
 	
+	<li><a href="../symbols/CAAT._CSSActor.html">CAAT._CSSActor</a></li>
+	
 	<li><a href="../symbols/CAAT.Actor.html">CAAT.Actor</a></li>
+	
+	<li><a href="../symbols/CAAT.ActorContainer.html">CAAT.ActorContainer</a></li>
 	
 	<li><a href="../symbols/CAAT.ActorContainer.html">CAAT.ActorContainer</a></li>
 	
@@ -222,6 +226,8 @@ ul.inheritsList
 	<li><a href="../symbols/CAAT.Curve.html">CAAT.Curve</a></li>
 	
 	<li><a href="../symbols/CAAT.CurvePath.html">CAAT.CurvePath</a></li>
+	
+	<li><a href="../symbols/CAAT.Director.html">CAAT.Director</a></li>
 	
 	<li><a href="../symbols/CAAT.Director.html">CAAT.Director</a></li>
 	
@@ -279,6 +285,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Scene.html">CAAT.Scene</a></li>
 	
+	<li><a href="../symbols/CAAT.SceneCSS.html">CAAT.SceneCSS</a></li>
+	
 	<li><a href="../symbols/CAAT.ShapeActor.html">CAAT.ShapeActor</a></li>
 	
 	<li><a href="../symbols/CAAT.SpriteActor.html">CAAT.SpriteActor</a></li>
@@ -304,14 +312,12 @@ ul.inheritsList
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
 				
-				<br />Extends
-					<a href="../symbols/CAAT.ActorContainer.html">CAAT.ActorContainer</a>.<br />
 				
 			
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actor.js.html">actor.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actorCSS.js.html">actorCSS.js</a>.
 				
 			</p>
 
@@ -332,7 +338,7 @@ ul.inheritsList
 							<div class="fixedFont">
 								<b><a href="../symbols/CAAT.CSSActor.html#constructor">CAAT.CSSActor</a></b>()
 							</div>
-							<div class="description">This class aims to instrument Dom elements as if were Canvas elements.</div>
+							<div class="description">This class is the base for all animable entities in CAAT.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -359,9 +365,46 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#addChild">addChild</a></b>(actor)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#addBehavior">addBehavior</a></b>(behavior)
+								</div>
+								<div class="description">Add a Behavior to the Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#addListener">addListener</a></b>(actorListener)
+								</div>
+								<div class="description">Adds an Actor's life cycle listener.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#animate">animate</a></b>(director, time)
+								</div>
+								<div class="description">Private
+This method is called by the Director instance.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#cacheAsBitmap">cacheAsBitmap</a></b>(time)
 								</div>
 								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#contains">contains</a></b>(x, y)
+								</div>
+								<div class="description">Checks whether a coordinate is inside the Actor's bounding box.</div>
 							</td>
 						</tr>
 					
@@ -370,7 +413,210 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#create">create</a></b>()
 								</div>
+								<div class="description">This method must be called explicitly by every CAAT Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#destroy">destroy</a></b>(time)
+								</div>
+								<div class="description">This method will be called internally by CAAT when an Actor is expired, and at the
+same time, is flagged as discardable.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#drawScreenBoundingBox">drawScreenBoundingBox</a></b>(director, time)
+								</div>
+								<div class="description">Draw a bounding box with on-screen coordinates regardless of the transformations
+applied to the Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#emptyBehaviorList">emptyBehaviorList</a></b>()
+								</div>
+								<div class="description">Removes all behaviors from an Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#enableDrag">enableDrag</a></b>()
+								</div>
+								<div class="description">Enables a default dragging routine for the Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#enableEvents">enableEvents</a></b>(enable)
+								</div>
+								<div class="description">Enable or disable the event bubbling for this Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#endAnimate">endAnimate</a></b>(director, time)
+								</div>
 								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#findActorAtPosition">findActorAtPosition</a></b>(point, screenPoint)
+								</div>
+								<div class="description">Private
+This method does the needed point transformations across an Actor hierarchy to devise
+whether the parameter point coordinate lies inside the Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#fireEvent">fireEvent</a></b>(sEventType, time)
+								</div>
+								<div class="description">Notifies the registered Actor's life cycle listener about some event.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#getAnchor">getAnchor</a></b>(anchor)
+								</div>
+								<div class="description">Private.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#glNeedsFlush">glNeedsFlush</a></b>(director)
+								</div>
+								<div class="description">Test for compulsory gl flushing:
+ 1.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#glSetShader">glSetShader</a></b>(director)
+								</div>
+								<div class="description">Change texture shader program parameters.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#initialize">initialize</a></b>(overrides)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#isInAnimationFrame">isInAnimationFrame</a></b>(time)
+								</div>
+								<div class="description">This method is called by the Director to know whether the actor is on Scene time.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#modelToView">modelToView</a></b>(point)
+								</div>
+								<div class="description">Transform a point or array of points in model space to view space.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#mouseClick">mouseClick</a></b>(mouseEvent)
+								</div>
+								<div class="description">Default mouseClick handler.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#mouseDblClick">mouseDblClick</a></b>(mouseEvent)
+								</div>
+								<div class="description">Default double click handler</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#mouseDown">mouseDown</a></b>(mouseEvent)
+								</div>
+								<div class="description">default mouse press in Actor handler.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#mouseDrag">mouseDrag</a></b>(mouseEvent)
+								</div>
+								<div class="description">default Actor mouse drag handler.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#mouseEnter">mouseEnter</a></b>(mouseEvent)
+								</div>
+								<div class="description">Default mouse enter on Actor handler.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#mouseExit">mouseExit</a></b>(mouseEvent)
+								</div>
+								<div class="description">Default mouse exit on Actor handler.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#mouseMove">mouseMove</a></b>(mouseEvent)
+								</div>
+								<div class="description">Default mouse move inside Actor handler.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#mouseUp">mouseUp</a></b>(mouseEvent)
+								</div>
+								<div class="description">default mouse release in Actor handler.</div>
 							</td>
 						</tr>
 					
@@ -379,7 +625,7 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#paint">paint</a></b>(director, time)
 								</div>
-								<div class="description"></div>
+								<div class="description">This method should me overriden by every custom Actor.</div>
 							</td>
 						</tr>
 					
@@ -395,9 +641,54 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setBackground">setBackground</a></b>(backgroundImage_Local_URL)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#paintActorGL">paintActorGL</a></b>(director, time)
 								</div>
-								<div class="description"></div>
+								<div class="description">Set coordinates and uv values for this actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#removeBehavior">removeBehavior</a></b>(id)
+								</div>
+								<div class="description">Remove a Behavior with id param as behavior identifier from this actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#removeBehaviour">removeBehaviour</a></b>(behavior)
+								</div>
+								<div class="description">Remove a Behavior from the Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#removeListener">removeListener</a></b>(actorListener)
+								</div>
+								<div class="description">Removes an Actor's life cycle listener.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#resetTransform">resetTransform</a></b>()
+								</div>
+								<div class="description">Remove all transformation values for the Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setAlpha">setAlpha</a></b>(alpha)
+								</div>
+								<div class="description">Stablishes the Alpha transparency for the Actor.</div>
 							</td>
 						</tr>
 					
@@ -406,14 +697,59 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setBounds">setBounds</a></b>(x, y, w, h)
 								</div>
-								<div class="description"></div>
+								<div class="description">Set location and dimension of an Actor at once.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setDOMParent">setDOMParent</a></b>(dom)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setClip">setClip</a></b>(clip)
+								</div>
+								<div class="description">Enable or disable the clipping process for this Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setDiscardable">setDiscardable</a></b>(discardable)
+								</div>
+								<div class="description">Set discardable property.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setExpired">setExpired</a></b>(time)
+								</div>
+								<div class="description">Sets this Actor as Expired.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setFillStyle">setFillStyle</a></b>(style)
+								</div>
+								<div class="description">Caches a fillStyle in the Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setFrameTime">setFrameTime</a></b>(startTime, duration)
+								</div>
+								<div class="description">Sets the time life cycle for an Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setGLCoords">setGLCoords</a></b>(glCoords, glCoordsIndex, z)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -422,9 +758,9 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setInnerHTML">setInnerHTML</a></b>(innerHTML)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setGlobalAlpha">setGlobalAlpha</a></b>(global)
 								</div>
-								<div class="description">Set CSS div's inner HTML.</div>
+								<div class="description">Set alpha composition scope.</div>
 							</td>
 						</tr>
 					
@@ -433,6 +769,33 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setLocation">setLocation</a></b>(x, y)
 								</div>
+								<div class="description">This method sets the position of an Actor inside its parent.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setModelViewMatrix">setModelViewMatrix</a></b>()
+								</div>
+								<div class="description">Set this model view matrix if the actor is Dirty.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setOutOfFrameTime">setOutOfFrameTime</a></b>()
+								</div>
+								<div class="description">Puts an Actor out of time line, that is, won't be transformed nor rendered.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setPaint">setPaint</a></b>(paint)
+								</div>
 								<div class="description"></div>
 							</td>
 						</tr>
@@ -440,9 +803,45 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setOpacity">setOpacity</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setRotation">setRotation</a></b>(angle)
 								</div>
-								<div class="description"></div>
+								<div class="description">A helper method for setRotationAnchored.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setRotationAnchored">setRotationAnchored</a></b>(angle, rx, ry)
+								</div>
+								<div class="description">This method sets Actor rotation around a given position.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setScale">setScale</a></b>(sx, sy)
+								</div>
+								<div class="description">A helper method to setScaleAnchored with an anchor of ANCHOR_CENTER</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setScaleAnchored">setScaleAnchored</a></b>(sx, sy, anchor)
+								</div>
+								<div class="description">Modify the dimensions on an Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setScreenBounds">setScreenBounds</a></b>()
+								</div>
+								<div class="description">Calculates the 2D bounding box in canvas coordinates of the Actor.</div>
 							</td>
 						</tr>
 					
@@ -451,7 +850,52 @@ ul.inheritsList
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setSize">setSize</a></b>(w, h)
 								</div>
+								<div class="description">Sets an Actor's dimension</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setStrokeStyle">setStrokeStyle</a></b>(style)
+								</div>
+								<div class="description">Caches a stroke style in the Actor.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setUV">setUV</a></b>(uvBuffer, uvIndex)
+								</div>
 								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#setVisible">setVisible</a></b>(visible)
+								</div>
+								<div class="description">Set this actor invisible.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#style">style</a></b>(attr, value)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CSSActor.html#viewToModel">viewToModel</a></b>(point)
+								</div>
+								<div class="description">Transform a point from model to view space.</div>
 							</td>
 						</tr>
 					
@@ -459,10 +903,6 @@ ul.inheritsList
 				</table>
 				
 				
-				
-				<dl class="inheritsList">
-				<dt>Methods borrowed from class <a href="../symbols/CAAT.ActorContainer.html">CAAT.ActorContainer</a>: </dt><dd><a href="../symbols/CAAT.ActorContainer.html#addChildAt">addChildAt</a>, <a href="../symbols/CAAT.ActorContainer.html#addChildDelayed">addChildDelayed</a>, <a href="../symbols/CAAT.ActorContainer.html#addChildImmediately">addChildImmediately</a>, <a href="../symbols/CAAT.ActorContainer.html#animate">animate</a>, <a href="../symbols/CAAT.ActorContainer.html#destroy">destroy</a>, <a href="../symbols/CAAT.ActorContainer.html#drawScreenBoundingBox">drawScreenBoundingBox</a>, <a href="../symbols/CAAT.ActorContainer.html#emptyChildren">emptyChildren</a>, <a href="../symbols/CAAT.ActorContainer.html#endAnimate">endAnimate</a>, <a href="../symbols/CAAT.ActorContainer.html#findActorAtPosition">findActorAtPosition</a>, <a href="../symbols/CAAT.ActorContainer.html#findChild">findChild</a>, <a href="../symbols/CAAT.ActorContainer.html#getChildAt">getChildAt</a>, <a href="../symbols/CAAT.ActorContainer.html#getNumActiveChildren">getNumActiveChildren</a>, <a href="../symbols/CAAT.ActorContainer.html#getNumChildren">getNumChildren</a>, <a href="../symbols/CAAT.ActorContainer.html#paintActorGL">paintActorGL</a>, <a href="../symbols/CAAT.ActorContainer.html#removeChild">removeChild</a>, <a href="../symbols/CAAT.ActorContainer.html#setZOrder">setZOrder</a></dd><dt>Methods borrowed from class <a href="../symbols/CAAT.Actor.html">CAAT.Actor</a>: </dt><dd><a href="../symbols/CAAT.Actor.html#addBehavior">addBehavior</a>, <a href="../symbols/CAAT.Actor.html#addListener">addListener</a>, <a href="../symbols/CAAT.Actor.html#cacheAsBitmap">cacheAsBitmap</a>, <a href="../symbols/CAAT.Actor.html#contains">contains</a>, <a href="../symbols/CAAT.Actor.html#emptyBehaviorList">emptyBehaviorList</a>, <a href="../symbols/CAAT.Actor.html#enableDrag">enableDrag</a>, <a href="../symbols/CAAT.Actor.html#enableEvents">enableEvents</a>, <a href="../symbols/CAAT.Actor.html#fireEvent">fireEvent</a>, <a href="../symbols/CAAT.Actor.html#getAnchor">getAnchor</a>, <a href="../symbols/CAAT.Actor.html#glNeedsFlush">glNeedsFlush</a>, <a href="../symbols/CAAT.Actor.html#glSetShader">glSetShader</a>, <a href="../symbols/CAAT.Actor.html#initialize">initialize</a>, <a href="../symbols/CAAT.Actor.html#isInAnimationFrame">isInAnimationFrame</a>, <a href="../symbols/CAAT.Actor.html#modelToView">modelToView</a>, <a href="../symbols/CAAT.Actor.html#mouseClick">mouseClick</a>, <a href="../symbols/CAAT.Actor.html#mouseDblClick">mouseDblClick</a>, <a href="../symbols/CAAT.Actor.html#mouseDown">mouseDown</a>, <a href="../symbols/CAAT.Actor.html#mouseDrag">mouseDrag</a>, <a href="../symbols/CAAT.Actor.html#mouseEnter">mouseEnter</a>, <a href="../symbols/CAAT.Actor.html#mouseExit">mouseExit</a>, <a href="../symbols/CAAT.Actor.html#mouseMove">mouseMove</a>, <a href="../symbols/CAAT.Actor.html#mouseUp">mouseUp</a>, <a href="../symbols/CAAT.Actor.html#removeBehavior">removeBehavior</a>, <a href="../symbols/CAAT.Actor.html#removeBehaviour">removeBehaviour</a>, <a href="../symbols/CAAT.Actor.html#removeListener">removeListener</a>, <a href="../symbols/CAAT.Actor.html#resetTransform">resetTransform</a>, <a href="../symbols/CAAT.Actor.html#setAlpha">setAlpha</a>, <a href="../symbols/CAAT.Actor.html#setClip">setClip</a>, <a href="../symbols/CAAT.Actor.html#setDiscardable">setDiscardable</a>, <a href="../symbols/CAAT.Actor.html#setExpired">setExpired</a>, <a href="../symbols/CAAT.Actor.html#setFillStyle">setFillStyle</a>, <a href="../symbols/CAAT.Actor.html#setFrameTime">setFrameTime</a>, <a href="../symbols/CAAT.Actor.html#setGLCoords">setGLCoords</a>, <a href="../symbols/CAAT.Actor.html#setGlobalAlpha">setGlobalAlpha</a>, <a href="../symbols/CAAT.Actor.html#setModelViewMatrix">setModelViewMatrix</a>, <a href="../symbols/CAAT.Actor.html#setOutOfFrameTime">setOutOfFrameTime</a>, <a href="../symbols/CAAT.Actor.html#setPaint">setPaint</a>, <a href="../symbols/CAAT.Actor.html#setRotation">setRotation</a>, <a href="../symbols/CAAT.Actor.html#setRotationAnchored">setRotationAnchored</a>, <a href="../symbols/CAAT.Actor.html#setScale">setScale</a>, <a href="../symbols/CAAT.Actor.html#setScaleAnchored">setScaleAnchored</a>, <a href="../symbols/CAAT.Actor.html#setScreenBounds">setScreenBounds</a>, <a href="../symbols/CAAT.Actor.html#setStrokeStyle">setStrokeStyle</a>, <a href="../symbols/CAAT.Actor.html#setUV">setUV</a>, <a href="../symbols/CAAT.Actor.html#setVisible">setVisible</a>, <a href="../symbols/CAAT.Actor.html#viewToModel">viewToModel</a></dd>
-				</dl>
 				
 			
 <!-- ============================== events summary ======================== -->
@@ -480,14 +920,20 @@ ul.inheritsList
 				</div>
 				
 				<div class="description">
-					This class aims to instrument Dom elements as if were Canvas elements.
-<p>
-It will create and add a div elemento to the dom which will be transformed and presented by CSS.
-The parent/child relationship inherent to every CAAT animable element will be held by containing
-div elements inside of other div elements.
+					This class is the base for all animable entities in CAAT.
+It defines an entity able to:
 
-<p>
-Experimental form.
+<ul>
+<li>Position itself on screen.
+<li>Able to modify its presentation aspect via affine transforms.
+<li>Take control of parent/child relationship.
+<li>Take track of behaviors (@see CAAT.Behavior).
+<li>Define a region on screen.
+<li>Define alpha composition scope.
+<li>Expose lifecycle.
+<li>Manage itself in/out scene time.
+<li>etc.
+</ul>
 					
 				</div>
 				
@@ -514,11 +960,138 @@ Experimental form.
 					Method Detail
 				</div>
 				
-					<a name="addChild"> </a>
+					<a name="addBehavior"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>addChild</b>(actor)
+					<b>addBehavior</b>(behavior)
+					
+					</div>
+					<div class="description">
+						Add a Behavior to the Actor.
+An Actor accepts an undefined number of Behaviors.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>behavior</b>
+									
+								</dt>
+								<dd>{CAAT.Behavior} a CAAT.Behavior instance</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="addListener"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>addListener</b>(actorListener)
+					
+					</div>
+					<div class="description">
+						Adds an Actor's life cycle listener.
+The developer must ensure the actorListener is not already a listener, otherwise
+it will notified more than once.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>actorListener</b>
+									
+								</dt>
+								<dd>{object} an object with at least a method of the form:
+<code>actorLyfeCycleEvent( actor, string_event_type, long_time )</code></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="animate"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>animate</b>(director, time)
+					
+					</div>
+					<div class="description">
+						Private
+This method is called by the Director instance.
+It applies the list of behaviors the Actor has registered.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>director</b>
+									
+								</dt>
+								<dd>the CAAT.Director object instance that contains the Scene the Actor is in.</dd>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>an integer indicating the Scene time when the bounding box is to be drawn.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="cacheAsBitmap"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>cacheAsBitmap</b>(time)
 					
 					</div>
 					<div class="description">
@@ -534,16 +1107,72 @@ Experimental form.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>actor</b>
+									<b>time</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>{Number=}</dd>
 							
 							</dl>
 						
 						
 						
 						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>canvas</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="contains"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>contains</b>(x, y)
+					
+					</div>
+					<div class="description">
+						Checks whether a coordinate is inside the Actor's bounding box.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>x</b>
+									
+								</dt>
+								<dd>{number} a float</dd>
+							
+								<dt>
+									<b>y</b>
+									
+								</dt>
+								<dd>{number} a float</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>boolean indicating whether it is inside.</dd>
+							
+							</dl>
 						
 						
 						
@@ -558,7 +1187,8 @@ Experimental form.
 					
 					</div>
 					<div class="description">
-						
+						This method must be called explicitly by every CAAT Actor.
+Making the life cycle explicitly initiated has always been a good idea.
 						
 						
 					</div>
@@ -570,16 +1200,215 @@ Experimental form.
 						
 						
 						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
 						
 						
 
 					<hr />
 				
-					<a name="paint"> </a>
+					<a name="destroy"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>destroy</b>(time)
+					
+					</div>
+					<div class="description">
+						This method will be called internally by CAAT when an Actor is expired, and at the
+same time, is flagged as discardable.
+It notifies the Actor life cycle listeners about the destruction event.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>an integer indicating the time at wich the Actor has been destroyed.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="drawScreenBoundingBox"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>paint</b>(director, time)
+					<b>drawScreenBoundingBox</b>(director, time)
+					
+					</div>
+					<div class="description">
+						Draw a bounding box with on-screen coordinates regardless of the transformations
+applied to the Actor.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>director</b>
+									
+								</dt>
+								<dd>the CAAT.Director object instance that contains the Scene the Actor is in.</dd>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>an integer indicating the Scene time when the bounding box is to be drawn.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="emptyBehaviorList"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>emptyBehaviorList</b>()
+					
+					</div>
+					<div class="description">
+						Removes all behaviors from an Actor.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="enableDrag"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>enableDrag</b>()
+					
+					</div>
+					<div class="description">
+						Enables a default dragging routine for the Actor.
+This default dragging routine allows to:
+ <li>scale the Actor by pressing shift+drag
+ <li>rotate the Actor by pressing control+drag
+ <li>scale non uniformly by pressing alt+shift+drag
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="enableEvents"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>enableEvents</b>(enable)
+					
+					</div>
+					<div class="description">
+						Enable or disable the event bubbling for this Actor.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>enable</b>
+									
+								</dt>
+								<dd>{boolean} a boolean indicating whether the event bubbling is enabled.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="endAnimate"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>endAnimate</b>(director, time)
 					
 					</div>
 					<div class="description">
@@ -598,13 +1427,681 @@ Experimental form.
 									<b>director</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>the CAAT.Director object instance that contains the Scene the Actor is in.</dd>
 							
 								<dt>
 									<b>time</b>
 									
 								</dt>
+								<dd>an integer indicating the Scene time when the bounding box is to be drawn.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="findActorAtPosition"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>findActorAtPosition</b>(point, screenPoint)
+					
+					</div>
+					<div class="description">
+						Private
+This method does the needed point transformations across an Actor hierarchy to devise
+whether the parameter point coordinate lies inside the Actor.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>point</b>
+									
+								</dt>
+								<dd>an object of the form { x: float, y: float }</dd>
+							
+								<dt>
+									<b>screenPoint</b>
+									
+								</dt>
 								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>null if the point is not inside the Actor. The Actor otherwise.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="fireEvent"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>fireEvent</b>(sEventType, time)
+					
+					</div>
+					<div class="description">
+						Notifies the registered Actor's life cycle listener about some event.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>sEventType</b>
+									
+								</dt>
+								<dd>an string indicating the type of event being notified.</dd>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>an integer indicating the time related to Scene's timeline when the event
+is being notified.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getAnchor"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getAnchor</b>(anchor)
+					
+					</div>
+					<div class="description">
+						Private.
+Gets a given anchor position referred to the Actor.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>anchor</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>an object of the form { x: float, y: float }</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="glNeedsFlush"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>glNeedsFlush</b>(director)
+					
+					</div>
+					<div class="description">
+						Test for compulsory gl flushing:
+ 1.- opacity has changed.
+ 2.- texture page has changed.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>director</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="glSetShader"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>glSetShader</b>(director)
+					
+					</div>
+					<div class="description">
+						Change texture shader program parameters.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>director</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="initialize"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>initialize</b>(overrides)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>overrides</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="isInAnimationFrame"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>isInAnimationFrame</b>(time)
+					
+					</div>
+					<div class="description">
+						This method is called by the Director to know whether the actor is on Scene time.
+In case it was necessary, this method will notify any life cycle behaviors about
+an Actor expiration.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>an integer indicating the Scene time.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="modelToView"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>modelToView</b>(point)
+					
+					</div>
+					<div class="description">
+						Transform a point or array of points in model space to view space.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>point</b>
+									
+								</dt>
+								<dd>{CAAT.Point|Array} an object of the form {x : float, y: float}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>the source transformed elements.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="mouseClick"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>mouseClick</b>(mouseEvent)
+					
+					</div>
+					<div class="description">
+						Default mouseClick handler.
+Mouse click events are received after a call to mouseUp method if no dragging was in progress.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>mouseEvent</b>
+									
+								</dt>
+								<dd>a CAAT.MouseEvent object instance.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="mouseDblClick"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>mouseDblClick</b>(mouseEvent)
+					
+					</div>
+					<div class="description">
+						Default double click handler
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>mouseEvent</b>
+									
+								</dt>
+								<dd>a CAAT.MouseEvent object instance.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="mouseDown"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>mouseDown</b>(mouseEvent)
+					
+					</div>
+					<div class="description">
+						default mouse press in Actor handler.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>mouseEvent</b>
+									
+								</dt>
+								<dd>a CAAT.MouseEvent object instance.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="mouseDrag"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>mouseDrag</b>(mouseEvent)
+					
+					</div>
+					<div class="description">
+						default Actor mouse drag handler.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>mouseEvent</b>
+									
+								</dt>
+								<dd>a CAAT.MouseEvent object instance.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="mouseEnter"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>mouseEnter</b>(mouseEvent)
+					
+					</div>
+					<div class="description">
+						Default mouse enter on Actor handler.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>mouseEvent</b>
+									
+								</dt>
+								<dd>a CAAT.MouseEvent object instance.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="mouseExit"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>mouseExit</b>(mouseEvent)
+					
+					</div>
+					<div class="description">
+						Default mouse exit on Actor handler.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>mouseEvent</b>
+									
+								</dt>
+								<dd>a CAAT.MouseEvent object instance.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="mouseMove"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>mouseMove</b>(mouseEvent)
+					
+					</div>
+					<div class="description">
+						Default mouse move inside Actor handler.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>mouseEvent</b>
+									
+								</dt>
+								<dd>a CAAT.MouseEvent object instance.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="mouseUp"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>mouseUp</b>(mouseEvent)
+					
+					</div>
+					<div class="description">
+						default mouse release in Actor handler.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>mouseEvent</b>
+									
+								</dt>
+								<dd>a CAAT.MouseEvent object instance.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="paint"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>paint</b>(director, time)
+					
+					</div>
+					<div class="description">
+						This method should me overriden by every custom Actor.
+It will be the drawing routine called by the Director to show every Actor.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>director</b>
+									
+								</dt>
+								<dd>the CAAT.Director instance that contains the Scene the Actor is in.</dd>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>an integer indicating the Scene time in which the drawing is performed.</dd>
 							
 							</dl>
 						
@@ -640,6 +2137,56 @@ Experimental form.
 									<b>director</b>
 									
 								</dt>
+								<dd>the CAAT.Director object instance that contains the Scene the Actor is in.</dd>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>an integer indicating the Scene time when the bounding box is to be drawn.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>boolean indicating whether the Actor isInFrameTime</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="paintActorGL"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>paintActorGL</b>(director, time)
+					
+					</div>
+					<div class="description">
+						Set coordinates and uv values for this actor.
+This function uses Director's coords and indexCoords values.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>director</b>
+									
+								</dt>
 								<dd></dd>
 							
 								<dt>
@@ -659,15 +2206,16 @@ Experimental form.
 
 					<hr />
 				
-					<a name="setBackground"> </a>
+					<a name="removeBehavior"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>setBackground</b>(backgroundImage_Local_URL)
+					<b>removeBehavior</b>(id)
 					
 					</div>
 					<div class="description">
-						
+						Remove a Behavior with id param as behavior identifier from this actor.
+This function will remove ALL behavior instances with the given id.
 						
 						
 					</div>
@@ -679,16 +2227,168 @@ Experimental form.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>backgroundImage_Local_URL</b>
+									<b>id</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>{number} an integer.
+return this;</dd>
 							
 							</dl>
 						
 						
 						
 						
+						
+						
+						
+
+					<hr />
+				
+					<a name="removeBehaviour"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>removeBehaviour</b>(behavior)
+					
+					</div>
+					<div class="description">
+						Remove a Behavior from the Actor.
+If the Behavior is not present at the actor behavior collection nothing happends.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>behavior</b>
+									
+								</dt>
+								<dd>{CAAT.Behavior} a CAAT.Behavior instance.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="removeListener"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>removeListener</b>(actorListener)
+					
+					</div>
+					<div class="description">
+						Removes an Actor's life cycle listener.
+It will only remove the first occurrence of the given actorListener.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>actorListener</b>
+									
+								</dt>
+								<dd>{object} an Actor's life cycle listener.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="resetTransform"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>resetTransform</b>()
+					
+					</div>
+					<div class="description">
+						Remove all transformation values for the Actor.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setAlpha"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setAlpha</b>(alpha)
+					
+					</div>
+					<div class="description">
+						Stablishes the Alpha transparency for the Actor.
+If it globalAlpha enabled, this alpha will the maximum alpha for every contained actors.
+The alpha must be between 0 and 1.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>alpha</b>
+									
+								</dt>
+								<dd>a float indicating the alpha value.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
 						
 						
 						
@@ -703,7 +2403,10 @@ Experimental form.
 					
 					</div>
 					<div class="description">
-						
+						Set location and dimension of an Actor at once.
+
+as http://jsperf.com/drawimage-whole-pixels states, drawing at whole pixels rocks while at subpixels sucks.
+thanks @pbakaus
 						
 						
 					</div>
@@ -718,25 +2421,25 @@ Experimental form.
 									<b>x</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>a float indicating Actor's x position.</dd>
 							
 								<dt>
 									<b>y</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>a float indicating Actor's y position</dd>
 							
 								<dt>
 									<b>w</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>a float indicating Actor's width</dd>
 							
 								<dt>
 									<b>h</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>a float indicating Actor's height</dd>
 							
 							</dl>
 						
@@ -744,16 +2447,248 @@ Experimental form.
 						
 						
 						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
 						
 						
 
 					<hr />
 				
-					<a name="setDOMParent"> </a>
+					<a name="setClip"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>setDOMParent</b>(dom)
+					<b>setClip</b>(clip)
+					
+					</div>
+					<div class="description">
+						Enable or disable the clipping process for this Actor.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>clip</b>
+									
+								</dt>
+								<dd>a boolean indicating whether clip is enabled.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setDiscardable"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setDiscardable</b>(discardable)
+					
+					</div>
+					<div class="description">
+						Set discardable property. If an actor is discardable, upon expiration will be removed from
+scene graph and hence deleted.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>discardable</b>
+									
+								</dt>
+								<dd>{boolean} a boolean indicating whether the Actor is discardable.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setExpired"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setExpired</b>(time)
+					
+					</div>
+					<div class="description">
+						Sets this Actor as Expired.
+If this is a Container, all the contained Actors won't be nor drawn nor will receive
+any event. That is, expiring an Actor means totally taking it out the Scene's timeline.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>{number} an integer indicating the time the Actor was expired at.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setFillStyle"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setFillStyle</b>(style)
+					
+					</div>
+					<div class="description">
+						Caches a fillStyle in the Actor.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>style</b>
+									
+								</dt>
+								<dd>a valid Canvas rendering context fillStyle.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setFrameTime"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setFrameTime</b>(startTime, duration)
+					
+					</div>
+					<div class="description">
+						Sets the time life cycle for an Actor.
+These values are related to Scene time.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>startTime</b>
+									
+								</dt>
+								<dd>an integer indicating the time until which the Actor won't be visible on the Scene.</dd>
+							
+								<dt>
+									<b>duration</b>
+									
+								</dt>
+								<dd>an integer indicating how much the Actor will last once visible.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setGLCoords"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setGLCoords</b>(glCoords, glCoordsIndex, z)
 					
 					</div>
 					<div class="description">
@@ -769,7 +2704,19 @@ Experimental form.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>dom</b>
+									<b>glCoords</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>glCoordsIndex</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>z</b>
 									
 								</dt>
 								<dd></dd>
@@ -785,15 +2732,16 @@ Experimental form.
 
 					<hr />
 				
-					<a name="setInnerHTML"> </a>
+					<a name="setGlobalAlpha"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>setInnerHTML</b>(innerHTML)
+					<b>setGlobalAlpha</b>(global)
 					
 					</div>
 					<div class="description">
-						Set CSS div's inner HTML.
+						Set alpha composition scope. global will mean this alpha value will be its children maximum.
+If set to false, only this actor will have this alpha value.
 						
 						
 					</div>
@@ -805,10 +2753,254 @@ Experimental form.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>innerHTML</b>
+									<b>global</b>
 									
 								</dt>
-								<dd>{string} a valid html block.</dd>
+								<dd>{boolean} whether the alpha value should be propagated to children.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setLocation"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setLocation</b>(x, y)
+					
+					</div>
+					<div class="description">
+						This method sets the position of an Actor inside its parent.
+
+as http://jsperf.com/drawimage-whole-pixels states, drawing at whole pixels rocks while at subpixels sucks.
+thanks @pbakaus
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>x</b>
+									
+								</dt>
+								<dd>a float indicating Actor's x position</dd>
+							
+								<dt>
+									<b>y</b>
+									
+								</dt>
+								<dd>a float indicating Actor's y position</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setModelViewMatrix"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setModelViewMatrix</b>()
+					
+					</div>
+					<div class="description">
+						Set this model view matrix if the actor is Dirty.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setOutOfFrameTime"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setOutOfFrameTime</b>()
+					
+					</div>
+					<div class="description">
+						Puts an Actor out of time line, that is, won't be transformed nor rendered.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setPaint"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setPaint</b>(paint)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>paint</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setRotation"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setRotation</b>(angle)
+					
+					</div>
+					<div class="description">
+						A helper method for setRotationAnchored. This methods stablishes the center
+of rotation to be the center of the Actor.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>angle</b>
+									
+								</dt>
+								<dd>a float indicating the angle in radians to rotate the Actor.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setRotationAnchored"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setRotationAnchored</b>(angle, rx, ry)
+					
+					</div>
+					<div class="description">
+						This method sets Actor rotation around a given position.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>angle</b>
+									
+								</dt>
+								<dd>a float indicating the angle in radians to rotate the Actor.</dd>
+							
+								<dt>
+									<b>rx</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>ry</b>
+									
+								</dt>
+								<dd></dd>
 							
 							</dl>
 						
@@ -828,15 +3020,15 @@ Experimental form.
 
 					<hr />
 				
-					<a name="setLocation"> </a>
+					<a name="setScale"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>setLocation</b>(x, y)
+					<b>setScale</b>(sx, sy)
 					
 					</div>
 					<div class="description">
-						
+						A helper method to setScaleAnchored with an anchor of ANCHOR_CENTER
 						
 						
 					</div>
@@ -848,16 +3040,16 @@ Experimental form.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>x</b>
+									<b>sx</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>a float indicating a width size multiplier.</dd>
 							
 								<dt>
-									<b>y</b>
+									<b>sy</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>a float indicating a height size multiplier.</dd>
 							
 							</dl>
 						
@@ -865,20 +3057,93 @@ Experimental form.
 						
 						
 						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">See:</dt>
+							
+								<dd>setScaleAnchored</dd>
+							
+							</dl>
+						
+
+					<hr />
+				
+					<a name="setScaleAnchored"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setScaleAnchored</b>(sx, sy, anchor)
+					
+					</div>
+					<div class="description">
+						Modify the dimensions on an Actor.
+The dimension will not affect the local coordinates system in opposition
+to setSize or setBounds.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>sx</b>
+									
+								</dt>
+								<dd>a float indicating a width size multiplier.</dd>
+							
+								<dt>
+									<b>sy</b>
+									
+								</dt>
+								<dd>a float indicating a height size multiplier.</dd>
+							
+								<dt>
+									<b>anchor</b>
+									
+								</dt>
+								<dd>an integer indicating the anchor to perform the Scale operation.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this;</dd>
+							
+							</dl>
+						
 						
 						
 
 					<hr />
 				
-					<a name="setOpacity"> </a>
-					<div class="fixedFont">
+					<a name="setScreenBounds"> </a>
+					<div class="fixedFont">&lt;private&gt; 
 					
 					
-					<b>setOpacity</b>()
+					<b>setScreenBounds</b>()
 					
 					</div>
 					<div class="description">
-						
+						Calculates the 2D bounding box in canvas coordinates of the Actor.
+This bounding box takes into account the transformations applied hierarchically for
+each Scene Actor.
 						
 						
 					</div>
@@ -903,7 +3168,7 @@ Experimental form.
 					
 					</div>
 					<div class="description">
-						
+						Sets an Actor's dimension
 						
 						
 					</div>
@@ -918,10 +3183,189 @@ Experimental form.
 									<b>w</b>
 									
 								</dt>
-								<dd></dd>
+								<dd>a float indicating Actor's width.</dd>
 							
 								<dt>
 									<b>h</b>
+									
+								</dt>
+								<dd>a float indicating Actor's height.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setStrokeStyle"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setStrokeStyle</b>(style)
+					
+					</div>
+					<div class="description">
+						Caches a stroke style in the Actor.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>style</b>
+									
+								</dt>
+								<dd>a valid canvas rendering context stroke style.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setUV"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setUV</b>(uvBuffer, uvIndex)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>uvBuffer</b>
+									
+								</dt>
+								<dd>{Float32Array}</dd>
+							
+								<dt>
+									<b>uvIndex</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setVisible"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setVisible</b>(visible)
+					
+					</div>
+					<div class="description">
+						Set this actor invisible.
+The actor is animated but not visible.
+A container won't show any of its children if set visible to false.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>visible</b>
+									
+								</dt>
+								<dd>{boolean} set this actor visible or not.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="style"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>style</b>(attr, value)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>attr</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>value</b>
 									
 								</dt>
 								<dd></dd>
@@ -931,6 +3375,52 @@ Experimental form.
 						
 						
 						
+						
+						
+						
+
+					<hr />
+				
+					<a name="viewToModel"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>viewToModel</b>(point)
+					
+					</div>
+					<div class="description">
+						Transform a point from model to view space.
+<p>
+WARNING: every call to this method calculates
+actor's world model view matrix.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>point</b>
+									
+								</dt>
+								<dd>{CAAT.Point} a point in screen space to be transformed to model space.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>the source point object</dd>
+							
+							</dl>
 						
 						
 						
@@ -949,7 +3439,7 @@ Experimental form.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Wed Jun 01 2011 15:57:53 GMT+0200 (CEST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Sat Jul 02 2011 11:30:35 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>

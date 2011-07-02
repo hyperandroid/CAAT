@@ -30,7 +30,7 @@
      * @constructor
      */
     CAAT.ImagePreloader = function()   {
-        this.images = new Array();
+        this.images = [];
         return this;
     };
 
@@ -50,19 +50,23 @@
          * function to call on every image load.
          */
         loadImages: function( aImages, callback_loaded_one_image ) {
-            var me= this;
+            var me= this, i;
             this.notificationCallback = callback_loaded_one_image;
             this.images= [];
-            for( var i=0; i<aImages.length; i++ ) {
+            for( i=0; i<aImages.length; i++ ) {
                 this.images.push( {id:aImages[i].id, image: new Image() } );
             }
 
-            for( var i=0; i<aImages.length; i++ ) {
+            for( i=0; i<aImages.length; i++ ) {
                 this.images[i].image.onload = function imageLoaded() {
                     me.imageCounter++;
                     me.notificationCallback.call(this, me.imageCounter, me.images);
                 };
                 this.images[i].image.src= aImages[i].url;
+            }
+
+            if ( aImages .length===0 ) {
+                callback_loaded_one_image(0,[]);
             }
         }
 

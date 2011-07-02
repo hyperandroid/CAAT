@@ -50,13 +50,18 @@
         this.worldModelViewMatrix= new CAAT.Matrix();
         this.modelViewMatrixI= new CAAT.Matrix();
         this.worldModelViewMatrixI= new CAAT.Matrix();
-        
+
+        this.tmpMatrix= new CAAT.Matrix();
+
 		return this;
 	};
 
 	CAAT.Actor.prototype= {
+
+        tmpMatrix :             null,
+
         lifecycleListenerList:	null,   // Array of life cycle listener
-		behaviorList: 			null,   // Array of behaviors to apply to the Actor
+        behaviorList:           null,   // Array of behaviors to apply to the Actor
 		parent:					null,   // Parent of this Actor. May be Scene.
 		x:						0,      // x position on parent. In parent's local coord. system.
 		y:						0,      // y position on parent. In parent's local coord. system.
@@ -152,7 +157,7 @@
         removeListener : function( actorListener ) {
             var n= this.lifecycleListenerList.length;
             while(n--) {
-                if ( this.lifecycleListenerList[n]==actorListener ) {
+                if ( this.lifecycleListenerList[n]===actorListener ) {
                     // remove the nth element.
                     this.lifecycleListenerList.splice(n,1);
                     return;
@@ -329,8 +334,8 @@
 
 			var ctx= director.crc;
 
-			if ( null!=this.fillStyle ) {
-				ctx.fillStyle= this.pointed ? 'orange' : (this.fillStyle!=null ? this.fillStyle : 'white'); //'white';
+			if ( null!==this.fillStyle ) {
+				ctx.fillStyle= this.pointed ? 'orange' : (this.fillStyle!==null ? this.fillStyle : 'white'); //'white';
 				ctx.fillRect(0,0,this.width,this.height );
 			}
 
@@ -366,40 +371,40 @@
 
 			switch( anchor ) {
             case this.ANCHOR_CENTER:
-            	tx= this.width/2;
-            	ty= this.height/2;
+                tx= this.width/2;
+                ty= this.height/2;
                 break;
             case this.ANCHOR_TOP:
-            	tx= this.width/2;
-            	ty= 0;
+                tx= this.width/2;
+                ty= 0;
                 break;
             case this.ANCHOR_BOTTOM:
-            	tx= this.width/2;
-            	ty= this.height;
+                tx= this.width/2;
+                ty= this.height;
                 break;
             case this.ANCHOR_LEFT:
-            	tx= 0;
-            	ty= this.height/2;
+                tx= 0;
+                ty= this.height/2;
                 break;
             case this.ANCHOR_RIGHT:
-            	tx= this.width;
-            	ty= this.height/2;
+                tx= this.width;
+                ty= this.height/2;
                 break;
             case this.ANCHOR_TOP_RIGHT:
-            	tx= this.width;
-            	ty= 0;
+                tx= this.width;
+                ty= 0;
                 break;
             case this.ANCHOR_BOTTOM_LEFT:
-            	tx= 0;
-            	ty= this.height;
+                tx= 0;
+                ty= this.height;
                 break;
             case this.ANCHOR_BOTTOM_RIGHT:
-            	tx= this.width;
-            	ty= this.height;
+                tx= this.width;
+                ty= this.height;
                 break;
             case this.ANCHOR_TOP_LEFT:
-            	tx= 0;
-            	ty= 0;
+                tx= 0;
+                ty= 0;
                 break;
 	        }
 
@@ -451,9 +456,9 @@
          * @return this;
          */
 	    setRotationAnchored : function( angle, rx, ry ) {
-	    	this.rotationAngle= angle;
-	    	this.rotationX= rx?rx:0;
-	    	this.rotationY= ry?ry:0;
+	        this.rotationAngle= angle;
+	        this.rotationX= rx?rx:0;
+	        this.rotationY= ry?ry:0;
 
             this.dirty= true;
 
@@ -466,8 +471,8 @@
          * @return this
          */
 	    setSize : function( w, h )   {
-	    	this.width= w>>0;
-	    	this.height= h>>0;
+	        this.width= w>>0;
+	        this.height= h>>0;
 
             return this;
 	    },
@@ -484,12 +489,12 @@
          * @return this
          */
 	    setBounds : function(x, y, w, h)  {
-	    	//this.x= x;
-	    	//this.y= y;
+	        //this.x= x;
+            //this.y= y;
             this.x= x|0;
             this.y= y|0;
-	    	this.width= w|0;
-	    	this.height= h|0;
+	        this.width= w|0;
+	        this.height= h|0;
 
             return this;
 	    },
@@ -530,9 +535,9 @@
                 return false;
             }
 
-	    	if ( this.duration==Number.MAX_VALUE ) {
-	    		return this.start_time<=time;
-	    	}
+	        if ( this.duration===Number.MAX_VALUE ) {
+	            return this.start_time<=time;
+	        }
 
 			if ( time>=this.start_time+this.duration )	{
 				if ( !this.expired )	{
@@ -542,7 +547,7 @@
 				return false;
 			}
 
-	    	return this.start_time<=time && time<this.start_time+this.duration;
+	        return this.start_time<=time && time<this.start_time+this.duration;
 	    },
         /**
          * Checks whether a coordinate is inside the Actor's bounding box.
@@ -583,7 +588,7 @@
         removeBehaviour : function( behavior ) {
             var n= this.behaviorList.length-1;
             while(n) {
-                if ( this.behaviorList[n]==behavior ) {
+                if ( this.behaviorList[n]===behavior ) {
                     this.behaviorList.splice(n,1);
                     return this;
                 }
@@ -600,7 +605,7 @@
          */
         removeBehavior : function( id ) {
             for( var n=0; n<this.behaviorList.length; n++ ) {
-                if ( this.behaviorList[n].id==id) {
+                if ( this.behaviorList[n].id===id) {
                     this.behaviorList.splice(n,1);
                 }
             }
@@ -686,7 +691,7 @@
 
             this.modelViewMatrixI= this.modelViewMatrix.getInverse();
             this.modelViewMatrixI.transformCoord(point);
-	    	return this.contains(point.x, point.y) ? this :null;
+	        return this.contains(point.x, point.y) ? this :null;
 	    },
         /**
          * Enables a default dragging routine for the Actor.
@@ -715,12 +720,12 @@
              *
              * @inner
              */
-	    	this.mouseEnter= function(mouseEvent) {
+	        this.mouseEnter= function(mouseEvent) {
 				this.ax= -1;
 				this.ay= -1;
-		    	this.pointed= true;
-		    	document.body.style.cursor = 'move';
-	    	};
+		        this.pointed= true;
+		        document.body.style.cursor = 'move';
+	        };
 
             /**
              * Mouse exit handler for default drag behavior.
@@ -728,12 +733,12 @@
              *
              * @inner
              */
-	    	this.mouseExit= function(mouseEvent) {
-				this.ax= -1;
-				this.ay= -1;
-				this.pointed= false;
-				document.body.style.cursor = 'default';
-	    	};
+            this.mouseExit = function(mouseEvent) {
+                this.ax = -1;
+                this.ay = -1;
+                this.pointed = false;
+                document.body.style.cursor = 'default';
+            };
 
             /**
              * Mouse move handler for default drag behavior.
@@ -741,10 +746,10 @@
              *
              * @inner
              */
-	    	this.mouseMove= function(mouseEvent) {
-				this.mx= mouseEvent.point.x;
-				this.my= mouseEvent.point.y;
-	    	};
+            this.mouseMove = function(mouseEvent) {
+                this.mx = mouseEvent.point.x;
+                this.my = mouseEvent.point.y;
+            };
 
             /**
              * Mouse up handler for default drag behavior.
@@ -752,10 +757,10 @@
              *
              * @inner
              */
-	    	this.mouseUp= function( mouseEvent) {
-				this.ax= -1;
-				this.ay= -1;
-	    	};
+            this.mouseUp = function(mouseEvent) {
+                this.ax = -1;
+                this.ay = -1;
+            };
 
             /**
              * Mouse drag handler for default drag behavior.
@@ -763,41 +768,41 @@
              *
              * @inner
              */
-	    	this.mouseDrag= function(mouseEvent) {
+            this.mouseDrag = function(mouseEvent) {
 
-				if ( this.ax==-1 || this.ay==-1 ) {
-					this.ax= mouseEvent.point.x;
-					this.ay= mouseEvent.point.y;
-					this.asx= this.scaleX;
-					this.asy= this.scaleY;
-					this.ara= this.rotationAngle;
-					this.screenx= mouseEvent.screenPoint.x;
-					this.screeny= mouseEvent.screenPoint.y;
-				}
+                if (this.ax === -1 || this.ay === -1) {
+                    this.ax = mouseEvent.point.x;
+                    this.ay = mouseEvent.point.y;
+                    this.asx = this.scaleX;
+                    this.asy = this.scaleY;
+                    this.ara = this.rotationAngle;
+                    this.screenx = mouseEvent.screenPoint.x;
+                    this.screeny = mouseEvent.screenPoint.y;
+                }
 
-				if ( mouseEvent.isShiftDown() ) {
-					var scx= (mouseEvent.screenPoint.x-this.screenx)/100;
-					var scy= (mouseEvent.screenPoint.y-this.screeny)/100;
-					if ( !mouseEvent.isAltDown() ) {
-						var sc= Math.max( scx, scy );
-						scx= sc;
-						scy= sc;
-					}
-					this.setScale( scx+this.asx, scy+this.asy );
+                if (mouseEvent.isShiftDown()) {
+                    var scx = (mouseEvent.screenPoint.x - this.screenx) / 100;
+                    var scy = (mouseEvent.screenPoint.y - this.screeny) / 100;
+                    if (!mouseEvent.isAltDown()) {
+                        var sc = Math.max(scx, scy);
+                        scx = sc;
+                        scy = sc;
+                    }
+                    this.setScale(scx + this.asx, scy + this.asy);
 
-				} else if ( mouseEvent.isControlDown() ) {
-					var vx=  mouseEvent.screenPoint.x - this.screenx;
-					var vy=  mouseEvent.screenPoint.y - this.screeny;
-					this.setRotation( -Math.atan2( vx, vy ) + this.ara );
-				} else {
-					this.x+= mouseEvent.point.x-this.ax;
-					this.y+= mouseEvent.point.y-this.ay;
-					this.ax= mouseEvent.point.x;
-					this.ay= mouseEvent.point.y;
-				}
+                } else if (mouseEvent.isControlDown()) {
+                    var vx = mouseEvent.screenPoint.x - this.screenx;
+                    var vy = mouseEvent.screenPoint.y - this.screeny;
+                    this.setRotation(-Math.atan2(vx, vy) + this.ara);
+                } else {
+                    this.x += mouseEvent.point.x - this.ax;
+                    this.y += mouseEvent.point.y - this.ay;
+                    this.ax = mouseEvent.point.x;
+                    this.ay = mouseEvent.point.y;
+                }
 
 
-	    	};
+            };
 
             return this;
 	    },
@@ -821,7 +826,7 @@
          * @param mouseEvent a CAAT.MouseEvent object instance.
          */
 		mouseEnter : function(mouseEvent) {
-	    	this.pointed= true;
+	        this.pointed= true;
 		},
         /**
          * Default mouse exit on Actor handler.
@@ -867,7 +872,7 @@
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          */
         drawScreenBoundingBox : function( director, time ) {
-            if ( this.inFrame && null!=this.AABB ) {
+            if ( this.inFrame && null!==this.AABB ) {
                 var s= this.AABB;
                 director.ctx.strokeRect( s.x, s.y, s.width, s.height );
             }
@@ -891,7 +896,7 @@
 				this.behaviorList[i].apply(time,this);
 			}
 
-            if ( this.x!=this.oldX || this.y!=this.oldY ) {
+            if ( this.x!==this.oldX || this.y!==this.oldY ) {
                 this.dirty= true;
                 this.oldX= this.x;
                 this.oldY= this.y;
@@ -912,18 +917,43 @@
             if ( this.dirty ) {
                 this.modelViewMatrix.identity();
 
-                var m= new CAAT.Matrix();
+                //var m= new CAAT.Matrix();
+                var m= this.tmpMatrix.identity();
 
-                this.modelViewMatrix.multiply( m.setTranslate( this.x, this.y ) );
+                var mm= this.modelViewMatrix.matrix;
+                //this.modelViewMatrix.multiply( m.setTranslate( this.x, this.y ) );
+                mm[2]+= this.x;
+                mm[5]+= this.y;
+
                 if ( this.rotationAngle ) {
-                    this.modelViewMatrix.multiply( m.setTranslate( this.rotationX, this.rotationY) );
+//                    this.modelViewMatrix.multiply( m.setTranslate( this.rotationX, this.rotationY) );
+                    mm[2]+= mm[0]*this.rotationX + mm[1]*this.rotationY;
+                    mm[5]+= mm[3]*this.rotationX + mm[4]*this.rotationY;
+
                     this.modelViewMatrix.multiply( m.setRotation( this.rotationAngle ) );
-                    this.modelViewMatrix.multiply( m.setTranslate( -this.rotationX, -this.rotationY) );
+
+//                    this.modelViewMatrix.multiply( m.setTranslate( -this.rotationX, -this.rotationY) );
+                    mm[2]+= -mm[0]*this.rotationX - mm[1]*this.rotationY;
+                    mm[5]+= -mm[3]*this.rotationX - mm[4]*this.rotationY;
+
                 }
                 if ( this.scaleX || this.scaleY && (this.scaleTX || this.scaleTY )) {
-                    this.modelViewMatrix.multiply( m.setTranslate( this.scaleTX , this.scaleTY ) );
-                    this.modelViewMatrix.multiply( m.setScale( this.scaleX, this.scaleY ) );
-                    this.modelViewMatrix.multiply( m.setTranslate( -this.scaleTX , -this.scaleTY ) );
+//                    this.modelViewMatrix.multiply( m.setTranslate( this.scaleTX , this.scaleTY ) );
+                    mm[2]+= mm[0]*this.scaleTX + mm[1]*this.scaleTY;
+                    mm[5]+= mm[3]*this.scaleTX + mm[4]*this.scaleTY;
+
+                    
+//                    this.modelViewMatrix.multiply( m.setScale( this.scaleX, this.scaleY ) );
+                    mm[0]= mm[0]*this.scaleX;
+                    mm[1]= mm[1]*this.scaleY;
+                    mm[3]= mm[3]*this.scaleX;
+                    mm[4]= mm[4]*this.scaleY;
+
+
+//                    this.modelViewMatrix.multiply( m.setTranslate( -this.scaleTX , -this.scaleTY ) );
+                    mm[2]+= -mm[0]*this.scaleTX - mm[1]*this.scaleTY;
+                    mm[5]+= -mm[3]*this.scaleTX - mm[4]*this.scaleTY;
+
                 }
 //                this.modelViewMatrixI= this.modelViewMatrix.getInverse();
             }
@@ -1067,7 +1097,7 @@
          */
         glSetShader : function(director) {
             // BUGBUG BUGBUG BUGBUG change texture page if needed.
-            if ( this.frameAlpha!=director.currentOpacity ) {
+            if ( this.frameAlpha!==director.currentOpacity ) {
                 director.setGLCurrentOpacity(this.frameAlpha);
             }
         },
@@ -1215,14 +1245,15 @@
         },
         paintActorGL : function(director,time) {
 
+            var i, c;
             if (!this.visible) {
                 return true;
             }
             
             if ( director.front_to_back ) {
-                var i= this.activeChildren.length-1;
+                i= this.activeChildren.length-1;
                 while( i>=0 ) {
-                    var c= this.activeChildren[i];
+                    c= this.activeChildren[i];
                     c.paintActorGL(director,time);
                     i--;
                 }
@@ -1236,8 +1267,8 @@
             
             if ( !director.front_to_back ) {
                 var n= this.activeChildren.length;
-                for( var i=0; i<n; i++ ) {
-                    var c= this.activeChildren[i];
+                for( i=0; i<n; i++ ) {
+                    c= this.activeChildren[i];
                     c.paintActorGL(director,time);
                 }
             }
@@ -1256,13 +1287,13 @@
 
             this.activeChildren= [];
 
-            if (false==CAAT.ActorContainer.superclass.animate.call(this,director,time)) {
+            if (false===CAAT.ActorContainer.superclass.animate.call(this,director,time)) {
                 return false;
             }
 
-            var i;
+            var i,l;
 
-            for( i=0; i<this.childrenList.length; i++ ) {
+            for( i=0, l=this.childrenList.length; i<l; i++ ) {
                 this.childrenList[i].time= time;
                 if ( this.childrenList[i].animate(director, time) ) {
                     this.activeChildren.push( this.childrenList[i] );
@@ -1364,7 +1395,7 @@
             var i=0,
 				len = this.childrenList.length;
 			for( i=0; i<len; i++ ) {
-				if ( this.childrenList[i]==child ) {
+				if ( this.childrenList[i]===child ) {
 					return i;
 				}
 			}
@@ -1380,7 +1411,7 @@
          */
 		removeChild : function(child) {
 			var pos= this.findChild(child);
-			if ( -1!=pos ) {
+			if ( -1!==pos ) {
 				this.childrenList.splice(pos,1);
 			}
 
@@ -1397,7 +1428,7 @@
          */
 		findActorAtPosition : function(point, screenPoint) {
 
-			if( null==CAAT.ActorContainer.superclass.findActorAtPosition.call(this,point,screenPoint) ) {
+			if( null===CAAT.ActorContainer.superclass.findActorAtPosition.call(this,point,screenPoint) ) {
 				return null;
 			}
 
@@ -1418,7 +1449,7 @@
                      screenPoint.y<=aabb.y+aabb.height ) {
 
                     var contained= child.findActorAtPosition( np, screenPoint );
-                    if ( null!=contained ) {
+                    if ( null!==contained ) {
                         return contained;
                     }
                 }
@@ -1468,10 +1499,10 @@
         setZOrder : function( actor, index ) {
             var actorPos= this.findChild(actor);
             // the actor is present
-            if ( -1!=actorPos ) {
+            if ( -1!==actorPos ) {
 
                 // trivial reject.
-                if ( index==actorPos ) {
+                if ( index===actorPos ) {
                     return;
                 }
 
@@ -1557,7 +1588,7 @@
 			this.compoundbitmap= conpoundimage;
 			this.width= conpoundimage.singleWidth;
 			this.height= conpoundimage.singleHeight;
-			if ( null==this.animationImageIndex ) {
+			if ( null===this.animationImageIndex ) {
 				this.setAnimationImageIndex([0]);
 			}
 
@@ -1611,7 +1642,7 @@
 			if ( this.compoundbitmap && this.animationImageIndex )	{
 
 				if ( this.animationImageIndex.length>1 ) {
-					if ( this.prevAnimationTime==-1 )	{
+					if ( this.prevAnimationTime===-1 )	{
 						this.prevAnimationTime= time;
 					}
 					else	{
@@ -1636,7 +1667,7 @@
          */
 		paint : function(director, time) {
 
-            if ( -1==this.spriteIndex ) {
+            if ( -1===this.spriteIndex ) {
                 return;
             }
 
@@ -1659,7 +1690,7 @@
 
 		},
         paintActorGL : function(director,time) {
-            if ( -1==this.spriteIndex ) {
+            if ( -1===this.spriteIndex ) {
                 return;
             }
 
@@ -1674,10 +1705,10 @@
             this.compoundbitmap.setUV(this.spriteIndex, uv, uvIndex);
         },
         glNeedsFlush : function(director) {
-            if ( this.compoundbitmap.image.__texturePage!=director.currentTexturePage ) {
+            if ( this.compoundbitmap.image.__texturePage!==director.currentTexturePage ) {
                 return true;
             }
-            if ( this.frameAlpha!=director.currentOpacity ) {
+            if ( this.frameAlpha!==director.currentOpacity ) {
                 return true;
             }
             return false;
@@ -1745,7 +1776,7 @@
          */
         setImage : function(image) {
             this.image= image;
-            if ( this.width==0 || this.height==0 ) {
+            if ( this.width===0 || this.height===0 ) {
                 this.width=  image.width;
                 this.height= image.height;
             }
@@ -1793,7 +1824,7 @@
 			}
 		},
         paintActorGL : function(director,time) {
-            if ( null==this.image ) {
+            if ( null===this.image ) {
                 return;
             }
 
@@ -1808,17 +1839,17 @@
 	    },
 	    paintInvertedV : function( ctx ) {
 	        ctx.save();
-	        	ctx.translate( 0, this.height );
-	        	ctx.scale(1, -1);
+	            ctx.translate( 0, this.height );
+	            ctx.scale(1, -1);
 		        ctx.drawImage( this.image,this.offsetX,this.offsetY );
 	        ctx.restore();
 	    },
 	    paintInvertedHV : function( ctx ) {
 	        ctx.save();
-		    	ctx.translate( 0, this.height );
-		    	ctx.scale(1, -1);
-	        	ctx.translate( this.width, 0 );
-	        	ctx.scale(-1, 1);
+		        ctx.translate( 0, this.height );
+		        ctx.scale(1, -1);
+	            ctx.translate( this.width, 0 );
+	            ctx.scale(-1, 1);
 		        ctx.drawImage(this.image,this.offsetX,this.offsetY);
 	        ctx.restore();
 	    },
@@ -1881,10 +1912,10 @@
             //director.uvIndex= index;
         },
         glNeedsFlush : function(director) {
-            if ( this.image.__texturePage!=director.currentTexturePage ) {
+            if ( this.image.__texturePage!==director.currentTexturePage ) {
                 return true;
             }
-            if ( this.frameAlpha!=director.currentOpacity ) {
+            if ( this.frameAlpha!==director.currentOpacity ) {
                 return true;
             }
             return false;
@@ -2006,7 +2037,7 @@
 
             this.font= font;
 
-            if ( this.text=="" || null==this.text ) {
+            if ( null===this.text || this.text==="" ) {
                 this.width= this.height= 0;
             }
 
@@ -2029,7 +2060,7 @@
             director.ctx.font= this.font;
 
             this.textWidth= director.crc.measureText( this.text ).width;
-            if (this.width==0) {
+            if (this.width===0) {
                 this.width= this.textWidth;
             }
 
@@ -2045,7 +2076,7 @@
                 this.textHeight=20; // default height;
             }
 
-            if ( this.height==0 ) {
+            if ( this.height===0 ) {
                 this.height= this.textHeight;
             }
 
@@ -2062,35 +2093,35 @@
          */
 		paint : function(director, time) {
 
-			if ( null==this.text) {
+			if ( null===this.text) {
 				return;
 			}
 
-            if ( this.textWidth==0 || this.textHeight==0 ) {
+            if ( this.textWidth===0 || this.textHeight===0 ) {
                 this.calcTextSize(director);
             }
 
 			var canvas= director.crc;
 
-			if( null!=this.font ) {
+			if( null!==this.font ) {
 				canvas.font= this.font;
 			}
-			if ( null!=this.textAlign ) {
+			if ( null!==this.textAlign ) {
 				canvas.textAlign= this.textAlign;
 			}
-			if ( null!=this.textBaseline ) {
+			if ( null!==this.textBaseline ) {
 				canvas.textBaseline= this.textBaseline;
 			}
-			if ( null!=this.fillStyle ) {
+			if ( null!==this.fillStyle ) {
 				canvas.fillStyle= this.fillStyle;
 			}
 
-			if (null==this.path) {
+			if (null===this.path) {
 
                 var tx=0;
-                if ( this.textAlign=='center') {
+                if ( this.textAlign==='center') {
                     tx= (this.width/2)|0;
-                } else if ( this.textAlign=='right' ) {
+                } else if ( this.textAlign==='right' ) {
                     tx= this.width;
                 }
 
@@ -2100,14 +2131,14 @@
 
 						// firefox necesita beginPath, si no, dibujara ademas el cuadrado del
 						// contenedor de los textos.
-						if ( null!=this.outlineColor ) {
+						if ( null!==this.outlineColor ) {
 							canvas.strokeStyle= this.outlineColor;
 						}
 						canvas.beginPath();
 						canvas.strokeText( this.text, tx, 0 );
 					}
 				} else {
-					if ( null!=this.outlineColor ) {
+					if ( null!==this.outlineColor ) {
 						canvas.strokeStyle= this.outlineColor;
 					}
 					canvas.strokeText( this.text, tx, 0 );
@@ -2141,13 +2172,13 @@
 				var currentCurveLength= charWidth/2 + textWidth;
 
 				p0= this.path.getPositionFromLength(currentCurveLength).clone();
-				p1= this.path.getPositionFromLength(currentCurveLength-.1).clone();
+				p1= this.path.getPositionFromLength(currentCurveLength-0.1).clone();
 
 				var angle= Math.atan2( p0.y-p1.y, p0.x-p1.x );
 
 				canvas.save();
 
-					canvas.translate( (.5+p0.x)|0, (.5+p0.y)|0 );
+					canvas.translate( (0.5+p0.x)|0, (0.5+p0.y)|0 );
 					canvas.rotate( angle );
                     if ( this.fill ) {
 					    canvas.fillText(caracter,0,0);
@@ -2276,7 +2307,7 @@
             this.spriteIndex= this.iNormal;
         },
         mouseClick : function(mouseEvent) {
-            if ( this.enabled && null!=this.fnOnClick ) {
+            if ( this.enabled && null!==this.fnOnClick ) {
                 this.fnOnClick();
             }
         },
@@ -2299,6 +2330,12 @@
     CAAT.ShapeActor = function() {
         CAAT.ShapeActor.superclass.constructor.call(this);
         this.compositeOp= 'source-over';
+
+        /**
+         * Thanks Svend Dutz and Thomas Karolski for noticing this call was not performed by default,
+         * so if no explicit call to setShape was made, nothing would be drawn.
+         */
+        this.setShape( this.SHAPE_CIRCLE );
         return this;
     };
 
@@ -2319,7 +2356,7 @@
          */
         setShape : function(iShape) {
             this.shape= iShape;
-            this.paint= this.shape==this.SHAPE_CIRCLE ?
+            this.paint= this.shape===this.SHAPE_CIRCLE ?
                     this.paintCircle :
                     this.paintRectangle;
             return this;
@@ -2352,14 +2389,14 @@
             var ctx= director.crc;
 
             ctx.globalCompositeOperation= this.compositeOp;
-            if ( null!=this.fillStyle ) {
+            if ( null!==this.fillStyle ) {
                 ctx.fillStyle= this.fillStyle;
                 ctx.beginPath();
                 ctx.arc( this.width/2, this.height/2, Math.min(this.width,this.height)/2, 0, 2*Math.PI, false );
                 ctx.fill();
             }
             
-            if ( null!=this.strokeStyle ) {
+            if ( null!==this.strokeStyle ) {
                 ctx.strokeStyle= this.strokeStyle;
                 ctx.beginPath();
                 ctx.arc( this.width/2, this.height/2, Math.min(this.width,this.height)/2, 0, 2*Math.PI, false );
@@ -2378,14 +2415,14 @@
             var ctx= director.crc;
 
             ctx.globalCompositeOperation= this.compositeOp;
-            if ( null!=this.fillStyle ) {
+            if ( null!==this.fillStyle ) {
                 ctx.fillStyle= this.fillStyle;
                 ctx.beginPath();
                 ctx.fillRect(0,0,this.width,this.height);
                 ctx.fill();
             }
 
-            if ( null!=this.strokeStyle ) {
+            if ( null!==this.strokeStyle ) {
                 ctx.strokeStyle= this.strokeStyle;
                 ctx.beginPath();
                 ctx.strokeRect(0,0,this.width,this.height);
@@ -2474,7 +2511,7 @@
 
             for( var i=1; i<this.nPeaks*2; i++ )   {
                 var angleStar= Math.PI/this.nPeaks * i + this.initialAngle;
-                var rr= (i%2==0) ? r1 : r2;
+                var rr= (i%2===0) ? r1 : r2;
                 var x= centerX + rr*Math.cos(angleStar);
                 var y= centerY + rr*Math.sin(angleStar);
                 ctx.lineTo(x,y);
@@ -2552,135 +2589,4 @@
     };
 
     extend( CAAT.IMActor, CAAT.ActorContainer, null);
-})();
-
-(function() {
-
-    /**
-     * This class aims to instrument Dom elements as if were Canvas elements.
-     * <p>
-     * It will create and add a div elemento to the dom which will be transformed and presented by CSS.
-     * The parent/child relationship inherent to every CAAT animable element will be held by containing
-     * div elements inside of other div elements.
-     *
-     * <p>
-     * Experimental form.
-     *
-     * @constructor
-     * @extends CAAT.ActorContainer
-     */
-    CAAT.CSSActor = function() {
-        CAAT.CSSActor.superclass.constructor.call(this);
-        this.setFillStyle(null);
-        this.setStrokeStyle(null);
-        this.DOMParent= document.body;
-        return this;
-    };
-
-    CAAT.CSSActor.prototype= {
-        domElement: null,
-        dirty: true,
-        oldX:   -1,
-        oldY:   -1,
-        DOMParent: null,
-
-        /**
-         * Set CSS div's inner HTML.
-         * @param innerHTML {string} a valid html block.
-         * @return this;
-         */
-        setInnerHTML : function(innerHTML) {
-            this.domElement.innerHTML= innerHTML;
-            return this;
-        },
-        create : function() {
-            CAAT.CSSActor.superclass.create.call(this);
-            this.domElement= document.createElement('div');
-            this.DOMParent.appendChild(this.domElement);
-            this.domElement.style['position']='absolute';
-            this.domElement.style['-webkit-transition']='all 0s linear';
-            return this;
-        },
-        setDOMParent : function(dom) {
-            this.DOMParent= dom;
-            return this;
-        },
-        setLocation : function( x, y ) {
-            CAAT.CSSActor.superclass.setLocation.call(this,x,y);
-            this.domElement.style['left']= x+'px';
-            this.domElement.style['top']=  y+'px';
-            return this;
-        },
-        setSize : function( w, h ) {
-            CAAT.CSSActor.superclass.setSize.call(this,w,h);
-            this.domElement.style['width']= ''+w+'px';
-            this.domElement.style['height']= ''+h+'px';
-            return this;
-        },
-        setBounds : function( x,y,w,h ) {
-            this.setLocation(x,y);
-            this.setSize(w,h);
-            return this;
-        },
-        setBackground : function( backgroundImage_Local_URL ) {
-            this.domElement.style.background= 'url('+backgroundImage_Local_URL+')';
-            return this;
-        },
-        setOpacity : function() {
-            this.domElement.style['filter']= 'alpha(opacity='+((this.alpha*100)>>0)+')';
-            this.domElement.style['-moz-opacity']= this.alpha;
-            this.domElement.style['-khtml-opacity']= this.alpha;
-            this.domElement.style['-opacity']= this.alpha;
-        },
-        addChild : function( actor ) {
-            if ( actor instanceof CAAT.CSSActor ) {
-                this.domElement.appendChild(actor.domElement);
-                CAAT.CSSActor.superclass.addChild.call(this,actor);
-            }
-        },
-        paintActor : function(director, time) {
-
-            if ( !this.isInAnimationFrame(time) ) {
-                this.inFrame= false;
-                return false;
-            }
-
-            if ( (this.oldX!=this.x) || (this.oldY!=this.y) ) {
-                this.domElement.style['top']= this.y+'px';
-                this.domElement.style['left']= this.x+'px';
-                this.oldX= this.x;
-                this.oldY= this.y;
-            }
-
-            if ( this.dirty ) {
-
-                var strMatrix='translate3d(0,0,0)';
-                if ( this.rotationAngle!=0 ) {
-                    strMatrix= strMatrix+ ' rotate('+this.rotationAngle+'rad)';
-                }
-                if ( this.scaleX!=1 ) {
-                    strMatrix= strMatrix+ ' scale('+this.scaleX+')';
-                }
-
-                this.domElement.style['-webkit-transform']= strMatrix;
-                this.domElement.style['-o-transform']= strMatrix;
-                this.domElement.style['-moz-transform']= strMatrix;
-
-                this.dirty= false;
-            }
-
-            for( var i=0; i<this.childrenList.length; i++ ) {
-                this.childrenList[i].paintActor(director,time);
-            }
-            
-            this.inFrame= true;
-
-            return true;
-        },
-        paint : function(director,time) {
-            
-        }
-    };
-
-    extend( CAAT.CSSActor, CAAT.ActorContainer, null);
 })();

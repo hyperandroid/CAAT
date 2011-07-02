@@ -15,7 +15,7 @@ function extend(subc, superc) {
     subc.superclass = superc.prototype;
     subc.prototype.constructor = subc;
 
-    if (superc.prototype.constructor == Object.prototype.constructor) {
+    if (superc.prototype.constructor === Object.prototype.constructor) {
         superc.prototype.constructor = superc;
     }
 
@@ -24,7 +24,7 @@ function extend(subc, superc) {
     for (var method in subcp) {
         if (subcp.hasOwnProperty(method)) {
             subc.prototype[method] = subcp[method];
-
+/*
             // tenemos en super un metodo con igual nombre.
             if ( superc.prototype[method]) {
                 subc.prototype[method]= (function(fn, fnsuper) {
@@ -40,12 +40,13 @@ function extend(subc, superc) {
                         this.__super= prevMethod;
 
                         return retValue;
-                    }
+                    };
                 })(subc.prototype[method], superc.prototype[method]);
             }
+            */
         }
     }
-};
+}
 
 /**
  * Proxy an object or wrap/decorate a function.
@@ -58,7 +59,7 @@ function extend(subc, superc) {
 function proxy(object, preMethod, postMethod, errorMethod) {
 
     // proxy a function
-    if ( typeof object=='function' ) {
+    if ( typeof object==='function' ) {
 
         if ( object.__isProxy ) {
             return object;
@@ -98,7 +99,7 @@ function proxy(object, preMethod, postMethod, errorMethod) {
 
                 // return original returned value to the caller.
                 return retValue;
-            }
+            };
             proxyfn.__isProxy= true;
             return proxyfn;
 
@@ -109,9 +110,9 @@ function proxy(object, preMethod, postMethod, errorMethod) {
      * If not a function then only non privitive objects can be proxied.
      * If it is a previously created proxy, return the proxy itself.
      */
-    if ( !typeof object=='object' ||
-            object.constructor==Array ||
-            object.constructor==String ||
+    if ( !typeof object==='object' ||
+            object.constructor===Array ||
+            object.constructor===String ||
             object.__isProxy ) {
 
         return object;
@@ -129,7 +130,7 @@ function proxy(object, preMethod, postMethod, errorMethod) {
     // For every element in the object to be proxied
     for( var method in object ) {
         // only function members
-        if ( typeof object[method]=='function' ) {
+        if ( typeof object[method]==='function' ) {
             // add to the proxy object a method of equal signature to the
             // method present at the object to be proxied.
             // cache references of object, function and function name.
@@ -172,14 +173,14 @@ function proxy(object, preMethod, postMethod, errorMethod) {
 
                     // return original returned value to the caller.
                     return retValue;
-                }
+                };
             })(proxy,object[method],method);
         }
     }
 
     // return our newly created and populated of functions proxy object.
     return proxy;
-};
+}
 
 /** proxy sample usage
 

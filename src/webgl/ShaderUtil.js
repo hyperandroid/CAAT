@@ -23,9 +23,9 @@
         },
         getShader : function (gl,type,str) {
             var shader;
-            if (type == "x-shader/x-fragment") {
+            if (type === "x-shader/x-fragment") {
                 shader = gl.createShader(gl.FRAGMENT_SHADER);
-            } else if (type == "x-shader/x-vertex") {
+            } else if (type === "x-shader/x-vertex") {
                 shader = gl.createShader(gl.VERTEX_SHADER);
             } else {
                 return null;
@@ -51,16 +51,16 @@
             var str = "";
             var k = shaderScript.firstChild;
             while (k) {
-                if (k.nodeType == 3) {
+                if (k.nodeType === 3) {
                     str += k.textContent;
                 }
                 k = k.nextSibling;
             }
 
             var shader;
-            if (shaderScript.type == "x-shader/x-fragment") {
+            if (shaderScript.type === "x-shader/x-fragment") {
                 shader = gl.createShader(gl.FRAGMENT_SHADER);
-            } else if (shaderScript.type == "x-shader/x-vertex") {
+            } else if (shaderScript.type === "x-shader/x-vertex") {
                 shader = gl.createShader(gl.VERTEX_SHADER);
             } else {
                 return null;
@@ -165,7 +165,7 @@
             this.useProgram();
 
             this.colorBuffer= this.gl.createBuffer();
-            this.setColor( [1,1,1,1] );
+            this.setColor( [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1] );
 
             var maxTris=4096, i;
             /// set vertex data
@@ -265,10 +265,12 @@
         },
         initialize : function() {
 
+            var i;
+
             this.linesBuffer= this.gl.createBuffer();
             this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, this.linesBuffer );
             var arr= [];
-            for( var i=0; i<1024; i++ ) {
+            for( i=0; i<1024; i++ ) {
                 arr[i]= i;
             }
             this.linesBufferArray= new Uint16Array(arr);
@@ -299,7 +301,7 @@
             this.setAlpha(1);
             this.setUseColor(false);
 
-            var maxTris=4096, i;
+            var maxTris=4096;
             /// set vertex data
             this.vertexPositionBuffer = this.gl.createBuffer();
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexPositionBuffer );
@@ -329,7 +331,7 @@
         setUseColor : function( use,r,g,b,a ) {
             this.gl.uniform1i(this.shaderProgram.useColor, use?1:0);
             if ( use ) {
-                if ( this.prevA!=a || this.prevR!=r || this.prevG!=g || this.prevB!=b ) {
+                if ( this.prevA!==a || this.prevR!==r || this.prevG!==g || this.prevB!==b ) {
                     this.gl.uniform4f(this.shaderProgram.color, r,g,b,a );
                     this.prevA= a;
                     this.prevR= r;
@@ -339,7 +341,7 @@
             }
         },
         setTexture : function( glTexture ) {
-            if ( this.prevTexture!=glTexture ) {
+            if ( this.prevTexture!==glTexture ) {
                 var gl= this.gl;
 
                 gl.activeTexture(gl.TEXTURE0);
@@ -362,7 +364,7 @@
             return this;
         },
         setAlpha : function(alpha) {
-            if ( this.prevAlpha != alpha ) {
+            if ( this.prevAlpha !== alpha ) {
                 this.gl.uniform1f(
                     this.shaderProgram.alphaUniform, alpha);
                 this.prevAlpha= alpha;

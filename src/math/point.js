@@ -24,9 +24,9 @@
 	};
 	
 	CAAT.Point.prototype= {
-		x:	0,
-		y: 	0,
-        z: 0,
+		x:  0,
+	    y:  0,
+        z:  0,
 
         /**
          * Sets this point coordinates.

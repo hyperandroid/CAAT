@@ -29,7 +29,7 @@
          * @param width
          */
         findWhereFits : function( width ) {
-            if ( this.freeChunks.length==0 ) {
+            if ( this.freeChunks.length===0 ) {
                 return [];
             }
 
@@ -91,7 +91,7 @@
             return false;
         },
         log : function(index) {
-            if ( 0==this.freeChunks.length ) {
+            if ( 0===this.freeChunks.length ) {
                 CAAT.log('index '+index+' empty');
             } else {
                 var str='index '+index;
@@ -153,7 +153,7 @@
 
                     // si no es nulo el array de resultados, quiere decir que en alguno de los puntos
                     // nos cabe un trozo de tama–o width.
-                    if ( null!=fitHorizontalPositions && fitHorizontalPositions.length>0 ) {
+                    if ( null!==fitHorizontalPositions && fitHorizontalPositions.length>0 ) {
                         foundPositionOnScan= true;
                         break;
                     }
@@ -180,27 +180,9 @@
                         // d.p.m. incluirla en posicion, y seguir con otra.
                         if ( fits ) {
                             return { x: fitHorizontalPositions[j], y: initialPosition };
-                        } else {
-/*
-                            if ( i<minInitialPosition ) {
-                                minInitialPosition= i;
-                            }
-*/
-                        }
+                        } 
                     }
 
-                    // cabe en ninguno de los trozos horizontales sugeridos.
-                    // avanzar el scan hasta el minimo scan donde no ha cabido el bloque para
-                    // las posiciones horizontales sugeridas.
-                    // si por alguna extra–a razon (nunca debiera ser), se da como posicion la misma
-                    // en que se inicio la busqueda, incrementar para no caer en bucle infinito de
-                    // repeticiones.
-/*
-                    if ( minInitialPosition==initialPosition ) {
-                        minInitialPosition++;
-                    }
-                    initialPosition= minInitialPosition;
-*/
                     initialPosition++;
                 } else {
                     // no hay sitio en ningun scan.
@@ -230,7 +212,6 @@
     CAAT.GLTexturePage= function(w,h) {
         this.width=         w || 1024;
         this.height=        h || 1024;
-        this.scan=          new CAAT.GLTextureScanMap( this.width, this.height );
         this.images=        [];
 
         return this;
@@ -238,15 +219,17 @@
 
     CAAT.GLTexturePage.prototype= {
 
-        width:          1024,
-        height:         1024,
-        gl:             null,
-        texture:        null,
+        width:                  1024,
+        height:                 1024,
+        gl:                     null,
+        texture:                null,
+        allowImagesInvertion:   false,
+        padding:                4,
+        scan:                   null,
+        images:                 null,
+        criteria:               'area',
 
-        scan:           null,
-        images:         null,
-
-        create: function(gl, imagesCache) {
+        initialize : function(gl) {
             this.gl= gl;
             this.texture = gl.createTexture();
 
@@ -272,99 +255,92 @@
                     gl.UNSIGNED_BYTE,
                     uarr);
 
+            gl.enable( gl.BLEND );
+
+            for( var i=0; i<this.images.length; i++ ) {
+
+                var img= this.images[i];
+                if ( img.inverted ) {
+                    img= CAAT.modules.ImageUtil.prototype.rotate( img, -90 );
+                }
+
+                gl.texSubImage2D(
+                        gl.TEXTURE_2D,
+                        0,
+                        this.images[i].__tx, this.images[i].__ty,
+                        gl.RGBA,
+                        gl.UNSIGNED_BYTE,
+                        img );
+            }
+
+        },
+        create: function(imagesCache) {
+
+            var images= [];
+            for( var i=0; i<imagesCache.length; i++ ) {
+                var img= imagesCache[i].image;
+                images.push( img );
+            }
+
+            this.createFromImages(images);
+        },
+        clear : function() {
+            this.createFromImages([]);
+        },
+        update : function(invert,padding,width,height) {
+            this.allowImagesInvertion= invert;
+            this.padding= padding;
+
+            if ( width<100 ) {
+                width= 100;
+            }
+            if ( height<100 ) {
+                height= 100;
+            }
+
+            this.width=  width;
+            this.height= height;
+            
+            this.createFromImages(this.images);
+        },
+        createFromImages : function( images ) {
+
             var i;
 
-            // poner las imagenes normalizadas en alto o ancho.
-            // por defecto en alto.
-            // ordenar imagenes: 1¼ mas altas, y a igual altura, 1¼ mas anchas.
-            imagesCache.sort( function(a,b) {
-                var ah= a.image.height;
-                var bh= b.image.height;
-                if (!(bh-ah)) {
-                    return b.image.width-a.image.width;
-                } else {
-                    return bh-ah;
-                }
-            });
+            this.scan=   new CAAT.GLTextureScanMap( this.width, this.height );
+            this.images= [];
 
-            for( i=0; i<imagesCache.length; i++ ) {
-
-                var img=  imagesCache[i].image;
-                if ( !img.__texturePage ) {
-                    var cimg= this.normalizeSize(img);
-
-                    var w= cimg.width;
-                    var h= cimg.height;
-                    var mod;
-
-                    // dejamos un poco de espacio para que las texturas no se pisen.
-                    // coordenadas normalizadas 0..1 dan problemas cuando las texturas no est‡n
-                    // alineadas a posici—n mod 4,8...
-                    mod= w%4;
-                    if ( !mod ) {mod=4;}
-                    if ( w+mod<=this.width ) { 
-                        w+=mod;
-                    }
-                    mod= h%4;
-                    if ( !mod ) {mod=4;}
-                    if ( h+mod<=this.height ) {
-                        h+=mod;
-                    }
-
-                    var where=  this.scan.whereFitsChunk( w, h );
-
-                    if ( null!=where ) {
-                        this.images.push( img );
-
-                        gl.texSubImage2D(gl.TEXTURE_2D, 0, where.x, where.y, gl.RGBA, gl.UNSIGNED_BYTE, cimg );
-
-                        img.__tx= where.x;
-                        img.__ty= where.y;
-                        img.__u=  where.x / this.width;
-                        img.__v=  where.y / this.height;
-                        img.__u1= (where.x+cimg.width) / this.width;
-                        img.__v1= (where.y+cimg.height) / this.height;
-                        img.__texturePage= this;
-                        img.__w= cimg.width;
-                        img.__h= cimg.height;
-                        img.inverted= cimg.inverted;
-
-                        //this.scan.substract(where.x,where.y,cimg.width,cimg.height);
-                        this.scan.substract(where.x,where.y,w,h);
-                    } else {
-                        CAAT.log('Imagen ',img.src,' de tama–o ',img.width,img.height,' no cabe.');
-                    }
+            if ( this.allowImagesInvertion ) {
+                for( i=0; i<images.length; i++ ) {
+                    images[i].inverted= this.allowImagesInvertion && images[i].height<images[i].width;
                 }
             }
 
-            gl.enable( gl.BLEND );
+            var me= this;
+
+            images.sort( function(a,b) {
+
+                var aarea= a.width*a.height;
+                var barea= b.width*b.height;
+
+                if ( me.criteria==='width' ) {
+                    return a.width<b.width ? 1 : a.width>b.width ? -1 : 0;
+                } else if ( me.criteria==='height' ) {
+                    return a.height<b.height ? 1 : a.height>b.height ? -1 : 0;
+                }
+                return aarea<barea ? 1 : aarea>barea ? -1 : 0;
+            });
+
+            for( i=0; i<images.length; i++ ) {
+                var img=  images[i];
+                this.packImage(img);
+            }
         },
-        normalizeSize : function(image) {
-            //if ( image.height>=image.width) {
-                image.inverted= false;
-                return image;
-            //}
-/* Take into account when rotating images for TexturePacking algorithm
-            var canvas= document.createElement("canvas");
-            canvas.width= image.height;
-            canvas.height= image.width;
-
-            var ctx= canvas.getContext('2d');
-            ctx.globalAlpha= .0;
-            ctx.fillStyle='rgba(0,0,0,0)';
-            ctx.clearRect(0,0,canvas.width,canvas.height);
-
-            var m= new CAAT.Matrix();
-            m.multiply( new CAAT.Matrix().setTranslate( canvas.width/2, canvas.width/2 ) );
-            m.multiply( new CAAT.Matrix().setRotation(Math.PI/2) );
-            m.multiply( new CAAT.Matrix().setTranslate( -canvas.width/2, -canvas.width/2 ) );
-            m.transformRenderingContext(ctx);
-            ctx.drawImage(image,0,0);
-
-            canvas.inverted= true;
-
-            return canvas;
-*/
+        addImage : function( image, invert, padding ) {
+            this.allowImagesInvertion= invert;
+            this.padding= padding;
+            this.images.push(image);
+            this.createFromImages(Array.prototype.slice.call(this.images));
         },
         endCreation : function() {
             var gl= this.gl;
@@ -383,6 +359,111 @@
             }
 
             this.gl.deleteTexture( this.texture );
+        },
+        toCanvas : function(canvass, outline) {
+
+            canvass= canvass || document.createElement('canvas');
+            canvass.width= this.width;
+            canvass.height= this.height;
+            var ctxx= canvass.getContext('2d');
+            ctxx.fillStyle= 'rgba(0,0,0,0)';
+            ctxx.fillRect(0,0,this.width,this.height);
+
+            for( var i=0; i<this.images.length; i++ ) {
+                ctxx.drawImage(
+                        !this.images[i].inverted ?
+                                this.images[i] :
+                                CAAT.modules.ImageUtil.prototype.rotate( this.images[i], 90 ),
+                        this.images[i].__tx,
+                        this.images[i].__ty );
+                if ( outline ) {
+                    ctxx.strokeStyle= 'red';
+                    ctxx.strokeRect(
+                            this.images[i].__tx,
+                            this.images[i].__ty,
+                            this.images[i].__w,
+                            this.images[i].__h );
+                }
+
+                if ( this.images[i].__gridC && this.images[i].__gridR ) {
+                    for( var t=0; t<this.images[i].__gridR; t++ ) {
+                        for( var u=0; u<this.images[i].__gridC; u++ ) {
+                            ctxx.strokeStyle= 'blue';
+                            ctxx.strokeRect(
+                                    this.images[i].__tx+ u*this.images[i].__w/this.images[i].__gridC,
+                                    this.images[i].__ty+ t*this.images[i].__h/this.images[i].__gridR,
+                                    this.images[i].__w/this.images[i].__gridC,
+                                    this.images[i].__h/this.images[i].__gridR
+                                    );
+                        }
+                    }
+                }
+            }
+
+
+            if (outline) {
+                ctxx.strokeStyle= 'red';
+                ctxx.strokeRect(0,0,this.width,this.height);
+            }
+
+            return canvass;
+        },
+        packImage : function(img) {
+            var newWidth, newHeight;
+            if ( img.inverted ) {
+                newWidth= img.height;
+                newHeight= img.width;
+            } else {
+                newWidth= img.width;
+                newHeight= img.height;
+            }
+
+            var w= newWidth;
+            var h= newHeight;
+
+            var mod;
+
+            // dejamos un poco de espacio para que las texturas no se pisen.
+            // coordenadas normalizadas 0..1 dan problemas cuando las texturas no est‡n
+            // alineadas a posici—n mod 4,8...
+            if ( w && this.padding ) {
+                mod= this.padding;
+//                mod= (w/this.padding)>>0;
+//                if ( !mod ) {mod=this.padding;}
+                if ( w+mod<=this.width ) {
+                    w+=mod;
+                }
+            }
+            if ( h && this.padding ) {
+                mod= this.padding;
+//                mod= (h/this.padding)>>0;
+//                if ( !mod ) {mod=this.padding;}
+                if ( h+mod<=this.height ) {
+                    h+=mod;
+                }
+            }
+            
+            var where=  this.scan.whereFitsChunk( w, h );
+            if ( null!==where ) {
+                this.images.push( img );
+
+                img.__tx= where.x;
+                img.__ty= where.y;
+                img.__u=  where.x / this.width;
+                img.__v=  where.y / this.height;
+                img.__u1= (where.x+newWidth) / this.width;
+                img.__v1= (where.y+newHeight) / this.height;
+                img.__texturePage= this;
+                img.__w= newWidth;
+                img.__h= newHeight;
+
+                this.scan.substract(where.x,where.y,w,h);
+            } else {
+                CAAT.log('Imagen ',img.src,' de tama–o ',img.width,img.height,' no cabe.');
+            }
+        },
+        changeHeuristic : function(criteria) {
+            this.criteria= criteria;
         }
     };
 })();
@@ -401,7 +482,8 @@
             var end= false;
             while( !end ) {
                 var page= new CAAT.GLTexturePage(width,height);
-                page.create(gl,imagesCache);
+                page.create(imagesCache);
+                page.initialize(gl);
                 page.endCreation();
                 this.pages.push(page);
 
@@ -424,6 +506,6 @@
             }
             this.pages= null;
         }
-    }
+    };
 
 })();
