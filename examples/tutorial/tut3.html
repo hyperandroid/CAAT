@@ -1370,7 +1370,7 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
             <canvas id="_tut3_100"></canvas>
             <script>
                 (function() {
-                    function __createArm( root, angle, segments, armSegmentSizeW, armSegmentSizeH, maxAngle ) {
+                    function __createArm( root, angle, segments, armSegmentSizeW, armSegmentSizeH, armIndex, maxAngle ) {
 
                         var i;
                         var segment= root;
@@ -1384,26 +1384,33 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                                     i
                             );
 
-                            var newSegment= new CAAT.ShapeActor().
-                                    create().
-                                    setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
-                                    setSize( armSegmentSizeW, armSegmentSizeH ).
-                                    setFillStyle( 'rgb('+color.r+","+color.g+","+color.b+")" ).
-                                    setLocation( 0,-armSegmentSizeH );
+
+
+                            var img= new CAAT.ShapeActor().
+                                create().
+                                setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+                                setSize( armSegmentSizeH-4, armSegmentSizeH-4 ).
+                                setFillStyle( 'rgb('+color.r+","+color.g+","+color.b+")" );
+
+                            var newSegment= new CAAT.ImageActor().create().
+                                setImage(img.cacheAsBitmap()).
+                                setLocation( 0,-armSegmentSizeH );
+
                             if ( segment==root ) {
                                 newSegment.setRotationAnchored(angle, armSegmentSizeW/2, armSegmentSizeH);
                                 newSegment.oldAngle= angle;
                             } else {
                                 newSegment.oldAngle= 0;
                                 newSegment.animate= function(director,time) {
-                                    CAAT.ActorContainer.prototype.animate.call(this,director,time);
                                     this.setRotationAnchored(
                                             this.oldAngle+
-                                            maxAngle*Math.sin(new Date().getTime()*.0005
+                                            maxAngle*Math.sin(new Date().getTime()*.0005 + armIndex*Math.PI/segments/2
                                             ),
                                             armSegmentSizeW/2,
                                             armSegmentSizeH
                                     );
+                                    return CAAT.ActorContainer.prototype.animate.call(this,director,time);
+
                                 };
                             }
 
@@ -1437,8 +1444,9 @@ function setScaleAnchored( scale_x, scale_y, anchor )</pre></div>
                 var segments=10;
                 var arms= 10;
 
-                for( var i=0; i<arms; i++ ) {
-                    __createArm(root, 2*Math.PI/arms * i,segments,2,10,Math.PI/segments/2);
+                var i;
+                for( i=0; i<arms; i++ ) {
+                    __createArm( root, 2*Math.PI/arms * i, segments, 2, 10, i, Math.PI/segments/2 );
                 }
                 _scene_9.addChild(root);
                 _director_9.loop(15);

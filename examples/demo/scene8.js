@@ -110,7 +110,7 @@ function __createArm( root, angle, segments, armSegmentSizeW, armSegmentSizeH, a
 
         var img= new CAAT.ShapeActor().
             create().
-            setShape( CAAT.ShapeActor.prototype.SHAPE_CIRCLE ).
+            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
             setSize( armSegmentSizeH-4, armSegmentSizeH-4 ).
             setFillStyle( 'rgb('+color.r+","+color.g+","+color.b+")" );
 
