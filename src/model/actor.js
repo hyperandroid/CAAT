@@ -331,20 +331,11 @@
          * @param time an integer indicating the Scene time in which the drawing is performed.
          */
 		paint : function(director, time) {
-
-			var ctx= director.crc;
-
-			if ( null!==this.fillStyle ) {
-				ctx.fillStyle= this.pointed ? 'orange' : (this.fillStyle!==null ? this.fillStyle : 'white'); //'white';
+			if ( this.fillStyle ) {
+                var ctx= director.crc;
+				ctx.fillStyle= this.fillStyle;
 				ctx.fillRect(0,0,this.width,this.height );
 			}
-
-            /*
-            if ( null!=this.strokeStyle ) {
-                ctx.strokeStyle= this.strokeStyle;
-                ctx.strokeRect(0,0,this.width,this.height);
-            }
-            */
 		},
         /**
          * A helper method to setScaleAnchored with an anchor of ANCHOR_CENTER
@@ -1946,6 +1937,9 @@
 		return this;
 	};
 
+    CAAT.TextActor.TRAVERSE_PATH_FORWARD= 1;
+    CAAT.TextActor.TRAVERSE_PATH_BACKWARD= -1;
+
 	CAAT.TextActor.prototype= {
 		font:			    null,   // a valid canvas rendering context font description. Default font
                                     // will be "10px sans-serif".
@@ -1987,6 +1981,10 @@
             this.outline= outline;
             return this;
         },
+        setPathTraverseDirection : function(direction) {
+            this.sign= direction;
+            return this;
+        },
         /**
          * Defines text's outline color.
          *
@@ -2008,21 +2006,29 @@
 
             return this;
         },
+        setTextAlign : function( align ) {
+            this.textAlign= align;
+            return this;
+        },
         /**
          * Sets text alignment
          * @param align
+         * @deprecated use setTextAlign
          */
         setAlign : function( align ) {
-            this.textAlign= align;
-            return this;
+            return this.setTextAlign(align);
         },
         /**
          * Set text baseline.
          * @param baseline
          */
-        setBaseline : function( baseline ) {
+        setTextBaseline : function( baseline ) {
             this.textBaseline= baseline;
             return this;
+
+        },
+        setBaseline : function( baseline ) {
+            return this.setTextBaseline(baseline);
         },
         /**
          * Sets the font to be applied for the text.

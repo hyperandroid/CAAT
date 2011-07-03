@@ -763,7 +763,7 @@
 			}
 
 			for( i=0; i<this.pathSegments.length; i++) {
-				this.pathSegmentDurationTime[i]= this.pathSegments[i].getLength()/this.pathLength /* * duration*/;
+				this.pathSegmentDurationTime[i]= this.pathLength ? this.pathSegments[i].getLength()/this.pathLength : 0;
 				if ( i>0 ) {
 					this.pathSegmentStartTime[i]= this.pathSegmentStartTime[i-1]+this.pathSegmentDurationTime[i-1];
 				} else {
@@ -810,7 +810,9 @@
 
             for( var i=0; i<this.pathSegments.length; i++ ) {
                 if (this.pathSegmentStartTime[i]<=time && time<=this.pathSegmentStartTime[i]+this.pathSegmentDurationTime[i]) {
-                    time= (time-this.pathSegmentStartTime[i])/this.pathSegmentDurationTime[i];
+                    time= this.pathSegmentDurationTime[i] ?
+                            (time-this.pathSegmentStartTime[i])/this.pathSegmentDurationTime[i] :
+                            0;
                     var pointInPath= this.pathSegments[i].getPosition(time);
                     this.newPosition.x= pointInPath.x;
                     this.newPosition.y= pointInPath.y;

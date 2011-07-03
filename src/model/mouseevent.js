@@ -163,7 +163,7 @@ window.requestAnimFrame = (function(){
           window.mozRequestAnimationFrame    ||
           window.oRequestAnimationFrame      ||
           window.msRequestAnimationFrame     ||
-          function(/* function */ callback, /* DOMElement */ element){
+          function raf(/* function */ callback, /* DOMElement */ element){
             window.setTimeout(callback, 1000 / CAAT.FPS);
           };
 })();
@@ -173,7 +173,7 @@ CAAT.loop= function(fps) {
         return;
     }
 
-    CAAT.FPS= fps || 30;
+    CAAT.FPS= fps || 60;
     CAAT.renderEnabled= true;
     CAAT.renderFrame();
 }

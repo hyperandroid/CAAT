@@ -799,6 +799,7 @@
         easeEnd : function(scene, b_easeIn) {
             // scene is going out
             if (!b_easeIn) {
+
                 scene.setExpired(true);
             } else {
                 this.currentScene = scene;
@@ -954,30 +955,9 @@
             if (this.onRenderEnd) {
                 this.onRenderEnd(this, delta);
             }
-
-/*
-            fps = fps || 30;
-            fps = 1000 / fps;
-
-            var me= this;
-
-            var floop = function _loop() {
-                var t = new Date().getTime(),
-                        delta = t - me.timeline;
-
-                me.render(delta);
-                me.timeline = t;
-
-                if (callback) {
-                    callback(me, delta);
-                }
-            };
-
-            this.interval = setInterval(floop, fps);
-*/
         },
         endLoop : function () {
-            clearInterval(this.interval);
+            //clearInterval(this.interval);
         },
         /**
          * This method states whether the director must clear background before rendering
@@ -997,6 +977,53 @@
             return this.audioManager;
         },
         /**
+         * Acculumate dom elements position to properly offset on-screen mouse/touch events.
+         * @param node
+         */
+        cumulateOffset : function(node, parent, prop) {
+            var left= prop+'Left';
+            var top= prop+'Top';
+            var x=0, y=0, style;
+
+            while( node && node.style ) {
+                if ( node.currentStyle ) {
+                    style= node['position'];
+                } else {
+                    style= (node.ownerDocument.defaultView || node.ownerDocument.parentWindow).getComputedStyle('position', null);
+                    style= style ? style.getPropertyValue('position') : null;
+                }
+
+                if (!/^(relative|absolute|fixed)$/.test(style)) {
+                    x+= node[left];
+                    y+= node[top];
+                    node = node[parent];
+                } else {
+                    break;
+                }
+            }
+
+            return {
+                x:      x,
+                y:      y,
+                style:  style
+            };
+        },
+        getOffset : function( node ) {
+            var res= this.cumulateOffset(node, 'offsetParent', 'offset');
+            if ( res.style==='fixed' ) {
+                var res2= this.cumulateOffset(node, node.parentNode ? 'parentNode' : 'parentElement', 'scroll');
+                return {
+                    x: res.x + res2.x,
+                    y: res.y + res2.y
+                };
+            }
+
+            return {
+                x: res.x,
+                y: res.y
+            };
+        },
+        /**
          * Normalize input event coordinates to be related to (0,0) canvas position.
          * @param point {CAAT.Point} a CAAT.Point instance to hold the canvas coordinate.
          * @param e {MouseEvent} a mouse event from an input event.
@@ -1011,27 +1038,17 @@
                 posx = e.pageX;
                 posy = e.pageY;
             }
-
             else if (e.clientX || e.clientY) {
                 posx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
                 posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
             }
 
-            var pposx = posx;
-            var pposy = posy;
-            var node = e.target;
-            while (HTMLBodyElement && false === node instanceof HTMLBodyElement) {
+            var offset= this.getOffset(e.target);
 
-                if (node.offsetLeft !== 0 && node.offsetTop !== 0) {
-                    pposx -= node.offsetLeft;
-                    pposy -= node.offsetTop;
-                    break;
-                }
-                node = node.parentNode ? node.parentNode : node.parentElement;
-            }
-
-            point.set(pposx, pposy);
-            this.screenMousePoint.set(pposx, pposy);
+            posx-= offset.x;
+            posy-= offset.y;
+            point.set(posx, posy);
+            this.screenMousePoint.set(posx, posy);
 
         },
 
@@ -1046,6 +1063,8 @@
 
             canvas.addEventListener('mouseup',
                     function(e) {
+                        e.preventDefault();
+
                         me.isMouseDown = false;
                         me.getCanvasCoord(me.mousePoint, e);
 
@@ -1083,6 +1102,8 @@
             canvas.addEventListener('mousedown',
                     function(e) {
 
+                        e.preventDefault();
+
                         me.getCanvasCoord(me.mousePoint, e);
 
                         me.isMouseDown = true;
@@ -1112,6 +1133,9 @@
 
             canvas.addEventListener('mouseover',
                     function(e) {
+
+                        e.preventDefault();
+
                         me.getCanvasCoord(me.mousePoint, e);
 
                         me.lastSelectedActor = me.findActorAtPosition(
@@ -1135,6 +1159,9 @@
 
             canvas.addEventListener('mouseout',
                     function(e) {
+
+                        e.preventDefault();
+
                         if (null !== me.lastSelectedActor) {
 
                             me.getCanvasCoord(me.mousePoint, e);
@@ -1156,6 +1183,8 @@
 
             canvas.addEventListener('mousemove',
                     function(e) {
+
+                        e.preventDefault();
 
                         me.getCanvasCoord(me.mousePoint, e);
                         // drag
@@ -1226,6 +1255,9 @@
 
             canvas.addEventListener("dblclick",
                     function(e) {
+
+                        e.preventDefault();
+
                         me.getCanvasCoord(me.mousePoint, e);
                         if (null !== me.lastSelectedActor) {
 
