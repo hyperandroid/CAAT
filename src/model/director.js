@@ -987,7 +987,7 @@
 
             while( node && node.style ) {
                 if ( node.currentStyle ) {
-                    style= node['position'];
+                    style= node.currentStyle['position'];
                 } else {
                     style= (node.ownerDocument.defaultView || node.ownerDocument.parentWindow).getComputedStyle('position', null);
                     style= style ? style.getPropertyValue('position') : null;

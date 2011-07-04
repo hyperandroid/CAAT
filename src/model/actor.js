@@ -1620,6 +1620,10 @@
 
             return this;
 		},
+        setSpriteIndex : function(index) {
+            this.spriteIndex= index;
+            return this;
+        },
         /**
          * Customization of the default CAAT.Actor.animate method.
          *
@@ -2401,7 +2405,7 @@
                 ctx.arc( this.width/2, this.height/2, Math.min(this.width,this.height)/2, 0, 2*Math.PI, false );
                 ctx.fill();
             }
-            
+
             if ( null!==this.strokeStyle ) {
                 ctx.strokeStyle= this.strokeStyle;
                 ctx.beginPath();
