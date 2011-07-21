@@ -181,7 +181,7 @@
          */
         fireEvent : function(sEventType, time)	{
             for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
-                this.lifecycleListenerList[i].actorLyfeCycleEvent(this, sEventType, time);
+                this.lifecycleListenerList[i].actorLifeCycleEvent(this, sEventType, time);
             }
         },
         /**
@@ -1739,6 +1739,7 @@
 		TR_FLIP_HORIZONTAL:		1,
 		TR_FLIP_VERTICAL:		2,
 		TR_FLIP_ALL:			3,
+        TR_FIXED_TO_SIZE:       4,
 
         offsetX:                0,
         offsetY:                0,
@@ -1763,6 +1764,11 @@
             this.offsetY= y|0;
             return this;
         },
+        setOffset : function( x,y ) {
+            this.offsetX= x;
+            this.offsetY= y;
+            return this;
+        },
         /**
          * Set the image to draw. If this CAAT.ImageActor has not set dimension, the actor will be equal
          * size to the image.
@@ -1771,7 +1777,7 @@
          */
         setImage : function(image) {
             this.image= image;
-            if ( this.width===0 || this.height===0 ) {
+            if ( image && (this.width===0 || this.height===0) ) {
                 this.width=  image.width;
                 this.height= image.height;
             }
@@ -1792,7 +1798,28 @@
          */
         setImageTransformation : function( transformation ) {
             this.transformation= transformation;
+
+            switch(this.transformation)	{
+                case this.TR_FLIP_HORIZONTAL:
+                    //this.paintInvertedH( ctx);
+                    this.paint= this.paintInvertedH;
+                    break;
+                case this.TR_FLIP_VERTICAL:
+                    //this.paintInvertedV( ctx);
+                    this.paint= this.paintInvertedV;
+                    break;
+                case this.TR_FLIP_ALL:
+                    //this.paintInvertedHV( ctx);
+                    this.paint= this.paintInvertedHV;
+                    break;
+                case this.TR_FIXED_TO_SIZE:
+                    this.paint= this.paintFixed;
+            }
+
             return this;
+        },
+        paintFixed : function(director,time) {
+            director.ctx.drawImage(this.image,this.offsetX,this.offsetY,this.width,this.height);
         },
         /**
          * Draws the image.
@@ -1803,6 +1830,8 @@
 		paint : function(director, time) {
 
 			var ctx= director.crc;
+            ctx.drawImage(this.image,this.offsetX,this.offsetY);
+            /*
             // drawn at 0,0 because they're already affine-transformed.
 			switch(this.transformation)	{
 				case this.TR_FLIP_HORIZONTAL:
@@ -1815,8 +1844,9 @@
 					this.paintInvertedHV( ctx);
 					break;
 				default:
-					ctx.drawImage(this.image,this.offsetX,this.offsetY);
+					ctx.drawImage(this.image,this.offsetX,this.offsetY,this.width,this.height);
 			}
+			*/
 		},
         paintActorGL : function(director,time) {
             if ( null===this.image ) {
@@ -1825,21 +1855,27 @@
 
             CAAT.ImageActor.superclass.paintActorGL.call(this,director,time);
         },
-	    paintInvertedH : function( ctx ) {
+	    paintInvertedH : function( director, time) {
+
+			var ctx= director.crc;
 	        ctx.save();
 		        ctx.translate( this.width, 0 );
 		        ctx.scale(-1, 1);
 		        ctx.drawImage( this.image,this.offsetX,this.offsetY );
 	        ctx.restore();
 	    },
-	    paintInvertedV : function( ctx ) {
+	    paintInvertedV : function( director, time) {
+
+			var ctx= director.crc;
 	        ctx.save();
 	            ctx.translate( 0, this.height );
 	            ctx.scale(1, -1);
 		        ctx.drawImage( this.image,this.offsetX,this.offsetY );
 	        ctx.restore();
 	    },
-	    paintInvertedHV : function( ctx ) {
+	    paintInvertedHV : function( director, time) {
+
+			var ctx= director.crc;
 	        ctx.save();
 		        ctx.translate( 0, this.height );
 		        ctx.scale(1, -1);

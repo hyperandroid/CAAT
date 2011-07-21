@@ -50,6 +50,9 @@
 
         debug:              false,  // flag indicating debug mode. It will draw affedted screen areas.
 
+        onRenderStart:      null,
+        onRenderEnd:        null,
+
         // input related attributes
         mousePoint:         null,   // mouse coordinate related to canvas 0,0 coord.
         prevMousePoint:     null,   // previous mouse position cache. Needed for drag events.
@@ -99,6 +102,7 @@
         RESIZE_WIDTH:       2,
         RESIZE_HEIGHT:      4,
         RESIZE_BOTH:        8,
+        RESIZE_PROPORTIONAL:16,
         resize:             1,
 
         windowResized : function(w, h) {
@@ -112,6 +116,10 @@
                 case this.RESIZE_BOTH:
                     this.setBounds(0, 0, w, h);
                     break;
+                case this.RESIZE_PROPORTIONAL:
+                    this.setBounds(0, 0, w, h);
+                    this.setScale( w/this.referenceWidth, h/this.referenceHeight );
+                    break;
             }
         },
         /**
@@ -119,7 +127,9 @@
          * @param mode {number}  RESIZE_BOTH, RESIZE_WIDTH, RESIZE_HEIGHT, RESIZE_NONE.
          */
         enableResizeEvents : function(mode) {
-            if (mode === this.RESIZE_BOTH || mode === this.RESIZE_WIDTH || mode === this.RESIZE_HEIGHT) {
+            if (mode === this.RESIZE_BOTH || mode === this.RESIZE_WIDTH || mode === this.RESIZE_HEIGHT || mode===this.RESIZE_PROPORTIONAL) {
+                this.referenceWidth= this.width;
+                this.referenceHeight=this.height;
                 this.resize = mode;
                 CAAT.registerResizeListener(this);
             } else {
@@ -928,9 +938,15 @@
          * @Deprecated use CAAT.loop instead.
          * @param fps
          * @param callback
+         * @param callback2
          */
-        loop : function(fps,callback) {
-            this.onRenderEnd= callback;
+        loop : function(fps,callback,callback2) {
+            if ( callback2 ) {
+                this.onRenderStart= callback;
+                this.onRenderEnd= callback2;
+            } else if (callback) {
+                this.onRenderEnd= callback;
+            }
             CAAT.loop();
         },
         /**
@@ -949,11 +965,15 @@
             var t = new Date().getTime(),
                     delta = t - this.timeline;
 
+            if ( this.onRenderStart ) {
+                this.onRenderStart(delta);
+            }
+
             this.render(delta);
             this.timeline = t;
 
             if (this.onRenderEnd) {
-                this.onRenderEnd(this, delta);
+                this.onRenderEnd(delta);
             }
         },
         endLoop : function () {
@@ -989,12 +1009,13 @@
                 if ( node.currentStyle ) {
                     style= node.currentStyle['position'];
                 } else {
-                    style= (node.ownerDocument.defaultView || node.ownerDocument.parentWindow).getComputedStyle('position', null);
+                    style= (node.ownerDocument.defaultView || node.ownerDocument.parentWindow).getComputedStyle(node, null);
                     style= style ? style.getPropertyValue('position') : null;
                 }
 
-                if (!/^(relative|absolute|fixed)$/.test(style)) {
-                    x+= node[left];
+//                if (!/^(relative|absolute|fixed)$/.test(style)) {
+                if (!/^(fixed)$/.test(style)) {
+                    x += node[left];
                     y+= node[top];
                     node = node[parent];
                 } else {
