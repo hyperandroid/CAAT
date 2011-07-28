@@ -33,6 +33,7 @@
      *
      */
     CAAT.CompoundImage = function() {
+        this.paint= this.paintN;
         return this;
     };
 
@@ -224,7 +225,7 @@
          *
          * @return this
          */
-        paint : function(canvas, imageIndex, x, y) {
+        paintN : function(canvas, imageIndex, x, y) {
 
             canvas.drawImage(
                     this.image,
@@ -233,6 +234,9 @@
                     x>>0, y>>0, this.singleWidth, this.singleHeight);
 
             return this;
+        },
+        paint : function(canvas, imageIndex, x, y) {
+            return this.paintN(canvas,imageIndex,x,y);
         },
         /**
          * Draws the subimage pointed by imageIndex scaled to the size of w and h.

@@ -64,6 +64,20 @@
 })();
 
 /**
+ * Allow visual debugging artifacts.
+ */
+CAAT.DEBUG= false;
+
+/**
+ * Log function which deals with window's Console object.
+ */
+CAAT.log= function() {
+    if(window.console){
+        window.console.log( Array.prototype.slice.call(arguments) );
+    }
+};
+
+/**
  * Flag to signal whether events are enabled for CAAT.
  */
 CAAT.GlobalEventsEnabled=   false;
@@ -175,7 +189,19 @@ CAAT.loop= function(fps) {
 
     CAAT.FPS= fps || 60;
     CAAT.renderEnabled= true;
-    CAAT.renderFrame();
+    if (CAAT.NO_PERF) {
+        alert('SIN RequestAnimationFrame');
+        setInterval(
+                function() {
+                    for (var i = 0, l = CAAT.director.length; i < l; i++) {
+                        CAAT.director[i].renderFrame();
+                    }
+                },
+                1000 / CAAT.FPS
+        );
+    } else {
+        CAAT.renderFrame();
+    }
 }
 
 CAAT.renderFrame= function() {

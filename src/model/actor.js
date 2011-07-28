@@ -41,17 +41,18 @@
                 new CAAT.Point(0,0,0)
         ];
 
-        this.scaleAnchor= this.ANCHOR_CENTER;
-        this.rotateAnchor= this.ANCHOR_CENTER;
+        this.scaleAnchor=           this.ANCHOR_CENTER;
+        this.rotateAnchor=          this.ANCHOR_CENTER;
+        this.behaviorList=          [];
+        this.modelViewMatrix=       new CAAT.Matrix();
+        this.worldModelViewMatrix=  new CAAT.Matrix();
+        this.modelViewMatrixI=      new CAAT.Matrix();
+        this.worldModelViewMatrixI= new CAAT.Matrix();
+        this.tmpMatrix=             new CAAT.Matrix();
+
+        this.resetTransform();
         this.setScale(1,1);
         this.setRotation(0);
-        this.behaviorList= [];
-        this.modelViewMatrix= new CAAT.Matrix();
-        this.worldModelViewMatrix= new CAAT.Matrix();
-        this.modelViewMatrixI= new CAAT.Matrix();
-        this.worldModelViewMatrixI= new CAAT.Matrix();
-
-        this.tmpMatrix= new CAAT.Matrix();
 
 		return this;
 	};
@@ -305,6 +306,8 @@
 			this.scaleTX=0;
 			this.scaleTY=0;
 			this.scaleAnchor=0;
+            this.oldX=-1;
+            this.oldY=-1;
             this.dirty= true;
 
             return this;
@@ -436,7 +439,6 @@
          */
 	    setRotation : function( angle )	{
 			this.setRotationAnchored( angle, this.width/2, this.height/2 );
-
             return this;
 	    },
         /**
@@ -450,9 +452,7 @@
 	        this.rotationAngle= angle;
 	        this.rotationX= rx?rx:0;
 	        this.rotationY= ry?ry:0;
-
             this.dirty= true;
-
             return this;
 	    },
         /**
@@ -500,10 +500,12 @@
          * @return this
          */
 	    setLocation : function( x, y ) {
-	        //this.x= x;
-	        //this.y= y;
-            this.x= x|0;
-            this.y= y|0;
+
+            x= x|0;
+            y= y|0;
+
+            this.x= x;
+            this.y= y;
 
             this.oldX= x;
             this.oldY= y;
@@ -555,6 +557,7 @@
          * Making the life cycle explicitly initiated has always been a good idea.
          *
          * @return this
+         * @deprecated no longer needed.
          */
 		create : function()	{
             return this;
@@ -646,7 +649,6 @@
             else {
                 this.worldModelViewMatrix.transformCoord(point);
             }
-
 
             return point;
         },
@@ -863,7 +865,7 @@
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          */
         drawScreenBoundingBox : function( director, time ) {
-            if ( this.inFrame && null!==this.AABB ) {
+            if ( null!==this.AABB && this.inFrame ) {
                 var s= this.AABB;
                 director.ctx.strokeRect( s.x, s.y, s.width, s.height );
             }
@@ -883,15 +885,15 @@
                 return false;
             }
 
-			for( var i=0; i<this.behaviorList.length; i++ )	{
-				this.behaviorList[i].apply(time,this);
-			}
-
             if ( this.x!==this.oldX || this.y!==this.oldY ) {
                 this.dirty= true;
                 this.oldX= this.x;
                 this.oldY= this.y;
             }
+
+			for( var i=0; i<this.behaviorList.length; i++ )	{
+				this.behaviorList[i].apply(time,this);
+			}
 
             this.setModelViewMatrix();
 
@@ -905,12 +907,12 @@
          * @return this
          */
         setModelViewMatrix : function() {
+            this.wdirty= false;
             if ( this.dirty ) {
+
                 this.modelViewMatrix.identity();
 
-                //var m= new CAAT.Matrix();
                 var m= this.tmpMatrix.identity();
-
                 var mm= this.modelViewMatrix.matrix;
                 //this.modelViewMatrix.multiply( m.setTranslate( this.x, this.y ) );
                 mm[2]+= this.x;
@@ -928,7 +930,7 @@
                     mm[5]+= -mm[3]*this.rotationX - mm[4]*this.rotationY;
 
                 }
-                if ( this.scaleX || this.scaleY && (this.scaleTX || this.scaleTY )) {
+                if ( this.scaleX!=1 || this.scaleY!=1 && (this.scaleTX || this.scaleTY )) {
 //                    this.modelViewMatrix.multiply( m.setTranslate( this.scaleTX , this.scaleTY ) );
                     mm[2]+= mm[0]*this.scaleTX + mm[1]*this.scaleTY;
                     mm[5]+= mm[3]*this.scaleTX + mm[4]*this.scaleTY;
@@ -946,7 +948,6 @@
                     mm[5]+= -mm[3]*this.scaleTX - mm[4]*this.scaleTY;
 
                 }
-//                this.modelViewMatrixI= this.modelViewMatrix.getInverse();
             }
 
 
@@ -954,7 +955,6 @@
                 if ( this.dirty || this.parent.wdirty ) {
                     this.worldModelViewMatrix.copy( this.parent.worldModelViewMatrix );
                     this.worldModelViewMatrix.multiply( this.modelViewMatrix );
-//                    this.worldModelViewMatrixI= this.worldModelViewMatrix.getInverse();
                     this.wdirty= true;
                 }
             } else {
@@ -962,7 +962,7 @@
             }
             
             // FIX: optimizar las coordenadas proyectadas: solo calcular si cambia mi matrix o la del parent.
-            if ( this.dirty || this.wdirty ) {
+            if ( CAAT.DEBUG && this.dirty || this.wdirty ) {
                 this.setScreenBounds();
             }
 
@@ -985,18 +985,17 @@
                 return true;
             }
 
-            var canvas= director.crc;
+            var ctx= director.ctx;
 
             this.frameAlpha= this.parent ? this.parent.frameAlpha*this.alpha : 1;
-            canvas.globalAlpha= this.frameAlpha;
+            ctx.globalAlpha= this.frameAlpha;
 
-            //this.modelViewMatrix.transformRenderingContext(director.ctx);
-            this.worldModelViewMatrix.transformRenderingContext(director.ctx);
+            this.worldModelViewMatrix.transformRenderingContext(ctx);
 
             if ( this.clip ) {
-                canvas.beginPath();
-                canvas.rect(0,0,this.width,this.height);
-                canvas.clip();
+                ctx.beginPath();
+                ctx.rect(0,0,this.width,this.height);
+                ctx.clip();
             }
 
             this.paint(director, time);
@@ -1099,6 +1098,8 @@
          * @param director the CAAT.Director object instance that contains the Scene the Actor is in.
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          * @return this
+         *
+         * @deprecated  @see {fireEvent}
          */
         endAnimate : function(director,time) {
             return this;
@@ -1215,9 +1216,9 @@
                 return true;
             }
 
-            var canvas= director.crc;
+            var ctx= director.ctx;
 
-            canvas.save();
+            ctx.save();
 
             CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
 
@@ -1226,11 +1227,11 @@
             }
 
             for( var i=0; i<this.activeChildren.length; i++ ) {
-                canvas.save();
+                ctx.save();
                 this.activeChildren[i].paintActor(director,time);
-                canvas.restore();
+                ctx.restore();
             }
-            canvas.restore();
+            ctx.restore();
 
             return true;
         },
@@ -1283,12 +1284,41 @@
             }
 
             var i,l;
+            var notActive= [];
+
+            /**
+             * Incluir los actores pendientes.
+             * El momento es ahora, antes de procesar ninguno del contenedor.
+             */
+            for( i=0; i<this.pendingChildrenList.length; i++ ) {
+                var child= this.pendingChildrenList[i];
+                child.parent =  this;
+                this.childrenList.push(child);
+            }
+            this.pendingChildrenList= [];
+
 
             for( i=0, l=this.childrenList.length; i<l; i++ ) {
-                this.childrenList[i].time= time;
-                if ( this.childrenList[i].animate(director, time) ) {
-                    this.activeChildren.push( this.childrenList[i] );
+                var actor= this.childrenList[i];
+                actor.time= time;
+                if ( actor.animate(director, time) ) {
+                    this.activeChildren.push( actor );
+                } else {
+                    notActive.push(actor)
                 }
+            }
+
+            /**
+             * Eliminar los actores no activos expirados.
+             */
+            for( i=0, l=notActive.length; i<l; i++ ) {
+                var actor= notActive[i];
+                if ( actor.expired && actor.discardable ) {
+                    actor.destroy(time);
+                    this.childrenList.splice(i,1);
+                }/* else {
+                    actor.endAnimate(director,time);
+                }*/
             }
 
             return true;
@@ -1298,11 +1328,13 @@
          *
          * @param director the CAAT.Director object instance that contains the Scene the Actor is in.
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
+         *
+         * @deprecated
          */
         endAnimate : function(director,time) {
-
+/*
             CAAT.ActorContainer.superclass.endAnimate.call(this,director,time);
-
+/*
             var i;
             // remove expired and discardable elements.
             for( i=this.childrenList.length-1; i>=0; i-- ) {
@@ -1314,13 +1346,16 @@
                     actor.endAnimate(director,time);
                 }
             }
+*/
 
+            /*
             for( i=0; i<this.pendingChildrenList.length; i++ ) {
                 var child= this.pendingChildrenList[i];
                 child.parent =  this;
                 this.childrenList.push(child);
             }
             this.pendingChildrenList= [];
+            */
         },
         /**
          * Adds an Actor to this Container.
@@ -1366,11 +1401,17 @@
          */
 		addChildAt : function(child, index) {
 
-			if( index < 0 || index > this.childrenList.length )
+			if( index <= 0 ) {
+                this.childrenList.unshift(child);
 				return this;
+            } else {
+                if ( index>=this.childrenList.length ) {
+                    index= this.childrenList.length;
+                }
+            }
 
 			child.parent= this;
-			this.childrenList.unshift(child);
+			this.childrenList.splice(index, 0, child);
 
             return this;
 		},
@@ -1425,26 +1466,24 @@
 
 			// z-order
 			for( var i=this.childrenList.length-1; i>=0; i-- ) {
-            //for( var i=this.activeChildren.length-1; i>=0; i-- ) {
                 var child= this.childrenList[i];
-
-            //    var child= this.activeChildren[i];
 
                 var np= new CAAT.Point( point.x, point.y, 0 );
                 var aabb= child.AABB;
-
+/* by default, no AABB is being calculated for every sprite.
                 // if the coordinate is not in the AABB, can't be actor's shape either.
                 if ( screenPoint.x>=aabb.x &&
                      screenPoint.y>=aabb.y &&
                      screenPoint.x<=aabb.x+aabb.width &&
                      screenPoint.y<=aabb.y+aabb.height ) {
-
+*/
                     var contained= child.findActorAtPosition( np, screenPoint );
                     if ( null!==contained ) {
                         return contained;
                     }
+/*
                 }
-
+*/
 			}
 
 			return this;
@@ -1607,6 +1646,19 @@
          */
         setSpriteTransformation : function( transformation ) {
             this.transformation= transformation;
+            switch(transformation)	{
+				case this.TR_FLIP_HORIZONTAL:
+					this.compoundbitmap.paint= this.compoundbitmap.paintInvertedH;
+					break;
+				case this.TR_FLIP_VERTICAL:
+					this.compoundbitmap.paint= this.compoundbitmap.paintInvertedV;
+					break;
+				case this.TR_FLIP_ALL:
+					this.compoundbitmap.paint= this.compoundbitmap.paintInvertedHV;
+					break;
+				default:
+					this.compoundbitmap.paint= this.compoundbitmap.paintN;
+			}
             return this;
         },
         /**
@@ -1625,36 +1677,6 @@
             return this;
         },
         /**
-         * Customization of the default CAAT.Actor.animate method.
-         *
-         * @param director the CAAT.Director object instance that contains the Scene the Actor is in.
-         * @param time an integer indicating the Scene time when the bounding box is to be drawn.
-         *
-         * @return boolean
-         */
-		animate : function( director, time )	{
-
-			if ( this.compoundbitmap && this.animationImageIndex )	{
-
-				if ( this.animationImageIndex.length>1 ) {
-					if ( this.prevAnimationTime===-1 )	{
-						this.prevAnimationTime= time;
-					}
-					else	{
-						var ttime= time;
-						ttime-= this.prevAnimationTime;
-						ttime/= this.changeFPS;
-						ttime%= this.animationImageIndex.length;
-						this.spriteIndex= this.animationImageIndex[Math.floor(ttime)];
-					}
-				}
-
-				return CAAT.SpriteActor.superclass.animate.call(this, director, time);
-			}
-
-            return false;
-		},
-        /**
          * Draws the sprite image calculated and stored in spriteIndex.
          *
          * @param director the CAAT.Director object instance that contains the Scene the Actor is in.
@@ -1662,27 +1684,21 @@
          */
 		paint : function(director, time) {
 
-            if ( -1===this.spriteIndex ) {
-                return;
+            if ( this.animationImageIndex.length>1 ) {
+                if ( this.prevAnimationTime===-1 )	{
+                    this.prevAnimationTime= time;
+                }
+                else	{
+                    var ttime= time;
+                    ttime-= this.prevAnimationTime;
+                    ttime/= this.changeFPS;
+                    ttime%= this.animationImageIndex.length;
+                    this.spriteIndex= this.animationImageIndex[Math.floor(ttime)];
+                }
             }
 
-			var canvas= director.crc;
-
-            // drawn at 0,0 because they're already affine-transformed.
-			switch(this.transformation)	{
-				case this.TR_FLIP_HORIZONTAL:
-					this.compoundbitmap.paintInvertedH( canvas, this.spriteIndex, 0, 0);
-					break;
-				case this.TR_FLIP_VERTICAL:
-					this.compoundbitmap.paintInvertedV( canvas, this.spriteIndex, 0, 0);
-					break;
-				case this.TR_FLIP_ALL:
-					this.compoundbitmap.paintInvertedHV( canvas, this.spriteIndex, 0, 0);
-					break;
-				default:
-					this.compoundbitmap.paint( canvas, this.spriteIndex, 0, 0);
-			}
-
+			var canvas= director.ctx;
+            this.compoundbitmap.paint( canvas, this.spriteIndex, 0, 0);
 		},
         paintActorGL : function(director,time) {
             if ( -1===this.spriteIndex ) {
@@ -1819,7 +1835,13 @@
             return this;
         },
         paintFixed : function(director,time) {
-            director.ctx.drawImage(this.image,this.offsetX,this.offsetY,this.width,this.height);
+            if ( this.image ) {
+                director.ctx.drawImage(this.image,this.offsetX,this.offsetY,this.width,this.height);
+            } else {
+                var ctx= director.ctx;
+                ctx.fillStyle= this.fillStyle;
+                ctx.fillRect(0,0,this.width,this.height);
+            }
         },
         /**
          * Draws the image.

@@ -295,19 +295,37 @@
                     this.imagesCache[ imagesCache[i].id ] = imagesCache[i].image;
                 }
             }
-            
+
+            this.tpW = tpW || 2048;
+            this.tpH = tpH || 2048;
+
+            this.updateGLPages();
+        },
+        updateGLPages : function() {
             if (this.glEnabled) {
 
-                tpW = tpW || 2048;
-                tpH = tpH || 2048;
-
                 this.glTextureManager = new CAAT.GLTexturePageManager();
-                this.glTextureManager.createPages(this.gl, tpW, tpH, this.imagesCache);
+                this.glTextureManager.createPages(this.gl, this.tpW, this.tpH, this.imagesCache);
 
                 this.currentTexturePage = this.glTextureManager.pages[0];
                 this.glTextureProgram.setTexture(this.currentTexturePage.texture);
             }
-
+        },
+        addImage : function( id, image ) {
+            if ( this.getImage(id) ) {
+                for( var i=0; i<this.imagesCache.length; i++ ) {
+                    if ( this.imagesCache[i].id===id ) {
+                        this.imagesCache[i].image= image;
+                        break;
+                    }
+                }
+                this.imagesCache[ id ]= image;
+            } else {
+                this.imagesCache.push( { id: id, image: image } );
+                this.imagesCache[id]= image;
+            }
+            
+            this.updateGLPages( );
         },
         setGLCurrentOpacity : function(opacity) {
             this.currentOpacity = opacity;
@@ -372,7 +390,6 @@
                 for (i = 0; i < ne; i++) {
                     var c = this.childrenList[i];
                     if (c.isInAnimationFrame(this.time)) {
-                        c.wdirty = false;
                         tt = c.time - c.start_time;
                         c.paintActorGL(this, tt);
                         c.time += time;
@@ -389,28 +406,25 @@
                     this.ctx.clearRect(0, 0, this.width, this.height);
                 }
 
-
                 for (i = 0; i < ne; i++) {
-                    if (this.childrenList[i].isInAnimationFrame(this.time)) {
-
-                        tt = this.childrenList[i].time - this.childrenList[i].start_time;
-
+                    var c= this.childrenList[i];
+                    if (c.isInAnimationFrame(this.time)) {
+                        tt = c.time - c.start_time;
                         this.ctx.save();
-                        this.childrenList[i].paintActor(this, tt);
+                        c.paintActor(this, tt);
                         this.ctx.restore();
                         if (this.debug) {
                             this.ctx.strokeStyle = 'red';
-                            this.childrenList[i].drawScreenBoundingBox(this, tt);
+                            c.drawScreenBoundingBox(this, tt);
                         }
 
-                        this.childrenList[i].time += time;
+                        c.time += time;
                     }
                 }
             }
 
-            this.endAnimate(this, time);
+//            this.endAnimate(this, time);
             this.frameCounter++;
-
         },
         /**
          * calculate and keep track of animable elements.
@@ -422,12 +436,25 @@
          */
         setupRender : function(time) {
 
+            this.animate.call(this,time);
+            
             for (var i = 0; i < this.childrenList.length; i++) {
                 var tt = this.childrenList[i].time - this.childrenList[i].start_time;
                 this.childrenList[i].animate(this, tt);
             }
 
             return this;
+        },
+        /**
+         * A director is a very special kind of actor.
+         * Its animation routine simple sets its modelViewMatrix in case some transformation's been
+         * applied.
+         * No behaviors are allowed for Director instances.
+         * @param director {CAAT.Director} redundant reference to CAAT.Director itself
+         * @param time {number} director time.
+         */
+        animate : function(director, time) {
+            this.setModelViewMatrix();
         },
         /**
          * This method draws an Scene to an offscreen canvas. This offscreen canvas is also a child of

@@ -35,18 +35,3 @@
  * @namespace
  */
 var CAAT= CAAT || {};
-
-/**
- * Allow visual debugging artifacts.
- */
-CAAT.DEBUG= true;
-
-/**
- * Log function which deals with window's Console object.
- */
-CAAT.log= function() {
-    if(window.console){
-        window.console.log( Array.prototype.slice.call(arguments) );
-    }
-};
-
