@@ -1003,6 +1003,22 @@
             return true;
         },
         /**
+         * for js2native
+         * @param director
+         * @param time
+         */
+        __paintActor : function(director, time) {
+            if (!this.visible) {
+                return true;
+            }
+            var ctx= director.ctx;
+            var m= this.worldModelViewMatrix.matrix;
+            ctx.setTransform( m[0], m[3], m[1], m[4], m[2], m[5] );
+            this.paint(director, time);
+            return true;
+        },
+
+        /**
          * Set coordinates and uv values for this actor.
          * This function uses Director's coords and indexCoords values.
          * @param director
@@ -1144,6 +1160,10 @@
         }
 	};
 
+    if ( CAAT.NO_PERF ) {
+        CAAT.Actor.prototype.paintActor= CAAT.Actor.prototype.__paintActor;
+    }
+
 })();
 
 
@@ -1164,7 +1184,6 @@
 		CAAT.ActorContainer.superclass.constructor.call(this);
 		this.childrenList= [];
         this.pendingChildrenList= [];
-        this.activeChildren= [];
 		return this;
 	};
 
@@ -1226,13 +1245,28 @@
                 this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
             }
 
-            for( var i=0; i<this.activeChildren.length; i++ ) {
+            //for( var i=0; i<this.activeChildren.length; i++ ) {
+            for( var actor= this.activeChildren; actor; actor=actor.__next ) {
                 ctx.save();
-                this.activeChildren[i].paintActor(director,time);
+//                this.activeChildren[i].paintActor(director,time);
+                actor.paintActor(director,time);
                 ctx.restore();
             }
             ctx.restore();
 
+            return true;
+        },
+        __paintActor : function(director, time ) {
+
+            var ctx= director.ctx;
+            //CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
+                var m= this.worldModelViewMatrix.matrix;
+                ctx.setTransform( m[0], m[3], m[1], m[4], m[2], m[5] );
+                this.paint(director, time);
+
+            for( var actor= this.activeChildren; actor; actor=actor.__next ) {
+                actor.paintActor(director,time);
+            }
             return true;
         },
         paintActorGL : function(director,time) {
@@ -1277,7 +1311,8 @@
          */
 		animate : function(director,time) {
 
-            this.activeChildren= [];
+            this.activeChildren= null;
+            var last= null;
 
             if (false===CAAT.ActorContainer.superclass.animate.call(this,director,time)) {
                 return false;
@@ -1302,7 +1337,16 @@
                 var actor= this.childrenList[i];
                 actor.time= time;
                 if ( actor.animate(director, time) ) {
-                    this.activeChildren.push( actor );
+                    if ( !this.activeChildren ) {
+                        this.activeChildren= actor;
+                        actor.__next= null;
+                        last= actor;
+                    } else {
+                        actor.__next= null;
+                        last.__next= actor;
+                        last= actor;
+                    }
+                    //this.activeChildren.push( actor );
                 } else {
                     notActive.push(actor)
                 }
@@ -1316,9 +1360,7 @@
                 if ( actor.expired && actor.discardable ) {
                     actor.destroy(time);
                     this.childrenList.splice(i,1);
-                }/* else {
-                    actor.endAnimate(director,time);
-                }*/
+                }
             }
 
             return true;
@@ -1332,30 +1374,6 @@
          * @deprecated
          */
         endAnimate : function(director,time) {
-/*
-            CAAT.ActorContainer.superclass.endAnimate.call(this,director,time);
-/*
-            var i;
-            // remove expired and discardable elements.
-            for( i=this.childrenList.length-1; i>=0; i-- ) {
-                var actor= this.childrenList[i];
-                if ( actor.expired && actor.discardable ) {
-                    actor.destroy(time);
-                    this.childrenList.splice(i,1);
-                } else {
-                    actor.endAnimate(director,time);
-                }
-            }
-*/
-
-            /*
-            for( i=0; i<this.pendingChildrenList.length; i++ ) {
-                var child= this.pendingChildrenList[i];
-                child.parent =  this;
-                this.childrenList.push(child);
-            }
-            this.pendingChildrenList= [];
-            */
         },
         /**
          * Adds an Actor to this Container.
@@ -1550,9 +1568,17 @@
                     this.childrenList.splice( index, 1, nActor );
                 }
             }
+        },
+        setNoContainer : function() {
+            this.paintActor= CAAT.ActorContainer.superclass.paintActor;
+            this.animate= CAAT.ActorContainer.superclass.animate;
         }
 	};
 
+    if ( CAAT.NO_PERF ) {
+        CAAT.ActorContainer.prototype.paintActor= CAAT.ActorContainer.prototype.__paintActor;
+    }
+    
     extend( CAAT.ActorContainer, CAAT.Actor, null);
 
 })();
@@ -1591,6 +1617,7 @@
 	CAAT.SpriteActor = function() {
 		CAAT.SpriteActor.superclass.constructor.call(this);
         this.glEnabled= true;
+        this.setAnimationImageIndex([0]);
 		return this;
 	};
 
@@ -1618,9 +1645,6 @@
 			this.compoundbitmap= conpoundimage;
 			this.width= conpoundimage.singleWidth;
 			this.height= conpoundimage.singleHeight;
-			if ( null===this.animationImageIndex ) {
-				this.setAnimationImageIndex([0]);
-			}
 
             return this;
 		},
@@ -1698,7 +1722,9 @@
             }
 
 			var canvas= director.ctx;
-            this.compoundbitmap.paint( canvas, this.spriteIndex, 0, 0);
+            if ( this.spriteIndex!=-1 ) {
+                this.compoundbitmap.paint( canvas, this.spriteIndex, 0, 0);
+            }
 		},
         paintActorGL : function(director,time) {
             if ( -1===this.spriteIndex ) {
@@ -1850,25 +1876,8 @@
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          */
 		paint : function(director, time) {
-
-			var ctx= director.crc;
+			var ctx= director.ctx;
             ctx.drawImage(this.image,this.offsetX,this.offsetY);
-            /*
-            // drawn at 0,0 because they're already affine-transformed.
-			switch(this.transformation)	{
-				case this.TR_FLIP_HORIZONTAL:
-					this.paintInvertedH( ctx);
-					break;
-				case this.TR_FLIP_VERTICAL:
-					this.paintInvertedV( ctx);
-					break;
-				case this.TR_FLIP_ALL:
-					this.paintInvertedHV( ctx);
-					break;
-				default:
-					ctx.drawImage(this.image,this.offsetX,this.offsetY,this.width,this.height);
-			}
-			*/
 		},
         paintActorGL : function(director,time) {
             if ( null===this.image ) {

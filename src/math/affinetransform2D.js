@@ -549,7 +549,7 @@
      * Each matrix knows its own type to speed transformations up.
      */
 	CAAT.Matrix = function() {
-        this.matrix= [ 1,0,0, 0,1,0, 0,0,1 ];
+        this.matrix= [ 1.0,0.0,0.0, 0.0,1.0,0.0, 0.0,0.0,1.0 ];
         /*
 		this.matrix= [ [1,0,0],
 		               [0,1,0],
@@ -728,17 +728,17 @@
 			this.matrix[2][2]= 1;
 */
             var m= this.matrix;
-            m[0]= 1;
-            m[1]= 0;
-            m[2]= 0;
+            m[0]= 1.0;
+            m[1]= 0.0;
+            m[2]= 0.0;
 
-            m[3]= 0;
-            m[4]= 1;
-            m[5]= 0;
+            m[3]= 0.0;
+            m[4]= 1.0;
+            m[5]= 0.0;
 
-            m[6]= 0;
-            m[7]= 0;
-            m[8]= 1;
+            m[6]= 0.0;
+            m[7]= 0.0;
+            m[8]= 1.0;
 
             return this;
 		},

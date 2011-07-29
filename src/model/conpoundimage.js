@@ -226,7 +226,6 @@
          * @return this
          */
         paintN : function(canvas, imageIndex, x, y) {
-
             canvas.drawImage(
                     this.image,
                     this.xyCache[imageIndex][0]>>0, this.xyCache[imageIndex][1]>>0,

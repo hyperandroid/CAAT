@@ -63,8 +63,8 @@
 
         // other attributes
 
-        scenes:                null,   // Scenes collection. An array.
-        currentScene:        null,   // The current Scene. This and only this will receive events.
+        scenes:             null,   // Scenes collection. An array.
+        currentScene:       null,   // The current Scene. This and only this will receive events.
         canvas:             null,   // The canvas the Director draws on.
         crc:                null,    // @deprecated. canvas rendering context
         ctx:                null,   // refactoring crc for a more convenient name
@@ -311,21 +311,35 @@
                 this.glTextureProgram.setTexture(this.currentTexturePage.texture);
             }
         },
-        addImage : function( id, image ) {
+        addImage : function( id, image, updateGL ) {
             if ( this.getImage(id) ) {
-                for( var i=0; i<this.imagesCache.length; i++ ) {
-                    if ( this.imagesCache[i].id===id ) {
-                        this.imagesCache[i].image= image;
+                for (var i = 0; i < this.imagesCache.length; i++) {
+                    if (this.imagesCache[i].id === id) {
+                        this.imagesCache[i].image = image;
                         break;
                     }
                 }
-                this.imagesCache[ id ]= image;
+                this.imagesCache[ id ] = image;
             } else {
                 this.imagesCache.push( { id: id, image: image } );
                 this.imagesCache[id]= image;
             }
-            
-            this.updateGLPages( );
+
+            if ( updateGL ) {
+                this.updateGLPages( );
+            }
+        },
+        deleteImage : function( id, updateGL ) {
+            for (var i = 0; i < this.imagesCache.length; i++) {
+                if (this.imagesCache[i].id === id) {
+                    delete this.imagesCache[id];
+                    this.imagesCache.splice(i,1);
+                    break;
+                }
+            }
+            if ( updateGL ) {
+                this.updateGLPages();
+            }
         },
         setGLCurrentOpacity : function(opacity) {
             this.currentOpacity = opacity;
@@ -374,7 +388,7 @@
 
             this.time += time;
 
-            this.setupRender(time);
+            this.animate(this,time);
 
             /**
              * draw director active scenes.
@@ -423,27 +437,7 @@
                 }
             }
 
-//            this.endAnimate(this, time);
             this.frameCounter++;
-        },
-        /**
-         * calculate and keep track of animable elements.
-         * model view matrices and world model view matrices are already set up.
-         * AABB are set up.
-         *
-         * @param time {number} director time
-         * @return this
-         */
-        setupRender : function(time) {
-
-            this.animate.call(this,time);
-            
-            for (var i = 0; i < this.childrenList.length; i++) {
-                var tt = this.childrenList[i].time - this.childrenList[i].start_time;
-                this.childrenList[i].animate(this, tt);
-            }
-
-            return this;
         },
         /**
          * A director is a very special kind of actor.
@@ -455,6 +449,13 @@
          */
         animate : function(director, time) {
             this.setModelViewMatrix();
+
+            for (var i = 0; i < this.childrenList.length; i++) {
+                var tt = this.childrenList[i].time - this.childrenList[i].start_time;
+                this.childrenList[i].animate(this, tt);
+            }
+
+            return this;
         },
         /**
          * This method draws an Scene to an offscreen canvas. This offscreen canvas is also a child of
