@@ -5,9 +5,7 @@
  * Actor is the superclass of every animable element in the scene graph. It handles the whole
  * affine transformation MatrixStack, rotation, translation, globalAlpha and Behaviours. It also
  * defines input methods.
- * TODO: method to handle keyboard.
  * TODO: add text presentation/animation effects.
- * TODO: add more shapes to ShapeActor
  **/
 
 (function() {
@@ -120,6 +118,121 @@
 
         glEnabled:              false,
 
+        backgroundImage:        null,
+
+        /**
+         * Set this actor's background image.
+         * The need of a background image is to kept compatibility with the new CSSDirector class.
+         * The image parameter can be either an Image/Canvas or a CAAT.SpriteImage instance. If an image
+         * is supplied, it will be wrapped into a CAAT.SriteImage instance of 1 row by 1 column.
+         * If the actor has set an image in the background, the paint method will draw the image, otherwise
+         * and if set, will fill its background with a solid color.
+         * If adjust_size_to_image is true, the host actor will be redimensioned to the size of one
+         * single image from the SpriteImage (either supplied or generated because of passing an Image or
+         * Canvas to the function). That means the size will be set to [width:SpriteImage.singleWidth,
+         * height:singleHeight].
+         *
+         * @see CAAT.SpriteImage
+         *
+         * @param image {Image|Canvas|CAAT.SpriteImage}
+         * @param adjust_size_to_image {boolean} whether to set this actor's size based on image parameter.
+         *
+         * @return this
+         */
+        setBackgroundImage : function(image, adjust_size_to_image ) {
+            if ( image ) {
+                if ( image instanceof Image ) {
+                    image= new CAAT.SpriteImage().initialize(image,1,1);
+                }
+
+                image.setOwner(this);
+                this.backgroundImage= image;
+                if ( adjust_size_to_image ) {
+                    this.width= image.singleWidth;
+                    this.height= image.singleHeight;
+                }
+
+                this.glEnabled= true;
+            }
+            
+            return this;
+        },
+        /**
+         * Set the actor's SpriteImage index from animation sheet.
+         * @see CAAT.SpriteImage
+         * @param index {integer}
+         *
+         * @return this
+         */
+        setSpriteIndex: function(index) {
+            if ( this.backgroundImage ) {
+                this.backgroundImage.setSpriteIndex(index);
+            }
+
+            return this;
+
+        },
+        /**
+         * Set this actor's background SpriteImage offset displacement.
+         * The values can be either positive or negative meaning the texture space of this background
+         * image does not start at (0,0) but at the desired position.
+         * @see CAAT.SpriteImage
+         * @param ox {integer} horizontal offset
+         * @param oy {integer} vertical offset
+         *
+         * @return this
+         */
+        setBackgroundImageOffset : function( ox, oy ) {
+            if ( this.backgroundImage ) {
+                this.backgroundImage.setOffset(ox,oy);
+            }
+
+            return this;
+        },
+        /**
+         * Set this actor's background SpriteImage its animation sequence.
+         * In its simplet's form a SpriteImage treats a given image as an array of rows by columns
+         * subimages. If you define d Sprite Image of 2x2, you'll be able to draw any of the 4 subimages.
+         * This method defines the animation sequence so that it could be set [0,2,1,3,2,1] as the
+         * animation sequence
+         * @param ii {array<integer>} an array of integers.
+         */
+        setAnimationImageIndex : function( ii ) {
+            if ( this.backgroundImage ) {
+                this.backgroundImage.setAnimationImageIndex(ii);
+            }
+            return this;
+        },
+        /**
+         * Set this background image transformation.
+         * If GL is enabled, this parameter has no effect.
+         * @param it any value from CAAT.Actor.TR_*
+         * @return this
+         */
+        setImageTransformation : function( it ) {
+            if ( this.backgroundImage ) {
+                this.backgroundImage.setSpriteTransformation(it);
+            }
+            return this;
+        },
+        /**
+         * Center this actor at position (x,y).
+         * @param x {float} x position
+         * @param y {float} y position
+         *
+         * @return this
+         */
+        centerOn : function( x,y ) {
+            this.setLocation( x-this.width/2, y-this.height/2 );
+            return this;
+        },
+        /**
+         * If GL is enables, get this background image's texture page, otherwise it will fail.
+         * @return {CAAT.GLTexturePage}
+         */
+        getTextureGLPage : function() {
+            return this.backgroundImage.image.__texturePage;            
+        },
         /**
          * Set this actor invisible.
          * The actor is animated but not visible.
@@ -334,11 +447,14 @@
          * @param time an integer indicating the Scene time in which the drawing is performed.
          */
 		paint : function(director, time) {
-			if ( this.fillStyle ) {
+            if ( this.backgroundImage ) {
+                this.backgroundImage.paint(director,time,0,0);
+            } else if ( this.fillStyle ) {
                 var ctx= director.crc;
 				ctx.fillStyle= this.fillStyle;
 				ctx.fillRect(0,0,this.width,this.height );
 			}
+
 		},
         /**
          * A helper method to setScaleAnchored with an anchor of ANCHOR_CENTER
@@ -464,6 +580,7 @@
 	    setSize : function( w, h )   {
 	        this.width= w>>0;
 	        this.height= h>>0;
+            this.dirty= true;
 
             return this;
 	    },
@@ -486,6 +603,7 @@
             this.y= y|0;
 	        this.width= w|0;
 	        this.height= h|0;
+            this.dirty= true;
 
             return this;
 	    },
@@ -895,7 +1013,7 @@
 				this.behaviorList[i].apply(time,this);
 			}
 
-            this.setModelViewMatrix();
+            this.setModelViewMatrix(director);
 
             this.inFrame= true;
 
@@ -906,7 +1024,7 @@
          * 
          * @return this
          */
-        setModelViewMatrix : function() {
+        setModelViewMatrix : function(director) {
             this.wdirty= false;
             if ( this.dirty ) {
 
@@ -950,7 +1068,6 @@
                 }
             }
 
-
             if ( this.parent ) {
                 if ( this.dirty || this.parent.wdirty ) {
                     this.worldModelViewMatrix.copy( this.parent.worldModelViewMatrix );
@@ -962,7 +1079,7 @@
             }
             
             // FIX: optimizar las coordenadas proyectadas: solo calcular si cambia mi matrix o la del parent.
-            if ( CAAT.DEBUG && this.dirty || this.wdirty ) {
+            if ( director.glEnabled && (this.dirty || this.wdirty) ) {
                 this.setScreenBounds();
             }
 
@@ -1061,6 +1178,12 @@
             this.setUV( director.uv, director.uvIndex );
             director.uvIndex+= 8;
         },
+        /**
+         * TODO: set GLcoords for different image transformations.
+         * @param glCoords
+         * @param glCoordsIndex
+         * @param z
+         */
         setGLCoords : function( glCoords, glCoordsIndex, z ) {
 
             var vv=             this.viewVertices;
@@ -1082,11 +1205,13 @@
 
         },
         /**
+         * Set UV for this actor's quad.
          *
          * @param uvBuffer {Float32Array}
          * @param uvIndex {number}
          */
         setUV : function( uvBuffer, uvIndex ) {
+            this.backgroundImage.setUV(uvBuffer, uvIndex);
         },
         /**
          * Test for compulsory gl flushing:
@@ -1095,6 +1220,12 @@
          *
          */
         glNeedsFlush : function(director) {
+             if ( this.getTextureGLPage()!==director.currentTexturePage ) {
+                return true;
+            }
+            if ( this.frameAlpha!==director.currentOpacity ) {
+                return true;
+            }
             return false;
         },
         /**
@@ -1115,7 +1246,7 @@
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          * @return this
          *
-         * @deprecated  @see {fireEvent}
+         * @deprecated
          */
         endAnimate : function(director,time) {
             return this;
@@ -1156,7 +1287,80 @@
             };
 
             this.paintActor(director,time);
+            this.setBackgroundImage(canvas);
             return canvas;
+        },
+        /**
+         * Set this actor behavior as if it were a Button. The actor size will be set as SpriteImage's
+         * single size.
+         * 
+         * @param buttonImage
+         * @param iNormal
+         * @param iOver
+         * @param iPress
+         * @param iDisabled
+         * @param fn
+         */
+        setAsButton : function( buttonImage, iNormal, iOver, iPress, iDisabled, fn ) {
+
+            (function(button,buttonImage, _iNormal, _iOver, _iPress, _iDisabled, fn) {
+                var iNormal=    0;
+                var iOver=      0;
+                var iPress=     0;
+                var iDisabled=  0;
+                var iCurrent=   0;
+                var fnOnClick=  null;
+                var enabled=    true;
+                var me=         this;
+
+                button.enabled= true;
+                button.setEnabled= function( enabled ) {
+                    this.enabled= enabled;
+                };
+
+                button.setBackgroundImage(buttonImage, true);
+                iNormal=       _iNormal || 0;
+                iOver=         _iOver || iNormal;
+                iPress=        _iPress || iNormal;
+                iDisabled=     _iDisabled || iNormal;
+                iCurrent=      iNormal;
+                fnOnClick=     fn;
+                button.setSpriteIndex( iNormal );
+
+                button.mouseEnter= function(mouseEvent) {
+                    this.setSpriteIndex( iOver );
+                    document.body.style.cursor = 'pointer';
+                };
+
+                button.mouseExit= function(mouseEvent) {
+                    this.setSpriteIndex( iNormal );
+                    document.body.style.cursor = 'default';
+                };
+
+                button.mouseDown= function(mouseEvent) {
+                    this.setSpriteIndex( iPress );
+                };
+
+                button.mouseUp= function(mouseEvent) {
+                    this.setSpriteIndex( iNormal );
+                };
+
+                button.mouseClick= function(mouseEvent) {
+                    if ( this.enabled && null!==fnOnClick ) {
+                        fnOnClick(this);
+                    }
+                };
+
+                button.setButtonImageIndex= function(_normal, _over, _press, _disabled ) {
+                    iNormal=    _normal;
+                    iOver=      _over;
+                    iPress=     _press;
+                    iDisabled=  _disabled;
+                    return this;
+                };
+            })(this,buttonImage, iNormal, iOver, iPress, iDisabled, fn);
+
+            return this;
         }
 	};
 
@@ -1275,7 +1479,8 @@
             if (!this.visible) {
                 return true;
             }
-            
+
+/*            Actors are always drawn back to front overwriting pixels.
             if ( director.front_to_back ) {
                 i= this.activeChildren.length-1;
                 while( i>=0 ) {
@@ -1284,20 +1489,22 @@
                     i--;
                 }
             }
-            
+*/
             CAAT.ActorContainer.superclass.paintActorGL.call(this,director,time);
 
             if ( !this.isGlobalAlpha ) {
                 this.frameAlpha= this.parent.frameAlpha;
             }
-            
-            if ( !director.front_to_back ) {
-                var n= this.activeChildren.length;
-                for( i=0; i<n; i++ ) {
-                    c= this.activeChildren[i];
+
+//          And thus, this if is removed.            
+//            if ( !director.front_to_back ) {
+//                var n= this.activeChildren.length;
+//                for( i=0; i<n; i++ ) {
+            for( c= this.activeChildren; c; c=c.__next ) {
+//                    c= this.activeChildren[i];
                     c.paintActorGL(director,time);
                 }
-            }
+//            }
 
         },
         /**
@@ -1970,8 +2177,6 @@
                 uvBuffer[index++]= u;
                 uvBuffer[index++]= v1;
             }
-
-            //director.uvIndex= index;
         },
         glNeedsFlush : function(director) {
             if ( this.image.__texturePage!==director.currentTexturePage ) {
@@ -2354,7 +2559,8 @@
          * with the pressed state.
          * @param iDisabled {number} an integer indicating which image index of the buttonImage corresponds
          * with the disabled state.
-         * @param fn {function} callback function to call on mouse release inside the button actor.
+         * @param fn {function} callback function to call on mouse release inside the button actor. The
+         * function receives as parameter the button that fired the event.
          */
         initialize : function( buttonImage, iNormal, iOver, iPress, iDisabled, fn) {
             this.setSpriteImage(buttonImage);
@@ -2370,22 +2576,22 @@
             return this;
         },
         mouseEnter : function(mouseEvent) {
-            this.spriteIndex= this.iOver;
+            this.setSpriteIndex( this.iOver );
             document.body.style.cursor = 'pointer';
         },
         mouseExit : function(mouseEvent) {
-            this.spriteIndex= this.iNormal;
+            this.setSpriteIndex( this.iNormal );
             document.body.style.cursor = 'default';
         },
         mouseDown : function(mouseEvent) {
-            this.spriteIndex= this.iPress;
+            this.setSpriteIndex( this.iPress );
         },
         mouseUp : function(mouseEvent) {
-            this.spriteIndex= this.iNormal;
+            this.setSpriteIndex( this.iNormal );
         },
         mouseClick : function(mouseEvent) {
             if ( this.enabled && null!==this.fnOnClick ) {
-                this.fnOnClick();
+                this.fnOnClick(this);
             }
         },
         toString : function() {

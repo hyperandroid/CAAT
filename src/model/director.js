@@ -311,7 +311,19 @@
                 this.glTextureProgram.setTexture(this.currentTexturePage.texture);
             }
         },
-        addImage : function( id, image, updateGL ) {
+        /**
+         * Add a new image to director's image cache. If gl is enabled and the 'noUpdateGL' is not set to true this
+         * function will try to recreate the whole GL texture pages.
+         * If many handcrafted images are to be added to the director, some performance can be achieved by calling
+         * <code>director.addImage(id,image,false)</code> many times and a final call with
+         * <code>director.addImage(id,image,true)</code> to finally command the director to create texture pages.
+         *
+         * @param id {string|object} an identitifier to retrieve the image with
+         * @param image {Image|Canvas} image to add to cache
+         * @param noUpdateGL {*boolean} unless otherwise stated, the director will
+         *  try to recreate the texture pages.
+         */
+        addImage : function( id, image, noUpdateGL ) {
             if ( this.getImage(id) ) {
                 for (var i = 0; i < this.imagesCache.length; i++) {
                     if (this.imagesCache[i].id === id) {
@@ -325,11 +337,11 @@
                 this.imagesCache[id]= image;
             }
 
-            if ( updateGL ) {
+            if ( !!!noUpdateGL ) {
                 this.updateGLPages( );
             }
         },
-        deleteImage : function( id, updateGL ) {
+        deleteImage : function( id, noUpdateGL ) {
             for (var i = 0; i < this.imagesCache.length; i++) {
                 if (this.imagesCache[i].id === id) {
                     delete this.imagesCache[id];
@@ -337,7 +349,7 @@
                     break;
                 }
             }
-            if ( updateGL ) {
+            if ( !!!noUpdateGL ) {
                 this.updateGLPages();
             }
         },
@@ -448,7 +460,10 @@
          * @param time {number} director time.
          */
         animate : function(director, time) {
-            this.setModelViewMatrix();
+            /**
+             * FIX: no haria falta. El director no se dibuja como elemento del grafo.
+             */
+            this.setModelViewMatrix(this);
 
             for (var i = 0; i < this.childrenList.length; i++) {
                 var tt = this.childrenList[i].time - this.childrenList[i].start_time;

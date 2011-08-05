@@ -1,0 +1,18 @@
+07/30/2011
+----------
+
+CAAT.Actor: added the capability to draw images on its background. This feature
+ will substitute the need of using CAAT.ImageActor, CAAT.Image and CAAT.Button.
+
+CAAT.CompoundImage: added method to automatically change sprite index on time
+ basis. Basically logic from SpriteActor's been moved to this class.
+
+Created CAAT.SpriteImage to substitute CAAT.CompoundImage and serve as images
+info backend for CAAT.Actor.  CAAT.CompoundImage is kept for backwards compatibility
+with CAAT.ImageActor, CAAT.SpriteActor and CAAT.Button.
+
+Modified GL methods to kept compatibility with new CAAT.Actor image capabilities.
+
+08/06/2011
+----------
+
