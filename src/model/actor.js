@@ -466,7 +466,7 @@
          * @return this
          */
 		setScale : function( sx, sy )    {
-			this.setScaleAnchored( sx, sy, this.ANCHOR_CENTER );
+			this.setScaleAnchored( sx, sy, this.width/2, this.height/2 );
             this.dirty= true;
             return this;
 		},
@@ -525,19 +525,16 @@
          * The dimension will not affect the local coordinates system in opposition
          * to setSize or setBounds.
          *
-         * @param sx a float indicating a width size multiplier.
-         * @param sy a float indicating a height size multiplier.
-         * @param anchor an integer indicating the anchor to perform the Scale operation.
+         * @param sx {float} width scale.
+         * @param sy {number} height scale.
+         * @param anchorx {number} x anchor to perform the Scale operation.
+         * @param anchory {number} y anchor to perform the Scale operation.
          *
          * @return this;
          */
-		setScaleAnchored : function( sx, sy, anchor )    {
-			this.scaleAnchor= anchor;
-
-			var obj= this.getAnchor( this.scaleAnchor );
-
-			this.scaleTX= obj.x;
-			this.scaleTY= obj.y;
+		setScaleAnchored : function( sx, sy, anchorx, anchory )    {
+            this.scaleTX= anchorx;
+            this.scaleTY= anchory;
 
 			this.scaleX=sx;
 			this.scaleY=sy;
@@ -1534,14 +1531,18 @@
              */
             for( i=0; i<this.pendingChildrenList.length; i++ ) {
                 var child= this.pendingChildrenList[i];
+                this.addChild(child);
+/*
                 child.parent =  this;
                 this.childrenList.push(child);
+                */
             }
             this.pendingChildrenList= [];
 
 
-            for( i=0, l=this.childrenList.length; i<l; i++ ) {
-                var actor= this.childrenList[i];
+            var cl= this.childrenList;
+            for( i=0; i<cl.length; i++ ) {
+                var actor= cl[i];
                 actor.time= time;
                 if ( actor.animate(director, time) ) {
                     if ( !this.activeChildren ) {
@@ -1553,20 +1554,11 @@
                         last.__next= actor;
                         last= actor;
                     }
-                    //this.activeChildren.push( actor );
                 } else {
-                    notActive.push(actor)
-                }
-            }
-
-            /**
-             * Eliminar los actores no activos expirados.
-             */
-            for( i=0, l=notActive.length; i<l; i++ ) {
-                var actor= notActive[i];
-                if ( actor.expired && actor.discardable ) {
-                    actor.destroy(time);
-                    this.childrenList.splice(i,1);
+                    if ( actor.expired && actor.discardable ) {
+                        actor.destroy(time);
+                        cl.splice(i,1);
+                    }
                 }
             }
 
@@ -1775,10 +1767,6 @@
                     this.childrenList.splice( index, 1, nActor );
                 }
             }
-        },
-        setNoContainer : function() {
-            this.paintActor= CAAT.ActorContainer.superclass.paintActor;
-            this.animate= CAAT.ActorContainer.superclass.animate;
         }
 	};
 

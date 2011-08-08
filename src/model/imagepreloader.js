@@ -60,7 +60,7 @@
             for( i=0; i<aImages.length; i++ ) {
                 this.images[i].image.onload = function imageLoaded() {
                     me.imageCounter++;
-                    me.notificationCallback.call(this, me.imageCounter, me.images);
+                    me.notificationCallback(me.imageCounter, me.images);
                 };
                 this.images[i].image.src= aImages[i].url;
             }

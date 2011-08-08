@@ -16,3 +16,27 @@ Modified GL methods to kept compatibility with new CAAT.Actor image capabilities
 08/06/2011
 ----------
 
+Added getRenderType method to Director. It will return WEBGL|CANVAS|CSS depending
+on the rendering techniques it uses.
+
+Added DirectorCSS, SceneCSS and ActorCSS to the system. Now, CSS is a suitable option
+to render.
+
+Added CSS renderer.
+
+DOM is unable to identify wihch of any overlapping divs the user is interacting with.
+ Added a over div which tracks mouse info. ( And works properly \o/ )
+
+CSS Renderer drawbacks:
+    * the scale anchor's been deprecated since transform style only supports one
+    * always use accessor/mutator method to interact with actor's properties
+    * unable to use dynamic images (ie Canvas generated images).
+
+Changed Scale Anchor semantics. Now it is equal to Rotation, so the method
+setScaleAnchored now accept two more parameters which define the position in pixels
+where the anchor is located.
+
+Changed ScaleBehavior and RotateBehavior to fit the new setScale semantics. Now the method
+setValues of these Behavior accept two more parameters to define the transformation anchor.
+
+In general, there should not be mixed different types of director renderers per page.

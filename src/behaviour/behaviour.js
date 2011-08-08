@@ -427,9 +427,8 @@
 	
 		startAngle:	0,  // behavior start angle
 		endAngle:	0,  // behavior end angle
-		anchor:		0,  // rotation anchor
-        rx:         0,  // rotation center x.
-        ry:         0,  // rotation center y.
+        anchorX:    .50,  // rotation center x.
+        anchorY:    .50,  // rotation center y.
 
         /**
          * Behavior application function.
@@ -442,24 +441,31 @@
 			var angle= 
 				this.startAngle + time*(this.endAngle-this.startAngle);
 
-            if ( this.anchor===CAAT.Actor.prototype.ANCHOR_CUSTOM ) {
-                actor.setRotationAnchored(angle, this.rx, this.ry);
-            } else {
-			    var obj= actor.getAnchor( this.anchor );
-			    actor.setRotationAnchored(angle, obj.x, obj.y);
-            }
+            actor.setRotationAnchored(angle, this.anchorX*actor.width, this.anchorY*actor.height);
 
             return angle;
 			
 		},
         /**
          * Set behavior bound values.
-         * @param startAngle a float indicating the starting angle.
-         * @param endAngle a float indicating the ending angle.
+         * if no anchorx,anchory values are supplied, the behavior will assume
+         * 50% for both values, that is, the actor's center.
+         *
+         * Be aware the anchor values are supplied in <b>RELATIVE PERCENT</b> to
+         * actor's size.
+         *
+         * @param startAngle {float} indicating the starting angle.
+         * @param endAngle {float} indicating the ending angle.
+         * @param anchorx {float} the percent position for anchorX
+         * @param anchory {float} the percent position for anchorY
          */
-        setValues : function( startAngle, endAngle ) {
+        setValues : function( startAngle, endAngle, anchorx, anchory ) {
             this.startAngle= startAngle;
             this.endAngle= endAngle;
+            if ( anchorx!==undefined && anchory!==undefined ) {
+                this.anchorX= anchorx/100;
+                this.anchorY= anchory/100;
+            }
             return this;
         },
         /**
@@ -480,6 +486,8 @@
          * </code> the custom rotation point is set.
          * @param rx
          * @param ry
+         *
+         * @deprecated should not be used anymore.
          */
         setAnchor : function( anchor, rx, ry ) {
             this.anchor= anchor;
@@ -606,7 +614,8 @@
         endScaleX:      0,
         startScaleY:    0,
         endScaleY:	    0,
-        anchor:		    0,
+        anchorX:        .50,
+        anchorY:        .50,
 
         /**
          * Applies corresponding scale values for a given time.
@@ -628,25 +637,35 @@
                 scaleY=0.01;
             }
 
-			actor.setScaleAnchored( scaleX, scaleY, this.anchor );
+			actor.setScaleAnchored( scaleX, scaleY, this.anchorX*actor.width, this.anchorY*actor.height );
 
             return { scaleX: scaleX, scaleY: scaleY };
 		},
         /**
          * Define this scale behaviors values.
          *
+         * Be aware the anchor values are supplied in <b>RELATIVE PERCENT</b> to
+         * actor's size.
+         *
          * @param startX {number} initial X axis scale value.
          * @param endX {number} final X axis scale value.
          * @param startY {number} initial Y axis scale value.
          * @param endY {number} final Y axis scale value.
+         * @param anchorx {float} the percent position for anchorX
+         * @param anchory {float} the percent position for anchorY
          *
          * @return this.
          */
-        setValues : function( startX, endX, startY, endY ) {
+        setValues : function( startX, endX, startY, endY, anchorx, anchory ) {
             this.startScaleX= startX;
             this.endScaleX=   endX;
             this.startScaleY= startY;
             this.endScaleY=   endY;
+
+            if ( anchorx!==undefined && anchory!==undefined ) {
+                this.anchorX= anchorx/100;
+                this.anchorY= anchory/100;
+            }
 
             return this;
         },
@@ -659,6 +678,8 @@
          * @param anchor {number} any of CAAT.Actor.ANCHOR_xxxx constant values.
          *
          * @return this.
+         *
+         * @deprecated should not be used anymore
          */
         setAnchor : function( anchor ) {
             this.anchor= anchor;

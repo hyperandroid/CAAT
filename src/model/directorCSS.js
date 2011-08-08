@@ -28,70 +28,44 @@
      * @constructor
      * @extends CAAT.ActorContainer
      */
-    CAAT.Director = function() {
-        CAAT.Director.superclass.constructor.call(this);
+    CAAT.DirectorCSS = function() {
+        CAAT.DirectorCSS.superclass.constructor.call(this);
 
         this.browserInfo = new CAAT.BrowserDetect();
         this.audioManager = new CAAT.AudioManager().initialize(8);
         this.scenes = [];
 
         // input related variables initialization
-        this.mousePoint = new CAAT.Point(0, 0, 0);
-        this.prevMousePoint = new CAAT.Point(0, 0, 0);
-        this.screenMousePoint = new CAAT.Point(0, 0, 0);
-        this.isMouseDown = false;
-        this.lastSelectedActor = null;
-        this.dragging = false;
+        this.mousePoint=        new CAAT.Point(0, 0, 0);
+        this.prevMousePoint=    new CAAT.Point(0, 0, 0);
+        this.screenMousePoint=  new CAAT.Point(0, 0, 0);
+        this.isMouseDown=       false;
+        this.lastSelectedActor= null;
+        this.dragging=          false;
+
+        this.setClip(true);
 
         return this;
     };
 
-    CAAT.Director.prototype = {
+    CAAT.DirectorCSS.prototype = {
 
         debug:              false,  // flag indicating debug mode. It will draw affedted screen areas.
 
         onRenderStart:      null,
         onRenderEnd:        null,
 
-        // input related attributes
-        mousePoint:         null,   // mouse coordinate related to canvas 0,0 coord.
-        prevMousePoint:     null,   // previous mouse position cache. Needed for drag events.
-        screenMousePoint:   null,   // screen mouse coordinates.
-        isMouseDown:        false,  // is the left mouse button pressed ?
-        lastSelectedActor:  null,   // director's last actor receiving input.
-        dragging:           false,  // is in drag mode ?
-
         // other attributes
 
         scenes:             null,   // Scenes collection. An array.
         currentScene:       null,   // The current Scene. This and only this will receive events.
-        canvas:             null,   // The canvas the Director draws on.
-        crc:                null,    // @deprecated. canvas rendering context
-        ctx:                null,   // refactoring crc for a more convenient name
         time:               0,      // virtual actor time.
         timeline:           0,      // global director timeline.
         imagesCache:        null,   // An array of JSON elements of the form { id:string, image:Image }
         audioManager:       null,
         clear:              true,   // clear background before drawing scenes ??
 
-        transitionScene:    null,
-
         browserInfo:        null,
-
-        gl:                 null,
-        glEnabled:          false,
-        glTextureManager:   null,
-        glTtextureProgram:  null,
-        glColorProgram:     null,
-
-        pMatrix:            null,       // projection matrix
-        coords:             null,       // Float32Array
-        coordsIndex:        0,
-        uv:                 null,
-        uvIndex:            0,
-
-        front_to_back:      false,
-        currentTexturePage: 0,
         currentOpacity:     1,
 
         intervalId:         null,
@@ -106,7 +80,7 @@
         resize:             1,
 
         getRenderType : function() {
-            return this.glEnabled ? 'WEBGL' : 'CANVAS';
+            return 'CSS';
         },
         windowResized : function(w, h) {
             switch (this.resize) {
@@ -149,12 +123,7 @@
          * @return this
          */
         setBounds : function(x, y, w, h) {
-            CAAT.Director.superclass.setBounds.call(this, x, y, w, h);
-            this.canvas.width = w;
-            this.canvas.height = h;
-            this.ctx = this.canvas.getContext('2d');
-            this.crc = this.ctx;
-
+            CAAT.DirectorCSS.superclass.setBounds.call(this, x, y, w, h);
             for (var i = 0; i < this.scenes.length; i++) {
                 this.scenes[i].setBounds(0, 0, w, h);
             }
@@ -174,91 +143,15 @@
          *
          * @return this
          */
-        initialize : function(width, height, canvas) {
-            canvas = canvas || document.createElement('canvas');
-            this.canvas = canvas;
-
+        initialize : function(width, height, domElement) {
             this.setBounds(0, 0, width, height);
-            this.create();
-            this.enableEvents();
-
             this.timeline = new Date().getTime();
-
-            // transition scene
-            this.transitionScene = new CAAT.Scene().create().setBounds(0, 0, width, height);
-            var transitionCanvas = document.createElement('canvas');
-            transitionCanvas.width = width;
-            transitionCanvas.height = height;
-            var transitionImageActor = new CAAT.ImageActor().create().setImage(transitionCanvas);
-            this.transitionScene.ctx = transitionCanvas.getContext('2d');
-            this.transitionScene.addChildImmediately(transitionImageActor);
-            this.transitionScene.setEaseListener(this);
-
-            return this;
-        },
-        /**
-         * Experimental.
-         * Initialize a gl enabled director.
-         * @param width
-         * @param height
-         * @param canvas
-         */
-        initializeGL : function(width, height, canvas) {
-
-            canvas = canvas || document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
-            var i;
-
-            try {
-                this.gl = canvas.getContext("experimental-webgl"/*, {antialias: false}*/);
-                this.gl.viewportWidth = width;
-                this.gl.viewportHeight = height;
-            } catch(e) {
-            }
-
-            if (this.gl) {
-                this.canvas = canvas;
-                this.create();
-                this.setBounds(0, 0, width, height);
-
-                this.crc = this.ctx;
-                this.enableEvents();
-                this.timeline = new Date().getTime();
-
-                this.pMatrix = makePerspective(90, width / height, 0.1, 3000.0, height);
-
-                this.glColorProgram = new CAAT.ColorProgram(this.gl).create().initialize();
-                this.glColorProgram.setMatrixUniform(this.pMatrix);
-
-                this.glTextureProgram = new CAAT.TextureProgram(this.gl).create().initialize();
-                this.glTextureProgram.setMatrixUniform(this.pMatrix);
-
-                this.glTextureProgram.useProgram();
-
-                var maxTris = 2048;
-                this.coords = new Float32Array(maxTris * 12);
-                this.uv = new Float32Array(maxTris * 8);
-
-
-                this.gl.clearColor(0.0, 0.0, 0.0, 255);
-
-                if (this.front_to_back) {
-                    this.gl.clearDepth(1.0);
-                    this.gl.enable(this.gl.DEPTH_TEST);
-                    this.gl.depthFunc(this.gl.LESS);
-                } else {
-                    this.gl.disable(this.gl.DEPTH_TEST);
-                }
-
-                this.gl.enable(this.gl.BLEND);
-                this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
-                this.glEnabled = true;
-            } else {
-                // fallback to non gl enabled canvas.
-                return this.initialize(width, height, canvas);
-            }
-
+            this.domElement= domElement;
+            this.style('position','absolute');
+            this.style('width',''+width+'px');
+            this.style('height',''+height+'px');
+            this.style('overflow', 'hidden' );
+            this.enableEvents();
             return this;
         },
         /**
@@ -266,18 +159,13 @@
          * @return {CAAT.Scene}
          */
         createScene : function() {
-            var scene = new CAAT.Scene().create();
+            var scene = new CAAT.SceneCSS();
             this.addScene(scene);
             return scene;
         },
         setImagesCache : function(imagesCache, tpW, tpH) {
 
             var i;
-
-            if (null !== this.glTextureManager) {
-                this.glTextureManager.deletePages();
-                this.glTextureManager = null;
-            }
 
             // delete previous image identifiers
             if ( this.imagesCache ) {
@@ -301,18 +189,6 @@
 
             this.tpW = tpW || 2048;
             this.tpH = tpH || 2048;
-
-            this.updateGLPages();
-        },
-        updateGLPages : function() {
-            if (this.glEnabled) {
-
-                this.glTextureManager = new CAAT.GLTexturePageManager();
-                this.glTextureManager.createPages(this.gl, this.tpW, this.tpH, this.imagesCache);
-
-                this.currentTexturePage = this.glTextureManager.pages[0];
-                this.glTextureProgram.setTexture(this.currentTexturePage.texture);
-            }
         },
         /**
          * Add a new image to director's image cache. If gl is enabled and the 'noUpdateGL' is not set to true this
@@ -356,40 +232,6 @@
                 this.updateGLPages();
             }
         },
-        setGLCurrentOpacity : function(opacity) {
-            this.currentOpacity = opacity;
-            this.glTextureProgram.setAlpha(opacity);
-        },
-        /**
-         * Render buffered elements.
-         * @param vertex
-         * @param coordsIndex
-         * @param uv
-         */
-        glRender : function(vertex, coordsIndex, uv) {
-
-            vertex = vertex || this.coords;
-            uv = uv || this.uv;
-            coordsIndex = coordsIndex || this.coordsIndex;
-
-            var gl = this.gl;
-
-            var numTris = coordsIndex / 12 * 2;
-            var numVertices = coordsIndex / 3;
-
-            this.glTextureProgram.updateVertexBuffer(vertex);
-            this.glTextureProgram.updateUVBuffer(uv);
-
-            gl.drawElements(gl.TRIANGLES, 3 * numTris, gl.UNSIGNED_SHORT, 0);
-
-        },
-        glFlush : function() {
-            if (this.coordsIndex !== 0) {
-                this.glRender(this.coords, this.coordsIndex, this.uv);
-            }
-            this.coordsIndex = 0;
-            this.uvIndex = 0;
-        },
         /**
          * This is the entry point for the animation system of the Director.
          * The director is fed with the elapsed time value to maintain a virtual timeline.
@@ -402,53 +244,19 @@
         render : function(time) {
 
             this.time += time;
-
             this.animate(this,time);
 
             /**
              * draw director active scenes.
              */
-            var ne = this.childrenList.length;
-            var i, tt;
-            if (this.glEnabled) {
+            var i, l, tt;
 
-                this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-                this.coordsIndex = 0;
-                this.uvIndex = 0;
-
-                for (i = 0; i < ne; i++) {
-                    var c = this.childrenList[i];
-                    if (c.isInAnimationFrame(this.time)) {
-                        tt = c.time - c.start_time;
-                        c.paintActorGL(this, tt);
-                        c.time += time;
-                    }
-                }
-
-                this.glFlush();
-
-            } else {
-                this.ctx.globalAlpha = 1;
-                this.ctx.globalCompositeOperation = 'source-over';
-
-                if (this.clear) {
-                    this.ctx.clearRect(0, 0, this.width, this.height);
-                }
-
-                for (i = 0; i < ne; i++) {
-                    var c= this.childrenList[i];
-                    if (c.isInAnimationFrame(this.time)) {
-                        tt = c.time - c.start_time;
-                        this.ctx.save();
-                        c.paintActor(this, tt);
-                        this.ctx.restore();
-                        if (this.debug) {
-                            this.ctx.strokeStyle = 'red';
-                            c.drawScreenBoundingBox(this, tt);
-                        }
-
-                        c.time += time;
-                    }
+            for (i = 0, l=this.childrenList.length; i < l; i++) {
+                var c= this.childrenList[i];
+                if (c.isInAnimationFrame(this.time)) {
+                    tt = c.time - c.start_time;
+                    c.paintActor(this, tt);
+                    c.time += time;
                 }
             }
 
@@ -476,45 +284,6 @@
             return this;
         },
         /**
-         * This method draws an Scene to an offscreen canvas. This offscreen canvas is also a child of
-         * another Scene (transitionScene). So instead of drawing two scenes while transitioning from
-         * one to another, first of all an scene is drawn to offscreen, and that image is translated.
-         * <p>
-         * Until the creation of this method, both scenes where drawn while transitioning with
-         * its performance penalty since drawing two scenes could be twice as expensive than drawing
-         * only one.
-         * <p>
-         * Though a high performance increase, we should keep an eye on memory consumption.
-         *
-         * @param ctx a <code>canvas.getContext('2d')</code> instnce.
-         * @param scene {CAAT.Scene} the scene to draw offscreen.
-         */
-        renderToContext : function(ctx, scene) {
-            ctx.globalAlpha = 1;
-            ctx.globalCompositeOperation = 'source-over';
-
-            ctx.clearRect(0, 0, this.width, this.height);
-
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-            var octx = this.ctx;
-            var ocrc = this.crc;
-
-            this.ctx = this.crc = ctx;
-
-            /**
-             * draw actors on scene.
-             */
-            if (scene.isInAnimationFrame(this.time)) {
-                ctx.save();
-                scene.paintActor(this, scene.time - scene.start_time);
-                ctx.restore();
-            }
-
-            this.ctx = octx;
-            this.crc = ocrc;
-        },
-        /**
          * Add a new Scene to Director's Scene list. By adding a Scene to the Director
          * does not mean it will be immediately visible, you should explicitly call either
          * <ul>
@@ -528,12 +297,15 @@
          * @param scene {CAAT.Scene} an CAAT.Scene object.
          */
         addScene : function(scene) {
+            scene.setVisible(true);
             scene.setBounds(0, 0, this.width, this.height);
             this.scenes.push(scene);
             scene.setEaseListener(this);
             if (null === this.currentScene) {
                 this.setScene(0);
             }
+
+            this.domElement.appendChild( scene.domElement );
         },
         /**
          * Get the number of scenes contained in the Director.
@@ -594,22 +366,11 @@
             var ssin = this.scenes[ inSceneIndex ];
             var sout = this.scenes[ outSceneIndex ];
 
-            if (!this.glEnabled) {
-                this.renderToContext(this.transitionScene.ctx, sout);
-                sout = this.transitionScene;
-            }
-
             ssin.setExpired(false);
             sout.setExpired(false);
 
-            ssin.mouseEnabled = false;
-            sout.mouseEnabled = false;
-
             ssin.resetTransform();
             sout.resetTransform();
-
-            ssin.setLocation(0, 0);
-            sout.setLocation(0, 0);
 
             ssin.alpha = 1;
             sout.alpha = 1;
@@ -833,6 +594,7 @@
                 this.easeInOutRandom(currentSceneIndex + 1, currentSceneIndex, time, alpha);
             }
         },
+/*
         mouseEnter : function(mouseEvent) {
         },
         mouseExit : function(mouseEvent) {
@@ -845,6 +607,7 @@
         },
         mouseDrag : function(mouseEvent) {
         },
+*/
         /**
          * Scene easing listener. Notifies scenes when they're about to be activated (set as current
          * director's scene).
@@ -945,9 +708,7 @@
          * @return this
          */
         addAudio : function(id, url) {
-
             this.audioManager.addAudio(id, url);
-
             return this;
         },
         /**
@@ -971,6 +732,9 @@
          */
         emptyScenes : function() {
             this.scenes = [];
+            this.domElement.innerHTML='';
+            this.createEventHandler();
+
         },
         /**
          * Adds an scene to this Director.
@@ -1023,7 +787,6 @@
             }
         },
         endLoop : function () {
-            //clearInterval(this.interval);
         },
         /**
          * This method states whether the director must clear background before rendering
@@ -1032,7 +795,6 @@
          * @return this.
          */
         setClear : function(clear) {
-            this.clear = clear;
             return this;
         },
         /**
@@ -1043,90 +805,25 @@
             return this.audioManager;
         },
         /**
-         * Acculumate dom elements position to properly offset on-screen mouse/touch events.
-         * @param node
-         */
-        cumulateOffset : function(node, parent, prop) {
-            var left= prop+'Left';
-            var top= prop+'Top';
-            var x=0, y=0, style;
-
-            while( node && node.style ) {
-                if ( node.currentStyle ) {
-                    style= node.currentStyle['position'];
-                } else {
-                    style= (node.ownerDocument.defaultView || node.ownerDocument.parentWindow).getComputedStyle(node, null);
-                    style= style ? style.getPropertyValue('position') : null;
-                }
-
-//                if (!/^(relative|absolute|fixed)$/.test(style)) {
-                if (!/^(fixed)$/.test(style)) {
-                    x += node[left];
-                    y+= node[top];
-                    node = node[parent];
-                } else {
-                    break;
-                }
-            }
-
-            return {
-                x:      x,
-                y:      y,
-                style:  style
-            };
-        },
-        getOffset : function( node ) {
-            var res= this.cumulateOffset(node, 'offsetParent', 'offset');
-            if ( res.style==='fixed' ) {
-                var res2= this.cumulateOffset(node, node.parentNode ? 'parentNode' : 'parentElement', 'scroll');
-                return {
-                    x: res.x + res2.x,
-                    y: res.y + res2.y
-                };
-            }
-
-            return {
-                x: res.x,
-                y: res.y
-            };
-        },
-        /**
-         * Normalize input event coordinates to be related to (0,0) canvas position.
-         * @param point {CAAT.Point} a CAAT.Point instance to hold the canvas coordinate.
-         * @param e {MouseEvent} a mouse event from an input event.
-         */
-        getCanvasCoord : function(point, e) {
-
-            var posx = 0;
-            var posy = 0;
-            if (!e) e = window.event;
-
-            if (e.pageX || e.pageY) {
-                posx = e.pageX;
-                posy = e.pageY;
-            }
-            else if (e.clientX || e.clientY) {
-                posx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-                posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-            }
-
-            var offset= this.getOffset(e.target);
-
-            posx-= offset.x;
-            posy-= offset.y;
-            point.set(posx, posy);
-            this.screenMousePoint.set(posx, posy);
-
-        },
-
-        /**
          * Enable canvas input events.
          */
         enableEvents : function() {
             CAAT.RegisterDirector(this);
+            this.createEventHandler();
+        },
+        createEventHandler : function() {
+            this.eventHandler= document.createElement('div');
+            this.domElement.appendChild(this.eventHandler);
 
-            var canvas = this.canvas;
-            var me = this;
+            this.eventHandler.style.position=   'absolute';
+            this.eventHandler.style.left=       '0';
+            this.eventHandler.style.top=        '0';
+            this.eventHandler.style.zIndex=     999999;
+            this.eventHandler.style.width=      ''+this.width+'px';
+            this.eventHandler.style.height=     ''+this.height+'px';
+            
+            var canvas= this.eventHandler;
+            var me= this;
 
             canvas.addEventListener('mouseup',
                     function(e) {
@@ -1376,7 +1073,7 @@
                         null);
 
                 me.canvas.dispatchEvent(simulatedEvent);
-                event.preventDefault();
+                //event.preventDefault();
             }
 
             canvas.addEventListener("touchstart", touchHandler, true);
@@ -1384,47 +1081,86 @@
             canvas.addEventListener("touchend", touchHandler, true);
             canvas.addEventListener("touchcancel", touchHandler, true);
 
+
+        },
+        /**
+         * Acculumate dom elements position to properly offset on-screen mouse/touch events.
+         * @param node
+         */
+        cumulateOffset : function(node, parent, prop) {
+            var left= prop+'Left';
+            var top= prop+'Top';
+            var x=0, y=0, style;
+
+            while( node && node.style ) {
+                if ( node.currentStyle ) {
+                    style= node.currentStyle['position'];
+                } else {
+                    style= (node.ownerDocument.defaultView || node.ownerDocument.parentWindow).getComputedStyle(node, null);
+                    style= style ? style.getPropertyValue('position') : null;
+                }
+
+//                if (!/^(relative|absolute|fixed)$/.test(style)) {
+                if (!/^(fixed)$/.test(style)) {
+                    x += node[left];
+                    y+= node[top];
+                    node = node[parent];
+                } else {
+                    break;
+                }
+            }
+
+            return {
+                x:      x,
+                y:      y,
+                style:  style
+            };
+        },
+        getOffset : function( node ) {
+            var res= this.cumulateOffset(node, 'offsetParent', 'offset');
+            if ( res.style==='fixed' ) {
+                var res2= this.cumulateOffset(node, node.parentNode ? 'parentNode' : 'parentElement', 'scroll');
+                return {
+                    x: res.x + res2.x,
+                    y: res.y + res2.y
+                };
+            }
+
+            return {
+                x: res.x,
+                y: res.y
+            };
+        },
+        /**
+         * Normalize input event coordinates to be related to (0,0) canvas position.
+         * @param point {CAAT.Point} a CAAT.Point instance to hold the canvas coordinate.
+         * @param e {MouseEvent} a mouse event from an input event.
+         */
+        getCanvasCoord : function(point, e) {
+
+            var posx = 0;
+            var posy = 0;
+            if (!e) e = window.event;
+
+            if (e.pageX || e.pageY) {
+                posx = e.pageX;
+                posy = e.pageY;
+            }
+            else if (e.clientX || e.clientY) {
+                posx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+                posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+            }
+
+            var offset= this.getOffset(e.target);
+
+            posx-= offset.x;
+            posy-= offset.y;
+            point.set(posx, posy);
         }
 
     };
 
-    extend(CAAT.Director, CAAT.ActorContainer, null);
+    extend(CAAT.DirectorCSS, CAAT.ActorContainerCSS, null);
+
 })();
 
-// TODO: ease in out flip.
-/*		flip : function( inSceneIndex, time ) {
- var ssin=this.scenes[ inSceneIndex ];
- var sout=null;
-
- this.childList= [];
-
- if ( this.currentScene!=null ) {
- sout= this.currentScene;
- this.scenes[ this.getSceneIndex(this.currentScene) ];
- sout.setFrameTime(this.time, Number.MAX_VALUE);
- sout.easeScaleOut(0, time/2, false, CAAT.Actor.prototype.ANCHOR_CENTER );
- this.addChild(sout);
- }
-
- ssin.setFrameTime(this.time/2, Number.MAX_VALUE);
- ssin.easeScaleIn( time/2, time/2, false, CAAT.Actor.prototype.ANCHOR_CENTER );
- this.addChild(ssin);
- },
- flipToNext : function( time ) {
- var currentSceneIndex= this.getSceneIndex(this.currentScene);
-
- if ( this.getNumScenes()<=1 || currentSceneIndex==this.getNumScenes()-1 ) {
- return;
- }
-
- this.flip( currentSceneIndex+1, time );
- },
- flipToPrev : function( time ) {
- var currentSceneIndex= this.getSceneIndex(this.currentScene);
-
- if ( this.getNumScenes()<=1 || currentSceneIndex==0 ) {
- return;
- }
-
- this.flip( currentSceneIndex-1, time );
- },*/

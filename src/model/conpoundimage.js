@@ -625,6 +625,10 @@
 
             return this;
         },
+        getCurrentSpriteImageCSSPosition : function() {
+            return '-'+(this.xyCache[this.spriteIndex][0]-this.offsetX)+'px '+
+                   '-'+(this.xyCache[this.spriteIndex][1]-this.offsetY)+'px';
+        },
         /**
          * Get the number of subimages in this compoundImage
          * @return {number}

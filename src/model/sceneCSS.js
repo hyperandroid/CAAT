@@ -14,14 +14,14 @@
      * @extends CAAT.ActorContainer
      *
      */
-	CAAT.Scene= function() {
-		CAAT.Scene.superclass.constructor.call(this);
+	CAAT.SceneCSS= function() {
+		CAAT.SceneCSS.superclass.constructor.call(this);
         this.timerList= [];
-        this.fillStyle= null;
+        this.style( 'overflow', 'hidden' );
 		return this;
 	};
 	
-	CAAT.Scene.prototype= {
+	CAAT.SceneCSS.prototype= {
 		
 		easeContainerBehaviour:			null,   // Behavior container used uniquely for Scene switching.
 		easeContainerBehaviourListener: null,   // who to notify about container behaviour events. Array.
@@ -124,7 +124,7 @@
          */
         animate : function(director, time) {
             this.checkTimers(time);
-            CAAT.Scene.superclass.animate.call(this,director,time);
+            CAAT.SceneCSS.superclass.animate.call(this,director,time);
             this.removeExpiredTimers();
         },
         /**
@@ -240,7 +240,7 @@
 			this.easeContainerBehaviour.addListener(this);
 
 			this.emptyBehaviorList();
-			CAAT.Scene.superclass.addBehavior.call( this, this.easeContainerBehaviour );
+			CAAT.SceneCSS.superclass.addBehavior.call( this, this.easeContainerBehaviour );
 		},
         /**
          * Called from CAAT.Director to bring in a Scene.
@@ -439,7 +439,7 @@
 			this.easeContainerBehaviour.addListener(this);
 			
 			this.emptyBehaviorList();
-			CAAT.Scene.superclass.addBehavior.call( this, this.easeContainerBehaviour );
+			CAAT.SceneCSS.superclass.addBehavior.call( this, this.easeContainerBehaviour );
 		},
         /**
          * Registers a listener for listen for transitions events.
@@ -468,9 +468,11 @@
         /**
          * Scenes, do not expire the same way Actors do.
          * It simply will be set expired=true, but the frameTime won't be modified.
+         * WARN: the parameter here is treated as boolean, not number.
          */
         setExpired : function(bExpired) {
             this.expired= bExpired;
+            this.style('display', bExpired ? 'none' : 'block');
         },
         /**
          * An scene by default does not paint anything because has not fillStyle set.
@@ -478,14 +480,9 @@
          * @param time
          */
         paint : function(director, time) {
-
-            if ( this.fillStyle ) {
-                var ctx= director.crc;
-                ctx.fillStyle= this.fillStyle;
-                ctx.fillRect(0,0,this.width,this.height );
-            }
         }
 	};
 
-    extend( CAAT.Scene, CAAT.ActorContainer, null);
+    extend( CAAT.SceneCSS, CAAT.ActorContainerCSS, null);
+
 })();

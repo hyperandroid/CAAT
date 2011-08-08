@@ -35,3 +35,25 @@
  * @namespace
  */
 var CAAT= CAAT || {};
+
+/**
+ * This method call can't be undone. It is intended to set the system to create
+ * CSS based actors and not Canvas/WebGL ones.
+ */
+CAAT.SetCSSRenderer= function() {
+    CAAT.Actor= CAAT.ActorCSS;
+    CAAT.ActorContainer= CAAT.ActorContainerCSS;
+    CAAT.Scene= CAAT.SceneCSS;
+    CAAT.Director= CAAT.DirectorCSS;
+}
+
+Function.prototype.bind= function() {
+    var fn=     this;                                   // the function
+    var args=   Array.prototype.slice.call(arguments);  // copy the arguments.
+    var obj=    args.shift();                           // first parameter will be context 'this'
+    return function() {
+        return fn.apply(
+                obj,
+                args.concat(Array.prototype.slice.call(arguments)));
+    }
+}
