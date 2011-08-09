@@ -1,4 +1,5 @@
 **CAAT: Canvas Advanced Animation Tookit**  CAAT in essence is a multi-instance director-based Scene graph manager.
+It is able to render using Canvas, WebGL and CSS w/o making changes to the developments that sit on top of it.
 
 ## HOW TO ##
 Tutorials can be found here [http://labs.hyperandroid.com/caat-tutorial-1-getting-started](http://labs.hyperandroid.com/caat-tutorial-1-getting-started)
