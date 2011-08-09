@@ -121,6 +121,14 @@
         backgroundImage:        null,
 
         /**
+         * Set this actor's parent.
+         * @param parent {CAAT.ActorContainer}
+         * @return this
+         */
+        setParent : function(parent) {
+            this.parent= parent;
+        },
+        /**
          * Set this actor's background image.
          * The need of a background image is to kept compatibility with the new CSSDirector class.
          * The image parameter can be either an Image/Canvas or a CAAT.SpriteImage instance. If an image
@@ -1671,6 +1679,7 @@
 		removeChild : function(child) {
 			var pos= this.findChild(child);
 			if ( -1!==pos ) {
+                this.childrenList[pos].setParent(null);
 				this.childrenList.splice(pos,1);
 			}
 

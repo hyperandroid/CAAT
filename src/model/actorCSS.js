@@ -95,10 +95,25 @@
         inFrame:                false,  // boolean indicating whether this Actor was present on last frame.
         backgroundImage:        null,
 
+        /**
+         * Set this Actor's parent and connect in CSS a div with its parent.
+         * In case there's a parent set, previously the div will be removed from
+         * its old parent and reattached to the new one.
+         * @param parent {CAAT.ActorContainerCSS|CAAT.ActorContainer}
+         * @return this
+         */
         setParent : function( parent ) {
+            if ( this.parent ) {
+                this.domParent.removeChild(this.domElement);
+            }
+
             this.parent= parent;
-            this.parent.domElement.appendChild(this.domElement);
-            this.domParent= this.parent.domElement;
+            if ( null!=parent ) {
+                this.parent.domElement.appendChild(this.domElement);
+                this.domParent= this.parent.domElement;
+            } else {
+                this.domParent= null;
+            }
             return this;
         },
         /**
@@ -1386,8 +1401,7 @@
 		removeChild : function(child) {
 			var pos= this.findChild(child);
 			if ( -1!==pos ) {
-                this.domElement.removeChild(this.childrenList[pos].domElement);
-                this.domParent= null;
+                this.childrenList[pos].setParent(null);
 				this.childrenList.splice(pos,1);
 			}
 
