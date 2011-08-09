@@ -478,7 +478,8 @@
             return this.setValues(start,end);
         },
         /**
-         * Set the behavior rotation anchor.
+         * Set the behavior rotation anchor. Use this method when setting an exact percent
+         * by calling setValues is complicated.
          * @see CAAT.Actor
          * @param anchor any of CAAT.Actor.prototype.ANCHOR_* constants.
          *
@@ -487,14 +488,10 @@
          * @param rx
          * @param ry
          *
-         * @deprecated should not be used anymore.
          */
-        setAnchor : function( anchor, rx, ry ) {
-            this.anchor= anchor;
-            if ( anchor===CAAT.Actor.prototype.ANCHOR_CUSTOM ) {
-                this.rx= rx;
-                this.ry= ry;
-            }
+        setAnchor : function( actor, rx, ry ) {
+            this.anchorX= rx/actor.width;
+            this.anchorY= ry/actor.height;
             return this;
         }
 		
@@ -670,19 +667,16 @@
             return this;
         },
         /**
-         * <p>
-         * Defines scale application anchor.
-         * <p>
-         * Any of CAAT.Actor.ANCHOR_xxxx values.
-         *
-         * @param anchor {number} any of CAAT.Actor.ANCHOR_xxxx constant values.
-         *
-         * @return this.
-         *
-         * @deprecated should not be used anymore
+         * Set an exact position scale anchor. Use this method when it is hard to
+         * set a thorough anchor position expressed in percentage.
+         * @param actor
+         * @param x
+         * @param y
          */
-        setAnchor : function( anchor ) {
-            this.anchor= anchor;
+        setAnchor : function( actor, x, y ) {
+            this.anchorX= x/actor.width;
+            this.anchorY= y/actor.height;
+
             return this;
         }
 	};

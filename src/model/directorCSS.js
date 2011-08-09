@@ -255,7 +255,13 @@
                 var c= this.childrenList[i];
                 if (c.isInAnimationFrame(this.time)) {
                     tt = c.time - c.start_time;
+                    if ( c.onRenderStart ) {
+                        c.onRenderStart(tt);
+                    }
                     c.paintActor(this, tt);
+                    if ( c.onRenderEnd ) {
+                        c.onRenderEnd(tt);
+                    }
                     c.time += time;
                 }
             }
@@ -594,20 +600,6 @@
                 this.easeInOutRandom(currentSceneIndex + 1, currentSceneIndex, time, alpha);
             }
         },
-/*
-        mouseEnter : function(mouseEvent) {
-        },
-        mouseExit : function(mouseEvent) {
-        },
-        mouseMove : function(mouseEvent) {
-        },
-        mouseDown : function(mouseEvent) {
-        },
-        mouseUp : function(mouseEvent) {
-        },
-        mouseDrag : function(mouseEvent) {
-        },
-*/
         /**
          * Scene easing listener. Notifies scenes when they're about to be activated (set as current
          * director's scene).

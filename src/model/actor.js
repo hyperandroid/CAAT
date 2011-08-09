@@ -132,6 +132,8 @@
          * Canvas to the function). That means the size will be set to [width:SpriteImage.singleWidth,
          * height:singleHeight].
          *
+         * WARN: if using a CSS renderer, the image supplied MUST be a HTMLImageElement instance.
+         *
          * @see CAAT.SpriteImage
          *
          * @param image {Image|Canvas|CAAT.SpriteImage}
@@ -141,7 +143,8 @@
          */
         setBackgroundImage : function(image, adjust_size_to_image ) {
             if ( image ) {
-                if ( image instanceof Image ) {
+//                if ( image instanceof Image ) {
+                if ( !(image instanceof CAAT.SpriteImage) ) {
                     image= new CAAT.SpriteImage().initialize(image,1,1);
                 }
 
@@ -202,6 +205,13 @@
                 this.backgroundImage.setAnimationImageIndex(ii);
             }
             return this;
+        },
+        setChangeFPS : function(time) {
+            if ( this.backgroundImage ) {
+                this.backgroundImage.setChangeFPS(time);
+            }
+            return this;
+
         },
         /**
          * Set this background image transformation.
@@ -1270,7 +1280,7 @@
         /**
          *
          * @param time {Number=}
-         * @return canvas
+         * @return this
          */
         cacheAsBitmap : function(time) {
             time= time||0;
@@ -1285,7 +1295,7 @@
 
             this.paintActor(director,time);
             this.setBackgroundImage(canvas);
-            return canvas;
+            return this;
         },
         /**
          * Set this actor behavior as if it were a Button. The actor size will be set as SpriteImage's
@@ -2362,6 +2372,11 @@
          * @param time an integer with the Scene time the Actor is being drawn.
          */
 		paint : function(director, time) {
+
+            if ( this.backgroundImage ) {   // cached
+                CAAT.TextActor.superclass.paint.call(this, director, time );
+                return ;
+            }
 
 			if ( null===this.text) {
 				return;

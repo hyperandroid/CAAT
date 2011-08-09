@@ -420,7 +420,14 @@
                     var c = this.childrenList[i];
                     if (c.isInAnimationFrame(this.time)) {
                         tt = c.time - c.start_time;
+                        if ( c.onRenderStart ) {
+                            c.onRenderStart(tt);
+                        }
                         c.paintActorGL(this, tt);
+                        if ( c.onRenderEnd ) {
+                            c.onRenderEnd(tt);
+                        }
+
                         c.time += time;
                     }
                 }
@@ -440,7 +447,13 @@
                     if (c.isInAnimationFrame(this.time)) {
                         tt = c.time - c.start_time;
                         this.ctx.save();
+                        if ( c.onRenderStart ) {
+                            c.onRenderStart(tt);
+                        }
                         c.paintActor(this, tt);
+                        if ( c.onRenderEnd ) {
+                            c.onRenderEnd(tt);
+                        }
                         this.ctx.restore();
                         if (this.debug) {
                             this.ctx.strokeStyle = 'red';

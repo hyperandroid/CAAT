@@ -45,7 +45,7 @@ CAAT.SetCSSRenderer= function() {
     CAAT.ActorContainer= CAAT.ActorContainerCSS;
     CAAT.Scene= CAAT.SceneCSS;
     CAAT.Director= CAAT.DirectorCSS;
-}
+};
 
 Function.prototype.bind= function() {
     var fn=     this;                                   // the function
@@ -56,4 +56,4 @@ Function.prototype.bind= function() {
                 obj,
                 args.concat(Array.prototype.slice.call(arguments)));
     }
-}
+};

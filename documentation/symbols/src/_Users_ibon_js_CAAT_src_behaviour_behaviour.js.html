@@ -434,436 +434,451 @@
 <span class='line'>427</span> </span><span class="WHIT">	
 <span class='line'>428</span> 		</span><span class="NAME">startAngle</span><span class="PUNC">:</span><span class="WHIT">	</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">  </span><span class="COMM">// behavior start angle</span><span class="WHIT">
 <span class='line'>429</span> </span><span class="WHIT">		</span><span class="NAME">endAngle</span><span class="PUNC">:</span><span class="WHIT">	</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">  </span><span class="COMM">// behavior end angle</span><span class="WHIT">
-<span class='line'>430</span> </span><span class="WHIT">		</span><span class="NAME">anchor</span><span class="PUNC">:</span><span class="WHIT">		</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">  </span><span class="COMM">// rotation anchor</span><span class="WHIT">
-<span class='line'>431</span> </span><span class="WHIT">        </span><span class="NAME">rx</span><span class="PUNC">:</span><span class="WHIT">         </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">  </span><span class="COMM">// rotation center x.</span><span class="WHIT">
-<span class='line'>432</span> </span><span class="WHIT">        </span><span class="NAME">ry</span><span class="PUNC">:</span><span class="WHIT">         </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">  </span><span class="COMM">// rotation center y.</span><span class="WHIT">
-<span class='line'>433</span> 
-<span class='line'>434</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>435</span>          * Behavior application function.
-<span class='line'>436</span>          * Do not call directly.
-<span class='line'>437</span>          * @param time an integer indicating the application time.
-<span class='line'>438</span>          * @param actor a CAAT.Actor the behavior will be applied to.
-<span class='line'>439</span>          * @return the set angle.
-<span class='line'>440</span>          */</span><span class="WHIT">
-<span class='line'>441</span> </span><span class="WHIT">		</span><span class="NAME">setForTime</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>442</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">angle</span><span class="PUNC">=</span><span class="WHIT"> 
-<span class='line'>443</span> 				</span><span class="NAME">this.startAngle</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">*</span><span class="PUNC">(</span><span class="NAME">this.endAngle</span><span class="PUNC">-</span><span class="NAME">this.startAngle</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>444</span> 
-<span class='line'>445</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.anchor</span><span class="PUNC">===</span><span class="NAME">CAAT.Actor.prototype.ANCHOR_CUSTOM</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>446</span> </span><span class="WHIT">                </span><span class="NAME">actor.setRotationAnchored</span><span class="PUNC">(</span><span class="NAME">angle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.rx</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.ry</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>447</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>448</span> </span><span class="WHIT">			    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">obj</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">actor.getAnchor</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.anchor</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>449</span> </span><span class="WHIT">			    </span><span class="NAME">actor.setRotationAnchored</span><span class="PUNC">(</span><span class="NAME">angle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">obj.x</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">obj.y</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>450</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>451</span> 
-<span class='line'>452</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">angle</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>453</span> </span><span class="WHIT">			
-<span class='line'>454</span> 		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>455</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>456</span>          * Set behavior bound values.
-<span class='line'>457</span>          * @param startAngle a float indicating the starting angle.
-<span class='line'>458</span>          * @param endAngle a float indicating the ending angle.
-<span class='line'>459</span>          */</span><span class="WHIT">
-<span class='line'>460</span> </span><span class="WHIT">        </span><span class="NAME">setValues</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">startAngle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">endAngle</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>461</span> </span><span class="WHIT">            </span><span class="NAME">this.startAngle</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">startAngle</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>462</span> </span><span class="WHIT">            </span><span class="NAME">this.endAngle</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">endAngle</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>463</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>464</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>465</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>466</span>          * @deprecated
-<span class='line'>467</span>          * Use setValues instead
-<span class='line'>468</span>          * @param start
-<span class='line'>469</span>          * @param end
-<span class='line'>470</span>          */</span><span class="WHIT">
-<span class='line'>471</span> </span><span class="WHIT">        </span><span class="NAME">setAngles</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">start</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">end</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>472</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.setValues</span><span class="PUNC">(</span><span class="NAME">start</span><span class="PUNC">,</span><span class="NAME">end</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>473</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>474</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>475</span>          * Set the behavior rotation anchor.
-<span class='line'>476</span>          * @see CAAT.Actor
-<span class='line'>477</span>          * @param anchor any of CAAT.Actor.prototype.ANCHOR_* constants.
-<span class='line'>478</span>          *
-<span class='line'>479</span>          * These parameters are to set a custom rotation anchor point. if &lt;code>anchor==CAAT.Actor.prototype.ANCHOR_CUSTOM
-<span class='line'>480</span>          * &lt;/code> the custom rotation point is set.
-<span class='line'>481</span>          * @param rx
-<span class='line'>482</span>          * @param ry
-<span class='line'>483</span>          */</span><span class="WHIT">
-<span class='line'>484</span> </span><span class="WHIT">        </span><span class="NAME">setAnchor</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">anchor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">rx</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ry</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>485</span> </span><span class="WHIT">            </span><span class="NAME">this.anchor</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">anchor</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>486</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">anchor</span><span class="PUNC">===</span><span class="NAME">CAAT.Actor.prototype.ANCHOR_CUSTOM</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>487</span> </span><span class="WHIT">                </span><span class="NAME">this.rx</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">rx</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>488</span> </span><span class="WHIT">                </span><span class="NAME">this.ry</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">ry</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>489</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>490</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>491</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>492</span> </span><span class="WHIT">		
-<span class='line'>493</span> 	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>494</span> 
-<span class='line'>495</span> </span><span class="WHIT">    </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.RotateBehavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>496</span> </span><span class="WHIT">    
-<span class='line'>497</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>498</span> 
-<span class='line'>499</span> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>500</span> </span><span class="WHIT">    </span><span class="COMM">/**
-<span class='line'>501</span>      * &lt;p>
-<span class='line'>502</span>      * A generic behavior is supposed to be extended to create new behaviors when the out-of-the-box
-<span class='line'>503</span>      * ones are not sufficient. It applies the behavior result to a given target object in two ways:
-<span class='line'>504</span>      *
-<span class='line'>505</span>      * &lt;ol>
-<span class='line'>506</span>      * &lt;li>defining the property parameter: the toolkit will perform target_object[property]= calculated_value_for_time.
-<span class='line'>507</span>      * &lt;li>defining a callback function. Sometimes setting of a property is not enough. In example,
-<span class='line'>508</span>      * for a give property in a DOM element, it is needed to set object.style['left']= '70px';
-<span class='line'>509</span>      * With the property approach, you won't be able to add de 'px' suffix to the value, and hence won't
-<span class='line'>510</span>      * work correctly. The function callback will allow to take control by receiving as parameters the
-<span class='line'>511</span>      * target object, and the calculated value to apply by the behavior for the given time.
-<span class='line'>512</span>      * &lt;/ol>
-<span class='line'>513</span>      *
-<span class='line'>514</span>      * &lt;p>
-<span class='line'>515</span>      * For example, this code will move a dom element from 0 to 400 px on x during 1 second:
-<span class='line'>516</span>      * &lt;code>
-<span class='line'>517</span>      * &lt;p>
-<span class='line'>518</span>      * var enterBehavior= new CAAT.GenericBehavior(). &lt;br>
-<span class='line'>519</span>      * &nbsp;&nbsp;setFrameTime( scene.time, 1000 ). &lt;br>
-<span class='line'>520</span>      * &nbsp;&nbsp;setValues( &lt;br>
-<span class='line'>521</span>      * &nbsp;&nbsp;&nbsp;&nbsp;0, &lt;br>
-<span class='line'>522</span>      * &nbsp;&nbsp;&nbsp;&nbsp;400, &lt;br>
-<span class='line'>523</span>      * &nbsp;&nbsp;&nbsp;&nbsp;domElement, &lt;br>
-<span class='line'>524</span>      * &nbsp;&nbsp;&nbsp;&nbsp;null, &lt;br>
-<span class='line'>525</span>      * &nbsp;&nbsp;&nbsp;&nbsp;function( currentValue, target ) { &lt;br>
-<span class='line'>526</span>      * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;target.style['left']= currentValue+'px'; &lt;br>
-<span class='line'>527</span>      * &nbsp;&nbsp;&nbsp;&nbsp;} &lt;br>
-<span class='line'>528</span>      * &nbsp;&nbsp;); &lt;br>
-<span class='line'>529</span>      * &lt;/code>
-<span class='line'>530</span>      *
-<span class='line'>531</span>      * @constructor
-<span class='line'>532</span>      * @extends CAAT.Behavior
-<span class='line'>533</span>      *
-<span class='line'>534</span>      */</span><span class="WHIT">
-<span class='line'>535</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.GenericBehavior</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>536</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.GenericBehavior.superclass.constructor.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>537</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>538</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>539</span> 
-<span class='line'>540</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.GenericBehavior.prototype</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>541</span> 
-<span class='line'>542</span> </span><span class="WHIT">        </span><span class="NAME">start</span><span class="PUNC">:</span><span class="WHIT">      </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>543</span> </span><span class="WHIT">        </span><span class="NAME">end</span><span class="PUNC">:</span><span class="WHIT">        </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>544</span> </span><span class="WHIT">        </span><span class="NAME">target</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>545</span> </span><span class="WHIT">        </span><span class="NAME">property</span><span class="PUNC">:</span><span class="WHIT">   </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>546</span> </span><span class="WHIT">        </span><span class="NAME">callback</span><span class="PUNC">:</span><span class="WHIT">   </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>547</span> 
-<span class='line'>548</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>549</span>          * Sets the target objects property to the corresponding value for the given time.
-<span class='line'>550</span>          * If a callback function is defined, it is called as well.
-<span class='line'>551</span>          *
-<span class='line'>552</span>          * @param time {number} the scene time to apply the behavior at.
-<span class='line'>553</span>          * @param actor {CAAT.Actor} a CAAT.Actor object instance.
-<span class='line'>554</span>          */</span><span class="WHIT">
-<span class='line'>555</span> </span><span class="WHIT">        </span><span class="NAME">setForTime</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>556</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.start</span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">*</span><span class="PUNC">(</span><span class="NAME">this.end</span><span class="PUNC">-</span><span class="NAME">this.start</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>557</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.callback</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>558</span> </span><span class="WHIT">                </span><span class="NAME">this.callback</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.target</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>559</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>560</span> 
-<span class='line'>561</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.property</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>562</span> </span><span class="WHIT">                </span><span class="NAME">this.target</span><span class="PUNC">[</span><span class="NAME">this.property</span><span class="PUNC">]</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>563</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>564</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>565</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>566</span>          * Defines the values to apply this behavior.
-<span class='line'>567</span>          *
-<span class='line'>568</span>          * @param start {number} initial behavior value.
-<span class='line'>569</span>          * @param end {number} final behavior value.
-<span class='line'>570</span>          * @param target {object} an object. Usually a CAAT.Actor.
-<span class='line'>571</span>          * @param property {string} target object's property to set value to.
-<span class='line'>572</span>          * @param callback {function} a function of the form &lt;code>function( target, value )&lt;/code>.
-<span class='line'>573</span>          */</span><span class="WHIT">
-<span class='line'>574</span> </span><span class="WHIT">        </span><span class="NAME">setValues</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">start</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">end</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">target</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">property</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callback</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>575</span> </span><span class="WHIT">            </span><span class="NAME">this.start</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">start</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>576</span> </span><span class="WHIT">            </span><span class="NAME">this.end</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">end</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>577</span> </span><span class="WHIT">            </span><span class="NAME">this.target</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">target</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>578</span> </span><span class="WHIT">            </span><span class="NAME">this.property</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">property</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>579</span> </span><span class="WHIT">            </span><span class="NAME">this.callback</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">callback</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>580</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>581</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>582</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>583</span> 
-<span class='line'>584</span> </span><span class="WHIT">    </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.GenericBehavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>585</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>586</span> 
-<span class='line'>587</span> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>430</span> </span><span class="WHIT">        </span><span class="NAME">anchorX</span><span class="PUNC">:</span><span class="WHIT">    </span><span class="PUNC">.</span><span class="NUMB">50</span><span class="PUNC">,</span><span class="WHIT">  </span><span class="COMM">// rotation center x.</span><span class="WHIT">
+<span class='line'>431</span> </span><span class="WHIT">        </span><span class="NAME">anchorY</span><span class="PUNC">:</span><span class="WHIT">    </span><span class="PUNC">.</span><span class="NUMB">50</span><span class="PUNC">,</span><span class="WHIT">  </span><span class="COMM">// rotation center y.</span><span class="WHIT">
+<span class='line'>432</span> 
+<span class='line'>433</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>434</span>          * Behavior application function.
+<span class='line'>435</span>          * Do not call directly.
+<span class='line'>436</span>          * @param time an integer indicating the application time.
+<span class='line'>437</span>          * @param actor a CAAT.Actor the behavior will be applied to.
+<span class='line'>438</span>          * @return the set angle.
+<span class='line'>439</span>          */</span><span class="WHIT">
+<span class='line'>440</span> </span><span class="WHIT">		</span><span class="NAME">setForTime</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>441</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">angle</span><span class="PUNC">=</span><span class="WHIT"> 
+<span class='line'>442</span> 				</span><span class="NAME">this.startAngle</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">*</span><span class="PUNC">(</span><span class="NAME">this.endAngle</span><span class="PUNC">-</span><span class="NAME">this.startAngle</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>443</span> 
+<span class='line'>444</span> </span><span class="WHIT">            </span><span class="NAME">actor.setRotationAnchored</span><span class="PUNC">(</span><span class="NAME">angle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.anchorX</span><span class="PUNC">*</span><span class="NAME">actor.width</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.anchorY</span><span class="PUNC">*</span><span class="NAME">actor.height</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>445</span> 
+<span class='line'>446</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">angle</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>447</span> </span><span class="WHIT">			
+<span class='line'>448</span> 		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>449</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>450</span>          * Set behavior bound values.
+<span class='line'>451</span>          * if no anchorx,anchory values are supplied, the behavior will assume
+<span class='line'>452</span>          * 50% for both values, that is, the actor's center.
+<span class='line'>453</span>          *
+<span class='line'>454</span>          * Be aware the anchor values are supplied in &lt;b>RELATIVE PERCENT&lt;/b> to
+<span class='line'>455</span>          * actor's size.
+<span class='line'>456</span>          *
+<span class='line'>457</span>          * @param startAngle {float} indicating the starting angle.
+<span class='line'>458</span>          * @param endAngle {float} indicating the ending angle.
+<span class='line'>459</span>          * @param anchorx {float} the percent position for anchorX
+<span class='line'>460</span>          * @param anchory {float} the percent position for anchorY
+<span class='line'>461</span>          */</span><span class="WHIT">
+<span class='line'>462</span> </span><span class="WHIT">        </span><span class="NAME">setValues</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">startAngle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">endAngle</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">anchorx</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">anchory</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>463</span> </span><span class="WHIT">            </span><span class="NAME">this.startAngle</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">startAngle</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>464</span> </span><span class="WHIT">            </span><span class="NAME">this.endAngle</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">endAngle</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>465</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">anchorx</span><span class="PUNC">!==</span><span class="NAME">undefined</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">anchory</span><span class="PUNC">!==</span><span class="NAME">undefined</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>466</span> </span><span class="WHIT">                </span><span class="NAME">this.anchorX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">anchorx</span><span class="PUNC">/</span><span class="NUMB">100</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>467</span> </span><span class="WHIT">                </span><span class="NAME">this.anchorY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">anchory</span><span class="PUNC">/</span><span class="NUMB">100</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>468</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>469</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>470</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>471</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>472</span>          * @deprecated
+<span class='line'>473</span>          * Use setValues instead
+<span class='line'>474</span>          * @param start
+<span class='line'>475</span>          * @param end
+<span class='line'>476</span>          */</span><span class="WHIT">
+<span class='line'>477</span> </span><span class="WHIT">        </span><span class="NAME">setAngles</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">start</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">end</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>478</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.setValues</span><span class="PUNC">(</span><span class="NAME">start</span><span class="PUNC">,</span><span class="NAME">end</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>479</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>480</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>481</span>          * Set the behavior rotation anchor. Use this method when setting an exact percent
+<span class='line'>482</span>          * by calling setValues is complicated.
+<span class='line'>483</span>          * @see CAAT.Actor
+<span class='line'>484</span>          * @param anchor any of CAAT.Actor.prototype.ANCHOR_* constants.
+<span class='line'>485</span>          *
+<span class='line'>486</span>          * These parameters are to set a custom rotation anchor point. if &lt;code>anchor==CAAT.Actor.prototype.ANCHOR_CUSTOM
+<span class='line'>487</span>          * &lt;/code> the custom rotation point is set.
+<span class='line'>488</span>          * @param rx
+<span class='line'>489</span>          * @param ry
+<span class='line'>490</span>          *
+<span class='line'>491</span>          */</span><span class="WHIT">
+<span class='line'>492</span> </span><span class="WHIT">        </span><span class="NAME">setAnchor</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">rx</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ry</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>493</span> </span><span class="WHIT">            </span><span class="NAME">this.anchorX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">rx</span><span class="PUNC">/</span><span class="NAME">actor.width</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>494</span> </span><span class="WHIT">            </span><span class="NAME">this.anchorY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">ry</span><span class="PUNC">/</span><span class="NAME">actor.height</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>495</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>496</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>497</span> </span><span class="WHIT">		
+<span class='line'>498</span> 	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>499</span> 
+<span class='line'>500</span> </span><span class="WHIT">    </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.RotateBehavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>501</span> </span><span class="WHIT">    
+<span class='line'>502</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>503</span> 
+<span class='line'>504</span> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>505</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>506</span>      * &lt;p>
+<span class='line'>507</span>      * A generic behavior is supposed to be extended to create new behaviors when the out-of-the-box
+<span class='line'>508</span>      * ones are not sufficient. It applies the behavior result to a given target object in two ways:
+<span class='line'>509</span>      *
+<span class='line'>510</span>      * &lt;ol>
+<span class='line'>511</span>      * &lt;li>defining the property parameter: the toolkit will perform target_object[property]= calculated_value_for_time.
+<span class='line'>512</span>      * &lt;li>defining a callback function. Sometimes setting of a property is not enough. In example,
+<span class='line'>513</span>      * for a give property in a DOM element, it is needed to set object.style['left']= '70px';
+<span class='line'>514</span>      * With the property approach, you won't be able to add de 'px' suffix to the value, and hence won't
+<span class='line'>515</span>      * work correctly. The function callback will allow to take control by receiving as parameters the
+<span class='line'>516</span>      * target object, and the calculated value to apply by the behavior for the given time.
+<span class='line'>517</span>      * &lt;/ol>
+<span class='line'>518</span>      *
+<span class='line'>519</span>      * &lt;p>
+<span class='line'>520</span>      * For example, this code will move a dom element from 0 to 400 px on x during 1 second:
+<span class='line'>521</span>      * &lt;code>
+<span class='line'>522</span>      * &lt;p>
+<span class='line'>523</span>      * var enterBehavior= new CAAT.GenericBehavior(). &lt;br>
+<span class='line'>524</span>      * &nbsp;&nbsp;setFrameTime( scene.time, 1000 ). &lt;br>
+<span class='line'>525</span>      * &nbsp;&nbsp;setValues( &lt;br>
+<span class='line'>526</span>      * &nbsp;&nbsp;&nbsp;&nbsp;0, &lt;br>
+<span class='line'>527</span>      * &nbsp;&nbsp;&nbsp;&nbsp;400, &lt;br>
+<span class='line'>528</span>      * &nbsp;&nbsp;&nbsp;&nbsp;domElement, &lt;br>
+<span class='line'>529</span>      * &nbsp;&nbsp;&nbsp;&nbsp;null, &lt;br>
+<span class='line'>530</span>      * &nbsp;&nbsp;&nbsp;&nbsp;function( currentValue, target ) { &lt;br>
+<span class='line'>531</span>      * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;target.style['left']= currentValue+'px'; &lt;br>
+<span class='line'>532</span>      * &nbsp;&nbsp;&nbsp;&nbsp;} &lt;br>
+<span class='line'>533</span>      * &nbsp;&nbsp;); &lt;br>
+<span class='line'>534</span>      * &lt;/code>
+<span class='line'>535</span>      *
+<span class='line'>536</span>      * @constructor
+<span class='line'>537</span>      * @extends CAAT.Behavior
+<span class='line'>538</span>      *
+<span class='line'>539</span>      */</span><span class="WHIT">
+<span class='line'>540</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.GenericBehavior</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>541</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.GenericBehavior.superclass.constructor.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>542</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>543</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>544</span> 
+<span class='line'>545</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.GenericBehavior.prototype</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>546</span> 
+<span class='line'>547</span> </span><span class="WHIT">        </span><span class="NAME">start</span><span class="PUNC">:</span><span class="WHIT">      </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>548</span> </span><span class="WHIT">        </span><span class="NAME">end</span><span class="PUNC">:</span><span class="WHIT">        </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>549</span> </span><span class="WHIT">        </span><span class="NAME">target</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>550</span> </span><span class="WHIT">        </span><span class="NAME">property</span><span class="PUNC">:</span><span class="WHIT">   </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>551</span> </span><span class="WHIT">        </span><span class="NAME">callback</span><span class="PUNC">:</span><span class="WHIT">   </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>552</span> 
+<span class='line'>553</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>554</span>          * Sets the target objects property to the corresponding value for the given time.
+<span class='line'>555</span>          * If a callback function is defined, it is called as well.
+<span class='line'>556</span>          *
+<span class='line'>557</span>          * @param time {number} the scene time to apply the behavior at.
+<span class='line'>558</span>          * @param actor {CAAT.Actor} a CAAT.Actor object instance.
+<span class='line'>559</span>          */</span><span class="WHIT">
+<span class='line'>560</span> </span><span class="WHIT">        </span><span class="NAME">setForTime</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>561</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.start</span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">*</span><span class="PUNC">(</span><span class="NAME">this.end</span><span class="PUNC">-</span><span class="NAME">this.start</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>562</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.callback</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>563</span> </span><span class="WHIT">                </span><span class="NAME">this.callback</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.target</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>564</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>565</span> 
+<span class='line'>566</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.property</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>567</span> </span><span class="WHIT">                </span><span class="NAME">this.target</span><span class="PUNC">[</span><span class="NAME">this.property</span><span class="PUNC">]</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>568</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>569</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>570</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>571</span>          * Defines the values to apply this behavior.
+<span class='line'>572</span>          *
+<span class='line'>573</span>          * @param start {number} initial behavior value.
+<span class='line'>574</span>          * @param end {number} final behavior value.
+<span class='line'>575</span>          * @param target {object} an object. Usually a CAAT.Actor.
+<span class='line'>576</span>          * @param property {string} target object's property to set value to.
+<span class='line'>577</span>          * @param callback {function} a function of the form &lt;code>function( target, value )&lt;/code>.
+<span class='line'>578</span>          */</span><span class="WHIT">
+<span class='line'>579</span> </span><span class="WHIT">        </span><span class="NAME">setValues</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">start</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">end</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">target</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">property</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callback</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>580</span> </span><span class="WHIT">            </span><span class="NAME">this.start</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">start</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>581</span> </span><span class="WHIT">            </span><span class="NAME">this.end</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">end</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>582</span> </span><span class="WHIT">            </span><span class="NAME">this.target</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">target</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>583</span> </span><span class="WHIT">            </span><span class="NAME">this.property</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">property</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>584</span> </span><span class="WHIT">            </span><span class="NAME">this.callback</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">callback</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>585</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>586</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>587</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>588</span> 
-<span class='line'>589</span> </span><span class="WHIT">    </span><span class="COMM">/**
-<span class='line'>590</span>      * ScaleBehavior applies scale affine transforms in both axis.
-<span class='line'>591</span>      * StartScale and EndScale must be supplied for each axis. This method takes care of a FF bug in which if a Scale is
-<span class='line'>592</span>      * set to 0, the animation will fail playing.
-<span class='line'>593</span>      *
-<span class='line'>594</span>      * @constructor
-<span class='line'>595</span>      * @extends CAAT.Behavior
-<span class='line'>596</span>      *
-<span class='line'>597</span>      */</span><span class="WHIT">
-<span class='line'>598</span> </span><span class="WHIT">	</span><span class="NAME">CAAT.ScaleBehavior</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>599</span> </span><span class="WHIT">		</span><span class="NAME">CAAT.ScaleBehavior.superclass.constructor.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>600</span> </span><span class="WHIT">		</span><span class="NAME">this.anchor</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CAAT.Actor.prototype.ANCHOR_CENTER</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>601</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">		
-<span class='line'>602</span> 	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>603</span> </span><span class="WHIT">	
-<span class='line'>604</span> 	</span><span class="NAME">CAAT.ScaleBehavior.prototype</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>605</span> </span><span class="WHIT">        </span><span class="NAME">startScaleX</span><span class="PUNC">:</span><span class="WHIT">    </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>606</span> </span><span class="WHIT">        </span><span class="NAME">endScaleX</span><span class="PUNC">:</span><span class="WHIT">      </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>607</span> </span><span class="WHIT">        </span><span class="NAME">startScaleY</span><span class="PUNC">:</span><span class="WHIT">    </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>608</span> </span><span class="WHIT">        </span><span class="NAME">endScaleY</span><span class="PUNC">:</span><span class="WHIT">	    </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>609</span> </span><span class="WHIT">        </span><span class="NAME">anchor</span><span class="PUNC">:</span><span class="WHIT">		    </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>610</span> 
-<span class='line'>611</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>612</span>          * Applies corresponding scale values for a given time.
-<span class='line'>613</span>          * 
-<span class='line'>614</span>          * @param time the time to apply the scale for.
-<span class='line'>615</span>          * @param actor the target actor to Scale.
-<span class='line'>616</span>          * @return {object} an object of the form &lt;code>{ scaleX: {float}, scaleY: {float}�}&lt;/code>
-<span class='line'>617</span>          */</span><span class="WHIT">
-<span class='line'>618</span> </span><span class="WHIT">		</span><span class="NAME">setForTime</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>619</span> 
-<span class='line'>620</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">scaleX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.startScaleX</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">*</span><span class="PUNC">(</span><span class="NAME">this.endScaleX</span><span class="PUNC">-</span><span class="NAME">this.startScaleX</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>621</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">scaleY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.startScaleY</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">*</span><span class="PUNC">(</span><span class="NAME">this.endScaleY</span><span class="PUNC">-</span><span class="NAME">this.startScaleY</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>622</span> 
-<span class='line'>623</span> </span><span class="WHIT">            </span><span class="COMM">// Firefox 3.x & 4, will crash animation if either scaleX or scaleY equals 0.</span><span class="WHIT">
-<span class='line'>624</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">===</span><span class="NAME">scaleX</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>625</span> </span><span class="WHIT">                </span><span class="NAME">scaleX</span><span class="PUNC">=</span><span class="NUMB">0.01</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>626</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>627</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">===</span><span class="NAME">scaleY</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>628</span> </span><span class="WHIT">                </span><span class="NAME">scaleY</span><span class="PUNC">=</span><span class="NUMB">0.01</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>629</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>630</span> 
-<span class='line'>631</span> </span><span class="WHIT">			</span><span class="NAME">actor.setScaleAnchored</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">scaleX</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">scaleY</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.anchor</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>632</span> 
-<span class='line'>633</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">scaleX</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">scaleX</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">scaleY</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">scaleY</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>634</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>635</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>636</span>          * Define this scale behaviors values.
-<span class='line'>637</span>          *
-<span class='line'>638</span>          * @param startX {number} initial X axis scale value.
-<span class='line'>639</span>          * @param endX {number} final X axis scale value.
-<span class='line'>640</span>          * @param startY {number} initial Y axis scale value.
-<span class='line'>641</span>          * @param endY {number} final Y axis scale value.
-<span class='line'>642</span>          *
-<span class='line'>643</span>          * @return this.
-<span class='line'>644</span>          */</span><span class="WHIT">
-<span class='line'>645</span> </span><span class="WHIT">        </span><span class="NAME">setValues</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">startX</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">endX</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">startY</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">endY</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>646</span> </span><span class="WHIT">            </span><span class="NAME">this.startScaleX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">startX</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>647</span> </span><span class="WHIT">            </span><span class="NAME">this.endScaleX</span><span class="PUNC">=</span><span class="WHIT">   </span><span class="NAME">endX</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>648</span> </span><span class="WHIT">            </span><span class="NAME">this.startScaleY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">startY</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>649</span> </span><span class="WHIT">            </span><span class="NAME">this.endScaleY</span><span class="PUNC">=</span><span class="WHIT">   </span><span class="NAME">endY</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>650</span> 
-<span class='line'>651</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>652</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>653</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>654</span>          * &lt;p>
-<span class='line'>655</span>          * Defines scale application anchor.
-<span class='line'>656</span>          * &lt;p>
-<span class='line'>657</span>          * Any of CAAT.Actor.ANCHOR_xxxx values.
-<span class='line'>658</span>          *
-<span class='line'>659</span>          * @param anchor {number} any of CAAT.Actor.ANCHOR_xxxx constant values.
-<span class='line'>660</span>          *
-<span class='line'>661</span>          * @return this.
-<span class='line'>662</span>          */</span><span class="WHIT">
-<span class='line'>663</span> </span><span class="WHIT">        </span><span class="NAME">setAnchor</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">anchor</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>664</span> </span><span class="WHIT">            </span><span class="NAME">this.anchor</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">anchor</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>665</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>666</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>667</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>668</span> 
-<span class='line'>669</span> </span><span class="WHIT">    </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.ScaleBehavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>670</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>671</span> 
-<span class='line'>672</span> 
-<span class='line'>673</span> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>674</span> </span><span class="WHIT">    </span><span class="COMM">/**
-<span class='line'>675</span>      * AlphaBehavior modifies alpha composition property for an actor.
-<span class='line'>676</span>      *
-<span class='line'>677</span>      * @constructor
-<span class='line'>678</span>      * @extends CAAT.Behavior
-<span class='line'>679</span>      */</span><span class="WHIT">
-<span class='line'>680</span> </span><span class="WHIT">	</span><span class="NAME">CAAT.AlphaBehavior</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>681</span> </span><span class="WHIT">		</span><span class="NAME">CAAT.AlphaBehavior.superclass.constructor.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>682</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>683</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>684</span> </span><span class="WHIT">	
-<span class='line'>685</span> 	</span><span class="NAME">CAAT.AlphaBehavior.prototype</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>686</span> </span><span class="WHIT">		</span><span class="NAME">startAlpha</span><span class="PUNC">:</span><span class="WHIT">	</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>687</span> </span><span class="WHIT">		</span><span class="NAME">endAlpha</span><span class="PUNC">:</span><span class="WHIT">	</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>688</span> 
-<span class='line'>689</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>690</span>          * Applies corresponding alpha transparency value for a given time.
-<span class='line'>691</span>          *
-<span class='line'>692</span>          * @param time the time to apply the scale for.
-<span class='line'>693</span>          * @param actor the target actor to set transparency for.
-<span class='line'>694</span>          * @return {number} the alpha value set. Normalized from 0 (total transparency) to 1 (total opacity)
-<span class='line'>695</span>          */</span><span class="WHIT">
-<span class='line'>696</span> </span><span class="WHIT">		</span><span class="NAME">setForTime</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>697</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">alpha</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.startAlpha</span><span class="PUNC">+</span><span class="NAME">time</span><span class="PUNC">*</span><span class="PUNC">(</span><span class="NAME">this.endAlpha</span><span class="PUNC">-</span><span class="NAME">this.startAlpha</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>698</span> </span><span class="WHIT">            </span><span class="NAME">actor.setAlpha</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">alpha</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>699</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">alpha</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>700</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>701</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>702</span>          * Set alpha transparency minimum and maximum value.
-<span class='line'>703</span>          * This value can be coerced by Actor's property isGloblAlpha.
-<span class='line'>704</span>          *
-<span class='line'>705</span>          * @param start {number} a float indicating the starting alpha value.
-<span class='line'>706</span>          * @param end {number} a float indicating the ending alpha value.
-<span class='line'>707</span>          */</span><span class="WHIT">
-<span class='line'>708</span> </span><span class="WHIT">        </span><span class="NAME">setValues</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">start</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">end</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>709</span> </span><span class="WHIT">            </span><span class="NAME">this.startAlpha</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">start</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>710</span> </span><span class="WHIT">            </span><span class="NAME">this.endAlpha</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">end</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>711</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>712</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>713</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>714</span> 
-<span class='line'>715</span> </span><span class="WHIT">    </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.AlphaBehavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>716</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>717</span> 
-<span class='line'>718</span> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>719</span> </span><span class="WHIT">    </span><span class="COMM">/**
-<span class='line'>720</span>      * CAAT.PathBehavior modifies the position of a CAAT.Actor along the path represented by an
-<span class='line'>721</span>      * instance of &lt;code>CAAT.Path&lt;/code>.
-<span class='line'>722</span>      *
-<span class='line'>723</span>      * @constructor
-<span class='line'>724</span>      * @extends CAAT.Behavior
-<span class='line'>725</span>      *
-<span class='line'>726</span>      */</span><span class="WHIT">
-<span class='line'>727</span> </span><span class="WHIT">	</span><span class="NAME">CAAT.PathBehavior</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>728</span> </span><span class="WHIT">		</span><span class="NAME">CAAT.PathBehavior.superclass.constructor.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>729</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>730</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>731</span> 
-<span class='line'>732</span> </span><span class="WHIT">	</span><span class="NAME">CAAT.PathBehavior.prototype</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>733</span> </span><span class="WHIT">		</span><span class="NAME">path</span><span class="PUNC">:</span><span class="WHIT">           </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">   </span><span class="COMM">// the path to traverse</span><span class="WHIT">
-<span class='line'>734</span> </span><span class="WHIT">        </span><span class="NAME">autoRotate</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT">    </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">  </span><span class="COMM">// set whether the actor must be rotated tangentially to the path.</span><span class="WHIT">
-<span class='line'>735</span> </span><span class="WHIT">        </span><span class="NAME">prevX</span><span class="PUNC">:</span><span class="WHIT">          </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="WHIT">     </span><span class="COMM">// private, do not use.</span><span class="WHIT">
-<span class='line'>736</span> </span><span class="WHIT">        </span><span class="NAME">prevY</span><span class="PUNC">:</span><span class="WHIT">          </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="WHIT">     </span><span class="COMM">// private, do not use.</span><span class="WHIT">
-<span class='line'>737</span> 
-<span class='line'>738</span> </span><span class="WHIT">        </span><span class="NAME">translateX</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>739</span> </span><span class="WHIT">        </span><span class="NAME">translateY</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>740</span> 
-<span class='line'>741</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>742</span>          * Sets an actor rotation to be heading from past to current path's point.
-<span class='line'>743</span>          * Take into account that this will be incompatible with rotation Behaviors
-<span class='line'>744</span>          * since they will set their own rotation configuration.
-<span class='line'>745</span>          * @param autorotate {boolean}
-<span class='line'>746</span>          * @return this.
-<span class='line'>747</span>          */</span><span class="WHIT">
-<span class='line'>748</span> </span><span class="WHIT">        </span><span class="NAME">setAutoRotate</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">autorotate</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>749</span> </span><span class="WHIT">            </span><span class="NAME">this.autoRotate</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">autorotate</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>750</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>751</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>752</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>753</span>          * Set the behavior path.
-<span class='line'>754</span>          * The path can be any length, and will take behaviorDuration time to be traversed.
-<span class='line'>755</span>          * @param {CAAT.Path}
-<span class='line'>756</span>          */</span><span class="WHIT">
-<span class='line'>757</span> </span><span class="WHIT">        </span><span class="NAME">setPath</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">path</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>758</span> </span><span class="WHIT">            </span><span class="NAME">this.path</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">path</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>759</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>760</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>761</span> 
-<span class='line'>762</span> </span><span class="WHIT">        </span><span class="NAME">setFrameTime</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">startTime</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>763</span> </span><span class="WHIT">            </span><span class="NAME">CAAT.PathBehavior.superclass.setFrameTime.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">startTime</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>764</span> </span><span class="WHIT">            </span><span class="NAME">this.prevX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>765</span> </span><span class="WHIT">            </span><span class="NAME">this.prevY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>766</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>767</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>768</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>769</span>          * This method set an extra offset for the actor traversing the path.
-<span class='line'>770</span>          * in example, if you want an actor to traverse the path by its center, and not by default via its top-left corner,
-<span class='line'>771</span>          * you should call &lt;code>setTranslation(actor.width/2, actor.height/2);&lt;/code>.
-<span class='line'>772</span>          *
-<span class='line'>773</span>          * Displacement will be substracted from the tarrget coordinate.
-<span class='line'>774</span>          *
-<span class='line'>775</span>          * @param tx a float with xoffset.
-<span class='line'>776</span>          * @param ty a float with yoffset.
-<span class='line'>777</span>          */</span><span class="WHIT">
-<span class='line'>778</span> </span><span class="WHIT">        </span><span class="NAME">setTranslation</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">tx</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ty</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>779</span> </span><span class="WHIT">            </span><span class="NAME">this.translateX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">tx</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>780</span> </span><span class="WHIT">            </span><span class="NAME">this.translateY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">ty</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>589</span> </span><span class="WHIT">    </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.GenericBehavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>590</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>591</span> 
+<span class='line'>592</span> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>593</span> 
+<span class='line'>594</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>595</span>      * ScaleBehavior applies scale affine transforms in both axis.
+<span class='line'>596</span>      * StartScale and EndScale must be supplied for each axis. This method takes care of a FF bug in which if a Scale is
+<span class='line'>597</span>      * set to 0, the animation will fail playing.
+<span class='line'>598</span>      *
+<span class='line'>599</span>      * @constructor
+<span class='line'>600</span>      * @extends CAAT.Behavior
+<span class='line'>601</span>      *
+<span class='line'>602</span>      */</span><span class="WHIT">
+<span class='line'>603</span> </span><span class="WHIT">	</span><span class="NAME">CAAT.ScaleBehavior</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>604</span> </span><span class="WHIT">		</span><span class="NAME">CAAT.ScaleBehavior.superclass.constructor.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>605</span> </span><span class="WHIT">		</span><span class="NAME">this.anchor</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CAAT.Actor.prototype.ANCHOR_CENTER</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>606</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">		
+<span class='line'>607</span> 	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>608</span> </span><span class="WHIT">	
+<span class='line'>609</span> 	</span><span class="NAME">CAAT.ScaleBehavior.prototype</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>610</span> </span><span class="WHIT">        </span><span class="NAME">startScaleX</span><span class="PUNC">:</span><span class="WHIT">    </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>611</span> </span><span class="WHIT">        </span><span class="NAME">endScaleX</span><span class="PUNC">:</span><span class="WHIT">      </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>612</span> </span><span class="WHIT">        </span><span class="NAME">startScaleY</span><span class="PUNC">:</span><span class="WHIT">    </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>613</span> </span><span class="WHIT">        </span><span class="NAME">endScaleY</span><span class="PUNC">:</span><span class="WHIT">	    </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>614</span> </span><span class="WHIT">        </span><span class="NAME">anchorX</span><span class="PUNC">:</span><span class="WHIT">        </span><span class="PUNC">.</span><span class="NUMB">50</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>615</span> </span><span class="WHIT">        </span><span class="NAME">anchorY</span><span class="PUNC">:</span><span class="WHIT">        </span><span class="PUNC">.</span><span class="NUMB">50</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>616</span> 
+<span class='line'>617</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>618</span>          * Applies corresponding scale values for a given time.
+<span class='line'>619</span>          * 
+<span class='line'>620</span>          * @param time the time to apply the scale for.
+<span class='line'>621</span>          * @param actor the target actor to Scale.
+<span class='line'>622</span>          * @return {object} an object of the form &lt;code>{ scaleX: {float}, scaleY: {float}�}&lt;/code>
+<span class='line'>623</span>          */</span><span class="WHIT">
+<span class='line'>624</span> </span><span class="WHIT">		</span><span class="NAME">setForTime</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>625</span> 
+<span class='line'>626</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">scaleX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.startScaleX</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">*</span><span class="PUNC">(</span><span class="NAME">this.endScaleX</span><span class="PUNC">-</span><span class="NAME">this.startScaleX</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>627</span> </span><span class="WHIT">			</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">scaleY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.startScaleY</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">*</span><span class="PUNC">(</span><span class="NAME">this.endScaleY</span><span class="PUNC">-</span><span class="NAME">this.startScaleY</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>628</span> 
+<span class='line'>629</span> </span><span class="WHIT">            </span><span class="COMM">// Firefox 3.x & 4, will crash animation if either scaleX or scaleY equals 0.</span><span class="WHIT">
+<span class='line'>630</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">===</span><span class="NAME">scaleX</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>631</span> </span><span class="WHIT">                </span><span class="NAME">scaleX</span><span class="PUNC">=</span><span class="NUMB">0.01</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>632</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>633</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">===</span><span class="NAME">scaleY</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>634</span> </span><span class="WHIT">                </span><span class="NAME">scaleY</span><span class="PUNC">=</span><span class="NUMB">0.01</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>635</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>636</span> 
+<span class='line'>637</span> </span><span class="WHIT">			</span><span class="NAME">actor.setScaleAnchored</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">scaleX</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">scaleY</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.anchorX</span><span class="PUNC">*</span><span class="NAME">actor.width</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.anchorY</span><span class="PUNC">*</span><span class="NAME">actor.height</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>638</span> 
+<span class='line'>639</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">scaleX</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">scaleX</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">scaleY</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">scaleY</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>640</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>641</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>642</span>          * Define this scale behaviors values.
+<span class='line'>643</span>          *
+<span class='line'>644</span>          * Be aware the anchor values are supplied in &lt;b>RELATIVE PERCENT&lt;/b> to
+<span class='line'>645</span>          * actor's size.
+<span class='line'>646</span>          *
+<span class='line'>647</span>          * @param startX {number} initial X axis scale value.
+<span class='line'>648</span>          * @param endX {number} final X axis scale value.
+<span class='line'>649</span>          * @param startY {number} initial Y axis scale value.
+<span class='line'>650</span>          * @param endY {number} final Y axis scale value.
+<span class='line'>651</span>          * @param anchorx {float} the percent position for anchorX
+<span class='line'>652</span>          * @param anchory {float} the percent position for anchorY
+<span class='line'>653</span>          *
+<span class='line'>654</span>          * @return this.
+<span class='line'>655</span>          */</span><span class="WHIT">
+<span class='line'>656</span> </span><span class="WHIT">        </span><span class="NAME">setValues</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">startX</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">endX</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">startY</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">endY</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">anchorx</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">anchory</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>657</span> </span><span class="WHIT">            </span><span class="NAME">this.startScaleX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">startX</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>658</span> </span><span class="WHIT">            </span><span class="NAME">this.endScaleX</span><span class="PUNC">=</span><span class="WHIT">   </span><span class="NAME">endX</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>659</span> </span><span class="WHIT">            </span><span class="NAME">this.startScaleY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">startY</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>660</span> </span><span class="WHIT">            </span><span class="NAME">this.endScaleY</span><span class="PUNC">=</span><span class="WHIT">   </span><span class="NAME">endY</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>661</span> 
+<span class='line'>662</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">anchorx</span><span class="PUNC">!==</span><span class="NAME">undefined</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">anchory</span><span class="PUNC">!==</span><span class="NAME">undefined</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>663</span> </span><span class="WHIT">                </span><span class="NAME">this.anchorX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">anchorx</span><span class="PUNC">/</span><span class="NUMB">100</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>664</span> </span><span class="WHIT">                </span><span class="NAME">this.anchorY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">anchory</span><span class="PUNC">/</span><span class="NUMB">100</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>665</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>666</span> 
+<span class='line'>667</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>668</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>669</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>670</span>          * Set an exact position scale anchor. Use this method when it is hard to
+<span class='line'>671</span>          * set a thorough anchor position expressed in percentage.
+<span class='line'>672</span>          * @param actor
+<span class='line'>673</span>          * @param x
+<span class='line'>674</span>          * @param y
+<span class='line'>675</span>          */</span><span class="WHIT">
+<span class='line'>676</span> </span><span class="WHIT">        </span><span class="NAME">setAnchor</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">x</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>677</span> </span><span class="WHIT">            </span><span class="NAME">this.anchorX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">x</span><span class="PUNC">/</span><span class="NAME">actor.width</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>678</span> </span><span class="WHIT">            </span><span class="NAME">this.anchorY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">/</span><span class="NAME">actor.height</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>679</span> 
+<span class='line'>680</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>681</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>682</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>683</span> 
+<span class='line'>684</span> </span><span class="WHIT">    </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.ScaleBehavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>685</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>686</span> 
+<span class='line'>687</span> 
+<span class='line'>688</span> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>689</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>690</span>      * AlphaBehavior modifies alpha composition property for an actor.
+<span class='line'>691</span>      *
+<span class='line'>692</span>      * @constructor
+<span class='line'>693</span>      * @extends CAAT.Behavior
+<span class='line'>694</span>      */</span><span class="WHIT">
+<span class='line'>695</span> </span><span class="WHIT">	</span><span class="NAME">CAAT.AlphaBehavior</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>696</span> </span><span class="WHIT">		</span><span class="NAME">CAAT.AlphaBehavior.superclass.constructor.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>697</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>698</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>699</span> </span><span class="WHIT">	
+<span class='line'>700</span> 	</span><span class="NAME">CAAT.AlphaBehavior.prototype</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>701</span> </span><span class="WHIT">		</span><span class="NAME">startAlpha</span><span class="PUNC">:</span><span class="WHIT">	</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>702</span> </span><span class="WHIT">		</span><span class="NAME">endAlpha</span><span class="PUNC">:</span><span class="WHIT">	</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>703</span> 
+<span class='line'>704</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>705</span>          * Applies corresponding alpha transparency value for a given time.
+<span class='line'>706</span>          *
+<span class='line'>707</span>          * @param time the time to apply the scale for.
+<span class='line'>708</span>          * @param actor the target actor to set transparency for.
+<span class='line'>709</span>          * @return {number} the alpha value set. Normalized from 0 (total transparency) to 1 (total opacity)
+<span class='line'>710</span>          */</span><span class="WHIT">
+<span class='line'>711</span> </span><span class="WHIT">		</span><span class="NAME">setForTime</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>712</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">alpha</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.startAlpha</span><span class="PUNC">+</span><span class="NAME">time</span><span class="PUNC">*</span><span class="PUNC">(</span><span class="NAME">this.endAlpha</span><span class="PUNC">-</span><span class="NAME">this.startAlpha</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>713</span> </span><span class="WHIT">            </span><span class="NAME">actor.setAlpha</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">alpha</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>714</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">alpha</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>715</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>716</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>717</span>          * Set alpha transparency minimum and maximum value.
+<span class='line'>718</span>          * This value can be coerced by Actor's property isGloblAlpha.
+<span class='line'>719</span>          *
+<span class='line'>720</span>          * @param start {number} a float indicating the starting alpha value.
+<span class='line'>721</span>          * @param end {number} a float indicating the ending alpha value.
+<span class='line'>722</span>          */</span><span class="WHIT">
+<span class='line'>723</span> </span><span class="WHIT">        </span><span class="NAME">setValues</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">start</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">end</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>724</span> </span><span class="WHIT">            </span><span class="NAME">this.startAlpha</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">start</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>725</span> </span><span class="WHIT">            </span><span class="NAME">this.endAlpha</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">end</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>726</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>727</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>728</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>729</span> 
+<span class='line'>730</span> </span><span class="WHIT">    </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.AlphaBehavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>731</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>732</span> 
+<span class='line'>733</span> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>734</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>735</span>      * CAAT.PathBehavior modifies the position of a CAAT.Actor along the path represented by an
+<span class='line'>736</span>      * instance of &lt;code>CAAT.Path&lt;/code>.
+<span class='line'>737</span>      *
+<span class='line'>738</span>      * @constructor
+<span class='line'>739</span>      * @extends CAAT.Behavior
+<span class='line'>740</span>      *
+<span class='line'>741</span>      */</span><span class="WHIT">
+<span class='line'>742</span> </span><span class="WHIT">	</span><span class="NAME">CAAT.PathBehavior</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>743</span> </span><span class="WHIT">		</span><span class="NAME">CAAT.PathBehavior.superclass.constructor.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>744</span> </span><span class="WHIT">		</span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>745</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>746</span> 
+<span class='line'>747</span> </span><span class="WHIT">	</span><span class="NAME">CAAT.PathBehavior.prototype</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>748</span> </span><span class="WHIT">		</span><span class="NAME">path</span><span class="PUNC">:</span><span class="WHIT">           </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">   </span><span class="COMM">// the path to traverse</span><span class="WHIT">
+<span class='line'>749</span> </span><span class="WHIT">        </span><span class="NAME">autoRotate</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT">    </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">  </span><span class="COMM">// set whether the actor must be rotated tangentially to the path.</span><span class="WHIT">
+<span class='line'>750</span> </span><span class="WHIT">        </span><span class="NAME">prevX</span><span class="PUNC">:</span><span class="WHIT">          </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="WHIT">     </span><span class="COMM">// private, do not use.</span><span class="WHIT">
+<span class='line'>751</span> </span><span class="WHIT">        </span><span class="NAME">prevY</span><span class="PUNC">:</span><span class="WHIT">          </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="WHIT">     </span><span class="COMM">// private, do not use.</span><span class="WHIT">
+<span class='line'>752</span> 
+<span class='line'>753</span> </span><span class="WHIT">        </span><span class="NAME">translateX</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>754</span> </span><span class="WHIT">        </span><span class="NAME">translateY</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>755</span> 
+<span class='line'>756</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>757</span>          * Sets an actor rotation to be heading from past to current path's point.
+<span class='line'>758</span>          * Take into account that this will be incompatible with rotation Behaviors
+<span class='line'>759</span>          * since they will set their own rotation configuration.
+<span class='line'>760</span>          * @param autorotate {boolean}
+<span class='line'>761</span>          * @return this.
+<span class='line'>762</span>          */</span><span class="WHIT">
+<span class='line'>763</span> </span><span class="WHIT">        </span><span class="NAME">setAutoRotate</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">autorotate</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>764</span> </span><span class="WHIT">            </span><span class="NAME">this.autoRotate</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">autorotate</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>765</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>766</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>767</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>768</span>          * Set the behavior path.
+<span class='line'>769</span>          * The path can be any length, and will take behaviorDuration time to be traversed.
+<span class='line'>770</span>          * @param {CAAT.Path}
+<span class='line'>771</span>          */</span><span class="WHIT">
+<span class='line'>772</span> </span><span class="WHIT">        </span><span class="NAME">setPath</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">path</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>773</span> </span><span class="WHIT">            </span><span class="NAME">this.path</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">path</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>774</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>775</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>776</span> 
+<span class='line'>777</span> </span><span class="WHIT">        </span><span class="NAME">setFrameTime</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">startTime</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>778</span> </span><span class="WHIT">            </span><span class="NAME">CAAT.PathBehavior.superclass.setFrameTime.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">startTime</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>779</span> </span><span class="WHIT">            </span><span class="NAME">this.prevX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>780</span> </span><span class="WHIT">            </span><span class="NAME">this.prevY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>781</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>782</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>783</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>784</span>          * Translates the Actor to the corresponding time path position.
-<span class='line'>785</span>          * If autoRotate=true, the actor is rotated as well. The rotation anchor will (if set) always be ANCHOR_CENTER.
-<span class='line'>786</span>          * @param time an integer indicating the time the behavior is being applied at.
-<span class='line'>787</span>          * @param actor a CAAT.Actor instance to be translated.
-<span class='line'>788</span>          * @return {object} an object of the form &lt;code>{ x: {float}, y: {float}�}&lt;/code>.
-<span class='line'>789</span>          */</span><span class="WHIT">
-<span class='line'>790</span> </span><span class="WHIT">		</span><span class="NAME">setForTime</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>791</span> 
-<span class='line'>792</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">this.path</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>793</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>794</span> </span><span class="WHIT">                    </span><span class="NAME">x</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">actor.x</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>795</span> </span><span class="WHIT">                    </span><span class="NAME">y</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">actor.y</span><span class="WHIT">
-<span class='line'>796</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>797</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>798</span> 
-<span class='line'>799</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">point</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.path.getPosition</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>800</span> 
-<span class='line'>801</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.autoRotate</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>802</span> 
-<span class='line'>803</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">===</span><span class="NAME">this.prevX</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">===</span><span class="NAME">this.prevY</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">	</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>804</span> </span><span class="WHIT">                    </span><span class="NAME">this.prevX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">point.x</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>805</span> </span><span class="WHIT">                    </span><span class="NAME">this.prevY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">point.y</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>806</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>807</span> 
-<span class='line'>808</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">ax</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">point.x</span><span class="PUNC">-</span><span class="NAME">this.prevX</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>809</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">ay</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">point.y</span><span class="PUNC">-</span><span class="NAME">this.prevY</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>810</span> 
-<span class='line'>811</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">ax</span><span class="PUNC">===</span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">ay</span><span class="PUNC">===</span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>812</span> </span><span class="WHIT">                    </span><span class="NAME">actor.setLocation</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">point.x</span><span class="PUNC">-</span><span class="NAME">this.translateX</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">point.y</span><span class="PUNC">-</span><span class="NAME">this.translateY</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>813</span> </span><span class="WHIT">                    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">x</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">actor.x</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">actor.y</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>814</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>784</span>          * This method set an extra offset for the actor traversing the path.
+<span class='line'>785</span>          * in example, if you want an actor to traverse the path by its center, and not by default via its top-left corner,
+<span class='line'>786</span>          * you should call &lt;code>setTranslation(actor.width/2, actor.height/2);&lt;/code>.
+<span class='line'>787</span>          *
+<span class='line'>788</span>          * Displacement will be substracted from the tarrget coordinate.
+<span class='line'>789</span>          *
+<span class='line'>790</span>          * @param tx a float with xoffset.
+<span class='line'>791</span>          * @param ty a float with yoffset.
+<span class='line'>792</span>          */</span><span class="WHIT">
+<span class='line'>793</span> </span><span class="WHIT">        </span><span class="NAME">setTranslation</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">tx</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ty</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>794</span> </span><span class="WHIT">            </span><span class="NAME">this.translateX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">tx</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>795</span> </span><span class="WHIT">            </span><span class="NAME">this.translateY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">ty</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>796</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>797</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>798</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>799</span>          * Translates the Actor to the corresponding time path position.
+<span class='line'>800</span>          * If autoRotate=true, the actor is rotated as well. The rotation anchor will (if set) always be ANCHOR_CENTER.
+<span class='line'>801</span>          * @param time an integer indicating the time the behavior is being applied at.
+<span class='line'>802</span>          * @param actor a CAAT.Actor instance to be translated.
+<span class='line'>803</span>          * @return {object} an object of the form &lt;code>{ x: {float}, y: {float}�}&lt;/code>.
+<span class='line'>804</span>          */</span><span class="WHIT">
+<span class='line'>805</span> </span><span class="WHIT">		</span><span class="NAME">setForTime</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>806</span> 
+<span class='line'>807</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">this.path</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>808</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>809</span> </span><span class="WHIT">                    </span><span class="NAME">x</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">actor.x</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>810</span> </span><span class="WHIT">                    </span><span class="NAME">y</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">actor.y</span><span class="WHIT">
+<span class='line'>811</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>812</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>813</span> 
+<span class='line'>814</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">point</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.path.getPosition</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>815</span> 
-<span class='line'>816</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">angle</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Math.atan2</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">ay</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ax</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>816</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.autoRotate</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>817</span> 
-<span class='line'>818</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.prevX</span><span class="PUNC">&lt;=</span><span class="NAME">point.x</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">	</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>819</span> </span><span class="WHIT">                    </span><span class="COMM">//actor.transformation= CAAT.SpriteActor.prototype.TR_NONE;</span><span class="WHIT">
-<span class='line'>820</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>821</span> </span><span class="WHIT">                </span><span class="KEYW">else</span><span class="WHIT">	</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>822</span> </span><span class="WHIT">                    </span><span class="COMM">//actor.transformation= CAAT.SpriteActor.prototype.TR_FLIP_HORIZONTAL;</span><span class="WHIT">
-<span class='line'>823</span> </span><span class="WHIT">                    </span><span class="COMM">//angle+=Math.PI;</span><span class="WHIT">
-<span class='line'>824</span> </span><span class="WHIT">                    
-<span class='line'>825</span>                 </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>826</span> 
-<span class='line'>827</span> </span><span class="WHIT">                </span><span class="NAME">actor.setRotation</span><span class="PUNC">(</span><span class="NAME">angle</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>828</span> 
-<span class='line'>829</span> </span><span class="WHIT">                </span><span class="NAME">this.prevX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">point.x</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>830</span> </span><span class="WHIT">                </span><span class="NAME">this.prevY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">point.y</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>831</span> 
-<span class='line'>832</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">modulo</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Math.sqrt</span><span class="PUNC">(</span><span class="NAME">ax</span><span class="PUNC">*</span><span class="NAME">ax</span><span class="PUNC">+</span><span class="NAME">ay</span><span class="PUNC">*</span><span class="NAME">ay</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>833</span> </span><span class="WHIT">                </span><span class="NAME">ax</span><span class="PUNC">/</span><span class="PUNC">=</span><span class="NAME">modulo</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>834</span> </span><span class="WHIT">                </span><span class="NAME">ay</span><span class="PUNC">/</span><span class="PUNC">=</span><span class="NAME">modulo</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>835</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>836</span> 
-<span class='line'>837</span> </span><span class="WHIT">            </span><span class="NAME">actor.setLocation</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">point.x</span><span class="PUNC">-</span><span class="NAME">this.translateX</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">point.y</span><span class="PUNC">-</span><span class="NAME">this.translateY</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>838</span> 
-<span class='line'>839</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">x</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">actor.x</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">actor.y</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>840</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>841</span> </span><span class="WHIT">        </span><span class="COMM">/**
-<span class='line'>842</span>          * Get a point on the path.
-<span class='line'>843</span>          * If the time to get the point at is in behaviors frame time, a point on the path will be returned, otherwise
-<span class='line'>844</span>          * a default {x:-1, y:-1} point will be returned.
-<span class='line'>845</span>          *
-<span class='line'>846</span>          * @param time {number} the time at which the point will be taken from the path.
-<span class='line'>847</span>          * @return {object} an object of the form {x:float y:float}
-<span class='line'>848</span>          */</span><span class="WHIT">
-<span class='line'>849</span> </span><span class="WHIT">        </span><span class="NAME">positionOnTime</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>850</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.isBehaviorInTime</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="KEYW">null</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">	</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>851</span> </span><span class="WHIT">				</span><span class="NAME">time</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.normalizeTime</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>852</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.path.getPosition</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>853</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>854</span> 
-<span class='line'>855</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="NAME">x</span><span class="PUNC">:</span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">:</span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>856</span> 
-<span class='line'>857</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>858</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>859</span> 
-<span class='line'>860</span> </span><span class="WHIT">    </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.PathBehavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>861</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>862</span> </span></pre></body></html>
+<span class='line'>818</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">===</span><span class="NAME">this.prevX</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">===</span><span class="NAME">this.prevY</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">	</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>819</span> </span><span class="WHIT">                    </span><span class="NAME">this.prevX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">point.x</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>820</span> </span><span class="WHIT">                    </span><span class="NAME">this.prevY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">point.y</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>821</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>822</span> 
+<span class='line'>823</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">ax</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">point.x</span><span class="PUNC">-</span><span class="NAME">this.prevX</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>824</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">ay</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">point.y</span><span class="PUNC">-</span><span class="NAME">this.prevY</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>825</span> 
+<span class='line'>826</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">ax</span><span class="PUNC">===</span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">ay</span><span class="PUNC">===</span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>827</span> </span><span class="WHIT">                    </span><span class="NAME">actor.setLocation</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">point.x</span><span class="PUNC">-</span><span class="NAME">this.translateX</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">point.y</span><span class="PUNC">-</span><span class="NAME">this.translateY</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>828</span> </span><span class="WHIT">                    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">x</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">actor.x</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">actor.y</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>829</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>830</span> 
+<span class='line'>831</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">angle</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Math.atan2</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">ay</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">ax</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>832</span> 
+<span class='line'>833</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.prevX</span><span class="PUNC">&lt;=</span><span class="NAME">point.x</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">	</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>834</span> </span><span class="WHIT">                    </span><span class="COMM">//actor.transformation= CAAT.SpriteActor.prototype.TR_NONE;</span><span class="WHIT">
+<span class='line'>835</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>836</span> </span><span class="WHIT">                </span><span class="KEYW">else</span><span class="WHIT">	</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>837</span> </span><span class="WHIT">                    </span><span class="COMM">//actor.transformation= CAAT.SpriteActor.prototype.TR_FLIP_HORIZONTAL;</span><span class="WHIT">
+<span class='line'>838</span> </span><span class="WHIT">                    </span><span class="COMM">//angle+=Math.PI;</span><span class="WHIT">
+<span class='line'>839</span> </span><span class="WHIT">                    
+<span class='line'>840</span>                 </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>841</span> 
+<span class='line'>842</span> </span><span class="WHIT">                </span><span class="NAME">actor.setRotation</span><span class="PUNC">(</span><span class="NAME">angle</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>843</span> 
+<span class='line'>844</span> </span><span class="WHIT">                </span><span class="NAME">this.prevX</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">point.x</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>845</span> </span><span class="WHIT">                </span><span class="NAME">this.prevY</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">point.y</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>846</span> 
+<span class='line'>847</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">modulo</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Math.sqrt</span><span class="PUNC">(</span><span class="NAME">ax</span><span class="PUNC">*</span><span class="NAME">ax</span><span class="PUNC">+</span><span class="NAME">ay</span><span class="PUNC">*</span><span class="NAME">ay</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>848</span> </span><span class="WHIT">                </span><span class="NAME">ax</span><span class="PUNC">/</span><span class="PUNC">=</span><span class="NAME">modulo</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>849</span> </span><span class="WHIT">                </span><span class="NAME">ay</span><span class="PUNC">/</span><span class="PUNC">=</span><span class="NAME">modulo</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>850</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>851</span> 
+<span class='line'>852</span> </span><span class="WHIT">            </span><span class="NAME">actor.setLocation</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">point.x</span><span class="PUNC">-</span><span class="NAME">this.translateX</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">point.y</span><span class="PUNC">-</span><span class="NAME">this.translateY</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>853</span> 
+<span class='line'>854</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT"> </span><span class="NAME">x</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">actor.x</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">actor.y</span><span class="WHIT"> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>855</span> </span><span class="WHIT">		</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>856</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>857</span>          * Get a point on the path.
+<span class='line'>858</span>          * If the time to get the point at is in behaviors frame time, a point on the path will be returned, otherwise
+<span class='line'>859</span>          * a default {x:-1, y:-1} point will be returned.
+<span class='line'>860</span>          *
+<span class='line'>861</span>          * @param time {number} the time at which the point will be taken from the path.
+<span class='line'>862</span>          * @return {object} an object of the form {x:float y:float}
+<span class='line'>863</span>          */</span><span class="WHIT">
+<span class='line'>864</span> </span><span class="WHIT">        </span><span class="NAME">positionOnTime</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>865</span> </span><span class="WHIT">			</span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.isBehaviorInTime</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="KEYW">null</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">	</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>866</span> </span><span class="WHIT">				</span><span class="NAME">time</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.normalizeTime</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>867</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.path.getPosition</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>868</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>869</span> 
+<span class='line'>870</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="NAME">x</span><span class="PUNC">:</span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">:</span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>871</span> 
+<span class='line'>872</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>873</span> </span><span class="WHIT">	</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>874</span> 
+<span class='line'>875</span> </span><span class="WHIT">    </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.PathBehavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>876</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>877</span> </span></pre></body></html>

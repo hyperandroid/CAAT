@@ -40,3 +40,12 @@ Changed ScaleBehavior and RotateBehavior to fit the new setScale semantics. Now 
 setValues of these Behavior accept two more parameters to define the transformation anchor.
 
 In general, there should not be mixed different types of director renderers per page.
+
+09/08/2011
+----------
+
+Actor.cacheAsBitmap method change: now returns this instead of an HTMLCanvasElement.
+
+Set ScaleBehavior and RotateBehavior setAnchor method to define an exact pixel distance
+anchor. Use this method when setting percentages via setValues method call is hard to do,
+for example, when anchoring around a parent.
