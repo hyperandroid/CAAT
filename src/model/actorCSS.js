@@ -731,6 +731,8 @@
          *
          */
 		destroy : function(time)	{
+            this.parent= null;
+            this.domParent= null;
             this.fireEvent('destroyed',time);
 		},
         /**
@@ -1385,6 +1387,7 @@
 			var pos= this.findChild(child);
 			if ( -1!==pos ) {
                 this.domElement.removeChild(this.childrenList[pos].domElement);
+                this.domParent= null;
 				this.childrenList.splice(pos,1);
 			}
 
