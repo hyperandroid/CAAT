@@ -49,3 +49,12 @@ Actor.cacheAsBitmap method change: now returns this instead of an HTMLCanvasElem
 Set ScaleBehavior and RotateBehavior setAnchor method to define an exact pixel distance
 anchor. Use this method when setting percentages via setValues method call is hard to do,
 for example, when anchoring around a parent.
+
+10/08/2011
+----------
+
+Added on ActorCSS needed control to set a canvas as background image. It is not recommended
+ since the performance drops very significantly.
+
+Fixed director's RESIZE_PROPORTIONAL option. There was a bug that prevented scenes from
+ affine transforming properly with respect to the director instance.

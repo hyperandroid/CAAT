@@ -99,7 +99,7 @@
          * Set this Actor's parent and connect in CSS a div with its parent.
          * In case there's a parent set, previously the div will be removed from
          * its old parent and reattached to the new one.
-         * @param parent {CAAT.ActorContainerCSS|CAAT.ActorContainer}
+         * @param parent {CAAT.ActorContainerCSS|CAAT.Actor}
          * @return this
          */
         setParent : function( parent ) {
@@ -128,11 +128,15 @@
          * Canvas to the function). That means the size will be set to [width:SpriteImage.singleWidth,
          * height:singleHeight].
          *
+         * It is absolutely recommended not using a Canvas as argument. The performance
+         * of canvas.toDataURL (despite its result being cached) is very poor.
+         *
          * @see CAAT.SpriteImage
          *
          * @param image {Image|Canvas|CAAT.SpriteImage}
          * @param adjust_size_to_image {boolean} whether to set this actor's size based on image parameter.
-         *
+         * @throws 'Invalid image object to set actor's background' in case the image parameter is not of the
+         *  valid type.
          * @return this
          */
         setBackgroundImage : function(image, adjust_size_to_image ) {
@@ -140,6 +144,17 @@
                 // Opera will complaint about instanceof Image, so better HTMLImageElement.
                 if ( image instanceof HTMLImageElement ) {
                     image= new CAAT.SpriteImage().initialize(image,1,1);
+                } else if ( image instanceof HTMLCanvasElement ) {
+                    image.src= image.toDataURL();
+                    image= new CAAT.SpriteImage().initialize(image,1,1);
+                } else if ( image instanceof CAAT.SpriteImage ) {
+                    if ( image.image instanceof HTMLCanvasElement ) {
+                        if ( !image.image.src ) {
+                            image.image.src= image.image.toDataURL();
+                        }
+                    }
+                } else {
+                    throw "Invalid image object to set actor's background";
                 }
 
                 image.setOwner(this);
@@ -1058,6 +1073,9 @@
                     this.wdirty= true;
                 }
             } else {
+                if ( this.dirty ) {
+                    this.wdirty= true;
+                }
                 this.worldModelViewMatrix.copy( this.modelViewMatrix );
             }
 

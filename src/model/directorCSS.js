@@ -94,8 +94,8 @@
                     this.setBounds(0, 0, w, h);
                     break;
                 case this.RESIZE_PROPORTIONAL:
-                    this.setBounds(0, 0, w, h);
-                    this.setScale( w/this.referenceWidth, h/this.referenceHeight );
+                    var factor= Math.min(w/this.referenceWidth, h/this.referenceHeight);
+                    this.setScaleAnchored( factor, factor, 0, 0 );
                     break;
             }
         },

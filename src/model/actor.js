@@ -1090,6 +1090,9 @@
                     this.wdirty= true;
                 }
             } else {
+                if ( this.dirty ) {
+                    this.wdirty= true;
+                }
                 this.worldModelViewMatrix.copy( this.modelViewMatrix );
             }
             

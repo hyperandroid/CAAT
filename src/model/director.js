@@ -120,10 +120,19 @@
                     this.setBounds(0, 0, w, h);
                     break;
                 case this.RESIZE_PROPORTIONAL:
-                    this.setBounds(0, 0, w, h);
-                    this.setScale( w/this.referenceWidth, h/this.referenceHeight );
+                    this.setScaleProportional(w,h);
                     break;
             }
+        },
+        setScaleProportional : function(w,h) {
+            var factor= Math.min(w/this.referenceWidth, h/this.referenceHeight);
+
+            this.setScaleAnchored( factor, factor, 0, 0 );
+
+            this.canvas.width = this.referenceWidth*factor;
+            this.canvas.height = this.referenceHeight*factor;
+            this.ctx = this.canvas.getContext(this.glEnabled ? 'webgl' : '2d');
+            this.crc = this.ctx;
         },
         /**
          * Enable window resize events and set redimension policy.
@@ -152,7 +161,7 @@
             CAAT.Director.superclass.setBounds.call(this, x, y, w, h);
             this.canvas.width = w;
             this.canvas.height = h;
-            this.ctx = this.canvas.getContext('2d');
+            this.ctx = this.canvas.getContext(this.glEnabled ? 'webgl' : '2d');
             this.crc = this.ctx;
 
             for (var i = 0; i < this.scenes.length; i++) {
@@ -476,9 +485,6 @@
          * @param time {number} director time.
          */
         animate : function(director, time) {
-            /**
-             * FIX: no haria falta. El director no se dibuja como elemento del grafo.
-             */
             this.setModelViewMatrix(this);
 
             for (var i = 0; i < this.childrenList.length; i++) {
@@ -503,29 +509,49 @@
          * @param scene {CAAT.Scene} the scene to draw offscreen.
          */
         renderToContext : function(ctx, scene) {
-            ctx.globalAlpha = 1;
-            ctx.globalCompositeOperation = 'source-over';
-
-            ctx.clearRect(0, 0, this.width, this.height);
-
-            ctx.setTransform(1, 0, 0, 1, 0, 0);
-
-            var octx = this.ctx;
-            var ocrc = this.crc;
-
-            this.ctx = this.crc = ctx;
-
             /**
              * draw actors on scene.
              */
             if (scene.isInAnimationFrame(this.time)) {
-                ctx.save();
-                scene.paintActor(this, scene.time - scene.start_time);
-                ctx.restore();
-            }
+                ctx.globalAlpha = 1;
+                ctx.globalCompositeOperation = 'source-over';
+                ctx.clearRect(0, 0, this.width, this.height);
+                ctx.setTransform(1,0,0, 0,1,0);
 
-            this.ctx = octx;
-            this.crc = ocrc;
+                var octx = this.ctx;
+                var ocrc = this.crc;
+
+                this.ctx = this.crc = ctx;
+                ctx.save();
+
+                /**
+                 * to draw an scene to an offscreen canvas, we have to:
+                 *   1.- save diector's world model view matrix
+                 *   2.- set no transformation on director since we want the offscreen to
+                 *       be drawn 1:1.
+                 *   3.- set world dirty flag, so that the scene will recalculate its matrices
+                 *   4.- animate the scene
+                 *   5.- paint the scene
+                 *   6.- restore world model view matrix.
+                 */
+                var matwmv=  this.worldModelViewMatrix;
+                this.worldModelViewMatrix= new CAAT.Matrix();
+                this.wdirty= true;
+                    scene.animate(this, scene.time);
+                    if ( scene.onRenderStart ) {
+                        scene.onRenderStart(scene.time);
+                    }
+                    scene.paintActor(this, scene.time);
+                    if ( scene.onRenderEnd ) {
+                        scene.onRenderEnd(scene.time);
+                    }
+                this.worldModelViewMatrix = matwmv;
+
+                ctx.restore();
+
+                this.ctx = octx;
+                this.crc = ocrc;
+            }
         },
         /**
          * Add a new Scene to Director's Scene list. By adding a Scene to the Director
@@ -608,6 +634,7 @@
             var sout = this.scenes[ outSceneIndex ];
 
             if (!this.glEnabled) {
+                this.worldModelViewMatrix.transformRenderingContext(this.transitionScene.ctx);
                 this.renderToContext(this.transitionScene.ctx, sout);
                 sout = this.transitionScene;
             }
