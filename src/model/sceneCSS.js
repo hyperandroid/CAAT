@@ -14,14 +14,14 @@
      * @extends CAAT.ActorContainer
      *
      */
-	CAAT.SceneCSS= function() {
-		CAAT.SceneCSS.superclass.constructor.call(this);
+	CAAT.Scene= function() {
+		CAAT.Scene.superclass.constructor.call(this);
         this.timerList= [];
         this.style( 'overflow', 'hidden' );
 		return this;
 	};
 	
-	CAAT.SceneCSS.prototype= {
+	CAAT.Scene.prototype= {
 		
 		easeContainerBehaviour:			null,   // Behavior container used uniquely for Scene switching.
 		easeContainerBehaviourListener: null,   // who to notify about container behaviour events. Array.
@@ -124,7 +124,7 @@
          */
         animate : function(director, time) {
             this.checkTimers(time);
-            CAAT.SceneCSS.superclass.animate.call(this,director,time);
+            CAAT.Scene.superclass.animate.call(this,director,time);
             this.removeExpiredTimers();
         },
         /**
@@ -240,7 +240,7 @@
 			this.easeContainerBehaviour.addListener(this);
 
 			this.emptyBehaviorList();
-			CAAT.SceneCSS.superclass.addBehavior.call( this, this.easeContainerBehaviour );
+			CAAT.Scene.superclass.addBehavior.call( this, this.easeContainerBehaviour );
 		},
         /**
          * Called from CAAT.Director to bring in a Scene.
@@ -439,7 +439,7 @@
 			this.easeContainerBehaviour.addListener(this);
 			
 			this.emptyBehaviorList();
-			CAAT.SceneCSS.superclass.addBehavior.call( this, this.easeContainerBehaviour );
+			CAAT.Scene.superclass.addBehavior.call( this, this.easeContainerBehaviour );
 		},
         /**
          * Registers a listener for listen for transitions events.
@@ -483,6 +483,6 @@
         }
 	};
 
-    extend( CAAT.SceneCSS, CAAT.ActorContainerCSS, null);
+    extend( CAAT.Scene, CAAT.ActorContainer, null);
 
 })();

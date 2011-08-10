@@ -19,7 +19,7 @@
      *
      * @constructor
      */
-	CAAT.ActorCSS = function() {
+	CAAT.Actor = function() {
 		this.behaviorList=          [];
         this.lifecycleListenerList= [];
         this.scaleAnchor=           this.ANCHOR_CENTER;
@@ -45,7 +45,7 @@
 		return this;
 	};
 
-	CAAT.ActorCSS.prototype= {
+	CAAT.Actor.prototype= {
 
         tmpMatrix :             null,
 
@@ -1227,7 +1227,7 @@
      * @constructor
      * @extends CAAT.Actor
      */
-	CAAT.ActorContainerCSS= function() {
+	CAAT.ActorContainer= function() {
 		CAAT.ActorContainer.superclass.constructor.call(this);
 		this.childrenList=          [];
         this.pendingChildrenList=   [];
@@ -1235,7 +1235,7 @@
 	};
 
 
-	CAAT.ActorContainerCSS.prototype= {
+	CAAT.ActorContainer.prototype= {
 
         childrenList : null,       // the list of children contained.
         activeChildren: null,
@@ -1520,6 +1520,6 @@
         }
 	};
 
-    extend( CAAT.ActorContainerCSS, CAAT.ActorCSS, null);
+    extend( CAAT.ActorContainer, CAAT.Actor, null);
 
 })();

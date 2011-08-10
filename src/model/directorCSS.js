@@ -28,8 +28,8 @@
      * @constructor
      * @extends CAAT.ActorContainer
      */
-    CAAT.DirectorCSS = function() {
-        CAAT.DirectorCSS.superclass.constructor.call(this);
+    CAAT.Director = function() {
+        CAAT.Director.superclass.constructor.call(this);
 
         this.browserInfo = new CAAT.BrowserDetect();
         this.audioManager = new CAAT.AudioManager().initialize(8);
@@ -48,7 +48,7 @@
         return this;
     };
 
-    CAAT.DirectorCSS.prototype = {
+    CAAT.Director.prototype = {
 
         debug:              false,  // flag indicating debug mode. It will draw affedted screen areas.
 
@@ -123,7 +123,7 @@
          * @return this
          */
         setBounds : function(x, y, w, h) {
-            CAAT.DirectorCSS.superclass.setBounds.call(this, x, y, w, h);
+            CAAT.Director.superclass.setBounds.call(this, x, y, w, h);
             for (var i = 0; i < this.scenes.length; i++) {
                 this.scenes[i].setBounds(0, 0, w, h);
             }
@@ -159,7 +159,7 @@
          * @return {CAAT.Scene}
          */
         createScene : function() {
-            var scene = new CAAT.SceneCSS();
+            var scene = new CAAT.Scene();
             this.addScene(scene);
             return scene;
         },
@@ -1152,7 +1152,7 @@
 
     };
 
-    extend(CAAT.DirectorCSS, CAAT.ActorContainerCSS, null);
+    extend(CAAT.Director, CAAT.ActorContainer, null);
 
 })();
 
