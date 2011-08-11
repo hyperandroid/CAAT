@@ -327,20 +327,16 @@
 				this.createAlphaBehaviour(time,isIn);
 			}
 			
-			var sb= new CAAT.ScaleBehavior();
-			sb.setFrameTime( starttime, time );
-			sb.startScaleX= x;
-			sb.startScaleY= y;
-			sb.endScaleX= x2;
-			sb.endScaleY= y2;
-			sb.anchor= anchor;
+            var anchorPercent= this.getAnchorPercent(anchor);
+			var sb= new CAAT.ScaleBehavior().
+			        setFrameTime( starttime, time ).
+                    setValues(x,x2,y,y2, anchorPercent.x, anchorPercent.y);
 
             if ( interpolator ) {
                 sb.setInterpolator(interpolator);
             }
 
 			this.easeContainerBehaviour.addBehavior(sb);
-			
 			this.easeContainerBehaviour.setFrameTime( this.time, time );
 			this.easeContainerBehaviour.addListener(this);
 			
@@ -423,11 +419,10 @@
 				this.createAlphaBehaviour(time,isIn);
 			}
 			
-			var rb= new CAAT.RotateBehavior();
-			rb.setFrameTime( 0, time );
-			rb.startAngle= start;
-			rb.endAngle= end;
-			rb.anchor= anchor;
+            var anchorPercent= this.getAnchorPercent(anchor);
+			var rb= new CAAT.RotateBehavior().
+			        setFrameTime( 0, time ).
+                    setValues( start, end, anchorPercent.x, anchorPercent.y );
 
             if ( interpolator ) {
                 rb.setInterpolator(interpolator);
