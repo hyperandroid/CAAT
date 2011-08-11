@@ -106,11 +106,10 @@ function __scene9_text(director,scene) {
                 new CAAT.RotateBehavior().
                         setCycle(true).
                         setFrameTime( 0, 4000 ).
-                        setValues( -Math.PI/8, Math.PI/8 ).
+                        setValues( -Math.PI/8, Math.PI/8, 50, 0 ).
                         setInterpolator(
                             new CAAT.Interpolator().createExponentialInOutInterpolator(3,true)
-                        ).
-                        setAnchor( CAAT.Actor.prototype.ANCHOR_TOP )
+                        )
             );
 	scene.addChild(cc);
 
@@ -121,12 +120,7 @@ function __scene9_text(director,scene) {
             setFillStyle(gradient).
             setOutline(true).
             calcTextSize(director);
-    text.setLocation((cc.width-text.width)/2,0);
-    var aimg= new CAAT.ImageActor().create().
-            setImage(text.cacheAsBitmap()).
-            setLocation((cc.width-text.textWidth)/2,0);
-	cc.addChild(aimg);
-
+	cc.addChild(text.cacheAsBitmap().setLocation((cc.width-text.textWidth)/2,0));
 
 	var text2= new CAAT.TextActor().
 	        setFont("50px sans-serif").
@@ -135,12 +129,7 @@ function __scene9_text(director,scene) {
             create().
             setFillStyle(gradient).
 	        setOutline(true);
-    text2.setLocation((cc.width-text2.width)/2,50);
-    var aimg2= new CAAT.ImageActor().create().
-            setImage(text2.cacheAsBitmap()).
-            setLocation((cc.width-text2.textWidth)/2,50);
-	cc.addChild(aimg2);
-
+	cc.addChild(text2.cacheAsBitmap().setLocation((cc.width-text2.textWidth)/2,50));
 
 	scene.addChild(cc);
 }

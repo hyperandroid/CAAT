@@ -89,18 +89,15 @@
                             100,
                             document.getElementById('_linear_noinverse'+count++));
 
-                    var _scene_1= new CAAT.Scene().create();
-
-                    _director_1.addScene( _scene_1 );
+                    var _scene_1= _director_1.createScene();
 
                     _scene_1.addChild(
                             new CAAT.InterpolatorActor().
-                                create().
                                 setInterpolator( lerps[i] ).
                                 setBounds( 10, 10, 80, 80 ).
                                 setFillStyle('#d0d0d0') );
 
-                    _director_1.loop(1);
+                    CAAT.loop(30);
                 }
             })();
         </script>
@@ -135,18 +132,15 @@
                             100,
                             document.getElementById('_linear_inverse'+count++));
 
-                    var _scene_1= new CAAT.Scene().create();
-
-                    _director_1.addScene( _scene_1 );
+                    var _scene_1= _director_1.createScene();
 
                     _scene_1.addChild(
                             new CAAT.InterpolatorActor().
-                                create().
                                 setInterpolator( lerps[i] ).
                                 setBounds( 10, 10, 80, 80 ).
                                 setFillStyle('#d0d0d0') );
 
-                    _director_1.loop(1);
+                    CAAT.loop(30);
                 }
             })();
         </script>
@@ -260,18 +254,15 @@
                                 100,
                                 document.getElementById('_exp_'+count++));
 
-                        var _scene_1= new CAAT.Scene().create();
+                        var _scene_1= _director_1.createScene();
 
-                        _director_1.addScene( _scene_1 );
-                        
                         _scene_1.addChild(
                                 new CAAT.InterpolatorActor().
-                                    create().
                                     setInterpolator( lerps[j][i] ).
                                     setBounds( 10, 10, 80, 80 ).
                                     setFillStyle('#d0d0d0') );
 
-                        _director_1.loop(1);
+                        CAAT.loop(30);
                     }
                 }
             })();
@@ -336,18 +327,15 @@
                                  100,
                                  document.getElementById('_bounce_'+count++));
 
-                         var _scene_1= new CAAT.Scene().create();
-
-                         _director_1.addScene( _scene_1 );
+                         var _scene_1= _director_1.createScene();
 
                          _scene_1.addChild(
                                  new CAAT.InterpolatorActor().
-                                     create().
                                      setInterpolator( lerps[j][i] ).
                                      setBounds( 10, 10, 80, 80 ).
                                      setFillStyle('#d0d0d0') );
 
-                         _director_1.loop(1);
+                         CAAT.loop(30);
                      }
                  }
 
@@ -437,18 +425,15 @@
                                  140,
                                  document.getElementById('_Elastic_'+count++));
 
-                         var _scene_1= new CAAT.Scene().create();
-
-                         _director_1.addScene( _scene_1 );
+                         var _scene_1= _director_1.createScene();
 
                          _scene_1.addChild(
                                  new CAAT.InterpolatorActor().
-                                     create().
                                      setInterpolator( lerps[j][i] ).
                                      setBounds( 10, 30, 80, 80 ).
                                      setFillStyle('#d0d0d0') );
 
-                         _director_1.loop(1);
+                         CAAT.loop(30);
                      }
                  }
 
@@ -465,7 +450,7 @@
         on an Actor to apply the Interpolator to. You can then see how different interpolators modify
         the Behavior aplication. Every Behavior will last for fived seconds.
     </p>
-    <div><span id="interpolator_name"><code>No interpolator selected.</code></span></div>
+    <div><span id="interpolator_name"><code>Select a curve and press on any Actor.</code></span></div>
     <div><canvas id="_sample"></canvas></div>
     <script type="text/javascript">
 
@@ -475,9 +460,7 @@
                     600,
                     document.getElementById('_sample'));
 
-            var scene= new CAAT.Scene().create();
-
-            director.addScene(scene);
+            var scene= director.createScene();
 
             var lerps= CAAT.Interpolator.prototype.enumerateInterpolators();
 
@@ -492,7 +475,6 @@
             for( j=0; j<rows; j++ ) {
 
                 var root= new CAAT.Dock().
-                        create().
                         setBounds(0,director.canvas.height-(j+1)*max, director.canvas.width, max).
                         setSizes(min, max).
                         setLayoutOp( CAAT.Dock.prototype.OP_LAYOUT_BOTTOM );
@@ -507,7 +489,6 @@
                     }
 
                     var actor= new CAAT.InterpolatorActor().
-                         create().
                          setInterpolator( lerps[(j*cols+i)*2] ).
                          setBounds( 0, 0, min, min );
                     actor.name= lerps[(j*cols+i)*2 +1];
@@ -545,13 +526,14 @@
 
             for( i=0; i<3; i++ ) {
                 var _text_r0= new CAAT.TextActor().
-                        create().
                         setFont("50px sans-serif").
                         setText("CAAT").
                         setFillStyle('green').
                         setOutline(true).
                         setOutlineColor('red').
-                        setLocation( 30,60+140*i );
+                        setLocation( 30,60+140*i ).
+                        calcTextSize(director).
+                        cacheAsBitmap();
                 var text_r0_rb= new CAAT.RotateBehavior().
                         setFrameTime(0,5000).
                         setAngles(0,Math.PI*2).
@@ -567,13 +549,14 @@
 
             for( i=0; i<3; i++ ) {
                 var _text_r0= new CAAT.TextActor().
-                        create().
                         setFont("50px sans-serif").
                         setText("CAAT").
                         setFillStyle('green').
                         setOutline(true).
                         setOutlineColor('red').
-                        setLocation( 250,60+140*i );
+                        setLocation( 250,60+140*i ).
+                        calcTextSize(director).
+                        cacheAsBitmap();
                 var text_r0_rb= new CAAT.ScaleBehavior().
                         setFrameTime(0,5000).
                         setValues(1, 2, 1, 2).
@@ -589,7 +572,6 @@
 
             for( i=0; i<3; i++ ) {
                 var _text_r0= new CAAT.ShapeActor().
-                        create().
                         setShape( CAAT.ShapeActor.prototype.SHAPE_CIRCLE ).
                         setFillStyle('pink').
                         setStrokeStyle('orange').
@@ -608,7 +590,7 @@
             }
 
 
-            director.loop(60);
+            CAAT.loop(30);
         })();
     </script>
 </div>

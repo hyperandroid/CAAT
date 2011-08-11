@@ -58,3 +58,17 @@ Added on ActorCSS needed control to set a canvas as background image. It is not 
 
 Fixed director's RESIZE_PROPORTIONAL option. There was a bug that prevented scenes from
  affine transforming properly with respect to the director instance.
+
+Separated CAAT compilation results into two separate versions one for Canvas/GL and the
+ other for CSS. This is needed since the Actor,ActorContainer,Scene and Director classes
+ have been rewritten to support a CSS renderer. Since there's a extend function invoked
+ inside closures to extend prototypes I'm unable to decide on the fly whether to extends
+ an object (Actor) or another version with the same interface (ActorCSS).
+
+11/08/2011
+----------
+
+Updated tutorials to fit new CAAT needs.
+Updated demo/examples to fit new CAAT needs. Suggested place to look for examples is CAAT-Samples repo.
+
+Fixed some scene transition bugs (when scaling).

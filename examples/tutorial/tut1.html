@@ -55,10 +55,9 @@
                 100,    // 100 pixels across
                 document.getElementById('_c1'));
 
-        var scene=     new CAAT.Scene().create();
+        var scene=     director.createScene();
 
         var circle=    new CAAT.ShapeActor().
-                create().
                 setLocation(20,20).
                 setSize(60,60).
                 setFillStyle('#ff0000').
@@ -95,9 +94,8 @@
             100,100,
             document.getElementById('_c1'));
 
-    var scene=     new CAAT.Scene().create();
+    var scene=     director.createScene();
     var circle=    new CAAT.ShapeActor().
-            create().
             setLocation(20,20).
             setSize(60,60).
             setFillStyle('#ff0000').
@@ -122,16 +120,14 @@
     // add the canvas to the document:
     document.getElementById('div_canvas2').appendChild( director2.canvas );
 
-    var scene2=     new CAAT.Scene().create();
+    var scene2=     director.createScene();
     var circle2=    new CAAT.ShapeActor().
-            create().
             setLocation(20,20).
             setSize(60,60).
             setFillStyle('#ff00ff').
             setStrokeStyle('#00ff00');
 
     scene2.addChild(circle2);
-    director2.addScene(scene2);
 
     director2.loop(1);
         </pre>
@@ -140,27 +136,26 @@
 </div>
 
 <div class="sample" id="div_canvas2"></div>
-<script>
-    // We are not pointing any canvas in the director creation statement,
-    // so the director will create a Canvas for us.
-    var director2 = new CAAT.Director().initialize(100,100);
+    <script>
+        // We are not pointing any canvas in the director creation statement,
+        // so the director will create a Canvas for us.
+        var director2 = new CAAT.Director().initialize(100,100);
 
-    // add the canvas to the document:
-    document.getElementById('div_canvas2').appendChild( director2.canvas );
+        // add the canvas to the document:
+        document.getElementById('div_canvas2').appendChild( director2.canvas );
 
-    var scene2=     new CAAT.Scene().create();
-    var circle2=    new CAAT.ShapeActor().
-            create().
-            setLocation(20,20).
-            setSize(60,60).
-            setFillStyle('#ff00ff').
-            setStrokeStyle('#00ff00');
+        var scene2=     director.createScene();
+        var circle2=    new CAAT.ShapeActor().
+                setLocation(20,20).
+                setSize(60,60).
+                setFillStyle('#ff00ff').
+                setStrokeStyle('#00ff00');
 
-    scene2.addChild(circle2);
-    director2.addScene(scene2);
+        scene2.addChild(circle2);
 
-    director2.loop(1);
-</script>
+        director2.loop(1);
+    </script>
+</div>
 
 </body>
 </html>

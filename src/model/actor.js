@@ -488,6 +488,16 @@
             this.dirty= true;
             return this;
 		},
+        getAnchorPercent : function( anchor ) {
+
+            var anchors=[
+                50,50,   50,0,  50,100,
+                0,50,   100,50, 0,0,
+                100,0,  0,100,  100,100
+            ];
+
+            return { x: anchors[anchor*2], y: anchors[anchor*2+1] };
+        },
         /**
          * Private.
          * Gets a given anchor position referred to the Actor.
@@ -1091,7 +1101,7 @@
                 }
             } else {
                 if ( this.dirty ) {
-                    this.wdirty= true;
+
                 }
                 this.worldModelViewMatrix.copy( this.modelViewMatrix );
             }

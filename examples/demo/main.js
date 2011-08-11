@@ -11,23 +11,16 @@
  *
  **/
 function setupTRButton(prev) {
-	var sb= new CAAT.ScaleBehavior();
-	sb.setPingPong();
-	sb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-	sb.startScaleX= 1;
-	sb.endScaleX= 1.5;
-	sb.startScaleY= 1;
-	sb.endScaleY= 1.5;
-	sb.expired= true;
+	var sb= new CAAT.ScaleBehavior().
+	        setPingPong().
+            setValues( 1,1.5, 1,1.5 );
 	prev.addBehavior(sb);
 	
-	var ab= new CAAT.AlphaBehavior();
-	ab.setPingPong();
-	ab.startAlpha=1;
-	ab.endAlpha=0.5;
-	ab.setCycle(true);
+	var ab= new CAAT.AlphaBehavior().
+	        setPingPong().
+            setValues(1,.5).
+            setCycle(true);
 	prev.addBehavior(ab);
-	
 	
 	prev.mouseExit= function(mouseEvent) {
 		var actor= mouseEvent.source;
@@ -58,10 +51,12 @@ function setupTRButton(prev) {
 		actor.pointed= true;
 		
 		if ( behaviour.expired ) {
-			actor.behaviorList[0].setFrameTime( mouseEvent.source.time, 1000 );
-			actor.behaviorList[0].setCycle(true);
-			actor.behaviorList[1].setFrameTime( mouseEvent.source.time, 1000 );
-			actor.behaviorList[1].setCycle(true);
+			actor.behaviorList[0].
+                    setFrameTime( mouseEvent.source.time, 1000 ).
+			        setCycle(true);
+			actor.behaviorList[1].
+                    setFrameTime( mouseEvent.source.time, 1000 ).
+			        setCycle(true);
 		}
 	};
 }
@@ -239,15 +234,13 @@ function __CAAT__loadingScene(director) {
     root.mouseEnter= function(mouseEvent) {}
     root.mouseExit= function(mouseEvent) {}
 
-    var textLoading= new CAAT.TextActor();
-    textLoading.setFont("20px sans-serif");
-    textLoading.textAlign="center";
-    textLoading.textBaseline="top";
-    textLoading.setText("  Loading  ");
-    textLoading.calcTextSize(director);
-    textLoading.setSize( textLoading.textWidth, textLoading.textHeight );
-    textLoading.create();
-    textLoading.fillStyle='white';
+    var textLoading= new CAAT.TextActor().
+            setFont("20px sans-serif").
+            setTextAlign("center").
+            setTextBaseline("top").
+            setText("Loading").
+            calcTextSize(director).
+            setFillStyle('white');
     root.addChild(textLoading);
     textLoading.setLocation(
             (director.canvas.width-textLoading.width)/2,
@@ -255,24 +248,23 @@ function __CAAT__loadingScene(director) {
 
     scene.loading= textLoading;
 
-    var rb= new CAAT.RotateBehavior();
-    rb.cycleBehavior= true;
-    rb.setFrameTime( 0, 5000 );
-    rb.startAngle= -Math.PI/4;
-    rb.endAngle= Math.PI/4;
-    rb.setInterpolator( new CAAT.Interpolator().createCubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
-    rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
+    var rb= new CAAT.RotateBehavior().
+            setCycle(true).
+            setFrameTime( 0, 5000 ).
+            setValues( -Math.PI/4, Math.PI/4, 50, 0 ).
+            setInterpolator(
+                new CAAT.Interpolator().createCubicBezierInterpolator(
+                    {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
     textLoading.addBehavior(rb);
 
     root.mouseMove= function(mouseEvent) {
 
-        var burbuja= new CAAT.ShapeActor();
-        burbuja.setLocation( mouseEvent.point.x, mouseEvent.point.y );
-        burbuja.create();
-        burbuja.mouseEnabled= false;
-        burbuja.compositeOp='lighter';
         var r= 1+10*Math.random();
-        burbuja.setSize( 5+r, 5+r );
+        var burbuja= new CAAT.ShapeActor().
+                setLocation( mouseEvent.point.x, mouseEvent.point.y ).
+                enableEvents(false).
+                setCompositeOp('lighter').
+                setSize( 5+r, 5+r );
 
         var r= 192 + (64*Math.random())>>0;
         var g= (64*Math.random())>>0;
@@ -294,18 +286,17 @@ function __CAAT__loadingScene(director) {
                 }
             });
 
-            var ab= new CAAT.AlphaBehavior();
-            ab.setFrameTime( 0, 500 );
-            ab.startAlpha= 1;
-            ab.endAlpha= 0;
+            var ab= new CAAT.AlphaBehavior().
+                    setFrameTime( 0, 500 ).
+                    setValues(1,0);
             cb.addBehavior(ab);
 
-            var tb= new CAAT.PathBehavior();
-            tb.setFrameTime( 0, 500 );
-            tb.setPath(
-                    new CAAT.Path().setLinear(
-                            burbuja.x, burbuja.y,
-                            burbuja.x, burbuja.y-100-100*Math.random() ) );
+            var tb= new CAAT.PathBehavior().
+                    setFrameTime( 0, 500 ).
+                    setPath(
+                        new CAAT.Path().setLinear(
+                                burbuja.x, burbuja.y,
+                                burbuja.x, burbuja.y-100-100*Math.random() ) );
             cb.addBehavior(tb);
 
         burbuja.addBehavior( cb );
@@ -326,22 +317,15 @@ function __CAAT__loadingScene(director) {
         this.loading.setText('Start');
         this.loading.emptyBehaviorList();
 
-        var sb= new CAAT.ScaleBehavior();
-        sb.setPingPong();
-        sb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-        sb.startScaleX= 1;
-        sb.endScaleX= 4;
-        sb.startScaleY= 1;
-        sb.endScaleY= 4;
-        sb.setCycle(true);
-        sb.setFrameTime( scene.time, 1000 );
+        var sb= new CAAT.ScaleBehavior().
+                setPingPong().
+                setValues(1,4,1,4).
+                setCycle(true).
+                setFrameTime( scene.time, 1000 );
 
         this.loading.addBehavior(sb);
 
-        // after changing the from 'loading' to 'start', set mouseclick function to initialize demo.
-//        this.loading.mouseClick= function(event) {
-            __CAAT_director_initialize(director);
-//        }
+        __CAAT_director_initialize(director);
     };
 
 	return scene;

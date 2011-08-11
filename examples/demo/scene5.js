@@ -70,10 +70,8 @@ function __scene5_text(director,scene) {
 	var rb= new CAAT.RotateBehavior();
 	rb.cycleBehavior= true;
 	rb.setFrameTime( 0, 4000 );
-	rb.startAngle= -Math.PI/8;
-	rb.endAngle= Math.PI/8;
+    rb.setValues( -Math.PI/8, Math.PI/8, 50, 0 );
 	rb.setInterpolator( new CAAT.Interpolator().createCubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
-	rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
 	cc1.addBehavior(rb);
 	
 	var gradient= director.crc.createLinearGradient(0,0,0,30);
@@ -90,11 +88,7 @@ function __scene5_text(director,scene) {
 	text.create();
 	text.fillStyle=gradient;
 	text.outline= true;
-
-    var aimg= new CAAT.ImageActor().create().
-            setImage(text.cacheAsBitmap()).
-            setLocation((cc1.width-text.textWidth)/2,0);
-	cc1.addChild(aimg);
+	cc1.addChild(text.cacheAsBitmap().setLocation((cc1.width-text.textWidth)/2,0));
 
 
 	var text2= new CAAT.TextActor();
@@ -106,11 +100,7 @@ function __scene5_text(director,scene) {
 	text2.create();
 	text2.fillStyle=gradient;
 	text2.outline= true;
-
-    var aimg2= new CAAT.ImageActor().create().
-            setImage(text2.cacheAsBitmap()).
-            setLocation((cc1.width-text2.textWidth)/2,40);
-	cc1.addChild(aimg2);
+	cc1.addChild(text2.cacheAsBitmap().setLocation((cc1.width-text2.textWidth)/2,40));
 
 
 	var text4= new CAAT.TextActor();
@@ -122,10 +112,6 @@ function __scene5_text(director,scene) {
 	text4.create();
 	text4.fillStyle=gradient;
 	text4.outline= true;
-
-    var aimg4= new CAAT.ImageActor().create().
-            setImage(text4.cacheAsBitmap()).
-            setLocation((cc1.width-text4.textWidth)/2,80);
-	cc1.addChild(aimg4);
+	cc1.addChild(text4.cacheAsBitmap().setLocation((cc1.width-text4.textWidth)/2,80));
 
 }

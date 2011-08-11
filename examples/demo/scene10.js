@@ -29,11 +29,10 @@ function __scene10_text(director,scene) {
                 new CAAT.RotateBehavior().
                         setCycle(true).
                         setFrameTime( 0, 4000 ).
-                        setValues( -Math.PI/8, Math.PI/8 ).
+                        setValues( -Math.PI/8, Math.PI/8, 50, 0 ).
                         setInterpolator(
                             new CAAT.Interpolator().createExponentialInOutInterpolator(3,true)
-                        ).
-                        setAnchor( CAAT.Actor.prototype.ANCHOR_TOP )
+                        )
             );
 	scene.addChild(cc);
 
@@ -44,11 +43,7 @@ function __scene10_text(director,scene) {
             setFillStyle(gradient).
             setOutline(true).
             calcTextSize(director);
-    text.setLocation((cc.width-text.width)/2,0);
-    var aimg= new CAAT.ImageActor().create().
-            setImage(text.cacheAsBitmap()).
-            setLocation((cc.width-text.textWidth)/2,0);
-	cc.addChild(aimg);
+	cc.addChild(text.cacheAsBitmap().setLocation((cc.width-text.textWidth)/2,0));
 
 
 	var text2= new CAAT.TextActor().
@@ -58,12 +53,7 @@ function __scene10_text(director,scene) {
             create().
             setFillStyle(gradient).
 	        setOutline(true);
-    text2.setLocation((cc.width-text2.width)/2,50);
-    var aimg2= new CAAT.ImageActor().create().
-            setImage(text2.cacheAsBitmap()).
-            setLocation((cc.width-text2.textWidth)/2,50);
-	cc.addChild(aimg2);
-
+	cc.addChild(text2.cacheAsBitmap().setLocation((cc.width-text2.textWidth)/2,50));
 
 	scene.addChild(cc);
 }
@@ -88,7 +78,6 @@ function __scene10_text(director,scene) {
 			this.scene = new CAAT.Scene().
 				create();
 			this.root = new CAAT.ActorContainer().
-				create().
 				setBounds(0,0, director.canvas.width, director.canvas.height);
 			this.scene.addChild( this.root );
 
@@ -112,7 +101,6 @@ function __scene10_text(director,scene) {
 					hex = colorHelper.hsvToRgb(hue, 80, 99).toHex(); // Convert to hex value
 
 				var circleActor = new CAAT.ShapeActor()
-                    .create()
 					.setShape( CAAT.ShapeActor.prototype.SHAPE_CIRCLE )
 					.setLocation( Math.random() * director.canvas.width, Math.random() * director.canvas.height)
 					.setSize(aRadius*2, aRadius*2) // Size is in diameters
@@ -151,7 +139,7 @@ function __scene10_text(director,scene) {
                 me.mousePosition.set(mouseEvent.point.x, mouseEvent.point.y);
             };
 
-            this.scene.endAnimate= function(director, delta)    {
+            this.scene.onRenderEnd= function(director, delta)    {
                 
                 me.packedCirleManager.pushAllCirclesTowardTarget();
                 me.packedCirleManager.handleCollisions();

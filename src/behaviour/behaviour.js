@@ -659,7 +659,7 @@
             this.startScaleY= startY;
             this.endScaleY=   endY;
 
-            if ( anchorx!==undefined && anchory!==undefined ) {
+            if ( anchorx!==undefined && anchory!==undefined && anchorx!==null && anchory!==null) {
                 this.anchorX= anchorx/100;
                 this.anchorY= anchory/100;
             }

@@ -145,9 +145,7 @@
                         document.getElementById('_tut5_1'));
 
                 // create scene.
-                var _scene= new CAAT.Scene().create();
-
-                _director.addScene(_scene);
+                var _scene= _director.createScene();
 
                 var p= new CAAT.Path().
                     beginPath(40,40).
@@ -158,13 +156,12 @@
                     setInteractive(false);
 
                 var path= new CAAT.PathActor().
-                        create().
                         setBounds(0,0,100,100).
                         setPath(p);
 
                 _scene.addChild( path );
 
-                _director.loop(1);
+                CAAT.loop(30);
                 })();
             </script>
         </div>
@@ -195,9 +192,7 @@
                         document.getElementById('_tut5_2'));
 
                 // create scene.
-                var _scene= new CAAT.Scene().create();
-
-                _director.addScene(_scene);
+                var _scene= _director.createScene();
 
                 var p= new CAAT.Path().
                     beginPath(40,40).
@@ -208,13 +203,12 @@
                     setInteractive(false);
 
                 var path= new CAAT.PathActor().
-                        create().
                         setBounds(0,0,100,100).
                         setPath(p);
 
                 _scene.addChild( path );
 
-                _director.loop(1);
+                CAAT.loop(30);
                 })();
             </script>
         </div>
@@ -260,7 +254,7 @@
                     var director_6 = new CAAT.Director().initialize(
                             300,250,document.getElementById('_tut5_3'));
 
-                    var scene_6=     new CAAT.Scene().create();
+                    var scene_6=     director_6.createScene();
 
                     // create an almost circular path.
                     var _path_c6= new CAAT.Path().
@@ -270,9 +264,7 @@
                         endPath().
                         setInteractive(false);
 
-                    var shape_c6_0= new CAAT.ShapeActor().
-                            create().
-                            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+                    var shape_c6_0= new CAAT.Actor().
                             setLocation( 50,50 ).
                             setSize(50,50).
                             setFillStyle('#ffff00').
@@ -287,9 +279,7 @@
                                         setTranslation( 25,25 )
 
                             );
-                    var shape_c6_1= new CAAT.ShapeActor().
-                            create().
-                            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+                    var shape_c6_1= new CAAT.Actor().
                             setLocation( 50,50 ).
                             setSize(50,50).
                             setFillStyle('#00ff00').
@@ -323,9 +313,7 @@
                             setBounds(0,0,director_6.width,director_6.height);
                     scene_6.addChild( _pathactor_c6 );
 
-                    // setup up a path traverser for the path.
-                    director_6.addScene(scene_6);
-                    director_6.loop(10);
+                    CAAT.loop(30);
 
                 })();
             </script>
@@ -355,7 +343,6 @@
                         for( j=0; j<rows; j++ ) {
 
                             var root= new CAAT.Dock().
-                                    create().
                                     setBounds(
                                         director.canvas.width-(j+1)*max,
                                         0,
@@ -375,7 +362,6 @@
                                 }
 
                                 var actor= new CAAT.InterpolatorActor().
-                                     create().
                                      setInterpolator( lerps[(j*cols+i)*2] ).
                                      setBounds( 0, 0, min, min ).
                                      setStrokeStyle( 'blue' );
@@ -411,7 +397,7 @@
                     var director = new CAAT.Director().initialize(
                             700,500,document.getElementById('_tut5_4'));
 
-                    var scene= new CAAT.Scene().create();
+                    var scene= director.createScene();
 
                     // path actor. to show the path and manipulate its control points.
                     var pa= new CAAT.PathActor().
@@ -428,9 +414,7 @@
                                 endPath() );
 
 
-                    var fish = new CAAT.ShapeActor().
-                            create().
-                            setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+                    var fish = new CAAT.Actor().
                             setLocation( 50,50 ).
                             setSize(50,50).
                             setFillStyle('#00ff00').
@@ -453,7 +437,7 @@
                     __scene1_generateInterpolators(director, scene, pb);
 
                     director.addScene(scene);
-                    director.loop(33);
+                    CAAT.loop(30);
 
                 })();
             </script>
@@ -542,9 +526,7 @@
                             document.getElementById('_tut5_5')
                     );
 
-                    var _scene_1= new CAAT.Scene().create();
-
-                    _director_1.addScene( _scene_1 );
+                    var _scene_1= _director_1.createScene();
 
                     _scene_1.addChild(
                             new CAAT.InterpolatorActor().
@@ -579,7 +561,7 @@
                                 setGap(0)
                     );
 
-                    _director_1.loop(1);
+                    CAAT.loop(30);
                 })();
             </script>
         </div>

@@ -20,11 +20,9 @@ function __scene3(director) {
 	
 	var rb= new CAAT.RotateBehavior();
 	rb.cycleBehavior= true;
+    rb.setValues(-Math.PI/8,Math.PI/8, 50,0);
 	rb.setFrameTime( 0, 4000 );
-	rb.startAngle= -Math.PI/8;
-	rb.endAngle= Math.PI/8;
 	rb.setInterpolator( new CAAT.Interpolator().createCubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
-	rb.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
 	cc.addBehavior(rb);
 	
 	var text= new CAAT.TextActor();
@@ -36,11 +34,7 @@ function __scene3(director) {
 	text.create();
 	text.fillStyle=gradient;
 	text.outline= true;
-
-    var aimg= new CAAT.ImageActor().create().
-            setImage(text.cacheAsBitmap()).
-            setLocation((cc.width-text.textWidth)/2,0);
-	cc.addChild(aimg);
+	cc.addChild(text.cacheAsBitmap().setLocation((cc.width-text.textWidth)/2,0));
 	
 	var text2= new CAAT.TextActor();
 	text2.setFont("50px sans-serif");
@@ -51,12 +45,7 @@ function __scene3(director) {
 	text2.create();
 	text2.fillStyle=gradient;
 	text2.outline= true;
-
-    var aimg2= new CAAT.ImageActor().create().
-            setImage(text2.cacheAsBitmap()).
-            setLocation((cc.width-text2.textWidth)/2,50);
-	cc.addChild(aimg2);
-
+	cc.addChild(text2.cacheAsBitmap().setLocation((cc.width-text2.textWidth)/2,50));
 
 	var text3= new CAAT.TextActor();
 	text3.setFont("50px sans-serif");
@@ -67,16 +56,12 @@ function __scene3(director) {
 	text3.create();
 	text3.fillStyle=gradient;
 	text3.outline= true;
-
-    var aimg3= new CAAT.ImageActor().create().
-            setImage(text3.cacheAsBitmap()).
-            setLocation((cc.width-text3.textWidth)/2,100);
-	cc.addChild(aimg3);
+	cc.addChild(text3.cacheAsBitmap().setLocation((cc.width-text3.textWidth)/2,100));
 
 	var conpoundimage = new CAAT.CompoundImage();
 	conpoundimage.initialize( director.getImage('fish'), 1, 3);
 	
-	var anchor= [5,1,6, 3,0,4, 7,2,8], i;
+	var anchors= [5,1,6, 3,0,4, 7,2,8], i;
 	// 10 peces con rotation y escalado. fijos sin path.
 	for( i=0; i<9; i++ ) {
 		var p2 = new CAAT.SpriteActor();
@@ -88,10 +73,9 @@ function __scene3(director) {
 		
 		var rb= new CAAT.RotateBehavior();
 		rb.cycleBehavior= true;
+        var anchor= scene.getAnchorPercent(anchors[i])
+        rb.setValues(0,2*Math.PI, anchor.x,anchor.y)
 		rb.setFrameTime( 0, 2000 );
-		rb.startAngle= 0;
-		rb.endAngle= Math.PI*2;
-		rb.anchor= anchor[i];
 		p2.addBehavior(rb);
 		
 		scene.addChild(p2);
@@ -109,12 +93,9 @@ function __scene3(director) {
 		var sb= new CAAT.ScaleBehavior();
 		sb.cycleBehavior= true;
 		sb.setFrameTime( 0, 2000 );
-		sb.startScaleX= .5;
-		sb.startScaleY= .5;
-		sb.endScaleX= 1.5;
-		sb.endScaleY= 1.5;
+        var anchor= scene.getAnchorPercent(anchors[i])
+        sb.setValues(.5, 1.5, .5, 1.5, anchor.x, anchor.y );
 		sb.setPingPong();
-		sb.anchor= anchor[i];
 		p2.addBehavior(sb);
 		
 		scene.addChild(p2);
@@ -135,13 +116,7 @@ function __scene3(director) {
 
 		var sb= new CAAT.ScaleBehavior();
 		sb.setPingPong();
-//		sb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-		sb.startScaleX= 1;
-		sb.endScaleX= 3;
-		sb.startScaleY= 1;
-		sb.endScaleY= 1;
-		sb.expired= true;
-		sb.anchor= CAAT.Actor.prototype.ANCHOR_LEFT;
+        sb.setValues(1,3,1,1, 0,50);
 		p2.addBehavior(sb);
 		
 		var ab= new CAAT.AlphaBehavior();

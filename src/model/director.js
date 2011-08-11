@@ -131,8 +131,25 @@
 
             this.canvas.width = this.referenceWidth*factor;
             this.canvas.height = this.referenceHeight*factor;
-            this.ctx = this.canvas.getContext(this.glEnabled ? 'webgl' : '2d');
+            this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d');
             this.crc = this.ctx;
+/*
+            if ( this.glEnabled ) {
+                this.pMatrix = makePerspective(90, this.canvas.width / this.canvas.height, 0.1, 3000.0, this.canvas.height);
+                this.glColorProgram = new CAAT.ColorProgram(this.gl).create().initialize();
+                this.glColorProgram.setMatrixUniform(this.pMatrix);
+                this.glTextureProgram = new CAAT.TextureProgram(this.gl).create().initialize();
+                this.glTextureProgram.setMatrixUniform(this.pMatrix);
+                this.glTextureProgram.useProgram();
+                var maxTris = 2048;
+                this.coords = new Float32Array(maxTris * 12);
+                this.uv = new Float32Array(maxTris * 8);
+                this.gl.clearColor(0.0, 0.0, 0.0, 255);
+                this.gl.disable(this.gl.DEPTH_TEST);
+                this.gl.enable(this.gl.BLEND);
+                this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+            }
+*/
         },
         /**
          * Enable window resize events and set redimension policy.
@@ -161,7 +178,7 @@
             CAAT.Director.superclass.setBounds.call(this, x, y, w, h);
             this.canvas.width = w;
             this.canvas.height = h;
-            this.ctx = this.canvas.getContext(this.glEnabled ? 'webgl' : '2d');
+            this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d');
             this.crc = this.ctx;
 
             for (var i = 0; i < this.scenes.length; i++) {
@@ -198,7 +215,7 @@
             var transitionCanvas = document.createElement('canvas');
             transitionCanvas.width = width;
             transitionCanvas.height = height;
-            var transitionImageActor = new CAAT.ImageActor().create().setImage(transitionCanvas);
+            var transitionImageActor = new CAAT.Actor().create().setBackgroundImage(transitionCanvas);
             this.transitionScene.ctx = transitionCanvas.getContext('2d');
             this.transitionScene.addChildImmediately(transitionImageActor);
             this.transitionScene.setEaseListener(this);

@@ -23,7 +23,7 @@ function __addPlanet(parent, rotationTime, pos, radius, color, startAngle ) {
                     setFrameTime( 0, rotationTime ).
                     setValues( 0,2*Math.PI).
                     setCycle( true ).
-                    setAnchor( CAAT.Actor.prototype.ANCHOR_CUSTOM, -x, -y )
+                    setAnchor( planet, -x, -y )
             );
 
     parent.addChild(planet);
@@ -108,14 +108,11 @@ function __createArm( root, angle, segments, armSegmentSizeW, armSegmentSizeH, a
 
 
 
-        var img= new CAAT.ShapeActor().
+        var newSegment= new CAAT.ShapeActor().
             create().
             setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
             setSize( armSegmentSizeH-4, armSegmentSizeH-4 ).
-            setFillStyle( 'rgb('+color.r+","+color.g+","+color.b+")" );
-
-        var newSegment= new CAAT.ImageActor().create().
-            setImage(img.cacheAsBitmap()).
+            setFillStyle( 'rgb('+color.r+","+color.g+","+color.b+")" ).
             setLocation( 0,-armSegmentSizeH );
         
         if ( segment==root ) {
@@ -155,40 +152,29 @@ function __scene8_text(director,scene) {
                 new CAAT.RotateBehavior().
                         setCycle(true).
                         setFrameTime( 0, 4000 ).
-                        setValues( -Math.PI/8, Math.PI/8 ).
+                        setValues( -Math.PI/8, Math.PI/8, 50, 0 ).
                         setInterpolator(
                             new CAAT.Interpolator().createExponentialInOutInterpolator(3,true)
-                        ).
-                        setAnchor( CAAT.Actor.prototype.ANCHOR_TOP )
+                        )
             );
 	scene.addChild(cc);
 
 	var text= new CAAT.TextActor().
             setFont("50px sans-serif").
             setText("Hierarchycal").
-            create().
             setFillStyle(gradient).
             setOutline(true).
             calcTextSize(director);
-    text.setLocation((cc.width-text.width)/2,0);
-    var aimg= new CAAT.ImageActor().create().
-            setImage(text.cacheAsBitmap()).
-            setLocation((cc.width-text.textWidth)/2,0);
-	cc.addChild(aimg);
+	cc.addChild(text.cacheAsBitmap().setLocation((cc.width-text.width)/2,0));
 
 
 	var text2= new CAAT.TextActor().
 	        setFont("50px sans-serif").
             setText("Rotations").
-            calcTextSize(director).
-            create().
             setFillStyle(gradient).
-	        setOutline(true);
-    text2.setLocation((cc.width-text2.width)/2,50);
-    var aimg2= new CAAT.ImageActor().create().
-            setImage(text2.cacheAsBitmap()).
-            setLocation((cc.width-text2.textWidth)/2,50);
-	cc.addChild(aimg2);
+	        setOutline(true).
+            calcTextSize(director);
+	cc.addChild(text2.cacheAsBitmap().setLocation((cc.width-text2.width)/2,50));
 
 
 	scene.addChild(cc);

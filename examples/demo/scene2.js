@@ -7,10 +7,9 @@ function __scene2(director) {
 	var scene= new CAAT.Scene();
 	scene.create();
 	
-	var conpoundimage = new CAAT.CompoundImage();
-	conpoundimage.initialize( director.getImage('chapas'), 6, 6);
+	var conpoundimage = new CAAT.SpriteImage().
+	        initialize( director.getImage('chapas'), 6, 6);
 	var __index=0;
-	
 	var padding= 10;
 	
 	var cw= director.canvas.width-padding*2;
@@ -21,48 +20,32 @@ function __scene2(director) {
 	
 	var w= cw/cols ;
 	var h= ch/rows;
-
 	
-	var cc= new CAAT.ActorContainer();
-	cc.setBounds(0,0,director.canvas.width,director.canvas.height);
-	cc.create();
+	var cc= new CAAT.ActorContainer().
+	        setBounds(0,0,director.canvas.width,director.canvas.height);
 	scene.addChild(cc);
 	
 	for( var i=0; i<rows; i++ ) {
 		for( var j=0; j<cols; j++ ) {
 			
-
-			var actor= new CAAT.SpriteActor();
-			actor.setBounds( j*w + padding, i*h + padding, w, h);
-			actor.create();
-			actor.setSpriteImage( conpoundimage );
-			actor.setAnimationImageIndex( [ (__index++)%conpoundimage.getNumImages() ] );
+			var actor= new CAAT.Actor().
+			        setBounds( j*w + padding, i*h + padding, w, h).
+			        setBackgroundImage( conpoundimage.getRef(), true ).
+			        setAnimationImageIndex( [ (__index++)%conpoundimage.getNumImages() ] );
 			cc.addChild(actor);
 			
-			var sb= new CAAT.ScaleBehavior();
-			sb.setPingPong();
-			sb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-			sb.startScaleX= 1;
-			sb.endScaleX= 2;
-			sb.startScaleY= 1;
-			sb.endScaleY= 2;
-			sb.expired= true;
-            /*
-            sb.setInterpolator( new CAAT.Interpolator().createQubicBezierInterpolator(
-            {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
-                        */
-            sb.setInterpolator(
-                    //new CAAT.Interpolator().createBounceOutInterpolator(true) );
-                    //new CAAT.Interpolator().createElasticOutInterpolator(1.1, .4) );
-                    new CAAT.Interpolator().createExponentialInOutInterpolator(3,true) );
+			var sb= new CAAT.ScaleBehavior().
+			        setPingPong().
+                    setValues(1,2, 1,2).
+                    setInterpolator(
+                            //new CAAT.Interpolator().createBounceOutInterpolator(true) );
+                            //new CAAT.Interpolator().createElasticOutInterpolator(1.1, .4) );
+                            new CAAT.Interpolator().createExponentialInOutInterpolator(3,true) );
 
 			actor.addBehavior(sb);
 			
-			var rb= new CAAT.RotateBehavior();
-			rb.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-			rb.startAngle=0;
-			rb.endAngle=Math.PI*2;
-			rb.expired= true;
+			var rb= new CAAT.RotateBehavior().
+                    setValues(0,Math.PI*2);
 			actor.addBehavior(rb);
 			
 			actor.mouseDblClick= function(mouseEvent) {
@@ -92,9 +75,7 @@ function __scene2(director) {
 				}
 				
 				if ( behaviour.expired ) {
-
                     actor.parent.setZOrder(actor, Number.MAX_VALUE);
-
 					actor.behaviorList[0].setFrameTime(	mouseEvent.source.time,	500 );
 					actor.behaviorList[1].setFrameTime(	mouseEvent.source.time,	500 );
 				}
@@ -107,100 +88,74 @@ function __scene2(director) {
 	gradient.addColorStop(0.5,'#ff00ff');
 	gradient.addColorStop(1,'blue');	
 	
-	var cc1= new CAAT.ActorContainer();
-	cc1.setBounds( 380,30, 300, 150 );
-	cc1.create();
+	var cc1= new CAAT.ActorContainer().
+	        setBounds( 380,30, 300, 150 ).
+            enableEvents(false);
 	scene.addChild(cc1);
-	cc1.mouseEnabled= false;
 	
-	var rb1= new CAAT.RotateBehavior();
-	rb1.cycleBehavior= true;
-	rb1.setFrameTime( 0, 4000 );
-	rb1.startAngle= -Math.PI/8;
-	rb1.endAngle= Math.PI/8;
-	rb1.setInterpolator( new CAAT.Interpolator().createCubicBezierInterpolator( {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true ) );
-	rb1.anchor= CAAT.Actor.prototype.ANCHOR_TOP;
+	var rb1= new CAAT.RotateBehavior().
+	        setCycle(true).
+	        setFrameTime( 0, 4000 ).
+            setValues(-Math.PI/8, Math.PI/8, 50,0).
+	        setInterpolator(
+                new CAAT.Interpolator().createCubicBezierInterpolator(
+                        {x:0,y:0}, {x:1,y:0}, {x:0,y:1}, {x:1,y:1}, true )
+            );
 	cc1.addBehavior(rb1);
 	
-	var text= new CAAT.TextActor();
-	text.setFont("50px sans-serif");
-	text.setText("One Image.");
-    text.calcTextSize(director);
-	text.textAlign="center";
-	text.setLocation((cc1.width-text.width)/2,0);
-	text.create();
-	text.fillStyle=gradient;
-	text.outline= true;
+	var text= new CAAT.TextActor().
+	        setFont("50px sans-serif").
+	        setText("One Image.").
+            calcTextSize(director).
+	        setTextAlign("center").
+	        setFillStyle(gradient).
+	        setOutline(true).
+            cacheAsBitmap();
+	cc1.addChild( text.setLocation((cc1.width-text.textWidth)/2,0) );
 
-    var aimg= new CAAT.ImageActor().create().
-            setImage(text.cacheAsBitmap()).
-            setLocation((cc1.width-text.textWidth)/2,0);
-	cc1.addChild(aimg);
-
-	var text2= new CAAT.TextActor();
-	text2.setFont("30px sans-serif");
-	text2.textAlign="center";
-	text2.setText("Behaviors on");
-    text2.calcTextSize(director);
-	text2.setLocation((cc1.width-text2.width)/2,50);
-	text2.create();
-	text2.fillStyle=gradient;
-	text2.outline= true;
-
-    var aimg2= new CAAT.ImageActor().create().
-            setImage(text2.cacheAsBitmap()).
-            setLocation((cc1.width-text2.textWidth)/2,50);
-	cc1.addChild(aimg2);
+	var text2= new CAAT.TextActor().
+	        setFont("30px sans-serif").
+	        setTextAlign("center").
+	        setText("Behaviors on").
+            calcTextSize(director).
+            setFillStyle(gradient).
+            setOutline(true).
+            cacheAsBitmap();
+	cc1.addChild(text2.setLocation((cc1.width-text2.width)/2,50));
 	
-	var text3= new CAAT.TextActor();
-	text3.setFont("30px sans-serif");
-	text3.textAlign="center";
-	text3.setText("MouseMove");
-    text3.calcTextSize(director);
-	text3.setLocation((cc1.width-text3.width)/2,80);
-	text3.create();
-	text3.fillStyle=gradient;
-	text3.outline= true;
+	var text3= new CAAT.TextActor().
+	        setFont("30px sans-serif").
+	        setTextAlign("center").
+	        setText("MouseMove").
+            calcTextSize(director).
+            setFillStyle(gradient).
+            setOutline(true).
+            cacheAsBitmap();
+	cc1.addChild(text3.setLocation((cc1.width-text3.textWidth)/2,80));
 
-    var aimg3= new CAAT.ImageActor().create().
-            setImage(text3.cacheAsBitmap()).
-            setLocation((cc1.width-text3.textWidth)/2,80);
-	cc1.addChild(aimg3);
+	var text4= new CAAT.TextActor().
+	        setFont("10px sans-serif").
+	        setTextAlign("center").
+	        setText("and").
+            calcTextSize(director).
+            setFillStyle('black').
+            setOutline(true).
+            cacheAsBitmap();
+	cc1.addChild(text4.setLocation((cc1.width-text4.textWidth)/2,110));
+	
+	var text5= new CAAT.TextActor().
+	        setFont("30px sans-serif").
+	        setTextAlign("center").
+	        setText("MouseDblClick").
+            calcTextSize(director).
+            setFillStyle(gradient).
+            setOutline(true).
+            cacheAsBitmap();
 
-	var text4= new CAAT.TextActor();
-	text4.setFont("10px sans-serif");
-	text4.textAlign="center";
-	text4.setText("and");
-    text4.calcTextSize(director);
-	text4.setLocation((cc1.width-text4.width)/2,110);
-	text4.create();
-	text4.fillStyle='black';
-	text4.outline= true;
+	cc1.addChild(text5.setLocation((cc1.width-text5.textWidth)/2,120));
+	cc1.enableEvents(false);
 
-    var aimg4= new CAAT.ImageActor().create().
-            setImage(text4.cacheAsBitmap()).
-            setLocation((cc1.width-text4.textWidth)/2,110);
-	cc1.addChild(aimg4);
-	
-	var text5= new CAAT.TextActor();
-	text5.setFont("30px sans-serif");
-	text5.textAlign="center";
-	text5.setText("MouseDblClick");
-    text5.calcTextSize(director);
-	text5.setLocation((cc1.width-text5.width)/2,120);
-	text5.create();
-	text5.fillStyle=gradient;
-	text5.outline= true;
-
-    var aimg5= new CAAT.ImageActor().create().
-            setImage(text5.cacheAsBitmap()).
-            setLocation((cc1.width-text5.textWidth)/2,120);
-	cc1.addChild(aimg5);
-	
-	
-	cc1.mouseEnabled= false;
-	
 	scene.addChild(cc1);
-	
+
 	return scene;
 }
