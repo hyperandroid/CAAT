@@ -1101,7 +1101,7 @@
                 }
             } else {
                 if ( this.dirty ) {
-
+                    this.wdirty= true;
                 }
                 this.worldModelViewMatrix.copy( this.modelViewMatrix );
             }
@@ -1188,7 +1188,7 @@
                     this.__vv= new Float32Array(12);
                 }
 
-                this.setGLCoords( this.__vv, 0, -director.canvas.height/2 );
+                this.setGLCoords( this.__vv, 0 );
                 this.setUV( this.__uv, 0 );
                 director.glRender(this.__vv, 12, this.__uv);
 
@@ -1199,7 +1199,7 @@
             var glCoordsIndex=  director.coordsIndex;
 
             ////////////////// XYZ
-            this.setGLCoords(glCoords, glCoordsIndex, -director.canvas.height/2);
+            this.setGLCoords(glCoords, glCoordsIndex);
             director.coordsIndex= glCoordsIndex+12;
 
             ////////////////// UV
@@ -1212,24 +1212,24 @@
          * @param glCoordsIndex
          * @param z
          */
-        setGLCoords : function( glCoords, glCoordsIndex, z ) {
+        setGLCoords : function( glCoords, glCoordsIndex ) {
 
             var vv=             this.viewVertices;
             glCoords[glCoordsIndex++]= vv[0].x;
             glCoords[glCoordsIndex++]= vv[0].y;
-            glCoords[glCoordsIndex++]= z;
+            glCoords[glCoordsIndex++]= 0;
 
             glCoords[glCoordsIndex++]= vv[1].x;
             glCoords[glCoordsIndex++]= vv[1].y;
-            glCoords[glCoordsIndex++]= z;
+            glCoords[glCoordsIndex++]= 0;
 
             glCoords[glCoordsIndex++]= vv[2].x;
             glCoords[glCoordsIndex++]= vv[2].y;
-            glCoords[glCoordsIndex++]= z;
+            glCoords[glCoordsIndex++]= 0;
 
             glCoords[glCoordsIndex++]= vv[3].x;
             glCoords[glCoordsIndex++]= vv[3].y;
-            glCoords[glCoordsIndex++]= z;
+            glCoords[glCoordsIndex++]= 0;
 
         },
         /**

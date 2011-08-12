@@ -30,9 +30,9 @@ function makeFrustum(left, right, bottom, top, znear, zfar, viewportHeight) {
             ]);
 }
 
-function makeOrtho(left, right, bottom, top, znear, zfar, viewportHeight) {
-    var tx = - (right + left) / (right - left) - viewportHeight/2;
-    var ty = - (top + bottom) / (top - bottom) + viewportHeight/2;
+function makeOrtho(left, right, bottom, top, znear, zfar) {
+    var tx = - (right + left) / (right - left) ;
+    var ty = - (top + bottom) / (top - bottom) ;
     var tz = - (zfar + znear) / (zfar - znear);
 
     return new CAAT.Matrix3().initWithMatrix(
@@ -43,3 +43,4 @@ function makeOrtho(left, right, bottom, top, znear, zfar, viewportHeight) {
                 [0, 0, 0,                  1  ]
             ]);
 }
+

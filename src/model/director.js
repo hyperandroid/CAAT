@@ -125,6 +125,7 @@
             }
         },
         setScaleProportional : function(w,h) {
+
             var factor= Math.min(w/this.referenceWidth, h/this.referenceHeight);
 
             this.setScaleAnchored( factor, factor, 0, 0 );
@@ -133,23 +134,10 @@
             this.canvas.height = this.referenceHeight*factor;
             this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d');
             this.crc = this.ctx;
-/*
+
             if ( this.glEnabled ) {
-                this.pMatrix = makePerspective(90, this.canvas.width / this.canvas.height, 0.1, 3000.0, this.canvas.height);
-                this.glColorProgram = new CAAT.ColorProgram(this.gl).create().initialize();
-                this.glColorProgram.setMatrixUniform(this.pMatrix);
-                this.glTextureProgram = new CAAT.TextureProgram(this.gl).create().initialize();
-                this.glTextureProgram.setMatrixUniform(this.pMatrix);
-                this.glTextureProgram.useProgram();
-                var maxTris = 2048;
-                this.coords = new Float32Array(maxTris * 12);
-                this.uv = new Float32Array(maxTris * 8);
-                this.gl.clearColor(0.0, 0.0, 0.0, 255);
-                this.gl.disable(this.gl.DEPTH_TEST);
-                this.gl.enable(this.gl.BLEND);
-                this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+                this.glReset();
             }
-*/
         },
         /**
          * Enable window resize events and set redimension policy.
@@ -183,6 +171,10 @@
 
             for (var i = 0; i < this.scenes.length; i++) {
                 this.scenes[i].setBounds(0, 0, w, h);
+            }
+
+            if ( this.glEnabled ) {
+                this.glReset();
             }
 
             return this;
@@ -222,6 +214,14 @@
 
             return this;
         },
+        glReset : function() {
+            this.pMatrix= makeOrtho( 0, this.canvas.width, this.canvas.height, 0, -1, 1 );
+            this.gl.viewport(0,0,this.canvas.width,this.canvas.height);
+            this.glColorProgram.setMatrixUniform(this.pMatrix);
+            this.glTextureProgram.setMatrixUniform(this.pMatrix);
+            this.gl.viewportWidth = this.canvas.width;
+            this.gl.viewportHeight = this.canvas.height;
+        },
         /**
          * Experimental.
          * Initialize a gl enabled director.
@@ -252,20 +252,15 @@
                 this.enableEvents();
                 this.timeline = new Date().getTime();
 
-                this.pMatrix = makePerspective(90, width / height, 0.1, 3000.0, height);
-
                 this.glColorProgram = new CAAT.ColorProgram(this.gl).create().initialize();
-                this.glColorProgram.setMatrixUniform(this.pMatrix);
-
                 this.glTextureProgram = new CAAT.TextureProgram(this.gl).create().initialize();
-                this.glTextureProgram.setMatrixUniform(this.pMatrix);
-
                 this.glTextureProgram.useProgram();
+                this.glReset();
+
 
                 var maxTris = 2048;
                 this.coords = new Float32Array(maxTris * 12);
                 this.uv = new Float32Array(maxTris * 8);
-
 
                 this.gl.clearColor(0.0, 0.0, 0.0, 255);
 
