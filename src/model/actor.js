@@ -119,7 +119,15 @@
         glEnabled:              false,
 
         backgroundImage:        null,
+        id:                     null,
 
+        getId : function()  {
+            return this.id;
+        },
+        setId : function(id) {
+            this.id= id;
+            return this;
+        },
         /**
          * Set this actor's parent.
          * @param parent {CAAT.ActorContainer}
@@ -280,6 +288,7 @@
          */
 		addListener : function( actorListener ) {
 			this.lifecycleListenerList.push(actorListener);
+            return this;
 		},
         /**
          * Removes an Actor's life cycle listener.
@@ -771,6 +780,10 @@
          *
          */
 		destroy : function(time)	{
+            if ( this.parent ) {
+                this.parent.removeChild(this);
+            }
+
             this.fireEvent('destroyed',time);
 		},
         /**
@@ -1572,6 +1585,7 @@
 
 
             var cl= this.childrenList;
+            this.activeChildren= null;
             for( i=0; i<cl.length; i++ ) {
                 var actor= cl[i];
                 actor.time= time;
@@ -1587,8 +1601,10 @@
                     }
                 } else {
                     if ( actor.expired && actor.discardable ) {
+                        // actor destroy means removing from its parent.
                         actor.destroy(time);
-                        cl.splice(i,1);
+                        // so don't do it again.
+                        //cl.splice(i,1);
                     }
                 }
             }
@@ -1628,6 +1644,11 @@
          * @return this
          */
 		addChild : function(child) {
+
+            if ( child.parent!=null ) {
+                throw('adding to a container an element with parent.');
+            }
+
             child.parent= this;
             this.childrenList.push(child);
             return this;

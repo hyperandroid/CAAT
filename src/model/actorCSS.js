@@ -267,7 +267,7 @@
         },
         style3 : function() {
 
-            var value= "rotate("+this.rotationAngle+"rad) scale("+this.scaleX+","+this.scaleY+")";
+            var value= "translate3d(0,0,0) rotate("+this.rotationAngle+"rad) scale("+this.scaleX+","+this.scaleY+")";
             this.domElement.style['transform']=         value;
             this.domElement.style['-ms-transform']=     value;
             this.domElement.style['-webkit-transform']= value;

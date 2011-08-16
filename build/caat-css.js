@@ -3609,7 +3609,7 @@ var cp1= proxy(
         },
         style3 : function() {
 
-            var value= "rotate("+this.rotationAngle+"rad) scale("+this.scaleX+","+this.scaleY+")";
+            var value= "translate3d(0,0,0) rotate("+this.rotationAngle+"rad) scale("+this.scaleX+","+this.scaleY+")";
             this.domElement.style['transform']=         value;
             this.domElement.style['-ms-transform']=     value;
             this.domElement.style['-webkit-transform']= value;
@@ -7807,6 +7807,13 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
          * function to call on every image load.
          */
         loadImages: function( aImages, callback_loaded_one_image ) {
+
+            if (!aImages) {
+                if (callback_loaded_one_image ) {
+                    callback_loaded_one_image(0,[]);
+                }
+            }
+
             var me= this, i;
             this.notificationCallback = callback_loaded_one_image;
             this.images= [];
@@ -7822,7 +7829,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                 this.images[i].image.src= aImages[i].url;
             }
 
-            if ( aImages .length===0 ) {
+            if ( aImages.length===0 ) {
                 callback_loaded_one_image(0,[]);
             }
         }

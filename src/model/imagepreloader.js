@@ -50,6 +50,13 @@
          * function to call on every image load.
          */
         loadImages: function( aImages, callback_loaded_one_image ) {
+
+            if (!aImages) {
+                if (callback_loaded_one_image ) {
+                    callback_loaded_one_image(0,[]);
+                }
+            }
+
             var me= this, i;
             this.notificationCallback = callback_loaded_one_image;
             this.images= [];
@@ -65,7 +72,7 @@
                 this.images[i].image.src= aImages[i].url;
             }
 
-            if ( aImages .length===0 ) {
+            if ( aImages.length===0 ) {
                 callback_loaded_one_image(0,[]);
             }
         }

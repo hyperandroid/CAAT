@@ -54,8 +54,6 @@ function __scene10_text(director,scene) {
             setFillStyle(gradient).
 	        setOutline(true);
 	cc.addChild(text2.cacheAsBitmap().setLocation((cc.width-text2.textWidth)/2,50));
-
-	scene.addChild(cc);
 }
 
 (function() {

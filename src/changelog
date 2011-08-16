@@ -72,3 +72,18 @@ Updated tutorials to fit new CAAT needs.
 Updated demo/examples to fit new CAAT needs. Suggested place to look for examples is CAAT-Samples repo.
 
 Fixed some scene transition bugs (when scaling).
+
+13/08/2011
+----------
+
+Fixed director canvas resize on RESIZE_PROPORTIONAL. WebGL renderer did not show properly after resizing.
+Changed directorGL perspective from frustum to orthogonal.
+
+15/08/2011
+----------
+
+Added a exception to be thrown whenever an Actor is to be added to any given parent and already has
+ a registered parent.
+Added on actor destroy event, a call to be removed from its parent (in case there's one). Now, discardable
+ and out-of-frame-time elements can be succesfully reused with the previous condition. To remove an
+ actor means a linear search to identify in which position is stored.

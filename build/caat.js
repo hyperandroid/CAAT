@@ -3461,7 +3461,15 @@ var cp1= proxy(
         glEnabled:              false,
 
         backgroundImage:        null,
+        id:                     null,
 
+        getId : function()  {
+            return this.id;
+        },
+        setId : function(id) {
+            this.id= id;
+            return this;
+        },
         /**
          * Set this actor's parent.
          * @param parent {CAAT.ActorContainer}
@@ -3622,6 +3630,7 @@ var cp1= proxy(
          */
 		addListener : function( actorListener ) {
 			this.lifecycleListenerList.push(actorListener);
+            return this;
 		},
         /**
          * Removes an Actor's life cycle listener.
@@ -4113,6 +4122,10 @@ var cp1= proxy(
          *
          */
 		destroy : function(time)	{
+            if ( this.parent ) {
+                this.parent.removeChild(this);
+            }
+
             this.fireEvent('destroyed',time);
 		},
         /**
@@ -4914,6 +4927,7 @@ var cp1= proxy(
 
 
             var cl= this.childrenList;
+            this.activeChildren= null;
             for( i=0; i<cl.length; i++ ) {
                 var actor= cl[i];
                 actor.time= time;
@@ -4929,8 +4943,10 @@ var cp1= proxy(
                     }
                 } else {
                     if ( actor.expired && actor.discardable ) {
+                        // actor destroy means removing from its parent.
                         actor.destroy(time);
-                        cl.splice(i,1);
+                        // so don't do it again.
+                        //cl.splice(i,1);
                     }
                 }
             }
@@ -4970,6 +4986,11 @@ var cp1= proxy(
          * @return this
          */
 		addChild : function(child) {
+
+            if ( child.parent!=null ) {
+                throw('adding to a container an element with parent.');
+            }
+
             child.parent= this;
             this.childrenList.push(child);
             return this;
@@ -9504,6 +9525,13 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
          * function to call on every image load.
          */
         loadImages: function( aImages, callback_loaded_one_image ) {
+
+            if (!aImages) {
+                if (callback_loaded_one_image ) {
+                    callback_loaded_one_image(0,[]);
+                }
+            }
+
             var me= this, i;
             this.notificationCallback = callback_loaded_one_image;
             this.images= [];
@@ -9519,7 +9547,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                 this.images[i].image.src= aImages[i].url;
             }
 
-            if ( aImages .length===0 ) {
+            if ( aImages.length===0 ) {
                 callback_loaded_one_image(0,[]);
             }
         }
