@@ -176,6 +176,4 @@ function __scene8_text(director,scene) {
             calcTextSize(director);
 	cc.addChild(text2.cacheAsBitmap().setLocation((cc.width-text2.width)/2,50));
 
-
-	scene.addChild(cc);
 }

@@ -30,6 +30,10 @@
         OP_LAYOUT_LEFT:     2,
         OP_LAYOUT_RIGHT:    3,
 
+        initialize : function(scene) {
+            this.scene= scene;
+            return this;
+        },
         /**
          * Set the number of elements that will be affected (zoomed) when the mouse is inside the component.
          * @param range {number} a number. Defaults to 2.
@@ -41,10 +45,10 @@
         /**
          * Set layout orientation. Choose from
          * <ul>
-         *  <li>CAAT.Dock.OP_LAYOUT_BOTTOM
-         *  <li>CAAT.Dock.OP_LAYOUT_TOP
-         *  <li>CAAT.Dock.OP_LAYOUT_BOTTOM
-         *  <li>CAAT.Dock.OP_LAYOUT_RIGHT
+         *  <li>CAAT.Dock.prototype.OP_LAYOUT_BOTTOM
+         *  <li>CAAT.Dock.prototype.OP_LAYOUT_TOP
+         *  <li>CAAT.Dock.prototype.OP_LAYOUT_BOTTOM
+         *  <li>CAAT.Dock.prototype.OP_LAYOUT_RIGHT
          * </ul>
          * By default, the layou operation is OP_LAYOUT_BOTTOM, that is, elements zoom bottom anchored.
          *
@@ -69,6 +73,12 @@
         setSizes : function( min, max ) {
             this.minSize= min;
             this.maxSize= max;
+
+            for( var i=0; i<this.childrenList.length; i++ ) {
+                this.childrenList[i].width= min;
+                this.childrenList[i].height= min;
+            }
+
             return this;
         },
         /**
@@ -287,6 +297,9 @@
                 me.actorPointed( mouseEvent.point.x, mouseEvent.point.y, mouseEvent.source );
                 mouseEvent.source.__Dock_mouseMove(mouseEvent);
             };
+
+            actor.width= this.minSize;
+            actor.height= this.minSize;
 
             return CAAT.Dock.superclass.addChild.call(this,actor);
         }

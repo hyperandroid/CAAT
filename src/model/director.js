@@ -645,7 +645,7 @@
             var ssin = this.scenes[ inSceneIndex ];
             var sout = this.scenes[ outSceneIndex ];
 
-            if (!this.glEnabled) {
+            if (!this.glEnabled && !navigator.browser==='iOS') {
                 this.worldModelViewMatrix.transformRenderingContext(this.transitionScene.ctx);
                 this.renderToContext(this.transitionScene.ctx, sout);
                 sout = this.transitionScene;
@@ -1017,6 +1017,21 @@
          */
         audioLoop : function(id) {
             return this.audioManager.loop(id);
+        },
+        endSound : function() {
+            return this.audioManager.endSound();
+        },
+        setSoundEffectsEnabled : function(enabled) {
+            return this.audioManager.setSoundEffectsEnabled(enabled);
+        },
+        setMusicEnabled : function(enabled) {
+            return this.audioManager.setMusicEnabled(enabled);
+        },
+        isMusicEnabled : function() {
+            return this.audioManager.isMusicEnabled();
+        },
+        isSoundEffectsEnabled : function() {
+            return this.audioManager.isSoundEffectsEnabled();
         },
         /**
          * Removes Director's scenes.

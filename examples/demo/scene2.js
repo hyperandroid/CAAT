@@ -91,7 +91,7 @@ function __scene2(director) {
 	var cc1= new CAAT.ActorContainer().
 	        setBounds( 380,30, 300, 150 ).
             enableEvents(false);
-	scene.addChild(cc1);
+	
 	
 	var rb1= new CAAT.RotateBehavior().
 	        setCycle(true).

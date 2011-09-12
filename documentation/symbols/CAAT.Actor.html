@@ -195,11 +195,11 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Actor.html">CAAT.Actor</a></li>
 	
+	<li><a href="../symbols/CAAT.Actor.html">CAAT.Actor</a></li>
+	
 	<li><a href="../symbols/CAAT.ActorContainer.html">CAAT.ActorContainer</a></li>
 	
-	<li><a href="../symbols/CAAT.ActorContainerCSS.html">CAAT.ActorContainerCSS</a></li>
-	
-	<li><a href="../symbols/CAAT.ActorCSS.html">CAAT.ActorCSS</a></li>
+	<li><a href="../symbols/CAAT.ActorContainer.html">CAAT.ActorContainer</a></li>
 	
 	<li><a href="../symbols/CAAT.AlphaBehavior.html">CAAT.AlphaBehavior</a></li>
 	
@@ -227,7 +227,7 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Director.html">CAAT.Director</a></li>
 	
-	<li><a href="../symbols/CAAT.DirectorCSS.html">CAAT.DirectorCSS</a></li>
+	<li><a href="../symbols/CAAT.Director.html">CAAT.Director</a></li>
 	
 	<li><a href="../symbols/CAAT.GenericBehavior.html">CAAT.GenericBehavior</a></li>
 	
@@ -283,7 +283,7 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Scene.html">CAAT.Scene</a></li>
 	
-	<li><a href="../symbols/CAAT.SceneCSS.html">CAAT.SceneCSS</a></li>
+	<li><a href="../symbols/CAAT.Scene.html">CAAT.Scene</a></li>
 	
 	<li><a href="../symbols/CAAT.ShapeActor.html">CAAT.ShapeActor</a></li>
 	
@@ -319,7 +319,7 @@ ul.inheritsList
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actor.js.html">actor.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actorCSS.js.html">actorCSS.js</a>.
 				
 			</p>
 
@@ -407,6 +407,15 @@ This method is called by the Director instance.</div>
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#cacheAsBitmap">cacheAsBitmap</a></b>(time)
 								</div>
 								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#centerAt">centerAt</a></b>(x, y)
+								</div>
+								<div class="description">Center this actor at position (x,y).</div>
 							</td>
 						</tr>
 					
@@ -519,6 +528,24 @@ whether the parameter point coordinate lies inside the Actor.</div>
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#getAnchor">getAnchor</a></b>(anchor)
 								</div>
 								<div class="description">Private.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#getAnchorPercent">getAnchorPercent</a></b>(anchor)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#getId">getId</a></b>()
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -841,9 +868,18 @@ whether the parameter point coordinate lies inside the Actor.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setId">setId</a></b>(id)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setImageTransformation">setImageTransformation</a></b>(it)
 								</div>
-								<div class="description">Set this background image transformation.</div>
+								<div class="description">This method has no effect on ActorCSS</div>
 							</td>
 						</tr>
 					
@@ -859,7 +895,7 @@ whether the parameter point coordinate lies inside the Actor.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setModelViewMatrix">setModelViewMatrix</a></b>(director)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setModelViewMatrix">setModelViewMatrix</a></b>()
 								</div>
 								<div class="description">Set this model view matrix if the actor is Dirty.</div>
 							</td>
@@ -880,6 +916,15 @@ whether the parameter point coordinate lies inside the Actor.</div>
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setPaint">setPaint</a></b>(paint)
 								</div>
 								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setParent">setParent</a></b>(parent)
+								</div>
+								<div class="description">Set this Actor's parent and connect in CSS a div with its parent.</div>
 							</td>
 						</tr>
 					
@@ -913,7 +958,7 @@ whether the parameter point coordinate lies inside the Actor.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setScaleAnchored">setScaleAnchored</a></b>(sx, sy, anchorx, anchory)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setScaleAnchored">setScaleAnchored</a></b>(sx, sy, anchor, anchory)
 								</div>
 								<div class="description">Modify the dimensions on an Actor.</div>
 							</td>
@@ -970,6 +1015,33 @@ whether the parameter point coordinate lies inside the Actor.</div>
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setVisible">setVisible</a></b>(visible)
 								</div>
 								<div class="description">Set this actor invisible.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#style">style</a></b>(attr, value)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#style3">style3</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#styleAlpha">styleAlpha</a></b>(alpha)
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -1052,6 +1124,9 @@ It defines an entity able to:
 					</div>
 					<div class="description">
 						for js2native
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actor.js.html">actor.js</a>.
 						
 						
 					</div>
@@ -1236,6 +1311,58 @@ It applies the list of behaviors the Actor has registered.
 									
 								</dt>
 								<dd>{Number=}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>canvas</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="centerAt"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>centerAt</b>(x, y)
+					
+					</div>
+					<div class="description">
+						Center this actor at position (x,y).
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actor.js.html">actor.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>x</b>
+									
+								</dt>
+								<dd>{float} x position</dd>
+							
+								<dt>
+									<b>y</b>
+									
+								</dt>
+								<dd>{float} y position</dd>
 							
 							</dl>
 						
@@ -1772,6 +1899,73 @@ Gets a given anchor position referred to the Actor.
 
 					<hr />
 				
+					<a name="getAnchorPercent"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getAnchorPercent</b>(anchor)
+					
+					</div>
+					<div class="description">
+						
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actor.js.html">actor.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>anchor</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getId"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getId</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actor.js.html">actor.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="getTextureGLPage"> </a>
 					<div class="fixedFont">
 					
@@ -1781,6 +1975,9 @@ Gets a given anchor position referred to the Actor.
 					</div>
 					<div class="description">
 						If GL is enables, get this background image's texture page, otherwise it will fail.
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actor.js.html">actor.js</a>.
 						
 						
 					</div>
@@ -1815,6 +2012,9 @@ Gets a given anchor position referred to the Actor.
 						Test for compulsory gl flushing:
  1.- opacity has changed.
  2.- texture page has changed.
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actor.js.html">actor.js</a>.
 						
 						
 					</div>
@@ -1851,6 +2051,9 @@ Gets a given anchor position referred to the Actor.
 					</div>
 					<div class="description">
 						Change texture shader program parameters.
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actor.js.html">actor.js</a>.
 						
 						
 					</div>
@@ -2387,6 +2590,9 @@ It will be the drawing routine called by the Director to show every Actor.
 						Set coordinates and uv values for this actor.
 This function uses Director's coords and indexCoords values.
 						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actor.js.html">actor.js</a>.
+						
 						
 					</div>
 					
@@ -2734,7 +2940,8 @@ single image from the SpriteImage (either supplied or generated because of passi
 Canvas to the function). That means the size will be set to [width:SpriteImage.singleWidth,
 height:singleHeight].
 
-WARN: if using a CSS renderer, the image supplied MUST be a HTMLImageElement instance.
+It is absolutely recommended not using a Canvas as argument. The performance
+of canvas.toDataURL (despite its result being cached) is very poor.
 						
 						
 					</div>
@@ -2761,6 +2968,17 @@ WARN: if using a CSS renderer, the image supplied MUST be a HTMLImageElement ins
 						
 						
 						
+						
+							<dl class="detailList">
+							<dt class="heading">Throws:</dt>
+							
+								<dt>
+									 <b></b>
+								</dt>
+								<dd>'Invalid image object to set actor's background' in case the image parameter is not of the
+ valid type.</dd>
+							
+							</dl>
 						
 						
 							<dl class="detailList">
@@ -2913,6 +3131,9 @@ thanks @pbakaus
 					</div>
 					<div class="description">
 						
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actor.js.html">actor.js</a>.
 						
 						
 					</div>
@@ -3175,6 +3396,9 @@ These values are related to Scene time.
 					<div class="description">
 						TODO: set GLcoords for different image transformations.
 						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actor.js.html">actor.js</a>.
+						
 						
 					</div>
 					
@@ -3250,6 +3474,45 @@ If set to false, only this actor will have this alpha value.
 
 					<hr />
 				
+					<a name="setId"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setId</b>(id)
+					
+					</div>
+					<div class="description">
+						
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actor.js.html">actor.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>id</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="setImageTransformation"> </a>
 					<div class="fixedFont">
 					
@@ -3258,8 +3521,7 @@ If set to false, only this actor will have this alpha value.
 					
 					</div>
 					<div class="description">
-						Set this background image transformation.
-If GL is enabled, this parameter has no effect.
+						This method has no effect on ActorCSS
 						
 						
 					</div>
@@ -3350,7 +3612,7 @@ thanks @pbakaus
 					<div class="fixedFont">
 					
 					
-					<b>setModelViewMatrix</b>(director)
+					<b>setModelViewMatrix</b>()
 					
 					</div>
 					<div class="description">
@@ -3361,17 +3623,6 @@ thanks @pbakaus
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>director</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
 						
 						
 						
@@ -3451,6 +3702,51 @@ thanks @pbakaus
 						
 						
 						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setParent"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setParent</b>(parent)
+					
+					</div>
+					<div class="description">
+						Set this Actor's parent and connect in CSS a div with its parent.
+In case there's a parent set, previously the div will be removed from
+its old parent and reattached to the new one.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>parent</b>
+									
+								</dt>
+								<dd>{CAAT.ActorContainerCSS|CAAT.Actor}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
 						
 						
 						
@@ -3616,7 +3912,7 @@ of rotation to be the center of the Actor.
 					<div class="fixedFont">
 					
 					
-					<b>setScaleAnchored</b>(sx, sy, anchorx, anchory)
+					<b>setScaleAnchored</b>(sx, sy, anchor, anchory)
 					
 					</div>
 					<div class="description">
@@ -3637,25 +3933,25 @@ to setSize or setBounds.
 									<b>sx</b>
 									
 								</dt>
-								<dd>{float} width scale.</dd>
+								<dd>a float indicating a width size multiplier.</dd>
 							
 								<dt>
 									<b>sy</b>
 									
 								</dt>
-								<dd>{number} height scale.</dd>
+								<dd>a float indicating a height size multiplier.</dd>
 							
 								<dt>
-									<b>anchorx</b>
+									<b>anchor</b>
 									
 								</dt>
-								<dd>{number} x anchor to perform the Scale operation.</dd>
+								<dd>an integer indicating the anchor to perform the Scale operation.</dd>
 							
 								<dt>
 									<b>anchory</b>
 									
 								</dt>
-								<dd>{number} y anchor to perform the Scale operation.</dd>
+								<dd></dd>
 							
 							</dl>
 						
@@ -3686,6 +3982,9 @@ to setSize or setBounds.
 						Calculates the 2D bounding box in canvas coordinates of the Actor.
 This bounding box takes into account the transformations applied hierarchically for
 each Scene Actor.
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actor.js.html">actor.js</a>.
 						
 						
 					</div>
@@ -3854,6 +4153,9 @@ each Scene Actor.
 					<div class="description">
 						Set UV for this actor's quad.
 						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_actor.js.html">actor.js</a>.
+						
 						
 					</div>
 					
@@ -3931,6 +4233,109 @@ A container won't show any of its children if set visible to false.
 
 					<hr />
 				
+					<a name="style"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>style</b>(attr, value)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>attr</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>value</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="style3"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>style3</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="styleAlpha"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>styleAlpha</b>(alpha)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>alpha</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="viewToModel"> </a>
 					<div class="fixedFont">
 					
@@ -3989,7 +4394,7 @@ actor's world model view matrix.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Tue Aug 09 2011 13:15:57 GMT+0200 (CEST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Mon Sep 12 2011 22:38:01 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>

@@ -142,7 +142,4 @@ function __scene6_text(director,scene) {
 	text2.fillStyle=gradient;
 	text2.outline= true;
 	cc.addChild(text2.cacheAsBitmap().setLocation((cc.width-text2.textWidth)/2,50));
-
-	
-	scene.addChild(cc);
 }

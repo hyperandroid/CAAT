@@ -43,6 +43,8 @@
             this.shift =        sourceEvent.shiftKey;
             this.meta =         sourceEvent.metaKey;
             this.sourceEvent=   sourceEvent;
+            this.x=             x;
+            this.y=             y;
 			return this;
 		},
 		isAltDown : function() {
@@ -190,7 +192,6 @@ CAAT.loop= function(fps) {
     CAAT.FPS= fps || 60;
     CAAT.renderEnabled= true;
     if (CAAT.NO_PERF) {
-        alert('SIN RequestAnimationFrame');
         setInterval(
                 function() {
                     for (var i = 0, l = CAAT.director.length; i < l; i++) {
@@ -211,6 +212,12 @@ CAAT.renderFrame= function() {
 
     window.requestAnimFrame(CAAT.renderFrame, 0 )
 }
+
+CAAT.setCursor= function(cursor) {
+    if ( navigator.browser!=='iOS' ) {
+        document.body.style.cursor= cursor;
+    }
+};
 
 /**
  * Register and keep track of every CAAT.Director instance in the document.

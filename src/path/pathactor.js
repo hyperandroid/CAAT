@@ -20,6 +20,7 @@
 		path:					null,
 		pathBoundingRectangle:	null,
 		bOutline:				false,
+        outlineColor:           'black',
 
         /**
          * Return the contained path.
@@ -51,10 +52,32 @@
 			this.path.paint(director);
 			
 			if ( this.bOutline ) {
-				canvas.strokeStyle='black';
+				canvas.strokeStyle= this.outlineColor;
 				canvas.strokeRect(0,0,this.width,this.height);
 			}
 		},
+        /**
+         * Enables/disables drawing of the contained path's bounding box.
+         * @param show {boolean} whether to show the bounding box
+         * @param color {*string} optional parameter defining the path's bounding box stroke style.
+         */
+        showBoundingBox : function(show, color) {
+            this.bOutline= show;
+            if ( show && color ) {
+                this.outlineColor= color;
+            }
+        },
+        /**
+         * Set the contained path as interactive. This means it can be changed on the fly by manipulation
+         * of its control points.
+         * @param interactive
+         */
+        setInteractive : function(interactive) {
+            if ( this.path ) {
+                this.path.setInteractive(interactive);
+            }
+            return this;
+        },
         /**
          * Route mouse dragging functionality to the contained path.
          * @param mouseEvent {CAAT.MouseEvent}

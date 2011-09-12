@@ -87,3 +87,31 @@ Added a exception to be thrown whenever an Actor is to be added to any given par
 Added on actor destroy event, a call to be removed from its parent (in case there's one). Now, discardable
  and out-of-frame-time elements can be succesfully reused with the previous condition. To remove an
  actor means a linear search to identify in which position is stored.
+
+16/08/2011
+----------
+
+Added x and y attributes to mouseEvent object instances.
+
+31/08/2011
+----------
+
+deprecated method centerOn and renamed it to centerAt.
+
+01/09/2011
+----------
+
+Added new layout module. Now simply lays out a collection of actors in a row into a given container.
+Will upgrade accordingly as needed.
+
+04/09/2011
+----------
+
+Removed bug on ActorCSS.setFillStyle().
+Deprecated methods setFilled and setOutlined form CAAT.StarActor.
+
+11/09/2011
+----------
+
+Added function setInteractive method to PathActor.
+Added function showBoundingBox : function(show, color) to PathActor.

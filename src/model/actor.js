@@ -232,7 +232,7 @@
         /**
          * Set this background image transformation.
          * If GL is enabled, this parameter has no effect.
-         * @param it any value from CAAT.Actor.TR_*
+         * @param it any value from CAAT.SpriteImage.TR_*
          * @return this
          */
         setImageTransformation : function( it ) {
@@ -247,10 +247,21 @@
          * @param y {float} y position
          *
          * @return this
+         * @deprecated
          */
         centerOn : function( x,y ) {
             this.setLocation( x-this.width/2, y-this.height/2 );
             return this;
+        },
+        /**
+         * Center this actor at position (x,y).
+         * @param x {float} x position
+         * @param y {float} y position
+         *
+         * @return this
+         */
+        centerAt : function(x,y) {
+            return this.centerOn(x,y);
         },
         /**
          * If GL is enables, get this background image's texture page, otherwise it will fail.
@@ -873,7 +884,7 @@
 				this.ax= -1;
 				this.ay= -1;
 		        this.pointed= true;
-		        document.body.style.cursor = 'move';
+		        CAAT.setCursor('move');
 	        };
 
             /**
@@ -886,7 +897,7 @@
                 this.ax = -1;
                 this.ay = -1;
                 this.pointed = false;
-                document.body.style.cursor = 'default';
+                CAAT.setCursor('default');
             };
 
             /**
@@ -1145,6 +1156,7 @@
 
             var ctx= director.ctx;
 
+
             this.frameAlpha= this.parent ? this.parent.frameAlpha*this.alpha : 1;
             ctx.globalAlpha= this.frameAlpha;
 
@@ -1170,8 +1182,10 @@
                 return true;
             }
             var ctx= director.ctx;
+            this.frameAlpha= this.parent ? this.parent.frameAlpha*this.alpha : 1;
+//            ctx.globalAlpha= this.frameAlpha;
             var m= this.worldModelViewMatrix.matrix;
-            ctx.setTransform( m[0], m[3], m[1], m[4], m[2], m[5] );
+            ctx.setTransform( m[0], m[3], m[1], m[4], m[2], m[5], this.frameAlpha );
             this.paint(director, time);
             return true;
         },
@@ -1370,12 +1384,12 @@
 
                 button.mouseEnter= function(mouseEvent) {
                     this.setSpriteIndex( iOver );
-                    document.body.style.cursor = 'pointer';
+                    CAAT.setCursor('pointer');
                 };
 
                 button.mouseExit= function(mouseEvent) {
                     this.setSpriteIndex( iNormal );
-                    document.body.style.cursor = 'default';
+                    CAAT.setCursor('default');
                 };
 
                 button.mouseDown= function(mouseEvent) {
@@ -1483,17 +1497,13 @@
             var ctx= director.ctx;
 
             ctx.save();
-
             CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
-
             if ( !this.isGlobalAlpha ) {
                 this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
             }
 
-            //for( var i=0; i<this.activeChildren.length; i++ ) {
             for( var actor= this.activeChildren; actor; actor=actor.__next ) {
                 ctx.save();
-//                this.activeChildren[i].paintActor(director,time);
                 actor.paintActor(director,time);
                 ctx.restore();
             }
@@ -1504,10 +1514,15 @@
         __paintActor : function(director, time ) {
 
             var ctx= director.ctx;
-            //CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
-                var m= this.worldModelViewMatrix.matrix;
-                ctx.setTransform( m[0], m[3], m[1], m[4], m[2], m[5] );
-                this.paint(director, time);
+
+            this.frameAlpha= this.parent ? this.parent.frameAlpha*this.alpha : 1;
+            var m= this.worldModelViewMatrix.matrix;
+            ctx.setTransform( m[0], m[3], m[1], m[4], m[2], m[5], this.frameAlpha );
+            this.paint(director, time);
+
+            if ( !this.isGlobalAlpha ) {
+                this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
+            }
 
             for( var actor= this.activeChildren; actor; actor=actor.__next ) {
                 actor.paintActor(director,time);
@@ -2623,11 +2638,11 @@
         },
         mouseEnter : function(mouseEvent) {
             this.setSpriteIndex( this.iOver );
-            document.body.style.cursor = 'pointer';
+            CAAT.setCursor('pointer');
         },
         mouseExit : function(mouseEvent) {
             this.setSpriteIndex( this.iNormal );
-            document.body.style.cursor = 'default';
+            CAAT.setCursor('default');
         },
         mouseDown : function(mouseEvent) {
             this.setSpriteIndex( this.iPress );
@@ -2773,6 +2788,7 @@
      */
     CAAT.StarActor= function() {
         CAAT.StarActor.superclass.constructor.call(this);
+        this.compositeOp= 'source-over';
         return this;
     };
 
@@ -2781,23 +2797,39 @@
         maxRadius:      0,
         minRadius:      0,
         initialAngle:   0,
-        outlined:       false,
-        filled:         true,
+        compositeOp:    null,
 
         /**
          * Sets whether the star will be color filled.
          * @param filled {boolean}
+         * @deprecated
          */
         setFilled : function( filled ) {
-            this.filled= filled;
             return this;
         },
         /**
          * Sets whether the star will be outlined.
          * @param outlined {boolean}
+         * @deprecated
          */
         setOutlined : function( outlined ) {
-            this.outlined= outlined;
+            return this;
+        },
+        /**
+         * Sets the composite operation to apply on shape drawing.
+         * @param compositeOp an string with a valid canvas rendering context string describing compositeOps.
+         * @return this
+         */
+        setCompositeOp : function(compositeOp){
+            this.compositeOp= compositeOp;
+            return this;
+        },
+        /**
+         * 
+         * @param angle {number} number in radians.
+         */
+        setInitialAngle : function(angle) {
+            this.initialAngle= angle;
             return this;
         },
         /**
@@ -2836,30 +2868,35 @@
             var ix=         centerX + r1*Math.cos(this.initialAngle);
             var iy=         centerY + r1*Math.sin(this.initialAngle);
 
+            ctx.globalCompositeOperation= this.compositeOp;
+
+            ctx.beginPath();
             ctx.moveTo(ix,iy);
 
             for( var i=1; i<this.nPeaks*2; i++ )   {
                 var angleStar= Math.PI/this.nPeaks * i + this.initialAngle;
-                var rr= (i%2===0) ? r1 : r2;
+               var rr= (i%2===0) ? r1 : r2;
                 var x= centerX + rr*Math.cos(angleStar);
                 var y= centerY + rr*Math.sin(angleStar);
                 ctx.lineTo(x,y);
             }
-            ctx.closePath();
 
             ctx.lineTo(
                 centerX + r1*Math.cos(this.initialAngle),
                 centerY + r1*Math.sin(this.initialAngle) );
 
-            if ( this.filled ) {
+            ctx.closePath();
+            
+            if ( this.fillStyle ) {
                 ctx.fillStyle= this.fillStyle;
                 ctx.fill();
             }
 
-            if ( this.outlined && this.strokeStyle ) {
+            if ( this.strokeStyle ) {
                 ctx.strokeStyle= this.strokeStyle;
                 ctx.stroke();
             }
+
         }
     };
 

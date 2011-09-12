@@ -53,7 +53,7 @@
          */
         paint : function( director, time ) {
 
-            CAAT.InterpolatorActor.superclass.paint.call(this,director,time);            
+            CAAT.InterpolatorActor.superclass.paint.call(this,director,time);
 
             if ( this.interpolator ) {
 

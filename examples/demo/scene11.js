@@ -100,6 +100,4 @@ function __scene11_text(director,scene) {
 	        setOutline(true);
 	cc.addChild(text2.cacheAsBitmap().setLocation((cc.width-text2.textWidth)/2,50));
 
-
-	scene.addChild(cc);
 }

@@ -768,10 +768,22 @@
          * Set the behavior path.
          * The path can be any length, and will take behaviorDuration time to be traversed.
          * @param {CAAT.Path}
+            *
+         * @deprecated
          */
         setPath : function(path) {
             this.path= path;
             return this;
+        },
+
+        /**
+         * Set the behavior path.
+         * The path can be any length, and will take behaviorDuration time to be traversed.
+         * @param {CAAT.Path}
+         * @return this
+         */
+        setValues : function(path) {
+            return this.setPath(path);
         },
 
         setFrameTime : function( startTime, duration ) {

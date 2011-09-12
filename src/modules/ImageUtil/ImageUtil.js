@@ -5,7 +5,7 @@
     };
 
     CAAT.modules.ImageUtil.prototype= {
-        createAlphaSpriteSheet: function(maxAlpha, minAlpha, sheetSize, image ) {
+        createAlphaSpriteSheet: function(maxAlpha, minAlpha, sheetSize, image, bg_fill_style ) {
 
             if ( maxAlpha<minAlpha ) {
                 var t= maxAlpha;
@@ -17,8 +17,8 @@
             canvas.width= image.width;
             canvas.height= image.height*sheetSize;
             var ctx= canvas.getContext('2d');
-            ctx.fillStyle = 'rgba(255,255,255,0)';
-            ctx.clearRect(0,0,image.width,image.height*sheetSize);
+            ctx.fillStyle = bg_fill_style ? bg_fill_style : 'rgba(255,255,255,0)';
+            ctx.fillRect(0,0,image.width,image.height*sheetSize);
 
             var i;
             for( i=0; i<sheetSize; i++ ) {

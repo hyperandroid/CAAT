@@ -384,7 +384,8 @@
          * @return this
          */
         setFillStyle : function( style ) {
-            return this.style.style('background', style);
+            this.style('background', style);
+            return this;
         },
         /**
          * Caches a stroke style in the Actor.
@@ -844,7 +845,7 @@
 				this.ax= -1;
 				this.ay= -1;
 		        this.pointed= true;
-		        document.body.style.cursor = 'move';
+		        CAAT.setCursor('move');
 	        };
 
             /**
@@ -857,7 +858,7 @@
                 this.ax = -1;
                 this.ay = -1;
                 this.pointed = false;
-                document.body.style.cursor = 'default';
+                CAAT.setCursor('default');
             };
 
             /**
@@ -1174,12 +1175,12 @@
 
                 button.mouseEnter= function(mouseEvent) {
                     this.setSpriteIndex( iOver );
-                    document.body.style.cursor = 'pointer';
+                    CAAT.setCursor('pointer');
                 };
 
                 button.mouseExit= function(mouseEvent) {
                     this.setSpriteIndex( iNormal );
-                    document.body.style.cursor = 'default';
+                    CAAT.setCursor('default');
                 };
 
                 button.mouseDown= function(mouseEvent) {
