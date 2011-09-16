@@ -95,6 +95,7 @@
         inFrame:                false,  // boolean indicating whether this Actor was present on last frame.
         backgroundImage:        null,
 
+
         /**
          * Set this Actor's parent and connect in CSS a div with its parent.
          * In case there's a parent set, previously the div will be removed from
@@ -237,6 +238,7 @@
          * @return this
          */
         setImageTransformation : function( it ) {
+            this.transformation= it;
             return this;
         },
         /**
@@ -267,7 +269,16 @@
         },
         style3 : function() {
 
-            var value= "translate3d(0,0,0) rotate("+this.rotationAngle+"rad) scale("+this.scaleX+","+this.scaleY+")";
+            var imageop= '';
+            if ( this.transformation===CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL ) {
+                imageop=' scale(-1,1) ';
+            }
+
+            var value=
+
+                "translate3d(0,0,0) rotate("+this.rotationAngle+"rad) scale("+this.scaleX+","+this.scaleY+")" +
+                    imageop;
+
             this.domElement.style['transform']=         value;
             this.domElement.style['-ms-transform']=     value;
             this.domElement.style['-webkit-transform']= value;
@@ -522,6 +533,16 @@
 
 			return {x: tx, y: ty};
 		},
+        getAnchorPercent : function( anchor ) {
+
+            var anchors=[
+                50,50,   50,0,  50,100,
+                0,50,   100,50, 0,0,
+                100,0,  0,100,  100,100
+            ];
+
+            return { x: anchors[anchor*2], y: anchors[anchor*2+1] };
+        },
         /**
          * Modify the dimensions on an Actor.
          * The dimension will not affect the local coordinates system in opposition
@@ -1516,6 +1537,10 @@
                     }
 
                     this.childrenList.splice( index, 1, nActor );
+                }
+
+                for( var i=0,l=this.childrenList.length; i<l; i++ ) {
+                    this.childrenList[i].domElement.style['z-index']= i;
                 }
             }
         }

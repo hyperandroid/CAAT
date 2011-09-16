@@ -134,6 +134,17 @@ CAAT.registerKeyListener= function(f) {
     CAAT.keyListeners.push(f);
 };
 
+CAAT.SHIFT_KEY=    16;
+CAAT.CONTROL_KEY=  17;
+CAAT.ALT_KEY=      18;
+CAAT.ENTER_KEY=    13;
+
+CAAT.KEY_MODIFIERS= {
+    alt:        false,
+    control:    false,
+    shift:      false
+};
+
 /**
  */
 CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
@@ -147,8 +158,22 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
     window.addEventListener('keydown',
         function(evt) {
             var key = (evt.which) ? evt.which : evt.keyCode;
-            for( var i=0; i<CAAT.keyListeners.length; i++ ) {
-                CAAT.keyListeners[i](key,'down');
+
+            if ( key===CAAT.SHIFT_KEY ) {
+                CAAT.KEY_MODIFIERS.shift= true;
+            } else if ( key===CAAT.CONTROL_KEY ) {
+                CAAT.KEY_MODIFIERS.control= true;
+            } else if ( key===CAAT.ALT_KEY ) {
+                CAAT.KEY_MODIFIERS.alt= true;
+            } else {
+                for( var i=0; i<CAAT.keyListeners.length; i++ ) {
+                    CAAT.keyListeners[i](key,'down',
+                        {
+                            alt:        CAAT.KEY_MODIFIERS.alt,
+                            control:    CAAT.KEY_MODIFIERS.control,
+                            shift:      CAAT.KEY_MODIFIERS.shift
+                        });
+                }
             }
         },
         false);
@@ -156,8 +181,22 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
     window.addEventListener('keyup',
         function(evt) {
             var key = (evt.which) ? evt.which : evt.keyCode;
-            for( var i=0; i<CAAT.keyListeners.length; i++ ) {
-                CAAT.keyListeners[i](key,'up');
+            if ( key===CAAT.SHIFT_KEY ) {
+                CAAT.KEY_MODIFIERS.shift= false;
+            } else if ( key===CAAT.CONTROL_KEY ) {
+                CAAT.KEY_MODIFIERS.control= false;
+            } else if ( key===CAAT.ALT_KEY ) {
+                CAAT.KEY_MODIFIERS.alt= false;
+            } else {
+
+                for( var i=0; i<CAAT.keyListeners.length; i++ ) {
+                    CAAT.keyListeners[i](key,'up',
+                        {
+                            alt:        CAAT.KEY_MODIFIERS.alt,
+                            control:    CAAT.KEY_MODIFIERS.control,
+                            shift:      CAAT.KEY_MODIFIERS.shift
+                        });
+                }
             }
         },
         false );

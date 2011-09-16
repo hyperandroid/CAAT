@@ -22,7 +22,7 @@
 
             var i;
             for( i=0; i<sheetSize; i++ ) {
-                ctx.globalAlpha= 1-(maxAlpha-minAlpha)/sheetSize*i;
+                ctx.globalAlpha= 1-(maxAlpha-minAlpha)/sheetSize*(i+1);
                 ctx.drawImage(image, 0, i*image.height);
             }
 
@@ -60,8 +60,11 @@
          * Remove an image's padding transparent border.
          * Transparent means that every scan pixel is alpha=0.
          * @param image
+         * @param threshold {integer} any value below or equal to this will be optimized.
          */
-        optimize : function(image) {
+        optimize : function(image, threshold) {
+            threshold>>=0;
+
             var canvas= document.createElement('canvas');
             canvas.width= image.width;
             canvas.height=image.height;
@@ -81,7 +84,7 @@
             var alpha= false;
             for( i=0; i<canvas.height; i++ ) {
                 for( j=0; j<canvas.width; j++ ) {
-                    if ( data[i*canvas.width*4 + 3+j*4] ) {
+                    if ( data[i*canvas.width*4 + 3+j*4]>threshold ) {
                         alpha= true;
                         break;
                     }
@@ -97,7 +100,7 @@
             alpha= false;
             for( i=canvas.height-1; i>=miny; i-- ) {
                 for( j=3; j<canvas.width*4; j+=4 ) {
-                    if ( data[i*canvas.width*4 + 3+j*4] ) {
+                    if ( data[i*canvas.width*4 + 3+j*4]>threshold ) {
                         alpha= true;
                         break;
                     }
@@ -113,7 +116,7 @@
             alpha= false;
             for( j=0; j<canvas.width; j++ ) {
                 for( i=0; i<canvas.height; i++ ) {
-                    if ( data[i*canvas.width*4 + 3+j*4 ] ) {
+                    if ( data[i*canvas.width*4 + 3+j*4 ]>threshold ) {
                         alpha= true;
                         break;
                     }
@@ -127,7 +130,7 @@
             alpha= false;
             for( j=canvas.width-1; j>=minx; j-- ) {
                 for( i=0; i<canvas.height; i++ ) {
-                    if ( data[i*canvas.width*4 + 3+j*4 ] ) {
+                    if ( data[i*canvas.width*4 + 3+j*4 ]>threshold ) {
                         alpha= true;
                         break;
                     }
@@ -153,7 +156,7 @@
 
             return canvas;
         },
-        createThumb : function(image, w, h) {
+        createThumb : function(image, w, h, best_fit) {
             w= w||24;
             h= h||24;
             var canvas= document.createElement('canvas');
@@ -161,10 +164,14 @@
             canvas.height= h;
             var ctx= canvas.getContext('2d');
 
-            var max= Math.max( image.width, image.height );
-            var ww= image.width/max*w;
-            var hh= image.height/max*h;
-            ctx.drawImage( image, (w-ww)/2,(h-hh)/2,ww,hh );
+            if ( best_fit ) {
+                var max= Math.max( image.width, image.height );
+                var ww= image.width/max*w;
+                var hh= image.height/max*h;
+                ctx.drawImage( image, (w-ww)/2,(h-hh)/2,ww,hh );
+            } else {
+                ctx.drawImage( image, 0, 0, w, h );
+            }
 
             return canvas;
         }

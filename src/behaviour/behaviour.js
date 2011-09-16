@@ -758,10 +758,12 @@
          * Take into account that this will be incompatible with rotation Behaviors
          * since they will set their own rotation configuration.
          * @param autorotate {boolean}
+         * @param right_to_left {boolean} whether the sprite is drawn heading to the right.
          * @return this.
          */
-        setAutoRotate : function( autorotate ) {
+        setAutoRotate : function( autorotate, right_to_left ) {
             this.autoRotate= autorotate;
+            this.right_to_left= !!right_to_left;
             return this;
         },
         /**
@@ -842,13 +844,23 @@
 
                 var angle= Math.atan2( ay, ax );
 
-                if ( this.prevX<=point.x )	{
-                    //actor.transformation= CAAT.SpriteActor.prototype.TR_NONE;
-                }
-                else	{
-                    //actor.transformation= CAAT.SpriteActor.prototype.TR_FLIP_HORIZONTAL;
-                    //angle+=Math.PI;
-                    
+                // actor is heading left to right
+                if ( !this.right_to_left ) {
+                    if ( this.prevX<=point.x )	{
+                        actor.transformation= CAAT.SpriteImage.prototype.TR_NONE;
+                    }
+                    else	{
+                        actor.transformation= CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL;
+                        angle+=Math.PI;
+                    }
+                } else {
+                    if ( this.prevX<=point.x )	{
+                        actor.transformation= CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL
+                    }
+                    else	{
+                        actor.transformation= CAAT.SpriteImage.prototype.TR_NONE;
+                        angle-=Math.PI;
+                    }
                 }
 
                 actor.setRotation(angle);

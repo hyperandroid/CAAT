@@ -110,8 +110,15 @@ Will upgrade accordingly as needed.
 Removed bug on ActorCSS.setFillStyle().
 Deprecated methods setFilled and setOutlined form CAAT.StarActor.
 
-11/09/2011
+09/11/2011
 ----------
 
 Added function setInteractive method to PathActor.
 Added function showBoundingBox : function(show, color) to PathActor.
+
+09/14/2011
+---------
+
+Added shift/control/alt modifiers to key events.
+added missing getAnchorPercent method to actorCSS.js file. [important bug]
+Fixed CSS renderer zOrder error.

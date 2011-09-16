@@ -372,9 +372,6 @@
             var ssin = this.scenes[ inSceneIndex ];
             var sout = this.scenes[ outSceneIndex ];
 
-            ssin.setExpired(false);
-            sout.setExpired(false);
-
             ssin.resetTransform();
             sout.resetTransform();
 
@@ -396,6 +393,9 @@
             } else {
                 sout.easeTranslationOut(time, alpha, anchorout, interpolatorOut);
             }
+
+            ssin.setExpired(false);
+            sout.setExpired(false);
 
             this.childrenList = [];
 
