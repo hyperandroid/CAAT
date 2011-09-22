@@ -205,6 +205,14 @@
 		finalPositionX : function() {
 			return this.finalPosition.x;
 		},
+		/**
+         * Draws this path segment on screen.
+         * @param director {CAAT.Director}
+         */
+		draw : function(director) {
+			var canvas= director.crc;
+			canvas.lineTo( this.finalPosition.x, this.finalPosition.y );
+		},
         /**
          * Draws this path segment on screen. Optionally it can draw handles for every control point, in
          * this case, start and ending path segment points.
@@ -220,7 +228,7 @@
             canvas.strokeStyle= this.color;
 			canvas.beginPath();
 			canvas.moveTo( this.initialPosition.x, this.initialPosition.y );
-			canvas.lineTo( this.finalPosition.x, this.finalPosition.y );
+			this.draw(director);
 			canvas.stroke();
 
             if ( bDrawHandles ) {
@@ -398,6 +406,13 @@
          */
 		getLength : function() {
 			return this.curve.getLength();
+		},
+		/**
+         * @inheritDoc
+         * @param director {CAAT.Director}
+         */
+		draw : function(director) {
+			this.curve.draw(director);
 		},
         /**
          * @inheritDoc
@@ -851,6 +866,15 @@
 			}
 			
 			return this.newPosition;
+		},
+		/**
+         * Draws this path segment on screen.
+         * @param director {CAAT.Director}
+         */
+		draw : function(director) {
+			for( var i=0; i<this.pathSegments.length; i++ ) {
+				this.pathSegments[i].draw(director);
+			}
 		},
         /**
          * Paints the path.

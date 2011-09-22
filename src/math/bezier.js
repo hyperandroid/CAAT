@@ -28,6 +28,24 @@
 		HANDLE_SIZE:	20,
 		drawHandles:	true,
 
+		/**
+         * Draw the curve control points.
+         * @param director {CAAT.Director}
+         * @param stroke   bool
+         */
+		draw : function(director, stroke) {
+			var canvas= director.crc;
+			canvas.moveTo( this.coordlist[0].x, this.coordlist[0].y );
+			canvas.lineTo( this.coordlist[1].x, this.coordlist[1].y );
+			if(stroke)
+				canvas.stroke();
+			if ( this.cubic ) {
+				canvas.moveTo( this.coordlist[2].x, this.coordlist[2].y );
+				canvas.lineTo( this.coordlist[3].x, this.coordlist[3].y );
+				if(stroke)
+					canvas.stroke();
+			}
+		},
         /**
          * Paint the curve control points.
          * @param director {CAAT.Director}
@@ -44,15 +62,8 @@
 			canvas.beginPath();
 			
 			canvas.strokeStyle='#a0a0a0';
-			canvas.moveTo( this.coordlist[0].x, this.coordlist[0].y );
-			canvas.lineTo( this.coordlist[1].x, this.coordlist[1].y );
-			canvas.stroke();
-			if ( this.cubic ) {
-				canvas.moveTo( this.coordlist[2].x, this.coordlist[2].y );
-				canvas.lineTo( this.coordlist[3].x, this.coordlist[3].y );
-				canvas.stroke();
-			} 
-			
+			this.draw(director, true);
+
             canvas.globalAlpha=0.5;
             for( var i=0; i<this.coordlist.length; i++ ) {
                 canvas.fillStyle='#7f7f00';
@@ -231,6 +242,18 @@
 
             return this;
 		},
+		/**
+         * Draws this curve.
+         *
+         * @param director {CAAT.Director}
+         */
+		draw : function( director ) {
+			if( this.cubic ) {
+				this.drawCubic(director);
+			} else {
+				this.drawCuadric(director);
+			}
+		},
         /**
          * Paint this curve.
          * @param director {CAAT.Director}
@@ -244,6 +267,26 @@
 			
 			CAAT.Bezier.superclass.paint.call(this,director);
 
+		},
+		/**
+         * Draws this cuadric Bezier curve.
+         *
+         * @param director {CAAT.Director}
+         */
+		drawCuadric : function( director ) {
+			var x1,y1;
+			x1 = this.coordlist[0].x;
+			y1 = this.coordlist[0].y;
+			
+			var canvas= director.crc;
+			
+			canvas.moveTo(x1,y1);
+
+			var point= new CAAT.Point();
+			for(var t=this.k;t<=1+this.k;t+=this.k){
+				this.solve(point,t);
+				canvas.lineTo(point.x, point.y );
+			}
 		},
         /**
          * Paint this quadric Bezier curve. Each time the curve is drawn it will be solved again from 0 to 1 with
@@ -272,6 +315,26 @@
 			canvas.stroke();
 			canvas.restore();
 		
+		},
+		/**
+         * Draws this cubic Bezier curve.
+         *
+         * @param director {CAAT.Director}
+         */
+		drawCubic : function( director ) {
+			var x1,y1;
+			x1 = this.coordlist[0].x;
+			y1 = this.coordlist[0].y;
+			
+			var canvas= director.crc;
+			
+			canvas.moveTo(x1,y1);
+			
+			var point= new CAAT.Point();
+			for(var t=this.k;t<=1+this.k;t+=this.k){
+				this.solve(point,t);
+				canvas.lineTo(point.x, point.y );
+			}
 		},
         /**
          * Paint this cubic Bezier curve. Each time the curve is drawn it will be solved again from 0 to 1 with
