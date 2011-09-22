@@ -1164,7 +1164,11 @@
 
             if ( this.clip ) {
                 ctx.beginPath();
-                ctx.rect(0,0,this.width,this.height);
+                if(this.clipPath) {
+					this.clipPath.draw(director);
+				} else {
+					ctx.rect(0,0,this.width,this.height);
+				}
                 ctx.clip();
             }
 
@@ -1323,6 +1327,16 @@
          */
         setClip : function( clip ) {
             this.clip= clip;
+            return this;
+        },
+		/**
+         * Set the clipping path for this Actor.
+         *
+         * @param path a CAAT.Path object
+         * @return this
+         */
+        setClipPath : function( path ) {
+            this.clipPath= path;
             return this;
         },
         /**
