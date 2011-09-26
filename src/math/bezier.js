@@ -231,6 +231,21 @@
 
             return this;
 		},
+        setPoints : function( points ) {
+            if ( points.length===3 ) {
+                this.coordlist= points;
+                this.cubic= false;
+                this.update();
+            } else if (points.length===4 ) {
+                this.coordlist= points;
+                this.cubic= true;
+                this.update();
+            } else {
+                throw 'points must be an array of 3 or 4 CAAT.Point instances.'
+            }
+
+            return this;
+        },
         /**
          * Paint this curve.
          * @param director {CAAT.Director}

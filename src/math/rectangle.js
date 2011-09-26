@@ -26,6 +26,11 @@
 		width:	0,
 		height:	0,
 
+        setEmpty : function() {
+            this.width=-1;
+            this.height=-1;
+            return this;
+        },
         /**
          * Set this rectangle's location.
          * @param x {number}
@@ -65,7 +70,7 @@
          * @return {boolean}
          */
 		isEmpty : function() {
-			return this.width===0 && this.height===0;
+			return this.width===-1 && this.height===-1;
 		},
         /**
          * Set this rectangle as the union of this rectangle and the given point.
@@ -74,9 +79,13 @@
          */
 		union : function(px,py) {
 			
-			if ( this.isEmpty() && this.x===0 && this.y===0 ) {
+			if ( this.isEmpty() ) {
 				this.x= px;
+                this.x1= px;
 				this.y= py;
+                this.y1= py;
+                this.width=0;
+                this.height=0;
 				return;
 			}
 			

@@ -1182,8 +1182,12 @@
                 return true;
             }
             var ctx= director.ctx;
-            this.frameAlpha= this.parent ? this.parent.frameAlpha*this.alpha : 1;
-//            ctx.globalAlpha= this.frameAlpha;
+//            this.frameAlpha= this.parent ? this.parent.frameAlpha*this.alpha : 1;
+
+            // global opt:
+            // set alpha as owns alpha, not take globalAlpha procedure.
+            this.frameAlpha= this.alpha;
+
             var m= this.worldModelViewMatrix.matrix;
             ctx.setTransform( m[0], m[3], m[1], m[4], m[2], m[5], this.frameAlpha );
             this.paint(director, time);
