@@ -1213,7 +1213,7 @@
                 this.length+= this.pathSegments[i].getLength();
                 this.pathSegments[i].getBoundingBox();
 
-                this.bbox.union( this.pathSegments[i].bbox );
+                this.bbox.unionRectangle( this.pathSegments[i].bbox );
 
 			}
 

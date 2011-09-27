@@ -66,6 +66,11 @@
 })();
 
 /**
+ * Box2D point meter conversion ratio.
+ */
+CAAT.PMR= 64;
+
+/**
  * Allow visual debugging artifacts.
  */
 CAAT.DEBUG= false;

@@ -151,7 +151,7 @@ function __CAAT_director_initialize(director) {
     director.addScene(  __scene11(director) );
 
 	director.easeIn(
-            0,
+            1,
             CAAT.Scene.prototype.EASE_SCALE,
             2000,
             false,

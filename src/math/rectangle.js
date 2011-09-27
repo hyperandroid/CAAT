@@ -107,6 +107,13 @@
 			
 			this.width= this.x1-this.x;
 			this.height= this.y1-this.y;
-		}
+		},
+        unionRectangle : function( rectangle ) {
+            this.union( rectangle.x , rectangle.y  );
+            this.union( rectangle.x1, rectangle.y  );
+            this.union( rectangle.x,  rectangle.y1 );
+            this.union( rectangle.x1, rectangle.y1 );
+            return this;
+        }
 	};
 })();
