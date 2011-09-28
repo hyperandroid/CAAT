@@ -60,6 +60,13 @@
         setPoints : function( points ) { },
 
         /**
+         * Set a point from this path segment.
+         * @param point {CAAT.Point}
+         * @param index {integer} a point index.
+         */
+        setPoint : function( point, index ) { },
+
+        /**
          * Get a coordinate on path.
          * The parameter time is normalized, that is, its values range from zero to one.
          * zero will mean <code>startCurvePosition</code> and one will be <code>endCurvePosition</code>. Other values
@@ -119,7 +126,13 @@
         /**
          * Recalculate internal path structures.
          */
-        updatePath : function(point) {}
+        updatePath : function(point) {},
+
+        /**
+         * Draw this path using RenderingContext2D drawing primitives.
+         * The intention is to set a path or pathsegment as a clipping region.
+         */
+        applyAsPath : function() {}
     };
 
 })();
@@ -146,6 +159,13 @@
 		finalPosition:		null,
 		newPosition:		null,   // spare holder for getPosition coordinate return.
 
+        setPoint : function( point, index ) {
+            if ( index===0 ) {
+                this.initialPosition= point;
+            } else if ( index===1 ) {
+                this.finalPosition= point;
+            }
+        },
         /**
          * Update this segments length and bounding box info.
          */
@@ -323,6 +343,11 @@
 		curve:	            null,   // a CAAT.Bezier instance.
 		newPosition:		null,   // spare holder for getPosition coordinate return.
 
+        setPoint : function( point, index ) {
+            if ( this.curve ) {
+                this.curve.setPoint(point,index);
+            }
+        },
         /**
          * Set this curve segment's points.
          * @param points {Array<CAAT.Point>}
@@ -500,6 +525,11 @@
         bbox:               null,
         newPosition:        null,   // spare point for calculations
 
+        setPoint : function( point, index ) {
+            if ( index>=0 && index<this.points.length ) {
+                this.points[index]= point;
+            }
+        },
         /**
          * An array of {CAAT.Point} composed of two points.
          * @param points {Array<CAAT.Point>}
@@ -814,6 +844,16 @@
             this.interactive= interactive;
             return this;
         },
+        getFirstPathSegment : function() {
+            return this.pathSegments.length ?
+                this.pathSegments[0] :
+                null;
+        },
+        getLastPathSegment : function() {
+            return this.pathSegments.length ?
+                this.pathSegments[ this.pathSegments.length-1 ] :
+                null;
+        },
         /**
          * Return the last point of the last path segment of this compound path.
          * @return {CAAT.Point}
@@ -911,8 +951,6 @@
 		},
         addRectangleTo : function( x1,y1, cw, color ) {
             var r= new CAAT.ShapePath();
-//            r.setInitialPosition( this.trackPathX, this.trackPathY );
-//            r.setFinalPosition(x1,y1);
             r.setPoints([
                     this.endCurvePosition(),
                     new CAAT.Point().set(x1,y1)
@@ -974,7 +1012,6 @@
          */
 		addCubicTo : function( px1,py1, px2,py2, px3,py3, color ) {
 			var bezier= new CAAT.Bezier();
-			//bezier.setCubic(this.trackPathX,this.trackPathY, px1,py1, px2,py2, px3,py3);
 
             bezier.setPoints(
                 [
@@ -1031,8 +1068,6 @@
          */
 		addLineTo : function( px1,py1, color ) {
 			var segment= new CAAT.LinearPath().setColor(color);
-//			segment.setInitialPosition(this.trackPathX, this.trackPathY);
-//			segment.setFinalPosition(px1, py1);
             segment.setPoints( [
                     this.endCurvePosition(),
                     new CAAT.Point().set(px1,py1)
@@ -1062,12 +1097,24 @@
             return this;
 		},
         /**
-         * Close the path by adding a line path segment from the current last path
-         * coordinate to startCurvePosition coordinate.
+         * <del>Close the path by adding a line path segment from the current last path
+         * coordinate to startCurvePosition coordinate</del>.
+         * <p>
+         * This method closes a path by setting its last path segment's last control point
+         * to be the first path segment's first control point.
+         * <p>
+         *     This method also sets the path as finished, and calculates all path's information
+         *     such as length and bounding box.
+         *
          * @return this
          */
 		closePath : function()	{
-			this.addLineTo( this.beginPathX, this.beginPathY );
+
+            this.getLastPathSegment().setPoint(
+                this.getFirstPathSegment().startCurvePosition(),
+                this.getLastPathSegment().numControlPoints()-1 );
+
+
 			this.trackPathX= this.beginPathX;
 			this.trackPathY= this.beginPathY;
 			
@@ -1209,10 +1256,7 @@
 
 			for( var i=0; i<this.pathSegments.length; i++ ) {
 				this.pathSegments[i].updatePath(point);
-
                 this.length+= this.pathSegments[i].getLength();
-                this.pathSegments[i].getBoundingBox();
-
                 this.bbox.unionRectangle( this.pathSegments[i].bbox );
 
 			}

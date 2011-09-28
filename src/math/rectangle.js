@@ -23,8 +23,8 @@
 		y:		0,
 		x1:		0,
 		y1:		0,
-		width:	0,
-		height:	0,
+		width:	-1,
+		height:	-1,
 
         setEmpty : function() {
             this.width=-1;

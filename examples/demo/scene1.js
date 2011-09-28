@@ -87,13 +87,11 @@ function __scene1(director) {
                 addRectangleTo(500,300,false,'#f00').
 
                 addCubicTo( 300,15, 400,10, 550,250 ).
-
-               addQuadricTo( 550,300, 450,350 ).
+                addQuadricTo( 550,300, 450,350 ).
                 addQuadricTo( 400,400, 350,200 ).
                 addCubicTo( 100,300, 300,450, 10,400).
                 addQuadricTo( 40,200, 200,200 ).
-
-                endPath() );
+                closePath() );
 
     var fish = new CAAT.SpriteActor().
         create().

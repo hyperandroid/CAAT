@@ -122,3 +122,12 @@ Added function showBoundingBox : function(show, color) to PathActor.
 Added shift/control/alt modifiers to key events.
 added missing getAnchorPercent method to actorCSS.js file. [important bug]
 Fixed CSS renderer zOrder error.
+
+09/26/2011
+----------
+
+Added ShapePath to allow for rectangle shaped path segments.
+Added methods on Path* and bezier curves to manage individual control points.
+Added bounding box support for Path* objects.
+Changed Path.closePath function semantics.
+Fixed some code on rectangle, point, bezier, path.

@@ -1,3 +1,9 @@
+/**
+ * @author  Hyperandroid  ||  http://hyperandroid.com/
+ *
+ * Box2D actors.
+ */
+
 (function() {
 
     /**

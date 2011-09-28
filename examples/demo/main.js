@@ -135,14 +135,14 @@ function __CAAT_director_initialize(director) {
 
     director.emptyScenes();
 
-    director.addScene(  __scene12(director) );
+
 	director.addScene(  __scene1(director) );
 	director.addScene(  __scene2(director) );
 	director.addScene(  __scene3(director) );
 	director.addScene(  __scene4(director) );
 	director.addScene(  __scene5(director) );
 	director.addScene(  __scene6(director) );
-
+    director.addScene(  __scene12(director) );
     director.addScene(  __scene7(director) );
 
     director.addScene(  __scene8(director) );
@@ -151,7 +151,7 @@ function __CAAT_director_initialize(director) {
     director.addScene(  __scene11(director) );
 
 	director.easeIn(
-            1,
+            0,
             CAAT.Scene.prototype.EASE_SCALE,
             2000,
             false,

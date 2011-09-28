@@ -112,7 +112,7 @@
 			
 			var pt= new CAAT.Point();
 			for(var t=this.k;t<=1+this.k;t+=this.k){
-				this.solve(pt);
+				this.solve(pt,t);
 				rectangle.union( pt.x, pt.y );
 			}			
 			
@@ -162,7 +162,16 @@
          */
 		startCurvePosition : function(point) {
 			return this.coordlist[ 0 ];
-		}
+		},
+
+        setPoints : function( points ) {
+        },
+
+        setPoint : function( point, index ) {
+            if ( index>=0 && index<this.coordlist.length ) {
+                this.coordlist[index]= point;
+            }
+        }
 	};
 })();
 

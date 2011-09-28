@@ -847,18 +847,18 @@
                 // actor is heading left to right
                 if ( !this.right_to_left ) {
                     if ( this.prevX<=point.x )	{
-                        actor.transformation= CAAT.SpriteImage.prototype.TR_NONE;
+                        actor.setImageTransformation( CAAT.SpriteImage.prototype.TR_NONE );
                     }
                     else	{
-                        actor.transformation= CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL;
+                        actor.setImageTransformation( CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL );
                         angle+=Math.PI;
                     }
                 } else {
                     if ( this.prevX<=point.x )	{
-                        actor.transformation= CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL
+                        actor.setImageTransformation( CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL );
                     }
                     else	{
-                        actor.transformation= CAAT.SpriteImage.prototype.TR_NONE;
+                        actor.setImageTransformation( CAAT.SpriteImage.prototype.TR_NONE );
                         angle-=Math.PI;
                     }
                 }
