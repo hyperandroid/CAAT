@@ -55,6 +55,10 @@
 
             CAAT.InterpolatorActor.superclass.paint.call(this,director,time);
 
+            if ( this.backgroundImage ) {
+                return this;
+            }
+
             if ( this.interpolator ) {
 
                 var canvas= director.crc;

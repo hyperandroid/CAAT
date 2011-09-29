@@ -171,6 +171,8 @@
             if ( index>=0 && index<this.coordlist.length ) {
                 this.coordlist[index]= point;
             }
+        },
+        applyAsPath : function( ctx ) {
         }
 	};
 })();
@@ -193,6 +195,32 @@
 		
 		cubic:		false,
 
+        applyAsPath : function( ctx ) {
+            if ( this.cubic ) {
+                ctx.bezierCurveTo(
+                    this.coordlist[1].x,
+                    this.coordlist[1].y,
+                    this.coordlist[2].x,
+                    this.coordlist[2].y,
+                    this.coordlist[3].x,
+                    this.coordlist[3].y
+                );
+            } else {
+                ctx.quadraticCurveTo(
+                    this.coordlist[1].x,
+                    this.coordlist[1].y,
+                    this.coordlist[2].x,
+                    this.coordlist[2].y
+                );
+            }
+            return this;
+        },
+        isQuadric : function() {
+            return !this.cubic;
+        },
+        isCubic : function() {
+            return this.cubic;
+        },
         /**
          * Set this curve as a cubic bezier defined by the given four control points.
          * @param cp0x {number}

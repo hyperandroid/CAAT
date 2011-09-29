@@ -131,8 +131,10 @@
         /**
          * Draw this path using RenderingContext2D drawing primitives.
          * The intention is to set a path or pathsegment as a clipping region.
+         *
+         * @param ctx {RenderingContext2D}
          */
-        applyAsPath : function() {}
+        applyAsPath : function(ctx) {}
     };
 
 })();
@@ -159,6 +161,9 @@
 		finalPosition:		null,
 		newPosition:		null,   // spare holder for getPosition coordinate return.
 
+        applyAsPath : function(ctx) {
+            ctx.lineTo( this.finalPosition.x, this.finalPosition.y );
+        },
         setPoint : function( point, index ) {
             if ( index===0 ) {
                 this.initialPosition= point;
@@ -343,6 +348,10 @@
 		curve:	            null,   // a CAAT.Bezier instance.
 		newPosition:		null,   // spare holder for getPosition coordinate return.
 
+        applyAsPath : function(ctx) {
+            this.curve.applyAsPath(ctx);
+            return this;
+        },
         setPoint : function( point, index ) {
             if ( this.curve ) {
                 this.curve.setPoint(point,index);
@@ -525,6 +534,10 @@
         bbox:               null,
         newPosition:        null,   // spare point for calculations
 
+        applyAsPath : function(ctx) {
+            ctx.rect( this.bbox.x, this.bbox.y, this.bbox.width, this.bbox.height );
+            return this;
+        },
         setPoint : function( point, index ) {
             if ( index>=0 && index<this.points.length ) {
                 this.points[index]= point;
@@ -836,6 +849,13 @@
 
         interactive:                true,
 
+        applyAsPath : function(ctx) {
+            ctx.beginPath(this.beginPathX, this.beginPathY);
+            for( var i=0; i<this.pathSegments.length; i++ ) {
+                this.pathSegments[i].applyAsPath(ctx);
+            }
+            return this;
+        },
         /**
          * Set whether this path should paint handles for every control point.
          * @param interactive {boolean}.

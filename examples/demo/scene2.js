@@ -22,7 +22,18 @@ function __scene2(director) {
 	var h= ch/rows;
 	
 	var cc= new CAAT.ActorContainer().
-	        setBounds(0,0,director.canvas.width,director.canvas.height);
+	        setBounds(0,0,director.canvas.width,director.canvas.height).
+            setClip(
+                true,
+                new CAAT.Path().
+                        beginPath(200,200).
+                        addCubicTo( 300,15, 400,10, 550,250 ).
+                        addQuadricTo( 550,300, 450,350 ).
+                        addQuadricTo( 400,400, 350,200 ).
+                        addCubicTo( 100,300, 300,450, 10,400).
+                        addQuadricTo( 40,200, 200,200 ).
+                        closePath()
+    );
 	scene.addChild(cc);
 	
 	for( var i=0; i<rows; i++ ) {

@@ -69,6 +69,7 @@
 		start_time:				0,      // Start time in Scene time.
 		duration:				Number.MAX_VALUE,   // Actor duration in Scene time
 		clip:					false,  // should clip the Actor's content against its contour.
+        clipPath:               null,
 
         scaleX:					0,      // transformation. width scale parameter
 		scaleY:					0,      // transformation. height scale parameter
@@ -1164,7 +1165,11 @@
 
             if ( this.clip ) {
                 ctx.beginPath();
-                ctx.rect(0,0,this.width,this.height);
+                if (!this.clipPath ) {
+                    ctx.rect(0,0,this.width,this.height);
+                } else {
+                    this.clipPath.applyAsPath(ctx);
+                }
                 ctx.clip();
             }
 
@@ -1320,13 +1325,14 @@
             return this;
         },
         /**
-         * Enable or disable the clipping process for this Actor.
-         *
-         * @param clip a boolean indicating whether clip is enabled.
-         * @return this
+         * Set this Actor's clipping area.
+         * @param enable {boolean} enable clip area.
+         * @param clipPath {CAAT.Path=} An optional path to apply clip with. If enabled and clipPath is not set,
+         *  a rectangle will be used.
          */
-        setClip : function( clip ) {
-            this.clip= clip;
+        setClip : function( enable, clipPath ) {
+            this.clip= enable;
+            this.clipPath= clipPath;
             return this;
         },
         /**
@@ -1507,9 +1513,11 @@
             }
 
             for( var actor= this.activeChildren; actor; actor=actor.__next ) {
-                ctx.save();
-                actor.paintActor(director,time);
-                ctx.restore();
+                if ( actor.visible ) {
+                    ctx.save();
+                    actor.paintActor(director,time);
+                    ctx.restore();
+                }
             }
             ctx.restore();
 
