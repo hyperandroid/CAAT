@@ -41,7 +41,7 @@
 
         this.scaleAnchor=           this.ANCHOR_CENTER;
         this.rotateAnchor=          this.ANCHOR_CENTER;
-        this.behaviorList=          [];
+
         this.modelViewMatrix=       new CAAT.Matrix();
         this.worldModelViewMatrix=  new CAAT.Matrix();
         this.modelViewMatrixI=      new CAAT.Matrix();
@@ -761,7 +761,7 @@
          * @param id {number} an integer.
          * return this;
          */
-        removeBehavior : function( id ) {
+        removeBehaviorById : function( id ) {
             for( var n=0; n<this.behaviorList.length; n++ ) {
                 if ( this.behaviorList[n].id===id) {
                     this.behaviorList.splice(n,1);
@@ -1062,6 +1062,15 @@
 			for( var i=0; i<this.behaviorList.length; i++ )	{
 				this.behaviorList[i].apply(time,this);
 			}
+
+            /*
+                If we have a mask applied, apply behaviors as well.
+             */
+            if ( this.clipPath ) {
+                if ( this.clipPath.applyBehaviors ) {
+                    this.clipPath.applyBehaviors(time);
+                }
+            }
 
             this.setModelViewMatrix(director);
 

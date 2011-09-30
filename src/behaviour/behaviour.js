@@ -744,11 +744,22 @@
 		return this;
 	};
 
+    /**
+     * @enum
+     */
+    CAAT.PathBehavior.autorotate = {
+        LEFT_TO_RIGHT:  0,          // fix left_to_right direction
+        RIGHT_TO_LEFT:  1,          // fix right_to_left
+        FREE:           2           // do not apply correction
+    };
+
 	CAAT.PathBehavior.prototype= {
 		path:           null,   // the path to traverse
         autoRotate :    false,  // set whether the actor must be rotated tangentially to the path.
         prevX:          -1,     // private, do not use.
         prevY:          -1,     // private, do not use.
+
+        autoRotateOp:   CAAT.PathBehavior.autorotate.FREE,
 
         translateX:     0,
         translateY:     0,
@@ -758,12 +769,14 @@
          * Take into account that this will be incompatible with rotation Behaviors
          * since they will set their own rotation configuration.
          * @param autorotate {boolean}
-         * @param right_to_left {boolean} whether the sprite is drawn heading to the right.
+         * @param autorotateOp {CAAT.PathBehavior.autorotate} whether the sprite is drawn heading to the right.
          * @return this.
          */
-        setAutoRotate : function( autorotate, right_to_left ) {
+        setAutoRotate : function( autorotate, autorotateOp ) {
             this.autoRotate= autorotate;
-            this.right_to_left= !!right_to_left;
+            if (autorotateOp!==undefined) {
+                this.autoRotateOp= autorotateOp;
+            }
             return this;
         },
         /**
@@ -845,7 +858,7 @@
                 var angle= Math.atan2( ay, ax );
 
                 // actor is heading left to right
-                if ( !this.right_to_left ) {
+                if ( this.autoRotateOp===CAAT.PathBehavior.autorotate.LEFT_TO_RIGHT ) {
                     if ( this.prevX<=point.x )	{
                         actor.setImageTransformation( CAAT.SpriteImage.prototype.TR_NONE );
                     }
@@ -853,7 +866,7 @@
                         actor.setImageTransformation( CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL );
                         angle+=Math.PI;
                     }
-                } else {
+                } else if ( this.autoRotateOp===CAAT.PathBehavior.autorotate.RIGHT_TO_LEFT ) {
                     if ( this.prevX<=point.x )	{
                         actor.setImageTransformation( CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL );
                     }

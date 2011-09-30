@@ -50,7 +50,7 @@
 
             canvas.strokeStyle='black';
 			this.path.paint(director);
-			
+
 			if ( this.bOutline ) {
 				canvas.strokeStyle= this.outlineColor;
 				canvas.strokeRect(0,0,this.width,this.height);

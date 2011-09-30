@@ -232,11 +232,67 @@ function __scene12(director) {
     gradient.addColorStop(0,'#000000');
     gradient.addColorStop(1,'#00007f');
 
+
+
+    var path2= new CAAT.Path().
+                        beginPath(100,director.height/2).
+                        addCubicTo(
+                            100,10,
+                            director.width-200,10,
+                            director.width-200,director.height/2 ).
+                        addCubicTo(
+                            director.width-200,director.height-10,
+                            100, director.height-10,
+                            100, director.height/2 ).
+                        closePath();
+
+    var path= new CAAT.Path().
+        //beginPath(100,100).
+        //addRectangleTo( director.width-100, director.height-100 ).
+
+        beginPath(100,director.height/2).
+        addCubicTo(
+            100,10,
+            director.width-100,10,
+            director.width-100,director.height/2 ).
+        addCubicTo(
+            director.width-100,director.height-10,
+            100, director.height-10,
+            100, director.height/2 ).
+                        closePath();
+
+    path.addBehavior(
+        new CAAT.PathBehavior().
+            setValues( path2 ).
+            setFrameTime( 0,15000 ).
+            setCycle( true ).
+            setTranslation( path2.width/2, path2.height/2 )
+    ).addBehavior(
+        new CAAT.RotateBehavior().
+            setValues( 0,Math.PI*2 ).
+            setFrameTime( 0,5000 ).
+            setCycle( true )
+    ).addBehavior(
+        new CAAT.ScaleBehavior().
+            setValues( .2, 1, .2, 1 ).
+            setFrameTime( 0,10000 ).
+            setCycle( true ).
+            setInterpolator(
+                new CAAT.Interpolator().createLinearInterpolator(true, false)
+        )
+    );
+
+
     var ac= new CAAT.ActorContainer().
             create().
             setBounds(0,0,director.width,director.height).
             setFillStyle(gradient).
-            enableEvents(false);
+            enableEvents(false).
+            setClip(
+                true,
+                path);
+
+
 
     for( var i=0; i<NP; i++ ) {
 
