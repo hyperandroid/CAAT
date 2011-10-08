@@ -600,7 +600,7 @@
                     this.image,
                     this.xyCache[this.spriteIndex][0]>>0, this.xyCache[this.spriteIndex][1]>>0,
                     this.singleWidth, this.singleHeight,
-                    this.offsetX+x,this.offsetY+y, this.singleWidth, this.singleHeight);
+                    this.offsetX+x, this.offsetY+y, this.singleWidth, this.singleHeight);
 
             return this;
         },

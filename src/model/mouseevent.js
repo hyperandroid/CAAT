@@ -84,6 +84,8 @@ CAAT.log= function() {
     }
 };
 
+CAAT.FRAME_TIME= 0;
+
 /**
  * Flag to signal whether events are enabled for CAAT.
  */
@@ -250,9 +252,12 @@ CAAT.loop= function(fps) {
 }
 
 CAAT.renderFrame= function() {
+    var t= new Date().getTime();
     for( var i=0, l=CAAT.director.length; i<l; i++ ) {
         CAAT.director[i].renderFrame();
     }
+    t= new Date().getTime()-t;
+    CAAT.FRAME_TIME= t;
 
     window.requestAnimFrame(CAAT.renderFrame, 0 )
 }

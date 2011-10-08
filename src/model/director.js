@@ -105,6 +105,12 @@
         RESIZE_PROPORTIONAL:16,
         resize:             1,
 
+        checkDebug : function() {
+            if ( CAAT.DEBUG ) {
+                var dd= new CAAT.Debug().initialize( this.width, 60 );
+                this.debugInfo= dd.debugInfo.bind(dd);
+            }
+        },
         getRenderType : function() {
             return this.glEnabled ? 'WEBGL' : 'CANVAS';
         },
@@ -212,6 +218,8 @@
             this.transitionScene.addChildImmediately(transitionImageActor);
             this.transitionScene.setEaseListener(this);
 
+            this.checkDebug();
+
             return this;
         },
         glReset : function() {
@@ -275,6 +283,8 @@
                 this.gl.enable(this.gl.BLEND);
                 this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
                 this.glEnabled = true;
+
+                this.checkDebug();
             } else {
                 // fallback to non gl enabled canvas.
                 return this.initialize(width, height, canvas);
@@ -449,7 +459,9 @@
                             c.onRenderEnd(tt);
                         }
 
-                        c.time += time;
+                        if ( !c.isPaused() ) {
+                            c.time += time;
+                        }
                     }
                 }
 
@@ -465,6 +477,7 @@
 
                 for (i = 0; i < ne; i++) {
                     var c= this.childrenList[i];
+
                     if (c.isInAnimationFrame(this.time)) {
                         tt = c.time - c.start_time;
                         this.ctx.save();
@@ -481,7 +494,9 @@
                             c.drawScreenBoundingBox(this, tt);
                         }
 
-                        c.time += time;
+                        if ( !c.isPaused() ) {
+                            c.time += time;
+                        }
                     }
                 }
             }
@@ -499,9 +514,14 @@
         animate : function(director, time) {
             this.setModelViewMatrix(this);
 
+            this.size_total=0;
+            this.size_active=0;
+
             for (var i = 0; i < this.childrenList.length; i++) {
                 var tt = this.childrenList[i].time - this.childrenList[i].start_time;
                 this.childrenList[i].animate(this, tt);
+                this.size_total+= this.childrenList[i].size_total;
+                this.size_active+= this.childrenList[i].size_active;
             }
 
             return this;
@@ -1083,6 +1103,11 @@
             }
 
             this.render(delta);
+
+            if ( this.debugInfo ) {
+                this.debugInfo(this.size_total, this.size_active);
+            }
+            
             this.timeline = t;
 
             if (this.onRenderEnd) {

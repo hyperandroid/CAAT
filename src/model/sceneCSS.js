@@ -35,6 +35,16 @@
         timerList:                      null,   // collection of CAAT.TimerTask objects.
         timerSequence:                  0,      // incremental CAAT.TimerTask id.
 
+        paused:                         false,
+
+        isPaused :  function()  {
+            return this.paused;
+        },
+
+        setPaused : function( paused ) {
+            this.paused= paused;
+        },
+
         /**
          * Check and apply timers in frame time.
          * @param time {number} the current Scene time.

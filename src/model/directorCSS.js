@@ -262,7 +262,10 @@
                     if ( c.onRenderEnd ) {
                         c.onRenderEnd(tt);
                     }
-                    c.time += time;
+
+                    if (!c.isPaused()) {
+                        c.time += time;
+                    }
                 }
             }
 

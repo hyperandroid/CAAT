@@ -122,6 +122,9 @@
         backgroundImage:        null,
         id:                     null,
 
+        size_active:            1,      // number of animated children
+        size_total:             1,
+
         getId : function()  {
             return this.id;
         },
@@ -682,7 +685,7 @@
          * This method is called by the Director to know whether the actor is on Scene time.
          * In case it was necessary, this method will notify any life cycle behaviors about
          * an Actor expiration.
-         * @param time an integer indicating the Scene time.
+         * @param time {integer} time indicating the Scene time.
          *
          * @private
          *
@@ -1430,6 +1433,7 @@
                     iOver=      _over;
                     iPress=     _press;
                     iDisabled=  _disabled;
+                    this.setSpriteIndex( iNormal );
                     return this;
                 };
             })(this,buttonImage, iNormal, iOver, iPress, iDisabled, fn);
@@ -1468,9 +1472,9 @@
 
 	CAAT.ActorContainer.prototype= {
 
-        childrenList : null,       // the list of children contained.
-        activeChildren: null,
-        pendingChildrenList : null,
+        childrenList :          null,       // the list of children contained.
+        activeChildren:         null,
+        pendingChildrenList:    null,
 
         /**
          * Draws this ActorContainer and all of its children screen bounding box.
@@ -1618,13 +1622,17 @@
                 */
             }
             this.pendingChildrenList= [];
+            var markDelete= [];
 
 
             var cl= this.childrenList;
             this.activeChildren= null;
+            this.size_active= 0;
+            this.size_total= 0;
             for( i=0; i<cl.length; i++ ) {
                 var actor= cl[i];
                 actor.time= time;
+                this.size_total+= actor.size_total;
                 if ( actor.animate(director, time) ) {
                     if ( !this.activeChildren ) {
                         this.activeChildren= actor;
@@ -1635,14 +1643,18 @@
                         last.__next= actor;
                         last= actor;
                     }
+
+                    this.size_active+= actor.size_active;
+
                 } else {
                     if ( actor.expired && actor.discardable ) {
-                        // actor destroy means removing from its parent.
-                        actor.destroy(time);
-                        // so don't do it again.
-                        //cl.splice(i,1);
+                        markDelete.push(actor);
                     }
                 }
+            }
+
+            for( i=0, l=markDelete.length; i<l; i++ ) {
+                markDelete.shift().destroy(time);
             }
 
             return true;

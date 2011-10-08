@@ -46,6 +46,8 @@
          */
         worldBody:          null,
 
+        world:              null,
+
         /**
          * Box2d fixture
          */
@@ -58,8 +60,47 @@
          */
         bodyData:           null,
 
+        recycle:            false,
+
         /**
-         * Set this body's density.
+         * set this actor to recycle its body, that is, do not destroy it.
+         */
+        setRecycle : function() {
+            this.recycle= true;
+            return this;
+        },
+        destroy : function() {
+
+            CAAT.B2DBodyActor.superclass.destroy.call(this);
+            if ( this.recycle ) {
+                this.setLocation(-Number.MAX_VALUE, -Number.MAX_VALUE);
+                this.setAwake(false);
+            } else {
+                var body= this.worldBody;
+                body.DestroyFixture( this.worldBodyFixture );
+                this.world.DestroyBody(body);
+            }
+
+            return this;
+        },
+        setAwake : function( bool ) {
+            this.worldBody.SetAwake(bool);
+            return this;
+        },
+        setSleepingAllowed : function(bool) {
+            this.worldBody.SetSleepingAllowed(bool);
+            return this;
+        },
+        setLocation : function(x,y) {
+            this.worldBody.SetPosition(
+                new Box2D.Common.Math.b2Vec2(
+                    (x+this.width/2)/CAAT.PMR,
+                    (y+this.height/2)/CAAT.PMR) );
+            return this;
+        },
+        /**
+         * Set this body's
+         * density.
          * @param d {number}
          */
         setDensity : function(d) {
@@ -130,6 +171,8 @@
                 this.image=         bodyData.image;
 
             }
+
+            this.world= world;
 
             return this;
         },
@@ -219,7 +262,8 @@
             var poly= this.worldBodyFixture.GetShape();
             if ( poly ) {
                 var v= Box2D.Common.Math.b2Math.MulX(xf, poly.m_centroid);
-                this.setLocation(
+                //this.setLocation(
+                CAAT.Actor.prototype.setLocation.call( this,
                         v.x*CAAT.PMR - this.width/2,
                         v.y*CAAT.PMR - this.height/2 );
                 this.setRotation( b.GetAngle() );
@@ -397,7 +441,8 @@
 
             var b= this.worldBody;
             var xf= b.m_xf;
-            this.setLocation(
+            //this.setLocation(
+            CAAT.Actor.prototype.setLocation.call( this,
                     CAAT.PMR*xf.position.x - this.width/2,
                     CAAT.PMR*xf.position.y - this.height/2 );
             this.setRotation( b.GetAngle() );
