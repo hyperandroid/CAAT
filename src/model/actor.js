@@ -170,7 +170,7 @@
 
                 image.setOwner(this);
                 this.backgroundImage= image;
-                if ( adjust_size_to_image ) {
+                if ( typeof adjust_size_to_image==='undefined' || adjust_size_to_image ) {
                     this.width= image.singleWidth;
                     this.height= image.singleHeight;
                 }
@@ -1607,7 +1607,6 @@
             }
 
             var i,l;
-            var notActive= [];
 
             /**
              * Incluir los actores pendientes.
@@ -1616,14 +1615,10 @@
             for( i=0; i<this.pendingChildrenList.length; i++ ) {
                 var child= this.pendingChildrenList[i];
                 this.addChild(child);
-/*
-                child.parent =  this;
-                this.childrenList.push(child);
-                */
             }
+
             this.pendingChildrenList= [];
             var markDelete= [];
-
 
             var cl= this.childrenList;
             this.activeChildren= null;
@@ -1654,7 +1649,7 @@
             }
 
             for( i=0, l=markDelete.length; i<l; i++ ) {
-                markDelete.shift().destroy(time);
+                markDelete[i].destroy(time);
             }
 
             return true;

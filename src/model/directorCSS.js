@@ -79,6 +79,12 @@
         RESIZE_PROPORTIONAL:16,
         resize:             1,
 
+        checkDebug : function() {
+            if ( CAAT.DEBUG ) {
+                var dd= new CAAT.Debug().initialize( this.width, 60 );
+                this.debugInfo= dd.debugInfo.bind(dd);
+            }
+        },
         getRenderType : function() {
             return 'CSS';
         },
@@ -152,6 +158,8 @@
             this.style('height',''+height+'px');
             this.style('overflow', 'hidden' );
             this.enableEvents();
+
+            this.checkDebug();
             return this;
         },
         /**
@@ -250,6 +258,8 @@
              * draw director active scenes.
              */
             var i, l, tt;
+            this.size_total=0;
+            this.size_active=0;
 
             for (i = 0, l=this.childrenList.length; i < l; i++) {
                 var c= this.childrenList[i];
@@ -266,6 +276,10 @@
                     if (!c.isPaused()) {
                         c.time += time;
                     }
+
+                    this.size_total+= this.childrenList[i].size_total;
+                    this.size_active+= this.childrenList[i].size_active;
+
                 }
             }
 
@@ -284,6 +298,7 @@
              * FIX: no haria falta. El director no se dibuja como elemento del grafo.
              */
             this.setModelViewMatrix(this);
+
 
             for (var i = 0; i < this.childrenList.length; i++) {
                 var tt = this.childrenList[i].time - this.childrenList[i].start_time;
@@ -775,6 +790,11 @@
             }
 
             this.render(delta);
+
+            if ( this.debugInfo ) {
+                this.debugInfo(this.size_total, this.size_active);
+            }
+
             this.timeline = t;
 
             if (this.onRenderEnd) {

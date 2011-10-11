@@ -436,6 +436,9 @@
 
             this.animate(this,time);
 
+            this.size_total=0;
+            this.size_active=0;
+
             /**
              * draw director active scenes.
              */
@@ -462,6 +465,10 @@
                         if ( !c.isPaused() ) {
                             c.time += time;
                         }
+
+                        this.size_total+= this.childrenList[i].size_total;
+                        this.size_active+= this.childrenList[i].size_active;
+
                     }
                 }
 
@@ -497,6 +504,10 @@
                         if ( !c.isPaused() ) {
                             c.time += time;
                         }
+
+                        this.size_total+= this.childrenList[i].size_total;
+                        this.size_active+= this.childrenList[i].size_active;
+
                     }
                 }
             }
@@ -514,14 +525,9 @@
         animate : function(director, time) {
             this.setModelViewMatrix(this);
 
-            this.size_total=0;
-            this.size_active=0;
-
             for (var i = 0; i < this.childrenList.length; i++) {
                 var tt = this.childrenList[i].time - this.childrenList[i].start_time;
                 this.childrenList[i].animate(this, tt);
-                this.size_total+= this.childrenList[i].size_total;
-                this.size_active+= this.childrenList[i].size_active;
             }
 
             return this;

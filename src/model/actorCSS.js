@@ -95,6 +95,8 @@
         inFrame:                false,  // boolean indicating whether this Actor was present on last frame.
         backgroundImage:        null,
 
+        size_active:            1,      // number of animated children
+        size_total:             1,
 
         /**
          * Set this Actor's parent and connect in CSS a div with its parent.
@@ -1305,6 +1307,9 @@
             var i,l;
             var notActive= [];
 
+            this.size_active= 0;
+            this.size_total= 0;
+
             /**
              * Incluir los actores pendientes.
              * El momento es ahora, antes de procesar ninguno del contenedor.
@@ -1314,12 +1319,14 @@
                 this.addChild(child);
             }
             this.pendingChildrenList= [];
+            
 
 
             var cl= this.childrenList;
             for( i=0; i<cl.length; i++ ) {
                 var actor= cl[i];
                 actor.time= time;
+                this.size_total+= actor.size_total;
                 if ( actor.animate(director, time) ) {
                     if ( !this.activeChildren ) {
                         this.activeChildren= actor;
@@ -1330,7 +1337,9 @@
                         last.__next= actor;
                         last= actor;
                     }
-                    //this.activeChildren.push( actor );
+
+                    this.size_active+= actor.size_active;
+
                 } else {
                     if ( actor.expired && actor.discardable ) {
                         this.domElement.removeChild(actor.domElement);
