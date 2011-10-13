@@ -1219,12 +1219,25 @@
 
         /**
          * Enable canvas input events.
+         * Events sent to any CAAT.Actor instance will be as follows:
+         *
+         * MouseEnter
+         *  if (press)
+         *      MouseDown
+         *      if (drag)
+         *          MouseDrag
+         *  if (release)
+         *      MouseUp
+         *      MouseClicked
+         *  MouseExit
+         *
          */
         enableEvents : function() {
             CAAT.RegisterDirector(this);
 
             var canvas = this.canvas;
             var me = this;
+            var in_ = false;
 
             canvas.addEventListener('mouseup',
                     function(e) {
@@ -1233,7 +1246,7 @@
                         me.isMouseDown = false;
                         me.getCanvasCoord(me.mousePoint, e);
 
-                        var pos;
+                        var pos= null;
 
                         if (null !== me.lastSelectedActor) {
                             pos = me.lastSelectedActor.viewToModel(
@@ -1248,19 +1261,20 @@
                                             me.screenMousePoint));
                         }
 
-                        if (!me.dragging) {
-                            if (null !== me.lastSelectedActor) {
+                        if (null !== me.lastSelectedActor) {
+                            if (me.lastSelectedActor.contains(pos.x, pos.y)) {
                                 me.lastSelectedActor.mouseClick(
-                                        new CAAT.MouseEvent().init(
-                                                pos.x,
-                                                pos.y,
-                                                e,
-                                                me.lastSelectedActor,
-                                                me.screenMousePoint));
+                                    new CAAT.MouseEvent().init(
+                                        pos.x,
+                                        pos.y,
+                                        e,
+                                        me.lastSelectedActor,
+                                        me.screenMousePoint));
                             }
-                        } else {
-                            me.dragging = false;
                         }
+                        me.dragging = false;
+
+                        in_= false;
                     },
                     false);
 
@@ -1343,6 +1357,7 @@
                             me.lastSelectedActor = null;
                         }
                         me.isMouseDown = false;
+                        in_ = false;
                     },
                     false);
 
@@ -1364,9 +1379,15 @@
                             }
 
                             me.dragging = true;
+
+                            var p= new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0);
+
                             if (null !== me.lastSelectedActor.parent) {
                                 me.lastSelectedActor.parent.viewToModel(me.mousePoint);
                             }
+
+                            var px= me.lastSelectedActor.x;
+                            var py= me.lastSelectedActor.y;
                             me.lastSelectedActor.mouseDrag(
                                     new CAAT.MouseEvent().init(
                                             me.mousePoint.x,
@@ -1374,9 +1395,42 @@
                                             e,
                                             me.lastSelectedActor,
                                             me.screenMousePoint));
+
+                            /**
+                             * Element has not moved after drag, so treat it as a button.
+                             * 
+                             */
+                            if ( px===me.lastSelectedActor.x && py===me.lastSelectedActor.y )   {
+                                me.lastSelectedActor.viewToModel( p );
+
+                                if (in_ && !me.lastSelectedActor.contains(p.x, p.y)) {
+                                    me.lastSelectedActor.mouseExit(
+                                        new CAAT.MouseEvent().init(
+                                            p.x,
+                                            p.y,
+                                            e,
+                                            me.lastSelectedActor,
+                                            me.screenMousePoint));
+                                    in_ = false;
+                                }
+
+                                if (!in_ && me.lastSelectedActor.contains(p.x, p.y)) {
+                                    me.lastSelectedActor.mouseEnter(
+                                        new CAAT.MouseEvent().init(
+                                            p.x,
+                                            p.y,
+                                            e,
+                                            me.lastSelectedActor,
+                                            me.screenMousePoint));
+                                    in_ = true;
+                                }
+                            }
+
                             return;
                         }
 
+                        in_= true;
+                        
                         var lactor = me.findActorAtPosition(
                                 me.mousePoint,
                                 new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0));
@@ -1450,10 +1504,6 @@
                     case "touchend":   type = "mouseup"; break;
                     default: return;
                 }
-
-                //initMouseEvent(type, canBubble, cancelable, view, clickCount,
-                //           screenX, screenY, clientX, clientY, ctrlKey,
-                //           altKey, shiftKey, metaKey, button, relatedTarget);
 
                 var simulatedEvent = document.createEvent("MouseEvent");
                 simulatedEvent.initMouseEvent(

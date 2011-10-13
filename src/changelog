@@ -131,3 +131,12 @@ Added methods on Path* and bezier curves to manage individual control points.
 Added bounding box support for Path* objects.
 Changed Path.closePath function semantics.
 Fixed some code on rectangle, point, bezier, path.
+
+10/13/2011
+----------
+
+Refurbished input subsystem. Now handles drag on buttons.
+Added scene pause methods.
+Added line definition values on Shape and Star actors.
+Added visual debugging info, regarding FPS and total/active actors on screen. (CAAT.DEBUG=1 before
+director creation).

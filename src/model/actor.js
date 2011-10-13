@@ -774,6 +774,14 @@
             return this;
 
         },
+        getBehavior : function(id)  {
+            for( var n=0; n<this.behaviorList.length; n++ ) {
+                if ( this.behaviorList[n].id===id) {
+                    return this.behaviorList[n];
+                }
+            }
+            return null;
+        },
         /**
          * Set discardable property. If an actor is discardable, upon expiration will be removed from
          * scene graph and hence deleted.
@@ -959,8 +967,8 @@
                     var vy = mouseEvent.screenPoint.y - this.screeny;
                     this.setRotation(-Math.atan2(vx, vy) + this.ara);
                 } else {
-                    this.x += mouseEvent.point.x - this.ax;
-                    this.y += mouseEvent.point.y - this.ay;
+                    this.x += (mouseEvent.point.x - this.ax);
+                    this.y += (mouseEvent.point.y - this.ay);
                     this.ax = mouseEvent.point.x;
                     this.ay = mouseEvent.point.y;
                 }
@@ -1390,6 +1398,8 @@
                 var enabled=    true;
                 var me=         this;
 
+                me.dragging=   false;
+
                 button.enabled= true;
                 button.setEnabled= function( enabled ) {
                     this.enabled= enabled;
@@ -1405,7 +1415,11 @@
                 button.setSpriteIndex( iNormal );
 
                 button.mouseEnter= function(mouseEvent) {
-                    this.setSpriteIndex( iOver );
+                    if ( this.dragging ) {
+                        this.setSpriteIndex( iPress );
+                    } else {
+                        this.setSpriteIndex( iOver );
+                    }
                     CAAT.setCursor('pointer');
                 };
 
@@ -1420,12 +1434,17 @@
 
                 button.mouseUp= function(mouseEvent) {
                     this.setSpriteIndex( iNormal );
+                    this.dragging= false;
                 };
 
                 button.mouseClick= function(mouseEvent) {
                     if ( this.enabled && null!==fnOnClick ) {
                         fnOnClick(this);
                     }
+                };
+
+                button.mouseDrag= function(mouseEvent)  {
+                    this.dragging= true;
                 };
 
                 button.setButtonImageIndex= function(_normal, _over, _press, _disabled ) {
@@ -2715,10 +2734,58 @@
 
         shape:          0,      // shape type. One of the constant SHAPE_* values
         compositeOp:    null,   // a valid canvas rendering context string describing compositeOps.
+        lineWidth:      1,
+        lineCap:        null,
+        lineJoin:       null,
+        miterLimit:     null,
 
         SHAPE_CIRCLE:   0,      // Constants to describe different shapes.
         SHAPE_RECTANGLE:1,
 
+        /**
+         * 
+         * @param l {number>0}
+         */
+        setLineWidth : function(l)  {
+            this.lineWidth= l;
+            return this;
+        },
+        /**
+         *
+         * @param lc {string{butt|round|square}}
+         */
+        setLineCap : function(lc)   {
+            this.lineCap= lc;
+            return this;
+        },
+        /**
+         *
+         * @param lj {string{bevel|round|miter}}
+         */
+        setLineJoin : function(lj)  {
+            this.lineJoin= lj;
+            return this;
+        },
+        /**
+         *
+         * @param ml {integer>0}
+         */
+        setMiterLimit : function(ml)    {
+            this.miterLimit= ml;
+            return this;
+        },
+        getLineCap : function() {
+            return this.lineCap;
+        },
+        getLineJoin : function()    {
+            return this.lineJoin;
+        },
+        getMiterLimit : function()  {
+            return this.miterLimit;
+        },
+        getLineWidth : function()   {
+            return this.lineWidth;
+        },
         /**
          * Sets shape type.
          * No check for parameter validity is performed.
@@ -2760,6 +2827,8 @@
         paintCircle : function(director,time) {
             var ctx= director.crc;
 
+            ctx.lineWidth= this.lineWidth;
+
             ctx.globalCompositeOperation= this.compositeOp;
             if ( null!==this.fillStyle ) {
                 ctx.fillStyle= this.fillStyle;
@@ -2785,6 +2854,18 @@
          */
         paintRectangle : function(director,time) {
             var ctx= director.crc;
+
+            ctx.lineWidth= this.lineWidth;
+
+            if ( this.lineCap ) {
+                ctx.lineCap= this.lineCap;
+            }
+            if ( this.lineJoin )    {
+                ctx.lineJoin= this.lineJoin;
+            }
+            if ( this.miterLimit )  {
+                ctx.miterLimit= this.miterLimit;
+            }
 
             ctx.globalCompositeOperation= this.compositeOp;
             if ( null!==this.fillStyle ) {
@@ -2826,7 +2907,55 @@
         minRadius:      0,
         initialAngle:   0,
         compositeOp:    null,
+        lineWidth:      1,
+        lineCap:        null,
+        lineJoin:       null,
+        miterLimit:     null,
 
+        /**
+         *
+         * @param l {number>0}
+         */
+        setLineWidth : function(l)  {
+            this.lineWidth= l;
+            return this;
+        },
+        /**
+         *
+         * @param lc {string{butt|round|square}}
+         */
+        setLineCap : function(lc)   {
+            this.lineCap= lc;
+            return this;
+        },
+        /**
+         *
+         * @param lj {string{bevel|round|miter}}
+         */
+        setLineJoin : function(lj)  {
+            this.lineJoin= lj;
+            return this;
+        },
+        /**
+         *
+         * @param ml {integer>0}
+         */
+        setMiterLimit : function(ml)    {
+            this.miterLimit= ml;
+            return this;
+        },
+        getLineCap : function() {
+            return this.lineCap;
+        },
+        getLineJoin : function()    {
+            return this.lineJoin;
+        },
+        getMiterLimit : function()  {
+            return this.miterLimit;
+        },
+        getLineWidth : function()   {
+            return this.lineWidth;
+        },
         /**
          * Sets whether the star will be color filled.
          * @param filled {boolean}
@@ -2895,6 +3024,17 @@
             var r2=         this.minRadius;
             var ix=         centerX + r1*Math.cos(this.initialAngle);
             var iy=         centerY + r1*Math.sin(this.initialAngle);
+
+            ctx.lineWidth= this.lineWidth;
+            if ( this.lineCap ) {
+                ctx.lineCap= this.lineCap;
+            }
+            if ( this.lineJoin )    {
+                ctx.lineJoin= this.lineJoin;
+            }
+            if ( this.miterLimit )  {
+                ctx.miterLimit= this.miterLimit;
+            }
 
             ctx.globalCompositeOperation= this.compositeOp;
 

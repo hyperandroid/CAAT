@@ -241,6 +241,9 @@
          */
         setImageTransformation : function( it ) {
             this.transformation= it;
+            if ( it===CAAT.SpriteImage.prototype.TR_FIXED_TO_SIZE ) {
+                this.style( 'background-size', '100%' );
+            }
             return this;
         },
         /**
@@ -764,6 +767,15 @@
             return this;
 
         },
+        getBehavior : function(id)  {
+            for( var n=0; n<this.behaviorList.length; n++ ) {
+                if ( this.behaviorList[n].id===id) {
+                    return this.behaviorList[n];
+                }
+            }
+            return null;
+        },
+
         /**
          * Set discardable property. If an actor is discardable, upon expiration will be removed from
          * scene graph and hence deleted.
@@ -1182,6 +1194,8 @@
                 var enabled=    true;
                 var me=         this;
 
+                me.dragging=   false;
+
                 button.enabled= true;
                 button.setEnabled= function( enabled ) {
                     this.enabled= enabled;
@@ -1197,7 +1211,11 @@
                 button.setSpriteIndex( iNormal );
 
                 button.mouseEnter= function(mouseEvent) {
-                    this.setSpriteIndex( iOver );
+                    if ( this.dragging ) {
+                        this.setSpriteIndex( iPress );
+                    } else {
+                        this.setSpriteIndex( iOver );
+                    }
                     CAAT.setCursor('pointer');
                 };
 
@@ -1212,12 +1230,17 @@
 
                 button.mouseUp= function(mouseEvent) {
                     this.setSpriteIndex( iNormal );
+                    this.dragging= false;
                 };
 
                 button.mouseClick= function(mouseEvent) {
                     if ( this.enabled && null!==fnOnClick ) {
                         fnOnClick(this);
                     }
+                };
+
+                button.mouseDrag= function(mouseEvent)  {
+                    this.dragging= true;
                 };
 
                 button.setButtonImageIndex= function(_normal, _over, _press, _disabled ) {
