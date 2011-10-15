@@ -1,5 +1,5 @@
 /**
- *
+ * See LICENSE file.
  */
 
 

@@ -1,3 +1,8 @@
+/**
+ * See LICENSE file.
+ *
+ */
+
 //
 // gluPerspective
 //

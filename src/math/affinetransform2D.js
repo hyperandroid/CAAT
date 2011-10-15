@@ -1,5 +1,5 @@
 /**
- * @author  Hyperandroid  ||  http://hyperandroid.com/
+ * See LICENSE file.
  *
  * Manages every Actor affine transformations.
  * Take into account that Canvas' renderingContext computes postive rotation clockwise, so hacks

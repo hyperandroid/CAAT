@@ -17,13 +17,13 @@ function __scene9(director) {
 
     var ip0= new CAAT.IMActor().
             create().
-            setBounds(100,100,100,100).
+            setBounds(100,100,400,400).
             setImageProcessor(
                 new CAAT.IMPlasma().
-                    initialize( 100,100, [0xffff0000, 0xffff7f00, 0xff7f00ff, 0xff0000ff ])
+                    initialize( 400,400, [0xffff0000, 0xffff7f00, 0xff7f00ff, 0xff0000ff ])
             );
     scene.addChild(ip0);
-
+/*
     var ip1= new CAAT.IMActor().
             create().
             setBounds(100,200,100,100).
@@ -73,7 +73,7 @@ function __scene9(director) {
     }
 
     scene.addChild(ip3);
-
+*/
     return scene;
 }
 

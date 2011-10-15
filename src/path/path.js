@@ -1,5 +1,5 @@
 /**
- * @author  Hyperandroid  ||  http://hyperandroid.com/
+ * See LICENSE file.
  *
  * These classes encapsulate different kinds of paths.
  * LinearPath, defines an straight line path, just 2 points.

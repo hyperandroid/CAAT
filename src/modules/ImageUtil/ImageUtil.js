@@ -1,3 +1,7 @@
+/**
+ * See LICENSE file.
+ */
+
 (function() {
 
     CAAT.modules.ImageUtil= function() {

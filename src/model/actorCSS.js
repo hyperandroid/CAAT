@@ -1,3 +1,11 @@
+/**
+ * See LICENSE file.
+ *
+ * Classes to define animable elements with DOM/CSS interface.
+ * Actor is the superclass of every animable element in the scene graph. It handles the whole
+ * affine transformation MatrixStack, rotation, translation, globalAlpha and Behaviours. It also
+ * defines input methods.
+ **/
 
 (function() {
 

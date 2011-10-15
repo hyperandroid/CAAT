@@ -1,5 +1,5 @@
 /**
- * @author  Hyperandroid  ||  http://hyperandroid.com/
+ * See LICENSE file.
  *
  * This file contains some image processing effects.
  * Currently contains the following out-of-the-box effects:
@@ -145,6 +145,7 @@
                 data[i*4+2]= b;
                 data[i*4+3]= a;
             }
+this.imageData.data= data;
 
             return this;
         },
@@ -164,6 +165,7 @@
          */
         apply : function(director, time) {
             if ( null!==this.imageData ) {
+this.imageData.data= this.bufferImage;
                 this.ctx.putImageData(this.imageData, 0, 0);
             }
             return this;
@@ -309,6 +311,12 @@
 	        this.tpos1 = this.pos1;
 	        this.tpos2 = this.pos2;
 
+            var bi= this.bufferImage;
+            var cm= this.m_colorMap;
+            var wt= this.wavetable;
+            var z;
+            var cmz;
+
 	        for (var x=0; x<this.height; x++) {
                 this.tpos3 = this.pos3;
                 this.tpos4 = this.pos4;
@@ -326,16 +334,13 @@
                     if ( this.b3 ) o3= -o3;
                     if ( this.b4 ) o4= -o4;
 
-                    var z = Math.floor(
-                        this.wavetable[o1&255] +
-                        this.wavetable[o2&255] +
-                        this.wavetable[o3&255] +
-                        this.wavetable[o4&255] );
+                    z = Math.floor( wt[o1&255] + wt[o2&255] + wt[o3&255] + wt[o4&255] );
+                    cmz= cm[z];
 
-                    this.bufferImage[ v++ ]= this.m_colorMap[z][0];
-                    this.bufferImage[ v++ ]= this.m_colorMap[z][1];
-                    this.bufferImage[ v++ ]= this.m_colorMap[z][2];
-                    this.bufferImage[ v++ ]= this.m_colorMap[z][3];
+                    bi[ v++ ]= cmz[0];
+                    bi[ v++ ]= cmz[1];
+                    bi[ v++ ]= cmz[2];
+                    bi[ v++ ]= cmz[3];
 
                     this.tpos3 += this.i1;
                     this.tpos3&=255;
@@ -757,22 +762,26 @@
             var i = (((this.width >> 1) << 8)  - ddx * ww + ddy * hh)&0xffff;
             var j = (((this.height >> 1) << 8) - ddy * ww - ddx * hh) & 0xffff;
 
-            var srcwidth= this.sourceImageData.width;
-            var srcheight= this.sourceImageData.height;
-            var srcdata= this.sourceImageData.data;
+            var srcwidth=   this.sourceImageData.width;
+            var srcheight=  this.sourceImageData.height;
+            var srcdata=    this.sourceImageData.data;
+            var bi=         this.bufferImage;
+            var dstoff;
+            var addx;
+            var addy;
 
             while (off < this.width * this.height * 4) {
-                var addx = i;
-                var addy = j;
+                addx = i;
+                addy = j;
 
                 for (var m = 0; m < this.width; m++) {
-                    var dstoff = ((addy >> this.shift) & this.mask) * srcwidth + ((addx >> this.shift) & this.mask);
+                    dstoff = ((addy >> this.shift) & this.mask) * srcwidth + ((addx >> this.shift) & this.mask);
                     dstoff <<= 2;
 
-                    this.bufferImage[ off++ ] = srcdata[ dstoff++ ];
-                    this.bufferImage[ off++ ] = srcdata[ dstoff++ ];
-                    this.bufferImage[ off++ ] = srcdata[ dstoff++ ];
-                    this.bufferImage[ off++ ] = srcdata[ dstoff++ ];
+                    bi[ off++ ] = srcdata[ dstoff++ ];
+                    bi[ off++ ] = srcdata[ dstoff++ ];
+                    bi[ off++ ] = srcdata[ dstoff++ ];
+                    bi[ off++ ] = srcdata[ dstoff++ ];
 
                     addx += ddx;
                     addy += ddy;

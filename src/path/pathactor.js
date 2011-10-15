@@ -1,5 +1,5 @@
 /**
- * @author  Hyperandroid  ||  http://hyperandroid.com/
+ * See LICENSE file.
  *
  * An actor to show the path and its handles in the scene graph. 
  *

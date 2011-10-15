@@ -1,5 +1,5 @@
 /**
- * @author  Hyperandroid  ||  http://hyperandroid.com/
+ * See LICENSE file.
  *
  * Hold a 2D point information.
  * Think about the possibility of turning CAAT.Point into {x:,y:}.

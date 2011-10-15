@@ -140,3 +140,14 @@ Added scene pause methods.
 Added line definition values on Shape and Star actors.
 Added visual debugging info, regarding FPS and total/active actors on screen. (CAAT.DEBUG=1 before
 director creation).
+
+10/14/2011
+----------
+
+Added modelToModel coordinate system conversion method which transforms a local coordinate into another
+actor's coordinate system.
+
+10/15/2011
+----------
+
+Fixed a bug with bezier bounding box that wasn't including the curve's first control point. (thanks yodesoft.com)

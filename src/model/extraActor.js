@@ -1,5 +1,5 @@
 /**
- * @author  Hyperandroid  ||  http://hyperandroid.com/
+ * See LICENSE file.
  *
  * In this file we'll be adding every useful Actor that is specific for certain purpose.
  *

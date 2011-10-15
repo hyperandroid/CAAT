@@ -1,5 +1,5 @@
 /**
- * @author  Hyperandroid  ||  http://hyperandroid.com/
+ * See LICENSE file.
  *
  * Classes to solve and draw curves.
  * Curve is the superclass of
@@ -109,7 +109,10 @@
 			if ( !rectangle ) {
 				rectangle= new CAAT.Rectangle();
 			}
-			
+
+            // thanks yodesoft.com for spotting the first point is out of the BB
+            rectangle.union( this.coordlist[0].x, this.coordlist[0].y );
+
 			var pt= new CAAT.Point();
 			for(var t=this.k;t<=1+this.k;t+=this.k){
 				this.solve(pt,t);

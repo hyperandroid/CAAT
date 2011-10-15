@@ -1,5 +1,5 @@
 /**
- * @author  Hyperandroid  ||  http://hyperandroid.com/
+ * See LICENSE file.
  *
  * Classes to define animable elements.
  * Actor is the superclass of every animable element in the scene graph. It handles the whole
@@ -668,8 +668,8 @@
          */
 	    setLocation : function( x, y ) {
 
-            x= x|0;
-            y= y|0;
+            x= x>>0;
+            y= y>>0;
 
             this.x= x;
             this.y= y;
@@ -830,6 +830,15 @@
             }
 
             return point;
+        },
+        /**
+         * Transform a local coordinate point on this Actor's coordinate system into
+         * another point in otherActor's coordinate system.
+         * @param point {CAAT.Point}
+         * @param otherModel {CAAT.Actor}
+         */
+        modelToModel : function( point, otherActor )   {
+            return otherActor.viewToModel( this.modelToView( point ) );
         },
         /**
          * Transform a point from model to view space.
@@ -1713,6 +1722,7 @@
 
             child.parent= this;
             this.childrenList.push(child);
+            child.dirty= true;
             return this;
 		},
         /**
@@ -1742,6 +1752,7 @@
             }
 
 			child.parent= this;
+            child.dirty= true;
 			this.childrenList.splice(index, 0, child);
 
             return this;

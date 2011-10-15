@@ -1,5 +1,5 @@
 /**
- * @author  Hyperandroid  ||  http://hyperandroid.com/
+ * See LICENSE file.
  *
  * Behaviors are keyframing elements.
  * By using a BehaviorContainer, you can specify different actions on any animation Actor.
@@ -249,11 +249,10 @@
 			return this.interpolator.getPosition(time/this.behaviorDuration).y;
 		},
         /**
-         * Private.
          * Sets the behavior as expired.
          * This method must not be called directly. It is an auxiliary method to isBehaviorInTime method.
-         * @param actor a CAAT.Actor instance.
-         * @param time an integer with the scene time.
+         * @param actor {CAAT.Actor}
+         * @param time {integer} the scene time.
          *
          * @private
          */

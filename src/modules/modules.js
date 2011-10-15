@@ -1,4 +1,6 @@
 /**
+ * See LICENSE file.
+ *
  * @author  Mario Gonzalez || http://onedayitwillmake.com
  *
  **/

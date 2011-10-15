@@ -1,14 +1,11 @@
 /**
- * @author  Hyperandroid  ||  http://hyperandroid.com/
+ * See LICENSE file.
  *
  * MouseEvent is a class to hold necessary information of every mouse event related to concrete
  * scene graph Actors.
  *
  * Here it is also the logic to on mouse events, pump the correct event to the appropiate scene
  * graph Actor.
- *
- * 20101008 Hyperandroid. changed event scope from CAAT.director.canvas to window. Works under
- *          al major browsers on linux and win7. Thanks @alteredq for this tip.
  *
  * TODO: add events for event pumping:
  *  + cancelBubling
@@ -201,7 +198,8 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
                         {
                             alt:        CAAT.KEY_MODIFIERS.alt,
                             control:    CAAT.KEY_MODIFIERS.control,
-                            shift:      CAAT.KEY_MODIFIERS.shift
+                            shift:      CAAT.KEY_MODIFIERS.shift,
+                            originalEvent: evt
                         });
                 }
             }

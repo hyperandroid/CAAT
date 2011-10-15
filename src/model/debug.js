@@ -1,3 +1,13 @@
+/**
+ * See LICENSE file.
+ *
+ * Get realtime Debug information of CAAT's activity.
+ * Set CAAT.DEBUG=1 before any CAAT.Director object creation.
+ * This class expects a DOM node called 'caat-debug' being a container element (DIV) where
+ * it will append itself. If this node is not present, it will append itself to the document's body.
+ *
+ */
+
 (function() {
 
     CAAT.Debug= function() {

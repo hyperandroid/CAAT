@@ -1,5 +1,7 @@
 /**
- * @author  Hyperandroid  ||  http://hyperandroid.com/
+ * See LICENSE file.
+ *
+ * @author: Mario Gonzalez (@onedayitwilltake) and Ibon Tolosana (@hyperandroid)
  *
  * Helper classes for color manipulation.
  *

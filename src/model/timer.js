@@ -1,4 +1,6 @@
-
+/**
+ * See LICENSE file.
+ */
 (function() {
     /**
      * This class defines a timer action which is constrained to Scene time, so every Scene has the
