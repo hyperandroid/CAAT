@@ -194,13 +194,15 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
             } else {
 
                 for( var i=0; i<CAAT.keyListeners.length; i++ ) {
-                    CAAT.keyListeners[i](key,'up',
+                    CAAT.keyListeners[i](
+                        key,
+                        'up',
                         {
                             alt:        CAAT.KEY_MODIFIERS.alt,
                             control:    CAAT.KEY_MODIFIERS.control,
-                            shift:      CAAT.KEY_MODIFIERS.shift,
-                            originalEvent: evt
-                        });
+                            shift:      CAAT.KEY_MODIFIERS.shift
+                        },
+                        evt);
                 }
             }
         },
