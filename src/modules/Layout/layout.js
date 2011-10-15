@@ -1,3 +1,6 @@
+/**
+ * See LICENSE file.
+ */
 
 (function() {
     CAAT.modules.LayoutUtils= {};

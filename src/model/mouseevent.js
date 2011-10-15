@@ -171,12 +171,15 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
                 CAAT.KEY_MODIFIERS.alt= true;
             } else {
                 for( var i=0; i<CAAT.keyListeners.length; i++ ) {
-                    CAAT.keyListeners[i](key,'down',
+                    CAAT.keyListeners[i](
+                        key,
+                        'down',
                         {
                             alt:        CAAT.KEY_MODIFIERS.alt,
                             control:    CAAT.KEY_MODIFIERS.control,
                             shift:      CAAT.KEY_MODIFIERS.shift
-                        });
+                        },
+                        evt);
                 }
             }
         },
