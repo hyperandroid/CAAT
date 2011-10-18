@@ -139,6 +139,7 @@
          */
         setParent : function(parent) {
             this.parent= parent;
+            return this;
         },
         /**
          * Set this actor's background image.
@@ -156,7 +157,7 @@
          *
          * @see CAAT.SpriteImage
          *
-         * @param image {Image|Canvas|CAAT.SpriteImage}
+         * @param image {Image|HTMLCanvasElement|CAAT.SpriteImage}
          * @param adjust_size_to_image {boolean} whether to set this actor's size based on image parameter.
          *
          * @return this
@@ -183,7 +184,7 @@
         /**
          * Set the actor's SpriteImage index from animation sheet.
          * @see CAAT.SpriteImage
-         * @param index {integer}
+         * @param index {number}
          *
          * @return this
          */
@@ -200,8 +201,8 @@
          * The values can be either positive or negative meaning the texture space of this background
          * image does not start at (0,0) but at the desired position.
          * @see CAAT.SpriteImage
-         * @param ox {integer} horizontal offset
-         * @param oy {integer} vertical offset
+         * @param ox {number} horizontal offset
+         * @param oy {number} vertical offset
          *
          * @return this
          */
@@ -218,7 +219,7 @@
          * subimages. If you define d Sprite Image of 2x2, you'll be able to draw any of the 4 subimages.
          * This method defines the animation sequence so that it could be set [0,2,1,3,2,1] as the
          * animation sequence
-         * @param ii {array<integer>} an array of integers.
+         * @param ii {Array<number>} an array of integers.
          */
         setAnimationImageIndex : function( ii ) {
             if ( this.backgroundImage ) {
@@ -247,8 +248,8 @@
         },
         /**
          * Center this actor at position (x,y).
-         * @param x {float} x position
-         * @param y {float} y position
+         * @param x {number} x position
+         * @param y {number} y position
          *
          * @return this
          * @deprecated
@@ -259,8 +260,8 @@
         },
         /**
          * Center this actor at position (x,y).
-         * @param x {float} x position
-         * @param y {float} y position
+         * @param x {number} x position
+         * @param y {number} y position
          *
          * @return this
          */
@@ -577,7 +578,7 @@
          * The dimension will not affect the local coordinates system in opposition
          * to setSize or setBounds.
          *
-         * @param sx {float} width scale.
+         * @param sx {number} width scale.
          * @param sy {number} height scale.
          * @param anchorx {number} x anchor to perform the Scale operation.
          * @param anchory {number} y anchor to perform the Scale operation.
@@ -627,8 +628,8 @@
          * @return this
          */
 	    setSize : function( w, h )   {
-	        this.width= w>>0;
-	        this.height= h>>0;
+	        this.width= w;
+	        this.height= h;
             this.dirty= true;
 
             return this;
@@ -636,22 +637,17 @@
         /**
          * Set location and dimension of an Actor at once.
          *
-         * as http://jsperf.com/drawimage-whole-pixels states, drawing at whole pixels rocks while at subpixels sucks.
-         * thanks @pbakaus
-         *
-         * @param x a float indicating Actor's x position.
-         * @param y a float indicating Actor's y position
-         * @param w a float indicating Actor's width
-         * @param h a float indicating Actor's height
+         * @param x{number} a float indicating Actor's x position.
+         * @param y{number} a float indicating Actor's y position
+         * @param w{number} a float indicating Actor's width
+         * @param h{number} a float indicating Actor's height
          * @return this
          */
 	    setBounds : function(x, y, w, h)  {
-	        //this.x= x;
-            //this.y= y;
-            this.x= x|0;
-            this.y= y|0;
-	        this.width= w|0;
-	        this.height= h|0;
+            this.x= x;
+            this.y= y;
+	        this.width= w;
+	        this.height= h;
             this.dirty= true;
 
             return this;
@@ -659,17 +655,11 @@
         /**
          * This method sets the position of an Actor inside its parent.
          *
-         * as http://jsperf.com/drawimage-whole-pixels states, drawing at whole pixels rocks while at subpixels sucks.
-         * thanks @pbakaus
-         *
-         * @param x a float indicating Actor's x position
-         * @param y a float indicating Actor's y position
+         * @param x{number} a float indicating Actor's x position
+         * @param y{number} a float indicating Actor's y position
          * @return this
          */
 	    setLocation : function( x, y ) {
-
-            x= x>>0;
-            y= y>>0;
 
             this.x= x;
             this.y= y;
@@ -685,7 +675,7 @@
          * This method is called by the Director to know whether the actor is on Scene time.
          * In case it was necessary, this method will notify any life cycle behaviors about
          * an Actor expiration.
-         * @param time {integer} time indicating the Scene time.
+         * @param time {number} time indicating the Scene time.
          *
          * @private
          *
@@ -835,7 +825,7 @@
          * Transform a local coordinate point on this Actor's coordinate system into
          * another point in otherActor's coordinate system.
          * @param point {CAAT.Point}
-         * @param otherModel {CAAT.Actor}
+         * @param otherActor {CAAT.Actor}
          */
         modelToModel : function( point, otherActor )   {
             return otherActor.viewToModel( this.modelToView( point ) );
@@ -865,7 +855,7 @@
          *
          * @return null if the point is not inside the Actor. The Actor otherwise.
          */
-	    findActorAtPosition : function(point,screenPoint) {
+	    findActorAtPosition : function(point) {
 			if ( !this.mouseEnabled || !this.isInAnimationFrame(this.time) ) {
 				return null;
 			}
@@ -1117,8 +1107,11 @@
                 var m= this.tmpMatrix.identity();
                 var mm= this.modelViewMatrix.matrix;
                 //this.modelViewMatrix.multiply( m.setTranslate( this.x, this.y ) );
-                mm[2]+= this.x;
-                mm[5]+= this.y;
+
+                // As http://jsperf.com/drawimage-whole-pixels states,
+                // drawing at whole pixels rocks while at subpixels sucks. thanks @pbakaus
+                mm[2]+= this.x>>0;
+                mm[5]+= this.y>>0;
 
                 if ( this.rotationAngle ) {
 //                    this.modelViewMatrix.multiply( m.setTranslate( this.rotationX, this.rotationY) );

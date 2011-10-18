@@ -6,38 +6,36 @@
     CAAT.modules.LayoutUtils= {};
 
     CAAT.modules.LayoutUtils.row= function( dst, what_to_layout_array, constraint_object ) {
-        var actors= what_to_layout_array;
-        var co= constraint_object;
 
         var width= dst.width;
         var x=0, y=0, i=0, l=0;
         var actor_max_h= Number.MIN_VALUE, actor_max_w= Number.MAX_VALUE;
 
         // compute max/min actor list size.
-        for( i=actors.length-1; i; i-=1 ) {
-            if ( actor_max_w<actors[i].width ) {
-                actor_max_w= actors[i].width;
+        for( i=what_to_layout_array.length-1; i; i-=1 ) {
+            if ( actor_max_w<what_to_layout_array[i].width ) {
+                actor_max_w= what_to_layout_array[i].width;
             }
-            if ( actor_max_h<actors[i].height ) {
-                actor_max_h= actors[i].height;
+            if ( actor_max_h<what_to_layout_array[i].height ) {
+                actor_max_h= what_to_layout_array[i].height;
             }
         }
 
-        if ( co.padding_left ) {
-            x= co.padding_left;
+        if ( constraint_object.padding_left ) {
+            x= constraint_object.padding_left;
             width-= x;
         }
-        if ( co.padding_right ) {
-            width-= co.padding_right;
+        if ( constraint_object.padding_right ) {
+            width-= constraint_object.padding_right;
         }
 
-        if ( co.top ) {
-            var top= parseInt(co.top, 10);
+        if ( constraint_object.top ) {
+            var top= parseInt(constraint_object.top, 10);
             if ( !isNaN(top) ) {
                 y= top;
             } else {
                 // not number
-                switch(co.top) {
+                switch(constraint_object.top) {
                     case 'center':
                         y= (dst.height-actor_max_h)/2;
                         break;
@@ -47,18 +45,18 @@
                     case 'bottom':
                         y= dst.height-actor_max_h;
                         break;
-                    defatul:
+                    default:
                         y= 0;
                 }
             }
         }
 
         // space for each actor
-        var actor_area= width / actors.length;
+        var actor_area= width / what_to_layout_array.length;
 
-        for( i=0, l=actors.length; i<l; i++ ) {
-            actors[i].setLocation(
-                x + i * actor_area + (actor_area - actors[i].width) / 2,
+        for( i=0, l=what_to_layout_array.length; i<l; i++ ) {
+            what_to_layout_array[i].setLocation(
+                x + i * actor_area + (actor_area - what_to_layout_array[i].width) / 2,
                 y);
         }
 

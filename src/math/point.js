@@ -17,9 +17,9 @@
      * @constructor
      */
 	CAAT.Point= function(xpos, ypos, zpos) {
-		this.x= xpos || 0;
-		this.y= ypos || 0;
-        this.z= zpos || 0;
+		this.x= xpos;
+		this.y= ypos;
+        this.z= zpos;
 		return this;
 	};
 	

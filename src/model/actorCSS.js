@@ -619,8 +619,8 @@
          * @return this
          */
 	    setSize : function( w, h )   {
-	        this.width= w>>0;
-	        this.height= h>>0;
+	        this.width= w;
+	        this.height= h;
 
             this.style('width', ''+w+'px');
             this.style('height',''+h+'px');
