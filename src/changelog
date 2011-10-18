@@ -1,8 +1,18 @@
+10/18/2011
+----------
+* Added a callback function to be triggered on Director resize events. The method enableResizeEvents signature
+  has been changed to be enableResizeEvents : function(mode, onResizeCallback) {}. The parameter
+  onResizeCallback is function with the signature function( director, width, height ).
+* If director has enableResizeEvents enabled, now is resized on first instance. Previously, a window resize
+  had to be triggered manually.
+* Fixed mousemove coordinates on scaled director that weren't proper ones.
+
 10/17/2011
 ----------
 
 Fixed input subsystem. Now Actor instances won't receive mouseUp if dragged was performed on them.
 BUG. Fixed a bug with container behaviors that prevented a contained behavior to be expired again.
+
 
 10/15/2011
 ----------

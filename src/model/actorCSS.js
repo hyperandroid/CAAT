@@ -1199,8 +1199,6 @@
                 var iDisabled=  0;
                 var iCurrent=   0;
                 var fnOnClick=  null;
-                var enabled=    true;
-                var me=         this;
 
                 button.enabled= true;
                 button.setEnabled= function( enabled ) {
@@ -1242,12 +1240,14 @@
 
                 button.mouseUp= function(mouseEvent) {
                     this.setSpriteIndex( iNormal );
+                    this.dragging= false;
                 };
 
                 button.mouseClick= function(mouseEvent) {
                 };
 
                 button.mouseDrag= function(mouseEvent)  {
+                    this.dragging= true;
                 };
 
                 button.setButtonImageIndex= function(_normal, _over, _press, _disabled ) {

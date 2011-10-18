@@ -104,6 +104,7 @@
         RESIZE_BOTH:        8,
         RESIZE_PROPORTIONAL:16,
         resize:             1,
+        onResizeCallback:   null,
 
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
@@ -129,6 +130,11 @@
                     this.setScaleProportional(w,h);
                     break;
             }
+
+            if ( this.onResizeCallback )    {
+                this.onResizeCallback( this, w, h );
+            }
+
         },
         setScaleProportional : function(w,h) {
 
@@ -146,17 +152,27 @@
             }
         },
         /**
-         * Enable window resize events and set redimension policy.
+         * Enable window resize events and set redimension policy. A callback functio could be supplied
+         * to be notified on a Director redimension event. This is necessary in the case you set a redim
+         * policy not equal to RESIZE_PROPORTIONAL. In those redimension modes, director's area and their
+         * children scenes are resized to fit the new area. But scenes content is not resized, and have
+         * no option of knowing so uless an onResizeCallback function is supplied.
+         *
          * @param mode {number}  RESIZE_BOTH, RESIZE_WIDTH, RESIZE_HEIGHT, RESIZE_NONE.
+         * @param onResizeCallback {function(director{CAAT.Director}, width{integer}, height{integer})} a callback
+         * to notify on canvas resize.
          */
-        enableResizeEvents : function(mode) {
+        enableResizeEvents : function(mode, onResizeCallback) {
             if (mode === this.RESIZE_BOTH || mode === this.RESIZE_WIDTH || mode === this.RESIZE_HEIGHT || mode===this.RESIZE_PROPORTIONAL) {
                 this.referenceWidth= this.width;
                 this.referenceHeight=this.height;
                 this.resize = mode;
                 CAAT.registerResizeListener(this);
+                this.onResizeCallback= onResizeCallback;
+                this.windowResized( window.innerWidth, window.innerHeight );
             } else {
                 CAAT.unregisterResizeListener(this);
+                this.onResizeCallback= null;
             }
         },
         /**
@@ -1402,7 +1418,7 @@
 
                             /**
                              * Element has not moved after drag, so treat it as a button.
-                             * 
+                             *
                              */
                             if ( px===me.lastSelectedActor.x && py===me.lastSelectedActor.y )   {
                                 me.lastSelectedActor.viewToModel( p );
@@ -1434,44 +1450,41 @@
                         }
 
                         in_= true;
-                        
+
                         var lactor = me.findActorAtPosition(
                                 me.mousePoint,
                                 new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0));
-                        var pos = lactor.viewToModel(new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0));
 
                         // cambiamos de actor.
                         if (lactor !== me.lastSelectedActor) {
                             if (null !== me.lastSelectedActor) {
-                                var posExit = me.lastSelectedActor.viewToModel(
-                                        new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0));
                                 me.lastSelectedActor.mouseExit(
-                                        new CAAT.MouseEvent().init(
-                                                posExit.x,
-                                                posExit.y,
-                                                e,
-                                                me.lastSelectedActor,
-                                                me.screenMousePoint));
+                                    new CAAT.MouseEvent().init(
+                                        me.mousePoint.x,
+                                        me.mousePoint.y,
+                                        e,
+                                        me.lastSelectedActor,
+                                        me.screenMousePoint));
                             }
                             if (null !== lactor) {
                                 lactor.mouseEnter(
-                                        new CAAT.MouseEvent().init(
-                                                pos.x,
-                                                pos.y,
-                                                e,
-                                                lactor,
-                                                me.screenMousePoint));
+                                    new CAAT.MouseEvent().init(
+                                        me.mousePoint.x,
+                                        me.mousePoint.y,
+                                        e,
+                                        lactor,
+                                        me.screenMousePoint));
                             }
                         }
                         me.lastSelectedActor = lactor;
                         if (null !== lactor) {
                             me.lastSelectedActor.mouseMove(
-                                    new CAAT.MouseEvent().init(
-                                            pos.x,
-                                            pos.y,
-                                            e,
-                                            me.lastSelectedActor,
-                                            me.screenMousePoint));
+                                new CAAT.MouseEvent().init(
+                                    me.mousePoint.x,
+                                    me.mousePoint.y,
+                                    e,
+                                    me.lastSelectedActor,
+                                    me.screenMousePoint));
                         }
                     },
                     false);
