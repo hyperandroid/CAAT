@@ -376,9 +376,6 @@
 			if ( this.cycleBehavior )	{
 				behavior.expired =  false;
 			}
-/*            else {
-                this.fireBehaviorExpiredEvent( actor, time );
-            }*/
 		},
         /**
          * Implementation method of the behavior.
@@ -388,11 +385,32 @@
          */
 		setForTime : function(time, actor) {
 			for( var i=0; i<this.behaviors.length; i++ ) {
-				this.behaviors[i].setForTime( time, actor );
+				this.behaviors[i].setForTime( time-this.behaviorStartTime, actor );
 			}
 
             return null;
-		}
+		},
+
+        setExpired : function(actor,time) {
+            CAAT.ContainerBehavior.superclass.setExpired.call(this,actor,time);
+            // set for final interpolator value.
+            for( var i=0; i<this.behaviors.length; i++ ) {
+                if (!this.behaviors[i].expired) {
+                    this.behaviors[i].setExpired(actor,time-this.behaviorStartTime);
+                }
+            }
+            this.fireBehaviorExpiredEvent(actor,time);
+            return this;
+        },
+
+        setFrameTime : function( start, duration )  {
+            CAAT.ContainerBehavior.superclass.setFrameTime.call(this,start,duration);
+            for( var i=0; i<this.behaviors.length; i++ ) {
+                this.behaviors[i].expired= false;
+            }
+            return this;
+        }
+
 	};
 
     extend( CAAT.ContainerBehavior, CAAT.Behavior, null );

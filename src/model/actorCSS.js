@@ -1202,12 +1202,16 @@
                 var enabled=    true;
                 var me=         this;
 
-                me.dragging=   false;
-
                 button.enabled= true;
                 button.setEnabled= function( enabled ) {
                     this.enabled= enabled;
                 };
+
+                button.actionPerformed= function(event) {
+                    if ( this.enabled && null!==fnOnClick ) {
+                        fnOnClick(this);
+                    }
+                }
 
                 button.setBackgroundImage(buttonImage, true);
                 iNormal=       _iNormal || 0;
@@ -1238,17 +1242,12 @@
 
                 button.mouseUp= function(mouseEvent) {
                     this.setSpriteIndex( iNormal );
-                    this.dragging= false;
                 };
 
                 button.mouseClick= function(mouseEvent) {
-                    if ( this.enabled && null!==fnOnClick ) {
-                        fnOnClick(this);
-                    }
                 };
 
                 button.mouseDrag= function(mouseEvent)  {
-                    this.dragging= true;
                 };
 
                 button.setButtonImageIndex= function(_normal, _over, _press, _disabled ) {

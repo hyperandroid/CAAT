@@ -1252,6 +1252,10 @@
                             pos = me.lastSelectedActor.viewToModel(
                                     new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0));
 
+                            if ( me.lastSelectedActor.actionPerformed && me.lastSelectedActor.contains(pos.x, pos.y) ) {
+                                me.lastSelectedActor.actionPerformed(e)
+                            }
+
                             me.lastSelectedActor.mouseUp(
                                     new CAAT.MouseEvent().init(
                                             pos.x,
@@ -1261,7 +1265,7 @@
                                             me.screenMousePoint));
                         }
 
-                        if (null !== me.lastSelectedActor) {
+                        if (!me.dragging && null !== me.lastSelectedActor) {
                             if (me.lastSelectedActor.contains(pos.x, pos.y)) {
                                 me.lastSelectedActor.mouseClick(
                                     new CAAT.MouseEvent().init(

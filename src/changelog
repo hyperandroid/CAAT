@@ -1,17 +1,134 @@
-07/30/2011
+10/17/2011
 ----------
 
-CAAT.Actor: added the capability to draw images on its background. This feature
- will substitute the need of using CAAT.ImageActor, CAAT.Image and CAAT.Button.
+Fixed input subsystem. Now Actor instances won't receive mouseUp if dragged was performed on them.
+BUG. Fixed a bug with container behaviors that prevented a contained behavior to be expired again.
 
-CAAT.CompoundImage: added method to automatically change sprite index on time
- basis. Basically logic from SpriteActor's been moved to this class.
+10/15/2011
+----------
 
-Created CAAT.SpriteImage to substitute CAAT.CompoundImage and serve as images
-info backend for CAAT.Actor.  CAAT.CompoundImage is kept for backwards compatibility
-with CAAT.ImageActor, CAAT.SpriteActor and CAAT.Button.
+Fixed a bug with bezier bounding box that wasn't including the curve's first control point. (thanks yodesoft.com)
 
-Modified GL methods to kept compatibility with new CAAT.Actor image capabilities.
+
+10/14/2011
+----------
+
+Added modelToModel coordinate system conversion method which transforms a local coordinate into another
+actor's coordinate system.
+
+
+10/13/2011
+----------
+
+Refurbished input subsystem. Now handles drag on buttons.
+Added scene pause methods.
+Added line definition values on Shape and Star actors.
+Added visual debugging info, regarding FPS and total/active actors on screen. (CAAT.DEBUG=1 before
+director creation).
+
+
+09/26/2011
+----------
+
+Added ShapePath to allow for rectangle shaped path segments.
+Added methods on Path* and bezier curves to manage individual control points.
+Added bounding box support for Path* objects.
+Changed Path.closePath function semantics.
+Fixed some code on rectangle, point, bezier, path.
+
+
+09/14/2011
+---------
+
+Added shift/control/alt modifiers to key events.
+added missing getAnchorPercent method to actorCSS.js file. [important bug]
+Fixed CSS renderer zOrder error.
+
+
+09/11/2011
+----------
+
+Added function setInteractive method to PathActor.
+Added function showBoundingBox : function(show, color) to PathActor.
+
+
+09/04/2011
+----------
+
+Removed bug on ActorCSS.setFillStyle().
+Deprecated methods setFilled and setOutlined form CAAT.StarActor.
+
+
+09/01/2011
+----------
+
+Added new layout module. Now simply lays out a collection of actors in a row into a given container.
+Will upgrade accordingly as needed.
+
+
+31/08/2011
+----------
+
+deprecated method centerOn and renamed it to centerAt.
+
+
+16/08/2011
+----------
+
+Added x and y attributes to mouseEvent object instances.
+
+
+15/08/2011
+----------
+
+Added a exception to be thrown whenever an Actor is to be added to any given parent and already has
+ a registered parent.
+Added on actor destroy event, a call to be removed from its parent (in case there's one). Now, discardable
+ and out-of-frame-time elements can be succesfully reused with the previous condition. To remove an
+ actor means a linear search to identify in which position is stored.
+
+
+13/08/2011
+----------
+
+Fixed director canvas resize on RESIZE_PROPORTIONAL. WebGL renderer did not show properly after resizing.
+Changed directorGL perspective from frustum to orthogonal.
+
+
+11/08/2011
+----------
+
+Updated tutorials to fit new CAAT needs.
+Updated demo/examples to fit new CAAT needs. Suggested place to look for examples is CAAT-Samples repo.
+
+Fixed some scene transition bugs (when scaling).
+
+
+10/08/2011
+----------
+
+Added on ActorCSS needed control to set a canvas as background image. It is not recommended
+ since the performance drops very significantly.
+
+Fixed director's RESIZE_PROPORTIONAL option. There was a bug that prevented scenes from
+ affine transforming properly with respect to the director instance.
+
+Separated CAAT compilation results into two separate versions one for Canvas/GL and the
+ other for CSS. This is needed since the Actor,ActorContainer,Scene and Director classes
+ have been rewritten to support a CSS renderer. Since there's a extend function invoked
+ inside closures to extend prototypes I'm unable to decide on the fly whether to extends
+ an object (Actor) or another version with the same interface (ActorCSS).
+
+
+09/08/2011
+----------
+
+Actor.cacheAsBitmap method change: now returns this instead of an HTMLCanvasElement.
+
+Set ScaleBehavior and RotateBehavior setAnchor method to define an exact pixel distance
+anchor. Use this method when setting percentages via setValues method call is hard to do,
+for example, when anchoring around a parent.
+
 
 08/06/2011
 ----------
@@ -41,113 +158,18 @@ setValues of these Behavior accept two more parameters to define the transformat
 
 In general, there should not be mixed different types of director renderers per page.
 
-09/08/2011
+
+07/30/2011
 ----------
 
-Actor.cacheAsBitmap method change: now returns this instead of an HTMLCanvasElement.
+CAAT.Actor: added the capability to draw images on its background. This feature
+ will substitute the need of using CAAT.ImageActor, CAAT.Image and CAAT.Button.
 
-Set ScaleBehavior and RotateBehavior setAnchor method to define an exact pixel distance
-anchor. Use this method when setting percentages via setValues method call is hard to do,
-for example, when anchoring around a parent.
+CAAT.CompoundImage: added method to automatically change sprite index on time
+ basis. Basically logic from SpriteActor's been moved to this class.
 
-10/08/2011
-----------
+Created CAAT.SpriteImage to substitute CAAT.CompoundImage and serve as images
+info backend for CAAT.Actor.  CAAT.CompoundImage is kept for backwards compatibility
+with CAAT.ImageActor, CAAT.SpriteActor and CAAT.Button.
 
-Added on ActorCSS needed control to set a canvas as background image. It is not recommended
- since the performance drops very significantly.
-
-Fixed director's RESIZE_PROPORTIONAL option. There was a bug that prevented scenes from
- affine transforming properly with respect to the director instance.
-
-Separated CAAT compilation results into two separate versions one for Canvas/GL and the
- other for CSS. This is needed since the Actor,ActorContainer,Scene and Director classes
- have been rewritten to support a CSS renderer. Since there's a extend function invoked
- inside closures to extend prototypes I'm unable to decide on the fly whether to extends
- an object (Actor) or another version with the same interface (ActorCSS).
-
-11/08/2011
-----------
-
-Updated tutorials to fit new CAAT needs.
-Updated demo/examples to fit new CAAT needs. Suggested place to look for examples is CAAT-Samples repo.
-
-Fixed some scene transition bugs (when scaling).
-
-13/08/2011
-----------
-
-Fixed director canvas resize on RESIZE_PROPORTIONAL. WebGL renderer did not show properly after resizing.
-Changed directorGL perspective from frustum to orthogonal.
-
-15/08/2011
-----------
-
-Added a exception to be thrown whenever an Actor is to be added to any given parent and already has
- a registered parent.
-Added on actor destroy event, a call to be removed from its parent (in case there's one). Now, discardable
- and out-of-frame-time elements can be succesfully reused with the previous condition. To remove an
- actor means a linear search to identify in which position is stored.
-
-16/08/2011
-----------
-
-Added x and y attributes to mouseEvent object instances.
-
-31/08/2011
-----------
-
-deprecated method centerOn and renamed it to centerAt.
-
-01/09/2011
-----------
-
-Added new layout module. Now simply lays out a collection of actors in a row into a given container.
-Will upgrade accordingly as needed.
-
-04/09/2011
-----------
-
-Removed bug on ActorCSS.setFillStyle().
-Deprecated methods setFilled and setOutlined form CAAT.StarActor.
-
-09/11/2011
-----------
-
-Added function setInteractive method to PathActor.
-Added function showBoundingBox : function(show, color) to PathActor.
-
-09/14/2011
----------
-
-Added shift/control/alt modifiers to key events.
-added missing getAnchorPercent method to actorCSS.js file. [important bug]
-Fixed CSS renderer zOrder error.
-
-09/26/2011
-----------
-
-Added ShapePath to allow for rectangle shaped path segments.
-Added methods on Path* and bezier curves to manage individual control points.
-Added bounding box support for Path* objects.
-Changed Path.closePath function semantics.
-Fixed some code on rectangle, point, bezier, path.
-
-10/13/2011
-----------
-
-Refurbished input subsystem. Now handles drag on buttons.
-Added scene pause methods.
-Added line definition values on Shape and Star actors.
-Added visual debugging info, regarding FPS and total/active actors on screen. (CAAT.DEBUG=1 before
-director creation).
-
-10/14/2011
-----------
-
-Added modelToModel coordinate system conversion method which transforms a local coordinate into another
-actor's coordinate system.
-
-10/15/2011
-----------
-
-Fixed a bug with bezier bounding box that wasn't including the curve's first control point. (thanks yodesoft.com)
+Modified GL methods to kept compatibility with new CAAT.Actor image capabilities.
