@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - CAAT.GenericBehavior</title>
+		<title>JsDoc Reference - CAAT.B2DCircularBody</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -195,17 +195,15 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Actor.html">CAAT.Actor</a></li>
 	
-	<li><a href="../symbols/CAAT.Actor.html">CAAT.Actor</a></li>
-	
 	<li><a href="../symbols/CAAT.ActorContainer.html">CAAT.ActorContainer</a></li>
-	
-	<li><a href="../symbols/CAAT.ActorContainer.html">CAAT.ActorContainer</a></li>
-	
-	<li><a href="../symbols/CAAT.AlphaBehavior.html">CAAT.AlphaBehavior</a></li>
 	
 	<li><a href="../symbols/CAAT.AudioManager.html">CAAT.AudioManager</a></li>
 	
-	<li><a href="../symbols/CAAT.Behavior.html">CAAT.Behavior</a></li>
+	<li><a href="../symbols/CAAT.B2DBodyActor.html">CAAT.B2DBodyActor</a></li>
+	
+	<li><a href="../symbols/CAAT.B2DCircularBody.html">CAAT.B2DCircularBody</a></li>
+	
+	<li><a href="../symbols/CAAT.B2DPolygonBody.html">CAAT.B2DPolygonBody</a></li>
 	
 	<li><a href="../symbols/CAAT.Bezier.html">CAAT.Bezier</a></li>
 	
@@ -219,17 +217,11 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.CompoundImage.html">CAAT.CompoundImage</a></li>
 	
-	<li><a href="../symbols/CAAT.ContainerBehavior.html">CAAT.ContainerBehavior</a></li>
-	
 	<li><a href="../symbols/CAAT.Curve.html">CAAT.Curve</a></li>
 	
 	<li><a href="../symbols/CAAT.CurvePath.html">CAAT.CurvePath</a></li>
 	
 	<li><a href="../symbols/CAAT.Director.html">CAAT.Director</a></li>
-	
-	<li><a href="../symbols/CAAT.Director.html">CAAT.Director</a></li>
-	
-	<li><a href="../symbols/CAAT.GenericBehavior.html">CAAT.GenericBehavior</a></li>
 	
 	<li><a href="../symbols/CAAT.IMActor.html">CAAT.IMActor</a></li>
 	
@@ -265,23 +257,17 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.modules.LocalStorage.html">CAAT.modules.LocalStorage</a></li>
 	
+	<li><a href="../symbols/CAAT.MouseEvent.html">CAAT.MouseEvent</a></li>
+	
 	<li><a href="../symbols/CAAT.Path.html">CAAT.Path</a></li>
 	
 	<li><a href="../symbols/CAAT.PathActor.html">CAAT.PathActor</a></li>
-	
-	<li><a href="../symbols/CAAT.PathBehavior.html">CAAT.PathBehavior</a></li>
 	
 	<li><a href="../symbols/CAAT.PathSegment.html">CAAT.PathSegment</a></li>
 	
 	<li><a href="../symbols/CAAT.Point.html">CAAT.Point</a></li>
 	
 	<li><a href="../symbols/CAAT.Rectangle.html">CAAT.Rectangle</a></li>
-	
-	<li><a href="../symbols/CAAT.RotateBehavior.html">CAAT.RotateBehavior</a></li>
-	
-	<li><a href="../symbols/CAAT.ScaleBehavior.html">CAAT.ScaleBehavior</a></li>
-	
-	<li><a href="../symbols/CAAT.Scene.html">CAAT.Scene</a></li>
 	
 	<li><a href="../symbols/CAAT.Scene.html">CAAT.Scene</a></li>
 	
@@ -308,26 +294,24 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class CAAT.GenericBehavior
+				Class CAAT.B2DCircularBody
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
 			<p class="description">
 				
-				<br />Extends
-					<a href="../symbols/CAAT.Behavior.html">CAAT.Behavior</a>.<br />
 				
 			
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_behaviour_behaviour.js.html">behaviour.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_box2d_box2Dactor.js.html">box2Dactor.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class CAAT.GenericBehavior.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class CAAT.B2DCircularBody.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -340,11 +324,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/CAAT.GenericBehavior.html#constructor">CAAT.GenericBehavior</a></b>()
+								<b><a href="../symbols/CAAT.B2DCircularBody.html#constructor">CAAT.B2DCircularBody</a></b>()
 							</div>
-							<div class="description"><p>
-A generic behavior is supposed to be extended to create new behaviors when the out-of-the-box
-ones are not sufficient.</div>
+							<div class="description">Create a box2d circular body.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -353,12 +335,40 @@ ones are not sufficient.</div>
 
 <!-- ============================== properties summary ===================== -->
 			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class CAAT.B2DCircularBody.">
+					<caption>Field Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.B2DCircularBody.html#radius">radius</a></b>
+								</div>
+								<div class="description">Default radius.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
 
 <!-- ============================== methods summary ======================== -->
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class CAAT.GenericBehavior.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class CAAT.B2DCircularBody.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -371,18 +381,36 @@ ones are not sufficient.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.GenericBehavior.html#setForTime">setForTime</a></b>(time, actor)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.B2DCircularBody.html#animate">animate</a></b>(director, time)
 								</div>
-								<div class="description">Sets the target objects property to the corresponding value for the given time.</div>
+								<div class="description">Method override to get position and rotation angle from box2d body.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.GenericBehavior.html#setValues">setValues</a></b>(start, end, target, property, callback)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.B2DCircularBody.html#createBody">createBody</a></b>(world, bodyData)
 								</div>
-								<div class="description">Defines the values to apply this behavior.</div>
+								<div class="description">Create a box2d body and link it to this CAAT.Actor instance.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.B2DCircularBody.html#getCenter">getCenter</a></b>()
+								</div>
+								<div class="description">Get this box2d body's center position on screen.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.B2DCircularBody.html#getDistanceJointLocalAnchor">getDistanceJointLocalAnchor</a></b>()
+								</div>
+								<div class="description">Get a given dinstance joint's local anchor position.</div>
 							</td>
 						</tr>
 					
@@ -390,10 +418,6 @@ ones are not sufficient.</div>
 				</table>
 				
 				
-				
-				<dl class="inheritsList">
-				<dt>Methods borrowed from class <a href="../symbols/CAAT.Behavior.html">CAAT.Behavior</a>: </dt><dd><a href="../symbols/CAAT.Behavior.html#addListener">addListener</a>, <a href="../symbols/CAAT.Behavior.html#apply">apply</a>, <a href="../symbols/CAAT.Behavior.html#emptyListenerList">emptyListenerList</a>, <a href="../symbols/CAAT.Behavior.html#fireBehaviorAppliedEvent">fireBehaviorAppliedEvent</a>, <a href="../symbols/CAAT.Behavior.html#fireBehaviorExpiredEvent">fireBehaviorExpiredEvent</a>, <a href="../symbols/CAAT.Behavior.html#getDuration">getDuration</a>, <a href="../symbols/CAAT.Behavior.html#getStartTime">getStartTime</a>, <a href="../symbols/CAAT.Behavior.html#initialize">initialize</a>, <a href="../symbols/CAAT.Behavior.html#isBehaviorInTime">isBehaviorInTime</a>, <a href="../symbols/CAAT.Behavior.html#normalizeTime">normalizeTime</a>, <a href="../symbols/CAAT.Behavior.html#setCycle">setCycle</a>, <a href="../symbols/CAAT.Behavior.html#setDefaultInterpolator">setDefaultInterpolator</a>, <a href="../symbols/CAAT.Behavior.html#setExpired">setExpired</a>, <a href="../symbols/CAAT.Behavior.html#setFrameTime">setFrameTime</a>, <a href="../symbols/CAAT.Behavior.html#setId">setId</a>, <a href="../symbols/CAAT.Behavior.html#setInterpolator">setInterpolator</a>, <a href="../symbols/CAAT.Behavior.html#setOutOfFrameTime">setOutOfFrameTime</a>, <a href="../symbols/CAAT.Behavior.html#setPingPong">setPingPong</a></dd>
-				</dl>
 				
 			
 <!-- ============================== events summary ======================== -->
@@ -407,39 +431,11 @@ ones are not sufficient.</div>
 				</div>
 				
 				<div class="fixedFont">
-						<b>CAAT.GenericBehavior</b>()
+						<b>CAAT.B2DCircularBody</b>()
 				</div>
 				
 				<div class="description">
-					<p>
-A generic behavior is supposed to be extended to create new behaviors when the out-of-the-box
-ones are not sufficient. It applies the behavior result to a given target object in two ways:
-
-<ol>
-<li>defining the property parameter: the toolkit will perform target_object[property]= calculated_value_for_time.
-<li>defining a callback function. Sometimes setting of a property is not enough. In example,
-for a give property in a DOM element, it is needed to set object.style['left']= '70px';
-With the property approach, you won't be able to add de 'px' suffix to the value, and hence won't
-work correctly. The function callback will allow to take control by receiving as parameters the
-target object, and the calculated value to apply by the behavior for the given time.
-</ol>
-
-<p>
-For example, this code will move a dom element from 0 to 400 px on x during 1 second:
-<code>
-<p>
-var enterBehavior= new CAAT.GenericBehavior(). <br>
-&nbsp;&nbsp;setFrameTime( scene.time, 1000 ). <br>
-&nbsp;&nbsp;setValues( <br>
-&nbsp;&nbsp;&nbsp;&nbsp;0, <br>
-&nbsp;&nbsp;&nbsp;&nbsp;400, <br>
-&nbsp;&nbsp;&nbsp;&nbsp;domElement, <br>
-&nbsp;&nbsp;&nbsp;&nbsp;null, <br>
-&nbsp;&nbsp;&nbsp;&nbsp;function( currentValue, target ) { <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;target.style['left']= currentValue+'px'; <br>
-&nbsp;&nbsp;&nbsp;&nbsp;} <br>
-&nbsp;&nbsp;); <br>
-</code>
+					Create a box2d circular body.
 					
 				</div>
 				
@@ -459,6 +455,33 @@ var enterBehavior= new CAAT.GenericBehavior(). <br>
 
 <!-- ============================== field details ========================== -->		
 			
+				<div class="sectionTitle">
+					Field Detail
+				</div>
+				
+					<a name="radius"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>radius</b>
+					
+					</div>
+					<div class="description">
+						Default radius.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					
+				
+			
 
 <!-- ============================== method details ========================= -->		
 			
@@ -466,16 +489,15 @@ var enterBehavior= new CAAT.GenericBehavior(). <br>
 					Method Detail
 				</div>
 				
-					<a name="setForTime"> </a>
+					<a name="animate"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>setForTime</b>(time, actor)
+					<b>animate</b>(director, time)
 					
 					</div>
 					<div class="description">
-						Sets the target objects property to the corresponding value for the given time.
-If a callback function is defined, it is called as well.
+						Method override to get position and rotation angle from box2d body.
 						
 						
 					</div>
@@ -487,16 +509,16 @@ If a callback function is defined, it is called as well.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
+									<b>director</b>
+									
+								</dt>
+								<dd>{CAAT.Director}</dd>
+							
+								<dt>
 									<b>time</b>
 									
 								</dt>
-								<dd>{number} the scene time to apply the behavior at.</dd>
-							
-								<dt>
-									<b>actor</b>
-									
-								</dt>
-								<dd>{CAAT.Actor} a CAAT.Actor object instance.</dd>
+								<dd>{number}</dd>
 							
 							</dl>
 						
@@ -509,15 +531,15 @@ If a callback function is defined, it is called as well.
 
 					<hr />
 				
-					<a name="setValues"> </a>
+					<a name="createBody"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>setValues</b>(start, end, target, property, callback)
+					<b>createBody</b>(world, bodyData)
 					
 					</div>
 					<div class="description">
-						Defines the values to apply this behavior.
+						Create a box2d body and link it to this CAAT.Actor instance.
 						
 						
 					</div>
@@ -529,36 +551,69 @@ If a callback function is defined, it is called as well.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>start</b>
+									<b>world</b>
 									
 								</dt>
-								<dd>{number} initial behavior value.</dd>
+								<dd>{Box2D.Dynamics.b2World} a Box2D world instance</dd>
 							
 								<dt>
-									<b>end</b>
+									<b>bodyData</b>
 									
 								</dt>
-								<dd>{number} final behavior value.</dd>
-							
-								<dt>
-									<b>target</b>
-									
-								</dt>
-								<dd>{object} an object. Usually a CAAT.Actor.</dd>
-							
-								<dt>
-									<b>property</b>
-									
-								</dt>
-								<dd>{string} target object's property to set value to.</dd>
-							
-								<dt>
-									<b>callback</b>
-									
-								</dt>
-								<dd>{function} a function of the form <code>function( target, value )</code>.</dd>
+								<dd>{object}</dd>
 							
 							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getCenter"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getCenter</b>()
+					
+					</div>
+					<div class="description">
+						Get this box2d body's center position on screen.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getDistanceJointLocalAnchor"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getDistanceJointLocalAnchor</b>()
+					
+					</div>
+					<div class="description">
+						Get a given dinstance joint's local anchor position.
+For a circular body, it is its center.
+						
+						
+					</div>
+					
+					
+					
 						
 						
 						
@@ -581,7 +636,7 @@ If a callback function is defined, it is called as well.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Fri Sep 16 2011 02:41:06 GMT+0200 (CEST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Oct 20 2011 00:20:55 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>

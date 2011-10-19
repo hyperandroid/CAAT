@@ -285,14 +285,26 @@
             actor.__Dock_mouseExit=  actor.mouseExit;
             actor.__Dock_mouseMove=  actor.mouseMove;
 
+            /**
+             * @ignore
+             * @param mouseEvent
+             */
             actor.mouseEnter= function(mouseEvent) {
                 me.actorMouseEnter(mouseEvent);
                 mouseEvent.source.__Dock_mouseEnter(mouseEvent);
             };
+            /**
+             * @ignore
+             * @param mouseEvent
+             */
             actor.mouseExit= function(mouseEvent) {
                 me.actorMouseExit(mouseEvent);
                 mouseEvent.source.__Dock_mouseExit(mouseEvent);
             };
+            /**
+             * @ignore
+             * @param mouseEvent
+             */
             actor.mouseMove= function(mouseEvent) {
                 me.actorPointed( mouseEvent.point.x, mouseEvent.point.y, mouseEvent.source );
                 mouseEvent.source.__Dock_mouseMove(mouseEvent);

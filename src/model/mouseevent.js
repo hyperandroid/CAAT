@@ -11,7 +11,13 @@
  *  + cancelBubling
  *
  **/
+
+
 (function() {
+    /**
+     * This function creates a mouse event that represents a touch or mouse event.
+     * @constructor
+     */
 	CAAT.MouseEvent = function() {
 		this.point= new CAAT.Point(0,0,0);
 		this.screenPoint= new CAAT.Point(0,0,0);
@@ -112,10 +118,18 @@ CAAT.FPS=           60;
  */
 CAAT.windowResizeListeners= [];
 
+/**
+ * Register an object as resize callback.
+ * @param f {object{windowResized(width{number},height{number})}}
+ */
 CAAT.registerResizeListener= function(f) {
     CAAT.windowResizeListeners.push(f);
 };
 
+/**
+ * Unregister a resize listener.
+ * @param director {CAAT.Director}
+ */
 CAAT.unregisterResizeListener= function(director) {
     for( var i=0; i<CAAT.windowResizeListeners.length; i++ ) {
         if ( director===CAAT.windowResizeListeners[i] ) {
@@ -143,6 +157,9 @@ CAAT.CONTROL_KEY=  17;
 CAAT.ALT_KEY=      18;
 CAAT.ENTER_KEY=    13;
 
+/**
+ * Event modifiers.
+ */
 CAAT.KEY_MODIFIERS= {
     alt:        false,
     control:    false,
@@ -150,6 +167,7 @@ CAAT.KEY_MODIFIERS= {
 };
 
 /**
+ * Enable window level input events, keys and redimension.
  */
 CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
 
@@ -222,6 +240,9 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
         false);
 };
 
+/**
+ * Polyfill for requestAnimationFrame.
+ */
 window.requestAnimFrame = (function(){
   return  window.requestAnimationFrame       ||
           window.webkitRequestAnimationFrame ||
@@ -233,6 +254,11 @@ window.requestAnimFrame = (function(){
           };
 })();
 
+/**
+ * Main animation loop entry point.
+ * @param fps {number} desired fps. This parameter makes no sense unless requestAnimationFrame function
+ * is not present in the system.
+ */
 CAAT.loop= function(fps) {
     if (CAAT.renderEnabled) {
         return;
@@ -254,6 +280,9 @@ CAAT.loop= function(fps) {
     }
 }
 
+/**
+ * Make a frame for each director instance present in the system.
+ */
 CAAT.renderFrame= function() {
     var t= new Date().getTime();
     for( var i=0, l=CAAT.director.length; i<l; i++ ) {
@@ -265,6 +294,10 @@ CAAT.renderFrame= function() {
     window.requestAnimFrame(CAAT.renderFrame, 0 )
 }
 
+/**
+ * Set browser cursor. The preferred method for cursor change is this method.
+ * @param cursor
+ */
 CAAT.setCursor= function(cursor) {
     if ( navigator.browser!=='iOS' ) {
         document.body.style.cursor= cursor;
@@ -310,38 +343,4 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
         }, true);
     }
 
-/*
-    //----------- Test for Accelerometer enabled functions.
-    try {
-        if (window.DeviceMotionEvent != undefined) {
-            CAAT.prevOnDeviceMotion= window.ondevicemotion;
-            window.ondevicemotion = CAAT.onDeviceMotion= function(e) {
-                CAAT.accelerationIncludingGravity= {
-                    x: e.accelerationIncludingGravity.x,
-                    y: e.accelerationIncludingGravity.y,
-                    z: e.accelerationIncludingGravity.z
-                };
-
-                if ( e.rotationRate ) {
-                    CAAT.rotationRate= {
-                        alpha : e.rotationRate.alpha,
-                        beta  : e.rotationRate.beta,
-                        gamma : e.rotationRate.gamma
-                    };
-                }
-            }
-        }
-
-        window.addEventListener( 'deviceorientation', function(e) {
-            CAAT.rotationRate= {
-                alpha : e.alpha,
-                beta  : e.beta,
-                gamma : e.gamma
-            }
-        });
-    } catch (e) {
-        alert(e);
-        // eat it.
-    }
-*/
 })();

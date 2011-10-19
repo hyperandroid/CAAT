@@ -6,215 +6,225 @@
 	.REGX {color: #339;}
 	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
 	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/**
-<span class='line'>  2</span>  * Extend a prototype with another to form a classical OOP inheritance procedure.
+<span class='line'>  2</span>  * See LICENSE file.
 <span class='line'>  3</span>  *
-<span class='line'>  4</span>  * @param subc Prototype to define the base class
-<span class='line'>  5</span>  * @param superc Prototype to be extended (derived class).
-<span class='line'>  6</span>  */</span><span class="WHIT">
-<span class='line'>  7</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="NAME">subc</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">superc</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>  8</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">subcp</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">subc.prototype</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>  9</span> 
-<span class='line'> 10</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">F</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 11</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 12</span> </span><span class="WHIT">    </span><span class="NAME">F.prototype</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">superc.prototype</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 13</span> 
-<span class='line'> 14</span> </span><span class="WHIT">    </span><span class="NAME">subc.prototype</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">F</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">       </span><span class="COMM">// chain prototypes.</span><span class="WHIT">
-<span class='line'> 15</span> </span><span class="WHIT">    </span><span class="NAME">subc.superclass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">superc.prototype</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 16</span> </span><span class="WHIT">    </span><span class="NAME">subc.prototype.constructor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">subc</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 17</span> 
-<span class='line'> 18</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">superc.prototype.constructor</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">Object.prototype.constructor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 19</span> </span><span class="WHIT">        </span><span class="NAME">superc.prototype.constructor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">superc</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 20</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 21</span> 
-<span class='line'> 22</span> </span><span class="WHIT">    </span><span class="COMM">// los metodos de superc, que no esten en esta clase, crear un metodo que</span><span class="WHIT">
-<span class='line'> 23</span> </span><span class="WHIT">    </span><span class="COMM">// llama al metodo de superc.</span><span class="WHIT">
-<span class='line'> 24</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">method</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">subcp</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 25</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">subcp.hasOwnProperty</span><span class="PUNC">(</span><span class="NAME">method</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 26</span> </span><span class="WHIT">            </span><span class="NAME">subc.prototype</span><span class="PUNC">[</span><span class="NAME">method</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">subcp</span><span class="PUNC">[</span><span class="NAME">method</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 27</span> </span><span class="COMM">/*
-<span class='line'> 28</span>             // tenemos en super un metodo con igual nombre.
-<span class='line'> 29</span>             if ( superc.prototype[method]) {
-<span class='line'> 30</span>                 subc.prototype[method]= (function(fn, fnsuper) {
-<span class='line'> 31</span>                     return function() {
-<span class='line'> 32</span>                         var prevMethod= this.__super;
-<span class='line'> 33</span> 
-<span class='line'> 34</span>                         this.__super= fnsuper;
-<span class='line'> 35</span> 
-<span class='line'> 36</span>                         var retValue= fn.apply(
-<span class='line'> 37</span>                                 this,
-<span class='line'> 38</span>                                 Array.prototype.slice.call(arguments) );
-<span class='line'> 39</span> 
-<span class='line'> 40</span>                         this.__super= prevMethod;
-<span class='line'> 41</span> 
-<span class='line'> 42</span>                         return retValue;
-<span class='line'> 43</span>                     };
-<span class='line'> 44</span>                 })(subc.prototype[method], superc.prototype[method]);
-<span class='line'> 45</span>             }
-<span class='line'> 46</span>             */</span><span class="WHIT">
-<span class='line'> 47</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 48</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 49</span> </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 50</span> 
-<span class='line'> 51</span> </span><span class="COMM">/**
-<span class='line'> 52</span>  * Proxy an object or wrap/decorate a function.
-<span class='line'> 53</span>  *
-<span class='line'> 54</span>  * @param object
-<span class='line'> 55</span>  * @param preMethod
-<span class='line'> 56</span>  * @param postMethod
-<span class='line'> 57</span>  * @param errorMethod
-<span class='line'> 58</span>  */</span><span class="WHIT">
-<span class='line'> 59</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">proxy</span><span class="PUNC">(</span><span class="NAME">object</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">preMethod</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">postMethod</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">errorMethod</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>  4</span>  * Extend a prototype with another to form a classical OOP inheritance procedure.
+<span class='line'>  5</span>  *
+<span class='line'>  6</span>  * @param subc {object} Prototype to define the base class
+<span class='line'>  7</span>  * @param superc {object} Prototype to be extended (derived class).
+<span class='line'>  8</span>  */</span><span class="WHIT">
+<span class='line'>  9</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="NAME">subc</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">superc</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 10</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">subcp</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">subc.prototype</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 11</span> 
+<span class='line'> 12</span> </span><span class="WHIT">    </span><span class="COMM">// Class pattern.</span><span class="WHIT">
+<span class='line'> 13</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">F</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 14</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 15</span> </span><span class="WHIT">    </span><span class="NAME">F.prototype</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">superc.prototype</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 16</span> 
+<span class='line'> 17</span> </span><span class="WHIT">    </span><span class="NAME">subc.prototype</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">F</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">       </span><span class="COMM">// chain prototypes.</span><span class="WHIT">
+<span class='line'> 18</span> </span><span class="WHIT">    </span><span class="NAME">subc.superclass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">superc.prototype</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 19</span> </span><span class="WHIT">    </span><span class="NAME">subc.prototype.constructor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">subc</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 20</span> 
+<span class='line'> 21</span> </span><span class="WHIT">    </span><span class="COMM">// Reset constructor. See Object Oriented Javascript for an in-depth explanation of this.</span><span class="WHIT">
+<span class='line'> 22</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">superc.prototype.constructor</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">Object.prototype.constructor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 23</span> </span><span class="WHIT">        </span><span class="NAME">superc.prototype.constructor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">superc</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 24</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 25</span> 
+<span class='line'> 26</span> </span><span class="WHIT">    </span><span class="COMM">// los metodos de superc, que no esten en esta clase, crear un metodo que</span><span class="WHIT">
+<span class='line'> 27</span> </span><span class="WHIT">    </span><span class="COMM">// llama al metodo de superc.</span><span class="WHIT">
+<span class='line'> 28</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">method</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">subcp</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 29</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">subcp.hasOwnProperty</span><span class="PUNC">(</span><span class="NAME">method</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 30</span> </span><span class="WHIT">            </span><span class="NAME">subc.prototype</span><span class="PUNC">[</span><span class="NAME">method</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">subcp</span><span class="PUNC">[</span><span class="NAME">method</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 31</span> 
+<span class='line'> 32</span> </span><span class="COMM">/**
+<span class='line'> 33</span>  * Sintactic sugar to add a __super attribute on every overriden method.
+<span class='line'> 34</span>  * Despite comvenient, it slows things down by 5fps.
+<span class='line'> 35</span>  *
+<span class='line'> 36</span>  * Uncomment at your own risk.
+<span class='line'> 37</span>  *
+<span class='line'> 38</span>             // tenemos en super un metodo con igual nombre.
+<span class='line'> 39</span>             if ( superc.prototype[method]) {
+<span class='line'> 40</span>                 subc.prototype[method]= (function(fn, fnsuper) {
+<span class='line'> 41</span>                     return function() {
+<span class='line'> 42</span>                         var prevMethod= this.__super;
+<span class='line'> 43</span> 
+<span class='line'> 44</span>                         this.__super= fnsuper;
+<span class='line'> 45</span> 
+<span class='line'> 46</span>                         var retValue= fn.apply(
+<span class='line'> 47</span>                                 this,
+<span class='line'> 48</span>                                 Array.prototype.slice.call(arguments) );
+<span class='line'> 49</span> 
+<span class='line'> 50</span>                         this.__super= prevMethod;
+<span class='line'> 51</span> 
+<span class='line'> 52</span>                         return retValue;
+<span class='line'> 53</span>                     };
+<span class='line'> 54</span>                 })(subc.prototype[method], superc.prototype[method]);
+<span class='line'> 55</span>             }
+<span class='line'> 56</span>             */</span><span class="WHIT">
+<span class='line'> 57</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 58</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 59</span> </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'> 60</span> 
-<span class='line'> 61</span> </span><span class="WHIT">    </span><span class="COMM">// proxy a function</span><span class="WHIT">
-<span class='line'> 62</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">object</span><span class="PUNC">===</span><span class="STRN">'function'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 63</span> 
-<span class='line'> 64</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">object.__isProxy</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 65</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">object</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 66</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 67</span> 
-<span class='line'> 68</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">fn</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 69</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">proxyfn</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 70</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">preMethod</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 71</span> </span><span class="WHIT">                    </span><span class="NAME">preMethod</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 72</span> </span><span class="WHIT">                            </span><span class="NAME">fn</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">fn</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'> 73</span> </span><span class="WHIT">                            </span><span class="NAME">arguments</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 74</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 75</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">retValue</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 76</span> </span><span class="WHIT">                </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 77</span> </span><span class="WHIT">                    </span><span class="COMM">// apply original function call with itself as context</span><span class="WHIT">
-<span class='line'> 78</span> </span><span class="WHIT">                    </span><span class="NAME">retValue</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">fn.apply</span><span class="PUNC">(</span><span class="NAME">fn</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 79</span> </span><span class="WHIT">                    </span><span class="COMM">// everything went right on function call, then call</span><span class="WHIT">
-<span class='line'> 80</span> </span><span class="WHIT">                    </span><span class="COMM">// post-method hook if present</span><span class="WHIT">
-<span class='line'> 81</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">postMethod</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 82</span> </span><span class="WHIT">                        </span><span class="NAME">postMethod</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 83</span> </span><span class="WHIT">                                </span><span class="NAME">fn</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">fn</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'> 84</span> </span><span class="WHIT">                                </span><span class="NAME">arguments</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 85</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 86</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 87</span> </span><span class="WHIT">                    </span><span class="COMM">// an exeception was thrown, call exception-method hook if</span><span class="WHIT">
-<span class='line'> 88</span> </span><span class="WHIT">                    </span><span class="COMM">// present and return its result as execution result.</span><span class="WHIT">
-<span class='line'> 89</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">errorMethod</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 90</span> </span><span class="WHIT">                        </span><span class="NAME">retValue</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">errorMethod</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 91</span> </span><span class="WHIT">                            </span><span class="NAME">fn</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">fn</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'> 92</span> </span><span class="WHIT">                            </span><span class="NAME">arguments</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'> 93</span> </span><span class="WHIT">                            </span><span class="NAME">exception</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">e</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 94</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 95</span> </span><span class="WHIT">                        </span><span class="COMM">// since there's no error hook, just throw the exception</span><span class="WHIT">
-<span class='line'> 96</span> </span><span class="WHIT">                        </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="NAME">e</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 97</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 98</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 99</span> 
-<span class='line'>100</span> </span><span class="WHIT">                </span><span class="COMM">// return original returned value to the caller.</span><span class="WHIT">
-<span class='line'>101</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">retValue</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>102</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>103</span> </span><span class="WHIT">            </span><span class="NAME">proxyfn.__isProxy</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>104</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">proxyfn</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>105</span> 
-<span class='line'>106</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="NAME">object</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>107</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>108</span> 
-<span class='line'>109</span> </span><span class="WHIT">    </span><span class="COMM">/**
-<span class='line'>110</span>      * If not a function then only non privitive objects can be proxied.
-<span class='line'>111</span>      * If it is a previously created proxy, return the proxy itself.
-<span class='line'>112</span>      */</span><span class="WHIT">
-<span class='line'>113</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">object</span><span class="PUNC">===</span><span class="STRN">'object'</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
-<span class='line'>114</span> </span><span class="WHIT">            </span><span class="NAME">object.constructor</span><span class="PUNC">===</span><span class="NAME">Array</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
-<span class='line'>115</span> </span><span class="WHIT">            </span><span class="NAME">object.constructor</span><span class="PUNC">===</span><span class="NAME">String</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
-<span class='line'>116</span> </span><span class="WHIT">            </span><span class="NAME">object.__isProxy</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>117</span> 
-<span class='line'>118</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">object</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>119</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>120</span> 
-<span class='line'>121</span> </span><span class="WHIT">    </span><span class="COMM">// Our proxy object class.</span><span class="WHIT">
-<span class='line'>122</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">cproxy</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>123</span> </span><span class="WHIT">    </span><span class="COMM">// A new proxy instance.</span><span class="WHIT">
-<span class='line'>124</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">proxy</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">cproxy</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>125</span> </span><span class="WHIT">    </span><span class="COMM">// hold the proxied object as member. Needed to assign proper</span><span class="WHIT">
-<span class='line'>126</span> </span><span class="WHIT">    </span><span class="COMM">// context on proxy method call.</span><span class="WHIT">
-<span class='line'>127</span> </span><span class="WHIT">    </span><span class="NAME">proxy.__object</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">object</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>128</span> </span><span class="WHIT">    </span><span class="NAME">proxy.__isProxy</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>129</span> 
-<span class='line'>130</span> </span><span class="WHIT">    </span><span class="COMM">// For every element in the object to be proxied</span><span class="WHIT">
-<span class='line'>131</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">method</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">object</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>132</span> </span><span class="WHIT">        </span><span class="COMM">// only function members</span><span class="WHIT">
-<span class='line'>133</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">object</span><span class="PUNC">[</span><span class="NAME">method</span><span class="PUNC">]</span><span class="PUNC">===</span><span class="STRN">'function'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>134</span> </span><span class="WHIT">            </span><span class="COMM">// add to the proxy object a method of equal signature to the</span><span class="WHIT">
-<span class='line'>135</span> </span><span class="WHIT">            </span><span class="COMM">// method present at the object to be proxied.</span><span class="WHIT">
-<span class='line'>136</span> </span><span class="WHIT">            </span><span class="COMM">// cache references of object, function and function name.</span><span class="WHIT">
-<span class='line'>137</span> </span><span class="WHIT">            </span><span class="NAME">proxy</span><span class="PUNC">[</span><span class="NAME">method</span><span class="PUNC">]</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">proxy</span><span class="PUNC">,</span><span class="NAME">fn</span><span class="PUNC">,</span><span class="NAME">method</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>138</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>139</span> </span><span class="WHIT">                    </span><span class="COMM">// call pre-method hook if present.</span><span class="WHIT">
-<span class='line'>140</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">preMethod</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>141</span> </span><span class="WHIT">                        </span><span class="NAME">preMethod</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>142</span> </span><span class="WHIT">                                </span><span class="NAME">object</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NAME">proxy.__object</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>143</span> </span><span class="WHIT">                                </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NAME">method</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>144</span> </span><span class="WHIT">                                </span><span class="NAME">arguments</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>145</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>146</span> </span><span class="WHIT">                    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">retValue</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>147</span> </span><span class="WHIT">                    </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>148</span> </span><span class="WHIT">                        </span><span class="COMM">// apply original object call with proxied object as</span><span class="WHIT">
-<span class='line'>149</span> </span><span class="WHIT">                        </span><span class="COMM">// function context.</span><span class="WHIT">
-<span class='line'>150</span> </span><span class="WHIT">                        </span><span class="NAME">retValue</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">fn.apply</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">proxy.__object</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>151</span> </span><span class="WHIT">                        </span><span class="COMM">// everything went right on function call, the call</span><span class="WHIT">
-<span class='line'>152</span> </span><span class="WHIT">                        </span><span class="COMM">// post-method hook if present</span><span class="WHIT">
-<span class='line'>153</span> </span><span class="WHIT">                        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">postMethod</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>154</span> </span><span class="WHIT">                            </span><span class="NAME">postMethod</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>155</span> </span><span class="WHIT">                                    </span><span class="NAME">object</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NAME">proxy.__object</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>156</span> </span><span class="WHIT">                                    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NAME">method</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>157</span> </span><span class="WHIT">                                    </span><span class="NAME">arguments</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>158</span> </span><span class="WHIT">                        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>159</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>160</span> </span><span class="WHIT">                        </span><span class="COMM">// an exeception was thrown, call exception-method hook if</span><span class="WHIT">
-<span class='line'>161</span> </span><span class="WHIT">                        </span><span class="COMM">// present and return its result as execution result.</span><span class="WHIT">
-<span class='line'>162</span> </span><span class="WHIT">                        </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">errorMethod</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>163</span> </span><span class="WHIT">                            </span><span class="NAME">retValue</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">errorMethod</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>164</span> </span><span class="WHIT">                                </span><span class="NAME">object</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NAME">proxy.__object</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>165</span> </span><span class="WHIT">                                </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NAME">method</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>166</span> </span><span class="WHIT">                                </span><span class="NAME">arguments</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>167</span> </span><span class="WHIT">                                </span><span class="NAME">exception</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">e</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>168</span> </span><span class="WHIT">                        </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>169</span> </span><span class="WHIT">                            </span><span class="COMM">// since there's no error hook, just throw the exception</span><span class="WHIT">
-<span class='line'>170</span> </span><span class="WHIT">                            </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="NAME">e</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>171</span> </span><span class="WHIT">                        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>172</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>173</span> 
-<span class='line'>174</span> </span><span class="WHIT">                    </span><span class="COMM">// return original returned value to the caller.</span><span class="WHIT">
-<span class='line'>175</span> </span><span class="WHIT">                    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">retValue</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>176</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>177</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="NAME">proxy</span><span class="PUNC">,</span><span class="NAME">object</span><span class="PUNC">[</span><span class="NAME">method</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="NAME">method</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>178</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>179</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>180</span> 
-<span class='line'>181</span> </span><span class="WHIT">    </span><span class="COMM">// return our newly created and populated of functions proxy object.</span><span class="WHIT">
-<span class='line'>182</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">proxy</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>183</span> </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>184</span> 
-<span class='line'>185</span> </span><span class="COMM">/** proxy sample usage
-<span class='line'>186</span> 
-<span class='line'>187</span> var c0= new Meetup.C1(5);
-<span class='line'>188</span> 
-<span class='line'>189</span> var cp1= proxy(
-<span class='line'>190</span>         c1,
-<span class='line'>191</span>         function() {
-<span class='line'>192</span>             console.log('pre method on object: ',
-<span class='line'>193</span>                     arguments[0].object.toString(),
-<span class='line'>194</span>                     arguments[0].method,
-<span class='line'>195</span>                     arguments[0].arguments );
-<span class='line'>196</span>         },
-<span class='line'>197</span>         function() {
-<span class='line'>198</span>             console.log('post method on object: ',
-<span class='line'>199</span>                     arguments[0].object.toString(),
-<span class='line'>200</span>                     arguments[0].method,
-<span class='line'>201</span>                     arguments[0].arguments );
-<span class='line'>202</span> 
-<span class='line'>203</span>         },
-<span class='line'>204</span>         function() {
-<span class='line'>205</span>             console.log('exception on object: ',
-<span class='line'>206</span>                     arguments[0].object.toString(),
-<span class='line'>207</span>                     arguments[0].method,
-<span class='line'>208</span>                     arguments[0].arguments,
-<span class='line'>209</span>                     arguments[0].exception);
-<span class='line'>210</span> 
-<span class='line'>211</span>             return -1;
-<span class='line'>212</span>         });
-<span class='line'>213</span>  **/</span></pre></body></html>
+<span class='line'> 61</span> </span><span class="COMM">/**
+<span class='line'> 62</span>  * Dynamic Proxy for an object or wrap/decorate a function.
+<span class='line'> 63</span>  *
+<span class='line'> 64</span>  * @param object
+<span class='line'> 65</span>  * @param preMethod
+<span class='line'> 66</span>  * @param postMethod
+<span class='line'> 67</span>  * @param errorMethod
+<span class='line'> 68</span>  */</span><span class="WHIT">
+<span class='line'> 69</span> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">proxy</span><span class="PUNC">(</span><span class="NAME">object</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">preMethod</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">postMethod</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">errorMethod</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 70</span> 
+<span class='line'> 71</span> </span><span class="WHIT">    </span><span class="COMM">// proxy a function</span><span class="WHIT">
+<span class='line'> 72</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">object</span><span class="PUNC">===</span><span class="STRN">'function'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 73</span> 
+<span class='line'> 74</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">object.__isProxy</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 75</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">object</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 76</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 77</span> 
+<span class='line'> 78</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">fn</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 79</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">proxyfn</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 80</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">preMethod</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 81</span> </span><span class="WHIT">                    </span><span class="NAME">preMethod</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="WHIT">                            </span><span class="NAME">fn</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">fn</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 83</span> </span><span class="WHIT">                            </span><span class="NAME">arguments</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 84</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 85</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">retValue</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 86</span> </span><span class="WHIT">                </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 87</span> </span><span class="WHIT">                    </span><span class="COMM">// apply original function call with itself as context</span><span class="WHIT">
+<span class='line'> 88</span> </span><span class="WHIT">                    </span><span class="NAME">retValue</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">fn.apply</span><span class="PUNC">(</span><span class="NAME">fn</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 89</span> </span><span class="WHIT">                    </span><span class="COMM">// everything went right on function call, then call</span><span class="WHIT">
+<span class='line'> 90</span> </span><span class="WHIT">                    </span><span class="COMM">// post-method hook if present</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">postMethod</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="WHIT">                        </span><span class="NAME">postMethod</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 93</span> </span><span class="WHIT">                                </span><span class="NAME">fn</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">fn</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 94</span> </span><span class="WHIT">                                </span><span class="NAME">arguments</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 95</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 96</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 97</span> </span><span class="WHIT">                    </span><span class="COMM">// an exeception was thrown, call exception-method hook if</span><span class="WHIT">
+<span class='line'> 98</span> </span><span class="WHIT">                    </span><span class="COMM">// present and return its result as execution result.</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">errorMethod</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>100</span> </span><span class="WHIT">                        </span><span class="NAME">retValue</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">errorMethod</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>101</span> </span><span class="WHIT">                            </span><span class="NAME">fn</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">fn</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>102</span> </span><span class="WHIT">                            </span><span class="NAME">arguments</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>103</span> </span><span class="WHIT">                            </span><span class="NAME">exception</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">e</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>104</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>105</span> </span><span class="WHIT">                        </span><span class="COMM">// since there's no error hook, just throw the exception</span><span class="WHIT">
+<span class='line'>106</span> </span><span class="WHIT">                        </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="NAME">e</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>107</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>108</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>109</span> 
+<span class='line'>110</span> </span><span class="WHIT">                </span><span class="COMM">// return original returned value to the caller.</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">retValue</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>112</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>113</span> </span><span class="WHIT">            </span><span class="NAME">proxyfn.__isProxy</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>114</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">proxyfn</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>115</span> 
+<span class='line'>116</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="NAME">object</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>117</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>118</span> 
+<span class='line'>119</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>120</span>      * If not a function then only non privitive objects can be proxied.
+<span class='line'>121</span>      * If it is a previously created proxy, return the proxy itself.
+<span class='line'>122</span>      */</span><span class="WHIT">
+<span class='line'>123</span> </span><span class="WHIT">    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">object</span><span class="PUNC">===</span><span class="STRN">'object'</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'>124</span> </span><span class="WHIT">            </span><span class="NAME">object.constructor</span><span class="PUNC">===</span><span class="NAME">Array</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">            </span><span class="NAME">object.constructor</span><span class="PUNC">===</span><span class="NAME">String</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">            </span><span class="NAME">object.__isProxy</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>127</span> 
+<span class='line'>128</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">object</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>129</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>130</span> 
+<span class='line'>131</span> </span><span class="WHIT">    </span><span class="COMM">// Our proxy object class.</span><span class="WHIT">
+<span class='line'>132</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">cproxy</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>133</span> </span><span class="WHIT">    </span><span class="COMM">// A new proxy instance.</span><span class="WHIT">
+<span class='line'>134</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">proxy</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">cproxy</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>135</span> </span><span class="WHIT">    </span><span class="COMM">// hold the proxied object as member. Needed to assign proper</span><span class="WHIT">
+<span class='line'>136</span> </span><span class="WHIT">    </span><span class="COMM">// context on proxy method call.</span><span class="WHIT">
+<span class='line'>137</span> </span><span class="WHIT">    </span><span class="NAME">proxy.__object</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">object</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>138</span> </span><span class="WHIT">    </span><span class="NAME">proxy.__isProxy</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>139</span> 
+<span class='line'>140</span> </span><span class="WHIT">    </span><span class="COMM">// For every element in the object to be proxied</span><span class="WHIT">
+<span class='line'>141</span> </span><span class="WHIT">    </span><span class="KEYW">for</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">method</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">object</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>142</span> </span><span class="WHIT">        </span><span class="COMM">// only function members</span><span class="WHIT">
+<span class='line'>143</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">object</span><span class="PUNC">[</span><span class="NAME">method</span><span class="PUNC">]</span><span class="PUNC">===</span><span class="STRN">'function'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>144</span> </span><span class="WHIT">            </span><span class="COMM">// add to the proxy object a method of equal signature to the</span><span class="WHIT">
+<span class='line'>145</span> </span><span class="WHIT">            </span><span class="COMM">// method present at the object to be proxied.</span><span class="WHIT">
+<span class='line'>146</span> </span><span class="WHIT">            </span><span class="COMM">// cache references of object, function and function name.</span><span class="WHIT">
+<span class='line'>147</span> </span><span class="WHIT">            </span><span class="NAME">proxy</span><span class="PUNC">[</span><span class="NAME">method</span><span class="PUNC">]</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">proxy</span><span class="PUNC">,</span><span class="NAME">fn</span><span class="PUNC">,</span><span class="NAME">method</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>148</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>149</span> </span><span class="WHIT">                    </span><span class="COMM">// call pre-method hook if present.</span><span class="WHIT">
+<span class='line'>150</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">preMethod</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>151</span> </span><span class="WHIT">                        </span><span class="NAME">preMethod</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>152</span> </span><span class="WHIT">                                </span><span class="NAME">object</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NAME">proxy.__object</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>153</span> </span><span class="WHIT">                                </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NAME">method</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>154</span> </span><span class="WHIT">                                </span><span class="NAME">arguments</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>155</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>156</span> </span><span class="WHIT">                    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">retValue</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>157</span> </span><span class="WHIT">                    </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>158</span> </span><span class="WHIT">                        </span><span class="COMM">// apply original object call with proxied object as</span><span class="WHIT">
+<span class='line'>159</span> </span><span class="WHIT">                        </span><span class="COMM">// function context.</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="WHIT">                        </span><span class="NAME">retValue</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">fn.apply</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">proxy.__object</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">arguments</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>161</span> </span><span class="WHIT">                        </span><span class="COMM">// everything went right on function call, the call</span><span class="WHIT">
+<span class='line'>162</span> </span><span class="WHIT">                        </span><span class="COMM">// post-method hook if present</span><span class="WHIT">
+<span class='line'>163</span> </span><span class="WHIT">                        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">postMethod</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>164</span> </span><span class="WHIT">                            </span><span class="NAME">postMethod</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>165</span> </span><span class="WHIT">                                    </span><span class="NAME">object</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NAME">proxy.__object</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>166</span> </span><span class="WHIT">                                    </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NAME">method</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>167</span> </span><span class="WHIT">                                    </span><span class="NAME">arguments</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>168</span> </span><span class="WHIT">                        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>169</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>170</span> </span><span class="WHIT">                        </span><span class="COMM">// an exeception was thrown, call exception-method hook if</span><span class="WHIT">
+<span class='line'>171</span> </span><span class="WHIT">                        </span><span class="COMM">// present and return its result as execution result.</span><span class="WHIT">
+<span class='line'>172</span> </span><span class="WHIT">                        </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">errorMethod</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>173</span> </span><span class="WHIT">                            </span><span class="NAME">retValue</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">errorMethod</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>174</span> </span><span class="WHIT">                                </span><span class="NAME">object</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NAME">proxy.__object</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>175</span> </span><span class="WHIT">                                </span><span class="NAME">method</span><span class="PUNC">:</span><span class="WHIT">     </span><span class="NAME">method</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>176</span> </span><span class="WHIT">                                </span><span class="NAME">arguments</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>177</span> </span><span class="WHIT">                                </span><span class="NAME">exception</span><span class="PUNC">:</span><span class="WHIT">  </span><span class="NAME">e</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>178</span> </span><span class="WHIT">                        </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>179</span> </span><span class="WHIT">                            </span><span class="COMM">// since there's no error hook, just throw the exception</span><span class="WHIT">
+<span class='line'>180</span> </span><span class="WHIT">                            </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="NAME">e</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>181</span> </span><span class="WHIT">                        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>182</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>183</span> 
+<span class='line'>184</span> </span><span class="WHIT">                    </span><span class="COMM">// return original returned value to the caller.</span><span class="WHIT">
+<span class='line'>185</span> </span><span class="WHIT">                    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">retValue</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>186</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>187</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="NAME">proxy</span><span class="PUNC">,</span><span class="NAME">object</span><span class="PUNC">[</span><span class="NAME">method</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="NAME">method</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>188</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>189</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>190</span> 
+<span class='line'>191</span> </span><span class="WHIT">    </span><span class="COMM">// return our newly created and populated of functions proxy object.</span><span class="WHIT">
+<span class='line'>192</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">proxy</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>193</span> </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>194</span> 
+<span class='line'>195</span> </span><span class="COMM">/** proxy sample usage
+<span class='line'>196</span> 
+<span class='line'>197</span> var c0= new Meetup.C1(5);
+<span class='line'>198</span> 
+<span class='line'>199</span> var cp1= proxy(
+<span class='line'>200</span>         c1,
+<span class='line'>201</span>         function() {
+<span class='line'>202</span>             console.log('pre method on object: ',
+<span class='line'>203</span>                     arguments[0].object.toString(),
+<span class='line'>204</span>                     arguments[0].method,
+<span class='line'>205</span>                     arguments[0].arguments );
+<span class='line'>206</span>         },
+<span class='line'>207</span>         function() {
+<span class='line'>208</span>             console.log('post method on object: ',
+<span class='line'>209</span>                     arguments[0].object.toString(),
+<span class='line'>210</span>                     arguments[0].method,
+<span class='line'>211</span>                     arguments[0].arguments );
+<span class='line'>212</span> 
+<span class='line'>213</span>         },
+<span class='line'>214</span>         function() {
+<span class='line'>215</span>             console.log('exception on object: ',
+<span class='line'>216</span>                     arguments[0].object.toString(),
+<span class='line'>217</span>                     arguments[0].method,
+<span class='line'>218</span>                     arguments[0].arguments,
+<span class='line'>219</span>                     arguments[0].exception);
+<span class='line'>220</span> 
+<span class='line'>221</span>             return -1;
+<span class='line'>222</span>         });
+<span class='line'>223</span>  **/</span></pre></body></html>

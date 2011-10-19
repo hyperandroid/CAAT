@@ -6,7 +6,7 @@
 	.REGX {color: #339;}
 	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
 	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/**
-<span class='line'>  2</span>  * @author  Hyperandroid  ||  http://hyperandroid.com/
+<span class='line'>  2</span>  * See LICENSE file.
 <span class='line'>  3</span>  *
 <span class='line'>  4</span>  * In this file we'll be adding every useful Actor that is specific for certain purpose.
 <span class='line'>  5</span>  *
@@ -292,27 +292,39 @@
 <span class='line'>285</span> </span><span class="WHIT">            </span><span class="NAME">actor.__Dock_mouseExit</span><span class="PUNC">=</span><span class="WHIT">  </span><span class="NAME">actor.mouseExit</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>286</span> </span><span class="WHIT">            </span><span class="NAME">actor.__Dock_mouseMove</span><span class="PUNC">=</span><span class="WHIT">  </span><span class="NAME">actor.mouseMove</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>287</span> 
-<span class='line'>288</span> </span><span class="WHIT">            </span><span class="NAME">actor.mouseEnter</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>289</span> </span><span class="WHIT">                </span><span class="NAME">me.actorMouseEnter</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>290</span> </span><span class="WHIT">                </span><span class="NAME">mouseEvent.source.__Dock_mouseEnter</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>291</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>292</span> </span><span class="WHIT">            </span><span class="NAME">actor.mouseExit</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>293</span> </span><span class="WHIT">                </span><span class="NAME">me.actorMouseExit</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>294</span> </span><span class="WHIT">                </span><span class="NAME">mouseEvent.source.__Dock_mouseExit</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>288</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>289</span>              * @ignore
+<span class='line'>290</span>              * @param mouseEvent
+<span class='line'>291</span>              */</span><span class="WHIT">
+<span class='line'>292</span> </span><span class="WHIT">            </span><span class="NAME">actor.mouseEnter</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>293</span> </span><span class="WHIT">                </span><span class="NAME">me.actorMouseEnter</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>294</span> </span><span class="WHIT">                </span><span class="NAME">mouseEvent.source.__Dock_mouseEnter</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>295</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>296</span> </span><span class="WHIT">            </span><span class="NAME">actor.mouseMove</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>297</span> </span><span class="WHIT">                </span><span class="NAME">me.actorPointed</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">mouseEvent.point.x</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">mouseEvent.point.y</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">mouseEvent.source</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>298</span> </span><span class="WHIT">                </span><span class="NAME">mouseEvent.source.__Dock_mouseMove</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>299</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>300</span> 
-<span class='line'>301</span> </span><span class="WHIT">            </span><span class="NAME">actor.width</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.minSize</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>302</span> </span><span class="WHIT">            </span><span class="NAME">actor.height</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.minSize</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>303</span> 
-<span class='line'>304</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">CAAT.Dock.superclass.addChild.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="NAME">actor</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>305</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>306</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>307</span> 
-<span class='line'>308</span> </span><span class="WHIT">    </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.Dock</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">CAAT.ActorContainer</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>309</span> 
-<span class='line'>310</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>311</span> </span></pre></body></html>
+<span class='line'>296</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>297</span>              * @ignore
+<span class='line'>298</span>              * @param mouseEvent
+<span class='line'>299</span>              */</span><span class="WHIT">
+<span class='line'>300</span> </span><span class="WHIT">            </span><span class="NAME">actor.mouseExit</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>301</span> </span><span class="WHIT">                </span><span class="NAME">me.actorMouseExit</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>302</span> </span><span class="WHIT">                </span><span class="NAME">mouseEvent.source.__Dock_mouseExit</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>303</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>304</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>305</span>              * @ignore
+<span class='line'>306</span>              * @param mouseEvent
+<span class='line'>307</span>              */</span><span class="WHIT">
+<span class='line'>308</span> </span><span class="WHIT">            </span><span class="NAME">actor.mouseMove</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>309</span> </span><span class="WHIT">                </span><span class="NAME">me.actorPointed</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">mouseEvent.point.x</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">mouseEvent.point.y</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">mouseEvent.source</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>310</span> </span><span class="WHIT">                </span><span class="NAME">mouseEvent.source.__Dock_mouseMove</span><span class="PUNC">(</span><span class="NAME">mouseEvent</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>311</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>312</span> 
+<span class='line'>313</span> </span><span class="WHIT">            </span><span class="NAME">actor.width</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.minSize</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>314</span> </span><span class="WHIT">            </span><span class="NAME">actor.height</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.minSize</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>315</span> 
+<span class='line'>316</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">CAAT.Dock.superclass.addChild.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="NAME">actor</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>317</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>318</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>319</span> 
+<span class='line'>320</span> </span><span class="WHIT">    </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.Dock</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">CAAT.ActorContainer</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>321</span> 
+<span class='line'>322</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>323</span> </span></pre></body></html>

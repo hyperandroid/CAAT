@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - CAAT.Behavior</title>
+		<title>JsDoc Reference - CAAT.Matrix3</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -195,17 +195,15 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Actor.html">CAAT.Actor</a></li>
 	
-	<li><a href="../symbols/CAAT.Actor.html">CAAT.Actor</a></li>
-	
 	<li><a href="../symbols/CAAT.ActorContainer.html">CAAT.ActorContainer</a></li>
-	
-	<li><a href="../symbols/CAAT.ActorContainer.html">CAAT.ActorContainer</a></li>
-	
-	<li><a href="../symbols/CAAT.AlphaBehavior.html">CAAT.AlphaBehavior</a></li>
 	
 	<li><a href="../symbols/CAAT.AudioManager.html">CAAT.AudioManager</a></li>
 	
-	<li><a href="../symbols/CAAT.Behavior.html">CAAT.Behavior</a></li>
+	<li><a href="../symbols/CAAT.B2DBodyActor.html">CAAT.B2DBodyActor</a></li>
+	
+	<li><a href="../symbols/CAAT.B2DCircularBody.html">CAAT.B2DCircularBody</a></li>
+	
+	<li><a href="../symbols/CAAT.B2DPolygonBody.html">CAAT.B2DPolygonBody</a></li>
 	
 	<li><a href="../symbols/CAAT.Bezier.html">CAAT.Bezier</a></li>
 	
@@ -219,17 +217,11 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.CompoundImage.html">CAAT.CompoundImage</a></li>
 	
-	<li><a href="../symbols/CAAT.ContainerBehavior.html">CAAT.ContainerBehavior</a></li>
-	
 	<li><a href="../symbols/CAAT.Curve.html">CAAT.Curve</a></li>
 	
 	<li><a href="../symbols/CAAT.CurvePath.html">CAAT.CurvePath</a></li>
 	
 	<li><a href="../symbols/CAAT.Director.html">CAAT.Director</a></li>
-	
-	<li><a href="../symbols/CAAT.Director.html">CAAT.Director</a></li>
-	
-	<li><a href="../symbols/CAAT.GenericBehavior.html">CAAT.GenericBehavior</a></li>
 	
 	<li><a href="../symbols/CAAT.IMActor.html">CAAT.IMActor</a></li>
 	
@@ -265,23 +257,17 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.modules.LocalStorage.html">CAAT.modules.LocalStorage</a></li>
 	
+	<li><a href="../symbols/CAAT.MouseEvent.html">CAAT.MouseEvent</a></li>
+	
 	<li><a href="../symbols/CAAT.Path.html">CAAT.Path</a></li>
 	
 	<li><a href="../symbols/CAAT.PathActor.html">CAAT.PathActor</a></li>
-	
-	<li><a href="../symbols/CAAT.PathBehavior.html">CAAT.PathBehavior</a></li>
 	
 	<li><a href="../symbols/CAAT.PathSegment.html">CAAT.PathSegment</a></li>
 	
 	<li><a href="../symbols/CAAT.Point.html">CAAT.Point</a></li>
 	
 	<li><a href="../symbols/CAAT.Rectangle.html">CAAT.Rectangle</a></li>
-	
-	<li><a href="../symbols/CAAT.RotateBehavior.html">CAAT.RotateBehavior</a></li>
-	
-	<li><a href="../symbols/CAAT.ScaleBehavior.html">CAAT.ScaleBehavior</a></li>
-	
-	<li><a href="../symbols/CAAT.Scene.html">CAAT.Scene</a></li>
 	
 	<li><a href="../symbols/CAAT.Scene.html">CAAT.Scene</a></li>
 	
@@ -308,7 +294,7 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class CAAT.Behavior
+				Class CAAT.Matrix3
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -319,13 +305,13 @@ ul.inheritsList
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_behaviour_behaviour.js.html">behaviour.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_math_affinetransform2D.js.html">affinetransform2D.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class CAAT.Behavior.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class CAAT.Matrix3.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -338,9 +324,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/CAAT.Behavior.html#constructor">CAAT.Behavior</a></b>()
+								<b><a href="../symbols/CAAT.Matrix3.html#constructor">CAAT.Matrix3</a></b>()
 							</div>
-							<div class="description">Behavior base class.</div>
+							<div class="description">Define a matrix to hold three dimensional affine transforms.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -354,7 +340,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class CAAT.Behavior.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class CAAT.Matrix3.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -367,52 +353,25 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#addListener">addListener</a></b>(behaviorListener)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#calculateDeterminant">calculateDeterminant</a></b>()
 								</div>
-								<div class="description">Adds an observer to this behavior.</div>
+								<div class="description">Calculate this matrix's determinant.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#apply">apply</a></b>(time, actor)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#copy">copy</a></b>(m)
 								</div>
-								<div class="description">This method must no be called directly.</div>
+								<div class="description">Copy a given matrix values into this one's.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#emptyListenerList">emptyListenerList</a></b>()
-								</div>
-								<div class="description">Remove all registered listeners to the behavior.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#fireBehaviorAppliedEvent">fireBehaviorAppliedEvent</a></b>(actor, time, normalizedTime, value)
-								</div>
-								<div class="description">Notify observers about behavior being applied.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#fireBehaviorExpiredEvent">fireBehaviorExpiredEvent</a></b>(actor, time)
-								</div>
-								<div class="description">Notify observers about expiration event.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#getDuration">getDuration</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#flatten">flatten</a></b>()
 								</div>
 								<div class="description"></div>
 							</td>
@@ -421,7 +380,43 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#getStartTime">getStartTime</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#getClone">getClone</a></b>()
+								</div>
+								<div class="description">Creates a new matrix being a copy of this matrix.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#getInverse">getInverse</a></b>()
+								</div>
+								<div class="description">Return a new matrix which is this matrix's inverse matrix.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#getMatrix">getMatrix</a></b>()
+								</div>
+								<div class="description">Get this matri'x internal representation data.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#identity">identity</a></b>()
+								</div>
+								<div class="description">Set this matrix to identity matrix.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#initialize">initialize</a></b>(x0, y0, z0, x1, y1, z1, x2, y2, z2)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -430,7 +425,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#initialize">initialize</a></b>(overrides)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#initWithMatrix">initWithMatrix</a></b>(matrixData)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -439,88 +434,79 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#isBehaviorInTime">isBehaviorInTime</a></b>(time, actor)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#multiply">multiply</a></b>(n)
 								</div>
-								<div class="description">Chekcs whether the behaviour is in scene time.</div>
+								<div class="description">Multiplies this matrix by another matrix.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#normalizeTime">normalizeTime</a></b>(time)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#multiplyScalar">multiplyScalar</a></b>(scalar)
 								</div>
-								<div class="description">Convert scene time into something more manageable for the behavior.</div>
+								<div class="description">Multiply this matrix by a scalar.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#setCycle">setCycle</a></b>(bool)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#premultiply">premultiply</a></b>(m)
 								</div>
-								<div class="description">Sets the behavior to cycle, ie apply forever.</div>
+								<div class="description">Pre multiplies this matrix by a given matrix.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#setDefaultInterpolator">setDefaultInterpolator</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#rotate">rotate</a></b>(xy, xz, yz)
 								</div>
-								<div class="description">Sets the default interpolator to a linear ramp, that is, behavior will be applied linearly.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;private&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#setExpired">setExpired</a></b>(actor, time)
-								</div>
-								<div class="description">Private.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;private&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#setForTime">setForTime</a></b>(actor, time)
-								</div>
-								<div class="description">This method must be overriden for every Behavior breed.</div>
+								<div class="description">Creates a matrix to represent arbitrary rotations around the given planes.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#setFrameTime">setFrameTime</a></b>(startTime, duration)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#rotateModelView">rotateModelView</a></b>(xy, xz, yz)
 								</div>
-								<div class="description">Sets behavior start time and duration.</div>
+								<div class="description">Set this matrix as the rotation matrix around the given axes.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#setId">setId</a></b>(id)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#rotateXY">rotateXY</a></b>(xy)
 								</div>
-								<div class="description">Sets this behavior id.</div>
+								<div class="description">Multiply this matrix by a created rotation matrix.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#setInterpolator">setInterpolator</a></b>(interpolator)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#rotateXZ">rotateXZ</a></b>(xz)
 								</div>
-								<div class="description">Changes behavior default interpolator to another instance of CAAT.Interpolator.</div>
+								<div class="description">Multiply this matrix by a created rotation matrix.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#setOutOfFrameTime">setOutOfFrameTime</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#rotateYZ">rotateYZ</a></b>(yz)
+								</div>
+								<div class="description">Multiply this matrix by a created rotation matrix.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#scale">scale</a></b>(sx, sy, sz)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -529,9 +515,45 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.html#setPingPong">setPingPong</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#setRotate">setRotate</a></b>(xy, xz, yz)
 								</div>
-								<div class="description">Sets default interpolator to be linear from 0.</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#setScale">setScale</a></b>(sx, sy, sz)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#setTranslate">setTranslate</a></b>(x, y, z)
+								</div>
+								<div class="description">Set this matrix translation values to be the given parameters.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#transformCoord">transformCoord</a></b>(point)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Matrix3.html#translate">translate</a></b>(x, y, z)
+								</div>
+								<div class="description">Create a translation matrix.</div>
 							</td>
 						</tr>
 					
@@ -552,47 +574,11 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>CAAT.Behavior</b>()
+						<b>CAAT.Matrix3</b>()
 				</div>
 				
 				<div class="description">
-					Behavior base class.
-
-<p>
-A behavior is defined by a frame time (behavior duration) and a behavior application function called interpolator.
-In its default form, a behaviour is applied linearly, that is, the same amount of behavior is applied every same
-time interval.
-<p>
-A concrete Behavior, a rotateBehavior in example, will change a concrete Actor's rotationAngle during the specified
-period.
-<p>
-A behavior is guaranteed to notify (if any observer is registered) on behavior expiration.
-<p>
-A behavior can keep an unlimited observers. Observers are objects of the form:
-<p>
-<code>
-{
-     behaviorExpired : function( behavior, time, actor);
-     behaviorApplied : function( behavior, time, normalizedTime, actor, value);
-}
-</code>
-<p>
-<strong>behaviorExpired</strong>: function( behavior, time, actor). This method will be called for any registered observer when
-the scene time is greater than behavior's startTime+duration. This method will be called regardless of the time
-granurality.
-<p>
-<strong>behaviorApplied</strong> : function( behavior, time, normalizedTime, actor, value). This method will be called once per
-frame while the behavior is not expired and is in frame time (behavior startTime>=scene time). This method can be
-called multiple times.
-<p>
-Every behavior is applied to a concrete Actor.
-Every actor must at least define an start and end value. The behavior will set start-value at behaviorStartTime and
-is guaranteed to apply end-value when scene time= behaviorStartTime+behaviorDuration.
-<p>
-You can set behaviors to apply forever that is cyclically. When a behavior is cycle=true, won't notify
-behaviorExpired to its registered observers.
-<p>
-Other Behaviors simply must supply with the method <code>setForTime(time, actor)</code> overriden.
+					Define a matrix to hold three dimensional affine transforms.
 					
 				</div>
 				
@@ -619,216 +605,15 @@ Other Behaviors simply must supply with the method <code>setForTime(time, actor)
 					Method Detail
 				</div>
 				
-					<a name="addListener"> </a>
+					<a name="calculateDeterminant"> </a>
 					<div class="fixedFont">
 					
-					
-					<b>addListener</b>(behaviorListener)
+					<span class="light">{number}</span>
+					<b>calculateDeterminant</b>()
 					
 					</div>
 					<div class="description">
-						Adds an observer to this behavior.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>behaviorListener</b>
-									
-								</dt>
-								<dd>an observer instance.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="apply"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>apply</b>(time, actor)
-					
-					</div>
-					<div class="description">
-						This method must no be called directly.
-The director loop will call this method in orther to apply actor behaviors.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>time</b>
-									
-								</dt>
-								<dd>the scene time the behaviro is being applied at.</dd>
-							
-								<dt>
-									<b>actor</b>
-									
-								</dt>
-								<dd>a CAAT.Actor instance the behavior is being applied to.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="emptyListenerList"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>emptyListenerList</b>()
-					
-					</div>
-					<div class="description">
-						Remove all registered listeners to the behavior.
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="fireBehaviorAppliedEvent"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>fireBehaviorAppliedEvent</b>(actor, time, normalizedTime, value)
-					
-					</div>
-					<div class="description">
-						Notify observers about behavior being applied.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>actor</b>
-									
-								</dt>
-								<dd>a CAAT.Actor instance the behavior is being applied to.</dd>
-							
-								<dt>
-									<b>time</b>
-									
-								</dt>
-								<dd>the scene time of behavior application.</dd>
-							
-								<dt>
-									<b>normalizedTime</b>
-									
-								</dt>
-								<dd>the normalized time (0..1) considering 0 behavior start time and 1
-behaviorStartTime+behaviorDuration.</dd>
-							
-								<dt>
-									<b>value</b>
-									
-								</dt>
-								<dd>the value being set for actor properties. each behavior will supply with its own value version.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="fireBehaviorExpiredEvent"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>fireBehaviorExpiredEvent</b>(actor, time)
-					
-					</div>
-					<div class="description">
-						Notify observers about expiration event.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>actor</b>
-									
-								</dt>
-								<dd>a CAAT.Actor instance</dd>
-							
-								<dt>
-									<b>time</b>
-									
-								</dt>
-								<dd>an integer with the scene time the behavior was expired at.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="getDuration"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>getDuration</b>()
-					
-					</div>
-					<div class="description">
-						
+						Calculate this matrix's determinant.
 						
 						
 					</div>
@@ -843,7 +628,7 @@ behaviorStartTime+behaviorDuration.</dd>
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>an integer indicating the behavior duration time in ms.</dd>
+								<dd><span class="light fixedFont">{number}</span> matrix determinant.</dd>
 							
 							</dl>
 						
@@ -852,11 +637,54 @@ behaviorStartTime+behaviorDuration.</dd>
 
 					<hr />
 				
-					<a name="getStartTime"> </a>
+					<a name="copy"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>getStartTime</b>()
+					<b>copy</b>(m)
+					
+					</div>
+					<div class="description">
+						Copy a given matrix values into this one's.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>m</b>
+									
+								</dt>
+								<dd>{CAAT.Matrix} a matrix</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="flatten"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>flatten</b>()
 					
 					</div>
 					<div class="description">
@@ -872,10 +700,124 @@ behaviorStartTime+behaviorDuration.</dd>
 						
 						
 						
+						
+						
+
+					<hr />
+				
+					<a name="getClone"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/CAAT.Matrix3.html">CAAT.Matrix3</a>}</span>
+					<b>getClone</b>()
+					
+					</div>
+					<div class="description">
+						Creates a new matrix being a copy of this matrix.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>an integer indicating the behavior start time in ms..</dd>
+								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Matrix3.html">CAAT.Matrix3</a>}</span> a newly allocated matrix object.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="getInverse"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/CAAT.Matrix3.html">CAAT.Matrix3</a>}</span>
+					<b>getInverse</b>()
+					
+					</div>
+					<div class="description">
+						Return a new matrix which is this matrix's inverse matrix.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Matrix3.html">CAAT.Matrix3</a>}</span> a new matrix.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="getMatrix"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getMatrix</b>()
+					
+					</div>
+					<div class="description">
+						Get this matri'x internal representation data. The bakced structure is a 4x4 array of number.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="identity"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>identity</b>()
+					
+					</div>
+					<div class="description">
+						Set this matrix to identity matrix.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
 							
 							</dl>
 						
@@ -888,7 +830,7 @@ behaviorStartTime+behaviorDuration.</dd>
 					<div class="fixedFont">
 					
 					
-					<b>initialize</b>(overrides)
+					<b>initialize</b>(x0, y0, z0, x1, y1, z1, x2, y2, z2)
 					
 					</div>
 					<div class="description">
@@ -904,7 +846,55 @@ behaviorStartTime+behaviorDuration.</dd>
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>overrides</b>
+									<b>x0</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>y0</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>z0</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>x1</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>y1</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>z1</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>x2</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>y2</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>z2</b>
 									
 								</dt>
 								<dd></dd>
@@ -920,17 +910,15 @@ behaviorStartTime+behaviorDuration.</dd>
 
 					<hr />
 				
-					<a name="isBehaviorInTime"> </a>
+					<a name="initWithMatrix"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>isBehaviorInTime</b>(time, actor)
+					<b>initWithMatrix</b>(matrixData)
 					
 					</div>
 					<div class="description">
-						Chekcs whether the behaviour is in scene time.
-In case it gets out of scene time, and has not been tagged as expired, the behavior is expired and observers
-are notified about that fact.
+						
 						
 						
 					</div>
@@ -942,61 +930,10 @@ are notified about that fact.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>time</b>
+									<b>matrixData</b>
 									
 								</dt>
-								<dd>the scene time to check the behavior against.</dd>
-							
-								<dt>
-									<b>actor</b>
-									
-								</dt>
-								<dd>the actor the behavior is being applied to.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd>a boolean indicating whether the behavior is in scene time.</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="normalizeTime"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>normalizeTime</b>(time)
-					
-					</div>
-					<div class="description">
-						Convert scene time into something more manageable for the behavior.
-behaviorStartTime will be 0 and behaviorStartTime+behaviorDuration will be 1.
-the time parameter will be proportional to those values.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>time</b>
-									
-								</dt>
-								<dd>the scene time to be normalized. an integer.</dd>
+								<dd></dd>
 							
 							</dl>
 						
@@ -1009,15 +946,15 @@ the time parameter will be proportional to those values.
 
 					<hr />
 				
-					<a name="setCycle"> </a>
+					<a name="multiply"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>setCycle</b>(bool)
+					<b>multiply</b>(n)
 					
 					</div>
 					<div class="description">
-						Sets the behavior to cycle, ie apply forever.
+						Multiplies this matrix by another matrix.
 						
 						
 					</div>
@@ -1029,37 +966,12 @@ the time parameter will be proportional to those values.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>bool</b>
+									<b>n</b>
 									
 								</dt>
-								<dd>a boolean indicating whether the behavior is cycle.</dd>
+								<dd>{CAAT.Matrix3} a CAAT.Matrix3 object.</dd>
 							
 							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="setDefaultInterpolator"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>setDefaultInterpolator</b>()
-					
-					</div>
-					<div class="description">
-						Sets the default interpolator to a linear ramp, that is, behavior will be applied linearly.
-						
-						
-					</div>
-					
-					
-					
 						
 						
 						
@@ -1077,17 +989,15 @@ the time parameter will be proportional to those values.
 
 					<hr />
 				
-					<a name="setExpired"> </a>
-					<div class="fixedFont">&lt;private&gt; 
+					<a name="multiplyScalar"> </a>
+					<div class="fixedFont">
 					
 					
-					<b>setExpired</b>(actor, time)
+					<b>multiplyScalar</b>(scalar)
 					
 					</div>
 					<div class="description">
-						Private.
-Sets the behavior as expired.
-This method must not be called directly. It is an auxiliary method to isBehaviorInTime method.
+						Multiply this matrix by a scalar.
 						
 						
 					</div>
@@ -1099,228 +1009,12 @@ This method must not be called directly. It is an auxiliary method to isBehavior
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>actor</b>
+									<b>scalar</b>
 									
 								</dt>
-								<dd>a CAAT.Actor instance.</dd>
-							
-								<dt>
-									<b>time</b>
-									
-								</dt>
-								<dd>an integer with the scene time.</dd>
+								<dd>{number} scalar value</dd>
 							
 							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="setForTime"> </a>
-					<div class="fixedFont">&lt;private&gt; 
-					
-					
-					<b>setForTime</b>(actor, time)
-					
-					</div>
-					<div class="description">
-						This method must be overriden for every Behavior breed.
-Must not be called directly.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>actor</b>
-									
-								</dt>
-								<dd>{CAAT.Actor} a CAAT.Actor instance.</dd>
-							
-								<dt>
-									<b>time</b>
-									
-								</dt>
-								<dd>{number} an integer with the scene time.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="setFrameTime"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>setFrameTime</b>(startTime, duration)
-					
-					</div>
-					<div class="description">
-						Sets behavior start time and duration.
-Scene time will be the time of the scene the behavior actor is bound to.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>startTime</b>
-									
-								</dt>
-								<dd>{number} an integer indicating behavior start time in scene time in ms..</dd>
-							
-								<dt>
-									<b>duration</b>
-									
-								</dt>
-								<dd>{number} an integer indicating behavior duration in ms.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="setId"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>setId</b>(id)
-					
-					</div>
-					<div class="description">
-						Sets this behavior id.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>id</b>
-									
-								</dt>
-								<dd>an integer.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="setInterpolator"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>setInterpolator</b>(interpolator)
-					
-					</div>
-					<div class="description">
-						Changes behavior default interpolator to another instance of CAAT.Interpolator.
-If the behavior is not defined by CAAT.Interpolator factory methods, the interpolation function must return
-its values in the range 0..1. The behavior will only apply for such value range.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>interpolator</b>
-									
-								</dt>
-								<dd>a CAAT.Interpolator instance.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="setOutOfFrameTime"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>setOutOfFrameTime</b>()
-					
-					</div>
-					<div class="description">
-						
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="setPingPong"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>setPingPong</b>()
-					
-					</div>
-					<div class="description">
-						Sets default interpolator to be linear from 0..1 and from 1..0.
-						
-						
-					</div>
-					
-					
-					
 						
 						
 						
@@ -1330,6 +1024,581 @@ its values in the range 0..1. The behavior will only apply for such value range.
 							<dt class="heading">Returns:</dt>
 							
 								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="premultiply"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>premultiply</b>(m)
+					
+					</div>
+					<div class="description">
+						Pre multiplies this matrix by a given matrix.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>m</b>
+									
+								</dt>
+								<dd>{CAAT.Matrix3} a CAAT.Matrix3 object.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="rotate"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/CAAT.Matrix3.html">CAAT.Matrix3</a>}</span>
+					<b>rotate</b>(xy, xz, yz)
+					
+					</div>
+					<div class="description">
+						Creates a matrix to represent arbitrary rotations around the given planes.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>xy</b>
+									
+								</dt>
+								<dd>{number} radians to rotate around xy plane.</dd>
+							
+								<dt>
+									<b>xz</b>
+									
+								</dt>
+								<dd>{number} radians to rotate around xz plane.</dd>
+							
+								<dt>
+									<b>yz</b>
+									
+								</dt>
+								<dd>{number} radians to rotate around yz plane.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Matrix3.html">CAAT.Matrix3</a>}</span> a newly allocated matrix.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="rotateModelView"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>rotateModelView</b>(xy, xz, yz)
+					
+					</div>
+					<div class="description">
+						Set this matrix as the rotation matrix around the given axes.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>xy</b>
+									
+								</dt>
+								<dd>{number} radians of rotation around z axis.</dd>
+							
+								<dt>
+									<b>xz</b>
+									
+								</dt>
+								<dd>{number} radians of rotation around y axis.</dd>
+							
+								<dt>
+									<b>yz</b>
+									
+								</dt>
+								<dd>{number} radians of rotation around x axis.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="rotateXY"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>rotateXY</b>(xy)
+					
+					</div>
+					<div class="description">
+						Multiply this matrix by a created rotation matrix. The rotation matrix is set up to rotate around
+xy axis.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>xy</b>
+									
+								</dt>
+								<dd>{Number} radians to rotate.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="rotateXZ"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>rotateXZ</b>(xz)
+					
+					</div>
+					<div class="description">
+						Multiply this matrix by a created rotation matrix. The rotation matrix is set up to rotate around
+xz axis.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>xz</b>
+									
+								</dt>
+								<dd>{Number} radians to rotate.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="rotateYZ"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>rotateYZ</b>(yz)
+					
+					</div>
+					<div class="description">
+						Multiply this matrix by a created rotation matrix. The rotation matrix is set up to rotate aroind
+yz axis.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>yz</b>
+									
+								</dt>
+								<dd>{Number} radians to rotate.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="scale"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>scale</b>(sx, sy, sz)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>sx</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>sy</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>sz</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setRotate"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setRotate</b>(xy, xz, yz)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>xy</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>xz</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>yz</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setScale"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setScale</b>(sx, sy, sz)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>sx</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>sy</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>sz</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setTranslate"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setTranslate</b>(x, y, z)
+					
+					</div>
+					<div class="description">
+						Set this matrix translation values to be the given parameters.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>x</b>
+									
+								</dt>
+								<dd>{number} x component of translation point.</dd>
+							
+								<dt>
+									<b>y</b>
+									
+								</dt>
+								<dd>{number} y component of translation point.</dd>
+							
+								<dt>
+									<b>z</b>
+									
+								</dt>
+								<dd>{number} z component of translation point.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="transformCoord"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>transformCoord</b>(point)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>point</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="translate"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/CAAT.Matrix3.html">CAAT.Matrix3</a>}</span>
+					<b>translate</b>(x, y, z)
+					
+					</div>
+					<div class="description">
+						Create a translation matrix.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>x</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+								<dt>
+									<b>y</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+								<dt>
+									<b>z</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Matrix3.html">CAAT.Matrix3</a>}</span> a new matrix.</dd>
 							
 							</dl>
 						
@@ -1350,7 +1619,7 @@ its values in the range 0..1. The behavior will only apply for such value range.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Fri Sep 16 2011 02:41:06 GMT+0200 (CEST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Oct 20 2011 00:20:56 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>

@@ -644,10 +644,10 @@
 	    setBounds : function(x, y, w, h)  {
 	        //this.x= x;
             //this.y= y;
-            this.x= x|0;
-            this.y= y|0;
-	        this.width= w|0;
-	        this.height= h|0;
+            this.x= x;
+            this.y= y;
+	        this.width= w;
+	        this.height= h;
 
             this.setLocation(x,y);
             this.setSize(w,h);
@@ -665,9 +665,6 @@
          * @return this
          */
 	    setLocation : function( x, y ) {
-
-            x= x|0;
-            y= y|0;
 
             this.x= x;
             this.y= y;

@@ -195,17 +195,15 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Actor.html">CAAT.Actor</a></li>
 	
-	<li><a href="../symbols/CAAT.Actor.html">CAAT.Actor</a></li>
-	
 	<li><a href="../symbols/CAAT.ActorContainer.html">CAAT.ActorContainer</a></li>
-	
-	<li><a href="../symbols/CAAT.ActorContainer.html">CAAT.ActorContainer</a></li>
-	
-	<li><a href="../symbols/CAAT.AlphaBehavior.html">CAAT.AlphaBehavior</a></li>
 	
 	<li><a href="../symbols/CAAT.AudioManager.html">CAAT.AudioManager</a></li>
 	
-	<li><a href="../symbols/CAAT.Behavior.html">CAAT.Behavior</a></li>
+	<li><a href="../symbols/CAAT.B2DBodyActor.html">CAAT.B2DBodyActor</a></li>
+	
+	<li><a href="../symbols/CAAT.B2DCircularBody.html">CAAT.B2DCircularBody</a></li>
+	
+	<li><a href="../symbols/CAAT.B2DPolygonBody.html">CAAT.B2DPolygonBody</a></li>
 	
 	<li><a href="../symbols/CAAT.Bezier.html">CAAT.Bezier</a></li>
 	
@@ -219,17 +217,11 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.CompoundImage.html">CAAT.CompoundImage</a></li>
 	
-	<li><a href="../symbols/CAAT.ContainerBehavior.html">CAAT.ContainerBehavior</a></li>
-	
 	<li><a href="../symbols/CAAT.Curve.html">CAAT.Curve</a></li>
 	
 	<li><a href="../symbols/CAAT.CurvePath.html">CAAT.CurvePath</a></li>
 	
 	<li><a href="../symbols/CAAT.Director.html">CAAT.Director</a></li>
-	
-	<li><a href="../symbols/CAAT.Director.html">CAAT.Director</a></li>
-	
-	<li><a href="../symbols/CAAT.GenericBehavior.html">CAAT.GenericBehavior</a></li>
 	
 	<li><a href="../symbols/CAAT.IMActor.html">CAAT.IMActor</a></li>
 	
@@ -265,23 +257,17 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.modules.LocalStorage.html">CAAT.modules.LocalStorage</a></li>
 	
+	<li><a href="../symbols/CAAT.MouseEvent.html">CAAT.MouseEvent</a></li>
+	
 	<li><a href="../symbols/CAAT.Path.html">CAAT.Path</a></li>
 	
 	<li><a href="../symbols/CAAT.PathActor.html">CAAT.PathActor</a></li>
-	
-	<li><a href="../symbols/CAAT.PathBehavior.html">CAAT.PathBehavior</a></li>
 	
 	<li><a href="../symbols/CAAT.PathSegment.html">CAAT.PathSegment</a></li>
 	
 	<li><a href="../symbols/CAAT.Point.html">CAAT.Point</a></li>
 	
 	<li><a href="../symbols/CAAT.Rectangle.html">CAAT.Rectangle</a></li>
-	
-	<li><a href="../symbols/CAAT.RotateBehavior.html">CAAT.RotateBehavior</a></li>
-	
-	<li><a href="../symbols/CAAT.ScaleBehavior.html">CAAT.ScaleBehavior</a></li>
-	
-	<li><a href="../symbols/CAAT.Scene.html">CAAT.Scene</a></li>
 	
 	<li><a href="../symbols/CAAT.Scene.html">CAAT.Scene</a></li>
 	
@@ -367,6 +353,15 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.PathSegment.html#applyAsPath">applyAsPath</a></b>(ctx)
+								</div>
+								<div class="description">Draw this path using RenderingContext2D drawing primitives.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.PathSegment.html#endCurvePosition">endCurvePosition</a></b>()
 								</div>
 								<div class="description">Get path's last coordinate.</div>
@@ -448,6 +443,33 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.PathSegment.html#setParent">setParent</a></b>(parent)
+								</div>
+								<div class="description">Set a PathSegment's parent</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.PathSegment.html#setPoint">setPoint</a></b>(point, index)
+								</div>
+								<div class="description">Set a point from this path segment.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.PathSegment.html#setPoints">setPoints</a></b>(points)
+								</div>
+								<div class="description">Set this path segment's points information.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.PathSegment.html#startCurvePosition">startCurvePosition</a></b>()
 								</div>
 								<div class="description">Get path's starting coordinate.</div>
@@ -457,7 +479,16 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.PathSegment.html#updatePath">updatePath</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/CAAT.PathSegment.html#transform">transform</a></b>(matrix)
+								</div>
+								<div class="description">Transform this path with the given affinetransform matrix.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.PathSegment.html#updatePath">updatePath</a></b>(point)
 								</div>
 								<div class="description">Recalculate internal path structures.</div>
 							</td>
@@ -517,6 +548,43 @@ It is implemented by all path segment types, ie:
 				<div class="sectionTitle">
 					Method Detail
 				</div>
+				
+					<a name="applyAsPath"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>applyAsPath</b>(ctx)
+					
+					</div>
+					<div class="description">
+						Draw this path using RenderingContext2D drawing primitives.
+The intention is to set a path or pathsegment as a clipping region.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>ctx</b>
+									
+								</dt>
+								<dd>{RenderingContext2D}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
 				
 					<a name="endCurvePosition"> </a>
 					<div class="fixedFont">
@@ -853,6 +921,120 @@ Each PathSegment type can have different control points.
 
 					<hr />
 				
+					<a name="setParent"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setParent</b>(parent)
+					
+					</div>
+					<div class="description">
+						Set a PathSegment's parent
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>parent</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setPoint"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setPoint</b>(point, index)
+					
+					</div>
+					<div class="description">
+						Set a point from this path segment.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>point</b>
+									
+								</dt>
+								<dd>{CAAT.Point}</dd>
+							
+								<dt>
+									<b>index</b>
+									
+								</dt>
+								<dd>{integer} a point index.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setPoints"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setPoints</b>(points)
+					
+					</div>
+					<div class="description">
+						Set this path segment's points information.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>points</b>
+									
+								</dt>
+								<dd>{Array<CAAT.Point>}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="startCurvePosition"> </a>
 					<div class="fixedFont">
 					
@@ -885,11 +1067,47 @@ Each PathSegment type can have different control points.
 
 					<hr />
 				
+					<a name="transform"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>transform</b>(matrix)
+					
+					</div>
+					<div class="description">
+						Transform this path with the given affinetransform matrix.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>matrix</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="updatePath"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>updatePath</b>()
+					<b>updatePath</b>(point)
 					
 					</div>
 					<div class="description">
@@ -900,6 +1118,17 @@ Each PathSegment type can have different control points.
 					
 					
 					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>point</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
 						
 						
 						
@@ -922,7 +1151,7 @@ Each PathSegment type can have different control points.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.3.2 on Fri Sep 16 2011 02:41:08 GMT+0200 (CEST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Oct 20 2011 00:20:57 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>

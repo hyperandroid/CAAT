@@ -312,6 +312,7 @@
      * This class is used by CAAT.Actor to draw images. It differs from CAAT.CompoundImage in that it
      * manages the subimage change based on time and a list of animation sub-image indexes.
      * A common use of this class will be:
+     * 
      * <code>
      *     var si= new CAAT.SpriteImage().
      *          initialize( an_image_instance, rows, columns ).

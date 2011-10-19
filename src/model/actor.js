@@ -851,7 +851,7 @@
          * Private
          * This method does the needed point transformations across an Actor hierarchy to devise
          * whether the parameter point coordinate lies inside the Actor.
-         * @param point an object of the form { x: float, y: float }
+         * @param point {CAAT.Point}
          *
          * @return null if the point is not inside the Actor. The Actor otherwise.
          */
@@ -889,7 +889,7 @@
              * Mouse enter handler for default drag behavior.
              * @param mouseEvent {CAAT.MouseEvent}
              *
-             * @inner
+             * @ignore
              */
 	        this.mouseEnter= function(mouseEvent) {
 				this.ax= -1;
@@ -902,7 +902,7 @@
              * Mouse exit handler for default drag behavior.
              * @param mouseEvent {CAAT.MouseEvent}
              *
-             * @inner
+             * @ignore
              */
             this.mouseExit = function(mouseEvent) {
                 this.ax = -1;
@@ -915,7 +915,7 @@
              * Mouse move handler for default drag behavior.
              * @param mouseEvent {CAAT.MouseEvent}
              *
-             * @inner
+             * @ignore
              */
             this.mouseMove = function(mouseEvent) {
                 this.mx = mouseEvent.point.x;
@@ -926,7 +926,7 @@
              * Mouse up handler for default drag behavior.
              * @param mouseEvent {CAAT.MouseEvent}
              *
-             * @inner
+             * @ignore
              */
             this.mouseUp = function(mouseEvent) {
                 this.ax = -1;
@@ -937,7 +937,7 @@
              * Mouse drag handler for default drag behavior.
              * @param mouseEvent {CAAT.MouseEvent}
              *
-             * @inner
+             * @ignore
              */
             this.mouseDrag = function(mouseEvent) {
 
@@ -971,8 +971,6 @@
                     this.ax = mouseEvent.point.x;
                     this.ay = mouseEvent.point.y;
                 }
-
-
             };
 
             return this;
@@ -981,20 +979,20 @@
          * Default mouseClick handler.
          * Mouse click events are received after a call to mouseUp method if no dragging was in progress.
          *
-         * @param mouseEvent a CAAT.MouseEvent object instance.
+         * @param mouseEvent {CAAT.MouseEvent}
          */
 	    mouseClick : function(mouseEvent) {
 	    },
         /**
          * Default double click handler
          *
-         * @param mouseEvent a CAAT.MouseEvent object instance.
+         * @param mouseEvent {CAAT.MouseEvent}
          */
 	    mouseDblClick : function(mouseEvent) {
 	    },
         /**
          * Default mouse enter on Actor handler.
-         * @param mouseEvent a CAAT.MouseEvent object instance.
+         * @param mouseEvent {CAAT.MouseEvent}
          */
 		mouseEnter : function(mouseEvent) {
 	        this.pointed= true;
@@ -1002,7 +1000,7 @@
         /**
          * Default mouse exit on Actor handler.
          *
-         * @param mouseEvent a CAAT.MouseEvent object instance.
+         * @param mouseEvent {CAAT.MouseEvent}
          */
 		mouseExit : function(mouseEvent) {
 			this.pointed= false;
@@ -1010,28 +1008,28 @@
         /**
          * Default mouse move inside Actor handler.
          *
-         * @param mouseEvent a CAAT.MouseEvent object instance.
+         * @param mouseEvent {CAAT.MouseEvent}
          */
 		mouseMove : function(mouseEvent) {
 		},
         /**
          * default mouse press in Actor handler.
          *
-         * @param mouseEvent a CAAT.MouseEvent object instance.
+         * @param mouseEvent {CAAT.MouseEvent}
          */
 		mouseDown : function(mouseEvent) {
 		},
         /**
          * default mouse release in Actor handler.
          *
-         * @param mouseEvent a CAAT.MouseEvent object instance.
+         * @param mouseEvent {CAAT.MouseEvent}
          */
 		mouseUp : function(mouseEvent) {
 		},
         /**
          * default Actor mouse drag handler.
          *
-         * @param mouseEvent a CAAT.MouseEvent object instance.
+         * @param mouseEvent {CAAT.MouseEvent}
          */
 		mouseDrag : function(mouseEvent) {
 		},
@@ -1039,8 +1037,8 @@
          * Draw a bounding box with on-screen coordinates regardless of the transformations
          * applied to the Actor.
          *
-         * @param director the CAAT.Director object instance that contains the Scene the Actor is in.
-         * @param time an integer indicating the Scene time when the bounding box is to be drawn.
+         * @param director {CAAT.Director} object instance that contains the Scene the Actor is in.
+         * @param time {number} integer indicating the Scene time when the bounding box is to be drawn.
          */
         drawScreenBoundingBox : function( director, time ) {
             if ( null!==this.AABB && this.inFrame ) {
@@ -1082,12 +1080,13 @@
                 }
             }
 
+            // transformation stuff.
+            this.wdirty= false;
             this.setModelViewMatrix();
             if ( director.glEnabled && (this.dirty || this.wdirty) ) {
                 this.setScreenBounds();
             }
             this.dirty= false;
-
 
             this.inFrame= true;
 
@@ -1098,8 +1097,8 @@
          * 
          * @return this
          */
-        setModelViewMatrix : function(director) {
-            this.wdirty= false;
+        setModelViewMatrix : function() {
+
             if ( this.dirty ) {
 
                 this.modelViewMatrix.identity();
@@ -1130,18 +1129,15 @@
                     mm[2]+= mm[0]*this.scaleTX + mm[1]*this.scaleTY;
                     mm[5]+= mm[3]*this.scaleTX + mm[4]*this.scaleTY;
 
-                    
 //                    this.modelViewMatrix.multiply( m.setScale( this.scaleX, this.scaleY ) );
                     mm[0]= mm[0]*this.scaleX;
                     mm[1]= mm[1]*this.scaleY;
                     mm[3]= mm[3]*this.scaleX;
                     mm[4]= mm[4]*this.scaleY;
 
-
 //                    this.modelViewMatrix.multiply( m.setTranslate( -this.scaleTX , -this.scaleTY ) );
                     mm[2]+= -mm[0]*this.scaleTX - mm[1]*this.scaleTY;
                     mm[5]+= -mm[3]*this.scaleTX - mm[4]*this.scaleTY;
-
                 }
             }
 
@@ -1177,7 +1173,6 @@
 
             var ctx= director.ctx;
 
-
             this.frameAlpha= this.parent ? this.parent.frameAlpha*this.alpha : 1;
             ctx.globalAlpha= this.frameAlpha;
 
@@ -1207,10 +1202,8 @@
                 return true;
             }
             var ctx= director.ctx;
-//            this.frameAlpha= this.parent ? this.parent.frameAlpha*this.alpha : 1;
 
-            // global opt:
-            // set alpha as owns alpha, not take globalAlpha procedure.
+            // global opt: set alpha as owns alpha, not take globalAlpha procedure.
             this.frameAlpha= this.alpha;
 
             var m= this.worldModelViewMatrix.matrix;
@@ -1379,82 +1372,229 @@
          * Set this actor behavior as if it were a Button. The actor size will be set as SpriteImage's
          * single size.
          * 
-         * @param buttonImage
-         * @param iNormal
-         * @param iOver
-         * @param iPress
-         * @param iDisabled
-         * @param fn
+         * @param buttonImage {CAAT.SpriteImage} sprite image with button's state images.
+         * @param _iNormal {number} button's normal state image index
+         * @param _iOver {number} button's mouse over state image index
+         * @param _iPress {number} button's pressed state image index
+         * @param _iDisabled {number} button's disabled state image index
+         * @param fn {function(button{CAAT.Actor})} callback function
          */
         setAsButton : function( buttonImage, iNormal, iOver, iPress, iDisabled, fn ) {
 
-            (function(button,buttonImage, _iNormal, _iOver, _iPress, _iDisabled, fn) {
-                var iNormal=    0;
-                var iOver=      0;
-                var iPress=     0;
-                var iDisabled=  0;
-                var iCurrent=   0;
-                var fnOnClick=  null;
+            this.setBackgroundImage(buttonImage, true);
 
-                button.enabled= true;
-                button.setEnabled= function( enabled ) {
-                    this.enabled= enabled;
-                };
+            this.iNormal=       iNormal || 0;
+            this.iOver=         iOver || iNormal;
+            this.iPress=        iPress || iNormal;
+            this.iDisabled=     iDisabled || iNormal;
+            this.iCurrent=      iNormal;
+            this.fnOnClick=     fn;
+            this.enabled=       true;
 
-                button.actionPerformed= function(event) {
-                    if ( this.enabled && null!==fnOnClick ) {
-                        fnOnClick(this);
-                    }
+            this.setSpriteIndex( iNormal );
+
+            /**
+             * Enable or disable the button.
+             * @param enabled {boolean}
+             * @ignore
+             */
+            this.setEnabled= function( enabled ) {
+                this.enabled= enabled;
+            };
+
+            /**
+             * This method will be called by CAAT *before* the mouseUp event is fired.
+             * @param event {CAAT.MouseEvent}
+             * @ignore
+             */
+            this.actionPerformed= function(event) {
+                if ( this.enabled && null!==this.fnOnClick ) {
+                    this.fnOnClick(this);
                 }
+            };
 
-                button.setBackgroundImage(buttonImage, true);
-                iNormal=       _iNormal || 0;
-                iOver=         _iOver || iNormal;
-                iPress=        _iPress || iNormal;
-                iDisabled=     _iDisabled || iNormal;
-                iCurrent=      iNormal;
-                fnOnClick=     fn;
-                button.setSpriteIndex( iNormal );
+            /**
+             * Button's mouse enter handler. It makes the button provide visual feedback
+             * @param mouseEvent {CAAT.MouseEvent}
+             * @ignore
+             */
+            this.mouseEnter= function(mouseEvent) {
+                if ( this.dragging ) {
+                    this.setSpriteIndex( this.iPress );
+                } else {
+                    this.setSpriteIndex( this.iOver );
+                }
+                CAAT.setCursor('pointer');
+            };
 
-                button.mouseEnter= function(mouseEvent) {
-                    if ( this.dragging ) {
-                        this.setSpriteIndex( iPress );
-                    } else {
-                        this.setSpriteIndex( iOver );
-                    }
-                    CAAT.setCursor('pointer');
-                };
+            /**
+             * Button's mouse exit handler. Release visual apperance.
+             * @param mouseEvent {CAAT.MouseEvent}
+             * @ignore
+             */
+            this.mouseExit= function(mouseEvent) {
+                this.setSpriteIndex( this.iNormal );
+                CAAT.setCursor('default');
+            };
 
-                button.mouseExit= function(mouseEvent) {
-                    this.setSpriteIndex( iNormal );
-                    CAAT.setCursor('default');
-                };
+            /**
+             * Button's mouse down handler.
+             * @param mouseEvent {CAAT.MouseEvent}
+             * @ignore
+             */
+            this.mouseDown= function(mouseEvent) {
+                this.setSpriteIndex( this.iPress );
+            };
 
-                button.mouseDown= function(mouseEvent) {
-                    this.setSpriteIndex( iPress );
-                };
+            /**
+             * Button's mouse up handler.
+             * @param mouseEvent {CAAT.MouseEvent}
+             * @ignore
+             */
+            this.mouseUp= function(mouseEvent) {
+                this.setSpriteIndex( this.iNormal );
+                this.dragging= false;
+            };
 
-                button.mouseUp= function(mouseEvent) {
-                    this.setSpriteIndex( iNormal );
-                    this.dragging= false;
-                };
+            /**
+             * Button's mouse click handler. Do nothing by default. This event handler will be
+             * called ONLY if it has not been drag on the button.
+             * @param mouseEvent {CAAT.MouseEvent}
+             * @ignore
+             */
+            this.mouseClick= function(mouseEvent) {
+            };
 
-                button.mouseClick= function(mouseEvent) {
-                };
+            /**
+             * Button's mouse drag handler.
+             * @param mouseEvent {CAAT.MouseEvent}
+             * @ignore
+             */
+            this.mouseDrag= function(mouseEvent)  {
+                this.dragging= true;
+            };
 
-                button.mouseDrag= function(mouseEvent)  {
-                    this.dragging= true;
-                };
 
-                button.setButtonImageIndex= function(_normal, _over, _press, _disabled ) {
-                    iNormal=    _normal;
-                    iOver=      _over;
-                    iPress=     _press;
-                    iDisabled=  _disabled;
-                    this.setSpriteIndex( iNormal );
-                    return this;
-                };
-            })(this,buttonImage, iNormal, iOver, iPress, iDisabled, fn);
+                /**
+                 * Closure for button behavior.
+                 * @param button {CAAT.Actor} the actor to behave as button.
+                 * @param buttonImage {CAAT.SpriteImage} sprite image with button's state images.
+                 * @param _iNormal {number} button's normal state image index
+                 * @param _iOver {number} button's mouse over state image index
+                 * @param _iPress {number} button's pressed state image index
+                 * @param _iDisabled {number} button's disabled state image index
+                 * @param fn {function(button{CAAT.Actor})} callback function
+                 */
+//
+//            (function(buttonImage, _iNormal, _iOver, _iPress, _iDisabled, fn) {
+//                var iNormal=    0;
+//                var iOver=      0;
+//                var iPress=     0;
+//                var iDisabled=  0;
+//                var iCurrent=   0;
+//                var fnOnClick=  null;
+//
+//                button.enabled= true;
+//
+//                /**
+//                 * Enable or disable the button.
+//                 * @param enabled {boolean}
+//                 */
+//                button.setEnabled= function( enabled ) {
+//                    this.enabled= enabled;
+//                };
+//
+//                /**
+//                 * This method will be called by CAAT *before* the mouseUp event is fired.
+//                 * @param event {CAAT.MouseEvent}
+//                 */
+//                button.actionPerformed= function(event) {
+//                    if ( this.enabled && null!==fnOnClick ) {
+//                        fnOnClick(this);
+//                    }
+//                }
+//
+//
+//                button.setBackgroundImage(buttonImage, true);
+//                iNormal=       _iNormal || 0;
+//                iOver=         _iOver || iNormal;
+//                iPress=        _iPress || iNormal;
+//                iDisabled=     _iDisabled || iNormal;
+//                iCurrent=      iNormal;
+//                fnOnClick=     fn;
+//                button.setSpriteIndex( iNormal );
+//
+//                /**
+//                 * Button's mouse enter handler. It makes the button provide visual feedback
+//                 * @param mouseEvent {CAAT.MouseEvent}
+//                 */
+//                button.mouseEnter= function(mouseEvent) {
+//                    if ( this.dragging ) {
+//                        this.setSpriteIndex( iPress );
+//                    } else {
+//                        this.setSpriteIndex( iOver );
+//                    }
+//                    CAAT.setCursor('pointer');
+//                };
+//
+//                /**
+//                 * Button's mouse exit handler. Release visual apperance.
+//                 * @param mouseEvent {CAAT.MouseEvent}
+//                 */
+//                button.mouseExit= function(mouseEvent) {
+//                    this.setSpriteIndex( iNormal );
+//                    CAAT.setCursor('default');
+//                };
+//
+//                /**
+//                 * Button's mouse down handler.
+//                 * @param mouseEvent {CAAT.MouseEvent}
+//                 */
+//                button.mouseDown= function(mouseEvent) {
+//                    this.setSpriteIndex( iPress );
+//                };
+//
+//                /**
+//                 * Button's mouse up handler.
+//                 * @param mouseEvent {CAAT.MouseEvent}
+//                 */
+//                button.mouseUp= function(mouseEvent) {
+//                    this.setSpriteIndex( iNormal );
+//                    this.dragging= false;
+//                };
+//
+//                /**
+//                 * Button's mouse click handler. Do nothing by default. This event handler will be
+//                 * called ONLY if it has not been drag on the button.
+//                 * @param mouseEvent {CAAT.MouseEvent}
+//                 */
+//                button.mouseClick= function(mouseEvent) {
+//                };
+//
+//                /**
+//                 * Button's mouse drag handler.
+//                 * @param mouseEvent {CAAT.MouseEvent}
+//                 */
+//                button.mouseDrag= function(mouseEvent)  {
+//                    this.dragging= true;
+//                };
+//
+//                /**
+//                 * Define button's visual apperarance image indices.
+//                 * @param _normal {number} button normal state sub image index.
+//                 * @param _over {number} button mouse over state sub image index.
+//                 * @param _press {number} button pressed state sub image index.
+//                 * @param _disabled {number} button disabled state sub image index.
+//                 */
+//                button.setButtonImageIndex= function(_normal, _over, _press, _disabled ) {
+//                    iNormal=    _normal;
+//                    iOver=      _over;
+//                    iPress=     _press;
+//                    iDisabled=  _disabled;
+//                    this.setSpriteIndex( iNormal );
+//                    return this;
+//                };
+//            })(buttonImage, iNormal, iOver, iPress, iDisabled, fn);
 
             return this;
         }
@@ -2684,20 +2824,40 @@
             this.spriteIndex=   iNormal;
             return this;
         },
+        /**
+         *
+         * @param mouseEvent {CAAT.MouseEvent}
+         */
         mouseEnter : function(mouseEvent) {
             this.setSpriteIndex( this.iOver );
             CAAT.setCursor('pointer');
         },
+        /**
+         *
+         * @param mouseEvent {CAAT.MouseEvent}
+         */
         mouseExit : function(mouseEvent) {
             this.setSpriteIndex( this.iNormal );
             CAAT.setCursor('default');
         },
+        /**
+         *
+         * @param mouseEvent {CAAT.MouseEvent}
+         */
         mouseDown : function(mouseEvent) {
             this.setSpriteIndex( this.iPress );
         },
+        /**
+         *
+         * @param mouseEvent {CAAT.MouseEvent}
+         */
         mouseUp : function(mouseEvent) {
             this.setSpriteIndex( this.iNormal );
         },
+        /**
+         *
+         * @param mouseEvent {CAAT.MouseEvent}
+         */
         mouseClick : function(mouseEvent) {
             if ( this.enabled && null!==this.fnOnClick ) {
                 this.fnOnClick(this);
