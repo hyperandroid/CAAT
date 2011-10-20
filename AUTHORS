@@ -1,5 +1,7 @@
-Copyright (c) 2010-2011 Ibon Tolosana.
-http://labs.hyperandroid.com/  @Hyperandroid
+CAAT is Copyright (c) 2010-2011 Ibon Tolosana.
+    http://labs.hyperandroid.com/
+    @Hyperandroid
 
-Thanks to Mario Gonzalez @onedayitwillmake for contributing the module structure and Circle Manager as well
-as some code parts on CAAT.Color object.
+This project distributes a Box2D port originally developed in C++ and Copyright (c) 2006-2007 Erin Catto http://www.gphysics.com
+
+Thanks to Mario Gonzalez @onedayitwillmake for contributing the module structure and Circle Manager as well as some code parts on CAAT.Color object.
