@@ -988,6 +988,8 @@
                         e.preventDefault();
 
                         me.getCanvasCoord(me.mousePoint, e);
+                        var pos = new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0);
+                        
                         // drag
                         if (me.isMouseDown && null !== me.lastSelectedActor) {
 
@@ -1050,7 +1052,7 @@
                             return;
                         }
 
-                        in_= true;
+
 
                         var lactor = me.findActorAtPosition(
                                 me.mousePoint,
@@ -1078,6 +1080,9 @@
                             }
                         }
                         me.lastSelectedActor = lactor;
+
+                        var pos = lactor.viewToModel(new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
+
                         if (null !== lactor) {
                             me.lastSelectedActor.mouseMove(
                                 new CAAT.MouseEvent().init(

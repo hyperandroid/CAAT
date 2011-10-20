@@ -353,8 +353,9 @@
 					time%= this.getDuration();
 				}
 
-				for( var i=0; i<this.behaviors.length; i++ )	{
-					this.behaviors[i].apply(time, actor);
+                var bh= this.behaviors;
+				for( var i=0; i<bh.length; i++ )	{
+					bh[i].apply(time, actor);
 				}
 			}
 		},
@@ -384,8 +385,9 @@
          * @param actor a CAAT.Actor the behavior is being applied to.
          */
 		setForTime : function(time, actor) {
-			for( var i=0; i<this.behaviors.length; i++ ) {
-				this.behaviors[i].setForTime( time-this.behaviorStartTime, actor );
+            var bh= this.behaviors;
+			for( var i=0; i<bh.length; i++ ) {
+				bh[i].setForTime( time-this.behaviorStartTime, actor );
 			}
 
             return null;
@@ -393,10 +395,13 @@
 
         setExpired : function(actor,time) {
             CAAT.ContainerBehavior.superclass.setExpired.call(this,actor,time);
+
+            var bh= this.behaviors;
             // set for final interpolator value.
-            for( var i=0; i<this.behaviors.length; i++ ) {
-                if (!this.behaviors[i].expired) {
-                    this.behaviors[i].setExpired(actor,time-this.behaviorStartTime);
+            for( var i=0; i<bh.length; i++ ) {
+                var bb= bh[i];
+                if (!bb.expired) {
+                    bb.setExpired(actor,time-this.behaviorStartTime);
                 }
             }
             this.fireBehaviorExpiredEvent(actor,time);
@@ -405,8 +410,10 @@
 
         setFrameTime : function( start, duration )  {
             CAAT.ContainerBehavior.superclass.setFrameTime.call(this,start,duration);
-            for( var i=0; i<this.behaviors.length; i++ ) {
-                this.behaviors[i].expired= false;
+
+            var bh= this.behaviors;
+            for( var i=0; i<bh.length; i++ ) {
+                bh[i].expired= false;
             }
             return this;
         }
@@ -873,22 +880,24 @@
                 }
 
                 var angle= Math.atan2( ay, ax );
+                var si= CAAT.SpriteImage.prototype;
+                var pba= CAAT.PathBehavior.autorotate;
 
                 // actor is heading left to right
-                if ( this.autoRotateOp===CAAT.PathBehavior.autorotate.LEFT_TO_RIGHT ) {
+                if ( this.autoRotateOp===pba.LEFT_TO_RIGHT ) {
                     if ( this.prevX<=point.x )	{
-                        actor.setImageTransformation( CAAT.SpriteImage.prototype.TR_NONE );
+                        actor.setImageTransformation( si.TR_NONE );
                     }
                     else	{
-                        actor.setImageTransformation( CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL );
+                        actor.setImageTransformation( si.TR_FLIP_HORIZONTAL );
                         angle+=Math.PI;
                     }
-                } else if ( this.autoRotateOp===CAAT.PathBehavior.autorotate.RIGHT_TO_LEFT ) {
+                } else if ( this.autoRotateOp===pba.RIGHT_TO_LEFT ) {
                     if ( this.prevX<=point.x )	{
-                        actor.setImageTransformation( CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL );
+                        actor.setImageTransformation( si.TR_FLIP_HORIZONTAL );
                     }
                     else	{
-                        actor.setImageTransformation( CAAT.SpriteImage.prototype.TR_NONE );
+                        actor.setImageTransformation( si.TR_NONE );
                         angle-=Math.PI;
                     }
                 }

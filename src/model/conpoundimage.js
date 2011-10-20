@@ -521,7 +521,7 @@
             ctx.drawImage(this.image,
                     this.xyCache[this.spriteIndex][0], this.xyCache[this.spriteIndex][1],
                     this.singleWidth, this.singleHeight,
-                    this.offsetX, this.offsetY, this.singleWidth, this.singleHeight);
+                    this.offsetX>>0, this.offsetY>>0, this.singleWidth, this.singleHeight);
 
             ctx.restore();
 
@@ -549,7 +549,7 @@
                     this.image,
                     this.xyCache[this.spriteIndex][0], this.xyCache[this.spriteIndex][1],
                     this.singleWidth, this.singleHeight,
-                    this.offsetX,this.offsetY, this.singleWidth, this.singleHeight);
+                    this.offsetX>>0,this.offsetY>>0, this.singleWidth, this.singleHeight);
 
             ctx.restore();
 
@@ -576,10 +576,11 @@
             ctx.scale(-1, 1);
 
             ctx.drawImage(
-                    this.image,
-                    this.xyCache[this.spriteIndex][0], this.xyCache[this.spriteIndex][1],
-                    this.singleWidth, this.singleHeight,
-                    this.offsetX, this.offsetY, this.singleWidth, this.singleHeight);
+                this.image,
+                this.xyCache[this.spriteIndex][0], this.xyCache[this.spriteIndex][1],
+                this.singleWidth, this.singleHeight,
+                this.offsetX>>0, this.offsetY>>0,
+                this.singleWidth, this.singleHeight);
 
             ctx.restore();
 
@@ -598,10 +599,11 @@
             this.setSpriteIndexAtTime(time);
 
             director.ctx.drawImage(
-                    this.image,
-                    this.xyCache[this.spriteIndex][0]>>0, this.xyCache[this.spriteIndex][1]>>0,
-                    this.singleWidth, this.singleHeight,
-                    this.offsetX+x, this.offsetY+y, this.singleWidth, this.singleHeight);
+                this.image,
+                this.xyCache[this.spriteIndex][0]>>0, this.xyCache[this.spriteIndex][1]>>0,
+                this.singleWidth, this.singleHeight,
+                (this.offsetX+x)>>0, (this.offsetY+y)>>0,
+                this.singleWidth, this.singleHeight);
 
             return this;
         },
@@ -622,7 +624,7 @@
                     this.image,
                     this.xyCache[this.spriteIndex][0], this.xyCache[this.spriteIndex][1],
                     this.singleWidth, this.singleHeight,
-                    (x + 0.5) | 0, (y + 0.5) | 0, this.ownerActor.width, this.ownerActor.height );
+                    x>>0, y>>0, this.ownerActor.width, this.ownerActor.height );
 
             return this;
         },

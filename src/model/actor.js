@@ -628,8 +628,8 @@
          * @return this
          */
 	    setSize : function( w, h )   {
-	        this.width= w;
-	        this.height= h;
+	        this.width= w|0;
+	        this.height= h|0;
             this.dirty= true;
 
             return this;
@@ -644,10 +644,10 @@
          * @return this
          */
 	    setBounds : function(x, y, w, h)  {
-            this.x= x;
-            this.y= y;
-	        this.width= w;
-	        this.height= h;
+            this.x= x|0;
+            this.y= y|0;
+	        this.width= w|0;
+	        this.height= h|0;
             this.dirty= true;
 
             return this;
@@ -661,11 +661,11 @@
          */
 	    setLocation : function( x, y ) {
 
-            this.x= x;
-            this.y= y;
+            this.x= x|0;
+            this.y= y|0;
 
-            this.oldX= x;
-            this.oldY= y;
+            this.oldX= x|0;
+            this.oldY= y|0;
 
             this.dirty= true;
 
@@ -1081,12 +1081,7 @@
             }
 
             // transformation stuff.
-            this.wdirty= false;
-            this.setModelViewMatrix();
-            if ( director.glEnabled && (this.dirty || this.wdirty) ) {
-                this.setScreenBounds();
-            }
-            this.dirty= false;
+            this.setModelViewMatrix(director.glEnabled);
 
             this.inFrame= true;
 
@@ -1097,49 +1092,112 @@
          * 
          * @return this
          */
-        setModelViewMatrix : function() {
+        setModelViewMatrix : function(glEnabled) {
+            var c,s,_m00,_m01,_m10,_m11;
+            var mm0, mm1, mm2, mm3, mm4, mm5;
+            var mm;
+
+            this.wdirty= false;
 
             if ( this.dirty ) {
 
-                this.modelViewMatrix.identity();
+                mm= this.modelViewMatrix.identity().matrix;
 
-                var m= this.tmpMatrix.identity();
-                var mm= this.modelViewMatrix.matrix;
-                //this.modelViewMatrix.multiply( m.setTranslate( this.x, this.y ) );
+                mm0= mm[0];
+                mm1= mm[1];
+                mm2= mm[2];
+                mm3= mm[3];
+                mm4= mm[4];
+                mm5= mm[5];
 
-                // As http://jsperf.com/drawimage-whole-pixels states,
-                // drawing at whole pixels rocks while at subpixels sucks. thanks @pbakaus
-                mm[2]+= this.x>>0;
-                mm[5]+= this.y>>0;
+                mm2+= this.x;
+                mm5+= this.y;
+
+                if ( this.rotationAngle ) {
+                    mm2+= mm0*this.rotationX + mm1*this.rotationY;
+                    mm5+= mm3*this.rotationX + mm4*this.rotationY;
+
+                    c= Math.cos( this.rotationAngle );
+                    s= Math.sin( this.rotationAngle );
+                    _m00= mm0;
+                    _m01= mm1;
+                    _m10= mm3;
+                    _m11= mm4;
+                    mm0=  _m00*c + _m01*s;
+                    mm1= -_m00*s + _m01*c;
+                    mm3=  _m10*c + _m11*s;
+                    mm4= -_m10*s + _m11*c;
+
+                    mm2+= -mm0*this.rotationX - mm1*this.rotationY;
+                    mm5+= -mm3*this.rotationX - mm4*this.rotationY;
+                }
+                if ( this.scaleX!=1 || this.scaleY!=1 && (this.scaleTX || this.scaleTY )) {
+
+                    mm2+= mm0*this.scaleTX + mm1*this.scaleTY;
+                    mm5+= mm3*this.scaleTX + mm4*this.scaleTY;
+
+                    mm0= mm0*this.scaleX;
+                    mm1= mm1*this.scaleY;
+                    mm3= mm3*this.scaleX;
+                    mm4= mm4*this.scaleY;
+
+                    mm2+= -mm0*this.scaleTX - mm1*this.scaleTY;
+                    mm5+= -mm3*this.scaleTX - mm4*this.scaleTY;
+                }
+
+                mm[0]= mm0;
+                mm[1]= mm1;
+                mm[2]= mm2;
+                mm[3]= mm3;
+                mm[4]= mm4;
+                mm[5]= mm5;
+
+/*
+                mm[2]+= this.x;
+                mm[5]+= this.y;
 
                 if ( this.rotationAngle ) {
 //                    this.modelViewMatrix.multiply( m.setTranslate( this.rotationX, this.rotationY) );
+//                    this.modelViewMatrix.multiply( m.setRotation( this.rotationAngle ) );
+//                    this.modelViewMatrix.multiply( m.setTranslate( -this.rotationX, -this.rotationY) );                    c= Math.cos( this.rotationAngle );
                     mm[2]+= mm[0]*this.rotationX + mm[1]*this.rotationY;
                     mm[5]+= mm[3]*this.rotationX + mm[4]*this.rotationY;
 
-                    this.modelViewMatrix.multiply( m.setRotation( this.rotationAngle ) );
+                    c= Math.cos( this.rotationAngle );
+                    s= Math.sin( this.rotationAngle );
+                    _m00= mm[0];
+                    _m01= mm[1];
+                    _m10= mm[3];
+                    _m11= mm[4];
+                    mm[0]=  _m00*c + _m01*s;
+                    mm[1]= -_m00*s + _m01*c;
+                    mm[3]=  _m10*c + _m11*s;
+                    mm[4]= -_m10*s + _m11*c;
 
-//                    this.modelViewMatrix.multiply( m.setTranslate( -this.rotationX, -this.rotationY) );
                     mm[2]+= -mm[0]*this.rotationX - mm[1]*this.rotationY;
                     mm[5]+= -mm[3]*this.rotationX - mm[4]*this.rotationY;
 
                 }
                 if ( this.scaleX!=1 || this.scaleY!=1 && (this.scaleTX || this.scaleTY )) {
 //                    this.modelViewMatrix.multiply( m.setTranslate( this.scaleTX , this.scaleTY ) );
+//                    this.modelViewMatrix.multiply( m.setScale( this.scaleX, this.scaleY ) );
+//                    this.modelViewMatrix.multiply( m.setTranslate( -this.scaleTX , -this.scaleTY ) );
+
                     mm[2]+= mm[0]*this.scaleTX + mm[1]*this.scaleTY;
                     mm[5]+= mm[3]*this.scaleTX + mm[4]*this.scaleTY;
 
-//                    this.modelViewMatrix.multiply( m.setScale( this.scaleX, this.scaleY ) );
                     mm[0]= mm[0]*this.scaleX;
                     mm[1]= mm[1]*this.scaleY;
                     mm[3]= mm[3]*this.scaleX;
                     mm[4]= mm[4]*this.scaleY;
 
-//                    this.modelViewMatrix.multiply( m.setTranslate( -this.scaleTX , -this.scaleTY ) );
                     mm[2]+= -mm[0]*this.scaleTX - mm[1]*this.scaleTY;
                     mm[5]+= -mm[3]*this.scaleTX - mm[4]*this.scaleTY;
+
                 }
+*/
             }
+
 
             if ( this.parent ) {
                 if ( this.dirty || this.parent.wdirty ) {
@@ -1153,7 +1211,13 @@
                 }
                 this.worldModelViewMatrix.copy( this.modelViewMatrix );
             }
-            
+
+            if ( glEnabled && (this.dirty || this.wdirty) ) {
+                this.setScreenBounds();
+            }
+            this.dirty= false;
+
+
             return this;
         },
         /**
@@ -1381,6 +1445,8 @@
          */
         setAsButton : function( buttonImage, iNormal, iOver, iPress, iDisabled, fn ) {
 
+            var me= this;
+            
             this.setBackgroundImage(buttonImage, true);
 
             this.iNormal=       iNormal || 0;
@@ -1474,127 +1540,14 @@
                 this.dragging= true;
             };
 
-
-                /**
-                 * Closure for button behavior.
-                 * @param button {CAAT.Actor} the actor to behave as button.
-                 * @param buttonImage {CAAT.SpriteImage} sprite image with button's state images.
-                 * @param _iNormal {number} button's normal state image index
-                 * @param _iOver {number} button's mouse over state image index
-                 * @param _iPress {number} button's pressed state image index
-                 * @param _iDisabled {number} button's disabled state image index
-                 * @param fn {function(button{CAAT.Actor})} callback function
-                 */
-//
-//            (function(buttonImage, _iNormal, _iOver, _iPress, _iDisabled, fn) {
-//                var iNormal=    0;
-//                var iOver=      0;
-//                var iPress=     0;
-//                var iDisabled=  0;
-//                var iCurrent=   0;
-//                var fnOnClick=  null;
-//
-//                button.enabled= true;
-//
-//                /**
-//                 * Enable or disable the button.
-//                 * @param enabled {boolean}
-//                 */
-//                button.setEnabled= function( enabled ) {
-//                    this.enabled= enabled;
-//                };
-//
-//                /**
-//                 * This method will be called by CAAT *before* the mouseUp event is fired.
-//                 * @param event {CAAT.MouseEvent}
-//                 */
-//                button.actionPerformed= function(event) {
-//                    if ( this.enabled && null!==fnOnClick ) {
-//                        fnOnClick(this);
-//                    }
-//                }
-//
-//
-//                button.setBackgroundImage(buttonImage, true);
-//                iNormal=       _iNormal || 0;
-//                iOver=         _iOver || iNormal;
-//                iPress=        _iPress || iNormal;
-//                iDisabled=     _iDisabled || iNormal;
-//                iCurrent=      iNormal;
-//                fnOnClick=     fn;
-//                button.setSpriteIndex( iNormal );
-//
-//                /**
-//                 * Button's mouse enter handler. It makes the button provide visual feedback
-//                 * @param mouseEvent {CAAT.MouseEvent}
-//                 */
-//                button.mouseEnter= function(mouseEvent) {
-//                    if ( this.dragging ) {
-//                        this.setSpriteIndex( iPress );
-//                    } else {
-//                        this.setSpriteIndex( iOver );
-//                    }
-//                    CAAT.setCursor('pointer');
-//                };
-//
-//                /**
-//                 * Button's mouse exit handler. Release visual apperance.
-//                 * @param mouseEvent {CAAT.MouseEvent}
-//                 */
-//                button.mouseExit= function(mouseEvent) {
-//                    this.setSpriteIndex( iNormal );
-//                    CAAT.setCursor('default');
-//                };
-//
-//                /**
-//                 * Button's mouse down handler.
-//                 * @param mouseEvent {CAAT.MouseEvent}
-//                 */
-//                button.mouseDown= function(mouseEvent) {
-//                    this.setSpriteIndex( iPress );
-//                };
-//
-//                /**
-//                 * Button's mouse up handler.
-//                 * @param mouseEvent {CAAT.MouseEvent}
-//                 */
-//                button.mouseUp= function(mouseEvent) {
-//                    this.setSpriteIndex( iNormal );
-//                    this.dragging= false;
-//                };
-//
-//                /**
-//                 * Button's mouse click handler. Do nothing by default. This event handler will be
-//                 * called ONLY if it has not been drag on the button.
-//                 * @param mouseEvent {CAAT.MouseEvent}
-//                 */
-//                button.mouseClick= function(mouseEvent) {
-//                };
-//
-//                /**
-//                 * Button's mouse drag handler.
-//                 * @param mouseEvent {CAAT.MouseEvent}
-//                 */
-//                button.mouseDrag= function(mouseEvent)  {
-//                    this.dragging= true;
-//                };
-//
-//                /**
-//                 * Define button's visual apperarance image indices.
-//                 * @param _normal {number} button normal state sub image index.
-//                 * @param _over {number} button mouse over state sub image index.
-//                 * @param _press {number} button pressed state sub image index.
-//                 * @param _disabled {number} button disabled state sub image index.
-//                 */
-//                button.setButtonImageIndex= function(_normal, _over, _press, _disabled ) {
-//                    iNormal=    _normal;
-//                    iOver=      _over;
-//                    iPress=     _press;
-//                    iDisabled=  _disabled;
-//                    this.setSpriteIndex( iNormal );
-//                    return this;
-//                };
-//            })(buttonImage, iNormal, iOver, iPress, iDisabled, fn);
+            this.setButtonImageIndex= function(_normal, _over, _press, _disabled ) {
+                this.iNormal=    _normal;
+                this.iOver=      _over;
+                this.iPress=     _press;
+                this.iDisabled=  _disabled;
+                this.setSpriteIndex( iNormal );
+                return this;
+            };
 
             return this;
         }
@@ -1646,8 +1599,9 @@
                 return;
             }
 
-            for( var i=0; i<this.childrenList.length; i++ ) {
-                this.childrenList[i].drawScreenBoundingBox(director,time);
+            var cl= this.childrenList;
+            for( var i=0; i<cl.length; i++ ) {
+                cl[i].drawScreenBoundingBox(director,time);
             }
             CAAT.ActorContainer.superclass.drawScreenBoundingBox.call(this,director,time);
 
@@ -1719,31 +1673,15 @@
                 return true;
             }
 
-/*            Actors are always drawn back to front overwriting pixels.
-            if ( director.front_to_back ) {
-                i= this.activeChildren.length-1;
-                while( i>=0 ) {
-                    c= this.activeChildren[i];
-                    c.paintActorGL(director,time);
-                    i--;
-                }
-            }
-*/
             CAAT.ActorContainer.superclass.paintActorGL.call(this,director,time);
 
             if ( !this.isGlobalAlpha ) {
                 this.frameAlpha= this.parent.frameAlpha;
             }
 
-//          And thus, this if is removed.            
-//            if ( !director.front_to_back ) {
-//                var n= this.activeChildren.length;
-//                for( i=0; i<n; i++ ) {
             for( c= this.activeChildren; c; c=c.__next ) {
-//                    c= this.activeChildren[i];
-                    c.paintActorGL(director,time);
-                }
-//            }
+                c.paintActorGL(director,time);
+            }
 
         },
         /**
@@ -1770,8 +1708,9 @@
              * Incluir los actores pendientes.
              * El momento es ahora, antes de procesar ninguno del contenedor.
              */
-            for( i=0; i<this.pendingChildrenList.length; i++ ) {
-                var child= this.pendingChildrenList[i];
+            var pcl= this.pendingChildrenList;
+            for( i=0; i<pcl.length; i++ ) {
+                var child= pcl[i];
                 this.addChild(child);
             }
 
@@ -1896,10 +1835,12 @@
          * @return an integer indicating the Actor's z-order.
          */
 		findChild : function(child) {
-            var i=0,
-				len = this.childrenList.length;
+            var cl= this.childrenList;
+            var i=0;
+            var len = cl.length;
+
 			for( i=0; i<len; i++ ) {
-				if ( this.childrenList[i]===child ) {
+				if ( cl[i]===child ) {
 					return i;
 				}
 			}
@@ -1915,9 +1856,10 @@
          */
 		removeChild : function(child) {
 			var pos= this.findChild(child);
+            var cl= this.childrenList;
 			if ( -1!==pos ) {
-                this.childrenList[pos].setParent(null);
-				this.childrenList.splice(pos,1);
+                cl[pos].setParent(null);
+				cl.splice(pos,1);
 			}
 
             return this;
@@ -1938,25 +1880,17 @@
 			}
 
 			// z-order
-			for( var i=this.childrenList.length-1; i>=0; i-- ) {
+            var cl= this.childrenList;
+			for( var i=cl.length-1; i>=0; i-- ) {
                 var child= this.childrenList[i];
 
                 var np= new CAAT.Point( point.x, point.y, 0 );
                 var aabb= child.AABB;
-/* by default, no AABB is being calculated for every sprite.
-                // if the coordinate is not in the AABB, can't be actor's shape either.
-                if ( screenPoint.x>=aabb.x &&
-                     screenPoint.y>=aabb.y &&
-                     screenPoint.x<=aabb.x+aabb.width &&
-                     screenPoint.y<=aabb.y+aabb.height ) {
-*/
-                    var contained= child.findActorAtPosition( np, screenPoint );
-                    if ( null!==contained ) {
-                        return contained;
-                    }
-/*
+
+                var contained= child.findActorAtPosition( np, screenPoint );
+                if ( null!==contained ) {
+                    return contained;
                 }
-*/
 			}
 
 			return this;
@@ -1968,8 +1902,9 @@
          * @return this
          */
         destroy : function() {
-            for( var i=this.childrenList.length-1; i>=0; i-- ) {
-                this.childrenList[i].destroy();
+            var cl= this.childrenList;
+            for( var i=cl.length-1; i>=0; i-- ) {
+                cl[i].destroy();
             }
             CAAT.ActorContainer.superclass.destroy.call(this);
 
@@ -2001,6 +1936,7 @@
          */
         setZOrder : function( actor, index ) {
             var actorPos= this.findChild(actor);
+            var cl= this.childrenList;
             // the actor is present
             if ( -1!==actorPos ) {
 
@@ -2009,18 +1945,18 @@
                     return;
                 }
 
-                if ( index>=this.childrenList.length ) {
-					this.childrenList.splice(actorPos,1);
-					this.childrenList.push(actor);
+                if ( index>=cl.length ) {
+					cl.splice(actorPos,1);
+					cl.push(actor);
                 } else {
-                    var nActor= this.childrenList.splice(actorPos,1);
+                    var nActor= cl.splice(actorPos,1);
                     if ( index<0 ) {
                         index=0;
-                    } else if ( index>this.childrenList.length ) {
-                        index= this.childrenList.length;
+                    } else if ( index>cl.length ) {
+                        index= cl.length;
                     }
 
-                    this.childrenList.splice( index, 1, nActor );
+                    cl.splice( index, 1, nActor );
                 }
             }
         }

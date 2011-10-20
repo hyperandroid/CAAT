@@ -49,10 +49,11 @@
          * @param time {number} the current Scene time.
          */
         checkTimers : function(time) {
-            var i=this.timerList.length-1;
+            var tl= this.timerList;
+            var i=tl.length-1;
             while( i>=0 ) {
-                if ( !this.timerList[i].remove ) {
-                    this.timerList[i].checkTask(time);
+                if ( !tl[i].remove ) {
+                    tl[i].checkTask(time);
                 }
                 i--;
             }
@@ -75,9 +76,10 @@
          * @return {boolean} a boolean indicating whether the timertask is in this scene or not.
          */
         hasTimer : function( timertask ) {
-            var i=this.timerList.length-1;
+            var tl= this.timerList;
+            var i=tl.length-1;
             while( i>=0 ) {
-                if ( this.timerList[i]===timertask ) {
+                if ( tl[i]===timertask ) {
                     return true;
                 }
                 i--;
@@ -119,9 +121,10 @@
          */
         removeExpiredTimers : function() {
             var i;
-            for( i=0; i<this.timerList.length; i++ ) {
-                if ( this.timerList[i].remove ) {
-                    this.timerList.splice(i,1);
+            var tl= this.timerList;
+            for( i=0; i<tl.length; i++ ) {
+                if ( tl[i].remove ) {
+                    tl.splice(i,1);
                 }
             }
         },

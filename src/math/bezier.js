@@ -37,37 +37,37 @@
                 return;
             }
 
-			var canvas= director.crc;
+			var ctx= director.ctx;
 		
 			// control points
-			canvas.save();
-			canvas.beginPath();
+			ctx.save();
+			ctx.beginPath();
 			
-			canvas.strokeStyle='#a0a0a0';
-			canvas.moveTo( this.coordlist[0].x, this.coordlist[0].y );
-			canvas.lineTo( this.coordlist[1].x, this.coordlist[1].y );
-			canvas.stroke();
+			ctx.strokeStyle='#a0a0a0';
+			ctx.moveTo( this.coordlist[0].x, this.coordlist[0].y );
+			ctx.lineTo( this.coordlist[1].x, this.coordlist[1].y );
+			ctx.stroke();
 			if ( this.cubic ) {
-				canvas.moveTo( this.coordlist[2].x, this.coordlist[2].y );
-				canvas.lineTo( this.coordlist[3].x, this.coordlist[3].y );
-				canvas.stroke();
+				ctx.moveTo( this.coordlist[2].x, this.coordlist[2].y );
+				ctx.lineTo( this.coordlist[3].x, this.coordlist[3].y );
+				ctx.stroke();
 			} 
 			
-            canvas.globalAlpha=0.5;
+            ctx.globalAlpha=0.5;
             for( var i=0; i<this.coordlist.length; i++ ) {
-                canvas.fillStyle='#7f7f00';
-                canvas.beginPath();
-                canvas.arc(
+                ctx.fillStyle='#7f7f00';
+                ctx.beginPath();
+                ctx.arc(
                         this.coordlist[i].x,
                         this.coordlist[i].y,
                         this.HANDLE_SIZE/2,
                         0,
                         2*Math.PI,
                         false) ;
-                canvas.fill();
+                ctx.fill();
             }
 
-			canvas.restore();
+			ctx.restore();
 		},
         /**
          * Signal the curve has been modified and recalculate curve length.
@@ -199,21 +199,24 @@
 		cubic:		false,
 
         applyAsPath : function( ctx ) {
+
+            var cc= this.coordlist;
+
             if ( this.cubic ) {
                 ctx.bezierCurveTo(
-                    this.coordlist[1].x,
-                    this.coordlist[1].y,
-                    this.coordlist[2].x,
-                    this.coordlist[2].y,
-                    this.coordlist[3].x,
-                    this.coordlist[3].y
+                    cc[1].x,
+                    cc[1].y,
+                    cc[2].x,
+                    cc[2].y,
+                    cc[3].x,
+                    cc[3].y
                 );
             } else {
                 ctx.quadraticCurveTo(
-                    this.coordlist[1].x,
-                    this.coordlist[1].y,
-                    this.coordlist[2].x,
-                    this.coordlist[2].y
+                    this.cc[1].x,
+                    this.cc[1].y,
+                    this.cc[2].x,
+                    this.cc[2].y
                 );
             }
             return this;
@@ -312,20 +315,20 @@
 			x1 = this.coordlist[0].x;
 			y1 = this.coordlist[0].y;
 			
-			var canvas= director.crc;
+			var ctx= director.ctx;
 			
-			canvas.save();
-			canvas.beginPath();
-			canvas.moveTo(x1,y1);
+			ctx.save();
+			ctx.beginPath();
+			ctx.moveTo(x1,y1);
 			
 			var point= new CAAT.Point();
 			for(var t=this.k;t<=1+this.k;t+=this.k){
 				this.solve(point,t);
-				canvas.lineTo(point.x, point.y );
+				ctx.lineTo(point.x, point.y );
 			}
 			
-			canvas.stroke();
-			canvas.restore();
+			ctx.stroke();
+			ctx.restore();
 		
 		},
         /**
@@ -341,20 +344,20 @@
 			x1 = this.coordlist[0].x;
 			y1 = this.coordlist[0].y;
 			
-			var canvas= director.crc;
+			var ctx= director.ctx;
 			
-			canvas.save();
-			canvas.beginPath();
-			canvas.moveTo(x1,y1);
+			ctx.save();
+			ctx.beginPath();
+			ctx.moveTo(x1,y1);
 			
 			var point= new CAAT.Point();
 			for(var t=this.k;t<=1+this.k;t+=this.k){
 				this.solve(point,t);
-				canvas.lineTo(point.x, point.y );
+				ctx.lineTo(point.x, point.y );
 			}
 			
-			canvas.stroke();
-			canvas.restore();
+			ctx.stroke();
+			ctx.restore();
 		},
         /**
          * Solves the curve for any given parameter t.
@@ -377,16 +380,19 @@
 			
 			var t2= t*t;
 			var t3= t*t2;
-			
-			point.x=(this.coordlist[0].x + t * (-this.coordlist[0].x * 3 + t * (3 * this.coordlist[0].x-
-					this.coordlist[0].x*t)))+t*(3*this.coordlist[1].x+t*(-6*this.coordlist[1].x+
-					this.coordlist[1].x*3*t))+t2*(this.coordlist[2].x*3-this.coordlist[2].x*3*t)+
-					this.coordlist[3].x * t3;
+
+            var cl= this.coordlist;
+
+			point.x=(cl[0].x + t * (-cl[0].x * 3 + t * (3 * cl[0].x-
+					cl[0].x*t)))+t*(3*cl[1].x+t*(-6*cl[1].x+
+					cl[1].x*3*t))+t2*(cl[2].x*3-cl[2].x*3*t)+
+					cl[3].x * t3;
 				
-			point.y=(this.coordlist[0].y+t*(-this.coordlist[0].y*3+t*(3*this.coordlist[0].y-
-					this.coordlist[0].y*t)))+t*(3*this.coordlist[1].y+t*(-6*this.coordlist[1].y+
-					this.coordlist[1].y*3*t))+t2*(this.coordlist[2].y*3-this.coordlist[2].y*3*t)+
-					this.coordlist[3].y * t3;
+			point.y=(
+                    cl[0].y+t*(-cl[0].y*3+t*(3*cl[0].y-
+					cl[0].y*t)))+t*(3*cl[1].y+t*(-6*cl[1].y+
+					cl[1].y*3*t))+t2*(cl[2].y*3-cl[2].y*3*t)+
+					cl[3].y * t3;
 			
 			return point;
 		},
@@ -396,8 +402,9 @@
          * @param t {number} the value to solve the curve for.
          */
 		solveQuadric : function(point,t) {
-			point.x= (1-t)*(1-t)*this.coordlist[0].x + 2*(1-t)*t*this.coordlist[1].x + t*t*this.coordlist[2].x;
-			point.y= (1-t)*(1-t)*this.coordlist[0].y + 2*(1-t)*t*this.coordlist[1].y + t*t*this.coordlist[2].y;
+            var cl= this.coordlist;
+			point.x= (1-t)*(1-t)*cl[0].x + 2*(1-t)*t*cl[1].x + t*t*cl[2].x;
+			point.y= (1-t)*(1-t)*cl[0].y + 2*(1-t)*t*cl[1].y + t*t*cl[2].y;
 			
 			return point;
 		}
@@ -457,21 +464,21 @@
 			x1 = this.coordlist[0].x;
 			y1 = this.coordlist[0].y;
 			
-			var canvas= director.crc;
+			var ctx= director.ctx;
 			
-			canvas.save();
-			canvas.beginPath();
-			canvas.moveTo(x1,y1);
+			ctx.save();
+			ctx.beginPath();
+			ctx.moveTo(x1,y1);
 			
 			var point= new CAAT.Point();
 			
 			for(var t=this.k;t<=1+this.k;t+=this.k){
 				this.solve(point,t);
-				canvas.lineTo(point.x,point.y);
+				ctx.lineTo(point.x,point.y);
 			}
 			
-			canvas.stroke();
-			canvas.restore();	
+			ctx.stroke();
+			ctx.restore();
 			
 			CAAT.CatmullRom.superclass.paint.call(this,director);
 		},

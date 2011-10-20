@@ -452,8 +452,10 @@
 
             this.animate(this,time);
 
-            this.size_total=0;
-            this.size_active=0;
+            if ( CAAT.DEBUG ) {
+                this.size_total=0;
+                this.size_active=0;
+            }
 
             /**
              * draw director active scenes.
@@ -482,8 +484,10 @@
                             c.time += time;
                         }
 
-                        this.size_total+= this.childrenList[i].size_total;
-                        this.size_active+= this.childrenList[i].size_active;
+                        if ( CAAT.DEBUG ) {
+                            this.size_total+= c.size_total;
+                            this.size_active+= c.size_active;
+                        }
 
                     }
                 }
@@ -521,8 +525,10 @@
                             c.time += time;
                         }
 
-                        this.size_total+= this.childrenList[i].size_total;
-                        this.size_active+= this.childrenList[i].size_active;
+                        if ( CAAT.DEBUG ) {
+                            this.size_total+= c.size_total;
+                            this.size_active+= c.size_active;
+                        }
 
                     }
                 }
@@ -539,7 +545,7 @@
          * @param time {number} director time.
          */
         animate : function(director, time) {
-            this.setModelViewMatrix(this);
+            this.setModelViewMatrix(this.glEnabled);
 
             for (var i = 0; i < this.childrenList.length; i++) {
                 var tt = this.childrenList[i].time - this.childrenList[i].start_time;
@@ -1477,11 +1483,14 @@
                             }
                         }
                         me.lastSelectedActor = lactor;
+
+                        var pos = lactor.viewToModel(new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
+
                         if (null !== lactor) {
                             me.lastSelectedActor.mouseMove(
                                 new CAAT.MouseEvent().init(
-                                    me.mousePoint.x,
-                                    me.mousePoint.y,
+                                    pos.x,
+                                    pos.y,
                                     e,
                                     me.lastSelectedActor,
                                     me.screenMousePoint));

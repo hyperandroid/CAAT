@@ -1,3 +1,9 @@
+10/19/2011
+----------
+
+* Code optimizations.
+* Fixed bug with onMouseMove local coordinates.
+
 10/18/2011
 ----------
 * Added a callback function to be triggered on Director resize events. The method enableResizeEvents signature
