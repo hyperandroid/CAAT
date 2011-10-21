@@ -213,10 +213,10 @@
                 );
             } else {
                 ctx.quadraticCurveTo(
-                    this.cc[1].x,
-                    this.cc[1].y,
-                    this.cc[2].x,
-                    this.cc[2].y
+                    cc[1].x,
+                    cc[1].y,
+                    cc[2].x,
+                    cc[2].y
                 );
             }
             return this;

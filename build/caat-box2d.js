@@ -2,6 +2,8 @@
 /*
 The MIT License
 
+Copyright (c) 2010-2011 Ibon Tolosana [@hyperandroid]
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -20,18 +22,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-
-Copyright (c) 2010-2011 Ibon Tolosana.
-http://labs.hyperandroid.com/  @Hyperandroid
-
-Thanks to Mario Gonzalez @onedayitwillmake for contributing the module structure and Circle Manager as well
-as some code parts on CAAT.Color object.
-
-Version: 0.1.40
+Version: 0.1.43
 
 Created on:
 DATE: 2011-10-21
-TIME: 00:08:18
+TIME: 10:07:57
 */
 
 

@@ -2,6 +2,8 @@
 /*
 The MIT License
 
+Copyright (c) 2010-2011 Ibon Tolosana [@hyperandroid]
+
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
@@ -20,18 +22,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-
-Copyright (c) 2010-2011 Ibon Tolosana.
-http://labs.hyperandroid.com/  @Hyperandroid
-
-Thanks to Mario Gonzalez @onedayitwillmake for contributing the module structure and Circle Manager as well
-as some code parts on CAAT.Color object.
-
-Version: 0.1.40
+Version: 0.1.43
 
 Created on:
 DATE: 2011-10-21
-TIME: 00:08:18
+TIME: 10:07:57
 */
 
 
@@ -84,11 +79,11 @@ a[f],h=g>>24&255,i=(g&16711680)>>16,k=(g&65280)>>8;g&=255;for(var j=a[f+1],m=((j
 0.5;for(var b=0;b<this.coordlist.length;b++)a.fillStyle="#7f7f00",a.beginPath(),a.arc(this.coordlist[b].x,this.coordlist[b].y,this.HANDLE_SIZE/2,0,2*Math.PI,false),a.fill();a.restore()}},update:function(){this.calcLength()},solve:function(){},getContour:function(a){var b=[],c;for(c=0;c<=a;c++){var d=new CAAT.Point;this.solve(d,c/a);b.push(d)}return b},getBoundingBox:function(a){a||(a=new CAAT.Rectangle);a.union(this.coordlist[0].x,this.coordlist[0].y);for(var b=new CAAT.Point,c=this.k;c<=1+this.k;c+=
 this.k)this.solve(b,c),a.union(b.x,b.y);return a},calcLength:function(){var a,b;a=this.coordlist[0].x;b=this.coordlist[0].y;for(var c=0,d=new CAAT.Point,e=this.k;e<=1+this.k;e+=this.k)this.solve(d,e),c+=Math.sqrt((d.x-a)*(d.x-a)+(d.y-b)*(d.y-b)),a=d.x,b=d.y;return this.length=c},getLength:function(){return this.length},endCurvePosition:function(){return this.coordlist[this.coordlist.length-1]},startCurvePosition:function(){return this.coordlist[0]},setPoints:function(){},setPoint:function(a,b){b>=
 0&&b<this.coordlist.length&&(this.coordlist[b]=a)},applyAsPath:function(){}}})();
-(function(){CAAT.Bezier=function(){CAAT.Bezier.superclass.constructor.call(this);return this};CAAT.Bezier.prototype={cubic:false,applyAsPath:function(a){var b=this.coordlist;this.cubic?a.bezierCurveTo(b[1].x,b[1].y,b[2].x,b[2].y,b[3].x,b[3].y):a.quadraticCurveTo(this.cc[1].x,this.cc[1].y,this.cc[2].x,this.cc[2].y);return this},isQuadric:function(){return!this.cubic},isCubic:function(){return this.cubic},setCubic:function(a,b,c,d,e,f,g,h){this.coordlist=[];this.coordlist.push((new CAAT.Point).set(a,
-b));this.coordlist.push((new CAAT.Point).set(c,d));this.coordlist.push((new CAAT.Point).set(e,f));this.coordlist.push((new CAAT.Point).set(g,h));this.cubic=true;this.update();return this},setQuadric:function(a,b,c,d,e,f){this.coordlist=[];this.coordlist.push((new CAAT.Point).set(a,b));this.coordlist.push((new CAAT.Point).set(c,d));this.coordlist.push((new CAAT.Point).set(e,f));this.cubic=false;this.update();return this},setPoints:function(a){if(a.length===3)this.coordlist=a,this.cubic=false,this.update();
-else if(a.length===4)this.coordlist=a,this.cubic=true,this.update();else throw"points must be an array of 3 or 4 CAAT.Point instances.";return this},paint:function(a){this.cubic?this.paintCubic(a):this.paintCuadric(a);CAAT.Bezier.superclass.paint.call(this,a)},paintCuadric:function(a){var b,c;b=this.coordlist[0].x;c=this.coordlist[0].y;a=a.ctx;a.save();a.beginPath();a.moveTo(b,c);b=new CAAT.Point;for(c=this.k;c<=1+this.k;c+=this.k)this.solve(b,c),a.lineTo(b.x,b.y);a.stroke();a.restore()},paintCubic:function(a){var b,
-c;b=this.coordlist[0].x;c=this.coordlist[0].y;a=a.ctx;a.save();a.beginPath();a.moveTo(b,c);b=new CAAT.Point;for(c=this.k;c<=1+this.k;c+=this.k)this.solve(b,c),a.lineTo(b.x,b.y);a.stroke();a.restore()},solve:function(a,b){return this.cubic?this.solveCubic(a,b):this.solveQuadric(a,b)},solveCubic:function(a,b){var c=b*b,d=b*c,e=this.coordlist;a.x=e[0].x+b*(-e[0].x*3+b*(3*e[0].x-e[0].x*b))+b*(3*e[1].x+b*(-6*e[1].x+e[1].x*3*b))+c*(e[2].x*3-e[2].x*3*b)+e[3].x*d;a.y=e[0].y+b*(-e[0].y*3+b*(3*e[0].y-e[0].y*
-b))+b*(3*e[1].y+b*(-6*e[1].y+e[1].y*3*b))+c*(e[2].y*3-e[2].y*3*b)+e[3].y*d;return a},solveQuadric:function(a,b){var c=this.coordlist;a.x=(1-b)*(1-b)*c[0].x+2*(1-b)*b*c[1].x+b*b*c[2].x;a.y=(1-b)*(1-b)*c[0].y+2*(1-b)*b*c[1].y+b*b*c[2].y;return a}};extend(CAAT.Bezier,CAAT.Curve,null)})();
+(function(){CAAT.Bezier=function(){CAAT.Bezier.superclass.constructor.call(this);return this};CAAT.Bezier.prototype={cubic:false,applyAsPath:function(a){var b=this.coordlist;this.cubic?a.bezierCurveTo(b[1].x,b[1].y,b[2].x,b[2].y,b[3].x,b[3].y):a.quadraticCurveTo(b[1].x,b[1].y,b[2].x,b[2].y);return this},isQuadric:function(){return!this.cubic},isCubic:function(){return this.cubic},setCubic:function(a,b,c,d,e,f,g,h){this.coordlist=[];this.coordlist.push((new CAAT.Point).set(a,b));this.coordlist.push((new CAAT.Point).set(c,
+d));this.coordlist.push((new CAAT.Point).set(e,f));this.coordlist.push((new CAAT.Point).set(g,h));this.cubic=true;this.update();return this},setQuadric:function(a,b,c,d,e,f){this.coordlist=[];this.coordlist.push((new CAAT.Point).set(a,b));this.coordlist.push((new CAAT.Point).set(c,d));this.coordlist.push((new CAAT.Point).set(e,f));this.cubic=false;this.update();return this},setPoints:function(a){if(a.length===3)this.coordlist=a,this.cubic=false,this.update();else if(a.length===4)this.coordlist=a,
+this.cubic=true,this.update();else throw"points must be an array of 3 or 4 CAAT.Point instances.";return this},paint:function(a){this.cubic?this.paintCubic(a):this.paintCuadric(a);CAAT.Bezier.superclass.paint.call(this,a)},paintCuadric:function(a){var b,c;b=this.coordlist[0].x;c=this.coordlist[0].y;a=a.ctx;a.save();a.beginPath();a.moveTo(b,c);b=new CAAT.Point;for(c=this.k;c<=1+this.k;c+=this.k)this.solve(b,c),a.lineTo(b.x,b.y);a.stroke();a.restore()},paintCubic:function(a){var b,c;b=this.coordlist[0].x;
+c=this.coordlist[0].y;a=a.ctx;a.save();a.beginPath();a.moveTo(b,c);b=new CAAT.Point;for(c=this.k;c<=1+this.k;c+=this.k)this.solve(b,c),a.lineTo(b.x,b.y);a.stroke();a.restore()},solve:function(a,b){return this.cubic?this.solveCubic(a,b):this.solveQuadric(a,b)},solveCubic:function(a,b){var c=b*b,d=b*c,e=this.coordlist;a.x=e[0].x+b*(-e[0].x*3+b*(3*e[0].x-e[0].x*b))+b*(3*e[1].x+b*(-6*e[1].x+e[1].x*3*b))+c*(e[2].x*3-e[2].x*3*b)+e[3].x*d;a.y=e[0].y+b*(-e[0].y*3+b*(3*e[0].y-e[0].y*b))+b*(3*e[1].y+b*(-6*
+e[1].y+e[1].y*3*b))+c*(e[2].y*3-e[2].y*3*b)+e[3].y*d;return a},solveQuadric:function(a,b){var c=this.coordlist;a.x=(1-b)*(1-b)*c[0].x+2*(1-b)*b*c[1].x+b*b*c[2].x;a.y=(1-b)*(1-b)*c[0].y+2*(1-b)*b*c[1].y+b*b*c[2].y;return a}};extend(CAAT.Bezier,CAAT.Curve,null)})();
 (function(){CAAT.CatmullRom=function(){CAAT.CatmullRom.superclass.constructor.call(this);return this};CAAT.CatmullRom.prototype={setCurve:function(a,b,c,d,e,f,g,h){this.coordlist=[];this.coordlist.push((new CAAT.Point).set(a,b));this.coordlist.push((new CAAT.Point).set(c,d));this.coordlist.push((new CAAT.Point).set(e,f));this.coordlist.push((new CAAT.Point).set(g,h));this.cubic=true;this.update()},paint:function(a){var b,c;b=this.coordlist[0].x;c=this.coordlist[0].y;var d=a.ctx;d.save();d.beginPath();
 d.moveTo(b,c);b=new CAAT.Point;for(c=this.k;c<=1+this.k;c+=this.k)this.solve(b,c),d.lineTo(b.x,b.y);d.stroke();d.restore();CAAT.CatmullRom.superclass.paint.call(this,a)},solve:function(a,b){var c=b*b,d=b*c,e=this.coordlist;a.x=0.5*(2*e[1].x+(-e[0].x+e[2].x)*b+(2*e[0].x-5*e[1].x+4*e[2].x-e[3].x)*c+(-e[0].x+3*e[1].x-3*e[2].x+e[3].x)*d);a.y=0.5*(2*e[1].y+(-e[0].y+e[2].y)*b+(2*e[0].y-5*e[1].y+4*e[2].y-e[3].y)*c+(-e[0].y+3*e[1].y-3*e[2].y+e[3].y)*d);return a}};extend(CAAT.CatmullRom,CAAT.Curve,null)})();(function(){CAAT.Point=function(a,b,c){this.x=a;this.y=b;this.z=c;return this};CAAT.Point.prototype={x:0,y:0,z:0,set:function(a,b,c){this.x=a;this.y=b;this.z=c;return this},clone:function(){return new CAAT.Point(this.x,this.y,this.z)},translate:function(a,b,c){this.x+=a;this.y+=b;this.z+=c||0;return this},translatePoint:function(a){this.x+=a.x;this.y+=a.y;this.z+=a.z;return this},subtract:function(a){this.x-=a.x;this.y-=a.y;this.z-=a.z;return this},multiply:function(a){this.x*=a;this.y*=a;this.z*=
 a;return this},rotate:function(a){var b=this.x,c=this.y;this.x=b*Math.cos(a)-Math.sin(a)*c;this.y=b*Math.sin(a)+Math.cos(a)*c;return this},setAngle:function(a){var b=this.getLength();this.x=Math.cos(a)*b;this.y=Math.sin(a)*b;return this},setLength:function(a){var b=this.getLength();b?this.multiply(a/b):this.x=this.y=a;return this},normalize:function(){var a=this.getLength();this.x/=a;this.y/=a;this.z/=a;return this},getAngle:function(){return Math.atan2(this.y,this.x)},limit:function(a){var b=this.getLengthSquared();
