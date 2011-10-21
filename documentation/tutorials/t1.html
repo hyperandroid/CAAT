@@ -1,0 +1,243 @@
+<!doctype html>
+<html>
+<head>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-17485141-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 1 - Getting started</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+            <div class="section">
+                <h1>Getting started</h1>
+
+                <p>
+                    To start with CAAT you first need to decide whether your application will be using DOM+CSS,
+                    Canvas or Webgl as rendering engine.
+                </p>
+
+                <p>
+                    In the library bundle under the build folder you'll find two files caat.js (needed to render with
+                    Canvas or WebGL) and caat-css.js to render with DOM+CSS. There're subtle differences
+                    between all three rendering technologies but you'll show no difference if using
+                    CAAT's out-of-the-box animation elements.
+                </p>
+
+                <p>
+                    Once the rendering engine's been chosen (use caat.js file which covers all possibilities), simply
+                    include it
+                    on your html file:
+                </p>
+
+                <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            <script type="text/javascript" src="../lib/caat.js"></script>
+        </pre>
+                </div>
+                <p>Make sure to change the path '../../build/' to your needs.</p>
+            </div>
+
+            <div class="section">
+                <h2>CAAT Templates</h2>
+
+                <p>
+                    To make starting with CAAT easier, there are two out-of-the-box generated templates.
+                    They are located in the CAAT-Samples file bundle under the <strong>templates</strong> folder.
+                    Use them as the start point to create a custom CAAT application.
+                <ul>
+                    <li>One template will simply launch the scene after loading located under the
+                        folder <strong>startup-wo-splash</strong>.
+                    </li>
+                    <li>Another version which will show an splash screen, keep it shown at least for 3 seconds, and
+                        then get the created CAAT scene in. It is located under the folder
+                        <strong>startup-with-splash</strong>.
+                    </li>
+                </ul>
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>How to start</h2>
+
+                <p>One of the minimum CAAT library setup programs could be this one:
+
+
+                <div class="code">
+    <pre class="brush: js; auto-links: false; toolbar: false;">
+        var director = new CAAT.Director().initialize(
+                100,    // 100 pixels wide
+                100,    // 100 pixels across
+                document.getElementById('_c1'));
+
+        var scene=     director.createScene();
+
+        var circle=    new CAAT.ShapeActor().
+                setLocation(20,20).
+                setSize(60,60).
+                setFillStyle('#ff0000').
+                setStrokeStyle('#000000');
+
+        scene.addChild(circle);
+
+        CAAT.loop(1);
+    </pre>
+                </div>
+
+                <p>By executing it, we'll get a black-outlined red circle at position 20,20 and of radius 30.
+
+                <p>Despite its simplicity, some facts must be taken into account:
+                <ol>
+                    <li>When using CAAT, it's mandatory to create a CAAT.Director instance. The Director is the entry
+                        point
+                        to
+                        CAAT.
+                    <li>You must explictly supply a canvas size in pixels. In this example 100 by 100 pixels.</li>
+                    <li>The director will perform animations in a HTML document canvas element. We can supply a
+                        reference to
+                        a
+                        canvas,
+                        or simple issue a <strong>new CAAT.Director().initialize(100,100)</strong> command and let the
+                        director
+                        create a canvas for us.
+                    </li>
+                    <li>The Director instance is fed with scenes. CAAT.Scene instances are advanced actor containers.
+                        We'll
+                        see
+                        how the Director manages Scenes, and how to elegantly switch from one to the other.
+                    <li>Scenes are fed with CAAT.Actor instances. Indeed, as much as needed.
+                    <li>CAAT.Actor instances and its subinstances (ShapeActor, SpriteActor, etc.) have a lifecycle, so
+                        it
+                        must
+                        be explicitly stated the call to create method.
+                    <li>We must call director.loop to signal CAAT to start delivering content to the canvas.
+                </ol>
+
+                <p>And that's it, our red circle:
+
+
+                <div class="sample">
+                    <canvas id="_c1"></canvas>
+                </div>
+                <script>
+                    (function() {
+                        // We assume that there's a element called _c1 in the dom.
+                        // This element must be a Canvas element.
+                        var director = new CAAT.Director().initialize(
+                                100, 100,
+                                document.getElementById('_c1'));
+
+                        var scene = director.createScene();
+                        var circle = new CAAT.ShapeActor().
+                                setLocation(20, 20).
+                                setSize(60, 60).
+                                setFillStyle('#ff0000').
+                                setStrokeStyle('#000000');
+
+                        scene.addChild(circle);
+
+                        CAAT.loop(1);
+                    })();
+                </script>
+
+                <div class="section">
+                    <p>In this other example, we're not specifying a DOM canvas element to the Director instantiation.
+                        The
+                        director itself will create one for us
+                        and we'll be responsible for adding the element to the desired position in the DOM.</p>
+
+                    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+    // We are not pointing any canvas in the director creation statement,
+    // so the director will create a Canvas for us.
+    var director2 = new CAAT.Director().initialize(100,100);
+
+    // add the canvas to the document:
+    document.getElementById('div_canvas2').appendChild( director2.canvas );
+
+    var scene2=     director.createScene();
+    var circle2=    new CAAT.ShapeActor().
+            setLocation(20,20).
+            setSize(60,60).
+            setFillStyle('#ff00ff').
+            setStrokeStyle('#00ff00');
+
+    scene2.addChild(circle2);
+
+    CAAT.loop(1);
+        </pre>
+                    </div>
+
+                </div>
+
+                <div class="sample" id="div_canvas2"></div>
+                <script>
+                    (function() {
+                        // We are not pointing any canvas in the director creation statement,
+                        // so the director will create a Canvas for us.
+                        var director2 = new CAAT.Director().initialize(100, 100);
+
+                        // add the canvas to the document:
+                        document.getElementById('div_canvas2').appendChild(director2.canvas);
+
+                        var scene2 = director2.createScene();
+                        var circle2 = new CAAT.ShapeActor().
+                                setLocation(20, 20).
+                                setSize(60, 60).
+                                setFillStyle('#ff00ff').
+                                setStrokeStyle('#00ff00');
+
+                        scene2.addChild(circle2);
+
+                        CAAT.loop(1);
+                    })();
+                </script>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

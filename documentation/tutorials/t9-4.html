@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+<head>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-17485141-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 9 - ImageActor</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>Other CAAT actors</h1>
+            <h2>CAAT.ImageActor</h2>
+            <div>
+                <p>
+                    This actor objects' functionalities are already available at any <span class="apicode">
+                    CAAT.Actor</span> which is the preferred way of setting up actors with images.
+                </p>
+                <p>
+                    The methods <span class="apicode">setOffsetX( offset )</span>,
+                    <span class="apicode">setOffsetY( offset )</span>,
+                    <span class="apicode">setOffset( offset_x, offset_y )</span> behave exactly
+                    as their counterparts on CAAT.Actor object instances.
+                </p>
+                <p>
+                    The method <span class="apicode">setImage( image )</span> has its counterpart
+                    in CAAT.Actor method <span class="apicode">setBackgroundImage( image_or_spriteImage )</span>.
+                </p>
+                <p>
+                    This actor has a fine grained image drawing method via the call to
+                    <span class="apicode">setImageTransformation( transformation )</span>. The transformation
+                    parameter must have any of the following values:
+                    <ul>
+                        <li><span class="important">TR_NONE</span>, no image transformation.
+                        <li><span class="important">TR_FLIP_HORIZONTAL</span>, set horizontal flip.
+                        <li><span class="important">TR_FLIP_VERTICAL</span>, set vertical flip.
+                        <li><span class="important">TR_FLIP_ALL</span>, set both horizontal and vertical flip.
+                        <li><span class="important">TR_FIXED_TO_SIZE</span>, scale image to fit actor's size.
+                    </ul>
+                </p>
+            </div>
+            <div>
+                <h2>Example</h2>
+                <p>
+                    This example show 20 image actors continuously traversing a random cubic
+                    bezier path.
+                </p>
+                <div>
+                    <canvas id="_c6"></canvas></div>
+                    <script>
+                        (function() {
+
+                            var director= new CAAT.Director().initialize(
+                                    700,
+                                    350,
+                                    document.getElementById('_c6') );
+
+                            var scene= director.createScene();
+
+                            // define a resource preloader.
+                            new CAAT.ImagePreloader().loadImages(
+                                [ {id:'fish',     url:'resource/logo.png'} ],   // get only this image.
+                                function( counter, images ) {
+
+                                    if ( counter==images.length ) {             // when it is done loading
+
+                                        // save loaded resources on Director.
+                                        director.setImagesCache(images);
+
+                                        for(var i=0; i<20; i++ ) {
+                                            var fish =
+                                                new CAAT.ImageActor().
+                                                    setImage(director.getImage('fish')).
+                                                    setImageTransformation(CAAT.ImageActor.prototype.TR_FIXED_TO_SIZE).
+                                                    addBehavior(
+                                                        new CAAT.PathBehavior().
+                                                            setAutoRotate(true).
+                                                            setPath( new CAAT.Path().setLinear(0,0,0,0) ).
+                                                            setInterpolator(
+                                                                new CAAT.Interpolator().createExponentialInOutInterpolator(2,false) ).
+                                                            setFrameTime( scene.time, 10 ).
+                                                            addListener( {
+                                                                behaviorExpired : function(behaviour,time) {
+                                                                    var endCoord= behaviour.path.endCurvePosition();
+                                                                    behaviour.setPath(
+                                                                            new CAAT.Path().setCubic(
+                                                                                endCoord.x,
+                                                                                endCoord.y,
+                                                                                Math.random()*director.width,
+                                                                                Math.random()*director.height,
+                                                                                Math.random()*director.width,
+                                                                                Math.random()*director.height,
+                                                                                Math.random()*director.width,
+                                                                                Math.random()*director.height) );
+                                                                    behaviour.setFrameTime( scene.time, 3000+Math.random()*3000 )
+                                                                }
+                                                            })
+                                                    ).
+                                                    enableEvents(false);
+                                            var s= Math.random()*.5 + .5;
+                                            fish.setSize( fish.width*s, fish.height*s );
+                                            scene.addChild(fish);
+                                        }
+
+                                    }
+                                });
+
+                            CAAT.loop(60);
+
+                        })();
+                    </script>
+                </div>
+
+                <div class="code">
+                    <pre class="brush: js; auto-links: false; toolbar: false;">
+                            var director= new CAAT.Director().initialize(
+                                    700,
+                                    350,
+                                    document.getElementById('_c6') );
+
+                            var scene= director.createScene();
+
+                            // define a resource preloader.
+                            new CAAT.ImagePreloader().loadImages(
+                                [ {id:'fish',     url:'resource/logo.png'} ],   // get only this image.
+                                function( counter, images ) {
+
+                                    if ( counter==images.length ) {             // when it is done loading
+
+                                        // save loaded resources on Director.
+                                        director.setImagesCache(images);
+
+                                        for(var i=0; i<20; i++ ) {
+                                            var fish =
+                                                new CAAT.ImageActor().
+                                                    setImage(director.getImage('fish')).
+                                                    setImageTransformation(CAAT.ImageActor.prototype.TR_FIXED_TO_SIZE).
+                                                    addBehavior(
+                                                        new CAAT.PathBehavior().
+                                                            setAutoRotate(true).
+                                                            setPath( new CAAT.Path().setLinear(0,0,0,0) ).
+                                                            setInterpolator(
+                                                                new CAAT.Interpolator().createExponentialInOutInterpolator(2,false) ).
+                                                            setFrameTime( scene.time, 10 ).
+                                                            addListener( {
+                                                                behaviorExpired : function(behaviour,time) {
+                                                                    var endCoord= behaviour.path.endCurvePosition();
+                                                                    behaviour.setPath(
+                                                                            new CAAT.Path().setCubic(
+                                                                                endCoord.x,
+                                                                                endCoord.y,
+                                                                                Math.random()*director.width,
+                                                                                Math.random()*director.height,
+                                                                                Math.random()*director.width,
+                                                                                Math.random()*director.height,
+                                                                                Math.random()*director.width,
+                                                                                Math.random()*director.height) );
+                                                                    behaviour.setFrameTime( scene.time, 3000+Math.random()*3000 )
+                                                                }
+                                                            })
+                                                    );
+                                            scene.addChild(fish);
+                                        }
+
+                                    }
+                                });
+
+                            CAAT.loop(60);
+
+                        })();
+                    </pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
