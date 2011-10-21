@@ -382,17 +382,22 @@
 			var t3= t*t2;
 
             var cl= this.coordlist;
+            var cl0= cl[0];
+            var cl1= cl[1];
+            var cl2= cl[2];
+            var cl3= cl[3];
 
-			point.x=(cl[0].x + t * (-cl[0].x * 3 + t * (3 * cl[0].x-
-					cl[0].x*t)))+t*(3*cl[1].x+t*(-6*cl[1].x+
-					cl[1].x*3*t))+t2*(cl[2].x*3-cl[2].x*3*t)+
-					cl[3].x * t3;
+			point.x=(
+                cl0.x + t * (-cl0.x * 3 + t * (3 * cl0.x-
+                cl0.x*t)))+t*(3*cl1.x+t*(-6*cl1.x+
+                cl1.x*3*t))+t2*(cl2.x*3-cl2.x*3*t)+
+                cl3.x * t3;
 				
 			point.y=(
-                    cl[0].y+t*(-cl[0].y*3+t*(3*cl[0].y-
-					cl[0].y*t)))+t*(3*cl[1].y+t*(-6*cl[1].y+
-					cl[1].y*3*t))+t2*(cl[2].y*3-cl[2].y*3*t)+
-					cl[3].y * t3;
+                    cl0.y+t*(-cl0.y*3+t*(3*cl0.y-
+					cl0.y*t)))+t*(3*cl1.y+t*(-6*cl1.y+
+					cl1.y*3*t))+t2*(cl2.y*3-cl2.y*3*t)+
+					cl3.y * t3;
 			
 			return point;
 		},
@@ -403,8 +408,13 @@
          */
 		solveQuadric : function(point,t) {
             var cl= this.coordlist;
-			point.x= (1-t)*(1-t)*cl[0].x + 2*(1-t)*t*cl[1].x + t*t*cl[2].x;
-			point.y= (1-t)*(1-t)*cl[0].y + 2*(1-t)*t*cl[1].y + t*t*cl[2].y;
+            var cl0= cl[0];
+            var cl1= cl[1];
+            var cl2= cl[2];
+            var t1= 1-t;
+
+			point.x= t1*t1*cl0.x + 2*t1*t*cl1.x + t*t*cl2.x;
+			point.y= t1*t1*cl0.y + 2*t1*t*cl1.y + t*t*cl2.y;
 			
 			return point;
 		}
