@@ -387,7 +387,7 @@
 		setForTime : function(time, actor) {
             var bh= this.behaviors;
 			for( var i=0; i<bh.length; i++ ) {
-				bh[i].setForTime( time-this.behaviorStartTime, actor );
+				bh[i].setForTime( time, actor );
 			}
 
             return null;
