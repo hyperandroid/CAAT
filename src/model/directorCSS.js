@@ -90,6 +90,7 @@
             return 'CSS';
         },
         windowResized : function(w, h) {
+
             switch (this.resize) {
                 case this.RESIZE_WIDTH:
                     this.setBounds(0, 0, w, this.height);
@@ -101,8 +102,7 @@
                     this.setBounds(0, 0, w, h);
                     break;
                 case this.RESIZE_PROPORTIONAL:
-                    var factor= Math.min(w/this.referenceWidth, h/this.referenceHeight);
-                    this.setScaleAnchored( factor, factor, 0, 0 );
+                    this.setScaleProportional(w,h);
                     break;
             }
 
@@ -111,6 +111,17 @@
             }
             
         },
+        setScaleProportional : function(w,h) {
+
+            var factor= Math.min(w/this.referenceWidth, h/this.referenceHeight);
+console.log('scale factor: '+factor+'             '+this.referenceWidth+','+this.referenceHeight);
+            this.setScaleAnchored( factor, factor, 0, 0 );
+
+            this.eventHandler.style.width=  ''+this.referenceWidth +'px';
+            this.eventHandler.style.height= ''+this.referenceHeight+'px';
+
+        },
+
         /**
          * Enable window resize events and set redimension policy. A callback functio could be supplied
          * to be notified on a Director redimension event. This is necessary in the case you set a redim
@@ -149,6 +160,9 @@
             for (var i = 0; i < this.scenes.length; i++) {
                 this.scenes[i].setBounds(0, 0, w, h);
             }
+            this.eventHandler.style.width= w+'px';
+            this.eventHandler.style.height= h+'px';
+console.log('setbounds '+w+' '+h);
 
             return this;
         },
@@ -166,7 +180,7 @@
          * @return this
          */
         initialize : function(width, height, domElement) {
-            this.setBounds(0, 0, width, height);
+
             this.timeline = new Date().getTime();
             this.domElement= domElement;
             this.style('position','absolute');
@@ -174,6 +188,8 @@
             this.style('height',''+height+'px');
             this.style('overflow', 'hidden' );
             this.enableEvents();
+
+            this.setBounds(0, 0, width, height);
 
             this.checkDebug();
             return this;
@@ -284,7 +300,7 @@
                     if ( c.onRenderStart ) {
                         c.onRenderStart(tt);
                     }
-                    c.paintActor(this, tt);
+
                     if ( c.onRenderEnd ) {
                         c.onRenderEnd(tt);
                     }
@@ -634,6 +650,18 @@
                 this.easeInOutRandom(currentSceneIndex + 1, currentSceneIndex, time, alpha);
             }
         },
+        mouseEnter : function(mouseEvent) {
+        },
+        mouseExit : function(mouseEvent) {
+        },
+        mouseMove : function(mouseEvent) {
+        },
+        mouseDown : function(mouseEvent) {
+        },
+        mouseUp : function(mouseEvent) {
+        },
+        mouseDrag : function(mouseEvent) {
+        },
         /**
          * Scene easing listener. Notifies scenes when they're about to be activated (set as current
          * director's scene).
@@ -758,9 +786,10 @@
          */
         emptyScenes : function() {
             this.scenes = [];
+            /*
             this.domElement.innerHTML='';
             this.createEventHandler();
-
+            */
         },
         /**
          * Adds an scene to this Director.
@@ -842,6 +871,80 @@
             CAAT.RegisterDirector(this);
             this.createEventHandler();
         },
+
+
+        /**
+         * Acculumate dom elements position to properly offset on-screen mouse/touch events.
+         * @param node
+         */
+        cumulateOffset : function(node, parent, prop) {
+            var left= prop+'Left';
+            var top= prop+'Top';
+            var x=0, y=0, style;
+
+            while( node && node.style ) {
+                if ( node.currentStyle ) {
+                    style= node.currentStyle['position'];
+                } else {
+                    style= (node.ownerDocument.defaultView || node.ownerDocument.parentWindow).getComputedStyle(node, null);
+                    style= style ? style.getPropertyValue('position') : null;
+                }
+
+//                if (!/^(relative|absolute|fixed)$/.test(style)) {
+                if (!/^(fixed)$/.test(style)) {
+                    x += node[left];
+                    y+= node[top];
+                    node = node[parent];
+                } else {
+                    break;
+                }
+            }
+
+            return {
+                x:      x,
+                y:      y,
+                style:  style
+            };
+        },
+        getOffset : function( node ) {
+            var res= this.cumulateOffset(node, 'offsetParent', 'offset');
+            if ( res.style==='fixed' ) {
+                var res2= this.cumulateOffset(node, node.parentNode ? 'parentNode' : 'parentElement', 'scroll');
+                return {
+                    x: res.x + res2.x,
+                    y: res.y + res2.y
+                };
+            }
+
+            return {
+                x: res.x,
+                y: res.y
+            };
+        },
+        getCanvasCoord : function(point, e) {
+
+            var posx = 0;
+            var posy = 0;
+            if (!e) e = window.event;
+
+            if (e.pageX || e.pageY) {
+                posx = e.pageX;
+                posy = e.pageY;
+            }
+            else if (e.clientX || e.clientY) {
+                posx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+                posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+            }
+
+            var offset= this.getOffset(e.target);
+
+            posx-= offset.x;
+            posy-= offset.y;
+            point.set(posx, posy);
+            this.screenMousePoint.set(posx, posy);
+
+        },
+
         createEventHandler : function() {
             this.eventHandler= document.createElement('div');
             this.domElement.appendChild(this.eventHandler);
@@ -855,6 +958,8 @@
             
             var canvas= this.eventHandler;
             var me= this;
+            var in_ = false;
+
 
             canvas.addEventListener('mouseup',
                     function(e) {
@@ -931,7 +1036,6 @@
                     },
                     false);
 
-
             canvas.addEventListener('mouseover',
                     function(e) {
 
@@ -983,13 +1087,13 @@
                     },
                     false);
 
-
             canvas.addEventListener('mousemove',
                     function(e) {
 
                         e.preventDefault();
 
                         me.getCanvasCoord(me.mousePoint, e);
+
                         // drag
                         if (me.isMouseDown && null !== me.lastSelectedActor) {
 
@@ -1117,7 +1221,6 @@
                     false);
 
 
-
             function touchHandler(event) {
                 var touches = event.changedTouches,
                         first = touches[0],
@@ -1162,11 +1265,12 @@
             canvas.addEventListener("touchcancel", touchHandler, true);
 
 
-        },
+        }
         /**
          * Acculumate dom elements position to properly offset on-screen mouse/touch events.
          * @param node
          */
+            /*
         cumulateOffset : function(node, parent, prop) {
             var left= prop+'Left';
             var top= prop+'Top';
@@ -1211,11 +1315,13 @@
                 y: res.y
             };
         },
+        */
         /**
          * Normalize input event coordinates to be related to (0,0) canvas position.
          * @param point {CAAT.Point} a CAAT.Point instance to hold the canvas coordinate.
          * @param e {MouseEvent} a mouse event from an input event.
          */
+            /*
         getCanvasCoord : function(point, e) {
 
             var posx = 0;
@@ -1239,7 +1345,7 @@
             this.screenMousePoint.set(posx, posy);
 
         }
-
+*/
     };
 
     extend(CAAT.Director, CAAT.ActorContainer, null);

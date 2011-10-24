@@ -1815,6 +1815,8 @@
 		addChildAt : function(child, index) {
 
 			if( index <= 0 ) {
+                child.parent= this;
+                child.dirty= true;
                 this.childrenList.unshift(child);
 				return this;
             } else {

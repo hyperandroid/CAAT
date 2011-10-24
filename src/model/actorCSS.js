@@ -434,7 +434,6 @@
          * @param paint
          */
 		setPaint : function( paint )	{
-            return this.setFillStyle(paint);
 		},
         /**
          * Stablishes the Alpha transparency for the Actor.
@@ -1089,6 +1088,8 @@
             //this.setAlpha(this.frameAlpha);
             this.styleAlpha(this.frameAlpha);
             this.inFrame= true;
+
+            this.setModelViewMatrix(false);
 
             return true;
 		},

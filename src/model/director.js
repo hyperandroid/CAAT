@@ -1045,9 +1045,7 @@
          * @return this
          */
         addAudio : function(id, url) {
-
             this.audioManager.addAudio(id, url);
-
             return this;
         },
         /**
@@ -1143,7 +1141,6 @@
             }
         },
         endLoop : function () {
-            //clearInterval(this.interval);
         },
         /**
          * This method states whether the director must clear background before rendering
