@@ -931,6 +931,7 @@
                     },
                     false);
 
+
             canvas.addEventListener('mouseover',
                     function(e) {
 
@@ -982,14 +983,13 @@
                     },
                     false);
 
+
             canvas.addEventListener('mousemove',
                     function(e) {
 
                         e.preventDefault();
 
                         me.getCanvasCoord(me.mousePoint, e);
-                        var pos = new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0);
-                        
                         // drag
                         if (me.isMouseDown && null !== me.lastSelectedActor) {
 
@@ -1052,7 +1052,7 @@
                             return;
                         }
 
-
+                        in_= true;
 
                         var lactor = me.findActorAtPosition(
                                 me.mousePoint,
@@ -1086,8 +1086,8 @@
                         if (null !== lactor) {
                             me.lastSelectedActor.mouseMove(
                                 new CAAT.MouseEvent().init(
-                                    me.mousePoint.x,
-                                    me.mousePoint.y,
+                                    pos.x,
+                                    pos.y,
                                     e,
                                     me.lastSelectedActor,
                                     me.screenMousePoint));
@@ -1236,6 +1236,8 @@
             posx-= offset.x;
             posy-= offset.y;
             point.set(posx, posy);
+            this.screenMousePoint.set(posx, posy);
+
         }
 
     };

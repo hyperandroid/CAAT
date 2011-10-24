@@ -1,3 +1,9 @@
+10/24/2011
+----------
+
+* Fixed CSS dragging bug.
+* Added get/set id methods to CSS Actor.
+
 10/19/2011
 ----------
 

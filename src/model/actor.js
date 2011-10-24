@@ -1649,6 +1649,9 @@
             return true;
         },
         __paintActor : function(director, time ) {
+            if (!this.visible) {
+                return true;
+            }
 
             var ctx= director.ctx;
 

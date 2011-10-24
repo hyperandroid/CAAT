@@ -106,6 +106,16 @@
         size_active:            1,      // number of animated children
         size_total:             1,
 
+        id:                     null,
+
+        getId : function()  {
+            return this.id;
+        },
+        setId : function(id) {
+            this.id= id;
+            return this;
+        },
+
         /**
          * Set this Actor's parent and connect in CSS a div with its parent.
          * In case there's a parent set, previously the div will be removed from
@@ -817,9 +827,17 @@
          *
          */
         modelToView : function(point) {
-            return null;
-        },
-        /**
+            if ( point instanceof Array ) {
+                for( var i=0; i<point.length; i++ ) {
+                    this.worldModelViewMatrix.transformCoord(point[i]);
+                }
+            }
+            else {
+                this.worldModelViewMatrix.transformCoord(point);
+            }
+
+            return point;
+        },        /**
          * Transform a point from model to view space.
          * <p>
          * WARNING: every call to this method calculates
@@ -836,6 +854,16 @@
             this.worldModelViewMatrixI.transformCoord(point);
 			return point;
 		},
+        /**
+         * Transform a local coordinate point on this Actor's coordinate system into
+         * another point in otherActor's coordinate system.
+         * @param point {CAAT.Point}
+         * @param otherActor {CAAT.Actor}
+         */
+        modelToModel : function( point, otherActor )   {
+            return otherActor.viewToModel( this.modelToView( point ) );
+        },
+
         /**
          * Private
          * This method does the needed point transformations across an Actor hierarchy to devise
