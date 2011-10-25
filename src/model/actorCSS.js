@@ -135,6 +135,9 @@
             } else {
                 this.domParent= null;
             }
+
+            this.dirty= true;
+
             return this;
         },
         /**
@@ -299,14 +302,14 @@
 
             var value=
 
-                "translate3d(0,0,0) rotate("+this.rotationAngle+"rad) scale("+this.scaleX+","+this.scaleY+")" +
+                "rotate("+this.rotationAngle+"rad) scale("+this.scaleX+","+this.scaleY+")" +
                     imageop;
 
-            this.domElement.style['transform']=         value;
             this.domElement.style['-ms-transform']=     value;
-            this.domElement.style['-webkit-transform']= value;
-            this.domElement.style['-o-transform']=      value;
-            this.domElement.style['-moz-transform']=    value;
+            this.domElement.style['-webkit-transform']= "translate3d(0,0,0) " + value;
+            this.domElement.style.OTransform=      value;
+            this.domElement.style.MozTransform=         value;
+            this.domElement.style['transform']=         value;
 
             var anchor= ''+((this.rotationX/this.width)*100)+'% '+
                            ((this.rotationY/this.height)*100)+'% ';
@@ -314,8 +317,8 @@
             this.domElement.style['transform-origin']=          anchor;
             this.domElement.style['-webkit-transform-origin']=  anchor;
             this.domElement.style['-ms-transform-origin']=      anchor;
-            this.domElement.style['-o-transform-origin']=       anchor;
-            this.domElement.style['-moz-transform-origin']=     anchor;
+            this.domElement.style.OTransformOrigin=             anchor;
+            this.domElement.style.MozTransformOrigin=           anchor;
 
             return this;
         },
@@ -1157,53 +1160,7 @@
                 mm[3]= mm3;
                 mm[4]= mm4;
                 mm[5]= mm5;
-
-/*
-                mm[2]+= this.x;
-                mm[5]+= this.y;
-
-                if ( this.rotationAngle ) {
-//                    this.modelViewMatrix.multiply( m.setTranslate( this.rotationX, this.rotationY) );
-//                    this.modelViewMatrix.multiply( m.setRotation( this.rotationAngle ) );
-//                    this.modelViewMatrix.multiply( m.setTranslate( -this.rotationX, -this.rotationY) );                    c= Math.cos( this.rotationAngle );
-                    mm[2]+= mm[0]*this.rotationX + mm[1]*this.rotationY;
-                    mm[5]+= mm[3]*this.rotationX + mm[4]*this.rotationY;
-
-                    c= Math.cos( this.rotationAngle );
-                    s= Math.sin( this.rotationAngle );
-                    _m00= mm[0];
-                    _m01= mm[1];
-                    _m10= mm[3];
-                    _m11= mm[4];
-                    mm[0]=  _m00*c + _m01*s;
-                    mm[1]= -_m00*s + _m01*c;
-                    mm[3]=  _m10*c + _m11*s;
-                    mm[4]= -_m10*s + _m11*c;
-
-                    mm[2]+= -mm[0]*this.rotationX - mm[1]*this.rotationY;
-                    mm[5]+= -mm[3]*this.rotationX - mm[4]*this.rotationY;
-
-                }
-                if ( this.scaleX!=1 || this.scaleY!=1 && (this.scaleTX || this.scaleTY )) {
-//                    this.modelViewMatrix.multiply( m.setTranslate( this.scaleTX , this.scaleTY ) );
-//                    this.modelViewMatrix.multiply( m.setScale( this.scaleX, this.scaleY ) );
-//                    this.modelViewMatrix.multiply( m.setTranslate( -this.scaleTX , -this.scaleTY ) );
-
-                    mm[2]+= mm[0]*this.scaleTX + mm[1]*this.scaleTY;
-                    mm[5]+= mm[3]*this.scaleTX + mm[4]*this.scaleTY;
-
-                    mm[0]= mm[0]*this.scaleX;
-                    mm[1]= mm[1]*this.scaleY;
-                    mm[3]= mm[3]*this.scaleX;
-                    mm[4]= mm[4]*this.scaleY;
-
-                    mm[2]+= -mm[0]*this.scaleTX - mm[1]*this.scaleTY;
-                    mm[5]+= -mm[3]*this.scaleTX - mm[4]*this.scaleTY;
-
-                }
-*/
             }
-
 
             if ( this.parent ) {
                 if ( this.dirty || this.parent.wdirty ) {
@@ -1215,7 +1172,8 @@
                 if ( this.dirty ) {
                     this.wdirty= true;
                 }
-                this.worldModelViewMatrix.copy( this.modelViewMatrix );
+                //this.worldModelViewMatrix.copy( this.modelViewMatrix );
+                this.worldModelViewMatrix.identity();
             }
 
             this.dirty= false;
@@ -1549,6 +1507,7 @@
 		addChild : function(child) {
             child.setParent( this );
             this.childrenList.push(child);
+            child.dirty= true;
             return this;
 		},
         /**
@@ -1581,6 +1540,8 @@
 			this.childrenList.splice(index, 0, child);
 
             this.domElement.insertBefore(child, this.domElement.childNodes[index]);
+
+            child.dirty= true;
 
             return this;
 		},
@@ -1639,8 +1600,6 @@
                 var child= this.childrenList[i];
 
                 var np= new CAAT.Point( point.x, point.y, 0 );
-                var aabb= child.AABB;
-
                 var contained= child.findActorAtPosition( np );
                 if ( null!==contained ) {
                     return contained;

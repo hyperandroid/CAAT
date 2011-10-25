@@ -892,8 +892,8 @@
              * @ignore
              */
 	        this.mouseEnter= function(mouseEvent) {
-				this.ax= -1;
-				this.ay= -1;
+				this.__d_ax= -1;
+				this.__d_ay= -1;
 		        this.pointed= true;
 		        CAAT.setCursor('move');
 	        };
@@ -905,8 +905,8 @@
              * @ignore
              */
             this.mouseExit = function(mouseEvent) {
-                this.ax = -1;
-                this.ay = -1;
+                this.__d_ax = -1;
+                this.__d_ay = -1;
                 this.pointed = false;
                 CAAT.setCursor('default');
             };
@@ -918,8 +918,6 @@
              * @ignore
              */
             this.mouseMove = function(mouseEvent) {
-                this.mx = mouseEvent.point.x;
-                this.my = mouseEvent.point.y;
             };
 
             /**
@@ -929,8 +927,8 @@
              * @ignore
              */
             this.mouseUp = function(mouseEvent) {
-                this.ax = -1;
-                this.ay = -1;
+                this.__d_ax = -1;
+                this.__d_ay = -1;
             };
 
             /**
@@ -941,36 +939,42 @@
              */
             this.mouseDrag = function(mouseEvent) {
 
-                if (this.ax === -1 || this.ay === -1) {
-                    this.ax = mouseEvent.point.x;
-                    this.ay = mouseEvent.point.y;
-                    this.asx = this.scaleX;
-                    this.asy = this.scaleY;
-                    this.ara = this.rotationAngle;
-                    this.screenx = mouseEvent.screenPoint.x;
-                    this.screeny = mouseEvent.screenPoint.y;
+                var pt;
+
+                pt= this.modelToView( new CAAT.Point(mouseEvent.x, mouseEvent.y ) );
+                this.parent.viewToModel( pt );
+
+                if (this.__d_ax === -1 || this.__d_ay === -1) {
+                    this.__d_ax = pt.x;
+                    this.__d_ay = pt.y;
+                    this.__d_asx = this.scaleX;
+                    this.__d_asy = this.scaleY;
+                    this.__d_ara = this.rotationAngle;
+                    this.__d_screenx = mouseEvent.screenPoint.x;
+                    this.__d_screeny = mouseEvent.screenPoint.y;
                 }
 
                 if (mouseEvent.isShiftDown()) {
-                    var scx = (mouseEvent.screenPoint.x - this.screenx) / 100;
-                    var scy = (mouseEvent.screenPoint.y - this.screeny) / 100;
+                    var scx = (mouseEvent.screenPoint.x - this.__d_screenx) / 100;
+                    var scy = (mouseEvent.screenPoint.y - this.__d_screeny) / 100;
                     if (!mouseEvent.isAltDown()) {
                         var sc = Math.max(scx, scy);
                         scx = sc;
                         scy = sc;
                     }
-                    this.setScale(scx + this.asx, scy + this.asy);
+                    this.setScale(scx + this.__d_asx, scy + this.__d_asy);
 
                 } else if (mouseEvent.isControlDown()) {
-                    var vx = mouseEvent.screenPoint.x - this.screenx;
-                    var vy = mouseEvent.screenPoint.y - this.screeny;
-                    this.setRotation(-Math.atan2(vx, vy) + this.ara);
+                    var vx = mouseEvent.screenPoint.x - this.__d_screenx;
+                    var vy = mouseEvent.screenPoint.y - this.__d_screeny;
+                    this.setRotation(-Math.atan2(vx, vy) + this.__d_ara);
                 } else {
-                    this.x += (mouseEvent.point.x - this.ax);
-                    this.y += (mouseEvent.point.y - this.ay);
-                    this.ax = mouseEvent.point.x;
-                    this.ay = mouseEvent.point.y;
+                    this.x += pt.x-this.__d_ax;
+                    this.y += pt.y-this.__d_ay;
                 }
+
+                this.__d_ax= pt.x;
+                this.__d_ay= pt.y;
             };
 
             return this;
@@ -1155,44 +1159,15 @@
 /*
                 mm[2]+= this.x;
                 mm[5]+= this.y;
-
                 if ( this.rotationAngle ) {
 //                    this.modelViewMatrix.multiply( m.setTranslate( this.rotationX, this.rotationY) );
 //                    this.modelViewMatrix.multiply( m.setRotation( this.rotationAngle ) );
 //                    this.modelViewMatrix.multiply( m.setTranslate( -this.rotationX, -this.rotationY) );                    c= Math.cos( this.rotationAngle );
-                    mm[2]+= mm[0]*this.rotationX + mm[1]*this.rotationY;
-                    mm[5]+= mm[3]*this.rotationX + mm[4]*this.rotationY;
-
-                    c= Math.cos( this.rotationAngle );
-                    s= Math.sin( this.rotationAngle );
-                    _m00= mm[0];
-                    _m01= mm[1];
-                    _m10= mm[3];
-                    _m11= mm[4];
-                    mm[0]=  _m00*c + _m01*s;
-                    mm[1]= -_m00*s + _m01*c;
-                    mm[3]=  _m10*c + _m11*s;
-                    mm[4]= -_m10*s + _m11*c;
-
-                    mm[2]+= -mm[0]*this.rotationX - mm[1]*this.rotationY;
-                    mm[5]+= -mm[3]*this.rotationX - mm[4]*this.rotationY;
-
                 }
                 if ( this.scaleX!=1 || this.scaleY!=1 && (this.scaleTX || this.scaleTY )) {
 //                    this.modelViewMatrix.multiply( m.setTranslate( this.scaleTX , this.scaleTY ) );
 //                    this.modelViewMatrix.multiply( m.setScale( this.scaleX, this.scaleY ) );
 //                    this.modelViewMatrix.multiply( m.setTranslate( -this.scaleTX , -this.scaleTY ) );
-
-                    mm[2]+= mm[0]*this.scaleTX + mm[1]*this.scaleTY;
-                    mm[5]+= mm[3]*this.scaleTX + mm[4]*this.scaleTY;
-
-                    mm[0]= mm[0]*this.scaleX;
-                    mm[1]= mm[1]*this.scaleY;
-                    mm[3]= mm[3]*this.scaleX;
-                    mm[4]= mm[4]*this.scaleY;
-
-                    mm[2]+= -mm[0]*this.scaleTX - mm[1]*this.scaleTY;
-                    mm[5]+= -mm[3]*this.scaleTX - mm[4]*this.scaleTY;
 
                 }
 */
@@ -1210,6 +1185,7 @@
                     this.wdirty= true;
                 }
                 this.worldModelViewMatrix.copy( this.modelViewMatrix );
+                //this.worldModelViewMatrix.identity();
             }
 
             if ( glEnabled && (this.dirty || this.wdirty) ) {
@@ -1878,9 +1854,9 @@
          *
          * @return the Actor contained inside this ActorContainer if found, or the ActorContainer itself.
          */
-		findActorAtPosition : function(point, screenPoint) {
+		findActorAtPosition : function(point) {
 
-			if( null===CAAT.ActorContainer.superclass.findActorAtPosition.call(this,point,screenPoint) ) {
+			if( null===CAAT.ActorContainer.superclass.findActorAtPosition.call(this,point) ) {
 				return null;
 			}
 
@@ -1890,9 +1866,7 @@
                 var child= this.childrenList[i];
 
                 var np= new CAAT.Point( point.x, point.y, 0 );
-                var aabb= child.AABB;
-
-                var contained= child.findActorAtPosition( np, screenPoint );
+                var contained= child.findActorAtPosition( np );
                 if ( null!==contained ) {
                     return contained;
                 }

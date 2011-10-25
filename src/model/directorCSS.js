@@ -114,7 +114,6 @@
         setScaleProportional : function(w,h) {
 
             var factor= Math.min(w/this.referenceWidth, h/this.referenceHeight);
-console.log('scale factor: '+factor+'             '+this.referenceWidth+','+this.referenceHeight);
             this.setScaleAnchored( factor, factor, 0, 0 );
 
             this.eventHandler.style.width=  ''+this.referenceWidth +'px';
@@ -940,9 +939,34 @@ console.log('setbounds '+w+' '+h);
 
             posx-= offset.x;
             posy-= offset.y;
+
+            //////////////
+            // transformar coordenada inversamente con affine transform de director.
+            var pt= new CAAT.Point( posx, posy );
+            this.modelViewMatrixI= this.modelViewMatrix.getInverse();
+            this.modelViewMatrixI.transformCoord(pt);
+            posx= pt.x;
+            posy= pt.y
+
             point.set(posx, posy);
             this.screenMousePoint.set(posx, posy);
 
+        },
+
+        findActorAtPosition : function(point) {
+
+            // z-order
+            for( var i=this.childrenList.length-1; i>=0; i-- ) {
+                var child= this.childrenList[i];
+
+                var np= new CAAT.Point( point.x, point.y, 0 );
+                var contained= child.findActorAtPosition( np );
+                if ( null!==contained ) {
+                    return contained;
+                }
+            }
+
+            return this;
         },
 
         createEventHandler : function() {
@@ -970,37 +994,40 @@ console.log('setbounds '+w+' '+h);
 
                         var pos= null;
 
-                        if (null !== me.lastSelectedActor) {
-                            pos = me.lastSelectedActor.viewToModel(
-                                    new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0));
+                        var lactor= me.lastSelectedActor;
 
-                            if ( me.lastSelectedActor.actionPerformed && me.lastSelectedActor.contains(pos.x, pos.y) ) {
-                                me.lastSelectedActor.actionPerformed(e)
+                        if (null !== lactor) {
+                            pos = lactor.viewToModel(
+                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
+
+                            if ( lactor.actionPerformed && lactor.contains(pos.x, pos.y) ) {
+                                lactor.actionPerformed(e)
                             }
 
-                            me.lastSelectedActor.mouseUp(
-                                    new CAAT.MouseEvent().init(
-                                            pos.x,
-                                            pos.y,
-                                            e,
-                                            me.lastSelectedActor,
-                                            me.screenMousePoint));
+                            lactor.mouseUp(
+                                new CAAT.MouseEvent().init(
+                                    pos.x,
+                                    pos.y,
+                                    e,
+                                    lactor,
+                                    me.screenMousePoint));
                         }
 
-                        if (!me.dragging && null !== me.lastSelectedActor) {
-                            if (me.lastSelectedActor.contains(pos.x, pos.y)) {
-                                me.lastSelectedActor.mouseClick(
+                        if (!me.dragging && null !== lactor) {
+                            if (lactor.contains(pos.x, pos.y)) {
+                                lactor.mouseClick(
                                     new CAAT.MouseEvent().init(
                                         pos.x,
                                         pos.y,
                                         e,
-                                        me.lastSelectedActor,
+                                        lactor,
                                         me.screenMousePoint));
                             }
                         }
-                        me.dragging = false;
 
-                        in_= false;
+                        me.dragging =           false;
+                        in_=                    false;
+                        CAAT.setCursor('default');
                     },
                     false);
 
@@ -1012,27 +1039,26 @@ console.log('setbounds '+w+' '+h);
                         me.getCanvasCoord(me.mousePoint, e);
 
                         me.isMouseDown = true;
-                        me.lastSelectedActor = me.findActorAtPosition(
-                                me.mousePoint,
-                                new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0));
-                        var px = me.mousePoint.x;
-                        var py = me.mousePoint.y;
+                        var lactor = me.findActorAtPosition(me.mousePoint);
 
-                        if (null !== me.lastSelectedActor) {
+                        if (null !== lactor) {
 
-                            me.lastSelectedActor.viewToModel(me.mousePoint);
+                            var pos = lactor.viewToModel(
+                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
 
                             // to calculate mouse drag threshold
-                            me.prevMousePoint.x = px;
-                            me.prevMousePoint.y = py;
-                            me.lastSelectedActor.mouseDown(
+                            lactor.mouseDown(
                                     new CAAT.MouseEvent().init(
-                                            me.mousePoint.x,
-                                            me.mousePoint.y,
-                                            e,
-                                            me.lastSelectedActor,
-                                            me.screenMousePoint));
+                                        pos.x,
+                                        pos.y,
+                                        e,
+                                        lactor,
+                                        new CAAT.Point(
+                                            me.screenMousePoint.x,
+                                            me.screenMousePoint.y )));
                         }
+
+                        me.lastSelectedActor= lactor;
                     },
                     false);
 
@@ -1040,25 +1066,26 @@ console.log('setbounds '+w+' '+h);
                     function(e) {
 
                         e.preventDefault();
-
                         me.getCanvasCoord(me.mousePoint, e);
 
-                        me.lastSelectedActor = me.findActorAtPosition(
-                                me.mousePoint,
-                                new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0));
-                        if (null !== me.lastSelectedActor) {
+                        var lactor= me.findActorAtPosition( me.mousePoint );
+                        var pos;
 
-                            var pos = new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0);
-                            me.lastSelectedActor.viewToModel(pos);
+                        if (null !== lactor) {
 
-                            me.lastSelectedActor.mouseEnter(
-                                    new CAAT.MouseEvent().init(
-                                            pos.x,
-                                            pos.y,
-                                            e,
-                                            me.lastSelectedActor,
-                                            me.screenMousePoint));
+                            pos = lactor.viewToModel(
+                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
+
+                            lactor.mouseEnter(
+                                new CAAT.MouseEvent().init(
+                                    pos.x,
+                                    pos.y,
+                                    e,
+                                    lactor,
+                                    me.screenMousePoint));
                         }
+
+                        me.lastSelectedActor= lactor;
                     },
                     false);
 
@@ -1094,60 +1121,67 @@ console.log('setbounds '+w+' '+h);
 
                         me.getCanvasCoord(me.mousePoint, e);
 
+                        var lactor;
+                        var pos;
+
                         // drag
                         if (me.isMouseDown && null !== me.lastSelectedActor) {
-
+/*
                             // check for mouse move threshold.
                             if (!me.dragging) {
                                 if (Math.abs(me.prevMousePoint.x - me.mousePoint.x) < CAAT.DRAG_THRESHOLD_X &&
-                                        Math.abs(me.prevMousePoint.y - me.mousePoint.y) < CAAT.DRAG_THRESHOLD_Y) {
+                                    Math.abs(me.prevMousePoint.y - me.mousePoint.y) < CAAT.DRAG_THRESHOLD_Y) {
                                     return;
                                 }
                             }
+*/
+                            lactor = me.lastSelectedActor;
+
+                            pos = lactor.viewToModel(
+                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
 
                             me.dragging = true;
 
-                            var p= new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0);
-
-                            if (null !== me.lastSelectedActor.parent) {
-                                me.lastSelectedActor.parent.viewToModel(me.mousePoint);
-                            }
-
-                            var px= me.lastSelectedActor.x;
-                            var py= me.lastSelectedActor.y;
-                            me.lastSelectedActor.mouseDrag(
+                            var px= lactor.x;
+                            var py= lactor.y;
+                            lactor.mouseDrag(
                                     new CAAT.MouseEvent().init(
-                                            me.mousePoint.x,
-                                            me.mousePoint.y,
-                                            e,
-                                            me.lastSelectedActor,
-                                            me.screenMousePoint));
+                                        pos.x,
+                                        pos.y,
+                                        e,
+                                        lactor,
+                                        new CAAT.Point(
+                                            me.screenMousePoint.x,
+                                            me.screenMousePoint.y)));
 
+                            me.prevMousePoint.x= pos.x;
+                            me.prevMousePoint.y= pos.y;
                             /**
                              * Element has not moved after drag, so treat it as a button.
                              *
                              */
-                            if ( px===me.lastSelectedActor.x && py===me.lastSelectedActor.y )   {
-                                me.lastSelectedActor.viewToModel( p );
+                            if ( px===lactor.x && py===lactor.y )   {
 
-                                if (in_ && !me.lastSelectedActor.contains(p.x, p.y)) {
-                                    me.lastSelectedActor.mouseExit(
+                                var contains= lactor.contains(pos.x, pos.y);
+
+                                if (in_ && !contains) {
+                                    lactor.mouseExit(
                                         new CAAT.MouseEvent().init(
-                                            p.x,
-                                            p.y,
+                                            pos.x,
+                                            pos.y,
                                             e,
-                                            me.lastSelectedActor,
+                                            lactor,
                                             me.screenMousePoint));
                                     in_ = false;
                                 }
 
-                                if (!in_ && me.lastSelectedActor.contains(p.x, p.y)) {
-                                    me.lastSelectedActor.mouseEnter(
+                                if (!in_ && contains ) {
+                                    lactor.mouseEnter(
                                         new CAAT.MouseEvent().init(
-                                            p.x,
-                                            p.y,
+                                            pos.x,
+                                            pos.y,
                                             e,
-                                            me.lastSelectedActor,
+                                            lactor,
                                             me.screenMousePoint));
                                     in_ = true;
                                 }
@@ -1158,44 +1192,53 @@ console.log('setbounds '+w+' '+h);
 
                         in_= true;
 
-                        var lactor = me.findActorAtPosition(
-                                me.mousePoint,
-                                new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0));
+                        lactor = me.findActorAtPosition(me.mousePoint);
 
                         // cambiamos de actor.
                         if (lactor !== me.lastSelectedActor) {
                             if (null !== me.lastSelectedActor) {
+
+                                pos = me.lastSelectedActor.viewToModel(
+                                    new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
+
                                 me.lastSelectedActor.mouseExit(
                                     new CAAT.MouseEvent().init(
-                                        me.mousePoint.x,
-                                        me.mousePoint.y,
+                                        pos.x,
+                                        pos.y,
                                         e,
-                                        me.lastSelectedActor,
+                                        lactor,
                                         me.screenMousePoint));
                             }
                             if (null !== lactor) {
+
+                                pos = lactor.viewToModel(
+                                    new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
+
                                 lactor.mouseEnter(
                                     new CAAT.MouseEvent().init(
-                                        me.mousePoint.x,
-                                        me.mousePoint.y,
+                                        pos.x,
+                                        pos.y,
                                         e,
                                         lactor,
                                         me.screenMousePoint));
                             }
                         }
-                        me.lastSelectedActor = lactor;
 
-                        var pos = lactor.viewToModel(new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
+                        pos = lactor.viewToModel(
+                            new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
 
                         if (null !== lactor) {
-                            me.lastSelectedActor.mouseMove(
+
+                            lactor.mouseMove(
                                 new CAAT.MouseEvent().init(
                                     pos.x,
                                     pos.y,
                                     e,
-                                    me.lastSelectedActor,
+                                    lactor,
                                     me.screenMousePoint));
                         }
+
+                        me.lastSelectedActor = lactor;
                     },
                     false);
 
@@ -1207,7 +1250,8 @@ console.log('setbounds '+w+' '+h);
                         me.getCanvasCoord(me.mousePoint, e);
                         if (null !== me.lastSelectedActor) {
 
-                            me.lastSelectedActor.viewToModel(me.mousePoint.x, me.mousePoint.y);
+                            var pos = me.lastSelectedActor.viewToModel(
+                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
 
                             me.lastSelectedActor.mouseDblClick(
                                     new CAAT.MouseEvent().init(
@@ -1219,7 +1263,6 @@ console.log('setbounds '+w+' '+h);
                         }
                     },
                     false);
-
 
             function touchHandler(event) {
                 var touches = event.changedTouches,
