@@ -70,8 +70,7 @@ function __scene10_text(director, scene) {
         initDirector: function(director) {
             this.mousePosition = new CAAT.Point(director.canvas.width / 2, director.canvas.height / 2);
             this.director = director;
-            this.scene = new CAAT.Scene().
-                    create();
+            this.scene = new CAAT.Scene();
             this.root = new CAAT.ActorContainer().
                     setBounds(0, 0, director.canvas.width, director.canvas.height);
             this.scene.addChild(this.root);
@@ -130,7 +129,7 @@ function __scene10_text(director, scene) {
             var me = this;
 
             this.root.mouseMove = function(mouseEvent) {
-                me.mousePosition.set(mouseEvent.point.x, mouseEvent.point.y);
+                me.mousePosition.set(mouseEvent.x, mouseEvent.y);
             };
 
             this.scene.onRenderEnd = function(director, delta) {

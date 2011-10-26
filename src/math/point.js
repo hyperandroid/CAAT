@@ -19,7 +19,7 @@
 	CAAT.Point= function(xpos, ypos, zpos) {
 		this.x= xpos;
 		this.y= ypos;
-        this.z= zpos;
+        this.z= zpos||0;
 		return this;
 	};
 	
@@ -38,7 +38,7 @@
 		set : function(x,y,z) {
 			this.x= x;
 			this.y= y;
-            this.z= z;
+            this.z= z||0;
 			return this;
 		},
         /**
@@ -105,6 +105,7 @@
 			var x = this.x, y = this.y;
 		    this.x = x * Math.cos(angle) - Math.sin(angle) * y;
 		    this.y = x * Math.sin(angle) + Math.cos(angle) * y;
+            this.z = 0;
 		    return this;
 		},
         /**
@@ -116,6 +117,7 @@
 		    var len = this.getLength();
 		    this.x = Math.cos(angle) * len;
 		    this.y = Math.sin(angle) * len;
+            this.z = 0;
 		    return this;
 		},
         /**
@@ -126,7 +128,7 @@
 		setLength: function(length)	{
 		    var len = this.getLength();
 		    if (len)this.multiply(length / len);
-		    else this.x = this.y = length;
+		    else this.x = this.y = this.z = length;
 		    return this;
 		},
         /**

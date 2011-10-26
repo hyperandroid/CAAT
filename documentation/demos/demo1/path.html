@@ -176,13 +176,13 @@
                             setStrokeStyle('blue');
 
                     actor.mouseExit = function(mouseEvent) {
-                        if (mouseEvent.source != selectedInterpolatorActor) {
-                            mouseEvent.source.setFillStyle(null);
+                        if (this != selectedInterpolatorActor) {
+                            this.setFillStyle(null);
                         }
                     }
                     actor.mouseEnter = function(mouseEvent) {
-                        if (mouseEvent.source != selectedInterpolatorActor) {
-                            mouseEvent.source.setFillStyle('#f0f0f0');
+                        if (this != selectedInterpolatorActor) {
+                            this.setFillStyle('#f0f0f0');
                         }
                     }
                     actor.mouseClick = function(mouseEvent) {
@@ -190,7 +190,7 @@
                             selectedInterpolatorActor.setFillStyle(null);
                         }
                         selectedInterpolatorActor = mouseEvent.source;
-                        mouseEvent.source.setFillStyle('#00ff00');
+                        this.setFillStyle('#00ff00');
                         selectedInterpolatorActor = mouseEvent.source;
 
                         pathBehavior.setInterpolator(mouseEvent.source.getInterpolator());

@@ -1488,7 +1488,7 @@
                                         pos.x,
                                         pos.y,
                                         e,
-                                        lactor,
+                                        me.lastSelectedActor,
                                         me.screenMousePoint));
                             }
                             if (null !== lactor) {

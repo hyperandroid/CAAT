@@ -1206,7 +1206,7 @@ console.log('setbounds '+w+' '+h);
                                         pos.x,
                                         pos.y,
                                         e,
-                                        lactor,
+                                        me.lastSelectedActor,
                                         me.screenMousePoint));
                             }
                             if (null !== lactor) {
@@ -1263,6 +1263,265 @@ console.log('setbounds '+w+' '+h);
                         }
                     },
                     false);
+
+
+/*
+            canvas.addEventListener('mouseup',
+                    function(e) {
+                        e.preventDefault();
+
+                        me.isMouseDown = false;
+                        me.getCanvasCoord(me.mousePoint, e);
+
+                        var pos= null;
+
+                        var lactor= me.lastSelectedActor;
+
+                        if (null !== lactor) {
+                            pos = lactor.viewToModel(
+                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
+
+                            if ( lactor.actionPerformed && lactor.contains(pos.x, pos.y) ) {
+                                lactor.actionPerformed(e)
+                            }
+
+                            lactor.mouseUp(
+                                new CAAT.MouseEvent().init(
+                                    pos.x,
+                                    pos.y,
+                                    e,
+                                    lactor,
+                                    me.screenMousePoint));
+                        }
+
+                        if (!me.dragging && null !== lactor) {
+                            if (lactor.contains(pos.x, pos.y)) {
+                                lactor.mouseClick(
+                                    new CAAT.MouseEvent().init(
+                                        pos.x,
+                                        pos.y,
+                                        e,
+                                        lactor,
+                                        me.screenMousePoint));
+                            }
+                        }
+
+                        me.dragging =           false;
+                        in_=                    false;
+                        CAAT.setCursor('default');
+                    },
+                    false);
+
+            canvas.addEventListener('mousedown',
+                    function(e) {
+
+                        e.preventDefault();
+
+                        me.getCanvasCoord(me.mousePoint, e);
+
+                        me.isMouseDown = true;
+                        var lactor = me.findActorAtPosition(me.mousePoint);
+
+                        if (null !== lactor) {
+
+                            var pos = lactor.viewToModel(
+                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
+
+                            // to calculate mouse drag threshold
+                            me.prevMousePoint.x = pos.x;
+                            me.prevMousePoint.y = pos.y;
+                            lactor.mouseDown(
+                                    new CAAT.MouseEvent().init(
+                                        pos.x,
+                                        pos.y,
+                                        e,
+                                        lactor,
+                                        new CAAT.Point(
+                                            me.screenMousePoint.x,
+                                            me.screenMousePoint.y )));
+                        }
+
+                        me.lastSelectedActor= lactor;
+                    },
+                    false);
+
+            canvas.addEventListener('mouseover',
+                    function(e) {
+
+                        e.preventDefault();
+                        me.getCanvasCoord(me.mousePoint, e);
+
+                        var lactor= me.findActorAtPosition( me.mousePoint );
+                        var pos;
+
+                        if (null !== lactor) {
+
+                            pos = lactor.viewToModel(
+                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
+
+                            lactor.mouseEnter(
+                                new CAAT.MouseEvent().init(
+                                    pos.x,
+                                    pos.y,
+                                    e,
+                                    lactor,
+                                    me.screenMousePoint));
+                        }
+
+                        me.lastSelectedActor= lactor;
+                    },
+                    false);
+
+            canvas.addEventListener('mouseout',
+                    function(e) {
+
+                        e.preventDefault();
+
+                        if (null !== me.lastSelectedActor) {
+
+                            me.getCanvasCoord(me.mousePoint, e);
+                            var pos = new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0);
+                            me.lastSelectedActor.viewToModel(pos);
+
+                            me.lastSelectedActor.mouseExit(
+                                    new CAAT.MouseEvent().init(
+                                            pos.x,
+                                            pos.y,
+                                            e,
+                                            me.lastSelectedActor,
+                                            me.screenMousePoint));
+                            me.lastSelectedActor = null;
+                        }
+                        me.isMouseDown = false;
+                        in_ = false;
+                    },
+                    false);
+
+            canvas.addEventListener('mousemove',
+                    function(e) {
+
+                        e.preventDefault();
+
+                        me.getCanvasCoord(me.mousePoint, e);
+
+                        var lactor= me.lastSelectedActor;
+                        if ( null===lactor ) {
+                            lactor = me.findActorAtPosition(new CAAT.Point( me.mousePoint.x, me.mousePoint.y ));
+                        }
+
+
+                        var pos = lactor.viewToModel(
+                            new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
+
+                        // drag
+                        if (me.isMouseDown && null !== lactor) {
+
+                            me.dragging = true;
+
+                            var px= lactor.x;
+                            var py= lactor.y;
+                            lactor.mouseDrag(
+                                    new CAAT.MouseEvent().init(
+                                        pos.x,
+                                        pos.y,
+                                        e,
+                                        me.lastSelectedActor,
+                                        new CAAT.Point(
+                                            me.screenMousePoint.x,
+                                            me.screenMousePoint.y)));
+
+                            if ( px===lactor.x && py===lactor.y )   {
+
+                                var contains= lactor.contains(pos.x, pos.y);
+
+                                if (in_ && !contains) {
+                                    me.lastSelectedActor.mouseExit(
+                                        new CAAT.MouseEvent().init(
+                                            pos.x,
+                                            pos.y,
+                                            e,
+                                            lactor,
+                                            me.screenMousePoint));
+                                    in_ = false;
+                                }
+
+                                if (!in_ && contains ) {
+                                    me.lastSelectedActor.mouseEnter(
+                                        new CAAT.MouseEvent().init(
+                                            pos.x,
+                                            pos.y,
+                                            e,
+                                            lactor,
+                                            me.screenMousePoint));
+                                    in_ = true;
+                                }
+                            }
+
+                            return;
+                        }
+
+                        in_= true;
+
+                        lactor = me.findActorAtPosition(new CAAT.Point( me.mousePoint.x, me.mousePoint.y ));
+
+                        // cambiamos de actor.
+                        if (lactor !== me.lastSelectedActor) {
+                            if (null !== me.lastSelectedActor) {
+                                me.lastSelectedActor.mouseExit(
+                                    new CAAT.MouseEvent().init(
+                                        pos.x,
+                                        pos.y,
+                                        e,
+                                        lactor,
+                                        me.screenMousePoint));
+                            }
+                            if (null !== lactor) {
+                                lactor.mouseEnter(
+                                    new CAAT.MouseEvent().init(
+                                        pos.x,
+                                        pos.y,
+                                        e,
+                                        lactor,
+                                        me.screenMousePoint));
+                            }
+                        }
+
+
+                        if (null !== lactor) {
+                            lactor.mouseMove(
+                                new CAAT.MouseEvent().init(
+                                    pos.x,
+                                    pos.y,
+                                    e,
+                                    lactor,
+                                    me.screenMousePoint));
+                        }
+
+                        me.lastSelectedActor = lactor;
+                    },
+                    false);
+
+            canvas.addEventListener("dblclick",
+                    function(e) {
+
+                        e.preventDefault();
+                        me.getCanvasCoord(me.mousePoint, e);
+                        if (null !== me.lastSelectedActor) {
+
+                            var pos = me.lastSelectedActor.viewToModel(
+                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
+
+                            me.lastSelectedActor.mouseDblClick(
+                                    new CAAT.MouseEvent().init(
+                                            pos.x,
+                                            pos.y,
+                                            e,
+                                            me.lastSelectedActor,
+                                            me.screenMousePoint));
+                        }
+                    },
+                    false);
+*/
 
             function touchHandler(event) {
                 var touches = event.changedTouches,
