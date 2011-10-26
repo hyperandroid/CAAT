@@ -246,11 +246,12 @@
                 this.ttask.cancel();
             }
 
+            var me= this;
             this.ttask= this.scene.createTimer(
                     this.scene.time,
                     100,
                     function timeout(sceneTime, time, timerTask) {
-                        mouseEvent.source.parent.actorNotPointed();
+                        me.actorNotPointed();
                     },
                     null,
                     null);
@@ -291,7 +292,7 @@
              */
             actor.mouseEnter= function(mouseEvent) {
                 me.actorMouseEnter(mouseEvent);
-                mouseEvent.source.__Dock_mouseEnter(mouseEvent);
+                this.__Dock_mouseEnter(mouseEvent);
             };
             /**
              * @ignore
@@ -299,7 +300,7 @@
              */
             actor.mouseExit= function(mouseEvent) {
                 me.actorMouseExit(mouseEvent);
-                mouseEvent.source.__Dock_mouseExit(mouseEvent);
+                this.__Dock_mouseExit(mouseEvent);
             };
             /**
              * @ignore
@@ -307,7 +308,7 @@
              */
             actor.mouseMove= function(mouseEvent) {
                 me.actorPointed( mouseEvent.point.x, mouseEvent.point.y, mouseEvent.source );
-                mouseEvent.source.__Dock_mouseMove(mouseEvent);
+                this.__Dock_mouseMove(mouseEvent);
             };
 
             actor.width= this.minSize;
