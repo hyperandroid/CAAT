@@ -73,13 +73,13 @@
 
         scaleX:					0,      // transformation. width scale parameter
 		scaleY:					0,      // transformation. height scale parameter
-		scaleTX:				0,      // transformation. scale anchor x position
-		scaleTY:				0,      // transformation. scale anchor y position
+		scaleTX:				.50,      // transformation. scale anchor x position
+		scaleTY:				.50,      // transformation. scale anchor y position
 		scaleAnchor:			0,      // transformation. scale anchor
 		rotationAngle:			0,      // transformation. rotation angle in radians
-		rotationY:				0,      // transformation. rotation center y
+		rotationY:				.50,      // transformation. rotation center y
         alpha:					1,      // alpha transparency value
-        rotationX:				0,      // transformation. rotation center x
+        rotationX:				.50,      // transformation. rotation center x
         isGlobalAlpha:          false,  // is this a global alpha
         frameAlpha:             1,      // hierarchically calculated alpha for this Actor.
 		expired:				false,  // set when the actor has been expired
@@ -455,12 +455,12 @@
 		resetTransform : function () {
 			this.rotationAngle=0;
 			this.rotateAnchor=0;
-			this.rotationX=0;
-			this.rotationY=0;
+			this.rotationX=.5;
+			this.rotationY=.5;
 			this.scaleX=1;
 			this.scaleY=1;
-			this.scaleTX=0;
-			this.scaleTY=0;
+			this.scaleTX=.5;
+			this.scaleTY=.5;
 			this.scaleAnchor=0;
             this.oldX=-1;
             this.oldY=-1;
@@ -509,16 +509,17 @@
          * @return this
          */
 		setScale : function( sx, sy )    {
-			this.setScaleAnchored( sx, sy, this.width/2, this.height/2 );
+			//this.setScaleAnchored( sx, sy, this.width/2, this.height/2 );
+            this.setScaleAnchored( sx, sy, .5, .5 );
             this.dirty= true;
             return this;
 		},
         getAnchorPercent : function( anchor ) {
 
             var anchors=[
-                50,50,   50,0,  50,100,
-                0,50,   100,50, 0,0,
-                100,0,  0,100,  100,100
+                .50,.50,   .50,0,  .50,1.00,
+                0,.50,   1.00,.50, 0,0,
+                1.00,0,  0,1.00,  1.00,1.00
             ];
 
             return { x: anchors[anchor*2], y: anchors[anchor*2+1] };
@@ -534,36 +535,49 @@
 
 			switch( anchor ) {
             case this.ANCHOR_CENTER:
-                tx= this.width/2;
-                ty= this.height/2;
+//                tx= this.width/2;
+//                ty= this.height/2;
+                    tx= .5;
+                    ty= .5;
                 break;
             case this.ANCHOR_TOP:
-                tx= this.width/2;
+//                tx= this.width/2;
+                    tx= .5;
                 ty= 0;
                 break;
             case this.ANCHOR_BOTTOM:
-                tx= this.width/2;
-                ty= this.height;
+//                tx= this.width/2;
+//                ty= this.height;
+                    tx= .5;
+                    ty= 1;
                 break;
             case this.ANCHOR_LEFT:
-                tx= 0;
-                ty= this.height/2;
+//                tx= 0;
+//                ty= this.height/2;
+                    tx= 0;
+                    ty= .5;
                 break;
             case this.ANCHOR_RIGHT:
-                tx= this.width;
-                ty= this.height/2;
+//                tx= this.width;
+//                ty= this.height/2;
+                    tx= 1;
+                    ty= .5;
                 break;
             case this.ANCHOR_TOP_RIGHT:
-                tx= this.width;
+//                tx= this.width;
+                    tx= 1;
                 ty= 0;
                 break;
             case this.ANCHOR_BOTTOM_LEFT:
                 tx= 0;
-                ty= this.height;
+//                ty= this.height;
+                    ty= 1;
                 break;
             case this.ANCHOR_BOTTOM_RIGHT:
-                tx= this.width;
-                ty= this.height;
+//                tx= this.width;
+//                ty= this.height;
+                    tx= 1;
+                    ty= 1;
                 break;
             case this.ANCHOR_TOP_LEFT:
                 tx= 0;
@@ -604,14 +618,14 @@
          * @return this
          */
 	    setRotation : function( angle )	{
-			this.setRotationAnchored( angle, this.width/2, this.height/2 );
+			this.setRotationAnchored( angle, .5, .5 ); //this.width/2, this.height/2 );
             return this;
 	    },
         /**
          * This method sets Actor rotation around a given position.
-         * @param angle a float indicating the angle in radians to rotate the Actor.
-         * @param rx
-         * @param ry
+         * @param angle {number} indicating the angle in radians to rotate the Actor.
+         * @param rx {number} value in the range 0..1
+         * @param ry {number} value in the range 0..1
          * @return this;
          */
 	    setRotationAnchored : function( angle, rx, ry ) {
@@ -646,8 +660,8 @@
 	    setBounds : function(x, y, w, h)  {
             this.x= x|0;
             this.y= y|0;
-	        this.width= w|0;
-	        this.height= h|0;
+            this.width= w|0;
+            this.height= h|0;
             this.dirty= true;
 
             return this;
@@ -1105,21 +1119,25 @@
 
             if ( this.dirty ) {
 
-                mm= this.modelViewMatrix.identity().matrix;
+                mm= this.modelViewMatrix.matrix;
 
-                mm0= mm[0];
-                mm1= mm[1];
+                mm0= 1;
+                mm1= 0;
                 mm2= mm[2];
-                mm3= mm[3];
-                mm4= mm[4];
+                mm3= 0;
+                mm4= 1;
                 mm5= mm[5];
 
-                mm2+= this.x;
-                mm5+= this.y;
+                mm2= this.x;
+                mm5= this.y;
 
                 if ( this.rotationAngle ) {
-                    mm2+= mm0*this.rotationX + mm1*this.rotationY;
-                    mm5+= mm3*this.rotationX + mm4*this.rotationY;
+
+                    var rx= this.rotationX*this.width;
+                    var ry= this.rotationY*this.height;
+
+                    mm2+= mm0*rx + mm1*ry;
+                    mm5+= mm3*rx + mm4*ry;
 
                     c= Math.cos( this.rotationAngle );
                     s= Math.sin( this.rotationAngle );
@@ -1132,21 +1150,24 @@
                     mm3=  _m10*c + _m11*s;
                     mm4= -_m10*s + _m11*c;
 
-                    mm2+= -mm0*this.rotationX - mm1*this.rotationY;
-                    mm5+= -mm3*this.rotationX - mm4*this.rotationY;
+                    mm2+= -mm0*rx - mm1*ry;
+                    mm5+= -mm3*rx - mm4*ry;
                 }
-                if ( this.scaleX!=1 || this.scaleY!=1 && (this.scaleTX || this.scaleTY )) {
+                if ( this.scaleX!=1 || this.scaleY!=1 ) {
 
-                    mm2+= mm0*this.scaleTX + mm1*this.scaleTY;
-                    mm5+= mm3*this.scaleTX + mm4*this.scaleTY;
+                    var sx= this.scaleTX*this.width;
+                    var sy= this.scaleTY*this.height;
+
+                    mm2+= mm0*sx + mm1*sy;
+                    mm5+= mm3*sx + mm4*sy;
 
                     mm0= mm0*this.scaleX;
                     mm1= mm1*this.scaleY;
                     mm3= mm3*this.scaleX;
                     mm4= mm4*this.scaleY;
 
-                    mm2+= -mm0*this.scaleTX - mm1*this.scaleTY;
-                    mm5+= -mm3*this.scaleTX - mm4*this.scaleTY;
+                    mm2+= -mm0*sx - mm1*sy;
+                    mm5+= -mm3*sx - mm4*sy;
                 }
 
                 mm[0]= mm0;
@@ -1184,8 +1205,8 @@
                 if ( this.dirty ) {
                     this.wdirty= true;
                 }
-                this.worldModelViewMatrix.copy( this.modelViewMatrix );
-                //this.worldModelViewMatrix.identity();
+                //this.worldModelViewMatrix.copy( this.modelViewMatrix );
+                this.worldModelViewMatrix.identity();
             }
 
             if ( glEnabled && (this.dirty || this.wdirty) ) {
@@ -1401,7 +1422,8 @@
             var ctx= canvas.getContext('2d');
             var director= {
                 ctx: ctx,
-                crc: ctx
+                crc: ctx,
+                modelViewMatrix: new CAAT.Matrix()
             };
 
             this.paintActor(director,time);
@@ -1606,21 +1628,27 @@
             }
 
             var ctx= director.ctx;
+            var dmvm= director.modelViewMatrix;
 
-            ctx.save();
+//            ctx.save();
+            dmvm.transformRenderingContextSet( ctx );
+
             CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
             if ( !this.isGlobalAlpha ) {
                 this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
             }
+//            ctx.restore();
 
+//            ctx.save();
             for( var actor= this.activeChildren; actor; actor=actor.__next ) {
+                dmvm.transformRenderingContextSet( ctx );
                 if ( actor.visible ) {
-                    ctx.save();
+//                    ctx.save();
                     actor.paintActor(director,time);
-                    ctx.restore();
+//                    ctx.restore();
                 }
             }
-            ctx.restore();
+//            ctx.restore();
 
             return true;
         },
@@ -1793,7 +1821,8 @@
 			if( index <= 0 ) {
                 child.parent= this;
                 child.dirty= true;
-                this.childrenList.unshift(child);
+                //this.childrenList.unshift(child);  // unshift unsupported on IE
+                this.childrenList.splice( 0, 0, child );
 				return this;
             } else {
                 if ( index>=this.childrenList.length ) {

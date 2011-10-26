@@ -69,13 +69,13 @@
 
         scaleX:					0,      // transformation. width scale parameter
 		scaleY:					0,      // transformation. height scale parameter
-		scaleTX:				0,      // transformation. scale anchor x position
-		scaleTY:				0,      // transformation. scale anchor y position
+		scaleTX:				.50,    // transformation. scale anchor x position
+		scaleTY:				.50,    // transformation. scale anchor y position
 		scaleAnchor:			0,      // transformation. scale anchor
 		rotationAngle:			0,      // transformation. rotation angle in radians
-		rotationY:				0,      // transformation. rotation center y
+		rotationY:				.50,    // transformation. rotation center y
         alpha:					1,      // alpha transparency value
-        rotationX:				0,      // transformation. rotation center x
+        rotationX:				.50,    // transformation. rotation center x
         isGlobalAlpha:          false,  // is this a global alpha
         frameAlpha:             1,      // hierarchically calculated alpha for this Actor.
 		expired:				false,  // set when the actor has been expired
@@ -311,8 +311,8 @@
             this.domElement.style.MozTransform=         value;
             this.domElement.style['transform']=         value;
 
-            var anchor= ''+((this.rotationX/this.width)*100)+'% '+
-                           ((this.rotationY/this.height)*100)+'% ';
+            var anchor= ''+(this.rotationX*100)+'% '+
+                           (this.rotationY*100)+'% ';
 
             this.domElement.style['transform-origin']=          anchor;
             this.domElement.style['-webkit-transform-origin']=  anchor;
@@ -453,16 +453,16 @@
          * Remove all transformation values for the Actor.
          * @return this
          */
-		resetTransform : function () {
-			this.rotationAngle=0;
-			this.rotateAnchor=0;
-			this.rotationX=0;
-			this.rotationY=0;
-			this.scaleX=1;
-			this.scaleY=1;
-			this.scaleTX=0;
-			this.scaleTY=0;
-			this.scaleAnchor=0;
+        resetTransform : function () {
+            this.rotationAngle=0;
+            this.rotateAnchor=0;
+            this.rotationX=.5;
+            this.rotationY=.5;
+            this.scaleX=1;
+            this.scaleY=1;
+            this.scaleTX=.5;
+            this.scaleTY=.5;
+            this.scaleAnchor=0;
             this.oldX=-1;
             this.oldY=-1;
 
@@ -505,7 +505,7 @@
          * @return this
          */
 		setScale : function( sx, sy )    {
-			this.setScaleAnchored( sx, sy, this.width/2, this.height/2 );
+			this.setScaleAnchored( sx, sy, .5, .5 );
             return this;
 		},
         /**
@@ -519,51 +519,64 @@
 
 			switch( anchor ) {
             case this.ANCHOR_CENTER:
-                tx= this.width/2;
-                ty= this.height/2;
+//                tx= this.width/2;
+//                ty= this.height/2;
+                    tx= .5;
+                    ty= .5;
                 break;
             case this.ANCHOR_TOP:
-                tx= this.width/2;
+//                tx= this.width/2;
+                    tx= .5;
                 ty= 0;
                 break;
             case this.ANCHOR_BOTTOM:
-                tx= this.width/2;
-                ty= this.height;
+//                tx= this.width/2;
+//                ty= this.height;
+                    tx= .5;
+                    ty= 1;
                 break;
             case this.ANCHOR_LEFT:
-                tx= 0;
-                ty= this.height/2;
+//                tx= 0;
+//                ty= this.height/2;
+                    tx= 0;
+                    ty= .5;
                 break;
             case this.ANCHOR_RIGHT:
-                tx= this.width;
-                ty= this.height/2;
+//                tx= this.width;
+//                ty= this.height/2;
+                    tx= 1;
+                    ty= .5;
                 break;
             case this.ANCHOR_TOP_RIGHT:
-                tx= this.width;
+//                tx= this.width;
+                    tx= 1;
                 ty= 0;
                 break;
             case this.ANCHOR_BOTTOM_LEFT:
                 tx= 0;
-                ty= this.height;
+//                ty= this.height;
+                    ty= 1;
                 break;
             case this.ANCHOR_BOTTOM_RIGHT:
-                tx= this.width;
-                ty= this.height;
+//                tx= this.width;
+//                ty= this.height;
+                    tx= 1;
+                    ty= 1;
                 break;
             case this.ANCHOR_TOP_LEFT:
                 tx= 0;
                 ty= 0;
                 break;
-	        }
+            }
 
 			return {x: tx, y: ty};
 		},
         getAnchorPercent : function( anchor ) {
 
             var anchors=[
-                50,50,   50,0,  50,100,
-                0,50,   100,50, 0,0,
-                100,0,  0,100,  100,100
+                .50,.50,   .50,0,  .50,1.00,
+                0,.50,   1.00,.50, 0,0,
+                1.00,0,  0,1.00,  1.00,1.00
             ];
 
             return { x: anchors[anchor*2], y: anchors[anchor*2+1] };
@@ -580,11 +593,11 @@
          * @return this;
          */
 		setScaleAnchored : function( sx, sy, anchorx, anchory )    {
-			//this.scaleAnchor= anchor;
-			//var obj= this.getAnchor( this.scaleAnchor );
 
 			this.rotationX= anchorx;
 			this.rotationY= anchory;
+            this.scaleTX=   anchorx;
+            this.scaleTY=   anchory;
 
 			this.scaleX=sx;
 			this.scaleY=sy;
@@ -603,7 +616,7 @@
          * @return this
          */
 	    setRotation : function( angle )	{
-			this.setRotationAnchored( angle, this.width/2, this.height/2 );
+			this.setRotationAnchored( angle, .5, .5 );
             return this;
 	    },
         /**
@@ -1123,8 +1136,8 @@
                 mm5+= this.y;
 
                 if ( this.rotationAngle ) {
-                    mm2+= mm0*this.rotationX + mm1*this.rotationY;
-                    mm5+= mm3*this.rotationX + mm4*this.rotationY;
+                    mm2+= mm0*this.rotationX*this.width + mm1*this.rotationY*this.height;
+                    mm5+= mm3*this.rotationX*this.width + mm4*this.rotationY*this.height;
 
                     c= Math.cos( this.rotationAngle );
                     s= Math.sin( this.rotationAngle );
@@ -1137,21 +1150,21 @@
                     mm3=  _m10*c + _m11*s;
                     mm4= -_m10*s + _m11*c;
 
-                    mm2+= -mm0*this.rotationX - mm1*this.rotationY;
-                    mm5+= -mm3*this.rotationX - mm4*this.rotationY;
+                    mm2+= -mm0*this.rotationX*this.width - mm1*this.rotationY*this.height;
+                    mm5+= -mm3*this.rotationX*this.width - mm4*this.rotationY*this.height;
                 }
-                if ( this.scaleX!=1 || this.scaleY!=1 && (this.scaleTX || this.scaleTY )) {
+                if ( this.scaleX!=1 || this.scaleY!=1 ) {
 
-                    mm2+= mm0*this.scaleTX + mm1*this.scaleTY;
-                    mm5+= mm3*this.scaleTX + mm4*this.scaleTY;
+                    mm2+= mm0*this.scaleTX*this.width + mm1*this.scaleTY*this.height;
+                    mm5+= mm3*this.scaleTX*this.width + mm4*this.scaleTY*this.height;
 
                     mm0= mm0*this.scaleX;
                     mm1= mm1*this.scaleY;
                     mm3= mm3*this.scaleX;
                     mm4= mm4*this.scaleY;
 
-                    mm2+= -mm0*this.scaleTX - mm1*this.scaleTY;
-                    mm5+= -mm3*this.scaleTX - mm4*this.scaleTY;
+                    mm2+= -mm0*this.scaleTX*this.width - mm1*this.scaleTY*this.height;
+                    mm5+= -mm3*this.scaleTX*this.width - mm4*this.scaleTY*this.height;
                 }
 
                 mm[0]= mm0;
@@ -1528,7 +1541,10 @@
 		addChildAt : function(child, index) {
 
 			if( index <= 0 ) {
-                this.childrenList.unshift(child);
+                //this.childrenList.unshift(child);  // unshift unsupported on IE
+                child.parent= this;
+                child.dirty= true;
+                this.childrenList.splice( 0, 0, child );
 				return this;
             } else {
                 if ( index>=this.childrenList.length ) {

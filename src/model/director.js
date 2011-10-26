@@ -438,6 +438,24 @@
             this.uvIndex = 0;
         },
 
+        findActorAtPosition : function(point) {
+
+            // z-order
+            var cl= this.childrenList;
+            for( var i=cl.length-1; i>=0; i-- ) {
+                var child= this.childrenList[i];
+
+                var np= new CAAT.Point( point.x, point.y, 0 );
+                var contained= child.findActorAtPosition( np );
+                if ( null!==contained ) {
+                    return contained;
+                }
+            }
+
+            return this;
+        },
+
+
         /**
          * This is the entry point for the animation system of the Director.
          * The director is fed with the elapsed time value to maintain a virtual timeline.
@@ -500,6 +518,9 @@
             } else {
                 this.ctx.globalAlpha = 1;
                 this.ctx.globalCompositeOperation = 'source-over';
+
+
+
 
                 if (this.clear) {
                     this.ctx.clearRect(0, 0, this.width, this.height);
@@ -1238,6 +1259,11 @@
             //////////////
             // transformar coordenada inversamente con affine transform de director.
 
+            var pt= new CAAT.Point( posx, posy );
+            this.modelViewMatrixI= this.modelViewMatrix.getInverse();
+            this.modelViewMatrixI.transformCoord(pt);
+            posx= pt.x;
+            posy= pt.y
 
             point.set(posx, posy);
             this.screenMousePoint.set(posx, posy);

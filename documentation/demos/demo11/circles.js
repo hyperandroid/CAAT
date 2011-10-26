@@ -28,7 +28,7 @@ function __scene10_text(director, scene) {
             new CAAT.RotateBehavior().
                     setCycle(true).
                     setFrameTime(0, 4000).
-                    setValues(-Math.PI / 8, Math.PI / 8, 50, 0).
+                    setValues(-Math.PI / 8, Math.PI / 8, .50, 0).
                     setInterpolator(
                     new CAAT.Interpolator().createExponentialInOutInterpolator(3, true)
                     )

@@ -126,24 +126,26 @@
                     setFillStyle(gradient).
                     cacheAsBitmap();
 
-            addMask( director, gr );
+            scene.addChild(gr);
+            
+            addMask( director, scene, gr );
             createFish(director,scene,gr);
 
-            scene.addChild(gr);
+
 
         }
 
-        function addMask(director, gr) {
+        function addMask(director, scene, gr) {
             var path2= new CAAT.Path().
-                                beginPath(100,director.height/2).
+                                beginPath(200,director.height/2).
                                 addCubicTo(
-                                    100,10,
+                                    200,10,
                                     director.width-200,10,
                                     director.width-200,director.height/2 ).
                                 addCubicTo(
                                     director.width-200,director.height-10,
-                                    100, director.height-10,
-                                    100, director.height/2 ).
+                                    200, director.height-10,
+                                    200, director.height/2 ).
                                 closePath();
 
             var path =
@@ -181,11 +183,11 @@
                     new CAAT.PathBehavior().
                         setValues( path2 ).
                         setFrameTime( 0,15000 ).
-                        setCycle( true ).
-                        setTranslation( path2.width/2, path2.height/2 )
+                        setCycle( true )
+                        .setTranslation( path[i].width/2, path[i].height/2 )
                 ).addBehavior(
                     new CAAT.RotateBehavior().
-                        setValues( 0,Math.PI*2 ).
+                        setValues( 0,Math.PI*2, .5, .5 ).
                         setFrameTime( 0,5000 ).
                         setCycle( true )
                 ).addBehavior(
@@ -196,7 +198,8 @@
                         setInterpolator(
                             new CAAT.Interpolator().createLinearInterpolator(true, false)
                     )
-                );
+                )
+                ;
             }
 
             var pathIndex=0;

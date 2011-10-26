@@ -832,11 +832,22 @@
          *
          * @param ctx
          */
-        transformRenderingContext : function(ctx) {
+        transformRenderingContextSet : function(ctx) {
             var m= this.matrix;
             ctx.setTransform( m[0], m[3], m[1], m[4], m[2], m[5] );
             return this;
+        },
+
+        /**
+         *
+         * @param ctx
+         */
+        transformRenderingContext : function(ctx) {
+            var m= this.matrix;
+            ctx.transform( m[0], m[3], m[1], m[4], m[2], m[5] );
+            return this;
         }
+
 	};
 })();
 

@@ -107,7 +107,7 @@
 
                 // and link it to the previos tentacle segment or root element
                             if ( segment==root ) {
-                                newSegment.setRotationAnchored(angle, armSegmentSizeW/2, armSegmentSizeH);
+                                newSegment.setRotationAnchored(angle, .5, 1);
                                 newSegment.oldAngle= angle;
                             } else {
                                 newSegment.oldAngle= 0;
@@ -119,8 +119,8 @@
                                             this.oldAngle+
                                             maxAngle*Math.sin(new Date().getTime()*.0005 + armIndex*Math.PI/segments/2
                                             ),
-                                            armSegmentSizeW/2,
-                                            armSegmentSizeH
+                                            .5,
+                                            1
                                     );
                                     return CAAT.ActorContainer.prototype.animate.call(this,director,time);
 
@@ -198,7 +198,7 @@
 
                         // and link it to the previos tentacle segment or root element
                         if (segment == root) {
-                            newSegment.setRotationAnchored(angle, armSegmentSizeW / 2, armSegmentSizeH);
+                            newSegment.setRotationAnchored(angle, .5, 1);
                             newSegment.oldAngle = angle;
                         } else {
                             newSegment.oldAngle = 0;
@@ -210,8 +210,8 @@
                                         this.oldAngle +
                                                 maxAngle * Math.sin(new Date().getTime() * .0005 + armIndex * Math.PI / segments / 2
                                                 ),
-                                        armSegmentSizeW / 2,
-                                        armSegmentSizeH
+                                        .5,
+                                        1
                                 );
                                 return CAAT.ActorContainer.prototype.animate.call(this, director, time);
 

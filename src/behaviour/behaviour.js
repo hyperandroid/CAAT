@@ -465,7 +465,7 @@
 			var angle= 
 				this.startAngle + time*(this.endAngle-this.startAngle);
 
-            actor.setRotationAnchored(angle, this.anchorX*actor.width, this.anchorY*actor.height);
+            actor.setRotationAnchored(angle, this.anchorX, this.anchorY);
 
             return angle;
 			
@@ -486,9 +486,9 @@
         setValues : function( startAngle, endAngle, anchorx, anchory ) {
             this.startAngle= startAngle;
             this.endAngle= endAngle;
-            if ( anchorx!==undefined && anchory!==undefined ) {
-                this.anchorX= anchorx/100;
-                this.anchorY= anchory/100;
+            if ( typeof anchorx!=='undefined' && typeof anchory!=='undefined' ) {
+                this.anchorX= anchorx;
+                this.anchorY= anchory;
             }
             return this;
         },
@@ -620,6 +620,8 @@
      * StartScale and EndScale must be supplied for each axis. This method takes care of a FF bug in which if a Scale is
      * set to 0, the animation will fail playing.
      *
+     * This behavior specifies anchors in values ranges 0..1
+     *
      * @constructor
      * @extends CAAT.Behavior
      *
@@ -631,10 +633,10 @@
 	};
 	
 	CAAT.ScaleBehavior.prototype= {
-        startScaleX:    0,
-        endScaleX:      0,
-        startScaleY:    0,
-        endScaleY:	    0,
+        startScaleX:    1,
+        endScaleX:      1,
+        startScaleY:    1,
+        endScaleY:	    1,
         anchorX:        .50,
         anchorY:        .50,
 
@@ -658,7 +660,7 @@
                 scaleY=0.01;
             }
 
-			actor.setScaleAnchored( scaleX, scaleY, this.anchorX*actor.width, this.anchorY*actor.height );
+			actor.setScaleAnchored( scaleX, scaleY, this.anchorX, this.anchorY );
 
             return { scaleX: scaleX, scaleY: scaleY };
 		},
@@ -683,9 +685,9 @@
             this.startScaleY= startY;
             this.endScaleY=   endY;
 
-            if ( anchorx!==undefined && anchory!==undefined && anchorx!==null && anchory!==null) {
-                this.anchorX= anchorx/100;
-                this.anchorY= anchory/100;
+            if ( typeof anchorx!=='undefined' && typeof anchory!=='undefined' ) {
+                this.anchorX= anchorx;
+                this.anchorY= anchory;
             }
 
             return this;

@@ -111,7 +111,7 @@
 
                 <div class="code">
 <pre class="brush: js; auto-links: false; toolbar: false;">
-<script>
+
     var director_4 = new CAAT.Director().initialize(
             160, 160, document.getElementById('_c4'));
     var scene_4 = director_4.createScene();
@@ -128,7 +128,7 @@
             setPingPong().
         // 50, 50 means to scale at 50% actor width and 50% actor height
         // its center.
-            setValues(1, 2, 1, 2, 50, 50).
+            setValues(1, 2, 1, 2, .50, .50).
         // scale Behavior enabled by default. Start at time=2000ms, and
         // last for 3000ms.
             setFrameTime(2000, 3000);
@@ -138,7 +138,7 @@
     var _rb_c4_text_0 = new CAAT.RotateBehavior().
         // 50, 50 means to scale at 50% actor width and 50% actor height
         // its center.
-            setValues(0, 2 * Math.PI, 50, 50);
+            setValues(0, 2 * Math.PI, .50, .50);
 
     _c4_rectangle_0.addBehavior(_sb_c4_text_0);
     _c4_rectangle_0.addBehavior(_rb_c4_text_0);
@@ -156,7 +156,7 @@
         }});
 
     CAAT.loop(30);
-</script>
+
 </pre>
                 </div>
 
@@ -181,7 +181,7 @@
                             setPingPong().
                         // 50, 50 means to scale at 50% actor width and 50% actor height
                         // its center.
-                            setValues(1, 2, 1, 2, 50, 50).
+                            setValues(1, 2, 1, 2, .50, .50).
                         // scale Behavior enabled by default. Start at time=2000ms, and
                         // last for 3000ms.
                             setFrameTime(2000, 3000);
@@ -191,7 +191,7 @@
                     var _rb_c4_text_0 = new CAAT.RotateBehavior().
                         // 50, 50 means to scale at 50% actor width and 50% actor height
                         // its center.
-                            setValues(0, 2 * Math.PI, 50, 50);
+                            setValues(0, 2 * Math.PI, .50, .50);
 
                     _c4_rectangle_0.addBehavior(_sb_c4_text_0);
                     _c4_rectangle_0.addBehavior(_rb_c4_text_0);

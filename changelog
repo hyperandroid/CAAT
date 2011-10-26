@@ -1,3 +1,13 @@
+10/26/2011
+----------
+
+* Changed Input subsystem (again). Now every event has the right information.
+* Changed Transformation matrix hierarchy. Now Director's transformation is considered to be Projection Matrix.
+* Changed Actor's setScaleAnchored and setRotationAnchored methods so that anchor values are no more
+  coordinates in space but proportional values (0..1) representing a percentage (like in behaviors).
+  This is a major issue and should be taken into account for previous developments.
+* Fixed tutorials and demos to reflect setScaleAnchored and setRotateAnchored changes.
+
 10/24/2011
 ----------
 

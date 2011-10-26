@@ -156,9 +156,9 @@
             cimages.push( new CAAT.SpriteImage().initialize( director.getImage('fish4'), 1, 3) );
 
             var anchor= [
-                0,0,   50, 0,   100, 0,
-                0,50,  50, 50,  100, 50,
-                0,100, 50, 100, 100, 100], i;
+                0,0,   .50, 0,   1.00, 0,
+                0,.50,  .50, .50,  1.00, .50,
+                0,1.00, .50, 1.00, 1.00, 1.00], i;
             for( i=0; i<9; i++ ) {
                 actor= createElement(
                         cimages[0],
@@ -203,7 +203,7 @@
                             new CAAT.RotateBehavior().
                                     setCycle(true).
                                     setFrameTime(0, 4000).
-                                    setValues(-Math.PI / 8,Math.PI / 8, 50, 0).
+                                    setValues(-Math.PI / 8,Math.PI / 8, .50, 0).
                                     setInterpolator(
                                             new CAAT.Interpolator().createCubicBezierInterpolator(
                                                     {x:0,y:0},

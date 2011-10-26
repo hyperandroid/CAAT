@@ -120,14 +120,14 @@
                 // (twice in size)
                 var sb = new CAAT.ScaleBehavior().
                         setPingPong().
-                        setValues(1, 2, 1, 2, 50, 50).
+                        setValues(1, 2, 1, 2, .50, .50).
                     // takes 2 seconds to scale. time measured from parent's
                     // zero time.
                         setFrameTime(0, 2000);
 
                 // setup a Rotating behavior. 0-2PI, ie 360 degrees.
                 var rb = new CAAT.RotateBehavior().
-                        setValues(0, Math.PI, 50, 50).
+                        setValues(0, Math.PI, .50, .50).
                     // takes 1 second, starting half a second after parent's
                     // time.
                         setFrameTime(500, 1000);
@@ -174,14 +174,14 @@
                 // (twice in size)
                 var sb = new CAAT.ScaleBehavior().
                         setPingPong().
-                        setValues(1, 2, 1, 2, 50, 50).
+                        setValues(1, 2, 1, 2, .50, .50).
                     // takes 2 seconds to scale. time measured from parent's
                     // zero time.
                         setFrameTime(0, 2000);
 
                 // setup a Rotating behavior. 0-2PI, ie 360 degrees.
                 var rb = new CAAT.RotateBehavior().
-                        setValues(0, Math.PI, 50, 50).
+                        setValues(0, Math.PI, .50, .50).
                     // takes 1 second, starting half a second after parent's
                     // time.
                         setFrameTime(500, 1000);

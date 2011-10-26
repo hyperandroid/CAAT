@@ -897,14 +897,14 @@
 
         /** rotation behavior info **/
         rb_angle:                   0,
-        rb_rotateAnchorX:           0,
-        rb_rotateAnchorY:           0,
+        rb_rotateAnchorX:           .5,
+        rb_rotateAnchorY:           .5,
 
         /** scale behavior info **/
         sb_scaleX:                  1,
         sb_scaleY:                  1,
-        sb_scaleAnchorX:            0,
-        sb_scaleAnchorY:            0,
+        sb_scaleAnchorX:            .5,
+        sb_scaleAnchorY:            .5,
 
         /** translate behavior info **/
         tb_x:                       0,
@@ -1595,32 +1595,69 @@
 
             var m= this.tmpMatrix.identity();
             var mm= this.matrix.matrix;
+            var c,s,_m00,_m01,_m10,_m11;
+            var mm0, mm1, mm2, mm3, mm4, mm5;
 
-            mm[2]+= this.tb_x;
-            mm[5]+= this.tb_y;
+            var bbox= this.bbox;
+            var bbw= bbox.width  ;
+            var bbh= bbox.height ;
+            var bbx= bbox.x;
+            var bby= bbox.y
+
+            mm0= 1;
+            mm1= 0;
+            mm3= 0;
+            mm4= 1;
+
+            mm2= this.tb_x - bbx;
+            mm5= this.tb_y - bby;
 
             if ( this.rb_angle ) {
-                mm[2]+= mm[0]*this.rb_rotateAnchorX + mm[1]*this.rb_rotateAnchorY;
-                mm[5]+= mm[3]*this.rb_rotateAnchorX + mm[4]*this.rb_rotateAnchorY;
 
-                this.matrix.multiply( m.setRotation( this.rb_angle ) );
+                var rbx= (this.rb_rotateAnchorX*bbw + bbx);
+                var rby= (this.rb_rotateAnchorY*bbh + bby);
 
-                mm[2]+= -mm[0]*this.rb_rotateAnchorX - mm[1]*this.rb_rotateAnchorY;
-                mm[5]+= -mm[3]*this.rb_rotateAnchorX - mm[4]*this.rb_rotateAnchorY;
+                mm2+= mm0*rbx + mm1*rby;
+                mm5+= mm3*rbx + mm4*rby;
+
+                c= Math.cos( this.rb_angle );
+                s= Math.sin( this.rb_angle);
+                _m00= mm0;
+                _m01= mm1;
+                _m10= mm3;
+                _m11= mm4;
+                mm0=  _m00*c + _m01*s;
+                mm1= -_m00*s + _m01*c;
+                mm3=  _m10*c + _m11*s;
+                mm4= -_m10*s + _m11*c;
+
+                mm2+= -mm0*rbx - mm1*rby;
+                mm5+= -mm3*rbx - mm4*rby;
             }
 
-            if ( this.sb_scaleX!=1 || this.sb_scaleY!=1 && (this.sb_scaleAnchorX || this.sb_scaleAnchorY )) {
-                mm[2]+= mm[0]*this.sb_scaleAnchorX + mm[1]*this.sb_scaleAnchorY;
-                mm[5]+= mm[3]*this.sb_scaleAnchorX + mm[4]*this.sb_scaleAnchorY;
+            if ( this.sb_scaleX!=1 || this.sb_scaleY!=1 ) {
 
-                mm[0]= mm[0]*this.sb_scaleX;
-                mm[1]= mm[1]*this.sb_scaleY;
-                mm[3]= mm[3]*this.sb_scaleX;
-                mm[4]= mm[4]*this.sb_scaleY;
+                var sbx= (this.sb_scaleAnchorX*bbw + bbx);
+                var sby= (this.sb_scaleAnchorY*bbh + bby);
 
-                mm[2]+= -mm[0]*this.sb_scaleAnchorX- mm[1]*this.sb_scaleAnchorY;
-                mm[5]+= -mm[3]*this.sb_scaleAnchorX - mm[4]*this.sb_scaleAnchorY;
+                mm2+= mm0*sbx + mm1*sby;
+                mm5+= mm3*sbx + mm4*sby;
+
+                mm0= mm0*this.sb_scaleX;
+                mm1= mm1*this.sb_scaleY;
+                mm3= mm3*this.sb_scaleX;
+                mm4= mm4*this.sb_scaleY;
+
+                mm2+= -mm0*sbx - mm1*sby;
+                mm5+= -mm3*sbx - mm4*sby;
             }
+
+            mm[0]= mm0;
+            mm[1]= mm1;
+            mm[2]= mm2;
+            mm[3]= mm3;
+            mm[4]= mm4;
+            mm[5]= mm5;
 
             return this;
 
@@ -1628,16 +1665,16 @@
 
         setRotationAnchored : function( angle, rx, ry ) {
             this.rb_angle=          angle;
-            this.rb_rotateAnchorX=  rx + this.bbox.x;
-            this.rb_rotateAnchorY=  ry + this.bbox.y;
+            this.rb_rotateAnchorX=  rx;
+            this.rb_rotateAnchorY=  ry;
             return this;
         },
 
         setScaleAnchored : function( scaleX, scaleY, sx, sy ) {
             this.sb_scaleX= scaleX;
-            this.sb_scaleAnchorX= sx + this.bbox.x;
+            this.sb_scaleAnchorX= sx;
             this.sb_scaleY= scaleY;
-            this.sb_scaleAnchorY= sy + this.bbox.y;
+            this.sb_scaleAnchorY= sy;
             return this;
         },
 
