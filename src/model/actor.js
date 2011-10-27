@@ -1630,7 +1630,7 @@
             var ctx= director.ctx;
             var dmvm= director.modelViewMatrix;
 
-//            ctx.save();
+            ctx.save();
             dmvm.transformRenderingContextSet( ctx );
 
             CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
@@ -1639,16 +1639,15 @@
             }
 //            ctx.restore();
 
-//            ctx.save();
             for( var actor= this.activeChildren; actor; actor=actor.__next ) {
                 dmvm.transformRenderingContextSet( ctx );
                 if ( actor.visible ) {
-//                    ctx.save();
+                    ctx.save();
                     actor.paintActor(director,time);
-//                    ctx.restore();
+                    ctx.restore();
                 }
             }
-//            ctx.restore();
+            ctx.restore();
 
             return true;
         },
