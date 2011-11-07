@@ -297,7 +297,7 @@
                 this.glReset();
 
 
-                var maxTris = 4096;
+                var maxTris = 512;
                 this.coords = new Float32Array(maxTris * 12);
                 this.uv = new Float32Array(maxTris * 8);
 
@@ -376,6 +376,11 @@
                 this.currentTexturePage = this.glTextureManager.pages[0];
                 this.glTextureProgram.setTexture(this.currentTexturePage.texture);
             }
+        },
+        setGLTexturePage : function( tp ) {
+            this.currentTexturePage = tp;
+            this.glTextureProgram.setTexture(tp.texture);
+            return this;
         },
         /**
          * Add a new image to director's image cache. If gl is enabled and the 'noUpdateGL' is not set to true this

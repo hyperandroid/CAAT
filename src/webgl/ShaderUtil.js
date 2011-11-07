@@ -167,7 +167,7 @@
             this.colorBuffer= this.gl.createBuffer();
             this.setColor( [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1] );
 
-            var maxTris=2048, i;
+            var maxTris=512, i;
             /// set vertex data
             this.vertexPositionBuffer = this.gl.createBuffer();
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexPositionBuffer );
@@ -232,7 +232,7 @@
                     "void main(void) { \n"+
 
                     "if ( uUseColor ) {\n"+
-                    "  gl_FragColor= vec4(uColor.rgb, uColor.a*alpha);\n"+
+                    "  gl_FragColor= vec4(uColor.r*alpha, uColor.g*alpha, uColor.b*alpha, uColor.a*alpha);\n"+
                     "} else { \n"+
                     "  vec4 textureColor= texture2D(uSampler, vec2(vTextureCoord)); \n"+
 // Fix FF   "  gl_FragColor = vec4(textureColor.rgb, textureColor.a * alpha); \n"+

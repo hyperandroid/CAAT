@@ -146,15 +146,15 @@
 
             function addFish(x,y) {
 
-                var scale= Math.random()*1+.5;
+                var scale= Math.random() + .5;
 
                 var fish = new CAAT.Actor().
-                        setAnimationImageIndex( [0,1,2,1] ).
                         setBackgroundImage(
                                 conpoundimagefish[(imageIndex++)%conpoundimagefish.length].getRef(),
                                 true).
                         setLocation( x,y ).
                         setScale( scale,scale ).
+                        setAnimationImageIndex( [0,1,2,1] ).
                         setChangeFPS(300).
                         enableEvents(false);
 
@@ -187,7 +187,7 @@
                 fish.addBehavior( pbfish );
             }
 
-            var gradient= director.crc.createLinearGradient(0,0,director.width,director.height);
+            var gradient= director.ctx.createLinearGradient(0,0,director.width,director.height);
             gradient.addColorStop(0,'#000000');
             gradient.addColorStop(1,'#00007f');
 

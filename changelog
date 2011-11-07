@@ -1,3 +1,9 @@
+11/07/2011
+----------
+
+* Enabled multi-page packed textures on GL renderer.
+* Fixed GL lines color with the new UNPACK_PREMULTIPLY_ALPHA_WEBGL flag to be compatible with FF.
+
 11/02/2011
 ----------
 

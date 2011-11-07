@@ -1358,7 +1358,7 @@
          *
          */
         glNeedsFlush : function(director) {
-             if ( this.getTextureGLPage()!==director.currentTexturePage ) {
+            if ( this.getTextureGLPage()!==director.currentTexturePage ) {
                 return true;
             }
             if ( this.frameAlpha!==director.currentOpacity ) {
@@ -1371,7 +1371,12 @@
          * @param director
          */
         glSetShader : function(director) {
-            // BUGBUG BUGBUG BUGBUG change texture page if needed.
+
+            var tp= this.getTextureGLPage();
+            if ( tp!==director.currentTexturePage ) {
+                director.setGLTexturePage(tp);
+            }
+
             if ( this.frameAlpha!==director.currentOpacity ) {
                 director.setGLCurrentOpacity(this.frameAlpha);
             }

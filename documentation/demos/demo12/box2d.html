@@ -153,6 +153,10 @@
                     me.world.Step(1.0/60, 1,1);
                     me.world.ClearForces();
                 };
+
+                this.scene.onRenderEnd =  function()    {
+                    me.world.DrawDebugData();
+                }
             },
 
             createWorld : function(director) {
@@ -180,6 +184,8 @@
 
                 this.world = new Box2D.Dynamics.b2World(gravity, doSleep);
                 this.world.SetContinuousPhysics(true);
+
+CAAT.enableBox2DDebug( true, director, this.world );
 
                 for( i=0; i<4; i++ )    {
                     var actor0= new CAAT.B2DPolygonBody().createBody(

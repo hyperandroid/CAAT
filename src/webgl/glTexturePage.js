@@ -286,7 +286,9 @@
             var images= [];
             for( var i=0; i<imagesCache.length; i++ ) {
                 var img= imagesCache[i].image;
-                images.push( img );
+                if ( !img.__texturePage ) {
+                    images.push( img );
+                }
             }
 
             this.createFromImages(images);
@@ -499,7 +501,7 @@
                     // imagen sin asociacion de textura
                     if ( !imagesCache[i].image.__texturePage ) {
                         // cabe en la pagina ?? continua con otras paginas.
-                        if ( imagesCache[i].image.width<=width && imagesCache[i].height<=height ) {
+                        if ( imagesCache[i].image.width<=width && imagesCache[i].image.height<=height ) {
                             end= false;
                         }
                         break;
