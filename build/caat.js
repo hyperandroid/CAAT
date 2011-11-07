@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 54
+Version: 0.1 build: 68
 
 Created on:
-DATE: 2011-10-27
-TIME: 23:45:03
+DATE: 2011-11-07
+TIME: 20:03:29
 */
 
 
@@ -3419,6 +3419,7 @@ var cp1= proxy(
         height: 0,
         canvas: null,
         ctx:    null,
+        statistics: null,
 
         SCALE:  50,
 
@@ -3449,9 +3450,8 @@ var cp1= proxy(
             return this;
         },
 
-        debugInfo : function( total, active ) {
-            this.size_total= total;
-            this.size_active= active;
+        debugInfo : function( statistics ) {
+            this.statistics= statistics;
             this.paint();
         },
 
@@ -3491,12 +3491,13 @@ var cp1= proxy(
             ctx.lineTo( this.width, t );
             ctx.stroke();
 
-            ctx.fillStyle='red';
-            ctx.fillRect( 0,0,120,15);
+            ctx.fillStyle='rgba(255,0,0,.75)';
+            ctx.fillRect( 0,0,180,15);
             ctx.fillStyle='white';
             ctx.fillText(
-                    '  Total: '+this.size_total+
-                    '  Active: '+this.size_active,
+                    '  Total: '+this.statistics.size_total+
+                    '  Active: '+this.statistics.size_active+
+                    '  Draws: '+this.statistics.draws,
                     0,
                     12 );
         }
@@ -7515,6 +7516,12 @@ var cp1= proxy(
         uvIndex:            0,
 
         front_to_back:      false,
+
+        statistics: {
+            size_total:         0,
+            size_active:        0,
+            draws:              0
+        },
         currentTexturePage: 0,
         currentOpacity:     1,
 
@@ -7553,6 +7560,10 @@ var cp1= proxy(
                 case this.RESIZE_PROPORTIONAL:
                     this.setScaleProportional(w,h);
                     break;
+            }
+
+            if ( this.glEnabled ) {
+                this.glReset();
             }
 
             if ( this.onResizeCallback )    {
@@ -7610,6 +7621,7 @@ var cp1= proxy(
          */
         setBounds : function(x, y, w, h) {
             CAAT.Director.superclass.setBounds.call(this, x, y, w, h);
+
             this.canvas.width = w;
             this.canvas.height = h;
             this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d');
@@ -7663,7 +7675,7 @@ var cp1= proxy(
             return this;
         },
         glReset : function() {
-            this.pMatrix= makeOrtho( 0, this.canvas.width, this.canvas.height, 0, -1, 1 );
+            this.pMatrix= makeOrtho( 0, this.referenceWidth, this.referenceHeight, 0, -1, 1 );
             this.gl.viewport(0,0,this.canvas.width,this.canvas.height);
             this.glColorProgram.setMatrixUniform(this.pMatrix);
             this.glTextureProgram.setMatrixUniform(this.pMatrix);
@@ -7682,6 +7694,10 @@ var cp1= proxy(
             canvas = canvas || document.createElement('canvas');
             canvas.width = width;
             canvas.height = height;
+
+            this.referenceWidth= width;
+            this.referenceHeight=height;
+
             var i;
 
             try {
@@ -7706,7 +7722,7 @@ var cp1= proxy(
                 this.glReset();
 
 
-                var maxTris = 2048;
+                var maxTris = 4096;
                 this.coords = new Float32Array(maxTris * 12);
                 this.uv = new Float32Array(maxTris * 8);
 
@@ -7721,7 +7737,8 @@ var cp1= proxy(
                 }
 
                 this.gl.enable(this.gl.BLEND);
-                this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+// Fix FF                this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+                this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
                 this.glEnabled = true;
 
                 this.checkDebug();
@@ -7860,6 +7877,8 @@ var cp1= proxy(
             }
             this.coordsIndex = 0;
             this.uvIndex = 0;
+
+            this.statistics.draws++;
         },
 
         findActorAtPosition : function(point) {
@@ -7880,6 +7899,12 @@ var cp1= proxy(
         },
 
 
+        resetStats : function() {
+            this.statistics.size_total= 0;
+            this.statistics.size_active=0;
+            this.statistics.draws=      0;
+        },
+
         /**
          * This is the entry point for the animation system of the Director.
          * The director is fed with the elapsed time value to maintain a virtual timeline.
@@ -7896,8 +7921,7 @@ var cp1= proxy(
             this.animate(this,time);
 
             if ( CAAT.DEBUG ) {
-                this.size_total=0;
-                this.size_active=0;
+                this.resetStats();
             }
 
             /**
@@ -7910,8 +7934,6 @@ var cp1= proxy(
                 this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
                 this.coordsIndex = 0;
                 this.uvIndex = 0;
-
-                // FIX: prepend director affine transform.
 
                 for (i = 0; i < ne; i++) {
                     var c = this.childrenList[i];
@@ -7930,8 +7952,8 @@ var cp1= proxy(
                         }
 
                         if ( CAAT.DEBUG ) {
-                            this.size_total+= c.size_total;
-                            this.size_active+= c.size_active;
+                            this.statistics.size_total+= c.size_total;
+                            this.statistics.size_active+= c.size_active;
                         }
 
                     }
@@ -7974,8 +7996,8 @@ var cp1= proxy(
                         }
 
                         if ( CAAT.DEBUG ) {
-                            this.size_total+= c.size_total;
-                            this.size_active+= c.size_active;
+                            this.statistics.size_total+= c.size_total;
+                            this.statistics.size_active+= c.size_active;
                         }
 
                     }
@@ -8579,7 +8601,7 @@ var cp1= proxy(
             this.render(delta);
 
             if ( this.debugInfo ) {
-                this.debugInfo(this.size_total, this.size_active);
+                this.debugInfo(this.statistics);
             }
             
             this.timeline = t;
@@ -15107,7 +15129,7 @@ this.imageData.data= this.bufferImage;
             this.colorBuffer= this.gl.createBuffer();
             this.setColor( [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1] );
 
-            var maxTris=4096, i;
+            var maxTris=2048, i;
             /// set vertex data
             this.vertexPositionBuffer = this.gl.createBuffer();
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexPositionBuffer );
@@ -15175,7 +15197,8 @@ this.imageData.data= this.bufferImage;
                     "  gl_FragColor= vec4(uColor.rgb, uColor.a*alpha);\n"+
                     "} else { \n"+
                     "  vec4 textureColor= texture2D(uSampler, vec2(vTextureCoord)); \n"+
-                    "  gl_FragColor = vec4(textureColor.rgb, textureColor.a * alpha); \n"+
+// Fix FF   "  gl_FragColor = vec4(textureColor.rgb, textureColor.a * alpha); \n"+
+                    "  gl_FragColor = vec4(textureColor.r*alpha, textureColor.g*alpha, textureColor.b*alpha, textureColor.a * alpha ); \n"+
                     "}\n"+
 
                     "}\n"
@@ -15294,13 +15317,15 @@ this.imageData.data= this.bufferImage;
             return this;
         },
         updateVertexBuffer : function(vertexArray) {
-            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexPositionBuffer );
-            this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, vertexArray);
+            var gl= this.gl;
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer );
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertexArray);
             return this;
         },
         updateUVBuffer : function(uvArray) {
-            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexUVBuffer );
-            this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, uvArray);
+            var gl= this.gl;
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexUVBuffer );
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, uvArray);
             return this;
         },
         setAlpha : function(alpha) {
@@ -15337,7 +15362,7 @@ this.imageData.data= this.bufferImage;
             this.setAlpha( 1 );
             this.setUseColor(false);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vertexIndexBuffer);
-            
+
         },
         /**
          * 
@@ -15656,11 +15681,16 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
 
         initialize : function(gl) {
             this.gl= gl;
+
+            // Fix firefox.
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+
             this.texture = gl.createTexture();
 
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
             gl.enable( gl.BLEND );
-            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+// Fix FF            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+            gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
             var uarr= new Uint8Array(this.width*this.height*4);
             for (var jj = 0; jj < 4*this.width*this.height; ) {

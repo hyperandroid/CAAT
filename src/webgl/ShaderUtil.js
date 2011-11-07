@@ -167,7 +167,7 @@
             this.colorBuffer= this.gl.createBuffer();
             this.setColor( [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1] );
 
-            var maxTris=4096, i;
+            var maxTris=2048, i;
             /// set vertex data
             this.vertexPositionBuffer = this.gl.createBuffer();
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexPositionBuffer );
@@ -235,7 +235,8 @@
                     "  gl_FragColor= vec4(uColor.rgb, uColor.a*alpha);\n"+
                     "} else { \n"+
                     "  vec4 textureColor= texture2D(uSampler, vec2(vTextureCoord)); \n"+
-                    "  gl_FragColor = vec4(textureColor.rgb, textureColor.a * alpha); \n"+
+// Fix FF   "  gl_FragColor = vec4(textureColor.rgb, textureColor.a * alpha); \n"+
+                    "  gl_FragColor = vec4(textureColor.r*alpha, textureColor.g*alpha, textureColor.b*alpha, textureColor.a * alpha ); \n"+
                     "}\n"+
 
                     "}\n"
@@ -354,13 +355,15 @@
             return this;
         },
         updateVertexBuffer : function(vertexArray) {
-            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexPositionBuffer );
-            this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, vertexArray);
+            var gl= this.gl;
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer );
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, vertexArray);
             return this;
         },
         updateUVBuffer : function(uvArray) {
-            this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexUVBuffer );
-            this.gl.bufferSubData(this.gl.ARRAY_BUFFER, 0, uvArray);
+            var gl= this.gl;
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexUVBuffer );
+            gl.bufferSubData(gl.ARRAY_BUFFER, 0, uvArray);
             return this;
         },
         setAlpha : function(alpha) {
@@ -397,7 +400,7 @@
             this.setAlpha( 1 );
             this.setUseColor(false);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vertexIndexBuffer);
-            
+
         },
         /**
          * 

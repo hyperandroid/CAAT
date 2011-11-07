@@ -91,6 +91,12 @@
         uvIndex:            0,
 
         front_to_back:      false,
+
+        statistics: {
+            size_total:         0,
+            size_active:        0,
+            draws:              0
+        },
         currentTexturePage: 0,
         currentOpacity:     1,
 
@@ -129,6 +135,10 @@
                 case this.RESIZE_PROPORTIONAL:
                     this.setScaleProportional(w,h);
                     break;
+            }
+
+            if ( this.glEnabled ) {
+                this.glReset();
             }
 
             if ( this.onResizeCallback )    {
@@ -186,6 +196,7 @@
          */
         setBounds : function(x, y, w, h) {
             CAAT.Director.superclass.setBounds.call(this, x, y, w, h);
+
             this.canvas.width = w;
             this.canvas.height = h;
             this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d');
@@ -239,7 +250,7 @@
             return this;
         },
         glReset : function() {
-            this.pMatrix= makeOrtho( 0, this.canvas.width, this.canvas.height, 0, -1, 1 );
+            this.pMatrix= makeOrtho( 0, this.referenceWidth, this.referenceHeight, 0, -1, 1 );
             this.gl.viewport(0,0,this.canvas.width,this.canvas.height);
             this.glColorProgram.setMatrixUniform(this.pMatrix);
             this.glTextureProgram.setMatrixUniform(this.pMatrix);
@@ -258,6 +269,10 @@
             canvas = canvas || document.createElement('canvas');
             canvas.width = width;
             canvas.height = height;
+
+            this.referenceWidth= width;
+            this.referenceHeight=height;
+
             var i;
 
             try {
@@ -282,7 +297,7 @@
                 this.glReset();
 
 
-                var maxTris = 2048;
+                var maxTris = 4096;
                 this.coords = new Float32Array(maxTris * 12);
                 this.uv = new Float32Array(maxTris * 8);
 
@@ -297,7 +312,8 @@
                 }
 
                 this.gl.enable(this.gl.BLEND);
-                this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+// Fix FF                this.gl.blendFunc(this.gl.SRC_ALPHA, this.gl.ONE_MINUS_SRC_ALPHA);
+                this.gl.blendFunc(this.gl.ONE, this.gl.ONE_MINUS_SRC_ALPHA);
                 this.glEnabled = true;
 
                 this.checkDebug();
@@ -436,6 +452,8 @@
             }
             this.coordsIndex = 0;
             this.uvIndex = 0;
+
+            this.statistics.draws++;
         },
 
         findActorAtPosition : function(point) {
@@ -456,6 +474,12 @@
         },
 
 
+        resetStats : function() {
+            this.statistics.size_total= 0;
+            this.statistics.size_active=0;
+            this.statistics.draws=      0;
+        },
+
         /**
          * This is the entry point for the animation system of the Director.
          * The director is fed with the elapsed time value to maintain a virtual timeline.
@@ -472,8 +496,7 @@
             this.animate(this,time);
 
             if ( CAAT.DEBUG ) {
-                this.size_total=0;
-                this.size_active=0;
+                this.resetStats();
             }
 
             /**
@@ -486,8 +509,6 @@
                 this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
                 this.coordsIndex = 0;
                 this.uvIndex = 0;
-
-                // FIX: prepend director affine transform.
 
                 for (i = 0; i < ne; i++) {
                     var c = this.childrenList[i];
@@ -506,8 +527,8 @@
                         }
 
                         if ( CAAT.DEBUG ) {
-                            this.size_total+= c.size_total;
-                            this.size_active+= c.size_active;
+                            this.statistics.size_total+= c.size_total;
+                            this.statistics.size_active+= c.size_active;
                         }
 
                     }
@@ -550,8 +571,8 @@
                         }
 
                         if ( CAAT.DEBUG ) {
-                            this.size_total+= c.size_total;
-                            this.size_active+= c.size_active;
+                            this.statistics.size_total+= c.size_total;
+                            this.statistics.size_active+= c.size_active;
                         }
 
                     }
@@ -1155,7 +1176,7 @@
             this.render(delta);
 
             if ( this.debugInfo ) {
-                this.debugInfo(this.size_total, this.size_active);
+                this.debugInfo(this.statistics);
             }
             
             this.timeline = t;

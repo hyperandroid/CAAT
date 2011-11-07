@@ -233,11 +233,16 @@
 
         initialize : function(gl) {
             this.gl= gl;
+
+            // Fix firefox.
+            gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
+
             this.texture = gl.createTexture();
 
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
             gl.enable( gl.BLEND );
-            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+// Fix FF            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+            gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
             var uarr= new Uint8Array(this.width*this.height*4);
             for (var jj = 0; jj < 4*this.width*this.height; ) {

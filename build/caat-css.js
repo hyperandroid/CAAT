@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 54
+Version: 0.1 build: 68
 
 Created on:
-DATE: 2011-10-27
-TIME: 23:45:04
+DATE: 2011-11-07
+TIME: 20:03:29
 */
 
 
@@ -3419,6 +3419,7 @@ var cp1= proxy(
         height: 0,
         canvas: null,
         ctx:    null,
+        statistics: null,
 
         SCALE:  50,
 
@@ -3449,9 +3450,8 @@ var cp1= proxy(
             return this;
         },
 
-        debugInfo : function( total, active ) {
-            this.size_total= total;
-            this.size_active= active;
+        debugInfo : function( statistics ) {
+            this.statistics= statistics;
             this.paint();
         },
 
@@ -3491,12 +3491,13 @@ var cp1= proxy(
             ctx.lineTo( this.width, t );
             ctx.stroke();
 
-            ctx.fillStyle='red';
-            ctx.fillRect( 0,0,120,15);
+            ctx.fillStyle='rgba(255,0,0,.75)';
+            ctx.fillRect( 0,0,180,15);
             ctx.fillStyle='white';
             ctx.fillText(
-                    '  Total: '+this.size_total+
-                    '  Active: '+this.size_active,
+                    '  Total: '+this.statistics.size_total+
+                    '  Active: '+this.statistics.size_active+
+                    '  Draws: '+this.statistics.draws,
                     0,
                     12 );
         }
@@ -6054,7 +6055,6 @@ var cp1= proxy(
             }
             this.eventHandler.style.width= w+'px';
             this.eventHandler.style.height= h+'px';
-console.log('setbounds '+w+' '+h);
 
             return this;
         },

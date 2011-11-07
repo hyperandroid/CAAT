@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 54
+Version: 0.1 build: 68
 
 Created on:
-DATE: 2011-10-27
-TIME: 23:45:04
+DATE: 2011-11-07
+TIME: 20:03:29
 */
 
 
@@ -34,6 +34,37 @@ TIME: 23:45:04
  *
  * Box2D actors.
  */
+
+(function() {
+
+    /**
+     * Ad Eemeli Kelokorpi suggested,
+     * @param set
+     * @param director
+     * @param world
+     */
+    CAAT.enableBox2DDebug= function(set, director, world) {
+
+        if ( set )  {
+            var debugDraw = new Box2D.Dynamics.b2DebugDraw();
+            var test= false;
+            try {
+                debugDraw.m_sprite.graphics.clear= function() {};
+            } catch( e ) {}
+
+            world.SetDebugDraw(debugDraw);
+
+            debugDraw.SetSprite(director.ctx);
+            debugDraw.SetDrawScale(CAAT.PMR);
+            debugDraw.SetFillAlpha(.5);
+            debugDraw.SetLineThickness(1.0);
+            debugDraw.SetFlags(0x0001 | 0x0002);
+
+        } else {
+            world.setDebugDraw( null );
+        }
+    }
+})();
 
 (function() {
 

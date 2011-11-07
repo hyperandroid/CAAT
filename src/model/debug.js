@@ -20,6 +20,7 @@
         height: 0,
         canvas: null,
         ctx:    null,
+        statistics: null,
 
         SCALE:  50,
 
@@ -50,9 +51,8 @@
             return this;
         },
 
-        debugInfo : function( total, active ) {
-            this.size_total= total;
-            this.size_active= active;
+        debugInfo : function( statistics ) {
+            this.statistics= statistics;
             this.paint();
         },
 
@@ -92,12 +92,13 @@
             ctx.lineTo( this.width, t );
             ctx.stroke();
 
-            ctx.fillStyle='red';
-            ctx.fillRect( 0,0,120,15);
+            ctx.fillStyle='rgba(255,0,0,.75)';
+            ctx.fillRect( 0,0,180,15);
             ctx.fillStyle='white';
             ctx.fillText(
-                    '  Total: '+this.size_total+
-                    '  Active: '+this.size_active,
+                    '  Total: '+this.statistics.size_total+
+                    '  Active: '+this.statistics.size_active+
+                    '  Draws: '+this.statistics.draws,
                     0,
                     12 );
         }

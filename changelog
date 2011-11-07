@@ -1,3 +1,11 @@
+11/02/2011
+----------
+
+* Fixed FF Webgl textures problem. Unpacking pre multiplied alpha on channels has done it.
+  Changing from blending function SRC_ALPHA to ONE.
+* Added Box2D debug renderer.
+* Fixed Demo3, sprite fish didn't animated properly.
+
 10/27/2011
 ----------
 

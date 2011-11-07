@@ -161,7 +161,6 @@
             }
             this.eventHandler.style.width= w+'px';
             this.eventHandler.style.height= h+'px';
-console.log('setbounds '+w+' '+h);
 
             return this;
         },
