@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 68
+Version: 0.1 build: 70
 
 Created on:
-DATE: 2011-11-07
-TIME: 20:03:29
+DATE: 2011-11-08
+TIME: 23:54:02
 */
 
 
@@ -3455,6 +3455,8 @@ var cp1= proxy(
             this.paint();
         },
 
+        prevRAF: -1,
+
         paint : function() {
             var ctx= this.ctx;
             var t=0;
@@ -3470,26 +3472,38 @@ var cp1= proxy(
             ctx.lineTo( this.width-.5, this.height );
             ctx.stroke();
 
+            ctx.strokeStyle= 'rgba(0,255,0,.8)';
+            ctx.beginPath();
+            t= this.height-((15/this.SCALE*this.height)>>0)-.5;
+            ctx.moveTo( .5, t );
+            ctx.lineTo( this.width+.5, t );
+            ctx.stroke();
+
+            ctx.strokeStyle= 'rgba(255,255,0,.8)';
+            ctx.beginPath();
+            t= this.height-((25/this.SCALE*this.height)>>0)-.5;
+            ctx.moveTo( .5, t );
+            ctx.lineTo( this.width+.5, t );
+            ctx.stroke();
+
             ctx.strokeStyle= CAAT.FRAME_TIME<16 ? 'green' : CAAT.FRAME_TIME<25 ? 'yellow' : 'red';
             ctx.beginPath();
             ctx.moveTo( this.width-.5, this.height );
             ctx.lineTo( this.width-.5, this.height-(CAAT.FRAME_TIME*this.height/this.SCALE) );
             ctx.stroke();
 
-            ctx.strokeStyle= 'rgba(0,255,0,.8)';
-            ctx.beginPath();
+            var t1= this.height-(CAAT.REQUEST_ANIMATION_FRAME_TIME/this.SCALE*this.height);
+            if (-1===this.prevRAF)   {
+                this.prevRAF= t1;
+            }
 
-            t= this.height-((15/this.SCALE*this.height)>>0)-.5;
-            ctx.moveTo( 0, t );
-            ctx.lineTo( this.width, t );
+            ctx.strokeStyle= 'rgba(255,0,255,.5)';
+            ctx.beginPath();
+            ctx.moveTo( this.width-.5, t1 );
+            ctx.lineTo( this.width-.5, this.prevRAF );
             ctx.stroke();
 
-            ctx.strokeStyle= 'rgba(255,255,0,.8)';
-            ctx.beginPath();
-            t= this.height-((25/this.SCALE*this.height)>>0)-.5;
-            ctx.moveTo( 0, t );
-            ctx.lineTo( this.width, t );
-            ctx.stroke();
+            this.prevRAF= t1;
 
             ctx.fillStyle='rgba(255,0,0,.75)';
             ctx.fillRect( 0,0,180,15);
@@ -4862,7 +4876,7 @@ var cp1= proxy(
          *
          */
         glNeedsFlush : function(director) {
-             if ( this.getTextureGLPage()!==director.currentTexturePage ) {
+            if ( this.getTextureGLPage()!==director.currentTexturePage ) {
                 return true;
             }
             if ( this.frameAlpha!==director.currentOpacity ) {
@@ -4875,7 +4889,12 @@ var cp1= proxy(
          * @param director
          */
         glSetShader : function(director) {
-            // BUGBUG BUGBUG BUGBUG change texture page if needed.
+
+            var tp= this.getTextureGLPage();
+            if ( tp!==director.currentTexturePage ) {
+                director.setGLTexturePage(tp);
+            }
+
             if ( this.frameAlpha!==director.currentOpacity ) {
                 director.setGLCurrentOpacity(this.frameAlpha);
             }
@@ -5047,7 +5066,7 @@ var cp1= proxy(
                 this.iOver=      _over;
                 this.iPress=     _press;
                 this.iDisabled=  _disabled;
-                this.setSpriteIndex( iNormal );
+                this.setSpriteIndex( this.iNormal );
                 return this;
             };
 
@@ -7722,7 +7741,7 @@ var cp1= proxy(
                 this.glReset();
 
 
-                var maxTris = 4096;
+                var maxTris = 512;
                 this.coords = new Float32Array(maxTris * 12);
                 this.uv = new Float32Array(maxTris * 8);
 
@@ -7801,6 +7820,11 @@ var cp1= proxy(
                 this.currentTexturePage = this.glTextureManager.pages[0];
                 this.glTextureProgram.setTexture(this.currentTexturePage.texture);
             }
+        },
+        setGLTexturePage : function( tp ) {
+            this.currentTexturePage = tp;
+            this.glTextureProgram.setTexture(tp.texture);
+            return this;
         },
         /**
          * Add a new image to director's image cache. If gl is enabled and the 'noUpdateGL' is not set to true this
@@ -9383,6 +9407,9 @@ CAAT.loop= function(fps) {
     }
 }
 
+
+CAAT.RAF=                       0;    // requestAnimationFrame time reference.
+CAAT.REQUEST_ANIMATION_FRAME_TIME=   0;
 /**
  * Make a frame for each director instance present in the system.
  */
@@ -9394,7 +9421,12 @@ CAAT.renderFrame= function() {
     t= new Date().getTime()-t;
     CAAT.FRAME_TIME= t;
 
-    window.requestAnimFrame(CAAT.renderFrame, 0 )
+    if (CAAT.RAF)   {
+        CAAT.REQUEST_ANIMATION_FRAME_TIME= new Date().getTime()-CAAT.RAF;
+    }
+    CAAT.RAF= new Date().getTime();
+
+    window.requestAnimFrame(CAAT.renderFrame, 0 );
 }
 
 /**
@@ -15129,7 +15161,7 @@ this.imageData.data= this.bufferImage;
             this.colorBuffer= this.gl.createBuffer();
             this.setColor( [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1] );
 
-            var maxTris=2048, i;
+            var maxTris=512, i;
             /// set vertex data
             this.vertexPositionBuffer = this.gl.createBuffer();
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, this.vertexPositionBuffer );
@@ -15194,7 +15226,7 @@ this.imageData.data= this.bufferImage;
                     "void main(void) { \n"+
 
                     "if ( uUseColor ) {\n"+
-                    "  gl_FragColor= vec4(uColor.rgb, uColor.a*alpha);\n"+
+                    "  gl_FragColor= vec4(uColor.r*alpha, uColor.g*alpha, uColor.b*alpha, uColor.a*alpha);\n"+
                     "} else { \n"+
                     "  vec4 textureColor= texture2D(uSampler, vec2(vTextureCoord)); \n"+
 // Fix FF   "  gl_FragColor = vec4(textureColor.rgb, textureColor.a * alpha); \n"+
@@ -15287,7 +15319,7 @@ this.imageData.data= this.bufferImage;
                 vertexIndex.push(0 + i*4); vertexIndex.push(1 + i*4); vertexIndex.push(2 + i*4);
                 vertexIndex.push(0 + i*4); vertexIndex.push(2 + i*4); vertexIndex.push(3 + i*4);
             }
-            this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertexIndex), this.gl.STATIC_DRAW);            
+            this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(vertexIndex), this.gl.DYNAMIC_DRAW);
 
             return CAAT.TextureProgram.superclass.initialize.call(this);
         },
@@ -15734,7 +15766,9 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
             var images= [];
             for( var i=0; i<imagesCache.length; i++ ) {
                 var img= imagesCache[i].image;
-                images.push( img );
+                if ( !img.__texturePage ) {
+                    images.push( img );
+                }
             }
 
             this.createFromImages(images);
@@ -15799,9 +15833,6 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
         },
         endCreation : function() {
             var gl= this.gl;
-
-//            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
-//            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST );
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
             gl.generateMipmap(gl.TEXTURE_2D);
@@ -15947,7 +15978,7 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
                     // imagen sin asociacion de textura
                     if ( !imagesCache[i].image.__texturePage ) {
                         // cabe en la pagina ?? continua con otras paginas.
-                        if ( imagesCache[i].image.width<=width && imagesCache[i].height<=height ) {
+                        if ( imagesCache[i].image.width<=width && imagesCache[i].image.height<=height ) {
                             end= false;
                         }
                         break;

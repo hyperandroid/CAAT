@@ -80,6 +80,12 @@
         resize:             1,
         onResizeCallback:   null,
 
+        statistics: {
+            size_total:         0,
+            size_active:        0,
+            draws:              0
+        },
+
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
                 var dd= new CAAT.Debug().initialize( this.width, 60 );
@@ -270,6 +276,13 @@
                 this.updateGLPages();
             }
         },
+
+        resetStats : function() {
+            this.statistics.size_total= 0;
+            this.statistics.size_active=0;
+            this.statistics.draws=      0;
+        },
+
         /**
          * This is the entry point for the animation system of the Director.
          * The director is fed with the elapsed time value to maintain a virtual timeline.
@@ -288,8 +301,10 @@
              * draw director active scenes.
              */
             var i, l, tt;
-            this.size_total=0;
-            this.size_active=0;
+
+            if ( CAAT.DEBUG ) {
+                this.resetStats();
+            }
 
             for (i = 0, l=this.childrenList.length; i < l; i++) {
                 var c= this.childrenList[i];
@@ -307,8 +322,10 @@
                         c.time += time;
                     }
 
-                    this.size_total+= this.childrenList[i].size_total;
-                    this.size_active+= this.childrenList[i].size_active;
+                    if ( CAAT.DEBUG ) {
+                        this.statistics.size_total+= c.size_total;
+                        this.statistics.size_active+= c.size_active;
+                    }
 
                 }
             }
@@ -835,7 +852,7 @@
             this.render(delta);
 
             if ( this.debugInfo ) {
-                this.debugInfo(this.size_total, this.size_active);
+                this.debugInfo(this.statistics);
             }
 
             this.timeline = t;

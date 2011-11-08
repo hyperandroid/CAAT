@@ -1548,7 +1548,7 @@
                 this.iOver=      _over;
                 this.iPress=     _press;
                 this.iDisabled=  _disabled;
-                this.setSpriteIndex( iNormal );
+                this.setSpriteIndex( this.iNormal );
                 return this;
             };
 

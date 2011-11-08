@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 68
+Version: 0.1 build: 70
 
 Created on:
-DATE: 2011-11-07
-TIME: 20:03:29
+DATE: 2011-11-08
+TIME: 23:54:02
 */
 
 
@@ -3455,6 +3455,8 @@ var cp1= proxy(
             this.paint();
         },
 
+        prevRAF: -1,
+
         paint : function() {
             var ctx= this.ctx;
             var t=0;
@@ -3470,26 +3472,38 @@ var cp1= proxy(
             ctx.lineTo( this.width-.5, this.height );
             ctx.stroke();
 
+            ctx.strokeStyle= 'rgba(0,255,0,.8)';
+            ctx.beginPath();
+            t= this.height-((15/this.SCALE*this.height)>>0)-.5;
+            ctx.moveTo( .5, t );
+            ctx.lineTo( this.width+.5, t );
+            ctx.stroke();
+
+            ctx.strokeStyle= 'rgba(255,255,0,.8)';
+            ctx.beginPath();
+            t= this.height-((25/this.SCALE*this.height)>>0)-.5;
+            ctx.moveTo( .5, t );
+            ctx.lineTo( this.width+.5, t );
+            ctx.stroke();
+
             ctx.strokeStyle= CAAT.FRAME_TIME<16 ? 'green' : CAAT.FRAME_TIME<25 ? 'yellow' : 'red';
             ctx.beginPath();
             ctx.moveTo( this.width-.5, this.height );
             ctx.lineTo( this.width-.5, this.height-(CAAT.FRAME_TIME*this.height/this.SCALE) );
             ctx.stroke();
 
-            ctx.strokeStyle= 'rgba(0,255,0,.8)';
-            ctx.beginPath();
+            var t1= this.height-(CAAT.REQUEST_ANIMATION_FRAME_TIME/this.SCALE*this.height);
+            if (-1===this.prevRAF)   {
+                this.prevRAF= t1;
+            }
 
-            t= this.height-((15/this.SCALE*this.height)>>0)-.5;
-            ctx.moveTo( 0, t );
-            ctx.lineTo( this.width, t );
+            ctx.strokeStyle= 'rgba(255,0,255,.5)';
+            ctx.beginPath();
+            ctx.moveTo( this.width-.5, t1 );
+            ctx.lineTo( this.width-.5, this.prevRAF );
             ctx.stroke();
 
-            ctx.strokeStyle= 'rgba(255,255,0,.8)';
-            ctx.beginPath();
-            t= this.height-((25/this.SCALE*this.height)>>0)-.5;
-            ctx.moveTo( 0, t );
-            ctx.lineTo( this.width, t );
-            ctx.stroke();
+            this.prevRAF= t1;
 
             ctx.fillStyle='rgba(255,0,0,.75)';
             ctx.fillRect( 0,0,180,15);
@@ -5974,6 +5988,12 @@ var cp1= proxy(
         resize:             1,
         onResizeCallback:   null,
 
+        statistics: {
+            size_total:         0,
+            size_active:        0,
+            draws:              0
+        },
+
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
                 var dd= new CAAT.Debug().initialize( this.width, 60 );
@@ -6164,6 +6184,13 @@ var cp1= proxy(
                 this.updateGLPages();
             }
         },
+
+        resetStats : function() {
+            this.statistics.size_total= 0;
+            this.statistics.size_active=0;
+            this.statistics.draws=      0;
+        },
+
         /**
          * This is the entry point for the animation system of the Director.
          * The director is fed with the elapsed time value to maintain a virtual timeline.
@@ -6182,8 +6209,10 @@ var cp1= proxy(
              * draw director active scenes.
              */
             var i, l, tt;
-            this.size_total=0;
-            this.size_active=0;
+
+            if ( CAAT.DEBUG ) {
+                this.resetStats();
+            }
 
             for (i = 0, l=this.childrenList.length; i < l; i++) {
                 var c= this.childrenList[i];
@@ -6201,8 +6230,10 @@ var cp1= proxy(
                         c.time += time;
                     }
 
-                    this.size_total+= this.childrenList[i].size_total;
-                    this.size_active+= this.childrenList[i].size_active;
+                    if ( CAAT.DEBUG ) {
+                        this.statistics.size_total+= c.size_total;
+                        this.statistics.size_active+= c.size_active;
+                    }
 
                 }
             }
@@ -6729,7 +6760,7 @@ var cp1= proxy(
             this.render(delta);
 
             if ( this.debugInfo ) {
-                this.debugInfo(this.size_total, this.size_active);
+                this.debugInfo(this.statistics);
             }
 
             this.timeline = t;
@@ -7829,6 +7860,9 @@ CAAT.loop= function(fps) {
     }
 }
 
+
+CAAT.RAF=                       0;    // requestAnimationFrame time reference.
+CAAT.REQUEST_ANIMATION_FRAME_TIME=   0;
 /**
  * Make a frame for each director instance present in the system.
  */
@@ -7840,7 +7874,12 @@ CAAT.renderFrame= function() {
     t= new Date().getTime()-t;
     CAAT.FRAME_TIME= t;
 
-    window.requestAnimFrame(CAAT.renderFrame, 0 )
+    if (CAAT.RAF)   {
+        CAAT.REQUEST_ANIMATION_FRAME_TIME= new Date().getTime()-CAAT.RAF;
+    }
+    CAAT.RAF= new Date().getTime();
+
+    window.requestAnimFrame(CAAT.renderFrame, 0 );
 }
 
 /**

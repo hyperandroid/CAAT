@@ -280,6 +280,9 @@ CAAT.loop= function(fps) {
     }
 }
 
+
+CAAT.RAF=                       0;    // requestAnimationFrame time reference.
+CAAT.REQUEST_ANIMATION_FRAME_TIME=   0;
 /**
  * Make a frame for each director instance present in the system.
  */
@@ -291,7 +294,12 @@ CAAT.renderFrame= function() {
     t= new Date().getTime()-t;
     CAAT.FRAME_TIME= t;
 
-    window.requestAnimFrame(CAAT.renderFrame, 0 )
+    if (CAAT.RAF)   {
+        CAAT.REQUEST_ANIMATION_FRAME_TIME= new Date().getTime()-CAAT.RAF;
+    }
+    CAAT.RAF= new Date().getTime();
+
+    window.requestAnimFrame(CAAT.renderFrame, 0 );
 }
 
 /**

@@ -56,6 +56,8 @@
             this.paint();
         },
 
+        prevRAF: -1,
+
         paint : function() {
             var ctx= this.ctx;
             var t=0;
@@ -71,26 +73,38 @@
             ctx.lineTo( this.width-.5, this.height );
             ctx.stroke();
 
+            ctx.strokeStyle= 'rgba(0,255,0,.8)';
+            ctx.beginPath();
+            t= this.height-((15/this.SCALE*this.height)>>0)-.5;
+            ctx.moveTo( .5, t );
+            ctx.lineTo( this.width+.5, t );
+            ctx.stroke();
+
+            ctx.strokeStyle= 'rgba(255,255,0,.8)';
+            ctx.beginPath();
+            t= this.height-((25/this.SCALE*this.height)>>0)-.5;
+            ctx.moveTo( .5, t );
+            ctx.lineTo( this.width+.5, t );
+            ctx.stroke();
+
             ctx.strokeStyle= CAAT.FRAME_TIME<16 ? 'green' : CAAT.FRAME_TIME<25 ? 'yellow' : 'red';
             ctx.beginPath();
             ctx.moveTo( this.width-.5, this.height );
             ctx.lineTo( this.width-.5, this.height-(CAAT.FRAME_TIME*this.height/this.SCALE) );
             ctx.stroke();
 
-            ctx.strokeStyle= 'rgba(0,255,0,.8)';
-            ctx.beginPath();
+            var t1= this.height-(CAAT.REQUEST_ANIMATION_FRAME_TIME/this.SCALE*this.height);
+            if (-1===this.prevRAF)   {
+                this.prevRAF= t1;
+            }
 
-            t= this.height-((15/this.SCALE*this.height)>>0)-.5;
-            ctx.moveTo( 0, t );
-            ctx.lineTo( this.width, t );
+            ctx.strokeStyle= 'rgba(255,0,255,.5)';
+            ctx.beginPath();
+            ctx.moveTo( this.width-.5, t1 );
+            ctx.lineTo( this.width-.5, this.prevRAF );
             ctx.stroke();
 
-            ctx.strokeStyle= 'rgba(255,255,0,.8)';
-            ctx.beginPath();
-            t= this.height-((25/this.SCALE*this.height)>>0)-.5;
-            ctx.moveTo( 0, t );
-            ctx.lineTo( this.width, t );
-            ctx.stroke();
+            this.prevRAF= t1;
 
             ctx.fillStyle='rgba(255,0,0,.75)';
             ctx.fillRect( 0,0,180,15);
