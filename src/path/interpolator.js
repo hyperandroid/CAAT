@@ -479,6 +479,7 @@
                 new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, 0.2, true), 'ElasticInOut pingpong=true, amp=1.0, d=.2'
             ];
         }
+
     };
 })();
 

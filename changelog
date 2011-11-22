@@ -1,3 +1,13 @@
+11/22/2011
+----------
+
+* Added proper touch events support.
+* Added behaviorStarted method to behavior lifecycle listener.
+* Added calculateKeyframesData method to get a CSS3 keyframes representation of any given behavior.
+* Added CSSKeyframeHelper methods to manage CSS3 @-[webkit|moz]-keyframes elements.
+* Fixed bug on setZOrder method which created a nested actor array.
+* Added setTimeOffset method on behaviors which allows to start a behavior at any given position instead of zero time.
+
 11/08/2011
 ----------
 

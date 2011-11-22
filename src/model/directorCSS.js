@@ -801,10 +801,8 @@
          */
         emptyScenes : function() {
             this.scenes = [];
-            /*
             this.domElement.innerHTML='';
             this.createEventHandler();
-            */
         },
         /**
          * Adds an scene to this Director.
@@ -985,6 +983,230 @@
             return this;
         },
 
+        __mouseDownHandler : function(e) {
+
+            this.getCanvasCoord(this.mousePoint, e);
+            this.isMouseDown = true;
+            var lactor = this.findActorAtPosition(this.mousePoint);
+
+            if (null !== lactor) {
+
+                var pos = lactor.viewToModel(
+                    new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+
+                lactor.mouseDown(
+                    new CAAT.MouseEvent().init(
+                        pos.x,
+                        pos.y,
+                        e,
+                        lactor,
+                        new CAAT.Point(
+                            this.screenMousePoint.x,
+                            this.screenMousePoint.y )));
+            }
+
+            this.lastSelectedActor= lactor;
+        },
+
+        __mouseUpHandler : function(e) {
+
+            this.isMouseDown = false;
+            this.getCanvasCoord(this.mousePoint, e);
+
+            var pos= null;
+            var lactor= this.lastSelectedActor;
+
+            if (null !== lactor) {
+                pos = lactor.viewToModel(
+                    new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+                if ( lactor.actionPerformed && lactor.contains(pos.x, pos.y) ) {
+                    lactor.actionPerformed(e)
+                }
+
+                lactor.mouseUp(
+                    new CAAT.MouseEvent().init(
+                        pos.x,
+                        pos.y,
+                        e,
+                        lactor,
+                        this.screenMousePoint));
+            }
+
+            if (!this.dragging && null !== lactor) {
+                if (lactor.contains(pos.x, pos.y)) {
+                    lactor.mouseClick(
+                        new CAAT.MouseEvent().init(
+                            pos.x,
+                            pos.y,
+                            e,
+                            lactor,
+                            this.screenMousePoint));
+                }
+            }
+
+            this.dragging = false;
+            this.in_=       false;
+//            CAAT.setCursor('default');
+        },
+
+        __mouseMoveHandler : function(e) {
+            this.getCanvasCoord(this.mousePoint, e);
+
+            var lactor;
+            var pos;
+
+            // drag
+
+            if (this.isMouseDown && null !== this.lastSelectedActor) {
+/*
+                // check for mouse move threshold.
+                if (!this.dragging) {
+                    if (Math.abs(this.prevMousePoint.x - this.mousePoint.x) < CAAT.DRAG_THRESHOLD_X &&
+                        Math.abs(this.prevMousePoint.y - this.mousePoint.y) < CAAT.DRAG_THRESHOLD_Y) {
+                        return;
+                    }
+                }
+*/
+
+
+                lactor = this.lastSelectedActor;
+                pos = lactor.viewToModel(
+                    new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+
+                this.dragging = true;
+
+                var px= lactor.x;
+                var py= lactor.y;
+                lactor.mouseDrag(
+                        new CAAT.MouseEvent().init(
+                            pos.x,
+                            pos.y,
+                            e,
+                            lactor,
+                            new CAAT.Point(
+                                this.screenMousePoint.x,
+                                this.screenMousePoint.y)));
+
+                this.prevMousePoint.x= pos.x;
+                this.prevMousePoint.y= pos.y;
+
+                /**
+                 * Element has not moved after drag, so treat it as a button.
+                 */
+                if ( px===lactor.x && py===lactor.y )   {
+
+                    var contains= lactor.contains(pos.x, pos.y);
+
+                    if (this.in_ && !contains) {
+                        lactor.mouseExit(
+                            new CAAT.MouseEvent().init(
+                                pos.x,
+                                pos.y,
+                                e,
+                                lactor,
+                                this.screenMousePoint));
+                        this.in_ = false;
+                    }
+
+                    if (!this.in_ && contains ) {
+                        lactor.mouseEnter(
+                            new CAAT.MouseEvent().init(
+                                pos.x,
+                                pos.y,
+                                e,
+                                lactor,
+                                this.screenMousePoint));
+                        this.in_ = true;
+                    }
+                }
+
+                return;
+            }
+
+            // mouse move.
+            this.in_= true;
+
+            lactor = this.findActorAtPosition(this.mousePoint);
+
+            // cambiamos de actor.
+            if (lactor !== this.lastSelectedActor) {
+                if (null !== this.lastSelectedActor) {
+
+                    pos = this.lastSelectedActor.viewToModel(
+                        new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+
+                    this.lastSelectedActor.mouseExit(
+                        new CAAT.MouseEvent().init(
+                            pos.x,
+                            pos.y,
+                            e,
+                            this.lastSelectedActor,
+                            this.screenMousePoint));
+                }
+
+                if (null !== lactor) {
+                    pos = lactor.viewToModel(
+                        new CAAT.Point( this.screenMousePoint.x, this.screenMousePoint.y, 0));
+
+                    lactor.mouseEnter(
+                        new CAAT.MouseEvent().init(
+                            pos.x,
+                            pos.y,
+                            e,
+                            lactor,
+                            this.screenMousePoint));
+                }
+            }
+
+            pos = lactor.viewToModel(
+                new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+
+            if (null !== lactor) {
+
+                lactor.mouseMove(
+                    new CAAT.MouseEvent().init(
+                        pos.x,
+                        pos.y,
+                        e,
+                        lactor,
+                        this.screenMousePoint));
+            }
+
+            this.lastSelectedActor = lactor;
+        },
+
+        /**
+         * Same as mouseDown but not preventing event.
+         * Will only take care of first touch.
+         * @param e
+         */
+        __touchStartHandler : function(e) {
+
+            e.preventDefault();
+
+            e= e.targetTouches[0]
+            this.__mouseDownHandler(e);
+        },
+
+        __touchEndHandler : function(e) {
+
+            e.preventDefault();
+
+            e= e.changedTouches[0];
+            this.__mouseUpHandler(e);
+        },
+
+        __touchMoveHandler : function(e) {
+
+            e.preventDefault();
+
+            for( var i=0; i<e.targetTouches.length; i++ ) {
+                if ( !i ) {
+                    this.__mouseMoveHandler(e.targetTouches[i]);
+                }
+            }
+        },
+
         createEventHandler : function() {
             this.eventHandler= document.createElement('div');
             this.domElement.appendChild(this.eventHandler);
@@ -998,85 +1220,18 @@
             
             var canvas= this.eventHandler;
             var me= this;
-            var in_ = false;
+            this.in_ = false;
 
 
-            canvas.addEventListener('mouseup',
-                    function(e) {
-                        e.preventDefault();
+            canvas.addEventListener('mouseup', function(e) {
+                e.preventDefault();
+                me.__mouseUpHandler(e);
+            }, false );
 
-                        me.isMouseDown = false;
-                        me.getCanvasCoord(me.mousePoint, e);
-
-                        var pos= null;
-
-                        var lactor= me.lastSelectedActor;
-
-                        if (null !== lactor) {
-                            pos = lactor.viewToModel(
-                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                            if ( lactor.actionPerformed && lactor.contains(pos.x, pos.y) ) {
-                                lactor.actionPerformed(e)
-                            }
-
-                            lactor.mouseUp(
-                                new CAAT.MouseEvent().init(
-                                    pos.x,
-                                    pos.y,
-                                    e,
-                                    lactor,
-                                    me.screenMousePoint));
-                        }
-
-                        if (!me.dragging && null !== lactor) {
-                            if (lactor.contains(pos.x, pos.y)) {
-                                lactor.mouseClick(
-                                    new CAAT.MouseEvent().init(
-                                        pos.x,
-                                        pos.y,
-                                        e,
-                                        lactor,
-                                        me.screenMousePoint));
-                            }
-                        }
-
-                        me.dragging =           false;
-                        in_=                    false;
-                        CAAT.setCursor('default');
-                    },
-                    false);
-
-            canvas.addEventListener('mousedown',
-                    function(e) {
-
-                        e.preventDefault();
-
-                        me.getCanvasCoord(me.mousePoint, e);
-
-                        me.isMouseDown = true;
-                        var lactor = me.findActorAtPosition(me.mousePoint);
-
-                        if (null !== lactor) {
-
-                            var pos = lactor.viewToModel(
-                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                            // to calculate mouse drag threshold
-                            lactor.mouseDown(
-                                    new CAAT.MouseEvent().init(
-                                        pos.x,
-                                        pos.y,
-                                        e,
-                                        lactor,
-                                        new CAAT.Point(
-                                            me.screenMousePoint.x,
-                                            me.screenMousePoint.y )));
-                        }
-
-                        me.lastSelectedActor= lactor;
-                    },
-                    false);
+            canvas.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                me.__mouseDownHandler(e);
+            }, false );
 
             canvas.addEventListener('mouseover',
                     function(e) {
@@ -1126,137 +1281,16 @@
                             me.lastSelectedActor = null;
                         }
                         me.isMouseDown = false;
-                        in_ = false;
+                        this.in_ = false;
                     },
                     false);
 
             canvas.addEventListener('mousemove',
-                    function(e) {
-
-                        e.preventDefault();
-
-                        me.getCanvasCoord(me.mousePoint, e);
-
-                        var lactor;
-                        var pos;
-
-                        // drag
-                        if (me.isMouseDown && null !== me.lastSelectedActor) {
-/*
-                            // check for mouse move threshold.
-                            if (!me.dragging) {
-                                if (Math.abs(me.prevMousePoint.x - me.mousePoint.x) < CAAT.DRAG_THRESHOLD_X &&
-                                    Math.abs(me.prevMousePoint.y - me.mousePoint.y) < CAAT.DRAG_THRESHOLD_Y) {
-                                    return;
-                                }
-                            }
-*/
-                            lactor = me.lastSelectedActor;
-
-                            pos = lactor.viewToModel(
-                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                            me.dragging = true;
-
-                            var px= lactor.x;
-                            var py= lactor.y;
-                            lactor.mouseDrag(
-                                    new CAAT.MouseEvent().init(
-                                        pos.x,
-                                        pos.y,
-                                        e,
-                                        lactor,
-                                        new CAAT.Point(
-                                            me.screenMousePoint.x,
-                                            me.screenMousePoint.y)));
-
-                            me.prevMousePoint.x= pos.x;
-                            me.prevMousePoint.y= pos.y;
-                            /**
-                             * Element has not moved after drag, so treat it as a button.
-                             *
-                             */
-                            if ( px===lactor.x && py===lactor.y )   {
-
-                                var contains= lactor.contains(pos.x, pos.y);
-
-                                if (in_ && !contains) {
-                                    lactor.mouseExit(
-                                        new CAAT.MouseEvent().init(
-                                            pos.x,
-                                            pos.y,
-                                            e,
-                                            lactor,
-                                            me.screenMousePoint));
-                                    in_ = false;
-                                }
-
-                                if (!in_ && contains ) {
-                                    lactor.mouseEnter(
-                                        new CAAT.MouseEvent().init(
-                                            pos.x,
-                                            pos.y,
-                                            e,
-                                            lactor,
-                                            me.screenMousePoint));
-                                    in_ = true;
-                                }
-                            }
-
-                            return;
-                        }
-
-                        in_= true;
-
-                        lactor = me.findActorAtPosition(me.mousePoint);
-
-                        // cambiamos de actor.
-                        if (lactor !== me.lastSelectedActor) {
-                            if (null !== me.lastSelectedActor) {
-
-                                pos = me.lastSelectedActor.viewToModel(
-                                    new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                                me.lastSelectedActor.mouseExit(
-                                    new CAAT.MouseEvent().init(
-                                        pos.x,
-                                        pos.y,
-                                        e,
-                                        me.lastSelectedActor,
-                                        me.screenMousePoint));
-                            }
-                            if (null !== lactor) {
-
-                                pos = lactor.viewToModel(
-                                    new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                                lactor.mouseEnter(
-                                    new CAAT.MouseEvent().init(
-                                        pos.x,
-                                        pos.y,
-                                        e,
-                                        lactor,
-                                        me.screenMousePoint));
-                            }
-                        }
-
-                        pos = lactor.viewToModel(
-                            new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                        if (null !== lactor) {
-
-                            lactor.mouseMove(
-                                new CAAT.MouseEvent().init(
-                                    pos.x,
-                                    pos.y,
-                                    e,
-                                    lactor,
-                                    me.screenMousePoint));
-                        }
-
-                        me.lastSelectedActor = lactor;
-                    },
-                    false);
+            function(e) {
+                e.preventDefault();
+                me.__mouseMoveHandler(e);
+            },
+            false);
 
             canvas.addEventListener("dblclick",
                     function(e) {
@@ -1280,390 +1314,18 @@
                     },
                     false);
 
-
-/*
-            canvas.addEventListener('mouseup',
-                    function(e) {
-                        e.preventDefault();
-
-                        me.isMouseDown = false;
-                        me.getCanvasCoord(me.mousePoint, e);
-
-                        var pos= null;
-
-                        var lactor= me.lastSelectedActor;
-
-                        if (null !== lactor) {
-                            pos = lactor.viewToModel(
-                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                            if ( lactor.actionPerformed && lactor.contains(pos.x, pos.y) ) {
-                                lactor.actionPerformed(e)
-                            }
-
-                            lactor.mouseUp(
-                                new CAAT.MouseEvent().init(
-                                    pos.x,
-                                    pos.y,
-                                    e,
-                                    lactor,
-                                    me.screenMousePoint));
-                        }
-
-                        if (!me.dragging && null !== lactor) {
-                            if (lactor.contains(pos.x, pos.y)) {
-                                lactor.mouseClick(
-                                    new CAAT.MouseEvent().init(
-                                        pos.x,
-                                        pos.y,
-                                        e,
-                                        lactor,
-                                        me.screenMousePoint));
-                            }
-                        }
-
-                        me.dragging =           false;
-                        in_=                    false;
-                        CAAT.setCursor('default');
-                    },
-                    false);
-
-            canvas.addEventListener('mousedown',
-                    function(e) {
-
-                        e.preventDefault();
-
-                        me.getCanvasCoord(me.mousePoint, e);
-
-                        me.isMouseDown = true;
-                        var lactor = me.findActorAtPosition(me.mousePoint);
-
-                        if (null !== lactor) {
-
-                            var pos = lactor.viewToModel(
-                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                            // to calculate mouse drag threshold
-                            me.prevMousePoint.x = pos.x;
-                            me.prevMousePoint.y = pos.y;
-                            lactor.mouseDown(
-                                    new CAAT.MouseEvent().init(
-                                        pos.x,
-                                        pos.y,
-                                        e,
-                                        lactor,
-                                        new CAAT.Point(
-                                            me.screenMousePoint.x,
-                                            me.screenMousePoint.y )));
-                        }
-
-                        me.lastSelectedActor= lactor;
-                    },
-                    false);
-
-            canvas.addEventListener('mouseover',
-                    function(e) {
-
-                        e.preventDefault();
-                        me.getCanvasCoord(me.mousePoint, e);
-
-                        var lactor= me.findActorAtPosition( me.mousePoint );
-                        var pos;
-
-                        if (null !== lactor) {
-
-                            pos = lactor.viewToModel(
-                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                            lactor.mouseEnter(
-                                new CAAT.MouseEvent().init(
-                                    pos.x,
-                                    pos.y,
-                                    e,
-                                    lactor,
-                                    me.screenMousePoint));
-                        }
-
-                        me.lastSelectedActor= lactor;
-                    },
-                    false);
-
-            canvas.addEventListener('mouseout',
-                    function(e) {
-
-                        e.preventDefault();
-
-                        if (null !== me.lastSelectedActor) {
-
-                            me.getCanvasCoord(me.mousePoint, e);
-                            var pos = new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0);
-                            me.lastSelectedActor.viewToModel(pos);
-
-                            me.lastSelectedActor.mouseExit(
-                                    new CAAT.MouseEvent().init(
-                                            pos.x,
-                                            pos.y,
-                                            e,
-                                            me.lastSelectedActor,
-                                            me.screenMousePoint));
-                            me.lastSelectedActor = null;
-                        }
-                        me.isMouseDown = false;
-                        in_ = false;
-                    },
-                    false);
-
-            canvas.addEventListener('mousemove',
-                    function(e) {
-
-                        e.preventDefault();
-
-                        me.getCanvasCoord(me.mousePoint, e);
-
-                        var lactor= me.lastSelectedActor;
-                        if ( null===lactor ) {
-                            lactor = me.findActorAtPosition(new CAAT.Point( me.mousePoint.x, me.mousePoint.y ));
-                        }
-
-
-                        var pos = lactor.viewToModel(
-                            new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                        // drag
-                        if (me.isMouseDown && null !== lactor) {
-
-                            me.dragging = true;
-
-                            var px= lactor.x;
-                            var py= lactor.y;
-                            lactor.mouseDrag(
-                                    new CAAT.MouseEvent().init(
-                                        pos.x,
-                                        pos.y,
-                                        e,
-                                        me.lastSelectedActor,
-                                        new CAAT.Point(
-                                            me.screenMousePoint.x,
-                                            me.screenMousePoint.y)));
-
-                            if ( px===lactor.x && py===lactor.y )   {
-
-                                var contains= lactor.contains(pos.x, pos.y);
-
-                                if (in_ && !contains) {
-                                    me.lastSelectedActor.mouseExit(
-                                        new CAAT.MouseEvent().init(
-                                            pos.x,
-                                            pos.y,
-                                            e,
-                                            lactor,
-                                            me.screenMousePoint));
-                                    in_ = false;
-                                }
-
-                                if (!in_ && contains ) {
-                                    me.lastSelectedActor.mouseEnter(
-                                        new CAAT.MouseEvent().init(
-                                            pos.x,
-                                            pos.y,
-                                            e,
-                                            lactor,
-                                            me.screenMousePoint));
-                                    in_ = true;
-                                }
-                            }
-
-                            return;
-                        }
-
-                        in_= true;
-
-                        lactor = me.findActorAtPosition(new CAAT.Point( me.mousePoint.x, me.mousePoint.y ));
-
-                        // cambiamos de actor.
-                        if (lactor !== me.lastSelectedActor) {
-                            if (null !== me.lastSelectedActor) {
-                                me.lastSelectedActor.mouseExit(
-                                    new CAAT.MouseEvent().init(
-                                        pos.x,
-                                        pos.y,
-                                        e,
-                                        lactor,
-                                        me.screenMousePoint));
-                            }
-                            if (null !== lactor) {
-                                lactor.mouseEnter(
-                                    new CAAT.MouseEvent().init(
-                                        pos.x,
-                                        pos.y,
-                                        e,
-                                        lactor,
-                                        me.screenMousePoint));
-                            }
-                        }
-
-
-                        if (null !== lactor) {
-                            lactor.mouseMove(
-                                new CAAT.MouseEvent().init(
-                                    pos.x,
-                                    pos.y,
-                                    e,
-                                    lactor,
-                                    me.screenMousePoint));
-                        }
-
-                        me.lastSelectedActor = lactor;
-                    },
-                    false);
-
-            canvas.addEventListener("dblclick",
-                    function(e) {
-
-                        e.preventDefault();
-                        me.getCanvasCoord(me.mousePoint, e);
-                        if (null !== me.lastSelectedActor) {
-
-                            var pos = me.lastSelectedActor.viewToModel(
-                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                            me.lastSelectedActor.mouseDblClick(
-                                    new CAAT.MouseEvent().init(
-                                            pos.x,
-                                            pos.y,
-                                            e,
-                                            me.lastSelectedActor,
-                                            me.screenMousePoint));
-                        }
-                    },
-                    false);
-*/
-
-            function touchHandler(event) {
-                var touches = event.changedTouches,
-                        first = touches[0],
-                        type = "";
-
-                switch (event.type) {
-                    case "touchstart": type = "mousedown"; break;
-                    case "touchmove":  type = "mousemove"; break;
-                    case "touchend":   type = "mouseup"; break;
-                    default: return;
-                }
-
-                //initMouseEvent(type, canBubble, cancelable, view, clickCount,
-                //           screenX, screenY, clientX, clientY, ctrlKey,
-                //           altKey, shiftKey, metaKey, button, relatedTarget);
-
-                var simulatedEvent = document.createEvent("MouseEvent");
-                simulatedEvent.initMouseEvent(
-                        type,
-                        true,
-                        true,
-                        me.canvas,
-                        1,
-                        first.screenX,
-                        first.screenY,
-                        first.clientX,
-                        first.clientY,
-                        false,
-                        false,
-                        false,
-                        false,
-                        0/*left*/,
-                        null);
-
-                me.canvas.dispatchEvent(simulatedEvent);
-                //event.preventDefault();
-            }
-
-            canvas.addEventListener("touchstart", touchHandler, true);
-            canvas.addEventListener("touchmove", touchHandler, true);
-            canvas.addEventListener("touchend", touchHandler, true);
-            canvas.addEventListener("touchcancel", touchHandler, true);
-
-
+            canvas.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
+            canvas.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
+            canvas.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
+            canvas.addEventListener("gesturestart", function(e) {
+                e.preventDefault();
+            }, false );
+            canvas.addEventListener("gesturechange", function(e) {
+                e.preventDefault();
+            }, false );
+            
         }
-        /**
-         * Acculumate dom elements position to properly offset on-screen mouse/touch events.
-         * @param node
-         */
-            /*
-        cumulateOffset : function(node, parent, prop) {
-            var left= prop+'Left';
-            var top= prop+'Top';
-            var x=0, y=0, style;
 
-            while( node && node.style ) {
-                if ( node.currentStyle ) {
-                    style= node.currentStyle['position'];
-                } else {
-                    style= (node.ownerDocument.defaultView || node.ownerDocument.parentWindow).getComputedStyle(node, null);
-                    style= style ? style.getPropertyValue('position') : null;
-                }
-
-//                if (!/^(relative|absolute|fixed)$/.test(style)) {
-                if (!/^(fixed)$/.test(style)) {
-                    x += node[left];
-                    y+= node[top];
-                    node = node[parent];
-                } else {
-                    break;
-                }
-            }
-
-            return {
-                x:      x,
-                y:      y,
-                style:  style
-            };
-        },
-        getOffset : function( node ) {
-            var res= this.cumulateOffset(node, 'offsetParent', 'offset');
-            if ( res.style==='fixed' ) {
-                var res2= this.cumulateOffset(node, node.parentNode ? 'parentNode' : 'parentElement', 'scroll');
-                return {
-                    x: res.x + res2.x,
-                    y: res.y + res2.y
-                };
-            }
-
-            return {
-                x: res.x,
-                y: res.y
-            };
-        },
-        */
-        /**
-         * Normalize input event coordinates to be related to (0,0) canvas position.
-         * @param point {CAAT.Point} a CAAT.Point instance to hold the canvas coordinate.
-         * @param e {MouseEvent} a mouse event from an input event.
-         */
-            /*
-        getCanvasCoord : function(point, e) {
-
-            var posx = 0;
-            var posy = 0;
-            if (!e) e = window.event;
-
-            if (e.pageX || e.pageY) {
-                posx = e.pageX;
-                posy = e.pageY;
-            }
-            else if (e.clientX || e.clientY) {
-                posx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-                posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-            }
-
-            var offset= this.getOffset(e.target);
-
-            posx-= offset.x;
-            posy-= offset.y;
-            point.set(posx, posy);
-            this.screenMousePoint.set(posx, posy);
-
-        }
-*/
     };
 
     extend(CAAT.Director, CAAT.ActorContainer, null);

@@ -62,17 +62,38 @@
 		this.setDefaultInterpolator();
 		return this;
 	};
-	
+
+    /**
+     * @enum
+     */
+    CAAT.Behavior.Status= {
+        NOT_STARTED:    0,
+        STARTED:        1,
+        EXPIRED:        2
+    };
+
+    var DefaultInterpolator=    new CAAT.Interpolator().createLinearInterpolator(false);
+    var DefaultPPInterpolator=  new CAAT.Interpolator().createLinearInterpolator(true);
+
 	CAAT.Behavior.prototype= {
 			
 		lifecycleListenerList:		null,   // observer list.
 		behaviorStartTime:	-1,             // scene time to start applying the behavior
 		behaviorDuration:	-1,             // behavior duration in ms.
 		cycleBehavior:		false,          // apply forever ?
-		expired:			true,           // indicates whether the behavior is expired.
+
+        status:             CAAT.Behavior.NOT_STARTED,
+
 		interpolator:		null,           // behavior application function. linear by default.
         actor:              null,           // actor the Behavior acts on.
         id:                 0,              // an integer id suitable to identify this behavior by number.
+
+        timeOffset:         0,
+
+        setTimeOffset : function( offset ) {
+            this.timeOffset= offset;
+            return this;
+        },
 
         /**
          * Sets this behavior id.
@@ -88,7 +109,7 @@
          * @return this
          */
 		setDefaultInterpolator : function() {
-			this.interpolator= new CAAT.Interpolator().createLinearInterpolator(false);
+			this.interpolator= DefaultInterpolator;
             return this;
 		},
         /**
@@ -96,9 +117,18 @@
          * @return this
          */
 		setPingPong : function() {
-			this.interpolator= new CAAT.Interpolator().createLinearInterpolator(true);
+			this.interpolator= DefaultPPInterpolator;
             return this;
 		},
+
+        /**
+         *
+         * @param status {CAAT.Behavior.Status}
+         */
+        setStatus : function(status) {
+            this.status= status;
+        },
+
         /**
          * Sets behavior start time and duration.
          * Scene time will be the time of the scene the behavior actor is bound to.
@@ -108,12 +138,12 @@
 		setFrameTime : function( startTime, duration ) {
 			this.behaviorStartTime= startTime;
 			this.behaviorDuration=  duration;
-            this.expired=           false;
+            this.setStatus( CAAT.Behavior.Status.NOT_STARTED );
 
             return this;
 		},
         setOutOfFrameTime : function() {
-            this.expired= true;
+            this.setStatus( CAAT.Behavior.Status.EXPIRED );
             this.behaviorStartTime= Number.MAX_VALUE;
             this.behaviorDuration= 0;
             return this;
@@ -135,6 +165,9 @@
          * @param actor a CAAT.Actor instance the behavior is being applied to.
          */
 		apply : function( time, actor )	{
+
+            time+= this.timeOffset*this.behaviorDuration;
+
             var orgTime= time;
 			if ( this.isBehaviorInTime(time,actor) )	{
 				time= this.normalizeTime(time);
@@ -145,6 +178,7 @@
                         this.setForTime( time, actor ) );
 			}
 		},
+
         /**
          * Sets the behavior to cycle, ie apply forever.
          * @param bool a boolean indicating whether the behavior is cycle.
@@ -157,8 +191,8 @@
          * Adds an observer to this behavior.
          * @param behaviorListener an observer instance.
          */
-		addListener : function( behaviorListener ) {
-			this.lifecycleListenerList.push(behaviorListener);
+		addListener : function( behaviorListener, actor ) {
+            this.lifecycleListenerList.push(behaviorListener);
             return this;
 		},
         /**
@@ -190,7 +224,10 @@
          * @return a boolean indicating whether the behavior is in scene time.
          */
 		isBehaviorInTime : function(time,actor) {
-			if ( this.expired || this.behaviorStartTime<0 )	{
+
+            var S= CAAT.Behavior.Status;
+
+			if ( /*this.expired*/ this.status===S.EXPIRED || this.behaviorStartTime<0 )	{
 				return false;
 			}
 			
@@ -201,15 +238,29 @@
 			}
 			
 			if ( time>this.behaviorStartTime+this.behaviorDuration )	{
-				if ( !this.expired )	{
+				if ( this.status!==S.EXPIRED )	{
 					this.setExpired(actor,time);
 				}
 				
 				return false;
 			}
-			
+
+            if ( this.status===S.NOT_STARTED ) {
+                this.status=S.STARTED;
+                this.fireBehaviorStartedEvent(actor,time);
+            }
+
 			return this.behaviorStartTime<=time && time<this.behaviorStartTime+this.behaviorDuration;
 		},
+
+        fireBehaviorStartedEvent : function(actor,time) {
+            for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
+                if ( this.lifecycleListenerList[i].behaviorStarted ) {
+                    this.lifecycleListenerList[i].behaviorStarted(this,time,actor);
+                }
+            }
+        },
+
         /**
          * Notify observers about expiration event.
          * @param actor a CAAT.Actor instance
@@ -258,7 +309,7 @@
          */
 		setExpired : function(actor,time) {
             // set for final interpolator value.
-            this.expired= true;
+            this.status= CAAT.Behavior.Status.EXPIRED;
 			this.setForTime(this.interpolator.getPosition(1).y,actor);
 			this.fireBehaviorExpiredEvent(actor,time);
 		},
@@ -284,6 +335,10 @@
             }
 
             return this;
+        },
+        
+        getPropertyName : function() {
+            return "";
         }
 	};
 })();
@@ -347,6 +402,9 @@
          * @param actor a CAAT.Actor instance indicating the actor to apply the behaviors for.
          */
 		apply : function(time, actor) {
+
+            time+= this.timeOffset*this.behaviorDuration;
+            
 			if ( this.isBehaviorInTime(time,actor) )	{
 				time-= this.getStartTime();
 				if ( this.cycleBehavior ){
@@ -360,13 +418,6 @@
 			}
 		},
         /**
-         * This method does nothing for containers, and hence has an empty implementation.
-         * @param interpolator a CAAt.Interpolator instance.
-         */
-		setInterpolator : function(interpolator) {
-            return this;
-		},
-        /**
          * This method is the observer implementation for every contained behavior.
          * If a container is Cycle=true, won't allow its contained behaviors to be expired.
          * @param behavior a CAAT.Behavior instance which has been expired.
@@ -375,7 +426,7 @@
          */
 		behaviorExpired : function(behavior,time,actor) {
 			if ( this.cycleBehavior )	{
-				behavior.expired =  false;
+                behavior.setStatus( CAAT.Behavior.Status.STARTED );
 			}
 		},
         /**
@@ -400,7 +451,7 @@
             // set for final interpolator value.
             for( var i=0; i<bh.length; i++ ) {
                 var bb= bh[i];
-                if (!bb.expired) {
+                if ( /*!bb.expired*/ bb.status!==CAAT.Behavior.Status.EXPIRED ) {
                     bb.setExpired(actor,time-this.behaviorStartTime);
                 }
             }
@@ -413,9 +464,130 @@
 
             var bh= this.behaviors;
             for( var i=0; i<bh.length; i++ ) {
-                bh[i].expired= false;
+                //bh[i].expired= false;
+                bh[i].setStatus( CAAT.Behavior.Status.NOT_STARTED );
             }
             return this;
+        },
+
+        calculateKeyFrameData : function(referenceTime, prefix, prevValues )  {
+
+            var i;
+            var bh;
+
+            var retValue= {};
+            var time;
+            var cssRuleValue;
+            var cssProperty;
+            var property;
+
+            for( i=0; i<this.behaviors.length; i++ ) {
+                bh= this.behaviors[i];
+                if ( /*!bh.expired*/ bh.status!==CAAT.Behavior.Status.EXPIRED && !(bh instanceof CAAT.GenericBehavior) ) {
+
+                    // ajustar tiempos:
+                    //  time es tiempo normalizado a duraci—n de comportamiento contenedor.
+                    //      1.- desnormalizar
+                    time= referenceTime * this.behaviorDuration;
+
+                    //      2.- calcular tiempo relativo de comportamiento respecto a contenedor
+                    if ( bh.behaviorStartTime<=time && bh.behaviorStartTime+bh.behaviorDuration>=time ) {
+                        //      3.- renormalizar tiempo reltivo a comportamiento.
+                        time= (time-bh.behaviorStartTime)/bh.behaviorDuration;
+
+                        //      4.- obtener valor de comportamiento para tiempo normalizado relativo a contenedor
+                        cssRuleValue= bh.calculateKeyFrameData(time);
+                        cssProperty= bh.getPropertyName(prefix);
+
+                        if ( typeof retValue[cssProperty] ==='undefined' ) {
+                            retValue[cssProperty]= "";
+                        }
+
+                        //      5.- asignar a objeto, par de propiedad/valor css
+                        retValue[cssProperty]+= cssRuleValue+" ";
+                    }
+
+                }
+            }
+
+
+            var tr="";
+            var pv;
+            function xx(pr) {
+                if ( retValue[pr] ) {
+                    tr+= retValue[pr];
+                } else {
+                    if ( prevValues ) {
+                        pv= prevValues[pr];
+                        if ( pv ) {
+                            tr+= pv;
+                            retValue[pr]= pv;
+                        }
+                    }
+                }
+
+            }
+
+            xx('translate');
+            xx('rotate');
+            xx('scale');
+
+            var keyFrameRule= "";
+
+            if ( tr ) {
+                keyFrameRule='-'+prefix+'-transform: '+tr+';';
+            }
+
+            tr="";
+            xx('opacity');
+            if( tr ) {
+                keyFrameRule+= ' opacity: '+tr+';';
+            }
+
+            return {
+                rules: keyFrameRule,
+                ret: retValue
+            };
+
+        },
+
+        /**
+         *
+         * @param prefix
+         * @param name
+         * @param keyframessize
+         */
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( this.duration===Number.MAX_VALUE ) {
+                return "";
+            }
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize=100;
+            }
+
+            var i;
+            var prevValues= null;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+            var ret;
+            var time;
+            var kfr;
+
+            for( i=0; i<=keyframessize; i++ )    {
+                time= this.interpolator.getPosition(i/keyframessize).y;
+                ret= this.calculateKeyFrameData(time, prefix, prevValues);
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" + ret.rules + "}\n";
+
+                prevValues= ret.ret;
+                kfd+= kfr;
+            }
+
+            kfd+= "}";
+
+            return kfd;
         }
 
 	};
@@ -454,6 +626,10 @@
         anchorX:    .50,  // rotation center x.
         anchorY:    .50,  // rotation center y.
 
+        getPropertyName : function() {
+            return "rotate";
+        },
+
         /**
          * Behavior application function.
          * Do not call directly.
@@ -462,9 +638,7 @@
          * @return the set angle.
          */
 		setForTime : function(time,actor) {
-			var angle= 
-				this.startAngle + time*(this.endAngle-this.startAngle);
-
+			var angle= this.startAngle + time*(this.endAngle-this.startAngle);
             actor.setRotationAnchored(angle, this.anchorX, this.anchorY);
 
             return angle;
@@ -517,8 +691,46 @@
             this.anchorX= rx/actor.width;
             this.anchorY= ry/actor.height;
             return this;
+        },
+
+
+        calculateKeyFrameData : function( time ) {
+            time= this.interpolator.getPosition(time).y;
+            return "rotate(" + (this.startAngle + time*(this.endAngle-this.startAngle)) +"rad)";
+        },
+
+        /**
+         * @param prefix {string} browser vendor prefix
+         * @param name {string} keyframes animation name
+         * @param keyframessize {integer} number of keyframes to generate
+         * @override
+         */
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
+                    "}\n";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
         }
-		
+
 	};
 
     extend( CAAT.RotateBehavior, CAAT.Behavior, null);
@@ -629,7 +841,7 @@
 	CAAT.ScaleBehavior= function() {
 		CAAT.ScaleBehavior.superclass.constructor.call(this);
 		this.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-		return this;		
+		return this;
 	};
 	
 	CAAT.ScaleBehavior.prototype= {
@@ -639,6 +851,10 @@
         endScaleY:	    1,
         anchorX:        .50,
         anchorY:        .50,
+
+        getPropertyName : function() {
+            return "scale";
+        },
 
         /**
          * Applies corresponding scale values for a given time.
@@ -704,6 +920,43 @@
             this.anchorY= y/actor.height;
 
             return this;
+        },
+
+        calculateKeyFrameData : function( time ) {
+            var scaleX;
+            var scaleY;
+
+            time= this.interpolator.getPosition(time).y;
+            scaleX= this.startScaleX + time*(this.endScaleX-this.startScaleX);
+            scaleY= this.startScaleY + time*(this.endScaleY-this.startScaleY);
+
+            return "scaleX("+scaleX+") scaleY("+scaleY+")";
+        },
+
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
+                    "}";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
         }
 	};
 
@@ -726,6 +979,10 @@
 	CAAT.AlphaBehavior.prototype= {
 		startAlpha:	0,
 		endAlpha:	0,
+
+        getPropertyName : function() {
+            return "opacity";
+        },
 
         /**
          * Applies corresponding alpha transparency value for a given time.
@@ -750,6 +1007,43 @@
             this.startAlpha= start;
             this.endAlpha= end;
             return this;
+        },
+
+        calculateKeyFrameData : function( time ) {
+            time= this.interpolator.getPosition(time).y;
+            return  (this.startAlpha+time*(this.endAlpha-this.startAlpha));
+        },
+
+        /**
+         * @param prefix {string} browser vendor prefix
+         * @param name {string} keyframes animation name
+         * @param keyframessize {integer} number of keyframes to generate
+         * @override
+         */
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                         "opacity: " + this.calculateKeyFrameData( i / keyframessize ) +
+                    "}";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
         }
 	};
 
@@ -789,6 +1083,10 @@
 
         translateX:     0,
         translateY:     0,
+
+        getPropertyName : function() {
+            return "translate";
+        },
 
         /**
          * Sets an actor rotation to be heading from past to current path's point.
@@ -848,6 +1146,40 @@
             this.translateY= ty;
             return this;
         },
+
+        calculateKeyFrameData : function( time ) {
+            time= this.interpolator.getPosition(time).y;
+            var point= this.path.getPosition(time);
+            return "translateX("+(point.x-this.translateX)+"px) translateY("+(point.y-this.translateY)+"px)" ;
+        },
+
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var time;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
+                    "}";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
+        },
+
         /**
          * Translates the Actor to the corresponding time path position.
          * If autoRotate=true, the actor is rotated as well. The rotation anchor will (if set) always be ANCHOR_CENTER.

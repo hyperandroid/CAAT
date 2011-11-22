@@ -36,6 +36,7 @@
 
         this.domElement=            document.createElement('div');
         this.domElement.style['position']='absolute';
+        this.domElement['-webkit-transform']='translate3d(0,0,0)';
         this.domElement.style['-webkit-transition']='all 0s linear';
         this.style( 'display', 'none');
 
@@ -770,14 +771,14 @@
          * @param behavior {CAAT.Behavior} a CAAT.Behavior instance.
          */
         removeBehaviour : function( behavior ) {
-            var n= this.behaviorList.length-1;
+            var c=this.behaviorList
+            var n= c.length-1;
             while(n) {
-                if ( this.behaviorList[n]===behavior ) {
-                    this.behaviorList.splice(n,1);
+                if ( c[n]===behavior ) {
+                    c.splice(n,1);
                     return this;
                 }
             }
-
             return this;
         },
         /**
@@ -787,20 +788,24 @@
          * @param id {number} an integer.
          * return this;
          */
-        removeBehavior : function( id ) {
-            for( var n=0; n<this.behaviorList.length; n++ ) {
-                if ( this.behaviorList[n].id===id) {
-                    this.behaviorList.splice(n,1);
+        removeBehaviorById : function( id ) {
+            var c=this.behaviorList;
+            for( var n=0; n<c.length; n++ ) {
+                if ( c[n].id===id) {
+                    c.splice(n,1);
                 }
             }
 
             return this;
 
         },
+
         getBehavior : function(id)  {
-            for( var n=0; n<this.behaviorList.length; n++ ) {
-                if ( this.behaviorList[n].id===id) {
-                    return this.behaviorList[n];
+            var c= this.behaviorList;
+            for( var n=0; n<c.length; n++ ) {
+                var cc= c[n];
+                if ( cc.id===id) {
+                    return cc;
                 }
             }
             return null;
@@ -1666,28 +1671,29 @@
             var actorPos= this.findChild(actor);
             // the actor is present
             if ( -1!==actorPos ) {
-
+                var cl= this.childrenList;
                 // trivial reject.
                 if ( index===actorPos ) {
                     return;
                 }
 
-                if ( index>=this.childrenList.length ) {
-					this.childrenList.splice(actorPos,1);
-					this.childrenList.push(actor);
+                if ( index>=cl.length ) {
+					cl.splice(actorPos,1);
+					cl.push(actor);
                 } else {
-                    var nActor= this.childrenList.splice(actorPos,1);
+                    var nActor= cl.splice(actorPos,1);
                     if ( index<0 ) {
                         index=0;
-                    } else if ( index>this.childrenList.length ) {
-                        index= this.childrenList.length;
+                    } else if ( index>cl.length ) {
+                        index= cl.length;
                     }
 
-                    this.childrenList.splice( index, 1, nActor );
+                    //this.childrenList.splice( index, 1, nActor );
+                    cl.splice( index, 0, nActor[0] );
                 }
 
-                for( var i=0,l=this.childrenList.length; i<l; i++ ) {
-                    this.childrenList[i].domElement.style['z-index']= i;
+                for( var i=0,l=cl.length; i<l; i++ ) {
+                    cl[i].domElement.style['z-index']= i;
                 }
             }
         }

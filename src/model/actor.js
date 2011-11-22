@@ -61,7 +61,7 @@
 
         lifecycleListenerList:	null,   // Array of life cycle listener
         behaviorList:           null,   // Array of behaviors to apply to the Actor
-		parent:					null,   // Parent of this Actor. May be Scene.
+        parent:					null,   // Parent of this Actor. May be Scene.
 		x:						0,      // x position on parent. In parent's local coord. system.
 		y:						0,      // y position on parent. In parent's local coord. system.
 		width:					0,      // Actor's width. In parent's local coord. system.
@@ -751,14 +751,14 @@
          * @param behavior {CAAT.Behavior} a CAAT.Behavior instance.
          */
         removeBehaviour : function( behavior ) {
-            var n= this.behaviorList.length-1;
+            var c= this.behaviorList;
+            var n= c.length-1;
             while(n) {
-                if ( this.behaviorList[n]===behavior ) {
-                    this.behaviorList.splice(n,1);
+                if ( c[n]===behavior ) {
+                    c.splice(n,1);
                     return this;
                 }
             }
-
             return this;
         },
         /**
@@ -769,9 +769,10 @@
          * return this;
          */
         removeBehaviorById : function( id ) {
-            for( var n=0; n<this.behaviorList.length; n++ ) {
-                if ( this.behaviorList[n].id===id) {
-                    this.behaviorList.splice(n,1);
+            var c= this.behaviorList;
+            for( var n=0; n<c.length; n++ ) {
+                if ( c[n].id===id) {
+                    c.splice(n,1);
                 }
             }
 
@@ -779,9 +780,11 @@
 
         },
         getBehavior : function(id)  {
-            for( var n=0; n<this.behaviorList.length; n++ ) {
-                if ( this.behaviorList[n].id===id) {
-                    return this.behaviorList[n];
+            var c= this.behaviorList;
+            for( var n=0; n<c.length; n++ ) {
+                var cc= c[n];
+                if ( cc.id===id) {
+                    return cc;
                 }
             }
             return null;
@@ -1073,6 +1076,9 @@
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          */
 		animate : function(director, time) {
+
+            var i;
+
             if ( !this.isInAnimationFrame(time) ) {
                 this.inFrame= false;
                 this.dirty= true;
@@ -1085,7 +1091,11 @@
                 this.oldY= this.y;
             }
 
-			for( var i=0; i<this.behaviorList.length; i++ )	{
+            /**
+             * better avoid using behaviors
+             * @deprecated
+             */
+			for( i=0; i<this.behaviorList.length; i++ )	{
 				this.behaviorList[i].apply(time,this);
 			}
 
@@ -1948,10 +1958,9 @@
          */
         setZOrder : function( actor, index ) {
             var actorPos= this.findChild(actor);
-            var cl= this.childrenList;
             // the actor is present
             if ( -1!==actorPos ) {
-
+                var cl= this.childrenList;
                 // trivial reject.
                 if ( index===actorPos ) {
                     return;
@@ -1968,7 +1977,8 @@
                         index= cl.length;
                     }
 
-                    cl.splice( index, 1, nActor );
+                    //cl.splice( index, 1, nActor );
+                    cl.splice( index, 0, nActor[0] );
                 }
             }
         }

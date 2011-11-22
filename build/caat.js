@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 70
+Version: 0.1 build: 182
 
 Created on:
-DATE: 2011-11-08
-TIME: 23:54:02
+DATE: 2011-11-22
+TIME: 21:33:07
 */
 
 
@@ -56,1310 +56,6 @@ Function.prototype.bind= function() {
     }
 };
 /**
- * See LICENSE file.
- *
- * Behaviors are keyframing elements.
- * By using a BehaviorContainer, you can specify different actions on any animation Actor.
- * An undefined number of Behaviors can be defined for each Actor.
- *
- * There're the following Behaviors:
- *  + AlphaBehavior:   controls container/actor global alpha.
- *  + RotateBehavior:  takes control of rotation affine transform.
- *  + ScaleBehavior:   takes control of scaling on x/y axis affine transform.
- *  + PathBehavior:    takes control of translating an Actor/ActorContainer across a path [ie. pathSegment collection].
- *  + GenericBehavior: applies a behavior to any given target object's property, or notifies a callback.
- *
- *
- **/
-
-(function() {
-    /**
-     * Behavior base class.
-     *
-     * <p>
-     * A behavior is defined by a frame time (behavior duration) and a behavior application function called interpolator.
-     * In its default form, a behaviour is applied linearly, that is, the same amount of behavior is applied every same
-     * time interval.
-     * <p>
-     * A concrete Behavior, a rotateBehavior in example, will change a concrete Actor's rotationAngle during the specified
-     * period.
-     * <p>
-     * A behavior is guaranteed to notify (if any observer is registered) on behavior expiration.
-     * <p>
-     * A behavior can keep an unlimited observers. Observers are objects of the form:
-     * <p>
-     * <code>
-     * {
-     *      behaviorExpired : function( behavior, time, actor);
-     *      behaviorApplied : function( behavior, time, normalizedTime, actor, value);
-     * }
-     * </code>
-     * <p>
-     * <strong>behaviorExpired</strong>: function( behavior, time, actor). This method will be called for any registered observer when
-     * the scene time is greater than behavior's startTime+duration. This method will be called regardless of the time
-     * granurality.
-     * <p>
-     * <strong>behaviorApplied</strong> : function( behavior, time, normalizedTime, actor, value). This method will be called once per
-     * frame while the behavior is not expired and is in frame time (behavior startTime>=scene time). This method can be
-     * called multiple times.
-     * <p>
-     * Every behavior is applied to a concrete Actor.
-     * Every actor must at least define an start and end value. The behavior will set start-value at behaviorStartTime and
-     * is guaranteed to apply end-value when scene time= behaviorStartTime+behaviorDuration.
-     * <p>
-     * You can set behaviors to apply forever that is cyclically. When a behavior is cycle=true, won't notify
-     * behaviorExpired to its registered observers.
-     * <p>
-     * Other Behaviors simply must supply with the method <code>setForTime(time, actor)</code> overriden.
-     *
-     * @constructor
-     */
-    CAAT.Behavior= function() {
-		this.lifecycleListenerList=[];
-		this.setDefaultInterpolator();
-		return this;
-	};
-	
-	CAAT.Behavior.prototype= {
-			
-		lifecycleListenerList:		null,   // observer list.
-		behaviorStartTime:	-1,             // scene time to start applying the behavior
-		behaviorDuration:	-1,             // behavior duration in ms.
-		cycleBehavior:		false,          // apply forever ?
-		expired:			true,           // indicates whether the behavior is expired.
-		interpolator:		null,           // behavior application function. linear by default.
-        actor:              null,           // actor the Behavior acts on.
-        id:                 0,              // an integer id suitable to identify this behavior by number.
-
-        /**
-         * Sets this behavior id.
-         * @param id an integer.
-         *
-         */
-        setId : function( id ) {
-            this.id= id;
-            return this;
-        },
-        /**
-         * Sets the default interpolator to a linear ramp, that is, behavior will be applied linearly.
-         * @return this
-         */
-		setDefaultInterpolator : function() {
-			this.interpolator= new CAAT.Interpolator().createLinearInterpolator(false);
-            return this;
-		},
-        /**
-         * Sets default interpolator to be linear from 0..1 and from 1..0.
-         * @return this
-         */
-		setPingPong : function() {
-			this.interpolator= new CAAT.Interpolator().createLinearInterpolator(true);
-            return this;
-		},
-        /**
-         * Sets behavior start time and duration.
-         * Scene time will be the time of the scene the behavior actor is bound to.
-         * @param startTime {number} an integer indicating behavior start time in scene time in ms..
-         * @param duration {number} an integer indicating behavior duration in ms.
-         */
-		setFrameTime : function( startTime, duration ) {
-			this.behaviorStartTime= startTime;
-			this.behaviorDuration=  duration;
-            this.expired=           false;
-
-            return this;
-		},
-        setOutOfFrameTime : function() {
-            this.expired= true;
-            this.behaviorStartTime= Number.MAX_VALUE;
-            this.behaviorDuration= 0;
-            return this;
-        },
-        /**
-         * Changes behavior default interpolator to another instance of CAAT.Interpolator.
-         * If the behavior is not defined by CAAT.Interpolator factory methods, the interpolation function must return
-         * its values in the range 0..1. The behavior will only apply for such value range.
-         * @param interpolator a CAAT.Interpolator instance.
-         */
-		setInterpolator : function(interpolator) {
-			this.interpolator= interpolator;
-            return this;
-		},
-        /**
-         * This method must no be called directly.
-         * The director loop will call this method in orther to apply actor behaviors.
-         * @param time the scene time the behaviro is being applied at.
-         * @param actor a CAAT.Actor instance the behavior is being applied to.
-         */
-		apply : function( time, actor )	{
-            var orgTime= time;
-			if ( this.isBehaviorInTime(time,actor) )	{
-				time= this.normalizeTime(time);
-				this.fireBehaviorAppliedEvent(
-                        actor,
-                        orgTime,
-                        time,
-                        this.setForTime( time, actor ) );
-			}
-		},
-        /**
-         * Sets the behavior to cycle, ie apply forever.
-         * @param bool a boolean indicating whether the behavior is cycle.
-         */
-		setCycle : function(bool) {
-			this.cycleBehavior= bool;
-            return this;
-		},
-        /**
-         * Adds an observer to this behavior.
-         * @param behaviorListener an observer instance.
-         */
-		addListener : function( behaviorListener ) {
-			this.lifecycleListenerList.push(behaviorListener);
-            return this;
-		},
-        /**
-         * Remove all registered listeners to the behavior.
-         */
-        emptyListenerList : function() {
-            this.lifecycleListenerList= [];
-            return this;
-        },
-        /**
-         * @return an integer indicating the behavior start time in ms..
-         */
-		getStartTime : function() {
-			return this.behaviorStartTime;
-		},
-        /**
-         * @return an integer indicating the behavior duration time in ms.
-         */
-		getDuration : function() {
-			return this.behaviorDuration;
-			
-		},
-        /**
-         * Chekcs whether the behaviour is in scene time.
-         * In case it gets out of scene time, and has not been tagged as expired, the behavior is expired and observers
-         * are notified about that fact.
-         * @param time the scene time to check the behavior against.
-         * @param actor the actor the behavior is being applied to.
-         * @return a boolean indicating whether the behavior is in scene time.
-         */
-		isBehaviorInTime : function(time,actor) {
-			if ( this.expired || this.behaviorStartTime<0 )	{
-				return false;
-			}
-			
-			if ( this.cycleBehavior )	{
-				if ( time>=this.behaviorStartTime )	{
-					time= (time-this.behaviorStartTime)%this.behaviorDuration + this.behaviorStartTime;
-				}
-			}
-			
-			if ( time>this.behaviorStartTime+this.behaviorDuration )	{
-				if ( !this.expired )	{
-					this.setExpired(actor,time);
-				}
-				
-				return false;
-			}
-			
-			return this.behaviorStartTime<=time && time<this.behaviorStartTime+this.behaviorDuration;
-		},
-        /**
-         * Notify observers about expiration event.
-         * @param actor a CAAT.Actor instance
-         * @param time an integer with the scene time the behavior was expired at.
-         */
-		fireBehaviorExpiredEvent : function(actor,time)	{
-			for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
-				this.lifecycleListenerList[i].behaviorExpired(this,time,actor);
-			}
-		},
-        /**
-         * Notify observers about behavior being applied.
-         * @param actor a CAAT.Actor instance the behavior is being applied to.
-         * @param time the scene time of behavior application.
-         * @param normalizedTime the normalized time (0..1) considering 0 behavior start time and 1
-         * behaviorStartTime+behaviorDuration.
-         * @param value the value being set for actor properties. each behavior will supply with its own value version.
-         */
-        fireBehaviorAppliedEvent : function(actor,time,normalizedTime,value)	{
-            for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
-                if (this.lifecycleListenerList[i].behaviorApplied) {
-                    this.lifecycleListenerList[i].behaviorApplied(this,time,normalizedTime,actor,value);
-                }
-            }
-        },
-        /**
-         * Convert scene time into something more manageable for the behavior.
-         * behaviorStartTime will be 0 and behaviorStartTime+behaviorDuration will be 1.
-         * the time parameter will be proportional to those values.
-         * @param time the scene time to be normalized. an integer.
-         */
-		normalizeTime : function(time)	{
-			time= time-this.behaviorStartTime;
-			if ( this.cycleBehavior )	{
-				time%=this.behaviorDuration;
-			}
-			return this.interpolator.getPosition(time/this.behaviorDuration).y;
-		},
-        /**
-         * Sets the behavior as expired.
-         * This method must not be called directly. It is an auxiliary method to isBehaviorInTime method.
-         * @param actor {CAAT.Actor}
-         * @param time {integer} the scene time.
-         *
-         * @private
-         */
-		setExpired : function(actor,time) {
-            // set for final interpolator value.
-            this.expired= true;
-			this.setForTime(this.interpolator.getPosition(1).y,actor);
-			this.fireBehaviorExpiredEvent(actor,time);
-		},
-        /**
-         * This method must be overriden for every Behavior breed.
-         * Must not be called directly.
-         * @param actor {CAAT.Actor} a CAAT.Actor instance.
-         * @param time {number} an integer with the scene time.
-         *
-         * @private
-         */
-		setForTime : function( time, actor ) {
-			
-		},
-        /**
-         * @param overrides
-         */
-        initialize : function(overrides) {
-            if (overrides) {
-               for (var i in overrides) {
-                  this[i] = overrides[i];
-               }
-            }
-
-            return this;
-        }
-	};
-})();
-
-(function() {
-    /**
-     * <p>
-     * A ContainerBehavior is a holder to sum up different behaviors.
-     * <p>
-     * It imposes some constraints to contained Behaviors:
-     * <ul>
-     * <li>The time of every contained behavior will be zero based, so the frame time set for each behavior will
-     * be referred to the container's behaviorStartTime and not scene time as usual.
-     * <li>Cycling a ContainerBehavior means cycling every contained behavior.
-     * <li>The container will not impose any Interpolator, so calling the method <code>setInterpolator(CAAT.Interpolator)
-     * </code> will be useless.
-     * <li>The Behavior application time will be bounded to the Container's frame time. I.E. if we set a container duration
-     * to 10 seconds, setting a contained behavior's duration to 15 seconds will be useless since the container will stop
-     * applying the behavior after 10 seconds have elapsed.
-     * <li>Every ContainerBehavior adds itself as an observer for its contained Behaviors. The main reason is because
-     * ContainerBehaviors modify cycling properties of its contained Behaviors. When a contained
-     * Behavior is expired, if the Container has isCycle=true, will unexpire the contained Behavior, otherwise, it won't be
-     * applied in the next frame. It is left up to the developer to manage correctly the logic of other posible contained
-     * behaviors observers.
-     * </ul>
-     *
-     * <p>
-     * A ContainerBehavior can contain other ContainerBehaviors at will.
-     * <p>
-     * A ContainerBehavior will not apply any CAAT.Actor property change by itself, but will instrument its contained
-     * Behaviors to do so.
-     *
-     * @constructor
-     * @extends CAAT.Behavior
-     */
-    CAAT.ContainerBehavior= function() {
-		CAAT.ContainerBehavior.superclass.constructor.call(this);
-		this.behaviors= [];
-		return this;
-	};
-
-    CAAT.ContainerBehavior.prototype= {
-
-		behaviors:	null,   // contained behaviors array
-        /**
-         * Adds a new behavior to the container.
-         * @param behavior
-         *
-         * @override
-         */
-		addBehavior : function(behavior)	{
-			this.behaviors.push(behavior);
-			behavior.addListener(this);
-            return this;
-		},
-        /**
-         * Applies every contained Behaviors.
-         * The application time the contained behaviors will receive will be ContainerBehavior related and not the
-         * received time.
-         * @param time an integer indicating the time to apply the contained behaviors at.
-         * @param actor a CAAT.Actor instance indicating the actor to apply the behaviors for.
-         */
-		apply : function(time, actor) {
-			if ( this.isBehaviorInTime(time,actor) )	{
-				time-= this.getStartTime();
-				if ( this.cycleBehavior ){
-					time%= this.getDuration();
-				}
-
-                var bh= this.behaviors;
-				for( var i=0; i<bh.length; i++ )	{
-					bh[i].apply(time, actor);
-				}
-			}
-		},
-        /**
-         * This method does nothing for containers, and hence has an empty implementation.
-         * @param interpolator a CAAt.Interpolator instance.
-         */
-		setInterpolator : function(interpolator) {
-            return this;
-		},
-        /**
-         * This method is the observer implementation for every contained behavior.
-         * If a container is Cycle=true, won't allow its contained behaviors to be expired.
-         * @param behavior a CAAT.Behavior instance which has been expired.
-         * @param time an integer indicating the time at which has become expired.
-         * @param actor a CAAT.Actor the expired behavior is being applied to.
-         */
-		behaviorExpired : function(behavior,time,actor) {
-			if ( this.cycleBehavior )	{
-				behavior.expired =  false;
-			}
-		},
-        /**
-         * Implementation method of the behavior.
-         * Just call implementation method for its contained behaviors.
-         * @param time an intenger indicating the time the behavior is being applied at.
-         * @param actor a CAAT.Actor the behavior is being applied to.
-         */
-		setForTime : function(time, actor) {
-            var bh= this.behaviors;
-			for( var i=0; i<bh.length; i++ ) {
-				bh[i].setForTime( time, actor );
-			}
-
-            return null;
-		},
-
-        setExpired : function(actor,time) {
-            CAAT.ContainerBehavior.superclass.setExpired.call(this,actor,time);
-
-            var bh= this.behaviors;
-            // set for final interpolator value.
-            for( var i=0; i<bh.length; i++ ) {
-                var bb= bh[i];
-                if (!bb.expired) {
-                    bb.setExpired(actor,time-this.behaviorStartTime);
-                }
-            }
-            this.fireBehaviorExpiredEvent(actor,time);
-            return this;
-        },
-
-        setFrameTime : function( start, duration )  {
-            CAAT.ContainerBehavior.superclass.setFrameTime.call(this,start,duration);
-
-            var bh= this.behaviors;
-            for( var i=0; i<bh.length; i++ ) {
-                bh[i].expired= false;
-            }
-            return this;
-        }
-
-	};
-
-    extend( CAAT.ContainerBehavior, CAAT.Behavior, null );
-})();
-
-(function() {
-    /**
-     * This class applies a rotation to a CAAt.Actor instance.
-     * StartAngle, EndAngle must be supplied. Angles are in radians.
-     * The RotationAnchor, if not supplied, will be ANCHOR_CENTER.
-     *
-     * An example os use will be
-     *
-     * var rb= new CAAT.RotateBehavior().
-     *      setValues(0,2*Math.PI).
-     *      setFrameTime(0,2500);
-     *
-     * @see CAAT.Actor.
-     *
-     * @constructor
-     * @extends CAAT.Behavior
-     *
-     */
-    CAAT.RotateBehavior= function() {
-		CAAT.RotateBehavior.superclass.constructor.call(this);
-		this.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-		return this;
-	};
-	
-	CAAT.RotateBehavior.prototype= {
-	
-		startAngle:	0,  // behavior start angle
-		endAngle:	0,  // behavior end angle
-        anchorX:    .50,  // rotation center x.
-        anchorY:    .50,  // rotation center y.
-
-        /**
-         * Behavior application function.
-         * Do not call directly.
-         * @param time an integer indicating the application time.
-         * @param actor a CAAT.Actor the behavior will be applied to.
-         * @return the set angle.
-         */
-		setForTime : function(time,actor) {
-			var angle= 
-				this.startAngle + time*(this.endAngle-this.startAngle);
-
-            actor.setRotationAnchored(angle, this.anchorX, this.anchorY);
-
-            return angle;
-			
-		},
-        /**
-         * Set behavior bound values.
-         * if no anchorx,anchory values are supplied, the behavior will assume
-         * 50% for both values, that is, the actor's center.
-         *
-         * Be aware the anchor values are supplied in <b>RELATIVE PERCENT</b> to
-         * actor's size.
-         *
-         * @param startAngle {float} indicating the starting angle.
-         * @param endAngle {float} indicating the ending angle.
-         * @param anchorx {float} the percent position for anchorX
-         * @param anchory {float} the percent position for anchorY
-         */
-        setValues : function( startAngle, endAngle, anchorx, anchory ) {
-            this.startAngle= startAngle;
-            this.endAngle= endAngle;
-            if ( typeof anchorx!=='undefined' && typeof anchory!=='undefined' ) {
-                this.anchorX= anchorx;
-                this.anchorY= anchory;
-            }
-            return this;
-        },
-        /**
-         * @deprecated
-         * Use setValues instead
-         * @param start
-         * @param end
-         */
-        setAngles : function( start, end ) {
-            return this.setValues(start,end);
-        },
-        /**
-         * Set the behavior rotation anchor. Use this method when setting an exact percent
-         * by calling setValues is complicated.
-         * @see CAAT.Actor
-         * @param anchor any of CAAT.Actor.prototype.ANCHOR_* constants.
-         *
-         * These parameters are to set a custom rotation anchor point. if <code>anchor==CAAT.Actor.prototype.ANCHOR_CUSTOM
-         * </code> the custom rotation point is set.
-         * @param rx
-         * @param ry
-         *
-         */
-        setAnchor : function( actor, rx, ry ) {
-            this.anchorX= rx/actor.width;
-            this.anchorY= ry/actor.height;
-            return this;
-        }
-		
-	};
-
-    extend( CAAT.RotateBehavior, CAAT.Behavior, null);
-    
-})();
-
-(function() {
-    /**
-     * <p>
-     * A generic behavior is supposed to be extended to create new behaviors when the out-of-the-box
-     * ones are not sufficient. It applies the behavior result to a given target object in two ways:
-     *
-     * <ol>
-     * <li>defining the property parameter: the toolkit will perform target_object[property]= calculated_value_for_time.
-     * <li>defining a callback function. Sometimes setting of a property is not enough. In example,
-     * for a give property in a DOM element, it is needed to set object.style['left']= '70px';
-     * With the property approach, you won't be able to add de 'px' suffix to the value, and hence won't
-     * work correctly. The function callback will allow to take control by receiving as parameters the
-     * target object, and the calculated value to apply by the behavior for the given time.
-     * </ol>
-     *
-     * <p>
-     * For example, this code will move a dom element from 0 to 400 px on x during 1 second:
-     * <code>
-     * <p>
-     * var enterBehavior= new CAAT.GenericBehavior(). <br>
-     * &nbsp;&nbsp;setFrameTime( scene.time, 1000 ). <br>
-     * &nbsp;&nbsp;setValues( <br>
-     * &nbsp;&nbsp;&nbsp;&nbsp;0, <br>
-     * &nbsp;&nbsp;&nbsp;&nbsp;400, <br>
-     * &nbsp;&nbsp;&nbsp;&nbsp;domElement, <br>
-     * &nbsp;&nbsp;&nbsp;&nbsp;null, <br>
-     * &nbsp;&nbsp;&nbsp;&nbsp;function( currentValue, target ) { <br>
-     * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;target.style['left']= currentValue+'px'; <br>
-     * &nbsp;&nbsp;&nbsp;&nbsp;} <br>
-     * &nbsp;&nbsp;); <br>
-     * </code>
-     *
-     * @constructor
-     * @extends CAAT.Behavior
-     *
-     */
-    CAAT.GenericBehavior= function() {
-        CAAT.GenericBehavior.superclass.constructor.call(this);
-        return this;
-    };
-
-    CAAT.GenericBehavior.prototype= {
-
-        start:      0,
-        end:        0,
-        target:     null,
-        property:   null,
-        callback:   null,
-
-        /**
-         * Sets the target objects property to the corresponding value for the given time.
-         * If a callback function is defined, it is called as well.
-         *
-         * @param time {number} the scene time to apply the behavior at.
-         * @param actor {CAAT.Actor} a CAAT.Actor object instance.
-         */
-        setForTime : function(time, actor) {
-            var value= this.start+ time*(this.end-this.start);
-            if ( this.callback ) {
-                this.callback( value, this.target, actor );
-            }
-
-            if ( this.property ) {
-                this.target[this.property]= value;
-            }
-        },
-        /**
-         * Defines the values to apply this behavior.
-         *
-         * @param start {number} initial behavior value.
-         * @param end {number} final behavior value.
-         * @param target {object} an object. Usually a CAAT.Actor.
-         * @param property {string} target object's property to set value to.
-         * @param callback {function} a function of the form <code>function( target, value )</code>.
-         */
-        setValues : function( start, end, target, property, callback ) {
-            this.start= start;
-            this.end= end;
-            this.target= target;
-            this.property= property;
-            this.callback= callback;
-            return this;
-        }
-    };
-
-    extend( CAAT.GenericBehavior, CAAT.Behavior, null);
-})();
-
-(function() {
-
-    /**
-     * ScaleBehavior applies scale affine transforms in both axis.
-     * StartScale and EndScale must be supplied for each axis. This method takes care of a FF bug in which if a Scale is
-     * set to 0, the animation will fail playing.
-     *
-     * This behavior specifies anchors in values ranges 0..1
-     *
-     * @constructor
-     * @extends CAAT.Behavior
-     *
-     */
-	CAAT.ScaleBehavior= function() {
-		CAAT.ScaleBehavior.superclass.constructor.call(this);
-		this.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
-		return this;		
-	};
-	
-	CAAT.ScaleBehavior.prototype= {
-        startScaleX:    1,
-        endScaleX:      1,
-        startScaleY:    1,
-        endScaleY:	    1,
-        anchorX:        .50,
-        anchorY:        .50,
-
-        /**
-         * Applies corresponding scale values for a given time.
-         * 
-         * @param time the time to apply the scale for.
-         * @param actor the target actor to Scale.
-         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}Ê}</code>
-         */
-		setForTime : function(time,actor) {
-
-			var scaleX= this.startScaleX + time*(this.endScaleX-this.startScaleX);
-			var scaleY= this.startScaleY + time*(this.endScaleY-this.startScaleY);
-
-            // Firefox 3.x & 4, will crash animation if either scaleX or scaleY equals 0.
-            if (0===scaleX ) {
-                scaleX=0.01;
-            }
-            if (0===scaleY ) {
-                scaleY=0.01;
-            }
-
-			actor.setScaleAnchored( scaleX, scaleY, this.anchorX, this.anchorY );
-
-            return { scaleX: scaleX, scaleY: scaleY };
-		},
-        /**
-         * Define this scale behaviors values.
-         *
-         * Be aware the anchor values are supplied in <b>RELATIVE PERCENT</b> to
-         * actor's size.
-         *
-         * @param startX {number} initial X axis scale value.
-         * @param endX {number} final X axis scale value.
-         * @param startY {number} initial Y axis scale value.
-         * @param endY {number} final Y axis scale value.
-         * @param anchorx {float} the percent position for anchorX
-         * @param anchory {float} the percent position for anchorY
-         *
-         * @return this.
-         */
-        setValues : function( startX, endX, startY, endY, anchorx, anchory ) {
-            this.startScaleX= startX;
-            this.endScaleX=   endX;
-            this.startScaleY= startY;
-            this.endScaleY=   endY;
-
-            if ( typeof anchorx!=='undefined' && typeof anchory!=='undefined' ) {
-                this.anchorX= anchorx;
-                this.anchorY= anchory;
-            }
-
-            return this;
-        },
-        /**
-         * Set an exact position scale anchor. Use this method when it is hard to
-         * set a thorough anchor position expressed in percentage.
-         * @param actor
-         * @param x
-         * @param y
-         */
-        setAnchor : function( actor, x, y ) {
-            this.anchorX= x/actor.width;
-            this.anchorY= y/actor.height;
-
-            return this;
-        }
-	};
-
-    extend( CAAT.ScaleBehavior, CAAT.Behavior, null);
-})();
-
-
-(function() {
-    /**
-     * AlphaBehavior modifies alpha composition property for an actor.
-     *
-     * @constructor
-     * @extends CAAT.Behavior
-     */
-	CAAT.AlphaBehavior= function() {
-		CAAT.AlphaBehavior.superclass.constructor.call(this);
-		return this;
-	};
-	
-	CAAT.AlphaBehavior.prototype= {
-		startAlpha:	0,
-		endAlpha:	0,
-
-        /**
-         * Applies corresponding alpha transparency value for a given time.
-         *
-         * @param time the time to apply the scale for.
-         * @param actor the target actor to set transparency for.
-         * @return {number} the alpha value set. Normalized from 0 (total transparency) to 1 (total opacity)
-         */
-		setForTime : function(time,actor) {
-            var alpha= (this.startAlpha+time*(this.endAlpha-this.startAlpha));
-            actor.setAlpha( alpha );
-            return alpha;
-        },
-        /**
-         * Set alpha transparency minimum and maximum value.
-         * This value can be coerced by Actor's property isGloblAlpha.
-         *
-         * @param start {number} a float indicating the starting alpha value.
-         * @param end {number} a float indicating the ending alpha value.
-         */
-        setValues : function( start, end ) {
-            this.startAlpha= start;
-            this.endAlpha= end;
-            return this;
-        }
-	};
-
-    extend( CAAT.AlphaBehavior, CAAT.Behavior, null);
-})();
-
-(function() {
-    /**
-     * CAAT.PathBehavior modifies the position of a CAAT.Actor along the path represented by an
-     * instance of <code>CAAT.Path</code>.
-     *
-     * @constructor
-     * @extends CAAT.Behavior
-     *
-     */
-	CAAT.PathBehavior= function() {
-		CAAT.PathBehavior.superclass.constructor.call(this);
-		return this;
-	};
-
-    /**
-     * @enum
-     */
-    CAAT.PathBehavior.autorotate = {
-        LEFT_TO_RIGHT:  0,          // fix left_to_right direction
-        RIGHT_TO_LEFT:  1,          // fix right_to_left
-        FREE:           2           // do not apply correction
-    };
-
-	CAAT.PathBehavior.prototype= {
-		path:           null,   // the path to traverse
-        autoRotate :    false,  // set whether the actor must be rotated tangentially to the path.
-        prevX:          -1,     // private, do not use.
-        prevY:          -1,     // private, do not use.
-
-        autoRotateOp:   CAAT.PathBehavior.autorotate.FREE,
-
-        translateX:     0,
-        translateY:     0,
-
-        /**
-         * Sets an actor rotation to be heading from past to current path's point.
-         * Take into account that this will be incompatible with rotation Behaviors
-         * since they will set their own rotation configuration.
-         * @param autorotate {boolean}
-         * @param autorotateOp {CAAT.PathBehavior.autorotate} whether the sprite is drawn heading to the right.
-         * @return this.
-         */
-        setAutoRotate : function( autorotate, autorotateOp ) {
-            this.autoRotate= autorotate;
-            if (autorotateOp!==undefined) {
-                this.autoRotateOp= autorotateOp;
-            }
-            return this;
-        },
-        /**
-         * Set the behavior path.
-         * The path can be any length, and will take behaviorDuration time to be traversed.
-         * @param {CAAT.Path}
-            *
-         * @deprecated
-         */
-        setPath : function(path) {
-            this.path= path;
-            return this;
-        },
-
-        /**
-         * Set the behavior path.
-         * The path can be any length, and will take behaviorDuration time to be traversed.
-         * @param {CAAT.Path}
-         * @return this
-         */
-        setValues : function(path) {
-            return this.setPath(path);
-        },
-
-        setFrameTime : function( startTime, duration ) {
-            CAAT.PathBehavior.superclass.setFrameTime.call(this, startTime, duration );
-            this.prevX= -1;
-            this.prevY= -1;
-            return this;
-        },
-        /**
-         * This method set an extra offset for the actor traversing the path.
-         * in example, if you want an actor to traverse the path by its center, and not by default via its top-left corner,
-         * you should call <code>setTranslation(actor.width/2, actor.height/2);</code>.
-         *
-         * Displacement will be substracted from the tarrget coordinate.
-         *
-         * @param tx a float with xoffset.
-         * @param ty a float with yoffset.
-         */
-        setTranslation : function( tx, ty ) {
-            this.translateX= tx;
-            this.translateY= ty;
-            return this;
-        },
-        /**
-         * Translates the Actor to the corresponding time path position.
-         * If autoRotate=true, the actor is rotated as well. The rotation anchor will (if set) always be ANCHOR_CENTER.
-         * @param time an integer indicating the time the behavior is being applied at.
-         * @param actor a CAAT.Actor instance to be translated.
-         * @return {object} an object of the form <code>{ x: {float}, y: {float}Ê}</code>.
-         */
-		setForTime : function(time,actor) {
-
-            if ( !this.path ) {
-                return {
-                    x: actor.x,
-                    y: actor.y
-                };
-            }
-
-            var point= this.path.getPosition(time);
-
-            if ( this.autoRotate ) {
-
-                if ( -1===this.prevX && -1===this.prevY )	{
-                    this.prevX= point.x;
-                    this.prevY= point.y;
-                }
-
-                var ax= point.x-this.prevX;
-                var ay= point.y-this.prevY;
-
-                if ( ax===0 && ay===0 ) {
-                    actor.setLocation( point.x-this.translateX, point.y-this.translateY );
-                    return { x: actor.x, y: actor.y };
-                }
-
-                var angle= Math.atan2( ay, ax );
-                var si= CAAT.SpriteImage.prototype;
-                var pba= CAAT.PathBehavior.autorotate;
-
-                // actor is heading left to right
-                if ( this.autoRotateOp===pba.LEFT_TO_RIGHT ) {
-                    if ( this.prevX<=point.x )	{
-                        actor.setImageTransformation( si.TR_NONE );
-                    }
-                    else	{
-                        actor.setImageTransformation( si.TR_FLIP_HORIZONTAL );
-                        angle+=Math.PI;
-                    }
-                } else if ( this.autoRotateOp===pba.RIGHT_TO_LEFT ) {
-                    if ( this.prevX<=point.x )	{
-                        actor.setImageTransformation( si.TR_FLIP_HORIZONTAL );
-                    }
-                    else	{
-                        actor.setImageTransformation( si.TR_NONE );
-                        angle-=Math.PI;
-                    }
-                }
-
-                actor.setRotation(angle);
-
-                this.prevX= point.x;
-                this.prevY= point.y;
-
-                var modulo= Math.sqrt(ax*ax+ay*ay);
-                ax/=modulo;
-                ay/=modulo;
-            }
-
-            actor.setLocation( point.x-this.translateX, point.y-this.translateY );
-
-            return { x: actor.x, y: actor.y };
-		},
-        /**
-         * Get a point on the path.
-         * If the time to get the point at is in behaviors frame time, a point on the path will be returned, otherwise
-         * a default {x:-1, y:-1} point will be returned.
-         *
-         * @param time {number} the time at which the point will be taken from the path.
-         * @return {object} an object of the form {x:float y:float}
-         */
-        positionOnTime : function(time) {
-			if ( this.isBehaviorInTime(time,null) )	{
-				time= this.normalizeTime(time);
-                return this.path.getPosition( time );
-            }
-
-            return {x:-1, y:-1};
-
-        }
-	};
-
-    extend( CAAT.PathBehavior, CAAT.Behavior, null);
-})();
-/**
- * 
- * taken from: http://www.quirksmode.org/js/detect.html
- *
- * 20101008 Hyperandroid. IE9 seems to identify himself as Explorer and stopped calling himself MSIE.
- *          Added Explorer description to browser list. Thanks @alteredq for this tip.
- *
- */
-(function() {
-
-	CAAT.BrowserDetect = function() {
-		this.init();
-        return this;
-	};
-
-	CAAT.BrowserDetect.prototype = {
-		browser: '',
-		version: 0,
-		OS: '',
-		init: function()
-		{
-			this.browser = this.searchString(this.dataBrowser) || "An unknown browser";
-			this.version = this.searchVersion(navigator.userAgent) ||
-                    this.searchVersion(navigator.appVersion) ||
-                    "an unknown version";
-			this.OS = this.searchString(this.dataOS) || "an unknown OS";
-		},
-
-		searchString: function (data) {
-			for (var i=0;i<data.length;i++)	{
-				var dataString = data[i].string;
-				var dataProp = data[i].prop;
-				this.versionSearchString = data[i].versionSearch || data[i].identity;
-				if (dataString) {
-					if (dataString.indexOf(data[i].subString) !== -1)
-						return data[i].identity;
-				}
-				else if (dataProp)
-					return data[i].identity;
-			}
-		},
-		searchVersion: function (dataString) {
-			var index = dataString.indexOf(this.versionSearchString);
-			if (index === -1) return;
-			return parseFloat(dataString.substring(index+this.versionSearchString.length+1));
-		},
-		dataBrowser: [
-			{
-				string: navigator.userAgent,
-				subString: "Chrome",
-				identity: "Chrome"
-			},
-			{   string: navigator.userAgent,
-			    subString: "OmniWeb",
-				versionSearch: "OmniWeb/",
-				identity: "OmniWeb"
-			},
-			{
-				string: navigator.vendor,
-				subString: "Apple",
-				identity: "Safari",
-				versionSearch: "Version"
-			},
-			{
-				prop: window.opera,
-				identity: "Opera"
-			},
-			{
-				string: navigator.vendor,
-				subString: "iCab",
-				identity: "iCab"
-			},
-			{
-				string: navigator.vendor,
-				subString: "KDE",
-				identity: "Konqueror"
-			},
-			{
-				string: navigator.userAgent,
-				subString: "Firefox",
-				identity: "Firefox"
-			},
-			{
-				string: navigator.vendor,
-				subString: "Camino",
-				identity: "Camino"
-			},
-			{		// for newer Netscapes (6+)
-				string: navigator.userAgent,
-				subString: "Netscape",
-				identity: "Netscape"
-			},
-			{
-				string: navigator.userAgent,
-				subString: "MSIE",
-				identity: "Explorer",
-				versionSearch: "MSIE"
-			},
-			{
-				string: navigator.userAgent,
-				subString: "Explorer",
-				identity: "Explorer",
-				versionSearch: "Explorer"
-			},
-			{
-				string: navigator.userAgent,
-				subString: "Gecko",
-				identity: "Mozilla",
-				versionSearch: "rv"
-			},
-			{ // for older Netscapes (4-)
-			    string: navigator.userAgent,
-				subString: "Mozilla",
-				identity: "Netscape",
-				versionSearch: "Mozilla"
-			}
-		],
-
-		dataOS : [
-			{
-				string: navigator.platform,
-				subString: "Win",
-				identity: "Windows"
-			},
-			{
-				string: navigator.platform,
-				subString: "Mac",
-				identity: "Mac"
-			},
-			{
-				   string: navigator.userAgent,
-				   subString: "iPhone",
-				   identity: "iPhone/iPod"
-			},
-			{
-				string: navigator.platform,
-				subString: "Linux",
-				identity: "Linux"
-			}
-		]
-	};
-})();/**
- * See LICENSE file.
- *
- * Extend a prototype with another to form a classical OOP inheritance procedure.
- *
- * @param subc {object} Prototype to define the base class
- * @param superc {object} Prototype to be extended (derived class).
- */
-function extend(subc, superc) {
-    var subcp = subc.prototype;
-
-    // Class pattern.
-    var F = function() {
-    };
-    F.prototype = superc.prototype;
-
-    subc.prototype = new F();       // chain prototypes.
-    subc.superclass = superc.prototype;
-    subc.prototype.constructor = subc;
-
-    // Reset constructor. See Object Oriented Javascript for an in-depth explanation of this.
-    if (superc.prototype.constructor === Object.prototype.constructor) {
-        superc.prototype.constructor = superc;
-    }
-
-    // los metodos de superc, que no esten en esta clase, crear un metodo que
-    // llama al metodo de superc.
-    for (var method in subcp) {
-        if (subcp.hasOwnProperty(method)) {
-            subc.prototype[method] = subcp[method];
-
-/**
- * Sintactic sugar to add a __super attribute on every overriden method.
- * Despite comvenient, it slows things down by 5fps.
- *
- * Uncomment at your own risk.
- *
-            // tenemos en super un metodo con igual nombre.
-            if ( superc.prototype[method]) {
-                subc.prototype[method]= (function(fn, fnsuper) {
-                    return function() {
-                        var prevMethod= this.__super;
-
-                        this.__super= fnsuper;
-
-                        var retValue= fn.apply(
-                                this,
-                                Array.prototype.slice.call(arguments) );
-
-                        this.__super= prevMethod;
-
-                        return retValue;
-                    };
-                })(subc.prototype[method], superc.prototype[method]);
-            }
-            */
-        }
-    }
-}
-
-/**
- * Dynamic Proxy for an object or wrap/decorate a function.
- *
- * @param object
- * @param preMethod
- * @param postMethod
- * @param errorMethod
- */
-function proxy(object, preMethod, postMethod, errorMethod) {
-
-    // proxy a function
-    if ( typeof object==='function' ) {
-
-        if ( object.__isProxy ) {
-            return object;
-        }
-
-        return (function(fn) {
-            var proxyfn= function() {
-                if ( preMethod ) {
-                    preMethod({
-                            fn: fn,
-                            arguments:  Array.prototype.slice.call(arguments)} );
-                }
-                var retValue= null;
-                try {
-                    // apply original function call with itself as context
-                    retValue= fn.apply(fn, Array.prototype.slice.call(arguments));
-                    // everything went right on function call, then call
-                    // post-method hook if present
-                    if ( postMethod ) {
-                        postMethod({
-                                fn: fn,
-                                arguments:  Array.prototype.slice.call(arguments)} );
-                    }
-                } catch(e) {
-                    // an exeception was thrown, call exception-method hook if
-                    // present and return its result as execution result.
-                    if( errorMethod ) {
-                        retValue= errorMethod({
-                            fn: fn,
-                            arguments:  Array.prototype.slice.call(arguments),
-                            exception:  e} );
-                    } else {
-                        // since there's no error hook, just throw the exception
-                        throw e;
-                    }
-                }
-
-                // return original returned value to the caller.
-                return retValue;
-            };
-            proxyfn.__isProxy= true;
-            return proxyfn;
-
-        })(object);
-    }
-
-    /**
-     * If not a function then only non privitive objects can be proxied.
-     * If it is a previously created proxy, return the proxy itself.
-     */
-    if ( !typeof object==='object' ||
-            object.constructor===Array ||
-            object.constructor===String ||
-            object.__isProxy ) {
-
-        return object;
-    }
-
-    // Our proxy object class.
-    var cproxy= function() {};
-    // A new proxy instance.
-    var proxy= new cproxy();
-    // hold the proxied object as member. Needed to assign proper
-    // context on proxy method call.
-    proxy.__object= object;
-    proxy.__isProxy= true;
-
-    // For every element in the object to be proxied
-    for( var method in object ) {
-        // only function members
-        if ( typeof object[method]==='function' ) {
-            // add to the proxy object a method of equal signature to the
-            // method present at the object to be proxied.
-            // cache references of object, function and function name.
-            proxy[method]= (function(proxy,fn,method) {
-                return function() {
-                    // call pre-method hook if present.
-                    if ( preMethod ) {
-                        preMethod({
-                                object:     proxy.__object,
-                                method:     method,
-                                arguments:  Array.prototype.slice.call(arguments)} );
-                    }
-                    var retValue= null;
-                    try {
-                        // apply original object call with proxied object as
-                        // function context.
-                        retValue= fn.apply( proxy.__object, arguments );
-                        // everything went right on function call, the call
-                        // post-method hook if present
-                        if ( postMethod ) {
-                            postMethod({
-                                    object:     proxy.__object,
-                                    method:     method,
-                                    arguments:  Array.prototype.slice.call(arguments)} );
-                        }
-                    } catch(e) {
-                        // an exeception was thrown, call exception-method hook if
-                        // present and return its result as execution result.
-                        if( errorMethod ) {
-                            retValue= errorMethod({
-                                object:     proxy.__object,
-                                method:     method,
-                                arguments:  Array.prototype.slice.call(arguments),
-                                exception:  e} );
-                        } else {
-                            // since there's no error hook, just throw the exception
-                            throw e;
-                        }
-                    }
-
-                    // return original returned value to the caller.
-                    return retValue;
-                };
-            })(proxy,object[method],method);
-        }
-    }
-
-    // return our newly created and populated of functions proxy object.
-    return proxy;
-}
-
-/** proxy sample usage
-
-var c0= new Meetup.C1(5);
-
-var cp1= proxy(
-        c1,
-        function() {
-            console.log('pre method on object: ',
-                    arguments[0].object.toString(),
-                    arguments[0].method,
-                    arguments[0].arguments );
-        },
-        function() {
-            console.log('post method on object: ',
-                    arguments[0].object.toString(),
-                    arguments[0].method,
-                    arguments[0].arguments );
-
-        },
-        function() {
-            console.log('exception on object: ',
-                    arguments[0].object.toString(),
-                    arguments[0].method,
-                    arguments[0].arguments,
-                    arguments[0].exception);
-
-            return -1;
-        });
- **//**
  * See LICENSE file.
  *
  * Manages every Actor affine transformations.
@@ -3400,6 +2096,2250 @@ var cp1= proxy(
 })();/**
  * See LICENSE file.
  *
+ * Generate interpolator.
+ *
+ * Partially based on Robert Penner easing equations.
+ * http://www.robertpenner.com/easing/
+ *
+ *
+ **/
+
+
+(function() {
+    /**
+     * a CAAT.Interpolator is a function which transforms a value into another but with some constraints:
+     *
+     * <ul>
+     * <li>The input values must be between 0 and 1.
+     * <li>Output values will be between 0 and 1.
+     * <li>Every Interpolator has at least an entering boolean parameter called pingpong. if set to true, the Interpolator
+     * will set values from 0..1 and back from 1..0. So half the time for each range.
+     * </ul>
+     *
+     * <p>
+     * CAAt.Interpolator is defined by a createXXXX method which sets up an internal getPosition(time)
+     * function. You could set as an Interpolator up any object which exposes a method getPosition(time)
+     * and returns a CAAT.Point or an object of the form {x:{number}, y:{number}}.
+     * <p>
+     * In the return value, the x attribute's value will be the same value as that of the time parameter,
+     * and y attribute will hold a value between 0 and 1 with the resulting value of applying the
+     * interpolation function for the time parameter.
+     *
+     * <p>
+     * For am exponential interpolation, the getPosition function would look like this:
+     * <code>function getPosition(time) { return { x:time, y: Math.pow(time,2) }Ê}</code>.
+     * meaning that for time=0.5, a value of 0,5*0,5 should use instead.
+     *
+     * <p>
+     * For a visual understanding of interpolators see tutorial 4 interpolators, or play with technical
+     * demo 1 where a SpriteActor moves along a path and the way it does can be modified by every
+     * out-of-the-box interpolator.
+     *
+     * @constructor
+     *
+     */
+    CAAT.Interpolator = function() {
+        this.interpolated= new CAAT.Point(0,0,0);
+        return this;
+    };
+
+    CAAT.Interpolator.prototype= {
+
+        interpolated:   null,   // a coordinate holder for not building a new CAAT.Point for each interpolation call.
+        paintScale:     90,     // the size of the interpolation draw on screen in pixels.
+
+        /**
+         * Set a linear interpolation function.
+         *
+         * @param bPingPong {boolean}
+         * @param bInverse {boolean} will values will be from 1 to 0 instead of 0 to 1 ?.
+         */
+        createLinearInterpolator : function(bPingPong, bInverse) {
+            /**
+             * Linear and inverse linear interpolation function.
+             * @param time {number}
+             */
+            this.getPosition= function getPosition(time) {
+
+                var orgTime= time;
+
+                if ( bPingPong ) {
+                    if ( time<0.5 ) {
+                        time*=2;
+                    } else {
+                        time= 1-(time-0.5)*2;
+                    }
+                }
+
+                if ( bInverse!==null && bInverse ) {
+                    time= 1-time;
+                }
+
+                return this.interpolated.set(orgTime,time);
+            };
+
+            return this;
+        },
+        createBackOutInterpolator : function(bPingPong) {
+            this.getPosition= function getPosition(time) {
+                var orgTime= time;
+
+                if ( bPingPong ) {
+                    if ( time<0.5 ) {
+                        time*=2;
+                    } else {
+                        time= 1-(time-0.5)*2;
+                    }
+                }
+
+                time = time - 1;
+                var overshoot= 1.70158;
+
+                return this.interpolated.set(
+                        orgTime,
+                        time * time * ((overshoot + 1) * time + overshoot) + 1);
+            };
+
+            return this;
+        },
+        /**
+         * Set an exponential interpolator function. The function to apply will be Math.pow(time,exponent).
+         * This function starts with 0 and ends in values of 1.
+         *
+         * @param exponent {number} exponent of the function.
+         * @param bPingPong {boolean}
+         */
+        createExponentialInInterpolator : function(exponent, bPingPong) {
+            this.getPosition= function getPosition(time) {
+                var orgTime= time;
+
+                if ( bPingPong ) {
+                    if ( time<0.5 ) {
+                        time*=2;
+                    } else {
+                        time= 1-(time-0.5)*2;
+                    }
+                }
+                return this.interpolated.set(orgTime,Math.pow(time,exponent));
+            };
+
+            return this;
+        },
+        /**
+         * Set an exponential interpolator function. The function to apply will be 1-Math.pow(time,exponent).
+         * This function starts with 1 and ends in values of 0.
+         *
+         * @param exponent {number} exponent of the function.
+         * @param bPingPong {boolean}
+         */
+        createExponentialOutInterpolator : function(exponent, bPingPong) {
+            this.getPosition= function getPosition(time) {
+                var orgTime= time;
+
+                if ( bPingPong ) {
+                    if ( time<0.5 ) {
+                        time*=2;
+                    } else {
+                        time= 1-(time-0.5)*2;
+                    }
+                }
+                return this.interpolated.set(orgTime,1-Math.pow(1-time,exponent));
+            };
+
+            return this;
+        },
+        /**
+         * Set an exponential interpolator function. Two functions will apply:
+         * Math.pow(time*2,exponent)/2 for the first half of the function (t<0.5) and
+         * 1-Math.abs(Math.pow(time*2-2,exponent))/2 for the second half (t>=.5)
+         * This function starts with 0 and goes to values of 1 and ends with values of 0.
+         *
+         * @param exponent {number} exponent of the function.
+         * @param bPingPong {boolean}
+         */
+        createExponentialInOutInterpolator : function(exponent, bPingPong) {
+            this.getPosition= function getPosition(time) {
+                var orgTime= time;
+
+                if ( bPingPong ) {
+                    if ( time<0.5 ) {
+                        time*=2;
+                    } else {
+                        time= 1-(time-0.5)*2;
+                    }
+                }
+                if ( time*2<1 ) {
+                    return this.interpolated.set(orgTime,Math.pow(time*2,exponent)/2);
+                }
+                
+                return this.interpolated.set(orgTime,1-Math.abs(Math.pow(time*2-2,exponent))/2);
+            };
+
+            return this;
+        },
+        /**
+         * Creates a Quadric bezier curbe as interpolator.
+         *
+         * @param p0 {CAAT.Point} a CAAT.Point instance.
+         * @param p1 {CAAT.Point} a CAAT.Point instance.
+         * @param p2 {CAAT.Point} a CAAT.Point instance.
+         * @param bPingPong {boolean} a boolean indicating if the interpolator must ping-pong.
+         */
+        createQuadricBezierInterpolator : function(p0,p1,p2,bPingPong) {
+            this.getPosition= function getPosition(time) {
+                var orgTime= time;
+
+                if ( bPingPong ) {
+                    if ( time<0.5 ) {
+                        time*=2;
+                    } else {
+                        time= 1-(time-0.5)*2;
+                    }
+                }
+
+                time= (1-time)*(1-time)*p0.y + 2*(1-time)*time*p1.y + time*time*p2.y;
+
+                return this.interpolated.set( orgTime, time );
+            };
+
+            return this;
+        },
+        /**
+         * Creates a Cubic bezier curbe as interpolator.
+         *
+         * @param p0 {CAAT.Point} a CAAT.Point instance.
+         * @param p1 {CAAT.Point} a CAAT.Point instance.
+         * @param p2 {CAAT.Point} a CAAT.Point instance.
+         * @param p3 {CAAT.Point} a CAAT.Point instance.
+         * @param bPingPong {boolean} a boolean indicating if the interpolator must ping-pong.
+         */
+        createCubicBezierInterpolator : function(p0,p1,p2,p3,bPingPong) {
+            this.getPosition= function getPosition(time) {
+                var orgTime= time;
+
+                if ( bPingPong ) {
+                    if ( time<0.5 ) {
+                        time*=2;
+                    } else {
+                        time= 1-(time-0.5)*2;
+                    }
+                }
+
+                var t2= time*time;
+                var t3= time*t2;
+
+                time = (p0.y + time * (-p0.y * 3 + time * (3 * p0.y -
+                        p0.y * time))) + time * (3 * p1.y + time * (-6 * p1.y +
+                        p1.y * 3 * time)) + t2 * (p2.y * 3 - p2.y * 3 * time) +
+                        p3.y * t3;
+
+                return this.interpolated.set( orgTime, time );
+            };
+
+            return this;
+        },
+        createElasticOutInterpolator : function(amplitude,p,bPingPong) {
+            this.getPosition= function getPosition(time) {
+
+            if ( bPingPong ) {
+                if ( time<0.5 ) {
+                    time*=2;
+                } else {
+                    time= 1-(time-0.5)*2;
+                }
+            }
+
+            if (time === 0) {
+                return {x:0,y:0};
+            }
+            if (time === 1) {
+                return {x:1,y:1};
+            }
+
+            var s = p/(2*Math.PI) * Math.asin (1/amplitude);
+            return this.interpolated.set(
+                    time,
+                    (amplitude*Math.pow(2,-10*time) * Math.sin( (time-s)*(2*Math.PI)/p ) + 1 ) );
+            };
+            return this;
+        },
+        createElasticInInterpolator : function(amplitude,p,bPingPong) {
+            this.getPosition= function getPosition(time) {
+
+            if ( bPingPong ) {
+                if ( time<0.5 ) {
+                    time*=2;
+                } else {
+                    time= 1-(time-0.5)*2;
+                }
+            }
+
+            if (time === 0) {
+                return {x:0,y:0};
+            }
+            if (time === 1) {
+                return {x:1,y:1};
+            }
+
+            var s = p/(2*Math.PI) * Math.asin (1/amplitude);
+            return this.interpolated.set(
+                    time,
+                    -(amplitude*Math.pow(2,10*(time-=1)) * Math.sin( (time-s)*(2*Math.PI)/p ) ) );
+            };
+
+            return this;
+        },
+        createElasticInOutInterpolator : function(amplitude,p,bPingPong) {
+            this.getPosition= function getPosition(time) {
+
+            if ( bPingPong ) {
+                if ( time<0.5 ) {
+                    time*=2;
+                } else {
+                    time= 1-(time-0.5)*2;
+                }
+            }
+
+            var s = p/(2*Math.PI) * Math.asin (1/amplitude);
+            time*=2;
+            if ( time<=1 ) {
+                return this.interpolated.set(
+                        time,
+                        -0.5*(amplitude*Math.pow(2,10*(time-=1)) * Math.sin( (time-s)*(2*Math.PI)/p )));
+            }
+
+            return this.interpolated.set(
+                    time,
+                    1+0.5*(amplitude*Math.pow(2,-10*(time-=1)) * Math.sin( (time-s)*(2*Math.PI)/p )));
+            };
+
+            return this;
+        },
+        /**
+         * @param time {number}
+         * @private
+         */
+        bounce : function(time) {
+            if ((time /= 1) < (1 / 2.75)) {
+                return {x:time, y:7.5625 * time * time};
+            } else if (time < (2 / 2.75)) {
+                return {x:time, y:7.5625 * (time -= (1.5 / 2.75)) * time + 0.75};
+            } else if (time < (2.5 / 2.75)) {
+                return {x:time, y:7.5625 * (time -= (2.25 / 2.75)) * time + 0.9375};
+            } else {
+                return {x:time, y:7.5625*(time-=(2.625/2.75))*time+0.984375};
+            }
+        },
+        createBounceOutInterpolator : function(bPingPong) {
+            this.getPosition= function getPosition(time) {
+                if ( bPingPong ) {
+                    if ( time<0.5 ) {
+                        time*=2;
+                    } else {
+                        time= 1-(time-0.5)*2;
+                    }
+                }
+                return this.bounce(time);
+            };
+
+            return this;
+        },
+        createBounceInInterpolator : function(bPingPong) {
+
+            this.getPosition= function getPosition(time) {
+                if ( bPingPong ) {
+                    if ( time<0.5 ) {
+                        time*=2;
+                    } else {
+                        time= 1-(time-0.5)*2;
+                    }
+                }
+                var r= this.bounce(1-time);
+                r.y= 1-r.y;
+                return r;
+            };
+
+            return this;
+        },
+        createBounceInOutInterpolator : function(bPingPong) {
+
+            this.getPosition= function getPosition(time) {
+                if ( bPingPong ) {
+                    if ( time<0.5 ) {
+                        time*=2;
+                    } else {
+                        time= 1-(time-0.5)*2;
+                    }
+                }
+
+                var r;
+                if (time < 0.5) {
+                    r= this.bounce(1 - time * 2);
+                    r.y= (1 - r.y)* 0.5;
+                    return r;
+                }
+                r= this.bounce(time * 2 - 1,bPingPong);
+                r.y= r.y* 0.5 + 0.5;
+                return r;
+            };
+
+            return this;
+        },
+        /**
+         * Paints an interpolator on screen.
+         * @param director {CAAT.Director} a CAAT.Director instance.
+         * @param time {number} an integer indicating the scene time the Interpolator will be drawn at. This value is useless.
+         */
+        paint : function(director,time) {
+
+            var canvas= director.crc;
+            canvas.save();
+            canvas.beginPath();
+
+            canvas.moveTo( 0, this.getPosition(0).y * this.paintScale );
+
+            for( var i=0; i<=this.paintScale; i++ ) {
+                canvas.lineTo( i, this.getPosition(i/this.paintScale).y * this.paintScale );
+            }
+
+            canvas.strokeStyle='black';
+            canvas.stroke();
+            canvas.restore();
+        },
+        /**
+         * Gets an array of coordinates which define the polyline of the intepolator's curve contour.
+         * Values for both coordinates range from 0 to 1. 
+         * @param iSize {number} an integer indicating the number of contour segments.
+         * @return array {[CAAT.Point]} of object of the form {x:float, y:float}.
+         */
+        getContour : function(iSize) {
+            var contour=[];
+            for( var i=0; i<=iSize; i++ ) {
+                contour.push( {x: i/iSize, y: this.getPosition(i/iSize).y} );
+            }
+
+            return contour;
+        },
+        /**
+         *
+         */
+        enumerateInterpolators : function() {
+            return [
+                new CAAT.Interpolator().createLinearInterpolator(false, false), 'Linear pingpong=false, inverse=false',
+                new CAAT.Interpolator().createLinearInterpolator(true,  false), 'Linear pingpong=true, inverse=false',
+
+                new CAAT.Interpolator().createLinearInterpolator(false, true), 'Linear pingpong=false, inverse=true',
+                new CAAT.Interpolator().createLinearInterpolator(true,  true), 'Linear pingpong=true, inverse=true',
+
+                new CAAT.Interpolator().createExponentialInInterpolator(    2, false), 'ExponentialIn pingpong=false, exponent=2',
+                new CAAT.Interpolator().createExponentialOutInterpolator(   2, false), 'ExponentialOut pingpong=false, exponent=2',
+                new CAAT.Interpolator().createExponentialInOutInterpolator( 2, false), 'ExponentialInOut pingpong=false, exponent=2',
+                new CAAT.Interpolator().createExponentialInInterpolator(    2, true), 'ExponentialIn pingpong=true, exponent=2',
+                new CAAT.Interpolator().createExponentialOutInterpolator(   2, true), 'ExponentialOut pingpong=true, exponent=2',
+                new CAAT.Interpolator().createExponentialInOutInterpolator( 2, true), 'ExponentialInOut pingpong=true, exponent=2',
+
+                new CAAT.Interpolator().createExponentialInInterpolator(    4, false), 'ExponentialIn pingpong=false, exponent=4',
+                new CAAT.Interpolator().createExponentialOutInterpolator(   4, false), 'ExponentialOut pingpong=false, exponent=4',
+                new CAAT.Interpolator().createExponentialInOutInterpolator( 4, false), 'ExponentialInOut pingpong=false, exponent=4',
+                new CAAT.Interpolator().createExponentialInInterpolator(    4, true), 'ExponentialIn pingpong=true, exponent=4',
+                new CAAT.Interpolator().createExponentialOutInterpolator(   4, true), 'ExponentialOut pingpong=true, exponent=4',
+                new CAAT.Interpolator().createExponentialInOutInterpolator( 4, true), 'ExponentialInOut pingpong=true, exponent=4',
+
+                new CAAT.Interpolator().createExponentialInInterpolator(    6, false), 'ExponentialIn pingpong=false, exponent=6',
+                new CAAT.Interpolator().createExponentialOutInterpolator(   6, false), 'ExponentialOut pingpong=false, exponent=6',
+                new CAAT.Interpolator().createExponentialInOutInterpolator( 6, false), 'ExponentialInOut pingpong=false, exponent=6',
+                new CAAT.Interpolator().createExponentialInInterpolator(    6, true), 'ExponentialIn pingpong=true, exponent=6',
+                new CAAT.Interpolator().createExponentialOutInterpolator(   6, true), 'ExponentialOut pingpong=true, exponent=6',
+                new CAAT.Interpolator().createExponentialInOutInterpolator( 6, true), 'ExponentialInOut pingpong=true, exponent=6',
+
+                new CAAT.Interpolator().createBounceInInterpolator(false), 'BounceIn pingpong=false',
+                new CAAT.Interpolator().createBounceOutInterpolator(false), 'BounceOut pingpong=false',
+                new CAAT.Interpolator().createBounceInOutInterpolator(false), 'BounceInOut pingpong=false',
+                new CAAT.Interpolator().createBounceInInterpolator(true), 'BounceIn pingpong=true',
+                new CAAT.Interpolator().createBounceOutInterpolator(true), 'BounceOut pingpong=true',
+                new CAAT.Interpolator().createBounceInOutInterpolator(true), 'BounceInOut pingpong=true',
+
+                new CAAT.Interpolator().createElasticInInterpolator(    1.1, 0.4, false), 'ElasticIn pingpong=false, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticOutInterpolator(   1.1, 0.4, false), 'ElasticOut pingpong=false, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, 0.4, false), 'ElasticInOut pingpong=false, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticInInterpolator(    1.1, 0.4, true), 'ElasticIn pingpong=true, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticOutInterpolator(   1.1, 0.4, true), 'ElasticOut pingpong=true, amp=1.1, d=.4',
+                new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, 0.4, true), 'ElasticInOut pingpong=true, amp=1.1, d=.4',
+
+                new CAAT.Interpolator().createElasticInInterpolator(    1.0, 0.2, false), 'ElasticIn pingpong=false, amp=1.0, d=.2',
+                new CAAT.Interpolator().createElasticOutInterpolator(   1.0, 0.2, false), 'ElasticOut pingpong=false, amp=1.0, d=.2',
+                new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, 0.2, false), 'ElasticInOut pingpong=false, amp=1.0, d=.2',
+                new CAAT.Interpolator().createElasticInInterpolator(    1.0, 0.2, true), 'ElasticIn pingpong=true, amp=1.0, d=.2',
+                new CAAT.Interpolator().createElasticOutInterpolator(   1.0, 0.2, true), 'ElasticOut pingpong=true, amp=1.0, d=.2',
+                new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, 0.2, true), 'ElasticInOut pingpong=true, amp=1.0, d=.2'
+            ];
+        }
+
+    };
+})();
+
+/**
+ * See LICENSE file.
+ *
+ * Behaviors are keyframing elements.
+ * By using a BehaviorContainer, you can specify different actions on any animation Actor.
+ * An undefined number of Behaviors can be defined for each Actor.
+ *
+ * There're the following Behaviors:
+ *  + AlphaBehavior:   controls container/actor global alpha.
+ *  + RotateBehavior:  takes control of rotation affine transform.
+ *  + ScaleBehavior:   takes control of scaling on x/y axis affine transform.
+ *  + PathBehavior:    takes control of translating an Actor/ActorContainer across a path [ie. pathSegment collection].
+ *  + GenericBehavior: applies a behavior to any given target object's property, or notifies a callback.
+ *
+ *
+ **/
+
+(function() {
+    /**
+     * Behavior base class.
+     *
+     * <p>
+     * A behavior is defined by a frame time (behavior duration) and a behavior application function called interpolator.
+     * In its default form, a behaviour is applied linearly, that is, the same amount of behavior is applied every same
+     * time interval.
+     * <p>
+     * A concrete Behavior, a rotateBehavior in example, will change a concrete Actor's rotationAngle during the specified
+     * period.
+     * <p>
+     * A behavior is guaranteed to notify (if any observer is registered) on behavior expiration.
+     * <p>
+     * A behavior can keep an unlimited observers. Observers are objects of the form:
+     * <p>
+     * <code>
+     * {
+     *      behaviorExpired : function( behavior, time, actor);
+     *      behaviorApplied : function( behavior, time, normalizedTime, actor, value);
+     * }
+     * </code>
+     * <p>
+     * <strong>behaviorExpired</strong>: function( behavior, time, actor). This method will be called for any registered observer when
+     * the scene time is greater than behavior's startTime+duration. This method will be called regardless of the time
+     * granurality.
+     * <p>
+     * <strong>behaviorApplied</strong> : function( behavior, time, normalizedTime, actor, value). This method will be called once per
+     * frame while the behavior is not expired and is in frame time (behavior startTime>=scene time). This method can be
+     * called multiple times.
+     * <p>
+     * Every behavior is applied to a concrete Actor.
+     * Every actor must at least define an start and end value. The behavior will set start-value at behaviorStartTime and
+     * is guaranteed to apply end-value when scene time= behaviorStartTime+behaviorDuration.
+     * <p>
+     * You can set behaviors to apply forever that is cyclically. When a behavior is cycle=true, won't notify
+     * behaviorExpired to its registered observers.
+     * <p>
+     * Other Behaviors simply must supply with the method <code>setForTime(time, actor)</code> overriden.
+     *
+     * @constructor
+     */
+    CAAT.Behavior= function() {
+		this.lifecycleListenerList=[];
+		this.setDefaultInterpolator();
+		return this;
+	};
+
+    /**
+     * @enum
+     */
+    CAAT.Behavior.Status= {
+        NOT_STARTED:    0,
+        STARTED:        1,
+        EXPIRED:        2
+    };
+
+    var DefaultInterpolator=    new CAAT.Interpolator().createLinearInterpolator(false);
+    var DefaultPPInterpolator=  new CAAT.Interpolator().createLinearInterpolator(true);
+
+	CAAT.Behavior.prototype= {
+			
+		lifecycleListenerList:		null,   // observer list.
+		behaviorStartTime:	-1,             // scene time to start applying the behavior
+		behaviorDuration:	-1,             // behavior duration in ms.
+		cycleBehavior:		false,          // apply forever ?
+
+        status:             CAAT.Behavior.NOT_STARTED,
+
+		interpolator:		null,           // behavior application function. linear by default.
+        actor:              null,           // actor the Behavior acts on.
+        id:                 0,              // an integer id suitable to identify this behavior by number.
+
+        timeOffset:         0,
+
+        setTimeOffset : function( offset ) {
+            this.timeOffset= offset;
+            return this;
+        },
+
+        /**
+         * Sets this behavior id.
+         * @param id an integer.
+         *
+         */
+        setId : function( id ) {
+            this.id= id;
+            return this;
+        },
+        /**
+         * Sets the default interpolator to a linear ramp, that is, behavior will be applied linearly.
+         * @return this
+         */
+		setDefaultInterpolator : function() {
+			this.interpolator= DefaultInterpolator;
+            return this;
+		},
+        /**
+         * Sets default interpolator to be linear from 0..1 and from 1..0.
+         * @return this
+         */
+		setPingPong : function() {
+			this.interpolator= DefaultPPInterpolator;
+            return this;
+		},
+
+        /**
+         *
+         * @param status {CAAT.Behavior.Status}
+         */
+        setStatus : function(status) {
+            this.status= status;
+        },
+
+        /**
+         * Sets behavior start time and duration.
+         * Scene time will be the time of the scene the behavior actor is bound to.
+         * @param startTime {number} an integer indicating behavior start time in scene time in ms..
+         * @param duration {number} an integer indicating behavior duration in ms.
+         */
+		setFrameTime : function( startTime, duration ) {
+			this.behaviorStartTime= startTime;
+			this.behaviorDuration=  duration;
+            this.setStatus( CAAT.Behavior.Status.NOT_STARTED );
+
+            return this;
+		},
+        setOutOfFrameTime : function() {
+            this.setStatus( CAAT.Behavior.Status.EXPIRED );
+            this.behaviorStartTime= Number.MAX_VALUE;
+            this.behaviorDuration= 0;
+            return this;
+        },
+        /**
+         * Changes behavior default interpolator to another instance of CAAT.Interpolator.
+         * If the behavior is not defined by CAAT.Interpolator factory methods, the interpolation function must return
+         * its values in the range 0..1. The behavior will only apply for such value range.
+         * @param interpolator a CAAT.Interpolator instance.
+         */
+		setInterpolator : function(interpolator) {
+			this.interpolator= interpolator;
+            return this;
+		},
+        /**
+         * This method must no be called directly.
+         * The director loop will call this method in orther to apply actor behaviors.
+         * @param time the scene time the behaviro is being applied at.
+         * @param actor a CAAT.Actor instance the behavior is being applied to.
+         */
+		apply : function( time, actor )	{
+
+            time+= this.timeOffset*this.behaviorDuration;
+
+            var orgTime= time;
+			if ( this.isBehaviorInTime(time,actor) )	{
+				time= this.normalizeTime(time);
+				this.fireBehaviorAppliedEvent(
+                        actor,
+                        orgTime,
+                        time,
+                        this.setForTime( time, actor ) );
+			}
+		},
+
+        /**
+         * Sets the behavior to cycle, ie apply forever.
+         * @param bool a boolean indicating whether the behavior is cycle.
+         */
+		setCycle : function(bool) {
+			this.cycleBehavior= bool;
+            return this;
+		},
+        /**
+         * Adds an observer to this behavior.
+         * @param behaviorListener an observer instance.
+         */
+		addListener : function( behaviorListener, actor ) {
+            this.lifecycleListenerList.push(behaviorListener);
+            return this;
+		},
+        /**
+         * Remove all registered listeners to the behavior.
+         */
+        emptyListenerList : function() {
+            this.lifecycleListenerList= [];
+            return this;
+        },
+        /**
+         * @return an integer indicating the behavior start time in ms..
+         */
+		getStartTime : function() {
+			return this.behaviorStartTime;
+		},
+        /**
+         * @return an integer indicating the behavior duration time in ms.
+         */
+		getDuration : function() {
+			return this.behaviorDuration;
+			
+		},
+        /**
+         * Chekcs whether the behaviour is in scene time.
+         * In case it gets out of scene time, and has not been tagged as expired, the behavior is expired and observers
+         * are notified about that fact.
+         * @param time the scene time to check the behavior against.
+         * @param actor the actor the behavior is being applied to.
+         * @return a boolean indicating whether the behavior is in scene time.
+         */
+		isBehaviorInTime : function(time,actor) {
+
+            var S= CAAT.Behavior.Status;
+
+			if ( /*this.expired*/ this.status===S.EXPIRED || this.behaviorStartTime<0 )	{
+				return false;
+			}
+			
+			if ( this.cycleBehavior )	{
+				if ( time>=this.behaviorStartTime )	{
+					time= (time-this.behaviorStartTime)%this.behaviorDuration + this.behaviorStartTime;
+				}
+			}
+			
+			if ( time>this.behaviorStartTime+this.behaviorDuration )	{
+				if ( this.status!==S.EXPIRED )	{
+					this.setExpired(actor,time);
+				}
+				
+				return false;
+			}
+
+            if ( this.status===S.NOT_STARTED ) {
+                this.status=S.STARTED;
+                this.fireBehaviorStartedEvent(actor,time);
+            }
+
+			return this.behaviorStartTime<=time && time<this.behaviorStartTime+this.behaviorDuration;
+		},
+
+        fireBehaviorStartedEvent : function(actor,time) {
+            for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
+                if ( this.lifecycleListenerList[i].behaviorStarted ) {
+                    this.lifecycleListenerList[i].behaviorStarted(this,time,actor);
+                }
+            }
+        },
+
+        /**
+         * Notify observers about expiration event.
+         * @param actor a CAAT.Actor instance
+         * @param time an integer with the scene time the behavior was expired at.
+         */
+		fireBehaviorExpiredEvent : function(actor,time)	{
+			for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
+				this.lifecycleListenerList[i].behaviorExpired(this,time,actor);
+			}
+		},
+        /**
+         * Notify observers about behavior being applied.
+         * @param actor a CAAT.Actor instance the behavior is being applied to.
+         * @param time the scene time of behavior application.
+         * @param normalizedTime the normalized time (0..1) considering 0 behavior start time and 1
+         * behaviorStartTime+behaviorDuration.
+         * @param value the value being set for actor properties. each behavior will supply with its own value version.
+         */
+        fireBehaviorAppliedEvent : function(actor,time,normalizedTime,value)	{
+            for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
+                if (this.lifecycleListenerList[i].behaviorApplied) {
+                    this.lifecycleListenerList[i].behaviorApplied(this,time,normalizedTime,actor,value);
+                }
+            }
+        },
+        /**
+         * Convert scene time into something more manageable for the behavior.
+         * behaviorStartTime will be 0 and behaviorStartTime+behaviorDuration will be 1.
+         * the time parameter will be proportional to those values.
+         * @param time the scene time to be normalized. an integer.
+         */
+		normalizeTime : function(time)	{
+			time= time-this.behaviorStartTime;
+			if ( this.cycleBehavior )	{
+				time%=this.behaviorDuration;
+			}
+			return this.interpolator.getPosition(time/this.behaviorDuration).y;
+		},
+        /**
+         * Sets the behavior as expired.
+         * This method must not be called directly. It is an auxiliary method to isBehaviorInTime method.
+         * @param actor {CAAT.Actor}
+         * @param time {integer} the scene time.
+         *
+         * @private
+         */
+		setExpired : function(actor,time) {
+            // set for final interpolator value.
+            this.status= CAAT.Behavior.Status.EXPIRED;
+			this.setForTime(this.interpolator.getPosition(1).y,actor);
+			this.fireBehaviorExpiredEvent(actor,time);
+		},
+        /**
+         * This method must be overriden for every Behavior breed.
+         * Must not be called directly.
+         * @param actor {CAAT.Actor} a CAAT.Actor instance.
+         * @param time {number} an integer with the scene time.
+         *
+         * @private
+         */
+		setForTime : function( time, actor ) {
+			
+		},
+        /**
+         * @param overrides
+         */
+        initialize : function(overrides) {
+            if (overrides) {
+               for (var i in overrides) {
+                  this[i] = overrides[i];
+               }
+            }
+
+            return this;
+        },
+        
+        getPropertyName : function() {
+            return "";
+        }
+	};
+})();
+
+(function() {
+    /**
+     * <p>
+     * A ContainerBehavior is a holder to sum up different behaviors.
+     * <p>
+     * It imposes some constraints to contained Behaviors:
+     * <ul>
+     * <li>The time of every contained behavior will be zero based, so the frame time set for each behavior will
+     * be referred to the container's behaviorStartTime and not scene time as usual.
+     * <li>Cycling a ContainerBehavior means cycling every contained behavior.
+     * <li>The container will not impose any Interpolator, so calling the method <code>setInterpolator(CAAT.Interpolator)
+     * </code> will be useless.
+     * <li>The Behavior application time will be bounded to the Container's frame time. I.E. if we set a container duration
+     * to 10 seconds, setting a contained behavior's duration to 15 seconds will be useless since the container will stop
+     * applying the behavior after 10 seconds have elapsed.
+     * <li>Every ContainerBehavior adds itself as an observer for its contained Behaviors. The main reason is because
+     * ContainerBehaviors modify cycling properties of its contained Behaviors. When a contained
+     * Behavior is expired, if the Container has isCycle=true, will unexpire the contained Behavior, otherwise, it won't be
+     * applied in the next frame. It is left up to the developer to manage correctly the logic of other posible contained
+     * behaviors observers.
+     * </ul>
+     *
+     * <p>
+     * A ContainerBehavior can contain other ContainerBehaviors at will.
+     * <p>
+     * A ContainerBehavior will not apply any CAAT.Actor property change by itself, but will instrument its contained
+     * Behaviors to do so.
+     *
+     * @constructor
+     * @extends CAAT.Behavior
+     */
+    CAAT.ContainerBehavior= function() {
+		CAAT.ContainerBehavior.superclass.constructor.call(this);
+		this.behaviors= [];
+		return this;
+	};
+
+    CAAT.ContainerBehavior.prototype= {
+
+		behaviors:	null,   // contained behaviors array
+        /**
+         * Adds a new behavior to the container.
+         * @param behavior
+         *
+         * @override
+         */
+		addBehavior : function(behavior)	{
+			this.behaviors.push(behavior);
+			behavior.addListener(this);
+            return this;
+		},
+        /**
+         * Applies every contained Behaviors.
+         * The application time the contained behaviors will receive will be ContainerBehavior related and not the
+         * received time.
+         * @param time an integer indicating the time to apply the contained behaviors at.
+         * @param actor a CAAT.Actor instance indicating the actor to apply the behaviors for.
+         */
+		apply : function(time, actor) {
+
+            time+= this.timeOffset*this.behaviorDuration;
+            
+			if ( this.isBehaviorInTime(time,actor) )	{
+				time-= this.getStartTime();
+				if ( this.cycleBehavior ){
+					time%= this.getDuration();
+				}
+
+                var bh= this.behaviors;
+				for( var i=0; i<bh.length; i++ )	{
+					bh[i].apply(time, actor);
+				}
+			}
+		},
+        /**
+         * This method is the observer implementation for every contained behavior.
+         * If a container is Cycle=true, won't allow its contained behaviors to be expired.
+         * @param behavior a CAAT.Behavior instance which has been expired.
+         * @param time an integer indicating the time at which has become expired.
+         * @param actor a CAAT.Actor the expired behavior is being applied to.
+         */
+		behaviorExpired : function(behavior,time,actor) {
+			if ( this.cycleBehavior )	{
+                behavior.setStatus( CAAT.Behavior.Status.STARTED );
+			}
+		},
+        /**
+         * Implementation method of the behavior.
+         * Just call implementation method for its contained behaviors.
+         * @param time an intenger indicating the time the behavior is being applied at.
+         * @param actor a CAAT.Actor the behavior is being applied to.
+         */
+		setForTime : function(time, actor) {
+            var bh= this.behaviors;
+			for( var i=0; i<bh.length; i++ ) {
+				bh[i].setForTime( time, actor );
+			}
+
+            return null;
+		},
+
+        setExpired : function(actor,time) {
+            CAAT.ContainerBehavior.superclass.setExpired.call(this,actor,time);
+
+            var bh= this.behaviors;
+            // set for final interpolator value.
+            for( var i=0; i<bh.length; i++ ) {
+                var bb= bh[i];
+                if ( /*!bb.expired*/ bb.status!==CAAT.Behavior.Status.EXPIRED ) {
+                    bb.setExpired(actor,time-this.behaviorStartTime);
+                }
+            }
+            this.fireBehaviorExpiredEvent(actor,time);
+            return this;
+        },
+
+        setFrameTime : function( start, duration )  {
+            CAAT.ContainerBehavior.superclass.setFrameTime.call(this,start,duration);
+
+            var bh= this.behaviors;
+            for( var i=0; i<bh.length; i++ ) {
+                //bh[i].expired= false;
+                bh[i].setStatus( CAAT.Behavior.Status.NOT_STARTED );
+            }
+            return this;
+        },
+
+        calculateKeyFrameData : function(referenceTime, prefix, prevValues )  {
+
+            var i;
+            var bh;
+
+            var retValue= {};
+            var time;
+            var cssRuleValue;
+            var cssProperty;
+            var property;
+
+            for( i=0; i<this.behaviors.length; i++ ) {
+                bh= this.behaviors[i];
+                if ( /*!bh.expired*/ bh.status!==CAAT.Behavior.Status.EXPIRED && !(bh instanceof CAAT.GenericBehavior) ) {
+
+                    // ajustar tiempos:
+                    //  time es tiempo normalizado a duraci—n de comportamiento contenedor.
+                    //      1.- desnormalizar
+                    time= referenceTime * this.behaviorDuration;
+
+                    //      2.- calcular tiempo relativo de comportamiento respecto a contenedor
+                    if ( bh.behaviorStartTime<=time && bh.behaviorStartTime+bh.behaviorDuration>=time ) {
+                        //      3.- renormalizar tiempo reltivo a comportamiento.
+                        time= (time-bh.behaviorStartTime)/bh.behaviorDuration;
+
+                        //      4.- obtener valor de comportamiento para tiempo normalizado relativo a contenedor
+                        cssRuleValue= bh.calculateKeyFrameData(time);
+                        cssProperty= bh.getPropertyName(prefix);
+
+                        if ( typeof retValue[cssProperty] ==='undefined' ) {
+                            retValue[cssProperty]= "";
+                        }
+
+                        //      5.- asignar a objeto, par de propiedad/valor css
+                        retValue[cssProperty]+= cssRuleValue+" ";
+                    }
+
+                }
+            }
+
+
+            var tr="";
+            var pv;
+            function xx(pr) {
+                if ( retValue[pr] ) {
+                    tr+= retValue[pr];
+                } else {
+                    if ( prevValues ) {
+                        pv= prevValues[pr];
+                        if ( pv ) {
+                            tr+= pv;
+                            retValue[pr]= pv;
+                        }
+                    }
+                }
+
+            }
+
+            xx('translate');
+            xx('rotate');
+            xx('scale');
+
+            var keyFrameRule= "";
+
+            if ( tr ) {
+                keyFrameRule='-'+prefix+'-transform: '+tr+';';
+            }
+
+            tr="";
+            xx('opacity');
+            if( tr ) {
+                keyFrameRule+= ' opacity: '+tr+';';
+            }
+
+            return {
+                rules: keyFrameRule,
+                ret: retValue
+            };
+
+        },
+
+        /**
+         *
+         * @param prefix
+         * @param name
+         * @param keyframessize
+         */
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( this.duration===Number.MAX_VALUE ) {
+                return "";
+            }
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize=100;
+            }
+
+            var i;
+            var prevValues= null;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+            var ret;
+            var time;
+            var kfr;
+
+            for( i=0; i<=keyframessize; i++ )    {
+                time= this.interpolator.getPosition(i/keyframessize).y;
+                ret= this.calculateKeyFrameData(time, prefix, prevValues);
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" + ret.rules + "}\n";
+
+                prevValues= ret.ret;
+                kfd+= kfr;
+            }
+
+            kfd+= "}";
+
+            return kfd;
+        }
+
+	};
+
+    extend( CAAT.ContainerBehavior, CAAT.Behavior, null );
+})();
+
+(function() {
+    /**
+     * This class applies a rotation to a CAAt.Actor instance.
+     * StartAngle, EndAngle must be supplied. Angles are in radians.
+     * The RotationAnchor, if not supplied, will be ANCHOR_CENTER.
+     *
+     * An example os use will be
+     *
+     * var rb= new CAAT.RotateBehavior().
+     *      setValues(0,2*Math.PI).
+     *      setFrameTime(0,2500);
+     *
+     * @see CAAT.Actor.
+     *
+     * @constructor
+     * @extends CAAT.Behavior
+     *
+     */
+    CAAT.RotateBehavior= function() {
+		CAAT.RotateBehavior.superclass.constructor.call(this);
+		this.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
+		return this;
+	};
+	
+	CAAT.RotateBehavior.prototype= {
+	
+		startAngle:	0,  // behavior start angle
+		endAngle:	0,  // behavior end angle
+        anchorX:    .50,  // rotation center x.
+        anchorY:    .50,  // rotation center y.
+
+        getPropertyName : function() {
+            return "rotate";
+        },
+
+        /**
+         * Behavior application function.
+         * Do not call directly.
+         * @param time an integer indicating the application time.
+         * @param actor a CAAT.Actor the behavior will be applied to.
+         * @return the set angle.
+         */
+		setForTime : function(time,actor) {
+			var angle= this.startAngle + time*(this.endAngle-this.startAngle);
+            actor.setRotationAnchored(angle, this.anchorX, this.anchorY);
+
+            return angle;
+			
+		},
+        /**
+         * Set behavior bound values.
+         * if no anchorx,anchory values are supplied, the behavior will assume
+         * 50% for both values, that is, the actor's center.
+         *
+         * Be aware the anchor values are supplied in <b>RELATIVE PERCENT</b> to
+         * actor's size.
+         *
+         * @param startAngle {float} indicating the starting angle.
+         * @param endAngle {float} indicating the ending angle.
+         * @param anchorx {float} the percent position for anchorX
+         * @param anchory {float} the percent position for anchorY
+         */
+        setValues : function( startAngle, endAngle, anchorx, anchory ) {
+            this.startAngle= startAngle;
+            this.endAngle= endAngle;
+            if ( typeof anchorx!=='undefined' && typeof anchory!=='undefined' ) {
+                this.anchorX= anchorx;
+                this.anchorY= anchory;
+            }
+            return this;
+        },
+        /**
+         * @deprecated
+         * Use setValues instead
+         * @param start
+         * @param end
+         */
+        setAngles : function( start, end ) {
+            return this.setValues(start,end);
+        },
+        /**
+         * Set the behavior rotation anchor. Use this method when setting an exact percent
+         * by calling setValues is complicated.
+         * @see CAAT.Actor
+         * @param anchor any of CAAT.Actor.prototype.ANCHOR_* constants.
+         *
+         * These parameters are to set a custom rotation anchor point. if <code>anchor==CAAT.Actor.prototype.ANCHOR_CUSTOM
+         * </code> the custom rotation point is set.
+         * @param rx
+         * @param ry
+         *
+         */
+        setAnchor : function( actor, rx, ry ) {
+            this.anchorX= rx/actor.width;
+            this.anchorY= ry/actor.height;
+            return this;
+        },
+
+
+        calculateKeyFrameData : function( time ) {
+            time= this.interpolator.getPosition(time).y;
+            return "rotate(" + (this.startAngle + time*(this.endAngle-this.startAngle)) +"rad)";
+        },
+
+        /**
+         * @param prefix {string} browser vendor prefix
+         * @param name {string} keyframes animation name
+         * @param keyframessize {integer} number of keyframes to generate
+         * @override
+         */
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
+                    "}\n";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
+        }
+
+	};
+
+    extend( CAAT.RotateBehavior, CAAT.Behavior, null);
+    
+})();
+
+(function() {
+    /**
+     * <p>
+     * A generic behavior is supposed to be extended to create new behaviors when the out-of-the-box
+     * ones are not sufficient. It applies the behavior result to a given target object in two ways:
+     *
+     * <ol>
+     * <li>defining the property parameter: the toolkit will perform target_object[property]= calculated_value_for_time.
+     * <li>defining a callback function. Sometimes setting of a property is not enough. In example,
+     * for a give property in a DOM element, it is needed to set object.style['left']= '70px';
+     * With the property approach, you won't be able to add de 'px' suffix to the value, and hence won't
+     * work correctly. The function callback will allow to take control by receiving as parameters the
+     * target object, and the calculated value to apply by the behavior for the given time.
+     * </ol>
+     *
+     * <p>
+     * For example, this code will move a dom element from 0 to 400 px on x during 1 second:
+     * <code>
+     * <p>
+     * var enterBehavior= new CAAT.GenericBehavior(). <br>
+     * &nbsp;&nbsp;setFrameTime( scene.time, 1000 ). <br>
+     * &nbsp;&nbsp;setValues( <br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;0, <br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;400, <br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;domElement, <br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;null, <br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;function( currentValue, target ) { <br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;target.style['left']= currentValue+'px'; <br>
+     * &nbsp;&nbsp;&nbsp;&nbsp;} <br>
+     * &nbsp;&nbsp;); <br>
+     * </code>
+     *
+     * @constructor
+     * @extends CAAT.Behavior
+     *
+     */
+    CAAT.GenericBehavior= function() {
+        CAAT.GenericBehavior.superclass.constructor.call(this);
+        return this;
+    };
+
+    CAAT.GenericBehavior.prototype= {
+
+        start:      0,
+        end:        0,
+        target:     null,
+        property:   null,
+        callback:   null,
+
+        /**
+         * Sets the target objects property to the corresponding value for the given time.
+         * If a callback function is defined, it is called as well.
+         *
+         * @param time {number} the scene time to apply the behavior at.
+         * @param actor {CAAT.Actor} a CAAT.Actor object instance.
+         */
+        setForTime : function(time, actor) {
+            var value= this.start+ time*(this.end-this.start);
+            if ( this.callback ) {
+                this.callback( value, this.target, actor );
+            }
+
+            if ( this.property ) {
+                this.target[this.property]= value;
+            }
+        },
+        /**
+         * Defines the values to apply this behavior.
+         *
+         * @param start {number} initial behavior value.
+         * @param end {number} final behavior value.
+         * @param target {object} an object. Usually a CAAT.Actor.
+         * @param property {string} target object's property to set value to.
+         * @param callback {function} a function of the form <code>function( target, value )</code>.
+         */
+        setValues : function( start, end, target, property, callback ) {
+            this.start= start;
+            this.end= end;
+            this.target= target;
+            this.property= property;
+            this.callback= callback;
+            return this;
+        }
+    };
+
+    extend( CAAT.GenericBehavior, CAAT.Behavior, null);
+})();
+
+(function() {
+
+    /**
+     * ScaleBehavior applies scale affine transforms in both axis.
+     * StartScale and EndScale must be supplied for each axis. This method takes care of a FF bug in which if a Scale is
+     * set to 0, the animation will fail playing.
+     *
+     * This behavior specifies anchors in values ranges 0..1
+     *
+     * @constructor
+     * @extends CAAT.Behavior
+     *
+     */
+	CAAT.ScaleBehavior= function() {
+		CAAT.ScaleBehavior.superclass.constructor.call(this);
+		this.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
+		return this;
+	};
+	
+	CAAT.ScaleBehavior.prototype= {
+        startScaleX:    1,
+        endScaleX:      1,
+        startScaleY:    1,
+        endScaleY:	    1,
+        anchorX:        .50,
+        anchorY:        .50,
+
+        getPropertyName : function() {
+            return "scale";
+        },
+
+        /**
+         * Applies corresponding scale values for a given time.
+         * 
+         * @param time the time to apply the scale for.
+         * @param actor the target actor to Scale.
+         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}Ê}</code>
+         */
+		setForTime : function(time,actor) {
+
+			var scaleX= this.startScaleX + time*(this.endScaleX-this.startScaleX);
+			var scaleY= this.startScaleY + time*(this.endScaleY-this.startScaleY);
+
+            // Firefox 3.x & 4, will crash animation if either scaleX or scaleY equals 0.
+            if (0===scaleX ) {
+                scaleX=0.01;
+            }
+            if (0===scaleY ) {
+                scaleY=0.01;
+            }
+
+			actor.setScaleAnchored( scaleX, scaleY, this.anchorX, this.anchorY );
+
+            return { scaleX: scaleX, scaleY: scaleY };
+		},
+        /**
+         * Define this scale behaviors values.
+         *
+         * Be aware the anchor values are supplied in <b>RELATIVE PERCENT</b> to
+         * actor's size.
+         *
+         * @param startX {number} initial X axis scale value.
+         * @param endX {number} final X axis scale value.
+         * @param startY {number} initial Y axis scale value.
+         * @param endY {number} final Y axis scale value.
+         * @param anchorx {float} the percent position for anchorX
+         * @param anchory {float} the percent position for anchorY
+         *
+         * @return this.
+         */
+        setValues : function( startX, endX, startY, endY, anchorx, anchory ) {
+            this.startScaleX= startX;
+            this.endScaleX=   endX;
+            this.startScaleY= startY;
+            this.endScaleY=   endY;
+
+            if ( typeof anchorx!=='undefined' && typeof anchory!=='undefined' ) {
+                this.anchorX= anchorx;
+                this.anchorY= anchory;
+            }
+
+            return this;
+        },
+        /**
+         * Set an exact position scale anchor. Use this method when it is hard to
+         * set a thorough anchor position expressed in percentage.
+         * @param actor
+         * @param x
+         * @param y
+         */
+        setAnchor : function( actor, x, y ) {
+            this.anchorX= x/actor.width;
+            this.anchorY= y/actor.height;
+
+            return this;
+        },
+
+        calculateKeyFrameData : function( time ) {
+            var scaleX;
+            var scaleY;
+
+            time= this.interpolator.getPosition(time).y;
+            scaleX= this.startScaleX + time*(this.endScaleX-this.startScaleX);
+            scaleY= this.startScaleY + time*(this.endScaleY-this.startScaleY);
+
+            return "scaleX("+scaleX+") scaleY("+scaleY+")";
+        },
+
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
+                    "}";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
+        }
+	};
+
+    extend( CAAT.ScaleBehavior, CAAT.Behavior, null);
+})();
+
+
+(function() {
+    /**
+     * AlphaBehavior modifies alpha composition property for an actor.
+     *
+     * @constructor
+     * @extends CAAT.Behavior
+     */
+	CAAT.AlphaBehavior= function() {
+		CAAT.AlphaBehavior.superclass.constructor.call(this);
+		return this;
+	};
+	
+	CAAT.AlphaBehavior.prototype= {
+		startAlpha:	0,
+		endAlpha:	0,
+
+        getPropertyName : function() {
+            return "opacity";
+        },
+
+        /**
+         * Applies corresponding alpha transparency value for a given time.
+         *
+         * @param time the time to apply the scale for.
+         * @param actor the target actor to set transparency for.
+         * @return {number} the alpha value set. Normalized from 0 (total transparency) to 1 (total opacity)
+         */
+		setForTime : function(time,actor) {
+            var alpha= (this.startAlpha+time*(this.endAlpha-this.startAlpha));
+            actor.setAlpha( alpha );
+            return alpha;
+        },
+        /**
+         * Set alpha transparency minimum and maximum value.
+         * This value can be coerced by Actor's property isGloblAlpha.
+         *
+         * @param start {number} a float indicating the starting alpha value.
+         * @param end {number} a float indicating the ending alpha value.
+         */
+        setValues : function( start, end ) {
+            this.startAlpha= start;
+            this.endAlpha= end;
+            return this;
+        },
+
+        calculateKeyFrameData : function( time ) {
+            time= this.interpolator.getPosition(time).y;
+            return  (this.startAlpha+time*(this.endAlpha-this.startAlpha));
+        },
+
+        /**
+         * @param prefix {string} browser vendor prefix
+         * @param name {string} keyframes animation name
+         * @param keyframessize {integer} number of keyframes to generate
+         * @override
+         */
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                         "opacity: " + this.calculateKeyFrameData( i / keyframessize ) +
+                    "}";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
+        }
+	};
+
+    extend( CAAT.AlphaBehavior, CAAT.Behavior, null);
+})();
+
+(function() {
+    /**
+     * CAAT.PathBehavior modifies the position of a CAAT.Actor along the path represented by an
+     * instance of <code>CAAT.Path</code>.
+     *
+     * @constructor
+     * @extends CAAT.Behavior
+     *
+     */
+	CAAT.PathBehavior= function() {
+		CAAT.PathBehavior.superclass.constructor.call(this);
+		return this;
+	};
+
+    /**
+     * @enum
+     */
+    CAAT.PathBehavior.autorotate = {
+        LEFT_TO_RIGHT:  0,          // fix left_to_right direction
+        RIGHT_TO_LEFT:  1,          // fix right_to_left
+        FREE:           2           // do not apply correction
+    };
+
+	CAAT.PathBehavior.prototype= {
+		path:           null,   // the path to traverse
+        autoRotate :    false,  // set whether the actor must be rotated tangentially to the path.
+        prevX:          -1,     // private, do not use.
+        prevY:          -1,     // private, do not use.
+
+        autoRotateOp:   CAAT.PathBehavior.autorotate.FREE,
+
+        translateX:     0,
+        translateY:     0,
+
+        getPropertyName : function() {
+            return "translate";
+        },
+
+        /**
+         * Sets an actor rotation to be heading from past to current path's point.
+         * Take into account that this will be incompatible with rotation Behaviors
+         * since they will set their own rotation configuration.
+         * @param autorotate {boolean}
+         * @param autorotateOp {CAAT.PathBehavior.autorotate} whether the sprite is drawn heading to the right.
+         * @return this.
+         */
+        setAutoRotate : function( autorotate, autorotateOp ) {
+            this.autoRotate= autorotate;
+            if (autorotateOp!==undefined) {
+                this.autoRotateOp= autorotateOp;
+            }
+            return this;
+        },
+        /**
+         * Set the behavior path.
+         * The path can be any length, and will take behaviorDuration time to be traversed.
+         * @param {CAAT.Path}
+            *
+         * @deprecated
+         */
+        setPath : function(path) {
+            this.path= path;
+            return this;
+        },
+
+        /**
+         * Set the behavior path.
+         * The path can be any length, and will take behaviorDuration time to be traversed.
+         * @param {CAAT.Path}
+         * @return this
+         */
+        setValues : function(path) {
+            return this.setPath(path);
+        },
+
+        setFrameTime : function( startTime, duration ) {
+            CAAT.PathBehavior.superclass.setFrameTime.call(this, startTime, duration );
+            this.prevX= -1;
+            this.prevY= -1;
+            return this;
+        },
+        /**
+         * This method set an extra offset for the actor traversing the path.
+         * in example, if you want an actor to traverse the path by its center, and not by default via its top-left corner,
+         * you should call <code>setTranslation(actor.width/2, actor.height/2);</code>.
+         *
+         * Displacement will be substracted from the tarrget coordinate.
+         *
+         * @param tx a float with xoffset.
+         * @param ty a float with yoffset.
+         */
+        setTranslation : function( tx, ty ) {
+            this.translateX= tx;
+            this.translateY= ty;
+            return this;
+        },
+
+        calculateKeyFrameData : function( time ) {
+            time= this.interpolator.getPosition(time).y;
+            var point= this.path.getPosition(time);
+            return "translateX("+(point.x-this.translateX)+"px) translateY("+(point.y-this.translateY)+"px)" ;
+        },
+
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var time;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
+                    "}";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
+        },
+
+        /**
+         * Translates the Actor to the corresponding time path position.
+         * If autoRotate=true, the actor is rotated as well. The rotation anchor will (if set) always be ANCHOR_CENTER.
+         * @param time an integer indicating the time the behavior is being applied at.
+         * @param actor a CAAT.Actor instance to be translated.
+         * @return {object} an object of the form <code>{ x: {float}, y: {float}Ê}</code>.
+         */
+		setForTime : function(time,actor) {
+
+            if ( !this.path ) {
+                return {
+                    x: actor.x,
+                    y: actor.y
+                };
+            }
+
+            var point= this.path.getPosition(time);
+
+            if ( this.autoRotate ) {
+
+                if ( -1===this.prevX && -1===this.prevY )	{
+                    this.prevX= point.x;
+                    this.prevY= point.y;
+                }
+
+                var ax= point.x-this.prevX;
+                var ay= point.y-this.prevY;
+
+                if ( ax===0 && ay===0 ) {
+                    actor.setLocation( point.x-this.translateX, point.y-this.translateY );
+                    return { x: actor.x, y: actor.y };
+                }
+
+                var angle= Math.atan2( ay, ax );
+                var si= CAAT.SpriteImage.prototype;
+                var pba= CAAT.PathBehavior.autorotate;
+
+                // actor is heading left to right
+                if ( this.autoRotateOp===pba.LEFT_TO_RIGHT ) {
+                    if ( this.prevX<=point.x )	{
+                        actor.setImageTransformation( si.TR_NONE );
+                    }
+                    else	{
+                        actor.setImageTransformation( si.TR_FLIP_HORIZONTAL );
+                        angle+=Math.PI;
+                    }
+                } else if ( this.autoRotateOp===pba.RIGHT_TO_LEFT ) {
+                    if ( this.prevX<=point.x )	{
+                        actor.setImageTransformation( si.TR_FLIP_HORIZONTAL );
+                    }
+                    else	{
+                        actor.setImageTransformation( si.TR_NONE );
+                        angle-=Math.PI;
+                    }
+                }
+
+                actor.setRotation(angle);
+
+                this.prevX= point.x;
+                this.prevY= point.y;
+
+                var modulo= Math.sqrt(ax*ax+ay*ay);
+                ax/=modulo;
+                ay/=modulo;
+            }
+
+            actor.setLocation( point.x-this.translateX, point.y-this.translateY );
+
+            return { x: actor.x, y: actor.y };
+		},
+        /**
+         * Get a point on the path.
+         * If the time to get the point at is in behaviors frame time, a point on the path will be returned, otherwise
+         * a default {x:-1, y:-1} point will be returned.
+         *
+         * @param time {number} the time at which the point will be taken from the path.
+         * @return {object} an object of the form {x:float y:float}
+         */
+        positionOnTime : function(time) {
+			if ( this.isBehaviorInTime(time,null) )	{
+				time= this.normalizeTime(time);
+                return this.path.getPosition( time );
+            }
+
+            return {x:-1, y:-1};
+
+        }
+	};
+
+    extend( CAAT.PathBehavior, CAAT.Behavior, null);
+})();
+/**
+ * See LICENSE file.
+ *
+ * This object manages CSS3 transitions reflecting applying behaviors.
+ *
+ **/
+
+(function() {
+
+    CAAT.CSS= {};
+
+    CAAT.CSS.PREFIX= (function() {
+
+        var prefix = "";
+        var prefixes = ['WebKit', 'Moz', 'O'];
+        var keyframes= "";
+
+        // guess this browser vendor prefix.
+        for (var i = 0; i < prefixes.length; i++) {
+            if (window[prefixes[i] + 'CSSKeyframeRule']) {
+                prefix = prefixes[i].toLowerCase();
+                break;
+            }
+        }
+
+        return prefix;
+    })();
+
+    /**
+     *
+     * @param keyframeObject {CAAT.Keyframe}
+     */
+    CAAT.CSS.addKeyframes= function(name, behavior, size) {
+
+        if ( typeof size==='undefined' ) {
+            size= 100;
+        }
+
+        // find if keyframes has already a name set.
+        var cssRulesIndex= -1;
+        var oldName= KeyframesObject.getCSSKeyframesName();
+        if ( oldName ) {
+            cssRulesIndex= CAAT.CSS.getCSSKeyframesIndex(oldName);
+        }
+
+        // create a random name.
+        // this is due to some of the css3 oddities. It seems that a DOM element takes information
+        // from the @-keyframes element once. That means, that even i can set new keyframeRules for
+        // the @-keyframes element, the DOM doesn't get notified about it.
+        // If i reset the DOM element with -[webkit|moz]-transition with the same one, it somehow
+        // decides the @-keyframes is the same and does not update the transition.
+        // So, i'm building new names to the supplied CAAT.Keyframe element, and removing the
+        // previously created from the stylesheet.
+        name= name + new Date().getTime();
+
+        var keyframesRule= behavior.calculateKeyframesData(CAAT.CSS.PREFIX, name, size );
+
+        if (document.styleSheets) {
+            if ( !document.styleSheets.length) {
+                var s = document.createElement('style');
+                s.type="text/css";
+
+                document.getElementsByTagName('head')[ 0 ].appendChild(s);
+            }
+
+            if ( -1!==cssRulesIndex ) {
+                document.styleSheets[0].deleteRule( cssRulesIndex );
+            }
+
+            document.styleSheets[0].insertRule( keyframesRule, 0 );
+        }
+
+    };
+
+    CAAT.CSS.getCSSKeyframesIndex= function(name) {
+        var ss = document.styleSheets;
+        for (var i = ss.length - 1; i >= 0; i--) {
+            try {
+                var s = ss[i],
+                    rs = s.cssRules ? s.cssRules :
+                         s.rules ? s.rules :
+                         [];
+
+                for (var j = rs.length - 1; j >= 0; j--) {
+                    if ( ( rs[j].type === window.CSSRule.WEBKIT_KEYFRAMES_RULE ||
+                           rs[j].type === window.CSSRule.MOZ_KEYFRAMES_RULE ) && rs[j].name === name) {
+
+                        return j;
+                    }
+                }
+            } catch(e) {
+            }
+        }
+
+        return -1;
+    };
+
+    CAAT.CSS.getCSSKeyframes= function(name) {
+
+        var ss = document.styleSheets;
+        for (var i = ss.length - 1; i >= 0; i--) {
+            try {
+                var s = ss[i],
+                    rs = s.cssRules ? s.cssRules :
+                         s.rules ? s.rules :
+                         [];
+
+                for (var j = rs.length - 1; j >= 0; j--) {
+                    if ( ( rs[j].type === window.CSSRule.WEBKIT_KEYFRAMES_RULE ||
+                           rs[j].type === window.CSSRule.MOZ_KEYFRAMES_RULE ) && rs[j].name === name) {
+
+                        return rs[j];
+                    }
+                }
+            }
+            catch(e) {
+            }
+        }
+        return null;
+    };
+
+
+
+})();/**
+ * 
+ * taken from: http://www.quirksmode.org/js/detect.html
+ *
+ * 20101008 Hyperandroid. IE9 seems to identify himself as Explorer and stopped calling himself MSIE.
+ *          Added Explorer description to browser list. Thanks @alteredq for this tip.
+ *
+ */
+(function() {
+
+	CAAT.BrowserDetect = function() {
+		this.init();
+        return this;
+	};
+
+	CAAT.BrowserDetect.prototype = {
+		browser: '',
+		version: 0,
+		OS: '',
+		init: function()
+		{
+			this.browser = this.searchString(this.dataBrowser) || "An unknown browser";
+			this.version = this.searchVersion(navigator.userAgent) ||
+                    this.searchVersion(navigator.appVersion) ||
+                    "an unknown version";
+			this.OS = this.searchString(this.dataOS) || "an unknown OS";
+		},
+
+		searchString: function (data) {
+			for (var i=0;i<data.length;i++)	{
+				var dataString = data[i].string;
+				var dataProp = data[i].prop;
+				this.versionSearchString = data[i].versionSearch || data[i].identity;
+				if (dataString) {
+					if (dataString.indexOf(data[i].subString) !== -1)
+						return data[i].identity;
+				}
+				else if (dataProp)
+					return data[i].identity;
+			}
+		},
+		searchVersion: function (dataString) {
+			var index = dataString.indexOf(this.versionSearchString);
+			if (index === -1) return;
+			return parseFloat(dataString.substring(index+this.versionSearchString.length+1));
+		},
+		dataBrowser: [
+			{
+				string: navigator.userAgent,
+				subString: "Chrome",
+				identity: "Chrome"
+			},
+			{   string: navigator.userAgent,
+			    subString: "OmniWeb",
+				versionSearch: "OmniWeb/",
+				identity: "OmniWeb"
+			},
+			{
+				string: navigator.vendor,
+				subString: "Apple",
+				identity: "Safari",
+				versionSearch: "Version"
+			},
+			{
+				prop: window.opera,
+				identity: "Opera"
+			},
+			{
+				string: navigator.vendor,
+				subString: "iCab",
+				identity: "iCab"
+			},
+			{
+				string: navigator.vendor,
+				subString: "KDE",
+				identity: "Konqueror"
+			},
+			{
+				string: navigator.userAgent,
+				subString: "Firefox",
+				identity: "Firefox"
+			},
+			{
+				string: navigator.vendor,
+				subString: "Camino",
+				identity: "Camino"
+			},
+			{		// for newer Netscapes (6+)
+				string: navigator.userAgent,
+				subString: "Netscape",
+				identity: "Netscape"
+			},
+			{
+				string: navigator.userAgent,
+				subString: "MSIE",
+				identity: "Explorer",
+				versionSearch: "MSIE"
+			},
+			{
+				string: navigator.userAgent,
+				subString: "Explorer",
+				identity: "Explorer",
+				versionSearch: "Explorer"
+			},
+			{
+				string: navigator.userAgent,
+				subString: "Gecko",
+				identity: "Mozilla",
+				versionSearch: "rv"
+			},
+			{ // for older Netscapes (4-)
+			    string: navigator.userAgent,
+				subString: "Mozilla",
+				identity: "Netscape",
+				versionSearch: "Mozilla"
+			}
+		],
+
+		dataOS : [
+			{
+				string: navigator.platform,
+				subString: "Win",
+				identity: "Windows"
+			},
+			{
+				string: navigator.platform,
+				subString: "Mac",
+				identity: "Mac"
+			},
+			{
+				   string: navigator.userAgent,
+				   subString: "iPhone",
+				   identity: "iPhone/iPod"
+			},
+			{
+				string: navigator.platform,
+				subString: "Linux",
+				identity: "Linux"
+			}
+		]
+	};
+})();/**
+ * See LICENSE file.
+ *
+ * Extend a prototype with another to form a classical OOP inheritance procedure.
+ *
+ * @param subc {object} Prototype to define the base class
+ * @param superc {object} Prototype to be extended (derived class).
+ */
+function extend(subc, superc) {
+    var subcp = subc.prototype;
+
+    // Class pattern.
+    var F = function() {
+    };
+    F.prototype = superc.prototype;
+
+    subc.prototype = new F();       // chain prototypes.
+    subc.superclass = superc.prototype;
+    subc.prototype.constructor = subc;
+
+    // Reset constructor. See Object Oriented Javascript for an in-depth explanation of this.
+    if (superc.prototype.constructor === Object.prototype.constructor) {
+        superc.prototype.constructor = superc;
+    }
+
+    // los metodos de superc, que no esten en esta clase, crear un metodo que
+    // llama al metodo de superc.
+    for (var method in subcp) {
+        if (subcp.hasOwnProperty(method)) {
+            subc.prototype[method] = subcp[method];
+
+/**
+ * Sintactic sugar to add a __super attribute on every overriden method.
+ * Despite comvenient, it slows things down by 5fps.
+ *
+ * Uncomment at your own risk.
+ *
+            // tenemos en super un metodo con igual nombre.
+            if ( superc.prototype[method]) {
+                subc.prototype[method]= (function(fn, fnsuper) {
+                    return function() {
+                        var prevMethod= this.__super;
+
+                        this.__super= fnsuper;
+
+                        var retValue= fn.apply(
+                                this,
+                                Array.prototype.slice.call(arguments) );
+
+                        this.__super= prevMethod;
+
+                        return retValue;
+                    };
+                })(subc.prototype[method], superc.prototype[method]);
+            }
+            */
+        }
+    }
+}
+
+/**
+ * Dynamic Proxy for an object or wrap/decorate a function.
+ *
+ * @param object
+ * @param preMethod
+ * @param postMethod
+ * @param errorMethod
+ */
+function proxy(object, preMethod, postMethod, errorMethod) {
+
+    // proxy a function
+    if ( typeof object==='function' ) {
+
+        if ( object.__isProxy ) {
+            return object;
+        }
+
+        return (function(fn) {
+            var proxyfn= function() {
+                if ( preMethod ) {
+                    preMethod({
+                            fn: fn,
+                            arguments:  Array.prototype.slice.call(arguments)} );
+                }
+                var retValue= null;
+                try {
+                    // apply original function call with itself as context
+                    retValue= fn.apply(fn, Array.prototype.slice.call(arguments));
+                    // everything went right on function call, then call
+                    // post-method hook if present
+                    if ( postMethod ) {
+                        postMethod({
+                                fn: fn,
+                                arguments:  Array.prototype.slice.call(arguments)} );
+                    }
+                } catch(e) {
+                    // an exeception was thrown, call exception-method hook if
+                    // present and return its result as execution result.
+                    if( errorMethod ) {
+                        retValue= errorMethod({
+                            fn: fn,
+                            arguments:  Array.prototype.slice.call(arguments),
+                            exception:  e} );
+                    } else {
+                        // since there's no error hook, just throw the exception
+                        throw e;
+                    }
+                }
+
+                // return original returned value to the caller.
+                return retValue;
+            };
+            proxyfn.__isProxy= true;
+            return proxyfn;
+
+        })(object);
+    }
+
+    /**
+     * If not a function then only non privitive objects can be proxied.
+     * If it is a previously created proxy, return the proxy itself.
+     */
+    if ( !typeof object==='object' ||
+            object.constructor===Array ||
+            object.constructor===String ||
+            object.__isProxy ) {
+
+        return object;
+    }
+
+    // Our proxy object class.
+    var cproxy= function() {};
+    // A new proxy instance.
+    var proxy= new cproxy();
+    // hold the proxied object as member. Needed to assign proper
+    // context on proxy method call.
+    proxy.__object= object;
+    proxy.__isProxy= true;
+
+    // For every element in the object to be proxied
+    for( var method in object ) {
+        // only function members
+        if ( typeof object[method]==='function' ) {
+            // add to the proxy object a method of equal signature to the
+            // method present at the object to be proxied.
+            // cache references of object, function and function name.
+            proxy[method]= (function(proxy,fn,method) {
+                return function() {
+                    // call pre-method hook if present.
+                    if ( preMethod ) {
+                        preMethod({
+                                object:     proxy.__object,
+                                method:     method,
+                                arguments:  Array.prototype.slice.call(arguments)} );
+                    }
+                    var retValue= null;
+                    try {
+                        // apply original object call with proxied object as
+                        // function context.
+                        retValue= fn.apply( proxy.__object, arguments );
+                        // everything went right on function call, the call
+                        // post-method hook if present
+                        if ( postMethod ) {
+                            postMethod({
+                                    object:     proxy.__object,
+                                    method:     method,
+                                    arguments:  Array.prototype.slice.call(arguments)} );
+                        }
+                    } catch(e) {
+                        // an exeception was thrown, call exception-method hook if
+                        // present and return its result as execution result.
+                        if( errorMethod ) {
+                            retValue= errorMethod({
+                                object:     proxy.__object,
+                                method:     method,
+                                arguments:  Array.prototype.slice.call(arguments),
+                                exception:  e} );
+                        } else {
+                            // since there's no error hook, just throw the exception
+                            throw e;
+                        }
+                    }
+
+                    // return original returned value to the caller.
+                    return retValue;
+                };
+            })(proxy,object[method],method);
+        }
+    }
+
+    // return our newly created and populated of functions proxy object.
+    return proxy;
+}
+
+/** proxy sample usage
+
+var c0= new Meetup.C1(5);
+
+var cp1= proxy(
+        c1,
+        function() {
+            console.log('pre method on object: ',
+                    arguments[0].object.toString(),
+                    arguments[0].method,
+                    arguments[0].arguments );
+        },
+        function() {
+            console.log('post method on object: ',
+                    arguments[0].object.toString(),
+                    arguments[0].method,
+                    arguments[0].arguments );
+
+        },
+        function() {
+            console.log('exception on object: ',
+                    arguments[0].object.toString(),
+                    arguments[0].method,
+                    arguments[0].arguments,
+                    arguments[0].exception);
+
+            return -1;
+        });
+ **//**
+ * See LICENSE file.
+ *
  * Get realtime Debug information of CAAT's activity.
  * Set CAAT.DEBUG=1 before any CAAT.Director object creation.
  * This class expects a DOM node called 'caat-debug' being a container element (DIV) where
@@ -3579,7 +4519,7 @@ var cp1= proxy(
 
         lifecycleListenerList:	null,   // Array of life cycle listener
         behaviorList:           null,   // Array of behaviors to apply to the Actor
-		parent:					null,   // Parent of this Actor. May be Scene.
+        parent:					null,   // Parent of this Actor. May be Scene.
 		x:						0,      // x position on parent. In parent's local coord. system.
 		y:						0,      // y position on parent. In parent's local coord. system.
 		width:					0,      // Actor's width. In parent's local coord. system.
@@ -4269,14 +5209,14 @@ var cp1= proxy(
          * @param behavior {CAAT.Behavior} a CAAT.Behavior instance.
          */
         removeBehaviour : function( behavior ) {
-            var n= this.behaviorList.length-1;
+            var c= this.behaviorList;
+            var n= c.length-1;
             while(n) {
-                if ( this.behaviorList[n]===behavior ) {
-                    this.behaviorList.splice(n,1);
+                if ( c[n]===behavior ) {
+                    c.splice(n,1);
                     return this;
                 }
             }
-
             return this;
         },
         /**
@@ -4287,9 +5227,10 @@ var cp1= proxy(
          * return this;
          */
         removeBehaviorById : function( id ) {
-            for( var n=0; n<this.behaviorList.length; n++ ) {
-                if ( this.behaviorList[n].id===id) {
-                    this.behaviorList.splice(n,1);
+            var c= this.behaviorList;
+            for( var n=0; n<c.length; n++ ) {
+                if ( c[n].id===id) {
+                    c.splice(n,1);
                 }
             }
 
@@ -4297,9 +5238,11 @@ var cp1= proxy(
 
         },
         getBehavior : function(id)  {
-            for( var n=0; n<this.behaviorList.length; n++ ) {
-                if ( this.behaviorList[n].id===id) {
-                    return this.behaviorList[n];
+            var c= this.behaviorList;
+            for( var n=0; n<c.length; n++ ) {
+                var cc= c[n];
+                if ( cc.id===id) {
+                    return cc;
                 }
             }
             return null;
@@ -4591,6 +5534,9 @@ var cp1= proxy(
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          */
 		animate : function(director, time) {
+
+            var i;
+
             if ( !this.isInAnimationFrame(time) ) {
                 this.inFrame= false;
                 this.dirty= true;
@@ -4603,7 +5549,11 @@ var cp1= proxy(
                 this.oldY= this.y;
             }
 
-			for( var i=0; i<this.behaviorList.length; i++ )	{
+            /**
+             * better avoid using behaviors
+             * @deprecated
+             */
+			for( i=0; i<this.behaviorList.length; i++ )	{
 				this.behaviorList[i].apply(time,this);
 			}
 
@@ -5466,10 +6416,9 @@ var cp1= proxy(
          */
         setZOrder : function( actor, index ) {
             var actorPos= this.findChild(actor);
-            var cl= this.childrenList;
             // the actor is present
             if ( -1!==actorPos ) {
-
+                var cl= this.childrenList;
                 // trivial reject.
                 if ( index===actorPos ) {
                     return;
@@ -5486,7 +6435,8 @@ var cp1= proxy(
                         index= cl.length;
                     }
 
-                    cl.splice( index, 1, nActor );
+                    //cl.splice( index, 1, nActor );
+                    cl.splice( index, 0, nActor[0] );
                 }
             }
         }
@@ -11787,490 +12737,6 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 
     };
 })();/**
- * See LICENSE file.
- *
- * Generate interpolator.
- *
- * Partially based on Robert Penner easing equations.
- * http://www.robertpenner.com/easing/
- *
- *
- **/
-
-
-(function() {
-    /**
-     * a CAAT.Interpolator is a function which transforms a value into another but with some constraints:
-     *
-     * <ul>
-     * <li>The input values must be between 0 and 1.
-     * <li>Output values will be between 0 and 1.
-     * <li>Every Interpolator has at least an entering boolean parameter called pingpong. if set to true, the Interpolator
-     * will set values from 0..1 and back from 1..0. So half the time for each range.
-     * </ul>
-     *
-     * <p>
-     * CAAt.Interpolator is defined by a createXXXX method which sets up an internal getPosition(time)
-     * function. You could set as an Interpolator up any object which exposes a method getPosition(time)
-     * and returns a CAAT.Point or an object of the form {x:{number}, y:{number}}.
-     * <p>
-     * In the return value, the x attribute's value will be the same value as that of the time parameter,
-     * and y attribute will hold a value between 0 and 1 with the resulting value of applying the
-     * interpolation function for the time parameter.
-     *
-     * <p>
-     * For am exponential interpolation, the getPosition function would look like this:
-     * <code>function getPosition(time) { return { x:time, y: Math.pow(time,2) }Ê}</code>.
-     * meaning that for time=0.5, a value of 0,5*0,5 should use instead.
-     *
-     * <p>
-     * For a visual understanding of interpolators see tutorial 4 interpolators, or play with technical
-     * demo 1 where a SpriteActor moves along a path and the way it does can be modified by every
-     * out-of-the-box interpolator.
-     *
-     * @constructor
-     *
-     */
-    CAAT.Interpolator = function() {
-        this.interpolated= new CAAT.Point(0,0,0);
-        return this;
-    };
-
-    CAAT.Interpolator.prototype= {
-
-        interpolated:   null,   // a coordinate holder for not building a new CAAT.Point for each interpolation call.
-        paintScale:     90,     // the size of the interpolation draw on screen in pixels.
-
-        /**
-         * Set a linear interpolation function.
-         *
-         * @param bPingPong {boolean}
-         * @param bInverse {boolean} will values will be from 1 to 0 instead of 0 to 1 ?.
-         */
-        createLinearInterpolator : function(bPingPong, bInverse) {
-            /**
-             * Linear and inverse linear interpolation function.
-             * @param time {number}
-             */
-            this.getPosition= function getPosition(time) {
-
-                var orgTime= time;
-
-                if ( bPingPong ) {
-                    if ( time<0.5 ) {
-                        time*=2;
-                    } else {
-                        time= 1-(time-0.5)*2;
-                    }
-                }
-
-                if ( bInverse!==null && bInverse ) {
-                    time= 1-time;
-                }
-
-                return this.interpolated.set(orgTime,time);
-            };
-
-            return this;
-        },
-        createBackOutInterpolator : function(bPingPong) {
-            this.getPosition= function getPosition(time) {
-                var orgTime= time;
-
-                if ( bPingPong ) {
-                    if ( time<0.5 ) {
-                        time*=2;
-                    } else {
-                        time= 1-(time-0.5)*2;
-                    }
-                }
-
-                time = time - 1;
-                var overshoot= 1.70158;
-
-                return this.interpolated.set(
-                        orgTime,
-                        time * time * ((overshoot + 1) * time + overshoot) + 1);
-            };
-
-            return this;
-        },
-        /**
-         * Set an exponential interpolator function. The function to apply will be Math.pow(time,exponent).
-         * This function starts with 0 and ends in values of 1.
-         *
-         * @param exponent {number} exponent of the function.
-         * @param bPingPong {boolean}
-         */
-        createExponentialInInterpolator : function(exponent, bPingPong) {
-            this.getPosition= function getPosition(time) {
-                var orgTime= time;
-
-                if ( bPingPong ) {
-                    if ( time<0.5 ) {
-                        time*=2;
-                    } else {
-                        time= 1-(time-0.5)*2;
-                    }
-                }
-                return this.interpolated.set(orgTime,Math.pow(time,exponent));
-            };
-
-            return this;
-        },
-        /**
-         * Set an exponential interpolator function. The function to apply will be 1-Math.pow(time,exponent).
-         * This function starts with 1 and ends in values of 0.
-         *
-         * @param exponent {number} exponent of the function.
-         * @param bPingPong {boolean}
-         */
-        createExponentialOutInterpolator : function(exponent, bPingPong) {
-            this.getPosition= function getPosition(time) {
-                var orgTime= time;
-
-                if ( bPingPong ) {
-                    if ( time<0.5 ) {
-                        time*=2;
-                    } else {
-                        time= 1-(time-0.5)*2;
-                    }
-                }
-                return this.interpolated.set(orgTime,1-Math.pow(1-time,exponent));
-            };
-
-            return this;
-        },
-        /**
-         * Set an exponential interpolator function. Two functions will apply:
-         * Math.pow(time*2,exponent)/2 for the first half of the function (t<0.5) and
-         * 1-Math.abs(Math.pow(time*2-2,exponent))/2 for the second half (t>=.5)
-         * This function starts with 0 and goes to values of 1 and ends with values of 0.
-         *
-         * @param exponent {number} exponent of the function.
-         * @param bPingPong {boolean}
-         */
-        createExponentialInOutInterpolator : function(exponent, bPingPong) {
-            this.getPosition= function getPosition(time) {
-                var orgTime= time;
-
-                if ( bPingPong ) {
-                    if ( time<0.5 ) {
-                        time*=2;
-                    } else {
-                        time= 1-(time-0.5)*2;
-                    }
-                }
-                if ( time*2<1 ) {
-                    return this.interpolated.set(orgTime,Math.pow(time*2,exponent)/2);
-                }
-                
-                return this.interpolated.set(orgTime,1-Math.abs(Math.pow(time*2-2,exponent))/2);
-            };
-
-            return this;
-        },
-        /**
-         * Creates a Quadric bezier curbe as interpolator.
-         *
-         * @param p0 {CAAT.Point} a CAAT.Point instance.
-         * @param p1 {CAAT.Point} a CAAT.Point instance.
-         * @param p2 {CAAT.Point} a CAAT.Point instance.
-         * @param bPingPong {boolean} a boolean indicating if the interpolator must ping-pong.
-         */
-        createQuadricBezierInterpolator : function(p0,p1,p2,bPingPong) {
-            this.getPosition= function getPosition(time) {
-                var orgTime= time;
-
-                if ( bPingPong ) {
-                    if ( time<0.5 ) {
-                        time*=2;
-                    } else {
-                        time= 1-(time-0.5)*2;
-                    }
-                }
-
-                time= (1-time)*(1-time)*p0.y + 2*(1-time)*time*p1.y + time*time*p2.y;
-
-                return this.interpolated.set( orgTime, time );
-            };
-
-            return this;
-        },
-        /**
-         * Creates a Cubic bezier curbe as interpolator.
-         *
-         * @param p0 {CAAT.Point} a CAAT.Point instance.
-         * @param p1 {CAAT.Point} a CAAT.Point instance.
-         * @param p2 {CAAT.Point} a CAAT.Point instance.
-         * @param p3 {CAAT.Point} a CAAT.Point instance.
-         * @param bPingPong {boolean} a boolean indicating if the interpolator must ping-pong.
-         */
-        createCubicBezierInterpolator : function(p0,p1,p2,p3,bPingPong) {
-            this.getPosition= function getPosition(time) {
-                var orgTime= time;
-
-                if ( bPingPong ) {
-                    if ( time<0.5 ) {
-                        time*=2;
-                    } else {
-                        time= 1-(time-0.5)*2;
-                    }
-                }
-
-                var t2= time*time;
-                var t3= time*t2;
-
-                time = (p0.y + time * (-p0.y * 3 + time * (3 * p0.y -
-                        p0.y * time))) + time * (3 * p1.y + time * (-6 * p1.y +
-                        p1.y * 3 * time)) + t2 * (p2.y * 3 - p2.y * 3 * time) +
-                        p3.y * t3;
-
-                return this.interpolated.set( orgTime, time );
-            };
-
-            return this;
-        },
-        createElasticOutInterpolator : function(amplitude,p,bPingPong) {
-            this.getPosition= function getPosition(time) {
-
-            if ( bPingPong ) {
-                if ( time<0.5 ) {
-                    time*=2;
-                } else {
-                    time= 1-(time-0.5)*2;
-                }
-            }
-
-            if (time === 0) {
-                return {x:0,y:0};
-            }
-            if (time === 1) {
-                return {x:1,y:1};
-            }
-
-            var s = p/(2*Math.PI) * Math.asin (1/amplitude);
-            return this.interpolated.set(
-                    time,
-                    (amplitude*Math.pow(2,-10*time) * Math.sin( (time-s)*(2*Math.PI)/p ) + 1 ) );
-            };
-            return this;
-        },
-        createElasticInInterpolator : function(amplitude,p,bPingPong) {
-            this.getPosition= function getPosition(time) {
-
-            if ( bPingPong ) {
-                if ( time<0.5 ) {
-                    time*=2;
-                } else {
-                    time= 1-(time-0.5)*2;
-                }
-            }
-
-            if (time === 0) {
-                return {x:0,y:0};
-            }
-            if (time === 1) {
-                return {x:1,y:1};
-            }
-
-            var s = p/(2*Math.PI) * Math.asin (1/amplitude);
-            return this.interpolated.set(
-                    time,
-                    -(amplitude*Math.pow(2,10*(time-=1)) * Math.sin( (time-s)*(2*Math.PI)/p ) ) );
-            };
-
-            return this;
-        },
-        createElasticInOutInterpolator : function(amplitude,p,bPingPong) {
-            this.getPosition= function getPosition(time) {
-
-            if ( bPingPong ) {
-                if ( time<0.5 ) {
-                    time*=2;
-                } else {
-                    time= 1-(time-0.5)*2;
-                }
-            }
-
-            var s = p/(2*Math.PI) * Math.asin (1/amplitude);
-            time*=2;
-            if ( time<=1 ) {
-                return this.interpolated.set(
-                        time,
-                        -0.5*(amplitude*Math.pow(2,10*(time-=1)) * Math.sin( (time-s)*(2*Math.PI)/p )));
-            }
-
-            return this.interpolated.set(
-                    time,
-                    1+0.5*(amplitude*Math.pow(2,-10*(time-=1)) * Math.sin( (time-s)*(2*Math.PI)/p )));
-            };
-
-            return this;
-        },
-        /**
-         * @param time {number}
-         * @private
-         */
-        bounce : function(time) {
-            if ((time /= 1) < (1 / 2.75)) {
-                return {x:time, y:7.5625 * time * time};
-            } else if (time < (2 / 2.75)) {
-                return {x:time, y:7.5625 * (time -= (1.5 / 2.75)) * time + 0.75};
-            } else if (time < (2.5 / 2.75)) {
-                return {x:time, y:7.5625 * (time -= (2.25 / 2.75)) * time + 0.9375};
-            } else {
-                return {x:time, y:7.5625*(time-=(2.625/2.75))*time+0.984375};
-            }
-        },
-        createBounceOutInterpolator : function(bPingPong) {
-            this.getPosition= function getPosition(time) {
-                if ( bPingPong ) {
-                    if ( time<0.5 ) {
-                        time*=2;
-                    } else {
-                        time= 1-(time-0.5)*2;
-                    }
-                }
-                return this.bounce(time);
-            };
-
-            return this;
-        },
-        createBounceInInterpolator : function(bPingPong) {
-
-            this.getPosition= function getPosition(time) {
-                if ( bPingPong ) {
-                    if ( time<0.5 ) {
-                        time*=2;
-                    } else {
-                        time= 1-(time-0.5)*2;
-                    }
-                }
-                var r= this.bounce(1-time);
-                r.y= 1-r.y;
-                return r;
-            };
-
-            return this;
-        },
-        createBounceInOutInterpolator : function(bPingPong) {
-
-            this.getPosition= function getPosition(time) {
-                if ( bPingPong ) {
-                    if ( time<0.5 ) {
-                        time*=2;
-                    } else {
-                        time= 1-(time-0.5)*2;
-                    }
-                }
-
-                var r;
-                if (time < 0.5) {
-                    r= this.bounce(1 - time * 2);
-                    r.y= (1 - r.y)* 0.5;
-                    return r;
-                }
-                r= this.bounce(time * 2 - 1,bPingPong);
-                r.y= r.y* 0.5 + 0.5;
-                return r;
-            };
-
-            return this;
-        },
-        /**
-         * Paints an interpolator on screen.
-         * @param director {CAAT.Director} a CAAT.Director instance.
-         * @param time {number} an integer indicating the scene time the Interpolator will be drawn at. This value is useless.
-         */
-        paint : function(director,time) {
-
-            var canvas= director.crc;
-            canvas.save();
-            canvas.beginPath();
-
-            canvas.moveTo( 0, this.getPosition(0).y * this.paintScale );
-
-            for( var i=0; i<=this.paintScale; i++ ) {
-                canvas.lineTo( i, this.getPosition(i/this.paintScale).y * this.paintScale );
-            }
-
-            canvas.strokeStyle='black';
-            canvas.stroke();
-            canvas.restore();
-        },
-        /**
-         * Gets an array of coordinates which define the polyline of the intepolator's curve contour.
-         * Values for both coordinates range from 0 to 1. 
-         * @param iSize {number} an integer indicating the number of contour segments.
-         * @return array {[CAAT.Point]} of object of the form {x:float, y:float}.
-         */
-        getContour : function(iSize) {
-            var contour=[];
-            for( var i=0; i<=iSize; i++ ) {
-                contour.push( {x: i/iSize, y: this.getPosition(i/iSize).y} );
-            }
-
-            return contour;
-        },
-        /**
-         *
-         */
-        enumerateInterpolators : function() {
-            return [
-                new CAAT.Interpolator().createLinearInterpolator(false, false), 'Linear pingpong=false, inverse=false',
-                new CAAT.Interpolator().createLinearInterpolator(true,  false), 'Linear pingpong=true, inverse=false',
-
-                new CAAT.Interpolator().createLinearInterpolator(false, true), 'Linear pingpong=false, inverse=true',
-                new CAAT.Interpolator().createLinearInterpolator(true,  true), 'Linear pingpong=true, inverse=true',
-
-                new CAAT.Interpolator().createExponentialInInterpolator(    2, false), 'ExponentialIn pingpong=false, exponent=2',
-                new CAAT.Interpolator().createExponentialOutInterpolator(   2, false), 'ExponentialOut pingpong=false, exponent=2',
-                new CAAT.Interpolator().createExponentialInOutInterpolator( 2, false), 'ExponentialInOut pingpong=false, exponent=2',
-                new CAAT.Interpolator().createExponentialInInterpolator(    2, true), 'ExponentialIn pingpong=true, exponent=2',
-                new CAAT.Interpolator().createExponentialOutInterpolator(   2, true), 'ExponentialOut pingpong=true, exponent=2',
-                new CAAT.Interpolator().createExponentialInOutInterpolator( 2, true), 'ExponentialInOut pingpong=true, exponent=2',
-
-                new CAAT.Interpolator().createExponentialInInterpolator(    4, false), 'ExponentialIn pingpong=false, exponent=4',
-                new CAAT.Interpolator().createExponentialOutInterpolator(   4, false), 'ExponentialOut pingpong=false, exponent=4',
-                new CAAT.Interpolator().createExponentialInOutInterpolator( 4, false), 'ExponentialInOut pingpong=false, exponent=4',
-                new CAAT.Interpolator().createExponentialInInterpolator(    4, true), 'ExponentialIn pingpong=true, exponent=4',
-                new CAAT.Interpolator().createExponentialOutInterpolator(   4, true), 'ExponentialOut pingpong=true, exponent=4',
-                new CAAT.Interpolator().createExponentialInOutInterpolator( 4, true), 'ExponentialInOut pingpong=true, exponent=4',
-
-                new CAAT.Interpolator().createExponentialInInterpolator(    6, false), 'ExponentialIn pingpong=false, exponent=6',
-                new CAAT.Interpolator().createExponentialOutInterpolator(   6, false), 'ExponentialOut pingpong=false, exponent=6',
-                new CAAT.Interpolator().createExponentialInOutInterpolator( 6, false), 'ExponentialInOut pingpong=false, exponent=6',
-                new CAAT.Interpolator().createExponentialInInterpolator(    6, true), 'ExponentialIn pingpong=true, exponent=6',
-                new CAAT.Interpolator().createExponentialOutInterpolator(   6, true), 'ExponentialOut pingpong=true, exponent=6',
-                new CAAT.Interpolator().createExponentialInOutInterpolator( 6, true), 'ExponentialInOut pingpong=true, exponent=6',
-
-                new CAAT.Interpolator().createBounceInInterpolator(false), 'BounceIn pingpong=false',
-                new CAAT.Interpolator().createBounceOutInterpolator(false), 'BounceOut pingpong=false',
-                new CAAT.Interpolator().createBounceInOutInterpolator(false), 'BounceInOut pingpong=false',
-                new CAAT.Interpolator().createBounceInInterpolator(true), 'BounceIn pingpong=true',
-                new CAAT.Interpolator().createBounceOutInterpolator(true), 'BounceOut pingpong=true',
-                new CAAT.Interpolator().createBounceInOutInterpolator(true), 'BounceInOut pingpong=true',
-
-                new CAAT.Interpolator().createElasticInInterpolator(    1.1, 0.4, false), 'ElasticIn pingpong=false, amp=1.1, d=.4',
-                new CAAT.Interpolator().createElasticOutInterpolator(   1.1, 0.4, false), 'ElasticOut pingpong=false, amp=1.1, d=.4',
-                new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, 0.4, false), 'ElasticInOut pingpong=false, amp=1.1, d=.4',
-                new CAAT.Interpolator().createElasticInInterpolator(    1.1, 0.4, true), 'ElasticIn pingpong=true, amp=1.1, d=.4',
-                new CAAT.Interpolator().createElasticOutInterpolator(   1.1, 0.4, true), 'ElasticOut pingpong=true, amp=1.1, d=.4',
-                new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, 0.4, true), 'ElasticInOut pingpong=true, amp=1.1, d=.4',
-
-                new CAAT.Interpolator().createElasticInInterpolator(    1.0, 0.2, false), 'ElasticIn pingpong=false, amp=1.0, d=.2',
-                new CAAT.Interpolator().createElasticOutInterpolator(   1.0, 0.2, false), 'ElasticOut pingpong=false, amp=1.0, d=.2',
-                new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, 0.2, false), 'ElasticInOut pingpong=false, amp=1.0, d=.2',
-                new CAAT.Interpolator().createElasticInInterpolator(    1.0, 0.2, true), 'ElasticIn pingpong=true, amp=1.0, d=.2',
-                new CAAT.Interpolator().createElasticOutInterpolator(   1.0, 0.2, true), 'ElasticOut pingpong=true, amp=1.0, d=.2',
-                new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, 0.2, true), 'ElasticInOut pingpong=true, amp=1.0, d=.2'
-            ];
-        }
-    };
-})();
-
-/**
  * See LICENSE file.
  *
  * Interpolator actor will draw interpolators on screen.
