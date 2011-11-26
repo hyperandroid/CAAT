@@ -154,7 +154,7 @@
 
             this.canvas.width = this.referenceWidth*factor;
             this.canvas.height = this.referenceHeight*factor;
-            this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d');
+            this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d' );
             this.crc = this.ctx;
 
             if ( this.glEnabled ) {
@@ -545,9 +545,6 @@
                 this.ctx.globalAlpha = 1;
                 this.ctx.globalCompositeOperation = 'source-over';
 
-
-
-
                 if (this.clear) {
                     this.ctx.clearRect(0, 0, this.width, this.height);
                 }
@@ -558,6 +555,7 @@
                     if (c.isInAnimationFrame(this.time)) {
                         tt = c.time - c.start_time;
                         this.ctx.save();
+
                         if ( c.onRenderStart ) {
                             c.onRenderStart(tt);
                         }
@@ -1173,6 +1171,15 @@
         renderFrame : function(fps, callback) {
             var t = new Date().getTime(),
                     delta = t - this.timeline;
+
+            /*
+            check for massive frame time. if for example the current browser tab is minified or taken out of
+            foreground, the system will account for a bit time interval. minify that impact by lowering down
+            the elapsed time (virtual timelines FTW)
+             */
+            if ( delta > 500 ) {
+                delta= 500;
+            }
 
             if ( this.onRenderStart ) {
                 this.onRenderStart(delta);

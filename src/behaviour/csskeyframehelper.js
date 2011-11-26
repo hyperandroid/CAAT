@@ -23,35 +23,49 @@
             }
         }
 
+        CAAT.CSS.PROP_ANIMATION= '-'+prefix+'-animation';
+
         return prefix;
     })();
 
+    CAAT.CSS.applyKeyframe= function( domElement, name, secs, forever ) {
+        domElement.style[CAAT.CSS.PROP_ANIMATION]= name+' '+(secs/1000)+'s linear both '+(forever ? 'infinite' : '') ;
+    };
+
+    CAAT.CSS.unregisterKeyframes= function( name ) {
+        var index= CAAT.CSS.getCSSKeyframesIndex(name);
+        if ( -1!==index ) {
+            document.styleSheets[0].deleteRule( index );
+        }
+    };
+
     /**
      *
-     * @param keyframeObject {CAAT.Keyframe}
+     * @param kfDescriptor {object{ name{string}, behavior{CAAT.Behavior}, size{!number}, overwrite{boolean}}
      */
-    CAAT.CSS.addKeyframes= function(name, behavior, size) {
+    CAAT.CSS.registerKeyframes= function( kfDescriptor ) {
+
+        var name=       kfDescriptor.name;
+        var behavior=   kfDescriptor.behavior;
+        var size=       kfDescriptor.size;
+        var overwrite=  kfDescriptor.overwrite;
+
+        if ( typeof name==='undefined' || typeof behavior==='undefined' ) {
+            throw 'Keyframes must be defined by a name and a CAAT.Behavior instance.';
+        }
 
         if ( typeof size==='undefined' ) {
             size= 100;
         }
-
-        // find if keyframes has already a name set.
-        var cssRulesIndex= -1;
-        var oldName= KeyframesObject.getCSSKeyframesName();
-        if ( oldName ) {
-            cssRulesIndex= CAAT.CSS.getCSSKeyframesIndex(oldName);
+        if ( typeof overwrite==='undefined' ) {
+            overwrite= false;
         }
 
-        // create a random name.
-        // this is due to some of the css3 oddities. It seems that a DOM element takes information
-        // from the @-keyframes element once. That means, that even i can set new keyframeRules for
-        // the @-keyframes element, the DOM doesn't get notified about it.
-        // If i reset the DOM element with -[webkit|moz]-transition with the same one, it somehow
-        // decides the @-keyframes is the same and does not update the transition.
-        // So, i'm building new names to the supplied CAAT.Keyframe element, and removing the
-        // previously created from the stylesheet.
-        name= name + new Date().getTime();
+        // find if keyframes has already a name set.
+        var cssRulesIndex= CAAT.CSS.getCSSKeyframesIndex(name);
+        if (-1!==cssRulesIndex && !overwrite) {
+            return;
+        }
 
         var keyframesRule= behavior.calculateKeyframesData(CAAT.CSS.PREFIX, name, size );
 

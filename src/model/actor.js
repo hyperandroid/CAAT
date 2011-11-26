@@ -30,6 +30,7 @@
      */
 	CAAT.Actor = function() {
 		this.behaviorList= [];
+        this.keyframesList= [];
         this.lifecycleListenerList= [];
         this.AABB= new CAAT.Rectangle();
         this.viewVertices= [
@@ -55,12 +56,31 @@
 		return this;
 	};
 
+    /**
+     *
+     * @param keyframeDesc {
+     *   keyframe:  {CAAT.Keyframne}
+     *   startTime: {number}
+     *   duration:  {number}
+     * }
+     */
+    ActorKeyframeDescriptor= function( keyframeDesc ) {
+
+        this.behavior= keyframeDesc.behavior;
+
+        return this;
+    }
+
 	CAAT.Actor.prototype= {
 
         tmpMatrix :             null,
 
         lifecycleListenerList:	null,   // Array of life cycle listener
+
+        //  @deprecated
         behaviorList:           null,   // Array of behaviors to apply to the Actor
+
+        keyframesList:          null,
         parent:					null,   // Parent of this Actor. May be Scene.
 		x:						0,      // x position on parent. In parent's local coord. system.
 		y:						0,      // y position on parent. In parent's local coord. system.
@@ -407,11 +427,18 @@
         /**
          * Removes all behaviors from an Actor.
          * @return this
+         *
+         * @deprecated
          */
 		emptyBehaviorList : function() {
 			this.behaviorList=[];
             return this;
 		},
+
+        emptyKeyframesList : function() {
+            this.keyframesList= [];
+        },
+
         /**
          * Caches a fillStyle in the Actor.
          * @param style a valid Canvas rendering context fillStyle.
@@ -535,49 +562,36 @@
 
 			switch( anchor ) {
             case this.ANCHOR_CENTER:
-//                tx= this.width/2;
-//                ty= this.height/2;
-                    tx= .5;
-                    ty= .5;
+                tx= .5;
+                ty= .5;
                 break;
             case this.ANCHOR_TOP:
-//                tx= this.width/2;
-                    tx= .5;
+                tx= .5;
                 ty= 0;
                 break;
             case this.ANCHOR_BOTTOM:
-//                tx= this.width/2;
-//                ty= this.height;
-                    tx= .5;
-                    ty= 1;
+                tx= .5;
+                ty= 1;
                 break;
             case this.ANCHOR_LEFT:
-//                tx= 0;
-//                ty= this.height/2;
-                    tx= 0;
-                    ty= .5;
+                tx= 0;
+                ty= .5;
                 break;
             case this.ANCHOR_RIGHT:
-//                tx= this.width;
-//                ty= this.height/2;
-                    tx= 1;
-                    ty= .5;
+                tx= 1;
+                ty= .5;
                 break;
             case this.ANCHOR_TOP_RIGHT:
-//                tx= this.width;
-                    tx= 1;
+                tx= 1;
                 ty= 0;
                 break;
             case this.ANCHOR_BOTTOM_LEFT:
                 tx= 0;
-//                ty= this.height;
-                    ty= 1;
+                ty= 1;
                 break;
             case this.ANCHOR_BOTTOM_RIGHT:
-//                tx= this.width;
-//                ty= this.height;
-                    tx= 1;
-                    ty= 1;
+                tx= 1;
+                ty= 1;
                 break;
             case this.ANCHOR_TOP_LEFT:
                 tx= 0;
@@ -733,12 +747,75 @@
 		create : function()	{
             return this;
 		},
+
+        /**
+         *
+         * @param keyframeDescriptor {CAAT.KeyframeDescriptor}
+         */
+        addKeyframes : function( keyframe, start, duration, cycle ) {
+            this.keyframesList.push( new CAAT.KeyframesDescriptor( keyframe, start, duration, cycle ) );
+        },
+
+        scheduleKeyframes : function( id, startTime, duration ) {
+            var kf= this.getKeyframesDescriptor(id);
+            if ( kf ) {
+                kf.schedule( startTime, duration );
+            }
+            return this;
+        },
+
+        /**
+         * This method is potentially risky and instead removeKeyframeById should be used.
+         * Removes the first ocurrence of the given keyframe.
+         *
+         * @param keyframe {CAAT.Keyframe}
+         */
+        removeKeyframes : function( keyframe ) {
+            var kfs= this.keyframesList;
+            for( var i=0; i<kfs.length; i++ ) {
+                if ( kfs[i].keyframe===keyframe ) {
+                    kfs.splice(i,1);
+                    return this;
+                }
+            }
+
+            return this;
+        },
+
+        removeKeyframesById : function( keyframe ) {
+            var kfs= this.keyframesList;
+            for( var i=0; i<kfs.length; i++ ) {
+                if ( kfs[i].id===id ) {
+                    kfs.splice(i,1);
+                    return this;
+                }
+            }
+
+            return this;
+        },
+
+        getKeyframesDescriptor : function( id ) {
+            var kfs= this.keyframesList;
+            var kf;
+            for( var i=0; i<kfs.length; i++ ) {
+                kf= kfs[i];
+                if ( kf.id===id ) {
+                    return kf;
+                }
+            }
+
+            return null;
+
+        },
+
         /**
          * Add a Behavior to the Actor.
          * An Actor accepts an undefined number of Behaviors.
          *
          * @param behavior {CAAT.Behavior} a CAAT.Behavior instance
          * @return this
+         *
+         * @deprecated
          */
 		addBehavior : function( behavior )	{
 			this.behaviorList.push(behavior);
@@ -1098,6 +1175,15 @@
 			for( i=0; i<this.behaviorList.length; i++ )	{
 				this.behaviorList[i].apply(time,this);
 			}
+
+            var kfs= this.keyframesList;
+            var kfi;
+            var kf;
+            for( i=0; i<kfs.length; i++ ) {
+                kfi= kfs[i];
+                kf= kfi.keyframe;
+                kf.apply( time, this, kfi.startTime, kfi.duration, kfi.cycle );
+            }
 
             /*
                 If we have a mask applied, apply behaviors as well.
@@ -1466,7 +1552,6 @@
             this.iOver=         iOver || iNormal;
             this.iPress=        iPress || iNormal;
             this.iDisabled=     iDisabled || iNormal;
-            this.iCurrent=      iNormal;
             this.fnOnClick=     fn;
             this.enabled=       true;
 
@@ -1479,6 +1564,7 @@
              */
             this.setEnabled= function( enabled ) {
                 this.enabled= enabled;
+                this.setSpriteIndex( this.enabled ? this.iNormal : this.iDisabled );
             };
 
             /**
@@ -1498,6 +1584,10 @@
              * @ignore
              */
             this.mouseEnter= function(mouseEvent) {
+                if ( !this.enabled ) {
+                    return;
+                }
+
                 if ( this.dragging ) {
                     this.setSpriteIndex( this.iPress );
                 } else {
@@ -1512,6 +1602,10 @@
              * @ignore
              */
             this.mouseExit= function(mouseEvent) {
+                if ( !this.enabled ) {
+                    return;
+                }
+
                 this.setSpriteIndex( this.iNormal );
                 CAAT.setCursor('default');
             };
@@ -1522,6 +1616,10 @@
              * @ignore
              */
             this.mouseDown= function(mouseEvent) {
+                if ( !this.enabled ) {
+                    return;
+                }
+
                 this.setSpriteIndex( this.iPress );
             };
 
@@ -1531,6 +1629,10 @@
              * @ignore
              */
             this.mouseUp= function(mouseEvent) {
+                if ( !this.enabled ) {
+                    return;
+                }
+
                 this.setSpriteIndex( this.iNormal );
                 this.dragging= false;
             };
@@ -1550,6 +1652,10 @@
              * @ignore
              */
             this.mouseDrag= function(mouseEvent)  {
+                if ( !this.enabled ) {
+                    return;
+                }
+
                 this.dragging= true;
             };
 

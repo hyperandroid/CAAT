@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 182
+Version: 0.1 build: 254
 
 Created on:
-DATE: 2011-11-22
-TIME: 21:33:07
+DATE: 2011-11-26
+TIME: 23:55:49
 */
 
 
@@ -2670,6 +2670,13 @@ Function.prototype.bind= function() {
 
         timeOffset:         0,
 
+        doValueApplication: true,
+
+        setValueApplication : function( apply ) {
+            this.doValueApplication= apply;
+            return this;
+        },
+
         setTimeOffset : function( offset ) {
             this.timeOffset= offset;
             return this;
@@ -3048,126 +3055,6 @@ Function.prototype.bind= function() {
                 bh[i].setStatus( CAAT.Behavior.Status.NOT_STARTED );
             }
             return this;
-        },
-
-        calculateKeyFrameData : function(referenceTime, prefix, prevValues )  {
-
-            var i;
-            var bh;
-
-            var retValue= {};
-            var time;
-            var cssRuleValue;
-            var cssProperty;
-            var property;
-
-            for( i=0; i<this.behaviors.length; i++ ) {
-                bh= this.behaviors[i];
-                if ( /*!bh.expired*/ bh.status!==CAAT.Behavior.Status.EXPIRED && !(bh instanceof CAAT.GenericBehavior) ) {
-
-                    // ajustar tiempos:
-                    //  time es tiempo normalizado a duración de comportamiento contenedor.
-                    //      1.- desnormalizar
-                    time= referenceTime * this.behaviorDuration;
-
-                    //      2.- calcular tiempo relativo de comportamiento respecto a contenedor
-                    if ( bh.behaviorStartTime<=time && bh.behaviorStartTime+bh.behaviorDuration>=time ) {
-                        //      3.- renormalizar tiempo reltivo a comportamiento.
-                        time= (time-bh.behaviorStartTime)/bh.behaviorDuration;
-
-                        //      4.- obtener valor de comportamiento para tiempo normalizado relativo a contenedor
-                        cssRuleValue= bh.calculateKeyFrameData(time);
-                        cssProperty= bh.getPropertyName(prefix);
-
-                        if ( typeof retValue[cssProperty] ==='undefined' ) {
-                            retValue[cssProperty]= "";
-                        }
-
-                        //      5.- asignar a objeto, par de propiedad/valor css
-                        retValue[cssProperty]+= cssRuleValue+" ";
-                    }
-
-                }
-            }
-
-
-            var tr="";
-            var pv;
-            function xx(pr) {
-                if ( retValue[pr] ) {
-                    tr+= retValue[pr];
-                } else {
-                    if ( prevValues ) {
-                        pv= prevValues[pr];
-                        if ( pv ) {
-                            tr+= pv;
-                            retValue[pr]= pv;
-                        }
-                    }
-                }
-
-            }
-
-            xx('translate');
-            xx('rotate');
-            xx('scale');
-
-            var keyFrameRule= "";
-
-            if ( tr ) {
-                keyFrameRule='-'+prefix+'-transform: '+tr+';';
-            }
-
-            tr="";
-            xx('opacity');
-            if( tr ) {
-                keyFrameRule+= ' opacity: '+tr+';';
-            }
-
-            return {
-                rules: keyFrameRule,
-                ret: retValue
-            };
-
-        },
-
-        /**
-         *
-         * @param prefix
-         * @param name
-         * @param keyframessize
-         */
-        calculateKeyFramesData : function(prefix, name, keyframessize) {
-
-            if ( this.duration===Number.MAX_VALUE ) {
-                return "";
-            }
-
-            if ( typeof keyframessize==='undefined' ) {
-                keyframessize=100;
-            }
-
-            var i;
-            var prevValues= null;
-            var kfd= "@-"+prefix+"-keyframes "+name+" {";
-            var ret;
-            var time;
-            var kfr;
-
-            for( i=0; i<=keyframessize; i++ )    {
-                time= this.interpolator.getPosition(i/keyframessize).y;
-                ret= this.calculateKeyFrameData(time, prefix, prevValues);
-                kfr= "" +
-                    (i/keyframessize*100) + "%" + // percentage
-                    "{" + ret.rules + "}\n";
-
-                prevValues= ret.ret;
-                kfd+= kfr;
-            }
-
-            kfd+= "}";
-
-            return kfd;
         }
 
 	};
@@ -3219,7 +3106,10 @@ Function.prototype.bind= function() {
          */
 		setForTime : function(time,actor) {
 			var angle= this.startAngle + time*(this.endAngle-this.startAngle);
-            actor.setRotationAnchored(angle, this.anchorX, this.anchorY);
+
+            if ( this.doValueApplication ) {
+                actor.setRotationAnchored(angle, this.anchorX, this.anchorY);
+            }
 
             return angle;
 			
@@ -3271,44 +3161,6 @@ Function.prototype.bind= function() {
             this.anchorX= rx/actor.width;
             this.anchorY= ry/actor.height;
             return this;
-        },
-
-
-        calculateKeyFrameData : function( time ) {
-            time= this.interpolator.getPosition(time).y;
-            return "rotate(" + (this.startAngle + time*(this.endAngle-this.startAngle)) +"rad)";
-        },
-
-        /**
-         * @param prefix {string} browser vendor prefix
-         * @param name {string} keyframes animation name
-         * @param keyframessize {integer} number of keyframes to generate
-         * @override
-         */
-        calculateKeyFramesData : function(prefix, name, keyframessize) {
-
-            if ( typeof keyframessize==='undefined' ) {
-                keyframessize= 100;
-            }
-            keyframessize>>=0;
-
-            var i;
-            var kfr;
-            var kfd= "@-"+prefix+"-keyframes "+name+" {";
-
-            for( i=0; i<=keyframessize; i++ )    {
-                kfr= "" +
-                    (i/keyframessize*100) + "%" + // percentage
-                    "{" +
-                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
-                    "}\n";
-
-                kfd+= kfr;
-            }
-
-            kfd+="}";
-
-            return kfd;
         }
 
 	};
@@ -3456,7 +3308,9 @@ Function.prototype.bind= function() {
                 scaleY=0.01;
             }
 
-			actor.setScaleAnchored( scaleX, scaleY, this.anchorX, this.anchorY );
+            if ( this.doValueApplication ) {
+			    actor.setScaleAnchored( scaleX, scaleY, this.anchorX, this.anchorY );
+            }
 
             return { scaleX: scaleX, scaleY: scaleY };
 		},
@@ -3500,43 +3354,6 @@ Function.prototype.bind= function() {
             this.anchorY= y/actor.height;
 
             return this;
-        },
-
-        calculateKeyFrameData : function( time ) {
-            var scaleX;
-            var scaleY;
-
-            time= this.interpolator.getPosition(time).y;
-            scaleX= this.startScaleX + time*(this.endScaleX-this.startScaleX);
-            scaleY= this.startScaleY + time*(this.endScaleY-this.startScaleY);
-
-            return "scaleX("+scaleX+") scaleY("+scaleY+")";
-        },
-
-        calculateKeyFramesData : function(prefix, name, keyframessize) {
-
-            if ( typeof keyframessize==='undefined' ) {
-                keyframessize= 100;
-            }
-            keyframessize>>=0;
-
-            var i;
-            var kfr;
-            var kfd= "@-"+prefix+"-keyframes "+name+" {";
-
-            for( i=0; i<=keyframessize; i++ )    {
-                kfr= "" +
-                    (i/keyframessize*100) + "%" + // percentage
-                    "{" +
-                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
-                    "}";
-
-                kfd+= kfr;
-            }
-
-            kfd+="}";
-
-            return kfd;
         }
 	};
 
@@ -3573,7 +3390,9 @@ Function.prototype.bind= function() {
          */
 		setForTime : function(time,actor) {
             var alpha= (this.startAlpha+time*(this.endAlpha-this.startAlpha));
-            actor.setAlpha( alpha );
+            if ( this.doValueApplication ) {
+                actor.setAlpha( alpha );
+            }
             return alpha;
         },
         /**
@@ -3587,43 +3406,6 @@ Function.prototype.bind= function() {
             this.startAlpha= start;
             this.endAlpha= end;
             return this;
-        },
-
-        calculateKeyFrameData : function( time ) {
-            time= this.interpolator.getPosition(time).y;
-            return  (this.startAlpha+time*(this.endAlpha-this.startAlpha));
-        },
-
-        /**
-         * @param prefix {string} browser vendor prefix
-         * @param name {string} keyframes animation name
-         * @param keyframessize {integer} number of keyframes to generate
-         * @override
-         */
-        calculateKeyFramesData : function(prefix, name, keyframessize) {
-
-            if ( typeof keyframessize==='undefined' ) {
-                keyframessize= 100;
-            }
-            keyframessize>>=0;
-
-            var i;
-            var kfr;
-            var kfd= "@-"+prefix+"-keyframes "+name+" {";
-
-            for( i=0; i<=keyframessize; i++ )    {
-                kfr= "" +
-                    (i/keyframessize*100) + "%" + // percentage
-                    "{" +
-                         "opacity: " + this.calculateKeyFrameData( i / keyframessize ) +
-                    "}";
-
-                kfd+= kfr;
-            }
-
-            kfd+="}";
-
-            return kfd;
         }
 	};
 
@@ -3705,12 +3487,6 @@ Function.prototype.bind= function() {
             return this.setPath(path);
         },
 
-        setFrameTime : function( startTime, duration ) {
-            CAAT.PathBehavior.superclass.setFrameTime.call(this, startTime, duration );
-            this.prevX= -1;
-            this.prevY= -1;
-            return this;
-        },
         /**
          * This method set an extra offset for the actor traversing the path.
          * in example, if you want an actor to traverse the path by its center, and not by default via its top-left corner,
@@ -3725,39 +3501,6 @@ Function.prototype.bind= function() {
             this.translateX= tx;
             this.translateY= ty;
             return this;
-        },
-
-        calculateKeyFrameData : function( time ) {
-            time= this.interpolator.getPosition(time).y;
-            var point= this.path.getPosition(time);
-            return "translateX("+(point.x-this.translateX)+"px) translateY("+(point.y-this.translateY)+"px)" ;
-        },
-
-        calculateKeyFramesData : function(prefix, name, keyframessize) {
-
-            if ( typeof keyframessize==='undefined' ) {
-                keyframessize= 100;
-            }
-            keyframessize>>=0;
-
-            var i;
-            var kfr;
-            var time;
-            var kfd= "@-"+prefix+"-keyframes "+name+" {";
-
-            for( i=0; i<=keyframessize; i++ )    {
-                kfr= "" +
-                    (i/keyframessize*100) + "%" + // percentage
-                    "{" +
-                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
-                    "}";
-
-                kfd+= kfr;
-            }
-
-            kfd+="}";
-
-            return kfd;
         },
 
         /**
@@ -3826,9 +3569,17 @@ Function.prototype.bind= function() {
                 ay/=modulo;
             }
 
-            actor.setLocation( point.x-this.translateX, point.y-this.translateY );
+            if ( this.doValueApplication ) {
+                actor.setLocation( point.x-this.translateX, point.y-this.translateY );
+                return { x: actor.x, y: actor.y };
+            } else {
+                return {
+                    x: point.x-this.translateX,
+                    y: point.y-this.translateY
+                };
+            }
 
-            return { x: actor.x, y: actor.y };
+
 		},
         /**
          * Get a point on the path.
@@ -3852,6 +3603,1154 @@ Function.prototype.bind= function() {
     extend( CAAT.PathBehavior, CAAT.Behavior, null);
 })();
 /**
+ * Created by Ibon Tolosana - @hyperandroid
+ * User: ibon
+ * Date: 16/11/11
+ * Time: 21:35
+ */
+
+/**
+ This file contains definitions for the keyframing interface.
+ It aims to override behavior functionality because their rigid configuration since a behavior instance
+ tightly couples the easing function, the application frame time and the property to be applied to.
+
+ keyframes will define each of these elements independently so that they can be reused across different
+ applications and actors.
+ */
+
+(function() {
+    CAAT.kfGenericBehavior= function(start, end, target, property, callback ) {
+        this.setValues(start, end, target, property, callback );
+        return this;
+    };
+
+    CAAT.kfGenericBehavior.prototype= {
+
+
+        start:      0,
+        end:        0,
+        target:     null,
+        property:   null,
+        callback:   null,
+
+        /**
+         * Sets the target objects property to the corresponding value for the given time.
+         * If a callback function is defined, it is called as well.
+         *
+         * @param time {number} the scene time to apply the behavior at.
+         * @param actor {CAAT.Actor} a CAAT.Actor object instance.
+         */
+        apply : function(time, actor) {
+            var value= this.start+ time*(this.end-this.start);
+            if ( this.callback ) {
+                this.callback( value, this.target, actor );
+            }
+
+            if ( this.property ) {
+                this.target[this.property]= value;
+            }
+        },
+        /**
+         * Defines the values to apply this behavior.
+         *
+         * @param start {number} initial behavior value.
+         * @param end {number} final behavior value.
+         * @param target {object} an object. Usually a CAAT.Actor.
+         * @param property {string} target object's property to set value to.
+         * @param callback {function} a function of the form <code>function( target, value )</code>.
+         */
+        setValues : function( start, end, target, property, callback ) {
+            this.start= start;
+            this.end= end;
+            this.target= target;
+            this.property= property;
+            this.callback= callback;
+            return this;
+        }
+    };
+
+
+})();
+
+(function() {
+
+    /**
+     *
+     * @param startAlpha {number}
+     * @param endAlpha {number}
+     *
+     * @constructor
+     */
+    CAAT.kfAlphaBehavior= function(startAlpha, endAlpha)   {
+        this.setValues(startAlpha,endAlpha);
+        return this;
+    };
+
+    CAAT.kfAlphaBehavior.prototype= {
+
+        startAlpha: 1,
+        endAlpha:   1,
+
+        /**
+         *
+         * @param startAlpha {number} starting angle.
+         * @param endAlpha {number} ending angle.
+         */
+        setValues: function( startAlpha, endAlpha ) {
+            if ( typeof startAlpha==='undefined' ) {
+                startAlpha= 1;
+            }
+            if ( typeof endAlpha==='undefined' ) {
+                endAlpha= 1;
+            }
+
+            this.startAlpha=    startAlpha;
+            this.endAlpha=      endAlpha;
+
+            return this;
+        },
+
+        /**
+         * Get this keyframe rotation value for the given time.
+         *
+         * @param time {number}
+         *
+         * @return {number}
+         *
+         */
+        getValueForTime : function( time ) {
+            return this.startAlpha + time * (this.endAlpha - this.startAlpha);
+        },
+
+        apply: function( time, actor ) {
+            var value= this.getValueForTime(time);
+            actor.setAlpha( value );
+            return value;
+        },
+
+        calculateCSS3Keyframe : function( time ) {
+            return  this.getValueForTime(time);
+        },
+
+        /**
+         * @param prefix {string} browser vendor prefix
+         * @param name {string} keyframes animation name
+         * @param keyframessize {integer} number of keyframes to generate
+         * @override
+         */
+        calculateKeyCSS3Frames : function(name, interpolator, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+CAAT.CSS.PREFIX+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "opacity: " + this.calculateCSS3Keyframe( interpolator.getPosition( i / keyframessize ).y ) +
+                    "}";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
+        },
+
+        getCSS3PropertyName : function() {
+            return "opacity";
+        }
+
+    };
+
+})();
+
+(function() {
+    CAAT.kfPathBehavior= function( path, modifiers ) {
+        if ( typeof path!=='undefined' ) {
+            this.path= path;
+        }
+        if ( typeof modifiers==='undefined' ) {
+            modifiers= new CAAT.kfPathBehaviorModifiers();
+        }
+        this.modifiers= modifiers;
+
+        return this;
+    };
+
+    CAAT.kfPathBehaviorModifiers= function() {
+
+        this.autorotate=    false;  // rotate tangentially traversing actor
+        this.relative=      false;  // make this path relative to x,y position. that means actor location will
+                                    // be set to path.getPosition(time).offset(x,y).
+        this.x=             0;      // x,y are used to back up actor position.
+        this.y=             0;
+
+        return this;
+    };
+
+    CAAT.kfPathBehavior.prototype= {
+
+        path:       null,
+        modifiers:  null,
+
+        /**
+         *
+         * @param path {CAAT.Path}
+         * @param modifiers {CAAT.kfPathBehaviorModifiers} modifiers to behavior application.
+         *
+         */
+        setValues : function( path, modifiers ) {
+
+            if ( typeof modifiers==='undefined' ) {
+                modifiers= new kfPathBehaviorModifiers();
+            }
+
+            modifiers.x>>=0;
+            modifiers.y>>=0;
+
+            this.path=      path;
+            this.modifiers= modifiers;
+
+            return this;
+        },
+
+        /**
+         *
+         * @param time
+         *
+         * @return  {  { x: {number}, y: {number} }
+         */
+        getValueForTime : function( time ) {
+            var value= this.path.getPosition(time);
+            var mod= this.modifiers;
+
+            if ( mod.relative ) {
+                value.x+= mod.x;
+                value.y+= mod.y;
+            }
+
+            return value;
+        },
+
+        /**
+         *
+         * @param time
+         * @param actor
+         */
+        apply : function( time, actor ) {
+            var value= this.getValueForTime( time );
+            actor.setLocation( value.x, value.y );
+        },
+
+        calculateCSS3Keyframe : function( time ) {
+            var point= this.getValueForTime(time);
+
+            return "translateX("+point.x+"px) translateY("+point.y+"px)" ;
+        },
+
+        calculateCSS3Keyframes : function( name, interpolator, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var time;
+            var kfd= "@-"+CAAT.CSS.PREFIX+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+CAAT.CSS.PREFIX+"-transform: " + this.calculateCSS3Keyframe(interpolator.getPosition(i/keyframessize).y) +
+                    "}";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
+        },
+
+        getCSS3PropertyName : function() {
+            return "translate";
+        }
+
+    };
+
+})();
+
+(function() {
+
+    CAAT.kfRotateBehavior= function(startAngle, endAngle, anchorX, anchorY)   {
+        this.setValues(startAngle, endAngle, anchorX, anchorY);
+        return this;
+    };
+
+    CAAT.kfRotateBehavior.prototype= {
+
+        startAngle: 0,
+        endAngle:   0,
+        anchorX:    .5,
+        anchorY:    .5,
+
+        /**
+         *
+         * @param startAngle {number} starting angle.
+         * @param endAngle {number} ending angle.
+         * @param anchorX {number} anchor x position.
+         * @param anchorY {number} anchor y position.
+         */
+        setValues: function( startAngle, endAngle, anchorX, anchorY ) {
+
+            if ( typeof startAngle==='undefined' ) {
+                startAngle=0;
+            }
+            if ( typeof endAngle==='undefined' ) {
+                endAngle=0;
+            }
+            if ( typeof anchorX==='undefined' ) {
+                anchorX= .5;
+            }
+            if ( typeof anchorY==='undefined' ) {
+                anchorY= .5;
+            }
+
+            this.startAngle=    startAngle;
+            this.endAngle=      endAngle;
+            this.anchorX= anchorX;
+            this.anchorY= anchorY;
+
+            return this;
+        },
+
+        /**
+         * Get this keyframe rotation value for the given time.
+         *
+         * @param time {number}
+         *
+         * @return {number}
+         *
+         */
+        getValueForTime : function( time ) {
+            return this.startAngle + time*(this.endAngle-this.startAngle);
+        },
+
+        apply: function( time, actor ) {
+            var value= this.getValueForTime( time );
+            actor.setRotationAnchored( value, this.anchorX, this.anchorY );
+            return value;
+        },
+
+        calculateCSS3Keyframe : function( time ) {
+            var value= this.getValueForTime(time);
+            return "rotate(" + value +"rad)";
+        },
+
+        /**
+         * @param prefix {string} browser vendor prefix
+         * @param name {string} keyframes animation name
+         * @param keyframessize {integer} number of keyframes to generate
+         * @override
+         */
+        calculateCSS3Keyframes : function( name, interpolator, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+CAAT.CSS.PREFIX+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+CAAT.CSS.PREFIX+"-transform:" + this.calculateCSS3Keyframe(interpolator.getPosition(i/keyframessize).y) +
+                    "}\n";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
+        },
+
+        getCSS3PropertyName : function() {
+            return "rotate";
+        }
+
+    };
+
+})();
+
+(function() {
+
+    CAAT.kfScaleBehavior= function( startScaleX, endScaleX, startScaleY, endScaleY, anchorX, anchorY )    {
+        this.setValues( startScaleX, endScaleX, startScaleY, endScaleY, anchorX, anchorY );
+        return this;
+    };
+
+    CAAT.kfScaleBehavior.prototype= {
+
+        startScaleX:  1,
+        endScaleX:  1,
+        startScaleY:  1,
+        endScaleY:  1,
+        anchorX:    .5,
+        anchorY:    .5,
+
+        setValues: function( startScaleX, endScaleX, startScaleY, endScaleY, anchorX, anchorY ) {
+            if ( typeof startScaleX==='undefined' ) {
+                startScaleX=1;
+            }
+            if ( typeof startScaleY==='undefined' ) {
+                startScaleY=1;
+            }
+            if ( typeof endScaleX==='undefined' ) {
+                endScaleX=1;
+            }
+            if ( typeof endScaleY==='undefined' ) {
+                endScaleY=1;
+            }
+            if ( typeof anchorX==='undefined' ) {
+                anchorX= .5;
+            }
+            if ( typeof anchorY==='undefined' ) {
+                anchorY= .5;
+            }
+
+            this.startScaleX=   startScaleX;
+            this.endScaleX=     endScaleX;
+            this.startScaleY=   startScaleY;
+            this.endScaleY=     endScaleY;
+            this.anchorX=       anchorX;
+            this.anchorY=       anchorY;
+
+            return this;
+        },
+
+        /**
+         * Get this keyframe rotation value for the given time.
+         * @param time {number}
+         *
+         * @return { { scaleX: {number}, scaleY: {number} }
+         */
+        getValueForTime : function( time ) {
+            var scaleX= this.startScaleX + time*(this.endScaleX-this.startScaleX);
+            var scaleY= this.startScaleY + time*(this.endScaleY-this.startScaleY);
+
+            return {
+                scaleX: scaleX,
+                scaleY: scaleY
+            };
+        },
+
+        apply: function( time, actor ) {
+
+            var scaleX= this.startScaleX + time*(this.endScaleX-this.startScaleX);
+            var scaleY= this.startScaleY + time*(this.endScaleY-this.startScaleY);
+
+            // Firefox 3.x & 4, will crash animation if either scaleX or scaleY equals 0.
+            if (0===scaleX ) {
+                scaleX=0.01;
+            }
+            if (0===scaleY ) {
+                scaleY=0.01;
+            }
+
+            actor.setScaleAnchored( scaleX, scaleY, this.anchorX, this.anchorY );
+
+            return {
+                scaleX: scaleX,
+                scaleY: scaleY
+            };
+        },
+
+        calculateCSS3Keyframe : function( time ) {
+            var value= this.getValueForTime(time);
+            return "scaleX("+value.scaleX+") scaleY("+value.scaleY+")";
+        },
+
+        calculateCSS3Keyframes : function( name, interpolator, keyframessize ) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+CAAT.CSS.PREFIX+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+CAAT.CSS.PREFIX+ "-transform:" + this.calculateCSS3Keyframe(interpolator.getPosition(i/keyframessize).y) +
+                    "}\n";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
+        },
+
+        getCSS3PropertyName : function() {
+            return "scale";
+        }
+    }
+
+})();
+
+
+(function() {
+
+    var __index= 0;
+    
+    CAAT.Keyframes= function( id, behavior, interpolator ) {
+
+        this.id= id;
+
+        this.onStart= [];
+        this.onApply= [];
+        this.onExpire=[];
+
+        if ( typeof behavior!=='undefined' ) {
+            this.setBehavior(behavior);
+        }
+        if ( typeof interpolator!=='undefined' ) {
+            this.setInterpolator(interpolator);
+        }
+
+        return this;
+    };
+
+    CAAT.Keyframes.Status= {
+        NOT_STARTED:    0,
+        STARTED:        1,
+        EXPIRED:        2
+    };
+
+    var DefaultInterpolator=
+        new CAAT.Interpolator().createLinearInterpolator( false );
+    var DefaultPingPongInterpolator=
+        new CAAT.Interpolator().createLinearInterpolator( true );
+
+    CAAT.Keyframes.prototype= {
+
+        id:             null,
+
+        behavior:       null,                               // what to apply
+        interpolator:   DefaultInterpolator,                // easing function
+        status :        CAAT.Keyframes.Status.NOT_STARTED,   // keyframes status.
+        cycle:          false,                              // apply forever ?
+
+        startOffset:    0,                                  //
+
+        asCSS:          false,                              // let the hardware manage this keyframe.
+        cssKeyframesName:null,
+
+        onStart:        null,                               // keyframe onStart registered callback
+        onApply:        null,                               // keyframe onApplication registered callback
+        onExpire:       null,                               // keyframe onExpiration registered callback
+
+
+        /**
+         * Value between 0 and 1. 0 means start, 1 means duration.
+         * @param offset {number}
+         */
+        setStartOffset : function( offset ) {
+            this.startOffset= offset;
+            return this;
+        },
+
+        getId : function() {
+            return this.id;
+        },
+
+        /**
+         *
+         * @param id {object}
+         */
+        setId : function( id ) {
+            this.id= id;
+            return this;
+        },
+
+        /**
+         *
+         * @param behavior {CAAT.kfAlphaBehavior|CAAT.kfRotateBehavior|CAAT.kfScaleBehavior|CAAT.kfPathBehavior}
+         */
+        setBehavior : function( behavior ) {
+            this.behavior= behavior;
+            return this;
+        },
+
+        getInterpolator : function() {
+            return this.interpolator;
+        },
+
+        getBehavior : function() {
+            return this.behavior;
+        },
+
+        /**
+         * Sets the default interpolator to a linear ramp.
+         *
+         * @return this
+         */
+        setDefaultInterpolator : function() {
+            this.interpolator= DefaultInterpolator;
+            return this;
+        },
+
+        /**
+         * Sets default interpolator to be linear from 0..1 and from 1..0.
+         *
+         * @return this
+         */
+        setPingPong : function() {
+            this.interpolator= DefaultPingPongInterpolator;
+            return this;
+        },
+
+        /**
+         *
+         * @param status {CAAT.Keyframe.Status}
+         *
+         * @return this
+         *
+         * @private
+         */
+        setStatus : function( status ) {
+            this.status= status;
+
+            return this;
+        },
+
+        /**
+         * Set this keyframe ready to be used.
+         *
+         * @return this
+         */
+		setFrameTime : function( ) {
+            this.setStatus( CAAT.Keyframes.Status.NOT_STARTED );
+            return this;
+		},
+
+        /**
+         * Avoid application of this keyframe.
+         *
+         * @return this
+         */
+        setOutOfFrameTime : function() {
+            this.setStatus( CAAT.Keyframes.Status.EXPIRED );
+            return this;
+        },
+
+        /**
+         * Changes this keyframe's default interpolator to another instance of CAAT.Interpolator.
+         *
+         * @param interpolator {CAAT.Interpolator} instance.
+         *
+         * @return this
+         */
+		setInterpolator : function(interpolator) {
+			this.interpolator= interpolator;
+
+            return this;
+		},
+
+        /**
+         * Apply a keyframe.
+         * This method notifies registered observers about keyframe rules application.
+         * If CSS3 transitions are enabled trasnformations are being applied by the browser itself. This
+         * means that instead applying the behavior, we're getting the just supposed application value. This
+         * value is notified to onApply registered observers and it may not be the exact just applied value.
+         * Take this into consideration when trying to thoroughly synchronize hardware animations and javascript.
+         *
+         * @param time {number} the scene time.
+         * @param actor {CAAT.Actor} actor instance.
+         * @param startTime {number} keyframe application start time
+         * @param duration {number} keyframe duration time
+         *
+         * @private
+         */
+		apply : function( time, actor, startTime, duration, cycle )	{
+            time+= this.startOffset*duration;
+            
+            var orgTime= time;
+			if ( this.isInTime(time,actor,startTime,duration, cycle) )	{
+
+                time= time-startTime;
+                if ( cycle )	{
+                    time%=duration;
+                }
+                time=  this.interpolator.getPosition(time/duration).y;
+
+                var value;
+                value= this.behavior.apply( time, actor );
+
+                for( var i= this.onApply.length-1; i>=0; i-- ) {
+                    this.onApply[i]( this, orgTime, actor, value, time );
+                }
+			}
+
+            return this;
+		},
+
+        /**
+         * Get this behavior value for a given normalized time.
+         * @param time
+         */
+        getValueForTime : function(time) {
+            time= this.interpolator.getPosition(time).y;
+            return this.behavior.getValueForTime( time );
+        },
+
+        /**
+         *
+         * @param f {function( keyframe {CAAT.Keyframe}, time {number}, actor {CAAT.Actor} )}
+         */
+        addOnStartCallback : function(f) {
+            this.onStart.push( f );
+            return this;
+        },
+
+        /**
+         *
+         * @param f {function( keyframe {CAAT.Keyframe}, time {number}, actor {CAAT.Actor}, value {object}, normalizedTime {number} )}
+         */
+        addOnApplyCallback : function(f) {
+            this.onApply.push(f);
+            return this;
+        },
+
+        /**
+         *
+         * @param f {function( keyframe {CAAT.Keyframe}, time {number}, actor {CAAT.Actor} )}
+         */
+        addOnExpireCallback : function(f) {
+            this.onExpire.push(f);
+            return this;
+        },
+
+        /**
+         * Chekcs whether the keyframe is in scene time.
+         * In case it gets out of scene time, and has not been tagged as expired, it is expired and observers
+         * are notified about that fact.
+         * @param currentTime {number} the scene time.
+         * @param actor {CAAT.Actor} the actor to apply to.
+         *
+         * @return {boolean} whether the keyframe is in scene time.
+         *
+         * @private
+         */
+		isInTime : function( currentTime, actor, startTime, duration, cycle ) {
+
+            var S= CAAT.Keyframes.Status;
+            var i;
+
+			if ( this.status===S.EXPIRED || startTime<0 )	{
+				return false;
+			}
+
+			if ( cycle )	{
+				if ( currentTime>=startTime )	{
+					currentTime= (currentTime-startTime)%duration + startTime;
+				}
+			}
+
+            // BUGBUG if css3 transitions are enabled, this 'transitionEnd' listener expires the
+            // keyframe.
+			if ( currentTime>startTime+duration )	{
+				if ( this.status!==S.EXPIRED )	{
+					this.setExpired(actor,currentTime,startTime,duration);
+				}
+
+				return false;
+			}
+
+            if ( this.status===S.NOT_STARTED ) {
+                this.status=S.STARTED;
+                if ( this.onStart ) {
+                    for( i=this.onStart.length-1; i>=0; i-- ) {
+                        this.onStart[i]( this, actor, currentTime );
+                    }
+                }
+            }
+
+			return startTime<=currentTime && currentTime<startTime+duration;
+		},
+
+        /**
+         * Sets this keyframe as expired.
+         * @param actor {CAAT.Actor}
+         * @param time {integer} the scene time.
+         *
+         * @private
+         */
+		setExpired : function(actor,time,startTime,duration) {
+
+            var i;
+
+            // set for final interpolator value.
+            this.status= CAAT.Keyframes.Status.EXPIRED;
+			this.behavior.apply( this.interpolator.getPosition( 1 ).y, actor);
+
+            for( i=this.onExpire.length-1; i>=0; i-- ) {
+                this.onExpire[i](this,actor,time);
+            }
+		},
+
+        calculateCSS3Keyframe : function( time ) {
+            return this.behavior.calculateCSS3Keyframe( time );
+        },
+
+        calculateCSS3Keyframes : function( name, size ) {
+            if ( this.hasCSS3Keyframes() ) {
+                return this.behavior.calculateCSS3Keyframes( name, size );
+            }
+        },
+
+        hasCSS3Keyframes : function() {
+            return !(this.behavior instanceof CAAT.kfGenericBehavior);
+        },
+
+        /**
+         * Clone this keyframe. Listener handlers are not copied.
+         */
+        clone : function() {
+            return new CAAT.Keyframes(
+                this.getBehavior(),
+                this.getInterpolator() ).
+                setName( this.getName() );
+        },
+
+        getCSS3PropertyName : function() {
+            return this.behavior.getCSS3PropertyName();
+        }
+
+    };
+
+})();
+
+(function() {
+
+    CAAT.KeyframesDescriptor = function( keyframe, startTime, duration, cycle ) {
+
+        this.keyframe=  keyframe;
+        this.startTime= startTime;
+        this.duration=  duration;
+        this.cycle=     cycle;
+        this.id=        keyframe.getId();
+
+        this.schedule= function( start, duration ) {
+            this.startTime= start;
+            this.duration= duration;
+            return this;
+        };
+
+        this.setCycle= function( cycle ) {
+            this.cycle= cycle;
+        };
+
+        return this;
+    };
+
+})();
+
+(function() {
+
+    CAAT.KeyframesContainer = function() {
+        CAAT.KeyframesContainer.superclass.constructor.call(this);
+        this.keyframes= [];
+        return this;
+    };
+
+    CAAT.KeyframesContainer.prototype= {
+
+        keyframes :         null,
+        referenceDuration:  1,
+
+        setReferenceDuration : function(rd) {
+            this.referenceDuration= rd;
+        },
+
+        getReferenceDuration : function() {
+            return this.referenceDuration;
+        },
+
+        /**
+         * Clone this keyframeContainer and all its contained keyframes. Listener handlers are not copied.
+         */
+        clone : function() {
+
+            var kf= new CAAT.KeyframesContainer().
+                setFrameTime( ).
+                setInterpolator( this.getInterpolator() ).
+                setName( this.getName() ).
+                setReferenceDuration( this.getReferenceDuration() );
+
+            for( var i=0; i<this.keyframes.length; i++ ) {
+                kf.addKeyframes( this.keyframes[i].clone() );
+            }
+
+            return kf;
+        },
+
+        /**
+         * Add a keyframe to this container.
+         *
+         * @param keyframe {CAAT.KeyframeDescriptor}
+         */
+		addKeyframes : function( keyframe, startTime, duration, cycle )	{
+            var me= this;
+
+			this.keyframes.push( new CAAT.KeyframesDescriptor(
+                keyframe,
+                startTime,
+                duration,
+                cycle
+            ));
+
+			keyframe.addOnExpireCallback(
+                function( keyframe, actor, time ) {
+                    keyframe.setStatus( CAAT.Keyframes.Status.STARTED );
+                });
+
+            return this;
+		},
+        /**
+         * Applies every contained keyframe.
+         * @param time an integer indicating the time to apply the contained behaviors at.
+         * @param actor a CAAT.Actor instance indicating the actor to apply the behaviors for.
+         */
+		apply : function( time, actor, startTime, duration, cycle ) {
+			if ( this.isInTime(time,actor, startTime, duration) )	{
+				time-= startTime;
+				if ( cycle ){
+					time%= duration;
+				}
+
+                var f= duration/this.referenceDuration;
+                var kfs= this.keyframes;
+				for( var i=0; i<kfs.length; i++ )	{
+                    var kf= kfs[i];
+					kf.keyframe.apply(time, actor, kf.startTime*f, kf.duration*f );
+				}
+			}
+		},
+
+        setExpired : function(actor,time,startTime,duration) {
+            CAAT.KeyframesContainer.superclass.setExpired.call(this,actor,time);
+
+            var i;
+            var kfs= this.keyframes;
+
+            for( var i=0; i<kfs.length; i++ ) {
+                var bb= kfs[i];
+                if ( bb.keyframe.status!==CAAT.Keyframes.Status.EXPIRED ) {
+                    bb.keyframe.setExpired(actor,time-startTime);
+                }
+            }
+
+            return this;
+        },
+
+        setFrameTime : function( )  {
+            CAAT.KeyframesContainer.superclass.setFrameTime.call(this);
+
+            var bh= this.keyframes;
+            for( var i=0; i<bh.length; i++ ) {
+                bh[i].keyframe.setFrameTime();
+            }
+            return this;
+        },
+
+        calculateCSS3Keyframe : function(referenceTime, prevValues)  {
+
+            var S= CAAT.Keyframes.Status;
+            var i;
+            var keyframesDescriptor;
+
+            var retValue= {};
+            var time;
+            var cssRuleValue;
+            var cssProperty;
+            var property;
+            var keyframes;
+
+            for( i=0; i<this.keyframes.length; i++ ) {
+                keyframesDescriptor= this.keyframes[i];
+                if ( keyframesDescriptor.keyframe.hasCSS3Keyframes() && keyframesDescriptor.status!==S.EXPIRED ) {
+
+                    keyframes= keyframesDescriptor.keyframe;
+
+                    // ajustar tiempos:
+                    //  time es tiempo normalizado a duración de comportamiento contenedor.
+                    //      1.- desnormalizar
+                    time= referenceTime * this.referenceDuration;
+
+                    //      2.- calcular tiempo relativo de comportamiento respecto a contenedor
+                    if ( keyframesDescriptor.startTime<=time && keyframesDescriptor.startTime+keyframesDescriptor.duration>=time ) {
+                        //      3.- renormalizar tiempo reltivo a comportamiento.
+                        time= (time-keyframesDescriptor.startTime)/keyframesDescriptor.duration;
+
+                        //      4.- obtener valor de comportamiento para tiempo normalizado relativo a contenedor
+                        cssRuleValue= keyframes.calculateCSS3Keyframe(time);
+                        cssProperty= keyframes.getCSS3PropertyName();
+
+                        if ( typeof retValue[cssProperty] ==='undefined' ) {
+                            retValue[cssProperty]= "";
+                        }
+
+                        //      5.- asignar a objeto, par de propiedad/valor css
+                        retValue[cssProperty]+= cssRuleValue+" ";
+                    }
+
+                }
+            }
+
+
+            var tr="";
+            var pv;
+            function xx(pr) {
+                if ( retValue[pr] ) {
+                    tr+= retValue[pr];
+                } else {
+                    if ( prevValues ) {
+                        pv= prevValues[pr];
+                        if ( pv ) {
+                            tr+= pv;
+                            retValue[pr]= pv;
+                        }
+                    }
+                }
+
+            }
+
+            xx('translate');
+            xx('rotate');
+            xx('scale');
+
+            var keyFrameRule= "";
+
+            if ( tr ) {
+                keyFrameRule='-'+CAAT.CSS.PREFIX+'-transform: '+tr+';';
+            }
+
+            tr="";
+            xx('opacity');
+            if( tr ) {
+                keyFrameRule+= ' opacity: '+tr+';';
+            }
+
+            return {
+                rules: keyFrameRule,
+                ret: retValue
+            };
+        },
+
+        calculateCSS3Keyframes : function(name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize=100;
+            }
+
+            var i;
+            var prevValues= null;
+            var kfd= "@-"+CAAT.CSS.PREFIX+"-keyframes "+name+" {";
+            var ret;
+            var time;
+            var kfr;
+
+            for( i=0; i<=keyframessize; i++ )    {
+                time= this.interpolator.getPosition(i/keyframessize).y;
+                ret= this.calculateCSS3Keyframe(time, prevValues);
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" + ret.rules + "}\n";
+
+                prevValues= ret.ret;
+                kfd+= kfr;
+            }
+
+            kfd+= "}";
+
+            return kfd;
+        }
+    };
+
+    extend( CAAT.KeyframesContainer, CAAT.Keyframes );
+
+})();
+
+(function() {
+
+    CAAT.KeyframesRegistry= {};
+
+    var KFR= CAAT.KeyframesRegistry;
+    var registeredKeyframes= {};
+
+    /**
+     * Register a keyframe for reuse.
+     * A new keyframe is returned which has a reference to the shame behavior and interpolator than the originally
+     * registered keyframe.
+     *
+     * @param name {string}
+     * @param keyframes {CAAT.Keyframes}
+     */
+    CAAT.KeyframesRegistry.register= function( keyframes ) {
+        var prev= registeredKeyframes[keyframes.getId()];
+        registeredKeyframes[keyframes.getId()]= keyframes;
+
+        return prev;
+    };
+
+    CAAT.KeyframesRegistry.getKeyframes= function( id ) {
+        return registeredKeyframes[id];
+    };
+
+    /**
+     * Copies a given keyframe animation.
+     * 
+     * @param name
+     * @param startTime
+     * @param duration
+     */
+    CAAT.KeyframesRegistry.copyKeyframe= function( name, startTime, duration ) {
+        var keyframe= registeredKeyframes[name];
+        if ( typeof keyframe==='undefined' ) {
+            return null;
+        }
+
+        var kf= keyframe.clone();
+        if ( typeof startTime!=='undefined' && typeof duration!=='undefined' ) {
+            kf.setFrameTime( startTime, duration );
+        }
+        return kf;
+    };
+
+
+})();/**
  * See LICENSE file.
  *
  * This object manages CSS3 transitions reflecting applying behaviors.
@@ -3876,35 +4775,49 @@ Function.prototype.bind= function() {
             }
         }
 
+        CAAT.CSS.PROP_ANIMATION= '-'+prefix+'-animation';
+
         return prefix;
     })();
 
+    CAAT.CSS.applyKeyframe= function( domElement, name, secs, forever ) {
+        domElement.style[CAAT.CSS.PROP_ANIMATION]= name+' '+(secs/1000)+'s linear both '+(forever ? 'infinite' : '') ;
+    };
+
+    CAAT.CSS.unregisterKeyframes= function( name ) {
+        var index= CAAT.CSS.getCSSKeyframesIndex(name);
+        if ( -1!==index ) {
+            document.styleSheets[0].deleteRule( index );
+        }
+    };
+
     /**
      *
-     * @param keyframeObject {CAAT.Keyframe}
+     * @param kfDescriptor {object{ name{string}, behavior{CAAT.Behavior}, size{!number}, overwrite{boolean}}
      */
-    CAAT.CSS.addKeyframes= function(name, behavior, size) {
+    CAAT.CSS.registerKeyframes= function( kfDescriptor ) {
+
+        var name=       kfDescriptor.name;
+        var behavior=   kfDescriptor.behavior;
+        var size=       kfDescriptor.size;
+        var overwrite=  kfDescriptor.overwrite;
+
+        if ( typeof name==='undefined' || typeof behavior==='undefined' ) {
+            throw 'Keyframes must be defined by a name and a CAAT.Behavior instance.';
+        }
 
         if ( typeof size==='undefined' ) {
             size= 100;
         }
-
-        // find if keyframes has already a name set.
-        var cssRulesIndex= -1;
-        var oldName= KeyframesObject.getCSSKeyframesName();
-        if ( oldName ) {
-            cssRulesIndex= CAAT.CSS.getCSSKeyframesIndex(oldName);
+        if ( typeof overwrite==='undefined' ) {
+            overwrite= false;
         }
 
-        // create a random name.
-        // this is due to some of the css3 oddities. It seems that a DOM element takes information
-        // from the @-keyframes element once. That means, that even i can set new keyframeRules for
-        // the @-keyframes element, the DOM doesn't get notified about it.
-        // If i reset the DOM element with -[webkit|moz]-transition with the same one, it somehow
-        // decides the @-keyframes is the same and does not update the transition.
-        // So, i'm building new names to the supplied CAAT.Keyframe element, and removing the
-        // previously created from the stylesheet.
-        name= name + new Date().getTime();
+        // find if keyframes has already a name set.
+        var cssRulesIndex= CAAT.CSS.getCSSKeyframesIndex(name);
+        if (-1!==cssRulesIndex && !overwrite) {
+            return;
+        }
 
         var keyframesRule= behavior.calculateKeyframesData(CAAT.CSS.PREFIX, name, size );
 
@@ -4488,6 +5401,7 @@ var cp1= proxy(
      */
 	CAAT.Actor = function() {
 		this.behaviorList= [];
+        this.keyframesList= [];
         this.lifecycleListenerList= [];
         this.AABB= new CAAT.Rectangle();
         this.viewVertices= [
@@ -4513,12 +5427,31 @@ var cp1= proxy(
 		return this;
 	};
 
+    /**
+     *
+     * @param keyframeDesc {
+     *   keyframe:  {CAAT.Keyframne}
+     *   startTime: {number}
+     *   duration:  {number}
+     * }
+     */
+    ActorKeyframeDescriptor= function( keyframeDesc ) {
+
+        this.behavior= keyframeDesc.behavior;
+
+        return this;
+    }
+
 	CAAT.Actor.prototype= {
 
         tmpMatrix :             null,
 
         lifecycleListenerList:	null,   // Array of life cycle listener
+
+        //  @deprecated
         behaviorList:           null,   // Array of behaviors to apply to the Actor
+
+        keyframesList:          null,
         parent:					null,   // Parent of this Actor. May be Scene.
 		x:						0,      // x position on parent. In parent's local coord. system.
 		y:						0,      // y position on parent. In parent's local coord. system.
@@ -4865,11 +5798,18 @@ var cp1= proxy(
         /**
          * Removes all behaviors from an Actor.
          * @return this
+         *
+         * @deprecated
          */
 		emptyBehaviorList : function() {
 			this.behaviorList=[];
             return this;
 		},
+
+        emptyKeyframesList : function() {
+            this.keyframesList= [];
+        },
+
         /**
          * Caches a fillStyle in the Actor.
          * @param style a valid Canvas rendering context fillStyle.
@@ -4993,49 +5933,36 @@ var cp1= proxy(
 
 			switch( anchor ) {
             case this.ANCHOR_CENTER:
-//                tx= this.width/2;
-//                ty= this.height/2;
-                    tx= .5;
-                    ty= .5;
+                tx= .5;
+                ty= .5;
                 break;
             case this.ANCHOR_TOP:
-//                tx= this.width/2;
-                    tx= .5;
+                tx= .5;
                 ty= 0;
                 break;
             case this.ANCHOR_BOTTOM:
-//                tx= this.width/2;
-//                ty= this.height;
-                    tx= .5;
-                    ty= 1;
+                tx= .5;
+                ty= 1;
                 break;
             case this.ANCHOR_LEFT:
-//                tx= 0;
-//                ty= this.height/2;
-                    tx= 0;
-                    ty= .5;
+                tx= 0;
+                ty= .5;
                 break;
             case this.ANCHOR_RIGHT:
-//                tx= this.width;
-//                ty= this.height/2;
-                    tx= 1;
-                    ty= .5;
+                tx= 1;
+                ty= .5;
                 break;
             case this.ANCHOR_TOP_RIGHT:
-//                tx= this.width;
-                    tx= 1;
+                tx= 1;
                 ty= 0;
                 break;
             case this.ANCHOR_BOTTOM_LEFT:
                 tx= 0;
-//                ty= this.height;
-                    ty= 1;
+                ty= 1;
                 break;
             case this.ANCHOR_BOTTOM_RIGHT:
-//                tx= this.width;
-//                ty= this.height;
-                    tx= 1;
-                    ty= 1;
+                tx= 1;
+                ty= 1;
                 break;
             case this.ANCHOR_TOP_LEFT:
                 tx= 0;
@@ -5191,12 +6118,75 @@ var cp1= proxy(
 		create : function()	{
             return this;
 		},
+
+        /**
+         *
+         * @param keyframeDescriptor {CAAT.KeyframeDescriptor}
+         */
+        addKeyframes : function( keyframe, start, duration, cycle ) {
+            this.keyframesList.push( new CAAT.KeyframesDescriptor( keyframe, start, duration, cycle ) );
+        },
+
+        scheduleKeyframes : function( id, startTime, duration ) {
+            var kf= this.getKeyframesDescriptor(id);
+            if ( kf ) {
+                kf.schedule( startTime, duration );
+            }
+            return this;
+        },
+
+        /**
+         * This method is potentially risky and instead removeKeyframeById should be used.
+         * Removes the first ocurrence of the given keyframe.
+         *
+         * @param keyframe {CAAT.Keyframe}
+         */
+        removeKeyframes : function( keyframe ) {
+            var kfs= this.keyframesList;
+            for( var i=0; i<kfs.length; i++ ) {
+                if ( kfs[i].keyframe===keyframe ) {
+                    kfs.splice(i,1);
+                    return this;
+                }
+            }
+
+            return this;
+        },
+
+        removeKeyframesById : function( keyframe ) {
+            var kfs= this.keyframesList;
+            for( var i=0; i<kfs.length; i++ ) {
+                if ( kfs[i].id===id ) {
+                    kfs.splice(i,1);
+                    return this;
+                }
+            }
+
+            return this;
+        },
+
+        getKeyframesDescriptor : function( id ) {
+            var kfs= this.keyframesList;
+            var kf;
+            for( var i=0; i<kfs.length; i++ ) {
+                kf= kfs[i];
+                if ( kf.id===id ) {
+                    return kf;
+                }
+            }
+
+            return null;
+
+        },
+
         /**
          * Add a Behavior to the Actor.
          * An Actor accepts an undefined number of Behaviors.
          *
          * @param behavior {CAAT.Behavior} a CAAT.Behavior instance
          * @return this
+         *
+         * @deprecated
          */
 		addBehavior : function( behavior )	{
 			this.behaviorList.push(behavior);
@@ -5556,6 +6546,15 @@ var cp1= proxy(
 			for( i=0; i<this.behaviorList.length; i++ )	{
 				this.behaviorList[i].apply(time,this);
 			}
+
+            var kfs= this.keyframesList;
+            var kfi;
+            var kf;
+            for( i=0; i<kfs.length; i++ ) {
+                kfi= kfs[i];
+                kf= kfi.keyframe;
+                kf.apply( time, this, kfi.startTime, kfi.duration, kfi.cycle );
+            }
 
             /*
                 If we have a mask applied, apply behaviors as well.
@@ -5924,7 +6923,6 @@ var cp1= proxy(
             this.iOver=         iOver || iNormal;
             this.iPress=        iPress || iNormal;
             this.iDisabled=     iDisabled || iNormal;
-            this.iCurrent=      iNormal;
             this.fnOnClick=     fn;
             this.enabled=       true;
 
@@ -5937,6 +6935,7 @@ var cp1= proxy(
              */
             this.setEnabled= function( enabled ) {
                 this.enabled= enabled;
+                this.setSpriteIndex( this.enabled ? this.iNormal : this.iDisabled );
             };
 
             /**
@@ -5956,6 +6955,10 @@ var cp1= proxy(
              * @ignore
              */
             this.mouseEnter= function(mouseEvent) {
+                if ( !this.enabled ) {
+                    return;
+                }
+
                 if ( this.dragging ) {
                     this.setSpriteIndex( this.iPress );
                 } else {
@@ -5970,6 +6973,10 @@ var cp1= proxy(
              * @ignore
              */
             this.mouseExit= function(mouseEvent) {
+                if ( !this.enabled ) {
+                    return;
+                }
+
                 this.setSpriteIndex( this.iNormal );
                 CAAT.setCursor('default');
             };
@@ -5980,6 +6987,10 @@ var cp1= proxy(
              * @ignore
              */
             this.mouseDown= function(mouseEvent) {
+                if ( !this.enabled ) {
+                    return;
+                }
+
                 this.setSpriteIndex( this.iPress );
             };
 
@@ -5989,6 +7000,10 @@ var cp1= proxy(
              * @ignore
              */
             this.mouseUp= function(mouseEvent) {
+                if ( !this.enabled ) {
+                    return;
+                }
+
                 this.setSpriteIndex( this.iNormal );
                 this.dragging= false;
             };
@@ -6008,6 +7023,10 @@ var cp1= proxy(
              * @ignore
              */
             this.mouseDrag= function(mouseEvent)  {
+                if ( !this.enabled ) {
+                    return;
+                }
+
                 this.dragging= true;
             };
 
@@ -8548,7 +9567,7 @@ var cp1= proxy(
 
             this.canvas.width = this.referenceWidth*factor;
             this.canvas.height = this.referenceHeight*factor;
-            this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d');
+            this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d' );
             this.crc = this.ctx;
 
             if ( this.glEnabled ) {
@@ -8939,9 +9958,6 @@ var cp1= proxy(
                 this.ctx.globalAlpha = 1;
                 this.ctx.globalCompositeOperation = 'source-over';
 
-
-
-
                 if (this.clear) {
                     this.ctx.clearRect(0, 0, this.width, this.height);
                 }
@@ -8952,6 +9968,7 @@ var cp1= proxy(
                     if (c.isInAnimationFrame(this.time)) {
                         tt = c.time - c.start_time;
                         this.ctx.save();
+
                         if ( c.onRenderStart ) {
                             c.onRenderStart(tt);
                         }
@@ -9567,6 +10584,15 @@ var cp1= proxy(
         renderFrame : function(fps, callback) {
             var t = new Date().getTime(),
                     delta = t - this.timeline;
+
+            /*
+            check for massive frame time. if for example the current browser tab is minified or taken out of
+            foreground, the system will account for a bit time interval. minify that impact by lowering down
+            the elapsed time (virtual timelines FTW)
+             */
+            if ( delta > 500 ) {
+                delta= 500;
+            }
 
             if ( this.onRenderStart ) {
                 this.onRenderStart(delta);

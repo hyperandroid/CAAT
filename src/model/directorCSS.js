@@ -796,6 +796,21 @@
         audioLoop : function(id) {
             return this.audioManager.loop(id);
         },
+        endSound : function() {
+            return this.audioManager.endSound();
+        },
+        setSoundEffectsEnabled : function(enabled) {
+            return this.audioManager.setSoundEffectsEnabled(enabled);
+        },
+        setMusicEnabled : function(enabled) {
+            return this.audioManager.setMusicEnabled(enabled);
+        },
+        isMusicEnabled : function() {
+            return this.audioManager.isMusicEnabled();
+        },
+        isSoundEffectsEnabled : function() {
+            return this.audioManager.isSoundEffectsEnabled();
+        },
         /**
          * Removes Director's scenes.
          */
@@ -842,6 +857,15 @@
         renderFrame : function(fps, callback) {
             var t = new Date().getTime(),
                     delta = t - this.timeline;
+
+            /*
+            check for massive frame time. if for example the current browser tab is minified or taken out of
+            foreground, the system will account for a bit time interval. minify that impact by lowering down
+            the elapsed time (virtual timelines FTW)
+             */
+            if ( delta > 500 ) {
+                delta= 500;
+            }
 
             if ( this.onRenderStart ) {
                 this.onRenderStart(delta);
