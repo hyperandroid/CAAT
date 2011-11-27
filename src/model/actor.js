@@ -30,7 +30,7 @@
      */
 	CAAT.Actor = function() {
 		this.behaviorList= [];
-        this.keyframesList= [];
+//        this.keyframesList= [];
         this.lifecycleListenerList= [];
         this.AABB= new CAAT.Rectangle();
         this.viewVertices= [
@@ -80,7 +80,7 @@
         //  @deprecated
         behaviorList:           null,   // Array of behaviors to apply to the Actor
 
-        keyframesList:          null,
+//        keyframesList:          null,
         parent:					null,   // Parent of this Actor. May be Scene.
 		x:						0,      // x position on parent. In parent's local coord. system.
 		y:						0,      // y position on parent. In parent's local coord. system.
@@ -434,11 +434,11 @@
 			this.behaviorList=[];
             return this;
 		},
-
+/*
         emptyKeyframesList : function() {
             this.keyframesList= [];
         },
-
+*/
         /**
          * Caches a fillStyle in the Actor.
          * @param style a valid Canvas rendering context fillStyle.
@@ -748,28 +748,20 @@
             return this;
 		},
 
-        /**
-         *
-         * @param keyframeDescriptor {CAAT.KeyframeDescriptor}
-         */
-        addKeyframes : function( keyframe, start, duration, cycle ) {
-            this.keyframesList.push( new CAAT.KeyframesDescriptor( keyframe, start, duration, cycle ) );
+/*
+        addKeyframes : function( keyframe, start, duration, cycle, startOffset ) {
+            this.keyframesList.push( new CAAT.KeyframesDescriptor( keyframe, start, duration, cycle, startOffset ) );
         },
 
-        scheduleKeyframes : function( id, startTime, duration ) {
+        scheduleKeyframes : function( id, startTime, duration, cycle, startOffset ) {
             var kf= this.getKeyframesDescriptor(id);
             if ( kf ) {
-                kf.schedule( startTime, duration );
+                kf.schedule( startTime, duration, cycle, startOffset );
             }
             return this;
         },
 
-        /**
-         * This method is potentially risky and instead removeKeyframeById should be used.
-         * Removes the first ocurrence of the given keyframe.
-         *
-         * @param keyframe {CAAT.Keyframe}
-         */
+
         removeKeyframes : function( keyframe ) {
             var kfs= this.keyframesList;
             for( var i=0; i<kfs.length; i++ ) {
@@ -807,7 +799,7 @@
             return null;
 
         },
-
+*/
         /**
          * Add a Behavior to the Actor.
          * An Actor accepts an undefined number of Behaviors.
@@ -1175,16 +1167,16 @@
 			for( i=0; i<this.behaviorList.length; i++ )	{
 				this.behaviorList[i].apply(time,this);
 			}
-
+/*
             var kfs= this.keyframesList;
             var kfi;
             var kf;
             for( i=0; i<kfs.length; i++ ) {
                 kfi= kfs[i];
                 kf= kfi.keyframe;
-                kf.apply( time, this, kfi.startTime, kfi.duration, kfi.cycle );
+                kf.apply( time, this, kfi.startTime, kfi.duration, kfi.cycle, kfi.startOffset );
             }
-
+*/
             /*
                 If we have a mask applied, apply behaviors as well.
              */

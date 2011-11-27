@@ -1,4 +1,10 @@
+11/24/2011 *0.1 257*
+--------------------
+
+* Keyframes's been removed. They were not such a big idea after all.
+
 11/24/2011 *0.1 252*
+--------------------
 
 * Added Keyframes. Keyframes set Behaviors deprecated.
 

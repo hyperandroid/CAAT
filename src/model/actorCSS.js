@@ -29,7 +29,7 @@
      */
 	CAAT.Actor = function() {
 		this.behaviorList=          [];
-        this.keyframesList=         [];
+//        this.keyframesList=         [];
         this.lifecycleListenerList= [];
         this.scaleAnchor=           this.ANCHOR_CENTER;
         this.rotateAnchor=          this.ANCHOR_CENTER;
@@ -62,7 +62,7 @@
         lifecycleListenerList:	null,   // Array of life cycle listener
         behaviorList:           null,   // Array of behaviors to apply to the Actor
 
-        keyframesList:          null,
+//        keyframesList:          null,
 		x:						0,      // x position on parent. In parent's local coord. system.
 		y:						0,      // y position on parent. In parent's local coord. system.
 		width:					0,      // Actor's width. In parent's local coord. system.
@@ -419,11 +419,11 @@
 			this.behaviorList=[];
             return this;
 		},
-
+/*
         emptyKeyframesList : function() {
             this.keyframesList= [];
         },
-
+*/
         /**
          * Caches a fillStyle in the Actor.
          * @param style a valid Canvas rendering context fillStyle.
@@ -763,9 +763,6 @@
 		},
 
         /**
-         *
-         * @param keyframeDescriptor {CAAT.KeyframeDescriptor}
-         */
         addKeyframes : function( keyframe, start, duration, cycle ) {
             this.keyframesList.push( new CAAT.KeyframesDescriptor( keyframe, start, duration, cycle ) );
         },
@@ -778,12 +775,6 @@
             return this;
         },
 
-        /**
-         * This method is potentially risky and instead removeKeyframeById should be used.
-         * Removes the first ocurrence of the given keyframe.
-         *
-         * @param keyframe {CAAT.Keyframe}
-         */
         removeKeyframes : function( keyframe ) {
             var kfs= this.keyframesList;
             for( var i=0; i<kfs.length; i++ ) {
@@ -821,7 +812,7 @@
             return null;
 
         },
-
+*/
         /**
          * Add a Behavior to the Actor.
          * An Actor accepts an undefined number of Behaviors.
@@ -1173,16 +1164,16 @@
 			for( var i=0; i<this.behaviorList.length; i++ )	{
 				this.behaviorList[i].apply(time,this);
 			}
-
+/*
             var kfs= this.keyframesList;
             var kfi;
             var kf;
             for( i=0; i<kfs.length; i++ ) {
                 kfi= kfs[i];
                 kf= kfi.keyframe;
-                kf.apply( time, this, kfi.startTime, kfi.duration, kfi.cycle );
+                kf.apply( time, this, kfi.startTime, kfi.duration, kfi.cycle, kfi.startOffset );
             }
-
+*/
             this.frameAlpha= this.parent ? this.parent.frameAlpha*this.alpha : 1;
             //this.setAlpha(this.frameAlpha);
             this.styleAlpha(this.frameAlpha);

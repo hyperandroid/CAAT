@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 254
+Version: 0.1 build: 259
 
 Created on:
-DATE: 2011-11-26
-TIME: 23:55:50
+DATE: 2011-11-27
+TIME: 22:53:24
 */
 
 
@@ -3055,6 +3055,126 @@ Function.prototype.bind= function() {
                 bh[i].setStatus( CAAT.Behavior.Status.NOT_STARTED );
             }
             return this;
+        },
+
+        calculateKeyFrameData : function(referenceTime, prefix, prevValues )  {
+
+            var i;
+            var bh;
+
+            var retValue= {};
+            var time;
+            var cssRuleValue;
+            var cssProperty;
+            var property;
+
+            for( i=0; i<this.behaviors.length; i++ ) {
+                bh= this.behaviors[i];
+                if ( /*!bh.expired*/ bh.status!==CAAT.Behavior.Status.EXPIRED && !(bh instanceof CAAT.GenericBehavior) ) {
+
+                    // ajustar tiempos:
+                    //  time es tiempo normalizado a duraci—n de comportamiento contenedor.
+                    //      1.- desnormalizar
+                    time= referenceTime * this.behaviorDuration;
+
+                    //      2.- calcular tiempo relativo de comportamiento respecto a contenedor
+                    if ( bh.behaviorStartTime<=time && bh.behaviorStartTime+bh.behaviorDuration>=time ) {
+                        //      3.- renormalizar tiempo reltivo a comportamiento.
+                        time= (time-bh.behaviorStartTime)/bh.behaviorDuration;
+
+                        //      4.- obtener valor de comportamiento para tiempo normalizado relativo a contenedor
+                        cssRuleValue= bh.calculateKeyFrameData(time);
+                        cssProperty= bh.getPropertyName(prefix);
+
+                        if ( typeof retValue[cssProperty] ==='undefined' ) {
+                            retValue[cssProperty]= "";
+                        }
+
+                        //      5.- asignar a objeto, par de propiedad/valor css
+                        retValue[cssProperty]+= cssRuleValue+" ";
+                    }
+
+                }
+            }
+
+
+            var tr="";
+            var pv;
+            function xx(pr) {
+                if ( retValue[pr] ) {
+                    tr+= retValue[pr];
+                } else {
+                    if ( prevValues ) {
+                        pv= prevValues[pr];
+                        if ( pv ) {
+                            tr+= pv;
+                            retValue[pr]= pv;
+                        }
+                    }
+                }
+
+            }
+
+            xx('translate');
+            xx('rotate');
+            xx('scale');
+
+            var keyFrameRule= "";
+
+            if ( tr ) {
+                keyFrameRule='-'+prefix+'-transform: '+tr+';';
+            }
+
+            tr="";
+            xx('opacity');
+            if( tr ) {
+                keyFrameRule+= ' opacity: '+tr+';';
+            }
+
+            return {
+                rules: keyFrameRule,
+                ret: retValue
+            };
+
+        },
+
+        /**
+         *
+         * @param prefix
+         * @param name
+         * @param keyframessize
+         */
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( this.duration===Number.MAX_VALUE ) {
+                return "";
+            }
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize=100;
+            }
+
+            var i;
+            var prevValues= null;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+            var ret;
+            var time;
+            var kfr;
+
+            for( i=0; i<=keyframessize; i++ )    {
+                time= this.interpolator.getPosition(i/keyframessize).y;
+                ret= this.calculateKeyFrameData(time, prefix, prevValues);
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" + ret.rules + "}\n";
+
+                prevValues= ret.ret;
+                kfd+= kfr;
+            }
+
+            kfd+= "}";
+
+            return kfd;
         }
 
 	};
@@ -3161,6 +3281,44 @@ Function.prototype.bind= function() {
             this.anchorX= rx/actor.width;
             this.anchorY= ry/actor.height;
             return this;
+        },
+
+
+        calculateKeyFrameData : function( time ) {
+            time= this.interpolator.getPosition(time).y;
+            return "rotate(" + (this.startAngle + time*(this.endAngle-this.startAngle)) +"rad)";
+        },
+
+        /**
+         * @param prefix {string} browser vendor prefix
+         * @param name {string} keyframes animation name
+         * @param keyframessize {integer} number of keyframes to generate
+         * @override
+         */
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
+                    "}\n";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
         }
 
 	};
@@ -3354,6 +3512,43 @@ Function.prototype.bind= function() {
             this.anchorY= y/actor.height;
 
             return this;
+        },
+
+        calculateKeyFrameData : function( time ) {
+            var scaleX;
+            var scaleY;
+
+            time= this.interpolator.getPosition(time).y;
+            scaleX= this.startScaleX + time*(this.endScaleX-this.startScaleX);
+            scaleY= this.startScaleY + time*(this.endScaleY-this.startScaleY);
+
+            return "scaleX("+scaleX+") scaleY("+scaleY+")";
+        },
+
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
+                    "}";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
         }
 	};
 
@@ -3406,6 +3601,43 @@ Function.prototype.bind= function() {
             this.startAlpha= start;
             this.endAlpha= end;
             return this;
+        },
+
+        calculateKeyFrameData : function( time ) {
+            time= this.interpolator.getPosition(time).y;
+            return  (this.startAlpha+time*(this.endAlpha-this.startAlpha));
+        },
+
+        /**
+         * @param prefix {string} browser vendor prefix
+         * @param name {string} keyframes animation name
+         * @param keyframessize {integer} number of keyframes to generate
+         * @override
+         */
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                         "opacity: " + this.calculateKeyFrameData( i / keyframessize ) +
+                    "}";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
         }
 	};
 
@@ -3501,6 +3733,39 @@ Function.prototype.bind= function() {
             this.translateX= tx;
             this.translateY= ty;
             return this;
+        },
+
+        calculateKeyFrameData : function( time ) {
+            time= this.interpolator.getPosition(time).y;
+            var point= this.path.getPosition(time);
+            return "translateX("+(point.x-this.translateX)+"px) translateY("+(point.y-this.translateY)+"px)" ;
+        },
+
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var time;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
+                    "}";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
         },
 
         /**
@@ -4160,9 +4425,6 @@ Function.prototype.bind= function() {
         behavior:       null,                               // what to apply
         interpolator:   DefaultInterpolator,                // easing function
         status :        CAAT.Keyframes.Status.NOT_STARTED,   // keyframes status.
-        cycle:          false,                              // apply forever ?
-
-        startOffset:    0,                                  //
 
         asCSS:          false,                              // let the hardware manage this keyframe.
         cssKeyframesName:null,
@@ -4170,16 +4432,6 @@ Function.prototype.bind= function() {
         onStart:        null,                               // keyframe onStart registered callback
         onApply:        null,                               // keyframe onApplication registered callback
         onExpire:       null,                               // keyframe onExpiration registered callback
-
-
-        /**
-         * Value between 0 and 1. 0 means start, 1 means duration.
-         * @param offset {number}
-         */
-        setStartOffset : function( offset ) {
-            this.startOffset= offset;
-            return this;
-        },
 
         getId : function() {
             return this.id;
@@ -4250,7 +4502,7 @@ Function.prototype.bind= function() {
          *
          * @return this
          */
-		setFrameTime : function( ) {
+		setFrameTime : function(  ) {
             this.setStatus( CAAT.Keyframes.Status.NOT_STARTED );
             return this;
 		},
@@ -4293,8 +4545,8 @@ Function.prototype.bind= function() {
          *
          * @private
          */
-		apply : function( time, actor, startTime, duration, cycle )	{
-            time+= this.startOffset*duration;
+		apply : function( time, actor, startTime, duration, cycle, startOffset )	{
+            time+= startOffset*duration;
             
             var orgTime= time;
 			if ( this.isInTime(time,actor,startTime,duration, cycle) )	{
@@ -4454,22 +4706,35 @@ Function.prototype.bind= function() {
 
 (function() {
 
-    CAAT.KeyframesDescriptor = function( keyframe, startTime, duration, cycle ) {
+    CAAT.KeyframesDescriptor = function( keyframe, startTime, duration, cycle, startOffset ) {
 
-        this.keyframe=  keyframe;
-        this.startTime= startTime;
-        this.duration=  duration;
-        this.cycle=     cycle;
-        this.id=        keyframe.getId();
+        this.keyframe=      keyframe;
+        this.startTime=     startTime;
+        this.duration=      duration;
+        this.cycle=         !!cycle;
+        this.startOffset=   startOffset || 0;
+        this.id=            keyframe.getId();
 
-        this.schedule= function( start, duration ) {
+        this.schedule= function( start, duration, cycle, startOffset ) {
             this.startTime= start;
             this.duration= duration;
+            if ( typeof cycle!=='undefined' ) {
+                this.cycle= cycle;
+            }
+            if ( typeof startOffset!=='undefined' ) {
+                this.startOffset= startOffset;
+            }
             return this;
         };
 
         this.setCycle= function( cycle ) {
             this.cycle= cycle;
+            return this;
+        };
+
+        this.setStartOffset= function( so ) {
+            this.startOffset= so;
+            return this;
         };
 
         return this;
@@ -4543,7 +4808,10 @@ Function.prototype.bind= function() {
          * @param time an integer indicating the time to apply the contained behaviors at.
          * @param actor a CAAT.Actor instance indicating the actor to apply the behaviors for.
          */
-		apply : function( time, actor, startTime, duration, cycle ) {
+		apply : function( time, actor, startTime, duration, cycle, startOffset ) {
+
+            time+= startOffset*duration;
+
 			if ( this.isInTime(time,actor, startTime, duration) )	{
 				time-= startTime;
 				if ( cycle ){
@@ -4554,7 +4822,7 @@ Function.prototype.bind= function() {
                 var kfs= this.keyframes;
 				for( var i=0; i<kfs.length; i++ )	{
                     var kf= kfs[i];
-					kf.keyframe.apply(time, actor, kf.startTime*f, kf.duration*f );
+					kf.keyframe.apply(time, actor, kf.startTime*f, kf.duration*f, kf.cycle, kf.startOffset );
 				}
 			}
 		},
@@ -5400,7 +5668,7 @@ var cp1= proxy(
      */
 	CAAT.Actor = function() {
 		this.behaviorList=          [];
-        this.keyframesList=         [];
+//        this.keyframesList=         [];
         this.lifecycleListenerList= [];
         this.scaleAnchor=           this.ANCHOR_CENTER;
         this.rotateAnchor=          this.ANCHOR_CENTER;
@@ -5433,7 +5701,7 @@ var cp1= proxy(
         lifecycleListenerList:	null,   // Array of life cycle listener
         behaviorList:           null,   // Array of behaviors to apply to the Actor
 
-        keyframesList:          null,
+//        keyframesList:          null,
 		x:						0,      // x position on parent. In parent's local coord. system.
 		y:						0,      // y position on parent. In parent's local coord. system.
 		width:					0,      // Actor's width. In parent's local coord. system.
@@ -5790,11 +6058,11 @@ var cp1= proxy(
 			this.behaviorList=[];
             return this;
 		},
-
+/*
         emptyKeyframesList : function() {
             this.keyframesList= [];
         },
-
+*/
         /**
          * Caches a fillStyle in the Actor.
          * @param style a valid Canvas rendering context fillStyle.
@@ -6134,9 +6402,6 @@ var cp1= proxy(
 		},
 
         /**
-         *
-         * @param keyframeDescriptor {CAAT.KeyframeDescriptor}
-         */
         addKeyframes : function( keyframe, start, duration, cycle ) {
             this.keyframesList.push( new CAAT.KeyframesDescriptor( keyframe, start, duration, cycle ) );
         },
@@ -6149,12 +6414,6 @@ var cp1= proxy(
             return this;
         },
 
-        /**
-         * This method is potentially risky and instead removeKeyframeById should be used.
-         * Removes the first ocurrence of the given keyframe.
-         *
-         * @param keyframe {CAAT.Keyframe}
-         */
         removeKeyframes : function( keyframe ) {
             var kfs= this.keyframesList;
             for( var i=0; i<kfs.length; i++ ) {
@@ -6192,7 +6451,7 @@ var cp1= proxy(
             return null;
 
         },
-
+*/
         /**
          * Add a Behavior to the Actor.
          * An Actor accepts an undefined number of Behaviors.
@@ -6544,16 +6803,16 @@ var cp1= proxy(
 			for( var i=0; i<this.behaviorList.length; i++ )	{
 				this.behaviorList[i].apply(time,this);
 			}
-
+/*
             var kfs= this.keyframesList;
             var kfi;
             var kf;
             for( i=0; i<kfs.length; i++ ) {
                 kfi= kfs[i];
                 kf= kfi.keyframe;
-                kf.apply( time, this, kfi.startTime, kfi.duration, kfi.cycle );
+                kf.apply( time, this, kfi.startTime, kfi.duration, kfi.cycle, kfi.startOffset );
             }
-
+*/
             this.frameAlpha= this.parent ? this.parent.frameAlpha*this.alpha : 1;
             //this.setAlpha(this.frameAlpha);
             this.styleAlpha(this.frameAlpha);

@@ -556,9 +556,6 @@
         behavior:       null,                               // what to apply
         interpolator:   DefaultInterpolator,                // easing function
         status :        CAAT.Keyframes.Status.NOT_STARTED,   // keyframes status.
-        cycle:          false,                              // apply forever ?
-
-        startOffset:    0,                                  //
 
         asCSS:          false,                              // let the hardware manage this keyframe.
         cssKeyframesName:null,
@@ -566,16 +563,6 @@
         onStart:        null,                               // keyframe onStart registered callback
         onApply:        null,                               // keyframe onApplication registered callback
         onExpire:       null,                               // keyframe onExpiration registered callback
-
-
-        /**
-         * Value between 0 and 1. 0 means start, 1 means duration.
-         * @param offset {number}
-         */
-        setStartOffset : function( offset ) {
-            this.startOffset= offset;
-            return this;
-        },
 
         getId : function() {
             return this.id;
@@ -646,7 +633,7 @@
          *
          * @return this
          */
-		setFrameTime : function( ) {
+		setFrameTime : function(  ) {
             this.setStatus( CAAT.Keyframes.Status.NOT_STARTED );
             return this;
 		},
@@ -689,8 +676,8 @@
          *
          * @private
          */
-		apply : function( time, actor, startTime, duration, cycle )	{
-            time+= this.startOffset*duration;
+		apply : function( time, actor, startTime, duration, cycle, startOffset )	{
+            time+= startOffset*duration;
             
             var orgTime= time;
 			if ( this.isInTime(time,actor,startTime,duration, cycle) )	{
@@ -850,22 +837,35 @@
 
 (function() {
 
-    CAAT.KeyframesDescriptor = function( keyframe, startTime, duration, cycle ) {
+    CAAT.KeyframesDescriptor = function( keyframe, startTime, duration, cycle, startOffset ) {
 
-        this.keyframe=  keyframe;
-        this.startTime= startTime;
-        this.duration=  duration;
-        this.cycle=     cycle;
-        this.id=        keyframe.getId();
+        this.keyframe=      keyframe;
+        this.startTime=     startTime;
+        this.duration=      duration;
+        this.cycle=         !!cycle;
+        this.startOffset=   startOffset || 0;
+        this.id=            keyframe.getId();
 
-        this.schedule= function( start, duration ) {
+        this.schedule= function( start, duration, cycle, startOffset ) {
             this.startTime= start;
             this.duration= duration;
+            if ( typeof cycle!=='undefined' ) {
+                this.cycle= cycle;
+            }
+            if ( typeof startOffset!=='undefined' ) {
+                this.startOffset= startOffset;
+            }
             return this;
         };
 
         this.setCycle= function( cycle ) {
             this.cycle= cycle;
+            return this;
+        };
+
+        this.setStartOffset= function( so ) {
+            this.startOffset= so;
+            return this;
         };
 
         return this;
@@ -939,7 +939,10 @@
          * @param time an integer indicating the time to apply the contained behaviors at.
          * @param actor a CAAT.Actor instance indicating the actor to apply the behaviors for.
          */
-		apply : function( time, actor, startTime, duration, cycle ) {
+		apply : function( time, actor, startTime, duration, cycle, startOffset ) {
+
+            time+= startOffset*duration;
+
 			if ( this.isInTime(time,actor, startTime, duration) )	{
 				time-= startTime;
 				if ( cycle ){
@@ -950,7 +953,7 @@
                 var kfs= this.keyframes;
 				for( var i=0; i<kfs.length; i++ )	{
                     var kf= kfs[i];
-					kf.keyframe.apply(time, actor, kf.startTime*f, kf.duration*f );
+					kf.keyframe.apply(time, actor, kf.startTime*f, kf.duration*f, kf.cycle, kf.startOffset );
 				}
 			}
 		},

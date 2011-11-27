@@ -475,6 +475,126 @@
                 bh[i].setStatus( CAAT.Behavior.Status.NOT_STARTED );
             }
             return this;
+        },
+
+        calculateKeyFrameData : function(referenceTime, prefix, prevValues )  {
+
+            var i;
+            var bh;
+
+            var retValue= {};
+            var time;
+            var cssRuleValue;
+            var cssProperty;
+            var property;
+
+            for( i=0; i<this.behaviors.length; i++ ) {
+                bh= this.behaviors[i];
+                if ( /*!bh.expired*/ bh.status!==CAAT.Behavior.Status.EXPIRED && !(bh instanceof CAAT.GenericBehavior) ) {
+
+                    // ajustar tiempos:
+                    //  time es tiempo normalizado a duraci—n de comportamiento contenedor.
+                    //      1.- desnormalizar
+                    time= referenceTime * this.behaviorDuration;
+
+                    //      2.- calcular tiempo relativo de comportamiento respecto a contenedor
+                    if ( bh.behaviorStartTime<=time && bh.behaviorStartTime+bh.behaviorDuration>=time ) {
+                        //      3.- renormalizar tiempo reltivo a comportamiento.
+                        time= (time-bh.behaviorStartTime)/bh.behaviorDuration;
+
+                        //      4.- obtener valor de comportamiento para tiempo normalizado relativo a contenedor
+                        cssRuleValue= bh.calculateKeyFrameData(time);
+                        cssProperty= bh.getPropertyName(prefix);
+
+                        if ( typeof retValue[cssProperty] ==='undefined' ) {
+                            retValue[cssProperty]= "";
+                        }
+
+                        //      5.- asignar a objeto, par de propiedad/valor css
+                        retValue[cssProperty]+= cssRuleValue+" ";
+                    }
+
+                }
+            }
+
+
+            var tr="";
+            var pv;
+            function xx(pr) {
+                if ( retValue[pr] ) {
+                    tr+= retValue[pr];
+                } else {
+                    if ( prevValues ) {
+                        pv= prevValues[pr];
+                        if ( pv ) {
+                            tr+= pv;
+                            retValue[pr]= pv;
+                        }
+                    }
+                }
+
+            }
+
+            xx('translate');
+            xx('rotate');
+            xx('scale');
+
+            var keyFrameRule= "";
+
+            if ( tr ) {
+                keyFrameRule='-'+prefix+'-transform: '+tr+';';
+            }
+
+            tr="";
+            xx('opacity');
+            if( tr ) {
+                keyFrameRule+= ' opacity: '+tr+';';
+            }
+
+            return {
+                rules: keyFrameRule,
+                ret: retValue
+            };
+
+        },
+
+        /**
+         *
+         * @param prefix
+         * @param name
+         * @param keyframessize
+         */
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( this.duration===Number.MAX_VALUE ) {
+                return "";
+            }
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize=100;
+            }
+
+            var i;
+            var prevValues= null;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+            var ret;
+            var time;
+            var kfr;
+
+            for( i=0; i<=keyframessize; i++ )    {
+                time= this.interpolator.getPosition(i/keyframessize).y;
+                ret= this.calculateKeyFrameData(time, prefix, prevValues);
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" + ret.rules + "}\n";
+
+                prevValues= ret.ret;
+                kfd+= kfr;
+            }
+
+            kfd+= "}";
+
+            return kfd;
         }
 
 	};
@@ -581,6 +701,44 @@
             this.anchorX= rx/actor.width;
             this.anchorY= ry/actor.height;
             return this;
+        },
+
+
+        calculateKeyFrameData : function( time ) {
+            time= this.interpolator.getPosition(time).y;
+            return "rotate(" + (this.startAngle + time*(this.endAngle-this.startAngle)) +"rad)";
+        },
+
+        /**
+         * @param prefix {string} browser vendor prefix
+         * @param name {string} keyframes animation name
+         * @param keyframessize {integer} number of keyframes to generate
+         * @override
+         */
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
+                    "}\n";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
         }
 
 	};
@@ -774,6 +932,43 @@
             this.anchorY= y/actor.height;
 
             return this;
+        },
+
+        calculateKeyFrameData : function( time ) {
+            var scaleX;
+            var scaleY;
+
+            time= this.interpolator.getPosition(time).y;
+            scaleX= this.startScaleX + time*(this.endScaleX-this.startScaleX);
+            scaleY= this.startScaleY + time*(this.endScaleY-this.startScaleY);
+
+            return "scaleX("+scaleX+") scaleY("+scaleY+")";
+        },
+
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
+                    "}";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
         }
 	};
 
@@ -826,6 +1021,43 @@
             this.startAlpha= start;
             this.endAlpha= end;
             return this;
+        },
+
+        calculateKeyFrameData : function( time ) {
+            time= this.interpolator.getPosition(time).y;
+            return  (this.startAlpha+time*(this.endAlpha-this.startAlpha));
+        },
+
+        /**
+         * @param prefix {string} browser vendor prefix
+         * @param name {string} keyframes animation name
+         * @param keyframessize {integer} number of keyframes to generate
+         * @override
+         */
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                         "opacity: " + this.calculateKeyFrameData( i / keyframessize ) +
+                    "}";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
         }
 	};
 
@@ -921,6 +1153,39 @@
             this.translateX= tx;
             this.translateY= ty;
             return this;
+        },
+
+        calculateKeyFrameData : function( time ) {
+            time= this.interpolator.getPosition(time).y;
+            var point= this.path.getPosition(time);
+            return "translateX("+(point.x-this.translateX)+"px) translateY("+(point.y-this.translateY)+"px)" ;
+        },
+
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var time;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
+                    "}";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
         },
 
         /**
