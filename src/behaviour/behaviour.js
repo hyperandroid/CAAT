@@ -390,6 +390,25 @@
     CAAT.ContainerBehavior.prototype= {
 
 		behaviors:	null,   // contained behaviors array
+
+        /**
+         * Proportionally change this container duration to its children.
+         * @param duration {number} new duration in ms.
+         * @return this;
+         */
+        conformToDuration : function( duration ) {
+            this.duration= duration;
+            
+            var f= duration/this.duration;
+            var bh;
+            for( var i=0; i<this.behavior.length; i++ ) {
+                bh= this.behavior[i];
+                bh.setFrameTime( bh.getStartTime()*f, bh.getDuration()*f );
+            }
+
+            return this;
+        },
+
         /**
          * Adds a new behavior to the container.
          * @param behavior
@@ -974,7 +993,6 @@
 
     extend( CAAT.ScaleBehavior, CAAT.Behavior, null);
 })();
-
 
 (function() {
     /**

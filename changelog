@@ -1,3 +1,9 @@
+11/24/2011 *0.1 261*
+--------------------
+
+* Deprecated and removed: CAAT.ImageActor, CAAT.SpriteActor, CAAT.Button, CAAT.CompoundImage
+* Removed csskeyframehelper.js and keyframe.js files
+
 11/24/2011 *0.1 257*
 --------------------
 
