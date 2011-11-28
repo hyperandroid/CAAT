@@ -46,6 +46,8 @@
         return this;
     };
 
+
+
     CAAT.Director.prototype = {
 
         debug:              false,  // flag indicating debug mode. It will draw affedted screen areas.
@@ -595,9 +597,12 @@
         animate : function(director, time) {
             this.setModelViewMatrix(this.glEnabled);
 
-            for (var i = 0; i < this.childrenList.length; i++) {
-                var tt = this.childrenList[i].time - this.childrenList[i].start_time;
-                this.childrenList[i].animate(this, tt);
+            var cl= this.childrenList;
+            var cli;
+            for (var i = 0; i < cl.length; i++) {
+                cli= cl[i];
+                var tt = cli.time - cli.start_time;
+                cli.animate(this, tt);
             }
 
             return this;
@@ -1318,7 +1323,7 @@
          *  MouseExit
          *
          */
-        enableEvents : function() {
+        __enableEvents : function() {
             CAAT.RegisterDirector(this);
 
             var canvas = this.canvas;
@@ -1646,8 +1651,490 @@
             canvas.addEventListener("touchcancel", touchHandler, true);
 
         }
+,
 
+
+
+
+
+
+
+
+
+
+        __mouseDownHandler : function(e) {
+
+            this.getCanvasCoord(this.mousePoint, e);
+            this.isMouseDown = true;
+            var lactor = this.findActorAtPosition(this.mousePoint);
+
+            if (null !== lactor) {
+
+                var pos = lactor.viewToModel(
+                    new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+
+                lactor.mouseDown(
+                    new CAAT.MouseEvent().init(
+                        pos.x,
+                        pos.y,
+                        e,
+                        lactor,
+                        new CAAT.Point(
+                            this.screenMousePoint.x,
+                            this.screenMousePoint.y )));
+            }
+
+            this.lastSelectedActor= lactor;
+        },
+
+        __mouseUpHandler : function(e) {
+
+            this.isMouseDown = false;
+            this.getCanvasCoord(this.mousePoint, e);
+
+            var pos= null;
+            var lactor= this.lastSelectedActor;
+
+            if (null !== lactor) {
+                pos = lactor.viewToModel(
+                    new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+                if ( lactor.actionPerformed && lactor.contains(pos.x, pos.y) ) {
+                    lactor.actionPerformed(e)
+                }
+
+                lactor.mouseUp(
+                    new CAAT.MouseEvent().init(
+                        pos.x,
+                        pos.y,
+                        e,
+                        lactor,
+                        this.screenMousePoint));
+            }
+
+            if (!this.dragging && null !== lactor) {
+                if (lactor.contains(pos.x, pos.y)) {
+                    lactor.mouseClick(
+                        new CAAT.MouseEvent().init(
+                            pos.x,
+                            pos.y,
+                            e,
+                            lactor,
+                            this.screenMousePoint));
+                }
+            }
+
+            this.dragging = false;
+            this.in_=       false;
+//            CAAT.setCursor('default');
+        },
+
+        __mouseMoveHandler : function(e) {
+            this.getCanvasCoord(this.mousePoint, e);
+
+            var lactor;
+            var pos;
+
+            // drag
+
+            if (this.isMouseDown && null !== this.lastSelectedActor) {
+/*
+                // check for mouse move threshold.
+                if (!this.dragging) {
+                    if (Math.abs(this.prevMousePoint.x - this.mousePoint.x) < CAAT.DRAG_THRESHOLD_X &&
+                        Math.abs(this.prevMousePoint.y - this.mousePoint.y) < CAAT.DRAG_THRESHOLD_Y) {
+                        return;
+                    }
+                }
+*/
+
+
+                lactor = this.lastSelectedActor;
+                pos = lactor.viewToModel(
+                    new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+
+                this.dragging = true;
+
+                var px= lactor.x;
+                var py= lactor.y;
+                lactor.mouseDrag(
+                        new CAAT.MouseEvent().init(
+                            pos.x,
+                            pos.y,
+                            e,
+                            lactor,
+                            new CAAT.Point(
+                                this.screenMousePoint.x,
+                                this.screenMousePoint.y)));
+
+                this.prevMousePoint.x= pos.x;
+                this.prevMousePoint.y= pos.y;
+
+                /**
+                 * Element has not moved after drag, so treat it as a button.
+                 */
+                if ( px===lactor.x && py===lactor.y )   {
+
+                    var contains= lactor.contains(pos.x, pos.y);
+
+                    if (this.in_ && !contains) {
+                        lactor.mouseExit(
+                            new CAAT.MouseEvent().init(
+                                pos.x,
+                                pos.y,
+                                e,
+                                lactor,
+                                this.screenMousePoint));
+                        this.in_ = false;
+                    }
+
+                    if (!this.in_ && contains ) {
+                        lactor.mouseEnter(
+                            new CAAT.MouseEvent().init(
+                                pos.x,
+                                pos.y,
+                                e,
+                                lactor,
+                                this.screenMousePoint));
+                        this.in_ = true;
+                    }
+                }
+
+                return;
+            }
+
+            // mouse move.
+            this.in_= true;
+
+            lactor = this.findActorAtPosition(this.mousePoint);
+
+            // cambiamos de actor.
+            if (lactor !== this.lastSelectedActor) {
+                if (null !== this.lastSelectedActor) {
+
+                    pos = this.lastSelectedActor.viewToModel(
+                        new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+
+                    this.lastSelectedActor.mouseExit(
+                        new CAAT.MouseEvent().init(
+                            pos.x,
+                            pos.y,
+                            e,
+                            this.lastSelectedActor,
+                            this.screenMousePoint));
+                }
+
+                if (null !== lactor) {
+                    pos = lactor.viewToModel(
+                        new CAAT.Point( this.screenMousePoint.x, this.screenMousePoint.y, 0));
+
+                    lactor.mouseEnter(
+                        new CAAT.MouseEvent().init(
+                            pos.x,
+                            pos.y,
+                            e,
+                            lactor,
+                            this.screenMousePoint));
+                }
+            }
+
+            pos = lactor.viewToModel(
+                new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+
+            if (null !== lactor) {
+
+                lactor.mouseMove(
+                    new CAAT.MouseEvent().init(
+                        pos.x,
+                        pos.y,
+                        e,
+                        lactor,
+                        this.screenMousePoint));
+            }
+
+            this.lastSelectedActor = lactor;
+        },
+
+        __mouseOutHandler : function(e) {
+
+            if (null !== this.lastSelectedActor) {
+
+                this.getCanvasCoord(this.mousePoint, e);
+                var pos = new CAAT.Point(this.mousePoint.x, this.mousePoint.y, 0);
+                this.lastSelectedActor.viewToModel(pos);
+
+                this.lastSelectedActor.mouseExit(
+                        new CAAT.MouseEvent().init(
+                                pos.x,
+                                pos.y,
+                                e,
+                                this.lastSelectedActor,
+                                this.screenMousePoint));
+                this.lastSelectedActor = null;
+            }
+            this.isMouseDown = false;
+            this.in_ = false;
+
+        },
+
+        __mouseOverHandler : function(e) {
+
+            this.getCanvasCoord(this.mousePoint, e);
+
+            var lactor= this.findActorAtPosition( this.mousePoint );
+            var pos;
+
+            if (null !== lactor) {
+
+                pos = lactor.viewToModel(
+                    new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+
+                lactor.mouseEnter(
+                    new CAAT.MouseEvent().init(
+                        pos.x,
+                        pos.y,
+                        e,
+                        lactor,
+                        this.screenMousePoint));
+            }
+
+            this.lastSelectedActor= lactor;
+
+        },
+
+        __mouseDBLClickHandler : function(e) {
+
+            this.getCanvasCoord(this.mousePoint, e);
+            if (null !== this.lastSelectedActor) {
+
+                var pos = this.lastSelectedActor.viewToModel(
+                    new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+
+                this.lastSelectedActor.mouseDblClick(
+                    new CAAT.MouseEvent().init(
+                            this.mousePoint.x,
+                            this.mousePoint.y,
+                            e,
+                            this.lastSelectedActor,
+                            this.screenMousePoint));
+            }
+        },
+
+        /**
+         * Same as mouseDown but not preventing event.
+         * Will only take care of first touch.
+         * @param e
+         */
+        __touchStartHandler : function(e) {
+
+            e.preventDefault();
+            e= e.targetTouches[0]
+            this.__mouseDownHandler(e);
+        },
+
+        __touchEndHandler : function(e) {
+
+            e.preventDefault();
+            e= e.changedTouches[0];
+            this.__mouseUpHandler(e);
+        },
+
+        __touchMoveHandler : function(e) {
+
+            e.preventDefault();
+
+            for( var i=0; i<e.targetTouches.length; i++ ) {
+                if ( !i ) {
+                    this.__mouseMoveHandler(e.targetTouches[i]);
+                }
+            }
+        },
+
+        addHandlers: function(canvas) {
+
+            var me= this;
+
+            canvas.addEventListener('mouseup', function(e) {
+                e.preventDefault();
+                me.__mouseUpHandler(e);
+            }, false );
+
+            canvas.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                me.__mouseDownHandler(e);
+            }, false );
+
+            canvas.addEventListener('mouseover',function(e) {
+                e.preventDefault();
+                me.__mouseOverHandler(e);
+            }, false);
+
+            canvas.addEventListener('mouseout',function(e) {
+                e.preventDefault();
+                me.__mouseOutHandler(e);
+            }, false);
+
+            canvas.addEventListener('mousemove',
+            function(e) {
+                e.preventDefault();
+                me.__mouseMoveHandler(e);
+            },
+            false);
+
+            canvas.addEventListener("dblclick", function(e) {
+                e.preventDefault();
+                me.__mouseDBLClickHandler(e);
+            }, false);
+
+            canvas.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
+            canvas.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
+            canvas.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
+            canvas.addEventListener("gesturestart", function(e) {
+                e.preventDefault();
+            }, false );
+            canvas.addEventListener("gesturechange", function(e) {
+                e.preventDefault();
+            }, false );
+        },
+
+        enableEvents : function() {
+            CAAT.RegisterDirector(this);
+            this.in_ = false;
+            this.createEventHandler();
+        },
+
+        createEventHandler : function() {
+            var canvas= this.canvas;
+            this.in_ = false;
+            this.addHandlers(canvas);
+        }
     };
+
+
+    if (CAAT.__CSS__) {
+
+        CAAT.Director.prototype.clip= true;
+        CAAT.Director.prototype.glEnabled= false;
+
+        CAAT.Director.prototype.getRenderType= function() {
+            return 'CSS';
+        };
+
+        CAAT.Director.prototype.setScaleProportional= function(w,h) {
+
+            var factor= Math.min(w/this.referenceWidth, h/this.referenceHeight);
+            this.setScaleAnchored( factor, factor, 0, 0 );
+
+            this.eventHandler.style.width=  ''+this.referenceWidth +'px';
+            this.eventHandler.style.height= ''+this.referenceHeight+'px';
+        };
+
+        CAAT.Director.prototype.setBounds= function(x, y, w, h) {
+            CAAT.Director.superclass.setBounds.call(this, x, y, w, h);
+            for (var i = 0; i < this.scenes.length; i++) {
+                this.scenes[i].setBounds(0, 0, w, h);
+            }
+            this.eventHandler.style.width= w+'px';
+            this.eventHandler.style.height= h+'px';
+
+            return this;
+        };
+
+        CAAT.Director.prototype.initialize= function(width, height, domElement) {
+
+            this.timeline = new Date().getTime();
+            this.domElement= domElement;
+            this.style('position','absolute');
+            this.style('width',''+width+'px');
+            this.style('height',''+height+'px');
+            this.style('overflow', 'hidden' );
+            this.enableEvents();
+
+            this.setBounds(0, 0, width, height);
+
+            this.checkDebug();
+            return this;
+        };
+
+        CAAT.Director.prototype.render= function(time) {
+
+            this.time += time;
+            this.animate(this,time);
+
+            /**
+             * draw director active scenes.
+             */
+            var i, l, tt;
+
+            if ( CAAT.DEBUG ) {
+                this.resetStats();
+            }
+
+            for (i = 0, l=this.childrenList.length; i < l; i++) {
+                var c= this.childrenList[i];
+                if (c.isInAnimationFrame(this.time)) {
+                    tt = c.time - c.start_time;
+                    if ( c.onRenderStart ) {
+                        c.onRenderStart(tt);
+                    }
+
+                    if ( c.onRenderEnd ) {
+                        c.onRenderEnd(tt);
+                    }
+
+                    if (!c.isPaused()) {
+                        c.time += time;
+                    }
+
+                    if ( CAAT.DEBUG ) {
+                        this.statistics.size_total+= c.size_total;
+                        this.statistics.size_active+= c.size_active;
+                    }
+
+                }
+            }
+
+            this.frameCounter++;
+        };
+
+        CAAT.Director.prototype.addScene= function(scene) {
+            scene.setVisible(true);
+            scene.setBounds(0, 0, this.width, this.height);
+            this.scenes.push(scene);
+            scene.setEaseListener(this);
+            if (null === this.currentScene) {
+                this.setScene(0);
+            }
+
+            this.domElement.appendChild( scene.domElement );
+        };
+
+        CAAT.Director.prototype.emptyScenes= function() {
+            this.scenes = [];
+            this.domElement.innerHTML='';
+            this.createEventHandler();
+        };
+
+        CAAT.Director.prototype.setClear= function(clear) {
+            return this;
+        };
+
+        CAAT.Director.prototype.createEventHandler= function() {
+            this.eventHandler= document.createElement('div');
+            this.domElement.appendChild(this.eventHandler);
+
+            this.eventHandler.style.position=   'absolute';
+            this.eventHandler.style.left=       '0';
+            this.eventHandler.style.top=        '0';
+            this.eventHandler.style.zIndex=     999999;
+            this.eventHandler.style.width=      ''+this.width+'px';
+            this.eventHandler.style.height=     ''+this.height+'px';
+
+            var canvas= this.eventHandler;
+            this.in_ = false;
+
+            this.addHandlers(canvas);
+        };
+    }
 
     extend(CAAT.Director, CAAT.ActorContainer, null);
 })();

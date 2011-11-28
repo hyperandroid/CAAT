@@ -145,6 +145,8 @@
         size_active:            1,      // number of animated children
         size_total:             1,
 
+        __next:                 null,
+
         getId : function()  {
             return this.id;
         },

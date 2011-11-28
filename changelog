@@ -1,3 +1,10 @@
+11/28/2011 *0.1 Build:287*
+--------------------------
+
+* One single director file (no more messing with director and directorCSS).
+* Unified touch code for canvas and CSS renderers.
+
+
 11/24/2011 *0.1 261*
 --------------------
 
