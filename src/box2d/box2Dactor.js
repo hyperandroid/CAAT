@@ -327,7 +327,7 @@
                     box2D_data.boundingBox[1].x-box2D_data.boundingBox[0].x+1,
                     box2D_data.boundingBox[1].y-box2D_data.boundingBox[0].y+1 ).
                 setFillStyle( box2D_data.worldBodyFixture.IsSensor() ? 'red' : 'green').
-                setImageTransformation(CAAT.ImageActor.prototype.TR_FIXED_TO_SIZE);
+                setImageTransformation(CAAT.SpriteImage.prototype.TR_FIXED_TO_SIZE);
 
             return this;
         }
@@ -529,7 +529,7 @@
             this.setFillStyle(this.worldBodyFixture.IsSensor() ? 'red' : 'blue').
                     setBackgroundImage(this.image).
                     setSize(2*this.radius,2*this.radius).
-                    setImageTransformation(CAAT.ImageActor.prototype.TR_FIXED_TO_SIZE);
+                    setImageTransformation(CAAT.SpriteImage.prototype.TR_FIXED_TO_SIZE);
 
 
             return this;

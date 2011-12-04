@@ -241,7 +241,6 @@
 
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
             gl.enable( gl.BLEND );
-// Fix FF            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
             gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
             var uarr= new Uint8Array(this.width*this.height*4);
@@ -390,20 +389,6 @@
                             this.images[i].__w,
                             this.images[i].__h );
                 }
-
-                if ( this.images[i].__gridC && this.images[i].__gridR ) {
-                    for( var t=0; t<this.images[i].__gridR; t++ ) {
-                        for( var u=0; u<this.images[i].__gridC; u++ ) {
-                            ctxx.strokeStyle= 'blue';
-                            ctxx.strokeRect(
-                                    this.images[i].__tx+ u*this.images[i].__w/this.images[i].__gridC,
-                                    this.images[i].__ty+ t*this.images[i].__h/this.images[i].__gridR,
-                                    this.images[i].__w/this.images[i].__gridC,
-                                    this.images[i].__h/this.images[i].__gridR
-                                    );
-                        }
-                    }
-                }
             }
 
 
@@ -434,16 +419,12 @@
             // alineadas a posici—n mod 4,8...
             if ( w && this.padding ) {
                 mod= this.padding;
-//                mod= (w/this.padding)>>0;
-//                if ( !mod ) {mod=this.padding;}
                 if ( w+mod<=this.width ) {
                     w+=mod;
                 }
             }
             if ( h && this.padding ) {
                 mod= this.padding;
-//                mod= (h/this.padding)>>0;
-//                if ( !mod ) {mod=this.padding;}
                 if ( h+mod<=this.height ) {
                     h+=mod;
                 }

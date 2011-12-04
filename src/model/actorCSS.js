@@ -144,6 +144,7 @@
 
             return this;
         },
+        
         /**
          * Set this actor's background image.
          * The need of a background image is to kept compatibility with the new CSSDirector class.
@@ -188,7 +189,7 @@
                 image.setOwner(this);
                 this.backgroundImage= image;
                 if ( typeof adjust_size_to_image==='undefined' || adjust_size_to_image ) {
-                    this.setSize(image.singleWidth, image.singleHeight);
+                    this.setSize(image.getWidth(), image.getHeight());
                 }
 
                 this.style(
@@ -1164,16 +1165,7 @@
 			for( var i=0; i<this.behaviorList.length; i++ )	{
 				this.behaviorList[i].apply(time,this);
 			}
-/*
-            var kfs= this.keyframesList;
-            var kfi;
-            var kf;
-            for( i=0; i<kfs.length; i++ ) {
-                kfi= kfs[i];
-                kf= kfi.keyframe;
-                kf.apply( time, this, kfi.startTime, kfi.duration, kfi.cycle, kfi.startOffset );
-            }
-*/
+
             this.frameAlpha= this.parent ? this.parent.frameAlpha*this.alpha : 1;
             //this.setAlpha(this.frameAlpha);
             this.styleAlpha(this.frameAlpha);
@@ -1278,6 +1270,14 @@
          * @return boolean indicating whether the Actor isInFrameTime
          */
         paintActor : function(director, time) {
+            var bi= this.backgroundImage;
+            if ( bi ) {
+                var pi= bi.spriteIndex;
+                bi.setSpriteIndexAtTime(time);
+                if ( bi.spriteIndex!=pi ) {
+                    this.setSpriteIndex( bi.spriteIndex );
+                }
+            }
             return true;
         },
         /**
@@ -1505,6 +1505,22 @@
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          */
         paintActor : function(director, time ) {
+
+            if (!this.visible) {
+                return true;
+            }
+
+            CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
+            if ( !this.isGlobalAlpha ) {
+                this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
+            }
+
+            for( var actor= this.activeChildren; actor; actor=actor.__next ) {
+                if ( actor.visible ) {
+                    actor.paintActor(director,time);
+                }
+            }
+
             return true;
         },
         /**

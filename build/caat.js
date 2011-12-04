@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 289
+Version: 0.1 build: 330
 
 Created on:
-DATE: 2011-11-28
-TIME: 16:38:34
+DATE: 2011-12-05
+TIME: 00:31:28
 */
 
 
@@ -4700,8 +4700,8 @@ var cp1= proxy(
                 image.setOwner(this);
                 this.backgroundImage= image;
                 if ( typeof adjust_size_to_image==='undefined' || adjust_size_to_image ) {
-                    this.width= image.singleWidth;
-                    this.height= image.singleHeight;
+                    this.width= image.getWidth();
+                    this.height= image.getHeight();
                 }
 
                 this.glEnabled= true;
@@ -5675,16 +5675,7 @@ var cp1= proxy(
 			for( i=0; i<this.behaviorList.length; i++ )	{
 				this.behaviorList[i].apply(time,this);
 			}
-/*
-            var kfs= this.keyframesList;
-            var kfi;
-            var kf;
-            for( i=0; i<kfs.length; i++ ) {
-                kfi= kfs[i];
-                kf= kfi.keyframe;
-                kf.apply( time, this, kfi.startTime, kfi.duration, kfi.cycle, kfi.startOffset );
-            }
-*/
+
             /*
                 If we have a mask applied, apply behaviors as well.
              */
@@ -9249,7 +9240,7 @@ var cp1= proxy(
             var top= prop+'Top';
             var x=0, y=0, style;
 
-            while( node && node.style ) {
+            while( navigator.browser!=='iOS' && node && node.style ) {
                 if ( node.currentStyle ) {
                     style= node.currentStyle['position'];
                 } else {
@@ -9326,360 +9317,6 @@ var cp1= proxy(
             this.screenMousePoint.set(posx, posy);
 
         },
-
-        /**
-         * Enable canvas input events.
-         * Events sent to any CAAT.Actor instance will be as follows:
-         *
-         * MouseEnter
-         *  if (press)
-         *      MouseDown
-         *      if (drag)
-         *          MouseDrag
-         *  if (release)
-         *      MouseUp
-         *      MouseClicked
-         *  MouseExit
-         *
-         */
-        __enableEvents : function() {
-            CAAT.RegisterDirector(this);
-
-            var canvas = this.canvas;
-            var me = this;
-            var in_ = false;
-
-
-            canvas.addEventListener('mouseup',
-                    function(e) {
-                        e.preventDefault();
-
-                        me.isMouseDown = false;
-                        me.getCanvasCoord(me.mousePoint, e);
-
-                        var pos= null;
-
-                        var lactor= me.lastSelectedActor;
-
-                        if (null !== lactor) {
-                            pos = lactor.viewToModel(
-                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                            if ( lactor.actionPerformed && lactor.contains(pos.x, pos.y) ) {
-                                lactor.actionPerformed(e)
-                            }
-
-                            lactor.mouseUp(
-                                new CAAT.MouseEvent().init(
-                                    pos.x,
-                                    pos.y,
-                                    e,
-                                    lactor,
-                                    me.screenMousePoint));
-                        }
-
-                        if (!me.dragging && null !== lactor) {
-                            if (lactor.contains(pos.x, pos.y)) {
-                                lactor.mouseClick(
-                                    new CAAT.MouseEvent().init(
-                                        pos.x,
-                                        pos.y,
-                                        e,
-                                        lactor,
-                                        me.screenMousePoint));
-                            }
-                        }
-
-                        me.dragging =           false;
-                        in_=                    false;
-                        CAAT.setCursor('default');
-                    },
-                    false);
-
-            canvas.addEventListener('mousedown',
-                    function(e) {
-
-                        e.preventDefault();
-
-                        me.getCanvasCoord(me.mousePoint, e);
-
-                        me.isMouseDown = true;
-                        var lactor = me.findActorAtPosition(me.mousePoint);
-
-                        if (null !== lactor) {
-
-                            var pos = lactor.viewToModel(
-                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                            // to calculate mouse drag threshold
-                            lactor.mouseDown(
-                                    new CAAT.MouseEvent().init(
-                                        pos.x,
-                                        pos.y,
-                                        e,
-                                        lactor,
-                                        new CAAT.Point(
-                                            me.screenMousePoint.x,
-                                            me.screenMousePoint.y )));
-                        }
-
-                        me.lastSelectedActor= lactor;
-                    },
-                    false);
-
-            canvas.addEventListener('mouseover',
-                    function(e) {
-
-                        e.preventDefault();
-                        me.getCanvasCoord(me.mousePoint, e);
-
-                        var lactor= me.findActorAtPosition( me.mousePoint );
-                        var pos;
-
-                        if (null !== lactor) {
-
-                            pos = lactor.viewToModel(
-                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                            lactor.mouseEnter(
-                                new CAAT.MouseEvent().init(
-                                    pos.x,
-                                    pos.y,
-                                    e,
-                                    lactor,
-                                    me.screenMousePoint));
-                        }
-
-                        me.lastSelectedActor= lactor;
-                    },
-                    false);
-
-            canvas.addEventListener('mouseout',
-                    function(e) {
-
-                        e.preventDefault();
-
-                        if (null !== me.lastSelectedActor) {
-
-                            me.getCanvasCoord(me.mousePoint, e);
-                            var pos = new CAAT.Point(me.mousePoint.x, me.mousePoint.y, 0);
-                            me.lastSelectedActor.viewToModel(pos);
-
-                            me.lastSelectedActor.mouseExit(
-                                    new CAAT.MouseEvent().init(
-                                            pos.x,
-                                            pos.y,
-                                            e,
-                                            me.lastSelectedActor,
-                                            me.screenMousePoint));
-                            me.lastSelectedActor = null;
-                        }
-                        me.isMouseDown = false;
-                        in_ = false;
-                    },
-                    false);
-
-            canvas.addEventListener('mousemove',
-                    function(e) {
-
-                        e.preventDefault();
-
-                        me.getCanvasCoord(me.mousePoint, e);
-
-                        var lactor;
-                        var pos;
-
-                        // drag
-                        if (me.isMouseDown && null !== me.lastSelectedActor) {
-/*
-                            // check for mouse move threshold.
-                            if (!me.dragging) {
-                                if (Math.abs(me.prevMousePoint.x - me.mousePoint.x) < CAAT.DRAG_THRESHOLD_X &&
-                                    Math.abs(me.prevMousePoint.y - me.mousePoint.y) < CAAT.DRAG_THRESHOLD_Y) {
-                                    return;
-                                }
-                            }
-*/
-                            lactor = me.lastSelectedActor;
-                            
-                            pos = lactor.viewToModel(
-                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                            me.dragging = true;
-
-                            var px= lactor.x;
-                            var py= lactor.y;
-                            lactor.mouseDrag(
-                                    new CAAT.MouseEvent().init(
-                                        pos.x,
-                                        pos.y,
-                                        e,
-                                        lactor,
-                                        new CAAT.Point(
-                                            me.screenMousePoint.x,
-                                            me.screenMousePoint.y)));
-
-                            me.prevMousePoint.x= pos.x;
-                            me.prevMousePoint.y= pos.y;
-                            /**
-                             * Element has not moved after drag, so treat it as a button.
-                             *
-                             */
-                            if ( px===lactor.x && py===lactor.y )   {
-
-                                var contains= lactor.contains(pos.x, pos.y);
-
-                                if (in_ && !contains) {
-                                    lactor.mouseExit(
-                                        new CAAT.MouseEvent().init(
-                                            pos.x,
-                                            pos.y,
-                                            e,
-                                            lactor,
-                                            me.screenMousePoint));
-                                    in_ = false;
-                                }
-
-                                if (!in_ && contains ) {
-                                    lactor.mouseEnter(
-                                        new CAAT.MouseEvent().init(
-                                            pos.x,
-                                            pos.y,
-                                            e,
-                                            lactor,
-                                            me.screenMousePoint));
-                                    in_ = true;
-                                }
-                            }
-
-                            return;
-                        }
-
-                        in_= true;
-
-                        lactor = me.findActorAtPosition(me.mousePoint);
-
-                        // cambiamos de actor.
-                        if (lactor !== me.lastSelectedActor) {
-                            if (null !== me.lastSelectedActor) {
-
-                                pos = me.lastSelectedActor.viewToModel(
-                                    new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                                me.lastSelectedActor.mouseExit(
-                                    new CAAT.MouseEvent().init(
-                                        pos.x,
-                                        pos.y,
-                                        e,
-                                        me.lastSelectedActor,
-                                        me.screenMousePoint));
-                            }
-                            if (null !== lactor) {
-
-                                pos = lactor.viewToModel(
-                                    new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                                lactor.mouseEnter(
-                                    new CAAT.MouseEvent().init(
-                                        pos.x,
-                                        pos.y,
-                                        e,
-                                        lactor,
-                                        me.screenMousePoint));
-                            }
-                        }
-
-                        pos = lactor.viewToModel(
-                            new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                        if (null !== lactor) {
-
-                            lactor.mouseMove(
-                                new CAAT.MouseEvent().init(
-                                    pos.x,
-                                    pos.y,
-                                    e,
-                                    lactor,
-                                    me.screenMousePoint));
-                        }
-
-                        me.lastSelectedActor = lactor;
-                    },
-                    false);
-
-            canvas.addEventListener("dblclick",
-                    function(e) {
-
-                        e.preventDefault();
-
-                        me.getCanvasCoord(me.mousePoint, e);
-                        if (null !== me.lastSelectedActor) {
-
-                            var pos = me.lastSelectedActor.viewToModel(
-                                new CAAT.Point(me.screenMousePoint.x, me.screenMousePoint.y, 0));
-
-                            me.lastSelectedActor.mouseDblClick(
-                                    new CAAT.MouseEvent().init(
-                                            me.mousePoint.x,
-                                            me.mousePoint.y,
-                                            e,
-                                            me.lastSelectedActor,
-                                            me.screenMousePoint));
-                        }
-                    },
-                    false);
-
-
-            function touchHandler(event) {
-                var touches = event.changedTouches,
-                        first = touches[0],
-                        type = "";
-
-                switch (event.type) {
-                    case "touchstart": type = "mousedown"; break;
-                    case "touchmove":  type = "mousemove"; break;
-                    case "touchend":   type = "mouseup"; break;
-                    default: return;
-                }
-
-                var simulatedEvent = document.createEvent("MouseEvent");
-                simulatedEvent.initMouseEvent(
-                        type,
-                        true,
-                        true,
-                        me.canvas,
-                        1,
-                        first.screenX,
-                        first.screenY,
-                        first.clientX,
-                        first.clientY,
-                        false,
-                        false,
-                        false,
-                        false,
-                        0/*left*/,
-                        null);
-
-                me.canvas.dispatchEvent(simulatedEvent);
-                event.preventDefault();
-            }
-
-            canvas.addEventListener("touchstart", touchHandler, true);
-            canvas.addEventListener("touchmove", touchHandler, true);
-            canvas.addEventListener("touchend", touchHandler, true);
-            canvas.addEventListener("touchcancel", touchHandler, true);
-
-        }
-,
-
-
-
-
-
-
-
-
-
 
         __mouseDownHandler : function(e) {
 
@@ -10096,6 +9733,8 @@ var cp1= proxy(
                         c.onRenderStart(tt);
                     }
 
+                    c.paintActor(this, tt);
+
                     if ( c.onRenderEnd ) {
                         c.onRenderEnd(tt);
                     }
@@ -10156,45 +9795,7 @@ var cp1= proxy(
     }
 
     extend(CAAT.Director, CAAT.ActorContainer, null);
-})();
-
-// TODO: ease in out flip.
-/*		flip : function( inSceneIndex, time ) {
- var ssin=this.scenes[ inSceneIndex ];
- var sout=null;
-
- this.childList= [];
-
- if ( this.currentScene!=null ) {
- sout= this.currentScene;
- this.scenes[ this.getSceneIndex(this.currentScene) ];
- sout.setFrameTime(this.time, Number.MAX_VALUE);
- sout.easeScaleOut(0, time/2, false, CAAT.Actor.prototype.ANCHOR_CENTER );
- this.addChild(sout);
- }
-
- ssin.setFrameTime(this.time/2, Number.MAX_VALUE);
- ssin.easeScaleIn( time/2, time/2, false, CAAT.Actor.prototype.ANCHOR_CENTER );
- this.addChild(ssin);
- },
- flipToNext : function( time ) {
- var currentSceneIndex= this.getSceneIndex(this.currentScene);
-
- if ( this.getNumScenes()<=1 || currentSceneIndex==this.getNumScenes()-1 ) {
- return;
- }
-
- this.flip( currentSceneIndex+1, time );
- },
- flipToPrev : function( time ) {
- var currentSceneIndex= this.getSceneIndex(this.currentScene);
-
- if ( this.getNumScenes()<=1 || currentSceneIndex==0 ) {
- return;
- }
-
- this.flip( currentSceneIndex-1, time );
- },*//**
+})();/**
  * See LICENSE file.
  *
  * MouseEvent is a class to hold necessary information of every mouse event related to concrete
@@ -10450,6 +10051,7 @@ window.requestAnimFrame = (function(){
           };
 })();
 
+CAAT.SET_INTERVAL=0;
 /**
  * Main animation loop entry point.
  * @param fps {number} desired fps. This parameter makes no sense unless requestAnimationFrame function
@@ -10460,14 +10062,21 @@ CAAT.loop= function(fps) {
         return;
     }
 
+
     CAAT.FPS= fps || 60;
     CAAT.renderEnabled= true;
     if (CAAT.NO_PERF) {
         setInterval(
                 function() {
+                    var t= new Date().getTime();
                     for (var i = 0, l = CAAT.director.length; i < l; i++) {
                         CAAT.director[i].renderFrame();
                     }
+                    //t= new Date().getTime()-t;
+                    CAAT.FRAME_TIME= t - CAAT.SET_INTERVAL;
+                    
+                    CAAT.SET_INTERVAL= t;
+
                 },
                 1000 / CAAT.FPS
         );
@@ -10554,6 +10163,37 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
  *
  **/
 
+(function() {
+
+    CAAT.SpriteImageHelper= function(x,y,w,h) {
+        this.x=         x;
+        this.y=         y;
+        this.width=     w;
+        this.height=    h;
+
+        return this;
+    };
+
+    CAAT.SpriteImageHelper.prototype= {
+
+        x       :   0,
+        y       :   0,
+        width   :   0,
+        height  :   0,
+        u       :   0,
+        v       :   0,
+        u1      :   0,
+        v1      :   0,
+
+        setGL : function( u,v,u1,v1 ) {
+            this.u= u;
+            this.v= v;
+            this.u1= u1;
+            this.v1= v1;
+            return this;
+        }
+    };
+})();
 
 (function() {
 
@@ -10594,6 +10234,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
     CAAT.SpriteImage = function() {
         this.paint= this.paintN;
         this.setAnimationImageIndex([0]);
+        this.mapInfo=   {};
         return this;
     };
 
@@ -10625,9 +10266,10 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
         offsetX:                0,
         offsetY:                0,
 
-        xyCache:                null,
-
         ownerActor:             null,
+
+        mapInfo             :   null,
+        map                 :   null,
 
         setOwner : function(actor) {
             this.ownerActor= actor;
@@ -10639,6 +10281,17 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
         getColumns : function() {
             return this.columns;
         },
+
+        getWidth : function() {
+            var el= this.mapInfo[this.spriteIndex];
+            return el.width;
+        },
+
+        getHeight : function() {
+            var el= this.mapInfo[this.spriteIndex];
+            return el.height;
+        },
+
         /**
          * Get a reference to the same image information (rows, columns, image and uv cache) of this
          * SpriteImage. This means that re-initializing this objects image info (that is, calling initialize
@@ -10653,7 +10306,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             ret.height=         this.height;
             ret.singleWidth=    this.singleWidth;
             ret.singleHeight=   this.singleHeight;
-            ret.xyCache=        this.xyCache;
+            ret.mapInfo=        this.mapInfo;
             ret.offsetX=        this.offsetX;
             ret.offsetY=        this.offsetY;
             ret.scaleX=         this.scaleX;
@@ -10701,9 +10354,11 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             this.height = image.height;
             this.singleWidth = Math.floor(this.width / columns);
             this.singleHeight = Math.floor(this.height / rows);
-            this.xyCache = [];
+            this.mapInfo= {};
 
             var i,sx0,sy0;
+            var helper;
+
             if (image.__texturePage) {
                 image.__du = this.singleWidth / image.__texturePage.width;
                 image.__dv = this.singleHeight / image.__texturePage.height;
@@ -10736,7 +10391,13 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                     var u1 = u + w;
                     var v1 = v + h;
 
-                    this.xyCache.push([u / tp.width,v / tp.height,u1 / tp.width,v1 / tp.height,u,v,u1,v1]);
+                    helper= new CAAT.SpriteImageHelper().setGL(
+                        u / tp.width,
+                        v / tp.height,
+                        u1 / tp.width,
+                        v1 / tp.height );
+
+                    this.mapInfo[i]= helper;
                 }
 
             } else {
@@ -10744,7 +10405,8 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                     sx0 = ((i % this.columns) | 0) * this.singleWidth;
                     sy0 = ((i / this.columns) | 0) * this.singleHeight;
 
-                    this.xyCache.push([sx0,sy0]);
+                    helper= new CAAT.SpriteImageHelper( sx0, sy0, this.singleWidth, this.singleHeight );
+                    this.mapInfo[i]= helper;
                 }
             }
 
@@ -10763,15 +10425,20 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 
             this.setSpriteIndexAtTime(time);
 
+            var el= this.mapInfo[this.spriteIndex];
+
             var ctx= director.ctx;
             ctx.save();
-            ctx.translate(((0.5 + x) | 0) + this.singleWidth, (0.5 + y) | 0);
+            ctx.translate(((0.5 + x) | 0) + el.width, (0.5 + y) | 0);
             ctx.scale(-1, 1);
 
-            ctx.drawImage(this.image,
-                    this.xyCache[this.spriteIndex][0], this.xyCache[this.spriteIndex][1],
-                    this.singleWidth, this.singleHeight,
-                    this.offsetX>>0, this.offsetY>>0, this.singleWidth, this.singleHeight);
+
+            ctx.drawImage(
+                this.image,
+                el.x, el.y,
+                el.width, el.height,
+                this.offsetX>>0, this.offsetY>>0,
+                el.width, el.height );
 
             ctx.restore();
 
@@ -10789,17 +10456,19 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
         paintInvertedV : function(director, time, x, y) {
 
             this.setSpriteIndexAtTime(time);
+            var el= this.mapInfo[this.spriteIndex];
 
             var ctx= director.ctx;
             ctx.save();
-            ctx.translate((x + 0.5) | 0, (0.5 + y + this.singleHeight) | 0);
+            ctx.translate((x + 0.5) | 0, (0.5 + y + el.height) | 0);
             ctx.scale(1, -1);
 
             ctx.drawImage(
-                    this.image,
-                    this.xyCache[this.spriteIndex][0], this.xyCache[this.spriteIndex][1],
-                    this.singleWidth, this.singleHeight,
-                    this.offsetX>>0,this.offsetY>>0, this.singleWidth, this.singleHeight);
+                this.image,
+                el.x, el.y,
+                el.width, el.height,
+                this.offsetX>>0,this.offsetY>>0,
+                el.width, el.height);
 
             ctx.restore();
 
@@ -10817,20 +10486,21 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
         paintInvertedHV : function(director, time, x, y) {
 
             this.setSpriteIndexAtTime(time);
+            var el= this.mapInfo[this.spriteIndex];
 
             var ctx= director.ctx;
             ctx.save();
-            ctx.translate((x + 0.5) | 0, (0.5 + y + this.singleHeight) | 0);
+            ctx.translate((x + 0.5) | 0, (0.5 + y + el.height) | 0);
             ctx.scale(1, -1);
-            ctx.translate(this.singleWidth, 0);
+            ctx.translate(el.width, 0);
             ctx.scale(-1, 1);
 
             ctx.drawImage(
                 this.image,
-                this.xyCache[this.spriteIndex][0], this.xyCache[this.spriteIndex][1],
-                this.singleWidth, this.singleHeight,
+                el.x, el.y,
+                el.width, el.height,
                 this.offsetX>>0, this.offsetY>>0,
-                this.singleWidth, this.singleHeight);
+                el.width, el.height);
 
             ctx.restore();
 
@@ -10847,13 +10517,14 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
          */
         paintN : function(director, time, x, y) {
             this.setSpriteIndexAtTime(time);
+            var el= this.mapInfo[this.spriteIndex];
 
             director.ctx.drawImage(
                 this.image,
-                this.xyCache[this.spriteIndex][0]>>0, this.xyCache[this.spriteIndex][1]>>0,
-                this.singleWidth, this.singleHeight,
+                el.x, el.y,
+                el.width, el.height,
                 (this.offsetX+x)>>0, (this.offsetY+y)>>0,
-                this.singleWidth, this.singleHeight);
+                el.width, el.height);
 
             return this;
         },
@@ -10870,17 +10541,22 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
          */
         paintScaled : function(director, time, x, y) {
             this.setSpriteIndexAtTime(time);
+            var el= this.mapInfo[this.spriteIndex];
+
             director.ctx.drawImage(
-                    this.image,
-                    this.xyCache[this.spriteIndex][0], this.xyCache[this.spriteIndex][1],
-                    this.singleWidth, this.singleHeight,
-                    x>>0, y>>0, this.ownerActor.width, this.ownerActor.height );
+                this.image,
+                el.x, el.y,
+                el.width, el.height,
+                (this.offsetX+x)>>0, (this.offsetY+y)>>0,
+                this.ownerActor.width, this.ownerActor.height );
 
             return this;
         },
         getCurrentSpriteImageCSSPosition : function() {
-            return '-'+(this.xyCache[this.spriteIndex][0]-this.offsetX)+'px '+
-                   '-'+(this.xyCache[this.spriteIndex][1]-this.offsetY)+'px';
+            var el= this.mapInfo[this.spriteIndex];
+
+            return '-'+(el.x-this.offsetX)+'px '+
+                   '-'+(el.y-this.offsetY)+'px';
         },
         /**
          * Get the number of subimages in this compoundImage
@@ -10904,10 +10580,12 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 
             var index = uvIndex;
             var sIndex= this.spriteIndex;
-            var u=  this.xyCache[sIndex][0];
-            var v=  this.xyCache[sIndex][1];
-            var u1= this.xyCache[sIndex][2];
-            var v1= this.xyCache[sIndex][3];
+            var el= this.mapInfo[this.spriteIndex];
+
+            var u=  el.u;
+            var v=  el.v;
+            var u1= el.u1;
+            var v1= el.v1;
             if ( this.offsetX || this.offsetY ) {
                 var w=  this.ownerActor.width;
                 var h=  this.ownerActor.height;
@@ -10991,8 +10669,15 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 			}
             return this;
         },
+
         /**
-         * Set the sprite animation images index.
+         * Set the sprite animation images index. This method accepts an array of objects which define indexes to
+         * subimages inside this sprite image.
+         * If the SpriteImage is instantiated by calling the method initialize( image, rows, cols ), the value of
+         * aAnimationImageIndex should be an array of numbers, which define the indexes into an array of subimages
+         * with size rows*columns.
+         * If the method InitializeFromMap( image, map ) is called, the value for aAnimationImageIndex is expected
+         * to be an array of strings which are the names of the subobjects contained in the map object.
          *
          * @param aAnimationImageIndex an array indicating the Sprite's frames.
          */
@@ -11006,6 +10691,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             this.spriteIndex= index;
             return this;
         },
+
         /**
          * Draws the sprite image calculated and stored in spriteIndex.
          *
@@ -11027,10 +10713,48 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                     this.spriteIndex= this.animationImageIndex[Math.floor(ttime)];
                 }
             }
+        },
+
+        /**
+         * This method takes the output generated from the tool at http://labs.hyperandroid.com/static/texture/spriter.html
+         * and creates a map into that image.
+         * @param image {Image|HTMLImageElement|Canvas} an image
+         * @param map {object} the map into the image to define subimages.
+         */
+        initializeFromMap : function( image, map ) {
+            this.initialize( image, 1, 1 );
+
+            var key;
+            var helper;
+            var count=0;
+
+            for( key in map ) {
+                var value= map[key];
+
+                helper= new CAAT.SpriteImageHelper(
+                    value.x,
+                    value.y,
+                    value.width,
+                    value.height
+                );
+
+                this.mapInfo[key]= helper;
+
+                // set a default spriteIndex
+                if ( !count ) {
+                    this.setAnimationImageIndex( [key] );
+                }
+
+                count++;
+            }
+
+            return this;
         }
 
+        
     };
-})();/**
+})();
+/**
  * See LICENSE file.
  *
  * Image/Resource preloader.
@@ -16007,7 +15731,6 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
 
             gl.bindTexture(gl.TEXTURE_2D, this.texture);
             gl.enable( gl.BLEND );
-// Fix FF            gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
             gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
 
             var uarr= new Uint8Array(this.width*this.height*4);
@@ -16156,20 +15879,6 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
                             this.images[i].__w,
                             this.images[i].__h );
                 }
-
-                if ( this.images[i].__gridC && this.images[i].__gridR ) {
-                    for( var t=0; t<this.images[i].__gridR; t++ ) {
-                        for( var u=0; u<this.images[i].__gridC; u++ ) {
-                            ctxx.strokeStyle= 'blue';
-                            ctxx.strokeRect(
-                                    this.images[i].__tx+ u*this.images[i].__w/this.images[i].__gridC,
-                                    this.images[i].__ty+ t*this.images[i].__h/this.images[i].__gridR,
-                                    this.images[i].__w/this.images[i].__gridC,
-                                    this.images[i].__h/this.images[i].__gridR
-                                    );
-                        }
-                    }
-                }
             }
 
 
@@ -16200,16 +15909,12 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
             // alineadas a posici—n mod 4,8...
             if ( w && this.padding ) {
                 mod= this.padding;
-//                mod= (w/this.padding)>>0;
-//                if ( !mod ) {mod=this.padding;}
                 if ( w+mod<=this.width ) {
                     w+=mod;
                 }
             }
             if ( h && this.padding ) {
                 mod= this.padding;
-//                mod= (h/this.padding)>>0;
-//                if ( !mod ) {mod=this.padding;}
                 if ( h+mod<=this.height ) {
                     h+=mod;
                 }

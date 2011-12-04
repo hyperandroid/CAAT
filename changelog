@@ -1,3 +1,11 @@
+11/28/2011 *0.1 Build:327*
+--------------------------
+
+* Added maps for SpriteImage. Now the output from the tool http://labs.hyperandroid.com/static/texture/spriter.html
+  can be directly used in SpriteImage by initializing it with the method initializeFromMap( image, map ).
+* Added SpriteImage setChangeFPS for CSS renderer.
+* Removed references to deprecated CAAT.ImageActor objects.
+
 11/28/2011 *0.1 Build:287*
 --------------------------
 

@@ -254,6 +254,7 @@ window.requestAnimFrame = (function(){
           };
 })();
 
+CAAT.SET_INTERVAL=0;
 /**
  * Main animation loop entry point.
  * @param fps {number} desired fps. This parameter makes no sense unless requestAnimationFrame function
@@ -264,14 +265,21 @@ CAAT.loop= function(fps) {
         return;
     }
 
+
     CAAT.FPS= fps || 60;
     CAAT.renderEnabled= true;
     if (CAAT.NO_PERF) {
         setInterval(
                 function() {
+                    var t= new Date().getTime();
                     for (var i = 0, l = CAAT.director.length; i < l; i++) {
                         CAAT.director[i].renderFrame();
                     }
+                    //t= new Date().getTime()-t;
+                    CAAT.FRAME_TIME= t - CAAT.SET_INTERVAL;
+                    
+                    CAAT.SET_INTERVAL= t;
+
                 },
                 1000 / CAAT.FPS
         );

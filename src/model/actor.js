@@ -194,8 +194,8 @@
                 image.setOwner(this);
                 this.backgroundImage= image;
                 if ( typeof adjust_size_to_image==='undefined' || adjust_size_to_image ) {
-                    this.width= image.singleWidth;
-                    this.height= image.singleHeight;
+                    this.width= image.getWidth();
+                    this.height= image.getHeight();
                 }
 
                 this.glEnabled= true;
@@ -1169,16 +1169,7 @@
 			for( i=0; i<this.behaviorList.length; i++ )	{
 				this.behaviorList[i].apply(time,this);
 			}
-/*
-            var kfs= this.keyframesList;
-            var kfi;
-            var kf;
-            for( i=0; i<kfs.length; i++ ) {
-                kfi= kfs[i];
-                kf= kfi.keyframe;
-                kf.apply( time, this, kfi.startTime, kfi.duration, kfi.cycle, kfi.startOffset );
-            }
-*/
+
             /*
                 If we have a mask applied, apply behaviors as well.
              */
