@@ -1,4 +1,15 @@
-11/28/2011 *0.1 Build:327*
+12/05/2011 *0.1 Build:347*
+--------------------------
+
+* Fixed bug in CAAT-CSS Actor.addChildAt.
+* Added no-repeat modifier to Actor background image to CSS conversion.
+* Optimized CSS Actor scene traversal procedure.
+* Added mouseOut and mouseOver handlers for events regarding mouse abandons CAAT's screen area or mouse gets in CAAT's
+  screen area respectively.
+* Fixed bug when dragging and getting out of CAAT's on-screen area. Now events resume properly.
+
+
+12/04/2011 *0.1 Build:327*
 --------------------------
 
 * Added maps for SpriteImage. Now the output from the tool http://labs.hyperandroid.com/static/texture/spriter.html
@@ -11,7 +22,6 @@
 
 * One single director file (no more messing with director and directorCSS).
 * Unified touch code for canvas and CSS renderers.
-
 
 11/24/2011 *0.1 261*
 --------------------

@@ -398,7 +398,7 @@
             var el= this.mapInfo[this.spriteIndex];
 
             return '-'+(el.x-this.offsetX)+'px '+
-                   '-'+(el.y-this.offsetY)+'px';
+                   '-'+(el.y-this.offsetY)+'px no-repeat';
         },
         /**
          * Get the number of subimages in this compoundImage

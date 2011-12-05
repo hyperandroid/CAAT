@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 330
+Version: 0.1 build: 347
 
 Created on:
 DATE: 2011-12-05
-TIME: 00:31:28
+TIME: 22:10:35
 */
 
 
@@ -5624,6 +5624,10 @@ var cp1= proxy(
          */
 		mouseUp : function(mouseEvent) {
 		},
+        mouseOut : function(mouseEvent) {
+        },
+        mouseOver : function(mouseEvent) {
+        },
         /**
          * default Actor mouse drag handler.
          *
@@ -9320,6 +9324,15 @@ var cp1= proxy(
 
         __mouseDownHandler : function(e) {
 
+            /*
+            was dragging and mousedown detected, can only mean a mouseOut's been performed and on mouseOver, no
+            button was presses. Then, send a mouseUp for the previos actor, and return;
+             */
+            if ( this.dragging && this.lastSelectedActor ) {
+                this.__mouseUpHandler(e);
+                return;
+            }
+
             this.getCanvasCoord(this.mousePoint, e);
             this.isMouseDown = true;
             var lactor = this.findActorAtPosition(this.mousePoint);
@@ -9512,49 +9525,74 @@ var cp1= proxy(
 
         __mouseOutHandler : function(e) {
 
-            if (null !== this.lastSelectedActor) {
+            if (null !== this.lastSelectedActor ) {
 
                 this.getCanvasCoord(this.mousePoint, e);
                 var pos = new CAAT.Point(this.mousePoint.x, this.mousePoint.y, 0);
                 this.lastSelectedActor.viewToModel(pos);
 
-                this.lastSelectedActor.mouseExit(
-                        new CAAT.MouseEvent().init(
+                var ev= new CAAT.MouseEvent().init(
                                 pos.x,
                                 pos.y,
                                 e,
                                 this.lastSelectedActor,
-                                this.screenMousePoint));
-                this.lastSelectedActor = null;
+                                this.screenMousePoint);
+
+                this.lastSelectedActor.mouseExit(ev);
+                this.lastSelectedActor.mouseOut(ev);
+
+                if ( !this.dragging ) {
+                    this.lastSelectedActor = null;
+                }
+            } else {
+                this.isMouseDown = false;
+                this.in_ = false;
             }
-            this.isMouseDown = false;
-            this.in_ = false;
 
         },
 
         __mouseOverHandler : function(e) {
 
+            var lactor;
+            var pos;
             this.getCanvasCoord(this.mousePoint, e);
 
-            var lactor= this.findActorAtPosition( this.mousePoint );
-            var pos;
+            if ( null==this.lastSelectedActor ) {
+                lactor= this.findActorAtPosition( this.mousePoint );
 
-            if (null !== lactor) {
+                if (null !== lactor) {
 
+                    pos = lactor.viewToModel(
+                        new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+
+                    var ev= new CAAT.MouseEvent().init(
+                            pos.x,
+                            pos.y,
+                            e,
+                            lactor,
+                            this.screenMousePoint);
+
+                    lactor.mouseOver(ev);
+                    lactor.mouseEnter(ev);
+                }
+
+                this.lastSelectedActor= lactor;
+            } else {
+                var lactor= this.lastSelectedActor;
                 pos = lactor.viewToModel(
                     new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
 
-                lactor.mouseEnter(
-                    new CAAT.MouseEvent().init(
+                var ev= new CAAT.MouseEvent().init(
                         pos.x,
                         pos.y,
                         e,
                         lactor,
-                        this.screenMousePoint));
+                        this.screenMousePoint);
+
+                lactor.mouseOver(ev);
+                lactor.mouseEnter(ev);
+                
             }
-
-            this.lastSelectedActor= lactor;
-
         },
 
         __mouseDBLClickHandler : function(e) {
@@ -9732,8 +9770,6 @@ var cp1= proxy(
                     if ( c.onRenderStart ) {
                         c.onRenderStart(tt);
                     }
-
-                    c.paintActor(this, tt);
 
                     if ( c.onRenderEnd ) {
                         c.onRenderEnd(tt);
@@ -10556,7 +10592,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             var el= this.mapInfo[this.spriteIndex];
 
             return '-'+(el.x-this.offsetX)+'px '+
-                   '-'+(el.y-this.offsetY)+'px';
+                   '-'+(el.y-this.offsetY)+'px no-repeat';
         },
         /**
          * Get the number of subimages in this compoundImage

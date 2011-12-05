@@ -1118,6 +1118,10 @@
          */
 		mouseUp : function(mouseEvent) {
 		},
+        mouseOut : function(mouseEvent) {
+        },
+        mouseOver : function(mouseEvent) {
+        },
         /**
          * default Actor mouse drag handler.
          *

@@ -1135,6 +1135,10 @@
          */
 		mouseDrag : function(mouseEvent) {
 		},
+        mouseOut : function(mouseEvent) {
+        },
+        mouseOver : function(mouseEvent) {
+        },
         /**
          * Draw a bounding box with on-screen coordinates regardless of the transformations
          * applied to the Actor.
@@ -1270,14 +1274,6 @@
          * @return boolean indicating whether the Actor isInFrameTime
          */
         paintActor : function(director, time) {
-            var bi= this.backgroundImage;
-            if ( bi ) {
-                var pi= bi.spriteIndex;
-                bi.setSpriteIndexAtTime(time);
-                if ( bi.spriteIndex!=pi ) {
-                    this.setSpriteIndex( bi.spriteIndex );
-                }
-            }
             return true;
         },
         /**
@@ -1505,22 +1501,6 @@
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          */
         paintActor : function(director, time ) {
-
-            if (!this.visible) {
-                return true;
-            }
-
-            CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
-            if ( !this.isGlobalAlpha ) {
-                this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
-            }
-
-            for( var actor= this.activeChildren; actor; actor=actor.__next ) {
-                if ( actor.visible ) {
-                    actor.paintActor(director,time);
-                }
-            }
-
             return true;
         },
         /**
@@ -1658,7 +1638,7 @@
 			child.setParent(this);
 			this.childrenList.splice(index, 0, child);
 
-            this.domElement.insertBefore(child, this.domElement.childNodes[index]);
+            this.domElement.insertBefore(child.domElement, this.domElement.childNodes[index]);
 
             child.dirty= true;
 
