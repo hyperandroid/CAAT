@@ -1,0 +1,323 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17485141-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    <title>CAAT example: Actors across a Path and Interpolators</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Path management</h1>
+            </div>
+            <div id="experiment-holder">
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>Controls:</p>
+                    <ul>
+                        <li>Drag path handles.</li>
+                        <li>Click on interpolators to traverse the path with different velocities.</li>
+                    </ul>
+                </div>
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>Constructing a Path and adding segments to it.</li>
+                        <li>What does a call to <code>closePath</code> means in opposition to <code>endPath</code>.</li>
+                        <li>Showing a path by associating it to a PathActor.</li>
+                        <li>Path management by calling setInteractive method.</li>
+                        <li>CAAT.Interpolator on path behavior.</li>
+                        <li>CompoundImage management.</li>
+                        <li>SpriteActor definition.</li>
+                        <li>Show interpolators by Wrapping them into InterpolatorActor.</li>
+                        <li>Management of CAAT.Dock actor to elegantly show interpolators.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script type="text/javascript" src="../../../build/caat.js"></script>
+<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
+
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+    (function() {
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener(
+                'load',
+                function() {
+                    CAAT.modules.initialization.init(
+                            800, 500,
+                            'experiment-holder',
+                            [
+                                {id:'fish', url:'../demo-resources/img/anim2.png'}
+                            ],
+                            __scene1
+                            );
+                },
+                false);
+
+        /**
+         * Create an Actor for every available interpolator/easing function built in CAAT.
+         * This Actors are indeed InterpolatorActor, an out-of-the-box scene actor which draws
+         * a function.
+         * Interpolators will be laid out in a OSX Dock fashion. To do so, there's an special
+         * CAAT.Dock actor. This Docking element allows to define its direction, whether
+         * horizontal or vertical, and the direction to anchor its contained elements zoom.
+         *
+         * @param director {CAAT.Director}
+         * @param scene {CAAT.Scene}
+         * @param pathBehavior {CAAT.PathBehavior} The path to modify traverse speed for.
+         */
+        function generateInterpolators(director, scene, pathBehavior) {
+
+            var lerps = CAAT.Interpolator.prototype.enumerateInterpolators();
+
+            /**
+             * Lay interpolators out on 20 rows, and construct as much as Dock
+             * elements to hold the whole collection of interpolators.
+             */
+            var cols = 20;
+            var j = 0, i = 0;
+            var rows = lerps.length / 2 / cols;
+            var min = 20;
+            var max = 45;
+            var selectedInterpolatorActor = null;
+
+            // generate interpolator actors.
+            for (j = 0; j < rows; j++) {
+
+                var root = new CAAT.Dock().
+                        initialize(scene).
+                        setBounds(
+                            director.canvas.width - (j + 1) * max,
+                            0,
+                            max,
+                            director.canvas.height).
+                        setSizes(min, max).
+                        setApplicationRange(3).
+                        setLayoutOp(CAAT.Dock.prototype.OP_LAYOUT_RIGHT);
+
+                scene.addChild(root);
+
+                for (i = 0; i < cols; i++) {
+
+                    if (j * cols + i >= lerps.length) {
+                        break;
+                    }
+
+                    var actor = new CAAT.InterpolatorActor().
+                            create().
+                            setInterpolator(lerps[(j * cols + i) * 2]).
+                            setBounds(0, 0, min, min).
+                            setStrokeStyle('blue');
+
+                    actor.mouseExit = function(mouseEvent) {
+                        if (this != selectedInterpolatorActor) {
+                            this.setFillStyle(null);
+                        }
+                    }
+                    actor.mouseEnter = function(mouseEvent) {
+                        if (this != selectedInterpolatorActor) {
+                            this.setFillStyle('#f0f0f0');
+                        }
+                    }
+                    actor.mouseClick = function(mouseEvent) {
+                        if (null != selectedInterpolatorActor) {
+                            selectedInterpolatorActor.setFillStyle(null);
+                        }
+                        selectedInterpolatorActor = mouseEvent.source;
+                        this.setFillStyle('#00ff00');
+                        selectedInterpolatorActor = mouseEvent.source;
+
+                        pathBehavior.setInterpolator(mouseEvent.source.getInterpolator());
+                    }
+
+                    root.addChild(actor);
+                }
+
+                root.layout();
+            }
+        }
+
+        function __scene1(director) {
+
+            var scene = director.createScene();
+
+            var path= new CAAT.Path().
+                            beginPath(200, 200).
+                            addCubicTo(300, 15, 400, 10, 500, 200).
+                            addQuadricTo(550, 300, 450, 350).
+                            addQuadricTo(400, 400, 350, 200).
+                            addCubicTo(100, 300, 300, 450, 10, 400).
+                            addQuadricTo(40, 200, 200, 200).
+                            closePath();
+            /**
+             * Show a Path on screen and allow manipulation of its path by showing handles.
+             */
+            var pa = new CAAT.PathActor().
+                    setBounds(0, 0, 800, director.canvas.height).
+                    create().
+                    setPath(path);
+
+            /**
+             * Create a fish which will traverse the path.
+             */
+            var fish = new CAAT.Actor().
+                    setBackgroundImage(
+                            new CAAT.SpriteImage().
+                                    initialize(director.getImage('fish'), 1, 3),
+                            true).
+                    setAnimationImageIndex([0,1,2,1]).
+                    setChangeFPS(300).
+                    enableEvents(false);
+
+            // path measurer behaviour
+            var pb = new CAAT.PathBehavior().
+                    setPath(path).
+                    setFrameTime(0, 20000).
+                    setCycle(true).
+                    setAutoRotate(true, CAAT.PathBehavior.autorotate.LEFT_TO_RIGHT).
+                    setTranslation(fish.width / 2, fish.height / 2);
+
+            fish.addBehavior(pb);
+
+
+            scene.addChild(pa);
+            addDescription(director, scene);
+            scene.addChild(fish);
+
+            generateInterpolators(director, scene, pb);
+
+            return scene;
+        }
+
+        function addDescription(director, scene) {
+            var cc1 = new CAAT.ActorContainer().
+                    setBounds(0, 30, 280, 110).
+                    create().
+                    enableEvents(false);
+            scene.addChild(cc1);
+
+            cc1.addBehavior(
+                    new CAAT.RotateBehavior().
+                            setCycle(true).
+                            setFrameTime(0, 4000).
+                            setValues(-Math.PI / 8, Math.PI / 8, .50, 0).    // anchor at 50%, 0%
+                            setInterpolator(
+                            new CAAT.Interpolator().createExponentialInOutInterpolator(3, true))
+                    );
+
+            var gradient = director.crc.createLinearGradient(0, 0, 0, 30);
+            gradient.addColorStop(0, '#00ff00');
+            gradient.addColorStop(0.5, 'red');
+            gradient.addColorStop(1, 'blue');
+
+            var text = new CAAT.TextActor().
+                    setFont("20px sans-serif").
+                    setText("Conpound Path").
+                    calcTextSize(director).
+                    setFillStyle(gradient).
+                    setOutline(true).
+                    cacheAsBitmap();
+            cc1.addChild(text.setLocation((cc1.width - text.textWidth) / 2, 0));
+
+            var text2 = new CAAT.TextActor().
+                setFont("20px sans-serif").
+                setText("Quadric,Cubic,Line segments").
+                calcTextSize(director).
+                setFillStyle(gradient).
+                setOutline(true).
+                cacheAsBitmap();
+
+            cc1.addChild(text2.setLocation((cc1.width - text2.textWidth) / 2, 20));
+
+            var text4 = new CAAT.TextActor().
+                    setFont("20px sans-serif").
+                    setText("Fish Path").
+                    calcTextSize(director).
+                    setFillStyle(gradient).
+                    setOutline(true).
+                    cacheAsBitmap();
+            cc1.addChild( text4.setLocation((cc1.width - text4.textWidth) / 2, 50) );
+
+            var text3 = new CAAT.TextActor().
+                    setFont("20px sans-serif").
+                    setText("Interpolators").
+                    calcTextSize(director).
+                    setFillStyle(gradient).
+                    setOutline(true).
+                    cacheAsBitmap();
+            cc1.addChild(text3.setLocation((cc1.width - text3.textWidth) / 2, 70));
+        };
+
+    })();
+
+
+</script>
+
+
+</html>

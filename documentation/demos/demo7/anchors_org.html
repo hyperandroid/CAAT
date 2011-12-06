@@ -1,0 +1,338 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17485141-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    <title>CAAT example: Affine transformation anchors</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+    <div id="page">
+        <div id="header">
+            <div style="text-align: center;">
+
+            </div>
+        </div>
+
+        <div id="content">
+            <div id="menu">
+
+            </div>
+            <div id="experiment">
+                <div style="text-align:center">
+                    <h1>Affine transformation anchors</h1>
+                </div>
+                <div id="experiment-holder">
+                </div>
+                <div id="experiment-description">
+                    <div>
+                        <p>Controls:</p>
+                        <ul>
+                            <li>Move mouse across experiment area.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p>
+                            This demo features the following elements:
+                        </p>
+                        <ul>
+                            <li>Properly define Behaviors.</li>
+                            <li>View different anchoring effects.</li>
+                            <li>CompoundImage management.</li>
+                            <li>SpriteActor definition.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script type="text/javascript" src="../../../build/caat.js"></script>
+<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    (function() {
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener(
+                'load',
+                function() {
+                    CAAT.modules.initialization.init(
+                            800, 500,
+                            'experiment-holder',
+                            [
+                                {id:'fish',     url:'../demo-resources/img/anim1.png'},
+                                {id:'fish2',    url:'../demo-resources/img/anim2.png'},
+                                {id:'fish3',    url:'../demo-resources/img/anim3.png'},
+                                {id:'fish4',    url:'../demo-resources/img/anim4.png'}
+                            ],
+                            anchors
+                            );
+                },
+                false);
+
+        function createSprite(compoundImage) {
+            return new CAAT.Actor().
+                    setBackgroundImage(compoundImage.getRef(), true).
+                    setAnimationImageIndex([0,1,2,1]).
+                    setChangeFPS(300).
+                    enableEvents(false);
+        }
+
+        function createElement(compoundImage, behavior) {
+            var ac= new CAAT.ActorContainer();
+
+            var fish = createSprite(compoundImage).
+                    addBehavior( behavior );
+
+            var bg= new CAAT.ShapeActor().
+                    setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
+                    setFillStyle(null).
+                    setStrokeStyle('black').
+                    setSize( fish.width, fish.height );
+
+            ac.setSize( fish.width, fish.height ).
+                    addChild( bg ).
+                    addChild( fish ).
+                    enableEvents(false);
+
+            return ac;
+        }
+
+        function anchors(director) {
+            
+            var scene= director.createScene();
+            var actor;
+            var cimages= [];
+            cimages.push( new CAAT.SpriteImage().initialize( director.getImage('fish'),  1, 3) );
+            cimages.push( new CAAT.SpriteImage().initialize( director.getImage('fish2'), 1, 3) );
+            cimages.push( new CAAT.SpriteImage().initialize( director.getImage('fish3'), 1, 3) );
+            cimages.push( new CAAT.SpriteImage().initialize( director.getImage('fish4'), 1, 3) );
+
+            var anchor= [
+                0,0,   .50, 0,   1.00, 0,
+                0,.50,  .50, .50,  1.00, .50,
+                0,1.00, .50, 1.00, 1.00, 1.00], i;
+            for( i=0; i<9; i++ ) {
+                actor= createElement(
+                        cimages[0],
+                        new CAAT.RotateBehavior().
+                                setCycle(true).
+                                setFrameTime( 0, 2000 ).
+                                setValues( 0, 2*Math.PI, anchor[i*2], anchor[i*2+1] )
+                        );
+
+                actor.setLocation(60+(cimages[0].singleWidth*2)*(i%3), 170+(cimages[0].singleWidth)*((i/3)>>0) );
+                scene.addChild(actor);
+            }
+
+            for( i=0; i<9; i++ ) {
+                actor= createElement(
+                        cimages[1],
+                        new CAAT.ScaleBehavior().
+                                setCycle(true).
+                                setFrameTime( 0, 2000 ).
+                                setValues( .5,1.5, .5,1.5, anchor[i*2], anchor[i*2+1] ).
+                                setPingPong()
+                        );
+
+                actor.setLocation(60+(cimages[0].singleWidth*2)*(i%3), 340+(cimages[0].singleWidth)*((i/3)>>0) );
+                scene.addChild(actor);
+            }
+
+            createField(director, scene, cimages);
+            createDescription(director,scene);
+        }
+
+        function createDescription(director,scene) {
+            var gradient = director.crc.createLinearGradient(0, 0, 0, 50);
+            gradient.addColorStop(0, 'blue');
+            gradient.addColorStop(0.5, 'orange');
+            gradient.addColorStop(1, 'yellow');
+
+            var cc = new CAAT.ActorContainer().
+                    setBounds(35, 30, 300, 150).
+                    enableEvents(false).
+                    addBehavior(
+                            new CAAT.RotateBehavior().
+                                    setCycle(true).
+                                    setFrameTime(0, 4000).
+                                    setValues(-Math.PI / 8,Math.PI / 8, .50, 0).
+                                    setInterpolator(
+                                            new CAAT.Interpolator().createCubicBezierInterpolator(
+                                                    {x:0,y:0},
+                                                    {x:1,y:0},
+                                                    {x:0,y:1},
+                                                    {x:1,y:1},
+                                                    true))
+                    );
+            scene.addChild(cc);
+
+            var text = new CAAT.TextActor().
+                    setFont("50px sans-serif").
+                    setText("Anchored").
+                    setTextAlign("center").
+                    setFillStyle(gradient).
+                    setOutline(true).
+                    calcTextSize(director).
+                    cacheAsBitmap();
+            cc.addChild(text.setLocation((cc.width - text.width) / 2, 0));
+
+            var text2 = new CAAT.TextActor().
+                    setFont("35px sans-serif").
+                    setTextAlign("center").
+                    setText("Affine transforms").
+                    setFillStyle(gradient).
+                    setOutline(true).
+                    calcTextSize(director).
+                    cacheAsBitmap();
+            cc.addChild(text2.setLocation((cc.width - text2.width) / 2, 50));
+        }
+
+        function createField(director, scene, ci) {
+            var w= 400;
+            var h= 460;
+            var peces= [];
+
+            var container= new CAAT.ActorContainer().
+                    setBounds(380,20,w,h).
+                    enableEvents(false);
+
+            var i,j;
+            var maxw= 0;
+            var maxh= 0;
+            for( i=0; i<ci.length; i++ ) {
+                if ( ci[i].singleWidth>maxw ) {
+                    maxw= ci[i].singleWidth;
+                }
+                if ( ci[i].singleHeight>maxh ) {
+                    maxh= ci[i].singleHeight;
+                }
+            }
+            maxw= maxh= Math.max(maxw,maxh);
+
+            var cols= (w/maxw)>>0;
+            var rows= (h/maxh)>>0;
+            var xoffset= (w-cols*maxw)/2;
+            var yoffset= (h-rows*maxh)/2;
+
+            for( i=0; i<rows; i++ ) {
+                for( j=0; j<cols; j++ ) {
+                    var fish= createSprite( ci[(Math.random()*ci.length)>>0] ).
+                            setLocation( xoffset+maxw*j, yoffset+maxh*i ).
+                            setChangeFPS(200+(Math.random()*300)>>0);
+                    peces.push(fish);
+                    container.addChild(fish);
+                }
+            }
+
+            scene.addChild(container);
+
+            scene.mouseMove= function(mouseEvent) {
+                var x= mouseEvent.point.x;
+                var y= mouseEvent.point.y;
+                fishLookAt(x,y);
+            };
+            scene.mouseEnter= function(mouseEvent) {
+                this.pointed= true;
+                circle.setVisible(false);
+            };
+            scene.mouseExit= function(mouseEvent) {
+                this.pointed= false;
+                circle.setVisible(true);
+            };
+
+            function fishLookAt(x,y) {
+                for(var i=0; i<peces.length; i++ ) {
+                    var actor = peces[i];
+                    var angle = Math.atan2(
+                            y - (actor.y + container.y + actor.height / 2),
+                            x - (actor.x + container.x + actor.width / 2));
+                    actor.setRotation(angle);
+                }
+            };
+
+
+
+            var circle= new CAAT.ShapeActor().
+                    setBounds( director.canvas.width/2, director.canvas.height/2, 25, 25 ).
+                    setFillStyle('blue').
+                    enableEvents(false).
+                    setAlpha(.8);
+
+            circle.__orgX= circle.x;
+            circle.__orgY= circle.y;
+
+            circle.animate= function(director,time) {
+
+                if ( false==scene.pointed ) {
+                    var angle= Math.PI*2*Math.sin(time*3E-4) + i*Math.PI/50;
+                    var radius= this.parent.width/8*Math.cos(time*3E-4);
+                    this.setLocation(
+
+                                this.__orgX +
+                                this.parent.width/4*Math.cos(time*3E-4) +	// move horizontally with time
+                                radius*Math.cos(angle)/2,
+
+                                this.__orgY +
+                                this.parent.height/4*Math.sin(time*3E-4) +	// move vertically with time
+                                radius*Math.sin(angle)/2
+                    );
+
+                    fishLookAt( this.x, this.y );
+                }
+
+                return CAAT.Actor.prototype.animate.call(this,director,time);
+            };
+            scene.addChild(circle);
+        }
+
+    })();
+</script>
+</html>

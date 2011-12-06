@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17485141-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    <title>CAAT example: Interactivity. Setting behaviors.</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+    <div id="page">
+        <div id="header">
+            <div style="text-align: center;">
+
+            </div>
+        </div>
+
+        <div id="content">
+            <div id="menu">
+
+            </div>
+            <div id="experiment">
+                <div style="text-align:center">
+                    <h1>Interactivity. Setting behaviors.</h1>
+                </div>
+                <div id="experiment-holder">
+                </div>
+                <div id="experiment-description">
+                    <div>
+                        <p>Controls:</p>
+                        <ul>
+                            <li>Mouse Move over number Actors.</li>
+                            <li>Mouse click on number Actors.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p>
+                            This demo features the following elements:
+                        </p>
+                        <ul>
+                            <li>Respond to mouse events.</li>
+                            <li>Generate a low-overhead Actor cache.</li>
+                            <li>Manage layers of Actors (numbers and stars).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script type="text/javascript" src="../../../build/caat.js"></script>
+<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    (function() {
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener(
+                'load',
+                function() {
+                    CAAT.modules.initialization.init(
+                            800, 500,
+                            'experiment-holder',
+                            [
+                                {id:'numbers', url:'../demo-resources/img/numbers.png'},
+                                {id:'stars', url:'../demo-resources/img/stars.png'}
+                            ],
+                            behaviors
+                            );
+                },
+                false);
+
+        function createStarCache(director, ci) {
+            var actor= new CAAT.Actor().
+                setBackgroundImage( ci.getRef(), true ).
+                setSpriteIndex( (Math.random()*6)>>0 ).
+                enableEvents(false).
+                setOutOfFrameTime();
+
+            return actor;
+        }
+
+        function behaviors(director) {
+            var scene= director.createScene();
+            var ci= new CAAT.SpriteImage().
+                        initialize(director.getImage('numbers'), 9, 9);
+            var cistars= new CAAT.SpriteImage().
+                        initialize(director.getImage('stars'), 1, 6);
+
+            var i,j;
+            var rows=           8;
+            var columns=        13;
+
+            var starCache=      [];
+            var starCacheIndex= 0;
+
+            /**
+             * create a cache of 400 falling stars.
+             */
+            var starContainer= new CAAT.ActorContainer().
+                    setBounds(0,0,director.width,director.height).
+                    enableEvents(false);
+            for( var i=0; i<400; i++ ) {
+                starCache.push( createStarCache(director, cistars) );
+            }
+            var numberContainer= new CAAT.ActorContainer().
+                    setBounds(0,0,director.width,director.height);
+
+
+            scene.addChild(numberContainer);
+            scene.addChild(starContainer);
+            
+
+            /**
+             * create 10x10 actors with random index.
+             */
+            var numberW= ci.singleWidth;
+            var numberH= ci.singleHeight;
+
+            var paddingLeft= 15;
+            var paddingTop=  15;
+
+            var numberPadding= 10;
+
+            for( var i=0; i<rows; i++ ) {
+                for( var j=0; j<columns; j++ ) {
+
+                    var number= new CAAT.Actor().
+                            setBackgroundImage(ci.getRef(),true).
+                            setLocation(
+                                paddingLeft + j*(numberPadding/2+numberW),
+                                paddingTop  + i*(numberPadding/2+numberH)).
+                            setSpriteIndex( (Math.random()*ci.rows*ci.columns)>>0 );
+
+                    number.mouseEnter= function(mouseEvent) {
+                        this.parent.setZOrder( this, Number.MAX_VALUE );
+                        this.emptyBehaviorList();
+                        this.addBehavior(
+                                new CAAT.ScaleBehavior().
+                                        setFrameTime( this.time, 500 ).
+                                        setValues( 1, 2, 1, 2 ).
+                                        setPingPong()
+                                ).
+                            addBehavior(
+                                new CAAT.RotateBehavior().
+                                        setFrameTime( this.time, 500 ).
+                                        setValues( 0, 2*Math.PI )
+                                );
+
+                        document.body.style.cursor = 'pointer';
+                    };
+                    
+                    number.mouseExit= function(mouseEvent) {
+                        document.body.style.cursor = 'default';
+                    };
+
+                    number.mouseClick= function(mouseEvent) {
+                        var NS= 20;
+                        for( var i=0; i<NS; i++ ) {
+                            var star= starCache[(i+starCacheIndex++)%starCache.length];
+
+                            var x= this.x+this.width/2;
+                            var y= this.y+this.height/2;
+                            var sgnX= (Math.random()<.5?1:-1);
+                            var sgnY= (Math.random()<.5?1:-1);
+                            var cpx= x+ (20+Math.random()*80)*sgnX;
+                            var cpy= y+ (20+Math.random()*40)*sgnY;
+
+                            var fpy= director.height+(50*Math.random());
+                            var fpx= cpx+(80*Math.random())*sgnX;
+                            
+                            star.emptyBehaviorList().
+                                    addBehavior(
+                                            new CAAT.PathBehavior().
+                                                    setFrameTime( this.time, 600+(400*Math.random()) ).
+                                                    setPath(
+                                                            new CAAT.Path().
+                                                                    beginPath( x,y ).
+                                                                    addQuadricTo( cpx, cpy, fpx, fpy ).
+                                                                    endPath()
+                                                    ).
+                                                    addListener( {
+                                                            behaviorExpired : function(behavior, time, actor) {
+                                                                actor.setExpired(true);
+                                                            }
+                                                    })
+                                            ).
+                                    setDiscardable(true).
+                                    setFrameTime( this.time, Number.MAX_VALUE );
+                            
+                            starContainer.addChild(star);
+                        }
+                    };
+
+                    numberContainer.addChild(number);
+                }
+            }
+
+        }
+
+    })();
+</script>
+</html>

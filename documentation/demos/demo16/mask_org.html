@@ -1,0 +1,278 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17485141-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+    <title>CAAT example: The Masked Fishpond</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Masking with arbitrary paths</h1>
+            </div>
+            <div id="experiment-holder">
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>
+                        How to use:
+                    </p>
+                    <ul>
+                        <li>Click to select different clipping masks.</li>
+                    </ul>
+
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>Applying arbirtrary clip mask.</li>
+                        <li>Apply mask behaviors (like in actors).</li>
+                        <li>Define a path for mask traversing.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script type="text/javascript" src="../../../build/caat.js"></script>
+<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
+<script type="text/javascript" src="../demo2/fish.js"></script>
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    (function() {
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener(
+                'load',
+                function() {
+                    CAAT.modules.initialization.init(
+                            800, 500,
+                            'experiment-holder',
+                            [],
+                            __fishpond
+                            );
+                },
+                false);
+
+
+        function __fishpond(director) {
+
+            var scene= director.createScene();
+
+            var gradient= director.crc.createLinearGradient(0,0,director.width,director.height);
+            gradient.addColorStop(0,'#000000');
+            gradient.addColorStop(1,'#00007f');
+
+            var gr= new CAAT.ActorContainer().
+                    setBounds(0,0,director.width,director.height).
+                    setFillStyle(gradient).
+                    cacheAsBitmap();
+
+            scene.addChild(gr);
+            
+            addMask( director, scene, gr );
+            createFish(director,scene,gr);
+
+
+
+        }
+
+        function addMask(director, scene, gr) {
+            var path2= new CAAT.Path().
+                                beginPath(200,director.height/2).
+                                addCubicTo(
+                                    200,10,
+                                    director.width-200,10,
+                                    director.width-200,director.height/2 ).
+                                addCubicTo(
+                                    director.width-200,director.height-10,
+                                    200, director.height-10,
+                                    200, director.height/2 ).
+                                closePath();
+
+            var path =
+                    [
+                        new CAAT.Path().
+                                beginPath(100, director.height / 2).
+                                addCubicTo(
+                                100, 10,
+                                director.width - 100, 10,
+                                director.width - 100, director.height / 2).
+                                addCubicTo(
+                                director.width - 100, director.height - 10,
+                                100, director.height - 10,
+                                100, director.height / 2).
+                                closePath(),
+
+                        new CAAT.Path().
+                                beginPath(100,100).
+                                addRectangleTo( director.width-100, director.height-100 ).
+                                endPath(),
+
+                        new CAAT.Path().
+                                beginPath(200,200).
+                                addCubicTo( 300,15, 400,10, 550,250 ).
+                                addQuadricTo( 550,300, 450,350 ).
+                                addQuadricTo( 400,400, 350,200 ).
+                                addCubicTo( 100,300, 300,450, 10,400).
+                                addQuadricTo( 40,200, 200,200 ).
+                                closePath()
+
+                    ];
+
+            for( var i=0; i<path.length; i++ ) {
+                path[i].addBehavior(
+                    new CAAT.PathBehavior().
+                        setValues( path2 ).
+                        setFrameTime( 0,15000 ).
+                        setCycle( true )
+                        .setTranslation( path[i].width/2, path[i].height/2 )
+                ).addBehavior(
+                    new CAAT.RotateBehavior().
+                        setValues( 0,Math.PI*2, .5, .5 ).
+                        setFrameTime( 0,5000 ).
+                        setCycle( true )
+                ).addBehavior(
+                    new CAAT.ScaleBehavior().
+                        setValues( .2, 1, .2, 1 ).
+                        setFrameTime( 0,10000 ).
+                        setCycle( true ).
+                        setInterpolator(
+                            new CAAT.Interpolator().createLinearInterpolator(true, false)
+                    )
+                )
+                ;
+            }
+
+            var pathIndex=0;
+            gr.setClip( true, path[0] );
+
+            gr.mouseClick= function(e) {
+                pathIndex++;
+                gr.setClip( true, path[ pathIndex%path.length ] );
+            }
+        }
+
+        function createFish(director,scene,gr) {
+            var colors= ['red', 'blue', 'white', 'rgb(0,255,255)', 'yellow'];
+            var NP=20;
+
+            for( var i=0; i<NP; i++ ) {
+
+                var fw= (100 + Math.random()*40*(Math.random()<.5?1:-1))>>0;
+                var fh= (20+ Math.random()*5*(Math.random()<.5?1:-1))>>0;
+
+                var inTime= i*1000;
+
+                var pb = new CAAT.PathBehavior().
+                        setPath(new CAAT.Path().setCubic(
+                        -fw - Math.random() * 300,
+                        Math.random() * director.height,
+
+                        director.width * Math.random(),
+                        Math.random() * director.height,
+
+                        director.width * Math.random(),
+                        Math.random() * director.height,
+
+                        Math.random() < .5 ? director.width + fw + Math.random() * 150 : Math.random() * director.width,
+                        Math.random() < .5 ? -director.height * Math.random() - 300 : director.height + Math.random() * director.height
+                        )).
+                        setFrameTime(scene.time + inTime, (20000 + 5000 * Math.random()) >> 0).
+                        setCycle(true).
+                        setAutoRotate(true).
+                        addListener({
+                                behaviorExpired : function(behavior, time, actor) {
+                                    behavior.path.setCubic(
+                                            -fw - Math.random() * 300,
+                                            Math.random() * director.height,
+
+                                            director.width * Math.random(),
+                                            -Math.random() * director.height / 2 + Math.random() * director.height,
+
+                                            director.width * Math.random(),
+                                            -Math.random() * director.height / 2 + Math.random() * director.height,
+
+                                            Math.random() < .5 ? director.width + fw + Math.random() * 150 : Math.random() * director.width,
+                                            Math.random() < .5 ? -director.height * Math.random() - 300 : director.height + Math.random() * director.height
+                                            );
+                                    behavior.setFrameTime(scene.time, (20000 + 5000 * Math.random()) >> 0);
+                                    actor.born();
+                                },
+                                behaviorApplied : function(actor, time, normalizedTime, value) {
+
+                                }
+                            });
+
+                var f= new CAAT.Fish().
+                        setBounds(300,400,fw,fh).
+                        born().
+                        setFrameTime( scene.time+inTime, Number.MAX_VALUE ).
+                        setBodyColor(colors[i%colors.length]);
+
+                f.addBehavior(pb);
+                gr.addChild(f);
+            }
+        }
+
+    })();
+</script>
+</html>

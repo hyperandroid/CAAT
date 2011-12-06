@@ -1,0 +1,233 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17485141-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    <title>CAAT example: Text on Path</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+</head>
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Text on Path</h1>
+            </div>
+            <div id="experiment-holder">
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>Controls:</p>
+                    <ul>
+                        <li>Drag path handles.</li>
+                    </ul>
+                </div>
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>Constructing a Path and adding segments to it.</li>
+                        <li>Showing a path by associating it to a PathActor.</li>
+                        <li>Path management by calling setInteractive method.</li>
+                        <li>Setting up a TextActor.</li>
+                        <li>Setting a path for a TextActor</li>
+                        <li>CAAT.Interpolator on path behavior.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script type="text/javascript" src="../../../build/caat.js"></script>
+<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
+
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    (function() {
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener(
+                'load',
+                function() {
+                    CAAT.modules.initialization.init(
+                            800, 500,
+                            'experiment-holder',
+                            [],
+                            textOnPath
+                            );
+                },
+                false);
+
+        function textOnPath(director) {
+
+            var scene = director.createScene();
+
+            var p = new CAAT.Path().
+                    beginPath(25, 250).
+                    addCubicTo(25, 0, 275, 0, 275, 250).
+                    addCubicTo(275, 400, 525, 400, 525, 250).
+                    addCubicTo(525, 0, 775, 0, 775, 250).
+                    addCubicTo(775, 500, 25, 500, 25, 250).
+                    endPath();
+
+
+            // actor de path para poder verlo y manipularlo
+            var pa = new CAAT.PathActor().
+                    setPath(p).
+                    setBounds(0, 0, director.canvas.width, director.canvas.height);
+            scene.addChild(pa);
+
+            var gradient = director.crc.createLinearGradient(0, 0, 0, -40);
+            gradient.addColorStop(0, '#ffff00');
+            gradient.addColorStop(0.5, '#00ffff');
+            gradient.addColorStop(1, 'blue');
+
+            var text = new CAAT.TextActor().
+                setFont("40px sans-serif").
+                setText("Text on path, easily traverse a path with text.").
+                setTextAlign("left").
+                setFillStyle(gradient).
+                setTextBaseline("bottom").
+                setPath(
+                    p,
+                    new CAAT.Interpolator().createLinearInterpolator(false),
+                    30000);
+            scene.addChild(text);
+
+            var gradient2 = director.crc.createLinearGradient(0, 0, 0, 40);
+            gradient2.addColorStop(0, '#0000ff');
+            gradient2.addColorStop(0.5, '#ff0000');
+            gradient2.addColorStop(1, '#ffff00');
+
+            var text2 = new CAAT.TextActor().
+                setFont("40px sans-serif").
+                setText("Text under path   :D").
+                setTextAlign("left").
+                setFillStyle(gradient2).
+                setTextBaseline("top").
+                setPath(
+                    p,
+                    new CAAT.Interpolator().createExponentialInOutInterpolator(3)).
+                setPathTraverseDirection( CAAT.TextActor.TRAVERSE_PATH_BACKWARD );
+            scene.addChild(text2);
+
+
+            createText(director, scene);
+        }
+
+        function createText(director, scene) {
+            var cc1 = new CAAT.ActorContainer().
+                    setBounds(255, 30, 280, 120).
+                    enableEvents(false);
+            scene.addChild(cc1);
+
+            var rb = new CAAT.RotateBehavior().
+                    setCycle(true).
+                    setFrameTime(0, 4000).
+                    setValues( -Math.PI / 8, Math.PI / 8, .50, 0 ).
+                    setInterpolator(
+                            new CAAT.Interpolator().createCubicBezierInterpolator(
+                                    {x:0,y:0},
+                                    {x:1,y:0},
+                                    {x:0,y:1},
+                                    {x:1,y:1},
+                                    true))
+            cc1.addBehavior(rb);
+
+            var gradient = director.crc.createLinearGradient(0, 0, 0, 30);
+            gradient.addColorStop(0, 'black');
+            gradient.addColorStop(0.5, 'gray');
+            gradient.addColorStop(1, '#d0d0d0');
+
+            var text = new CAAT.TextActor().
+                    setFont("40px sans-serif").
+                    setText("Text on Path").
+                    calcTextSize(director).
+                    setTextAlign("center").
+                    setFillStyle(gradient).
+                    setOutline(true).
+                    cacheAsBitmap();
+            cc1.addChild(text.setLocation((cc1.width - text.width) / 2, 0));
+
+            var text2 = new CAAT.TextActor().
+                    setFont("40px sans-serif").
+                    setTextAlign("center").
+                    setText("Interpolated").
+                    calcTextSize(director).
+                    setFillStyle(gradient).
+                    setOutline(true).
+                    cacheAsBitmap();
+            cc1.addChild(text2.setLocation((cc1.width - text2.width) / 2, 40));
+
+            var text4 = new CAAT.TextActor().
+                    setFont("40px sans-serif").
+                    setTextAlign("center").
+                    setText("As well").
+                    calcTextSize(director).
+                    setFillStyle(gradient).
+                    setOutline(true).
+                    cacheAsBitmap();
+            cc1.addChild(text4.setLocation((cc1.width - text4.width) / 2, 80));
+
+        }
+
+    })();
+
+</script>
+</html>
