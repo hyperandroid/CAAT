@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 351
+Version: 0.1 build: 355
 
 Created on:
-DATE: 2011-12-08
-TIME: 23:10:25
+DATE: 2011-12-09
+TIME: 09:38:08
 */
 
 
@@ -7547,8 +7547,8 @@ var cp1= proxy(
                             c.onRenderEnd(tt);
                         }
                         this.ctx.restore();
-                        if (CAAT.DEBUG) {
-                            this.ctx.strokeStyle = 'red';
+                        if (CAAT.DEBUGBB) {
+                            this.ctx.strokeStyle = CAAT.DEBUGBBCOLOR;
                             c.drawScreenBoundingBox(this, tt);
                         }
 
@@ -8877,6 +8877,8 @@ CAAT.PMR= 64;
  * Allow visual debugging artifacts.
  */
 CAAT.DEBUG= false;
+CAAT.DEBUGBB= false;    // debug bounding boxes.
+CAAT.DEBUGBBCOLOR='red';
 
 /**
  * Log function which deals with window's Console object.

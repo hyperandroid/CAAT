@@ -1294,7 +1294,7 @@
                 this.worldModelViewMatrix.identity();
             }
 
-            if ( (CAAT.DEBUG || glEnabled) && (this.dirty || this.wdirty) ) {
+            if ( (CAAT.DEBUGBB || glEnabled) && (this.dirty || this.wdirty) ) {
                 this.setScreenBounds();
             }
             this.dirty= false;

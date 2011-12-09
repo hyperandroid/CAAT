@@ -1,7 +1,7 @@
-12/08/2011 *0.1 Build:351*
+12/08/2011 *0.1 Build:355*
 --------------------------
 
-* Added bounding box drawing if CAAT.DEBUG is set.
+* Added bounding box drawing if CAAT.DEBUGBB is set.
 
 12/05/2011 *0.1 Build:347*
 --------------------------

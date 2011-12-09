@@ -566,8 +566,8 @@
                             c.onRenderEnd(tt);
                         }
                         this.ctx.restore();
-                        if (CAAT.DEBUG) {
-                            this.ctx.strokeStyle = 'red';
+                        if (CAAT.DEBUGBB) {
+                            this.ctx.strokeStyle = CAAT.DEBUGBBCOLOR;
                             c.drawScreenBoundingBox(this, tt);
                         }
 
