@@ -196,6 +196,9 @@
                         'background',
                         'url('+this.backgroundImage.image.src+') '+
                             this.backgroundImage.getCurrentSpriteImageCSSPosition() );
+            } else {
+                this.backgroundImage= null;
+                this.style('background', 'none');
             }
 
             return this;
@@ -1472,15 +1475,27 @@
 		CAAT.ActorContainer.superclass.constructor.call(this);
 		this.childrenList=          [];
         this.pendingChildrenList=   [];
+        if ( typeof hint!=='undefined' ) {
+            this.addHint=       hint;
+            this.boundingBox=   new CAAT.Rectangle();
+        }
 		return this;
 	};
 
+
+    CAAT.ActorContainer.AddHint= {
+        CONFORM     :    1
+    };
 
 	CAAT.ActorContainer.prototype= {
 
         childrenList : null,       // the list of children contained.
         activeChildren: null,
         pendingChildrenList : null,
+
+        addHint             :   0,
+        boundingBox         :   null,
+        runion              :   new CAAT.Rectangle(),   // Watch out. one for every container.
 
         /**
          * Removes all children from this ActorContainer.
@@ -1604,8 +1619,39 @@
             child.setParent( this );
             this.childrenList.push(child);
             child.dirty= true;
+
+            /**
+             * if Conforming size, recalc new bountainer size.
+             */
+            if ( this.addHint===CAAT.ActorContainer.AddHint.CONFORM ) {
+                this.recalcSize();
+            }
+
             return this;
 		},
+
+        /**
+         * Recalc this container size by computin the union of every children bounding box.
+         */
+        recalcSize : function() {
+            var bb= this.boundingBox;
+            bb.setEmpty();
+            var cl= this.childrenList;
+            var ac;
+            for( var i=0; i<cl.length; i++ ) {
+                ac= cl[i];
+                this.runion.setBounds(
+                    ac.x<0 ? 0 : ac.x,
+                    ac.y<0 ? 0 : ac.y,
+                    ac.width,
+                    ac.height );
+                bb.unionRectangle( this.runion );
+            }
+            this.setSize( bb.x1, bb.y1 );
+
+            return this;
+        },
+
         /**
          * Add a child element and make it active in the next frame.
          * @param child {CAAT.Actor}

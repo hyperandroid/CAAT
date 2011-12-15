@@ -51,8 +51,12 @@
         </div>
         <div id="tutorial">
             <h1>Other CAAT actors</h1>
-            <h2>CAAT.ImageActor</h2>
+            <h2>CAAT.ImageActor (deprecated)</h2>
             <div>
+                <p>
+                    <span class="apicode"><b>This actor type's been deprecated. Its functionality is already set in CAAT.Actor with the method
+                    <code>setBackgroundImage</code> and <code>setOffsetX, setOffsetY, setOffset</code></b></span>.
+                </p>
                 <p>
                     This actor objects' functionalities are already available at any <span class="apicode">
                     CAAT.Actor</span> which is the preferred way of setting up actors with images.
@@ -86,71 +90,7 @@
                     This example show 20 image actors continuously traversing a random cubic
                     bezier path.
                 </p>
-                <div>
-                    <canvas id="_c6"></canvas></div>
-                    <script>
-                        (function() {
 
-                            var director= new CAAT.Director().initialize(
-                                    700,
-                                    350,
-                                    document.getElementById('_c6') );
-
-                            var scene= director.createScene();
-
-                            // define a resource preloader.
-                            new CAAT.ImagePreloader().loadImages(
-                                [ {id:'fish',     url:'resource/logo.png'} ],   // get only this image.
-                                function( counter, images ) {
-
-                                    if ( counter==images.length ) {             // when it is done loading
-
-                                        // save loaded resources on Director.
-                                        director.setImagesCache(images);
-
-                                        for(var i=0; i<20; i++ ) {
-                                            var fish =
-                                                new CAAT.ImageActor().
-                                                    setImage(director.getImage('fish')).
-                                                    setImageTransformation(CAAT.ImageActor.prototype.TR_FIXED_TO_SIZE).
-                                                    addBehavior(
-                                                        new CAAT.PathBehavior().
-                                                            setAutoRotate(true).
-                                                            setPath( new CAAT.Path().setLinear(0,0,0,0) ).
-                                                            setInterpolator(
-                                                                new CAAT.Interpolator().createExponentialInOutInterpolator(2,false) ).
-                                                            setFrameTime( scene.time, 10 ).
-                                                            addListener( {
-                                                                behaviorExpired : function(behaviour,time) {
-                                                                    var endCoord= behaviour.path.endCurvePosition();
-                                                                    behaviour.setPath(
-                                                                            new CAAT.Path().setCubic(
-                                                                                endCoord.x,
-                                                                                endCoord.y,
-                                                                                Math.random()*director.width,
-                                                                                Math.random()*director.height,
-                                                                                Math.random()*director.width,
-                                                                                Math.random()*director.height,
-                                                                                Math.random()*director.width,
-                                                                                Math.random()*director.height) );
-                                                                    behaviour.setFrameTime( scene.time, 3000+Math.random()*3000 )
-                                                                }
-                                                            })
-                                                    ).
-                                                    enableEvents(false);
-                                            var s= Math.random()*.5 + .5;
-                                            fish.setSize( fish.width*s, fish.height*s );
-                                            scene.addChild(fish);
-                                        }
-
-                                    }
-                                });
-
-                            CAAT.loop(60);
-
-                        })();
-                    </script>
-                </div>
 
                 <div class="code">
                     <pre class="brush: js; auto-links: false; toolbar: false;">

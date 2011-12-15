@@ -93,6 +93,7 @@
         TR_FLIP_VERTICAL:		2,
         TR_FLIP_ALL:			3,
         TR_FIXED_TO_SIZE:       4,
+        TR_TILE:                5,
 
         image:                  null,
         rows:                   1,
@@ -254,6 +255,47 @@
 
             return this;
         },
+
+        /**
+         * Must be used to draw actor background and the actor should have setClip(true) so that the image tiles
+         * properly.
+         * @param director
+         * @param time
+         * @param x
+         * @param y
+         */
+        paintTiled : function( director, time, x, y ) {
+            this.setSpriteIndexAtTime(time);
+            var el= this.mapInfo[this.spriteIndex];
+
+            var w= this.getWidth();
+            var h= this.getHeight();
+            var xoff= this.offsetX % w;
+            if ( xoff> 0 ) {
+                xoff= xoff-w;
+            }
+            var yoff= this.offsetY % h;
+            if ( yoff> 0 ) {
+                yoff= yoff-h;
+            }
+
+            var nw= (((this.ownerActor.width-xoff)/w)>>0)+1;
+            var nh= (((this.ownerActor.height-yoff)/h)>>0)+1;
+            var i,j;
+            var ctx= director.ctx;
+
+            for( i=0; i<nh; i++ ) {
+                for( j=0; j<nw; j++ ) {
+                    director.ctx.drawImage(
+                        this.image,
+                        el.x, el.y,
+                        el.width, el.height,
+                        (x+xoff+j*el.width)>>0, (y+yoff+i*el.height)>>0,
+                        el.width, el.height);
+                }
+            }
+        },
+
         /**
          * Draws the subimage pointed by imageIndex horizontally inverted.
          * @param canvas a canvas context.
@@ -398,7 +440,8 @@
             var el= this.mapInfo[this.spriteIndex];
 
             return '-'+(el.x-this.offsetX)+'px '+
-                   '-'+(el.y-this.offsetY)+'px no-repeat';
+                   '-'+(el.y-this.offsetY)+'px '+
+                    this.transformation===this.TR_TILE ? '' : 'no-repeat';
         },
         /**
          * Get the number of subimages in this compoundImage
@@ -505,6 +548,9 @@
 					break;
                 case this.TR_FIXED_TO_SIZE:
                     this.paint= this.paintScaled;
+                    break;
+                case this.TR_TILE:
+                    this.paint= this.paintTiled;
                     break;
 				default:
 					this.paint= this.paintN;

@@ -27,8 +27,12 @@
 		height:	-1,
 
         setEmpty : function() {
-            this.width=-1;
-            this.height=-1;
+            this.width=     -1;
+            this.height=    -1;
+            this.x=         0;
+            this.y=         0;
+            this.width=     0;
+            this.height=    0;
             return this;
         },
         /**
@@ -53,6 +57,11 @@
             this.height= h;
             this.x1= this.x+this.width;
             this.y1= this.y+this.height;
+            return this;
+        },
+        setBounds : function( x,y,w,h ) {
+            this.setLocation( x, y )
+            this.setDimension( w, h );
             return this;
         },
         /**

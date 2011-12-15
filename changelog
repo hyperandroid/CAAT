@@ -1,3 +1,16 @@
+12/15/2011 *0.1 Build:371*
+--------------------------
+
+* Added TR_TILE to SpriteActor. This allows to tile an actor bg image. This method should be combined with a call to
+  actor.setClip(true) otherwise, the tiling op won't work properly. Bakground offseting won't work on CSS.
+* Added ActorContainer constructor modifier which will make the container conform to its childres bounds.
+  Constraint: actors located at negative coordinates won't modify containers top-left position.
+
+12/09/2011
+--------------------------
+
+* Added Scale1Behavior to apply scale behavior either on X or Y axis.
+
 12/08/2011 *0.1 Build:355*
 --------------------------
 

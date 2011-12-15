@@ -56,20 +56,6 @@
 		return this;
 	};
 
-    /**
-     *
-     * @param keyframeDesc {
-     *   keyframe:  {CAAT.Keyframne}
-     *   startTime: {number}
-     *   duration:  {number}
-     * }
-     */
-    ActorKeyframeDescriptor= function( keyframeDesc ) {
-
-        this.behavior= keyframeDesc.behavior;
-
-        return this;
-    }
 
 	CAAT.Actor.prototype= {
 
@@ -77,10 +63,7 @@
 
         lifecycleListenerList:	null,   // Array of life cycle listener
 
-        //  @deprecated
         behaviorList:           null,   // Array of behaviors to apply to the Actor
-
-//        keyframesList:          null,
         parent:					null,   // Parent of this Actor. May be Scene.
 		x:						0,      // x position on parent. In parent's local coord. system.
 		y:						0,      // y position on parent. In parent's local coord. system.
@@ -186,7 +169,6 @@
          */
         setBackgroundImage : function(image, adjust_size_to_image ) {
             if ( image ) {
-//                if ( image instanceof Image ) {
                 if ( !(image instanceof CAAT.SpriteImage) ) {
                     image= new CAAT.SpriteImage().initialize(image,1,1);
                 }
@@ -199,6 +181,8 @@
                 }
 
                 this.glEnabled= true;
+            } else {
+                this.backgroundImage= null;
             }
             
             return this;
@@ -750,58 +734,6 @@
             return this;
 		},
 
-/*
-        addKeyframes : function( keyframe, start, duration, cycle, startOffset ) {
-            this.keyframesList.push( new CAAT.KeyframesDescriptor( keyframe, start, duration, cycle, startOffset ) );
-        },
-
-        scheduleKeyframes : function( id, startTime, duration, cycle, startOffset ) {
-            var kf= this.getKeyframesDescriptor(id);
-            if ( kf ) {
-                kf.schedule( startTime, duration, cycle, startOffset );
-            }
-            return this;
-        },
-
-
-        removeKeyframes : function( keyframe ) {
-            var kfs= this.keyframesList;
-            for( var i=0; i<kfs.length; i++ ) {
-                if ( kfs[i].keyframe===keyframe ) {
-                    kfs.splice(i,1);
-                    return this;
-                }
-            }
-
-            return this;
-        },
-
-        removeKeyframesById : function( keyframe ) {
-            var kfs= this.keyframesList;
-            for( var i=0; i<kfs.length; i++ ) {
-                if ( kfs[i].id===id ) {
-                    kfs.splice(i,1);
-                    return this;
-                }
-            }
-
-            return this;
-        },
-
-        getKeyframesDescriptor : function( id ) {
-            var kfs= this.keyframesList;
-            var kf;
-            for( var i=0; i<kfs.length; i++ ) {
-                kf= kfs[i];
-                if ( kf.id===id ) {
-                    return kf;
-                }
-            }
-
-            return null;
-
-        },
-*/
         /**
          * Add a Behavior to the Actor.
          * An Actor accepts an undefined number of Behaviors.
@@ -815,6 +747,7 @@
 			this.behaviorList.push(behavior);
             return this;
 		},
+
         /**
          * Remove a Behavior from the Actor.
          * If the Behavior is not present at the actor behavior collection nothing happends.
@@ -1680,19 +1613,31 @@
      * @constructor
      * @extends CAAT.Actor
      */
-	CAAT.ActorContainer= function() {
+	CAAT.ActorContainer= function(hint) {
+
 		CAAT.ActorContainer.superclass.constructor.call(this);
-		this.childrenList= [];
-        this.pendingChildrenList= [];
+		this.childrenList=          [];
+        this.pendingChildrenList=   [];
+        if ( typeof hint!=='undefined' ) {
+            this.addHint=       hint;
+            this.boundingBox=   new CAAT.Rectangle();
+        }
 		return this;
 	};
 
+    CAAT.ActorContainer.AddHint= {
+        CONFORM     :    1
+    };
 
 	CAAT.ActorContainer.prototype= {
 
-        childrenList :          null,       // the list of children contained.
-        activeChildren:         null,
-        pendingChildrenList:    null,
+        childrenList        :   null,       // the list of children contained.
+        activeChildren      :   null,
+        pendingChildrenList :   null,
+
+        addHint             :   0,
+        boundingBox         :   null,
+        runion              :   new CAAT.Rectangle(),   // Watch out. one for every container.
 
         /**
          * Draws this ActorContainer and all of its children screen bounding box.
@@ -1895,6 +1840,11 @@
          * Except the Director and in orther to avoid visual artifacts, the developer SHOULD NOT call this
          * method directly.
          *
+         * If the container has addingHint as CAAT.ActorContainer.AddHint.CONFORM, new continer size will be
+         * calculated by summing up the union of every client actor bounding box.
+         * This method will not take into acount actor's affine transformations, so the bounding box will be
+         * AABB.
+         *
          * @param child a CAAT.Actor object instance.
          * @return this
          */
@@ -1907,8 +1857,39 @@
             child.parent= this;
             this.childrenList.push(child);
             child.dirty= true;
+
+            /**
+             * if Conforming size, recalc new bountainer size.
+             */
+            if ( this.addHint===CAAT.ActorContainer.AddHint.CONFORM ) {
+                this.recalcSize();
+            }
+
             return this;
 		},
+
+        /**
+         * Recalc this container size by computin the union of every children bounding box.
+         */
+        recalcSize : function() {
+            var bb= this.boundingBox;
+            bb.setEmpty();
+            var cl= this.childrenList;
+            var ac;
+            for( var i=0; i<cl.length; i++ ) {
+                ac= cl[i];
+                this.runion.setBounds(
+                    ac.x<0 ? 0 : ac.x,
+                    ac.y<0 ? 0 : ac.y,
+                    ac.width,
+                    ac.height );
+                bb.unionRectangle( this.runion );
+            }
+            this.setSize( bb.x1, bb.y1 );
+
+            return this;
+        },
+
         /**
          * Add a child element and make it active in the next frame.
          * @param child {CAAT.Actor}

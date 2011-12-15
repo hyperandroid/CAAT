@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 355
+Version: 0.1 build: 371
 
 Created on:
-DATE: 2011-12-09
-TIME: 09:38:08
+DATE: 2011-12-15
+TIME: 21:28:43
 */
 
 
@@ -1489,8 +1489,12 @@ var cp1= proxy(
 		height:	-1,
 
         setEmpty : function() {
-            this.width=-1;
-            this.height=-1;
+            this.width=     -1;
+            this.height=    -1;
+            this.x=         0;
+            this.y=         0;
+            this.width=     0;
+            this.height=    0;
             return this;
         },
         /**
@@ -1515,6 +1519,11 @@ var cp1= proxy(
             this.height= h;
             this.x1= this.x+this.width;
             this.y1= this.y+this.height;
+            return this;
+        },
+        setBounds : function( x,y,w,h ) {
+            this.setLocation( x, y )
+            this.setDimension( w, h );
             return this;
         },
         /**
@@ -4106,9 +4115,159 @@ var cp1= proxy(
         }
 	};
 
-    extend( CAAT.PathBehavior, CAAT.Behavior, null);
+    extend( CAAT.PathBehavior, CAAT.Behavior );
 })();
-/**
+
+(function() {
+
+    /**
+     * ColorBehavior interpolates between two given colors.
+     * @constructor
+     */
+    CAAT.ColorBehavior= function() {
+        return this;
+    };
+
+    CAAT.ColorBehavior.prototype= {
+
+    };
+
+    extend( CAAT.ColorBehavior, CAAT.Behavior );
+
+})();
+
+(function() {
+
+    /**
+     *
+     * Scale only X or Y axis, instead both at the same time as ScaleBehavior.
+     *
+     * @constructor
+     */
+    CAAT.Scale1Behavior= function() {
+		CAAT.Scale1Behavior.superclass.constructor.call(this);
+		this.anchor= CAAT.Actor.prototype.ANCHOR_CENTER;
+		return this;
+	};
+
+	CAAT.Scale1Behavior.prototype= {
+        startScale: 1,
+        endScale:   1,
+        anchorX:    .50,
+        anchorY:    .50,
+
+        sx          : 1,
+        sy          : 1,
+
+        applyOnX    : true,
+
+        getPropertyName : function() {
+            return "scale";
+        },
+
+        /**
+         * Applies corresponding scale values for a given time.
+         *
+         * @param time the time to apply the scale for.
+         * @param actor the target actor to Scale.
+         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}Ê}</code>
+         */
+		setForTime : function(time,actor) {
+
+			var scale= this.startScale + time*(this.endScale-this.startScale);
+
+            // Firefox 3.x & 4, will crash animation if either scaleX or scaleY equals 0.
+            if (0===scale ) {
+                scale=0.01;
+            }
+
+            if ( this.doValueApplication ) {
+                if ( this.applyOnX ) {
+			        actor.setScaleAnchored( scale, actor.scaleY, this.anchorX, this.anchorY );
+                } else {
+                    actor.setScaleAnchored( actor.scaleX, scale, this.anchorX, this.anchorY );
+                }
+            }
+
+            return scale;
+		},
+        /**
+         * Define this scale behaviors values.
+         *
+         * Be aware the anchor values are supplied in <b>RELATIVE PERCENT</b> to
+         * actor's size.
+         *
+         * @param start {number} initial X axis scale value.
+         * @param end {number} final X axis scale value.
+         * @param anchorx {float} the percent position for anchorX
+         * @param anchory {float} the percent position for anchorY
+         *
+         * @return this.
+         */
+        setValues : function( start, end, applyOnX, anchorx, anchory ) {
+            this.startScale= start;
+            this.endScale=   end;
+            this.applyOnX=   !!applyOnX;
+
+            if ( typeof anchorx!=='undefined' && typeof anchory!=='undefined' ) {
+                this.anchorX= anchorx;
+                this.anchorY= anchory;
+            }
+
+            return this;
+        },
+        /**
+         * Set an exact position scale anchor. Use this method when it is hard to
+         * set a thorough anchor position expressed in percentage.
+         * @param actor
+         * @param x
+         * @param y
+         */
+        setAnchor : function( actor, x, y ) {
+            this.anchorX= x/actor.width;
+            this.anchorY= y/actor.height;
+
+            return this;
+        },
+
+        calculateKeyFrameData : function( time ) {
+            var scale;
+
+            time= this.interpolator.getPosition(time).y;
+            scale= this.startScale + time*(this.endScale-this.startScale);
+
+            return this.applyOnX ? "scaleX("+scale+")" : "scaleY("+scale+")";
+        },
+
+        calculateKeyFramesData : function(prefix, name, keyframessize) {
+
+            if ( typeof keyframessize==='undefined' ) {
+                keyframessize= 100;
+            }
+            keyframessize>>=0;
+
+            var i;
+            var kfr;
+            var kfd= "@-"+prefix+"-keyframes "+name+" {";
+
+            for( i=0; i<=keyframessize; i++ )    {
+                kfr= "" +
+                    (i/keyframessize*100) + "%" + // percentage
+                    "{" +
+                        "-"+prefix+"-transform:" + this.calculateKeyFrameData(i/keyframessize) +
+                    "}";
+
+                kfd+= kfr;
+            }
+
+            kfd+="}";
+
+            return kfd;
+        }
+    };
+
+    extend( CAAT.Scale1Behavior, CAAT.Behavior );
+})();/**
  * See LICENSE file.
  *
  * This object manages CSS3 transitions reflecting applying behaviors.
@@ -4703,6 +4862,9 @@ var cp1= proxy(
                         'background',
                         'url('+this.backgroundImage.image.src+') '+
                             this.backgroundImage.getCurrentSpriteImageCSSPosition() );
+            } else {
+                this.backgroundImage= null;
+                this.style('background', 'none');
             }
 
             return this;
@@ -5979,15 +6141,27 @@ var cp1= proxy(
 		CAAT.ActorContainer.superclass.constructor.call(this);
 		this.childrenList=          [];
         this.pendingChildrenList=   [];
+        if ( typeof hint!=='undefined' ) {
+            this.addHint=       hint;
+            this.boundingBox=   new CAAT.Rectangle();
+        }
 		return this;
 	};
 
+
+    CAAT.ActorContainer.AddHint= {
+        CONFORM     :    1
+    };
 
 	CAAT.ActorContainer.prototype= {
 
         childrenList : null,       // the list of children contained.
         activeChildren: null,
         pendingChildrenList : null,
+
+        addHint             :   0,
+        boundingBox         :   null,
+        runion              :   new CAAT.Rectangle(),   // Watch out. one for every container.
 
         /**
          * Removes all children from this ActorContainer.
@@ -6111,8 +6285,39 @@ var cp1= proxy(
             child.setParent( this );
             this.childrenList.push(child);
             child.dirty= true;
+
+            /**
+             * if Conforming size, recalc new bountainer size.
+             */
+            if ( this.addHint===CAAT.ActorContainer.AddHint.CONFORM ) {
+                this.recalcSize();
+            }
+
             return this;
 		},
+
+        /**
+         * Recalc this container size by computin the union of every children bounding box.
+         */
+        recalcSize : function() {
+            var bb= this.boundingBox;
+            bb.setEmpty();
+            var cl= this.childrenList;
+            var ac;
+            for( var i=0; i<cl.length; i++ ) {
+                ac= cl[i];
+                this.runion.setBounds(
+                    ac.x<0 ? 0 : ac.x,
+                    ac.y<0 ? 0 : ac.y,
+                    ac.width,
+                    ac.height );
+                bb.unionRectangle( this.runion );
+            }
+            this.setSize( bb.x1, bb.y1 );
+
+            return this;
+        },
+
         /**
          * Add a child element and make it active in the next frame.
          * @param child {CAAT.Actor}
@@ -9256,6 +9461,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
         TR_FLIP_VERTICAL:		2,
         TR_FLIP_ALL:			3,
         TR_FIXED_TO_SIZE:       4,
+        TR_TILE:                5,
 
         image:                  null,
         rows:                   1,
@@ -9417,6 +9623,47 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 
             return this;
         },
+
+        /**
+         * Must be used to draw actor background and the actor should have setClip(true) so that the image tiles
+         * properly.
+         * @param director
+         * @param time
+         * @param x
+         * @param y
+         */
+        paintTiled : function( director, time, x, y ) {
+            this.setSpriteIndexAtTime(time);
+            var el= this.mapInfo[this.spriteIndex];
+
+            var w= this.getWidth();
+            var h= this.getHeight();
+            var xoff= this.offsetX % w;
+            if ( xoff> 0 ) {
+                xoff= xoff-w;
+            }
+            var yoff= this.offsetY % h;
+            if ( yoff> 0 ) {
+                yoff= yoff-h;
+            }
+
+            var nw= (((this.ownerActor.width-xoff)/w)>>0)+1;
+            var nh= (((this.ownerActor.height-yoff)/h)>>0)+1;
+            var i,j;
+            var ctx= director.ctx;
+
+            for( i=0; i<nh; i++ ) {
+                for( j=0; j<nw; j++ ) {
+                    director.ctx.drawImage(
+                        this.image,
+                        el.x, el.y,
+                        el.width, el.height,
+                        (x+xoff+j*el.width)>>0, (y+yoff+i*el.height)>>0,
+                        el.width, el.height);
+                }
+            }
+        },
+
         /**
          * Draws the subimage pointed by imageIndex horizontally inverted.
          * @param canvas a canvas context.
@@ -9561,7 +9808,8 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             var el= this.mapInfo[this.spriteIndex];
 
             return '-'+(el.x-this.offsetX)+'px '+
-                   '-'+(el.y-this.offsetY)+'px no-repeat';
+                   '-'+(el.y-this.offsetY)+'px '+
+                    this.transformation===this.TR_TILE ? '' : 'no-repeat';
         },
         /**
          * Get the number of subimages in this compoundImage
@@ -9668,6 +9916,9 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 					break;
                 case this.TR_FIXED_TO_SIZE:
                     this.paint= this.paintScaled;
+                    break;
+                case this.TR_TILE:
+                    this.paint= this.paintTiled;
                     break;
 				default:
 					this.paint= this.paintN;
