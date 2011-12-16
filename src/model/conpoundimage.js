@@ -441,7 +441,7 @@
 
             return '-'+(el.x-this.offsetX)+'px '+
                    '-'+(el.y-this.offsetY)+'px '+
-                    this.transformation===this.TR_TILE ? '' : 'no-repeat';
+                    (this.transformation===this.TR_TILE ? '' : 'no-repeat');
         },
         /**
          * Get the number of subimages in this compoundImage

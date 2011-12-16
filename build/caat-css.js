@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 371
+Version: 0.1 build: 374
 
 Created on:
-DATE: 2011-12-15
-TIME: 21:28:43
+DATE: 2011-12-16
+TIME: 17:29:01
 */
 
 
@@ -9809,7 +9809,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 
             return '-'+(el.x-this.offsetX)+'px '+
                    '-'+(el.y-this.offsetY)+'px '+
-                    this.transformation===this.TR_TILE ? '' : 'no-repeat';
+                    (this.transformation===this.TR_TILE ? '' : 'no-repeat');
         },
         /**
          * Get the number of subimages in this compoundImage

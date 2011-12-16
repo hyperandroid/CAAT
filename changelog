@@ -1,3 +1,8 @@
+12/16/2011 *0.1 Build:374*
+--------------------------
+
+* A bug prevented to construct an appropriate css sprite image representation.
+
 12/15/2011 *0.1 Build:371*
 --------------------------
 
