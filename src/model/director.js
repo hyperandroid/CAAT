@@ -224,16 +224,22 @@
          * @param width {number} a canvas width
          * @param height {number} a canvas height
          * @param canvas {HTMLCanvasElement=} An optional Canvas object.
+         * @param proxy {HTMLElement} this object can be an event proxy in case you'd like to layer different elements
+         *              and want events delivered to the correct element.
          *
          * @return this
          */
-        initialize : function(width, height, canvas) {
+        initialize : function(width, height, canvas, proxy) {
             canvas = canvas || document.createElement('canvas');
             this.canvas = canvas;
 
+            if ( typeof proxy==='undefined' ) {
+                proxy= canvas;
+            }
+
             this.setBounds(0, 0, width, height);
             this.create();
-            this.enableEvents();
+            this.enableEvents(proxy);
 
             this.timeline = new Date().getTime();
 
@@ -266,11 +272,15 @@
          * @param height
          * @param canvas
          */
-        initializeGL : function(width, height, canvas) {
+        initializeGL : function(width, height, canvas, proxy) {
 
             canvas = canvas || document.createElement('canvas');
             canvas.width = width;
             canvas.height = height;
+
+            if ( typeof proxy==='undefined' ) {
+                proxy= canvas;
+            }
 
             this.referenceWidth= width;
             this.referenceHeight=height;
@@ -290,7 +300,7 @@
                 this.setBounds(0, 0, width, height);
 
                 this.crc = this.ctx;
-                this.enableEvents();
+                this.enableEvents(canvas);
                 this.timeline = new Date().getTime();
 
                 this.glColorProgram = new CAAT.ColorProgram(this.gl).create().initialize();
@@ -1676,16 +1686,17 @@
             }, false );
         },
 
-        enableEvents : function() {
+        enableEvents : function( onElement ) {
             CAAT.RegisterDirector(this);
             this.in_ = false;
-            this.createEventHandler();
+            this.createEventHandler( onElement );
         },
 
-        createEventHandler : function() {
-            var canvas= this.canvas;
+        createEventHandler : function( onElement ) {
+            //var canvas= this.canvas;
             this.in_ = false;
-            this.addHandlers(canvas);
+            //this.addHandlers(canvas);
+            this.addHandlers( onElement );
         }
     };
 
@@ -1719,7 +1730,15 @@
             return this;
         };
 
-        CAAT.Director.prototype.initialize= function(width, height, domElement) {
+        /**
+         * In this DOM/CSS implementation, proxy is not taken into account since the event router is a top most
+         * div in the document hierarchy (z-index 999999).
+         * @param width
+         * @param height
+         * @param domElement
+         * @param proxy
+         */
+        CAAT.Director.prototype.initialize= function(width, height, domElement, proxy) {
 
             this.timeline = new Date().getTime();
             this.domElement= domElement;
@@ -1727,7 +1746,8 @@
             this.style('width',''+width+'px');
             this.style('height',''+height+'px');
             this.style('overflow', 'hidden' );
-            this.enableEvents();
+
+            this.enableEvents(domElement);
 
             this.setBounds(0, 0, width, height);
 

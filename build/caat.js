@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 374
+Version: 0.1 build: 407
 
 Created on:
-DATE: 2011-12-16
-TIME: 17:29:01
+DATE: 2011-12-18
+TIME: 16:41:42
 */
 
 
@@ -6866,6 +6866,7 @@ var cp1= proxy(
 
             return this;
 		},
+
         /**
          * Calculates the text dimension in pixels and stores the values in textWidth and textHeight
          * attributes.
@@ -6878,6 +6879,8 @@ var cp1= proxy(
             if ( director.glEnabled ) {
                 return this;
             }
+
+            var ctx= director.ctx;
 
             director.ctx.save();
             director.ctx.font= this.font;
@@ -6969,6 +6972,7 @@ var cp1= proxy(
 					if ( null!==this.outlineColor ) {
 						canvas.strokeStyle= this.outlineColor;
 					}
+                    canvas.beginPath();
 					canvas.strokeText( this.text, tx, 0 );
 				}
 			}
@@ -8378,16 +8382,22 @@ var cp1= proxy(
          * @param width {number} a canvas width
          * @param height {number} a canvas height
          * @param canvas {HTMLCanvasElement=} An optional Canvas object.
+         * @param proxy {HTMLElement} this object can be an event proxy in case you'd like to layer different elements
+         *              and want events delivered to the correct element.
          *
          * @return this
          */
-        initialize : function(width, height, canvas) {
+        initialize : function(width, height, canvas, proxy) {
             canvas = canvas || document.createElement('canvas');
             this.canvas = canvas;
 
+            if ( typeof proxy==='undefined' ) {
+                proxy= canvas;
+            }
+
             this.setBounds(0, 0, width, height);
             this.create();
-            this.enableEvents();
+            this.enableEvents(proxy);
 
             this.timeline = new Date().getTime();
 
@@ -8420,11 +8430,15 @@ var cp1= proxy(
          * @param height
          * @param canvas
          */
-        initializeGL : function(width, height, canvas) {
+        initializeGL : function(width, height, canvas, proxy) {
 
             canvas = canvas || document.createElement('canvas');
             canvas.width = width;
             canvas.height = height;
+
+            if ( typeof proxy==='undefined' ) {
+                proxy= canvas;
+            }
 
             this.referenceWidth= width;
             this.referenceHeight=height;
@@ -8444,7 +8458,7 @@ var cp1= proxy(
                 this.setBounds(0, 0, width, height);
 
                 this.crc = this.ctx;
-                this.enableEvents();
+                this.enableEvents(canvas);
                 this.timeline = new Date().getTime();
 
                 this.glColorProgram = new CAAT.ColorProgram(this.gl).create().initialize();
@@ -9830,16 +9844,17 @@ var cp1= proxy(
             }, false );
         },
 
-        enableEvents : function() {
+        enableEvents : function( onElement ) {
             CAAT.RegisterDirector(this);
             this.in_ = false;
-            this.createEventHandler();
+            this.createEventHandler( onElement );
         },
 
-        createEventHandler : function() {
-            var canvas= this.canvas;
+        createEventHandler : function( onElement ) {
+            //var canvas= this.canvas;
             this.in_ = false;
-            this.addHandlers(canvas);
+            //this.addHandlers(canvas);
+            this.addHandlers( onElement );
         }
     };
 
@@ -9873,7 +9888,15 @@ var cp1= proxy(
             return this;
         };
 
-        CAAT.Director.prototype.initialize= function(width, height, domElement) {
+        /**
+         * In this DOM/CSS implementation, proxy is not taken into account since the event router is a top most
+         * div in the document hierarchy (z-index 999999).
+         * @param width
+         * @param height
+         * @param domElement
+         * @param proxy
+         */
+        CAAT.Director.prototype.initialize= function(width, height, domElement, proxy) {
 
             this.timeline = new Date().getTime();
             this.domElement= domElement;
@@ -9881,7 +9904,8 @@ var cp1= proxy(
             this.style('width',''+width+'px');
             this.style('height',''+height+'px');
             this.style('overflow', 'hidden' );
-            this.enableEvents();
+
+            this.enableEvents(domElement);
 
             this.setBounds(0, 0, width, height);
 
@@ -12264,88 +12288,110 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 
 (function() {
 
-    CAAT.modules.ImageUtil= function() {
-        return this;
+    CAAT.modules.ImageUtil= {};
+
+    CAAT.modules.ImageUtil.createAlphaSpriteSheet= function(maxAlpha, minAlpha, sheetSize, image, bg_fill_style ) {
+
+        if ( maxAlpha<minAlpha ) {
+            var t= maxAlpha;
+            maxAlpha= minAlpha;
+            minAlpha= t;
+        }
+
+        var canvas= document.createElement('canvas');
+        canvas.width= image.width;
+        canvas.height= image.height*sheetSize;
+        var ctx= canvas.getContext('2d');
+        ctx.fillStyle = bg_fill_style ? bg_fill_style : 'rgba(255,255,255,0)';
+        ctx.fillRect(0,0,image.width,image.height*sheetSize);
+
+        var i;
+        for( i=0; i<sheetSize; i++ ) {
+            ctx.globalAlpha= 1-(maxAlpha-minAlpha)/sheetSize*(i+1);
+            ctx.drawImage(image, 0, i*image.height);
+        }
+
+        return canvas;
     };
 
-    CAAT.modules.ImageUtil.prototype= {
-        createAlphaSpriteSheet: function(maxAlpha, minAlpha, sheetSize, image, bg_fill_style ) {
-
-            if ( maxAlpha<minAlpha ) {
-                var t= maxAlpha;
-                maxAlpha= minAlpha;
-                minAlpha= t;
-            }
-
-            var canvas= document.createElement('canvas');
-            canvas.width= image.width;
-            canvas.height= image.height*sheetSize;
-            var ctx= canvas.getContext('2d');
-            ctx.fillStyle = bg_fill_style ? bg_fill_style : 'rgba(255,255,255,0)';
-            ctx.fillRect(0,0,image.width,image.height*sheetSize);
-
-            var i;
-            for( i=0; i<sheetSize; i++ ) {
-                ctx.globalAlpha= 1-(maxAlpha-minAlpha)/sheetSize*(i+1);
-                ctx.drawImage(image, 0, i*image.height);
-            }
-
-            return canvas;
-        },
         /**
          * Creates a rotated canvas image element.
          * @param img
          */
-        rotate : function( image, angle ) {
+    CAAT.modules.ImageUtil.rotate= function( image, angle ) {
 
-            angle= angle||0;
-            if ( !angle ) {
-                return image;
-            }
+        angle= angle||0;
+        if ( !angle ) {
+            return image;
+        }
 
-            var canvas= document.createElement("canvas");
-            canvas.width= image.height;
-            canvas.height= image.width;
-            var ctx= canvas.getContext('2d');
-            ctx.globalAlpha= 1;
-            ctx.fillStyle='rgba(0,0,0,0)';
-            ctx.clearRect(0,0,canvas.width,canvas.height);
+        var canvas= document.createElement("canvas");
+        canvas.width= image.height;
+        canvas.height= image.width;
+        var ctx= canvas.getContext('2d');
+        ctx.globalAlpha= 1;
+        ctx.fillStyle='rgba(0,0,0,0)';
+        ctx.clearRect(0,0,canvas.width,canvas.height);
 
-            var m= new CAAT.Matrix();
-            m.multiply( new CAAT.Matrix().setTranslate( canvas.width/2, canvas.width/2 ) );
-            m.multiply( new CAAT.Matrix().setRotation( angle*Math.PI/180 ) );
-            m.multiply( new CAAT.Matrix().setTranslate( -canvas.width/2, -canvas.width/2 ) );
-            m.transformRenderingContext(ctx);
-            ctx.drawImage(image,0,0);
+        var m= new CAAT.Matrix();
+        m.multiply( new CAAT.Matrix().setTranslate( canvas.width/2, canvas.width/2 ) );
+        m.multiply( new CAAT.Matrix().setRotation( angle*Math.PI/180 ) );
+        m.multiply( new CAAT.Matrix().setTranslate( -canvas.width/2, -canvas.width/2 ) );
+        m.transformRenderingContext(ctx);
+        ctx.drawImage(image,0,0);
 
-            return canvas;
-        },
+        return canvas;
+    };
+
         /**
          * Remove an image's padding transparent border.
          * Transparent means that every scan pixel is alpha=0.
          * @param image
          * @param threshold {integer} any value below or equal to this will be optimized.
+         * @param !areas { object{ top<boolean>, bottom<boolean>, left<boolean, right<boolean> }Ê}
          */
-        optimize : function(image, threshold) {
-            threshold>>=0;
+    CAAT.modules.ImageUtil.optimize= function(image, threshold, areas ) {
+        threshold>>=0;
 
-            var canvas= document.createElement('canvas');
-            canvas.width= image.width;
-            canvas.height=image.height;
-            var ctx= canvas.getContext('2d');
+        var atop=       true;
+        var abottom=    true;
+        var aleft=      true;
+        var aright=     true;
+        if ( typeof areas!=='undefined' ) {
+            if ( typeof areas.top!=='undefined' ) {
+                atop= areas.top;
+            }
+            if ( typeof areas.bottom!=='undefined' ) {
+                abottom= areas.bottom;
+            }
+            if ( typeof areas.left!=='undefined' ) {
+                aleft= areas.left;
+            }
+            if ( typeof areas.right!=='undefined' ) {
+                aright= areas.right;
+            }
+        }
 
-            ctx.fillStyle='rgba(0,0,0,0)';
-            ctx.fillRect(0,0,image.width,image.height);
-            ctx.drawImage( image, 0, 0 );
 
-            var imageData= ctx.getImageData(0,0,image.width,image.height);
-            var data= imageData.data;
+        var canvas= document.createElement('canvas');
+        canvas.width= image.width;
+        canvas.height=image.height;
+        var ctx= canvas.getContext('2d');
 
-            var i,j;
-            var miny= canvas.height, maxy=0;
-            var minx= canvas.width, maxx=0;
+        ctx.fillStyle='rgba(0,0,0,0)';
+        ctx.fillRect(0,0,image.width,image.height);
+        ctx.drawImage( image, 0, 0 );
 
-            var alpha= false;
+        var imageData= ctx.getImageData(0,0,image.width,image.height);
+        var data= imageData.data;
+
+        var i,j;
+        var miny= 0, maxy=canvas.height-1;
+        var minx= 0, maxx=canvas.width-1;
+
+        var alpha= false;
+
+        if ( atop ) {
             for( i=0; i<canvas.height; i++ ) {
                 for( j=0; j<canvas.width; j++ ) {
                     if ( data[i*canvas.width*4 + 3+j*4]>threshold ) {
@@ -12360,10 +12406,12 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             }
             // i contiene el indice del ultimo scan que no es transparente total.
             miny= i;
+        }
 
+        if ( abottom ) {
             alpha= false;
             for( i=canvas.height-1; i>=miny; i-- ) {
-                for( j=3; j<canvas.width*4; j+=4 ) {
+                for( j=0; j<canvas.width; j++ ) {
                     if ( data[i*canvas.width*4 + 3+j*4]>threshold ) {
                         alpha= true;
                         break;
@@ -12375,11 +12423,12 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 }
             }
             maxy= i;
+        }
 
-
+        if ( aleft ) {
             alpha= false;
             for( j=0; j<canvas.width; j++ ) {
-                for( i=0; i<canvas.height; i++ ) {
+                for( i=miny; i<=maxy; i++ ) {
                     if ( data[i*canvas.width*4 + 3+j*4 ]>threshold ) {
                         alpha= true;
                         break;
@@ -12390,10 +12439,12 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 }
             }
             minx= j;
+        }
 
+        if ( aright ) {
             alpha= false;
             for( j=canvas.width-1; j>=minx; j-- ) {
-                for( i=0; i<canvas.height; i++ ) {
+                for( i=miny; i<=maxy; i++ ) {
                     if ( data[i*canvas.width*4 + 3+j*4 ]>threshold ) {
                         alpha= true;
                         break;
@@ -12404,42 +12455,43 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 }
             }
             maxx= j;
+        }
 
-            if ( 0===minx && 0===miny && canvas.width-1===maxx && canvas.height-1===maxy ) {
-                return canvas;
-            }
-
-            var width= maxx-minx+1;
-            var height=maxy-miny+1;
-            var id2= ctx.getImageData( minx, miny, width, height );
-
-            canvas.width= width;
-            canvas.height= height;
-            ctx= canvas.getContext('2d');
-            ctx.putImageData( id2, 0, 0 );
-
-            return canvas;
-        },
-        createThumb : function(image, w, h, best_fit) {
-            w= w||24;
-            h= h||24;
-            var canvas= document.createElement('canvas');
-            canvas.width= w;
-            canvas.height= h;
-            var ctx= canvas.getContext('2d');
-
-            if ( best_fit ) {
-                var max= Math.max( image.width, image.height );
-                var ww= image.width/max*w;
-                var hh= image.height/max*h;
-                ctx.drawImage( image, (w-ww)/2,(h-hh)/2,ww,hh );
-            } else {
-                ctx.drawImage( image, 0, 0, w, h );
-            }
-
+        if ( 0===minx && 0===miny && canvas.width-1===maxx && canvas.height-1===maxy ) {
             return canvas;
         }
+
+        var width= maxx-minx+1;
+        var height=maxy-miny+1;
+        var id2= ctx.getImageData( minx, miny, width, height );
+
+        canvas.width= width;
+        canvas.height= height;
+        ctx= canvas.getContext('2d');
+        ctx.putImageData( id2, 0, 0 );
+
+        return canvas;
     };
+
+    CAAT.modules.ImageUtil.createThumb= function(image, w, h, best_fit) {
+        w= w||24;
+        h= h||24;
+        var canvas= document.createElement('canvas');
+        canvas.width= w;
+        canvas.height= h;
+        var ctx= canvas.getContext('2d');
+
+        if ( best_fit ) {
+            var max= Math.max( image.width, image.height );
+            var ww= image.width/max*w;
+            var hh= image.height/max*h;
+            ctx.drawImage( image, (w-ww)/2,(h-hh)/2,ww,hh );
+        } else {
+            ctx.drawImage( image, 0, 0, w, h );
+        }
+
+        return canvas;
+    }
 
 })();/**
  * See LICENSE file.
@@ -12504,7 +12556,166 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         }
 
     };
-})();/**
+})();
+(function() {
+
+    /**
+     * @constructor
+     */
+    CAAT.Font= function( ) {
+        return this;
+    };
+
+    var UNKNOWN_CHAR_WIDTH= 10;
+
+    CAAT.Font.prototype= {
+
+        fontSize    :   10,
+        fontSizeUnit:   "px",
+        font        :   'Sans-Serif',
+        fontStyle   :   '',
+        fillStyle   :   '#fff',
+        strokeStyle :   null,
+        padding     :   0,
+        image       :   null,
+        charMap     :   null,
+
+        height      :   0,
+
+        setPadding : function( padding ) {
+            this.padding= padding;
+            return this;
+        },
+
+        setFontStyle : function( style ) {
+            this.fontStyle= style;
+            return this;
+        },
+
+        setFontSize : function( fontSize ) {
+            this.fontSize=      fontSize;
+            this.fontSizeUnit=  'px';
+            return this;
+        },
+
+        setFont : function( font ) {
+            this.font= font;
+            return this;
+        },
+
+        setFillStyle : function( style ) {
+            this.fillStyle= style;
+            return this;
+        },
+
+        setStrokeStyle : function( style ) {
+            this.strokeStyle= style;
+            return this;
+        },
+
+        create : function( chars, padding ) {
+            var canvas= document.createElement('canvas');
+            canvas.width=   1;
+            canvas.height=  1;
+            var ctx= canvas.getContext('2d');
+
+            ctx.textBaseline= 'top';
+            ctx.font= this.fontStyle+' '+this.fontSize+""+this.fontSizeUnit+" "+ this.font;
+
+            var textWidth= 0;
+            var charWidth= [];
+            var i;
+            var x;
+            var cchar;
+
+            for( i=0; i<chars.length; i++ ) {
+                var cw= Math.max( 1, ctx.measureText( chars.charAt(i) ).width>>0 ) + 2 * padding;
+                charWidth.push(cw);
+                textWidth+= cw;
+            }
+
+            canvas.width= textWidth;
+            canvas.height= (this.fontSize*1.5)>>0;
+            ctx= canvas.getContext('2d');
+
+            ctx.textBaseline= 'top';
+            ctx.font= this.fontStyle+' '+this.fontSize+""+this.fontSizeUnit+" "+ this.font;
+            ctx.fillStyle= this.fillStyle;
+            ctx.strokeStyle= this.strokeStyle;
+
+            this.charMap= {};
+
+            x=0;
+            for( i=0; i<chars.length; i++ ) {
+                cchar= chars.charAt(i);
+                ctx.fillText( cchar, x+padding, 0 );
+                if ( this.strokeStyle ) {
+                    ctx.beginPath();
+                    ctx.strokeText( cchar, x+padding,  0 );
+                }
+                this.charMap[cchar]= {
+                    x:      x,
+                    width:  charWidth[i]
+                };
+                x+= charWidth[i];
+            }
+
+            this.image= CAAT.modules.ImageUtil.optimize( canvas, 32, { top: true, bottom: true, left: false, right: false } );
+            this.height= this.image.height;
+
+            return this;
+        },
+
+        stringWidth : function( str ) {
+            var i, l,  w=0, c;
+
+            for( i=0, l=str.length; i<l; i++ ) {
+                c= this.charMap[ str.charAt(i) ];
+                if ( c ) {
+                    w+= c.width;
+                } else {
+                    w+= UNKNOWN_CHAR_WIDTH;
+                }
+            }
+
+            return w;
+        },
+
+        drawText : function( str, ctx, x, y ) {
+            var i,l,charInfo,w;
+            var height= this.image.height;
+
+            for( i=0, l=str.length; i<l; i++ ) {
+                charInfo= this.charMap[ str.charAt(i) ];
+                if ( charInfo ) {
+                    w= charInfo.width;
+                    ctx.drawImage(
+                        this.image,
+                        charInfo.x, 0,
+                        w, height,
+                        x, y,
+                        w, height);
+
+                    x+= w;
+                } else {
+                    ctx.strokeStyle='#f00';
+                    ctx.strokeRect( x,y,UNKNOWN_CHAR_WIDTH,height );
+                    x+= UNKNOWN_CHAR_WIDTH;
+                }
+            }
+        },
+
+        save : function() {
+            var str= "image/png";
+            var strData= this.image.toDataURL(str);
+            document.location.href= strData.replace( str, "image/octet-stream" );
+        }
+
+    };
+
+})();
+
+/**
  * See LICENSE file.
  *
  * Interpolator actor will draw interpolators on screen.

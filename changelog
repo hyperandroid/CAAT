@@ -1,3 +1,12 @@
+12/17/2011 *0.1 Build:407*
+--------------------------
+
+* CAAT.modules.ImageUtil is no more an object but a namespace with (static) functions.
+* function CAAT.modules.ImageUtil.optimize now accepts a parameter to scan on specifig regions.
+* Added CAAT.Font which encapsulates a sprite font. Contains methods: to define font, paint, stringWidth, save, etc.
+* Method initialize and initializeGL give the opportunity to define a proxy input event. It is usefull in case some
+  layering has to be done on top of the canvas element.
+
 12/16/2011 *0.1 Build:374*
 --------------------------
 

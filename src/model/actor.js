@@ -2201,6 +2201,7 @@
 
             return this;
 		},
+
         /**
          * Calculates the text dimension in pixels and stores the values in textWidth and textHeight
          * attributes.
@@ -2213,6 +2214,8 @@
             if ( director.glEnabled ) {
                 return this;
             }
+
+            var ctx= director.ctx;
 
             director.ctx.save();
             director.ctx.font= this.font;
@@ -2304,6 +2307,7 @@
 					if ( null!==this.outlineColor ) {
 						canvas.strokeStyle= this.outlineColor;
 					}
+                    canvas.beginPath();
 					canvas.strokeText( this.text, tx, 0 );
 				}
 			}
