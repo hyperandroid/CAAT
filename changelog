@@ -1,3 +1,20 @@
+12/26/2011 *0.1 Build 415*
+--------------------------
+
+* Fixed PathActor to be able to draw background image or color.
+* Fixed key event system. Now, the original key event is 'preventDefault'ed, and the notification callback receives an
+  object of the form:
+
+  new CAAT.KeyEvent(
+      key,
+      'up' | 'down',
+      {
+          alt:        CAAT.KEY_MODIFIERS.alt,
+          control:    CAAT.KEY_MODIFIERS.control,
+          shift:      CAAT.KEY_MODIFIERS.shift
+      },
+      source_event );
+
 12/17/2011 *0.1 Build:407*
 --------------------------
 

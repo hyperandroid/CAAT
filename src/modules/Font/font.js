@@ -55,7 +55,19 @@
             return this;
         },
 
+        createDefault : function( padding ) {
+            var str="";
+            for( var i=32; i<128; i++ ) {
+                str= str+String.fromCharCode(i);
+            }
+
+            return this.create( str, padding );
+        },
+
         create : function( chars, padding ) {
+
+            this.padding= padding;
+
             var canvas= document.createElement('canvas');
             canvas.width=   1;
             canvas.height=  1;
@@ -71,7 +83,7 @@
             var cchar;
 
             for( i=0; i<chars.length; i++ ) {
-                var cw= Math.max( 1, ctx.measureText( chars.charAt(i) ).width>>0 ) + 2 * padding;
+                var cw= Math.max( 1, (ctx.measureText( chars.charAt(i) ).width>>0)+1 ) + 2 * padding ;
                 charWidth.push(cw);
                 textWidth+= cw;
             }

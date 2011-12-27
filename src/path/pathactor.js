@@ -46,6 +46,8 @@
          */
 		paint : function(director, time) {
 
+            CAAT.PathActor.superclass.paint.call( this, director, time );
+
             var canvas= director.crc;
 
             canvas.strokeStyle='black';
@@ -59,7 +61,7 @@
         /**
          * Enables/disables drawing of the contained path's bounding box.
          * @param show {boolean} whether to show the bounding box
-         * @param color {*string} optional parameter defining the path's bounding box stroke style.
+         * @param color {=string} optional parameter defining the path's bounding box stroke style.
          */
         showBoundingBox : function(show, color) {
             this.bOutline= show;

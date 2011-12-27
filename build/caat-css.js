@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 407
+Version: 0.1 build: 415
 
 Created on:
-DATE: 2011-12-18
-TIME: 16:41:42
+DATE: 2011-12-27
+TIME: 20:33:29
 */
 
 
@@ -9194,6 +9194,49 @@ CAAT.KEY_MODIFIERS= {
 };
 
 /**
+ * Define a key event.
+ * @constructor
+ * @param keyCode
+ * @param up_or_down
+ * @param modifiers
+ * @param originalEvent
+ */
+CAAT.KeyEvent= function( keyCode, up_or_down, modifiers, originalEvent ) {
+    this.keyCode= keyCode;
+    this.action=  up_or_down;
+    this.modifiers= modifiers;
+    this.sourceEvent= originalEvent;
+
+    this.getKeyCode= function() {
+        return this.keyCode;
+    };
+
+    this.getAction= function() {
+        return this.action;
+    };
+
+    this.modifiers= function() {
+        return this.modifiers;
+    };
+
+    this.isShiftPressed= function() {
+        return this.modifiers.shift;
+    };
+
+    this.isControlPressed= function() {
+        return this.modifiers.control;
+    };
+
+    this.isAltPressed= function() {
+        return this.modifiers.alt;
+    };
+
+    this.getSourceEvent= function() {
+        return this.sourceEvent;
+    };
+};
+
+/**
  * Enable window level input events, keys and redimension.
  */
 CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
@@ -9208,6 +9251,8 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
         function(evt) {
             var key = (evt.which) ? evt.which : evt.keyCode;
 
+            evt.preventDefault();
+
             if ( key===CAAT.SHIFT_KEY ) {
                 CAAT.KEY_MODIFIERS.shift= true;
             } else if ( key===CAAT.CONTROL_KEY ) {
@@ -9216,7 +9261,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
                 CAAT.KEY_MODIFIERS.alt= true;
             } else {
                 for( var i=0; i<CAAT.keyListeners.length; i++ ) {
-                    CAAT.keyListeners[i](
+                    CAAT.keyListeners[i]( new CAAT.KeyEvent(
                         key,
                         'down',
                         {
@@ -9224,7 +9269,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
                             control:    CAAT.KEY_MODIFIERS.control,
                             shift:      CAAT.KEY_MODIFIERS.shift
                         },
-                        evt);
+                        evt)) ;
                 }
             }
         },
@@ -9232,6 +9277,9 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
 
     window.addEventListener('keyup',
         function(evt) {
+
+            evt.preventDefault();
+
             var key = (evt.which) ? evt.which : evt.keyCode;
             if ( key===CAAT.SHIFT_KEY ) {
                 CAAT.KEY_MODIFIERS.shift= false;
@@ -9242,7 +9290,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
             } else {
 
                 for( var i=0; i<CAAT.keyListeners.length; i++ ) {
-                    CAAT.keyListeners[i](
+                    CAAT.keyListeners[i]( new CAAT.KeyEvent(
                         key,
                         'up',
                         {
@@ -9250,7 +9298,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
                             control:    CAAT.KEY_MODIFIERS.control,
                             shift:      CAAT.KEY_MODIFIERS.shift
                         },
-                        evt);
+                        evt));
                 }
             }
         },
@@ -11640,7 +11688,19 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             return this;
         },
 
+        createDefault : function( padding ) {
+            var str="";
+            for( var i=32; i<128; i++ ) {
+                str= str+String.fromCharCode(i);
+            }
+
+            return this.create( str, padding );
+        },
+
         create : function( chars, padding ) {
+
+            this.padding= padding;
+
             var canvas= document.createElement('canvas');
             canvas.width=   1;
             canvas.height=  1;
@@ -11656,7 +11716,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             var cchar;
 
             for( i=0; i<chars.length; i++ ) {
-                var cw= Math.max( 1, ctx.measureText( chars.charAt(i) ).width>>0 ) + 2 * padding;
+                var cw= Math.max( 1, (ctx.measureText( chars.charAt(i) ).width>>0)+1 ) + 2 * padding ;
                 charWidth.push(cw);
                 textWidth+= cw;
             }
@@ -13572,6 +13632,8 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
          * @param time {number}. Scene time.
          */
 		paint : function(director, time) {
+
+            CAAT.PathActor.superclass.paint.call( this, director, time );
 
             var canvas= director.crc;
 

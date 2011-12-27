@@ -169,6 +169,49 @@ CAAT.KEY_MODIFIERS= {
 };
 
 /**
+ * Define a key event.
+ * @constructor
+ * @param keyCode
+ * @param up_or_down
+ * @param modifiers
+ * @param originalEvent
+ */
+CAAT.KeyEvent= function( keyCode, up_or_down, modifiers, originalEvent ) {
+    this.keyCode= keyCode;
+    this.action=  up_or_down;
+    this.modifiers= modifiers;
+    this.sourceEvent= originalEvent;
+
+    this.getKeyCode= function() {
+        return this.keyCode;
+    };
+
+    this.getAction= function() {
+        return this.action;
+    };
+
+    this.modifiers= function() {
+        return this.modifiers;
+    };
+
+    this.isShiftPressed= function() {
+        return this.modifiers.shift;
+    };
+
+    this.isControlPressed= function() {
+        return this.modifiers.control;
+    };
+
+    this.isAltPressed= function() {
+        return this.modifiers.alt;
+    };
+
+    this.getSourceEvent= function() {
+        return this.sourceEvent;
+    };
+};
+
+/**
  * Enable window level input events, keys and redimension.
  */
 CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
@@ -183,6 +226,8 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
         function(evt) {
             var key = (evt.which) ? evt.which : evt.keyCode;
 
+            evt.preventDefault();
+
             if ( key===CAAT.SHIFT_KEY ) {
                 CAAT.KEY_MODIFIERS.shift= true;
             } else if ( key===CAAT.CONTROL_KEY ) {
@@ -191,7 +236,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
                 CAAT.KEY_MODIFIERS.alt= true;
             } else {
                 for( var i=0; i<CAAT.keyListeners.length; i++ ) {
-                    CAAT.keyListeners[i](
+                    CAAT.keyListeners[i]( new CAAT.KeyEvent(
                         key,
                         'down',
                         {
@@ -199,7 +244,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
                             control:    CAAT.KEY_MODIFIERS.control,
                             shift:      CAAT.KEY_MODIFIERS.shift
                         },
-                        evt);
+                        evt)) ;
                 }
             }
         },
@@ -207,6 +252,9 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
 
     window.addEventListener('keyup',
         function(evt) {
+
+            evt.preventDefault();
+
             var key = (evt.which) ? evt.which : evt.keyCode;
             if ( key===CAAT.SHIFT_KEY ) {
                 CAAT.KEY_MODIFIERS.shift= false;
@@ -217,7 +265,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
             } else {
 
                 for( var i=0; i<CAAT.keyListeners.length; i++ ) {
-                    CAAT.keyListeners[i](
+                    CAAT.keyListeners[i]( new CAAT.KeyEvent(
                         key,
                         'up',
                         {
@@ -225,7 +273,7 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
                             control:    CAAT.KEY_MODIFIERS.control,
                             shift:      CAAT.KEY_MODIFIERS.shift
                         },
-                        evt);
+                        evt));
                 }
             }
         },
