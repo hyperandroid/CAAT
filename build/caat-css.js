@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 415
+Version: 0.1 build: 422
 
 Created on:
-DATE: 2011-12-27
-TIME: 20:33:29
+DATE: 2011-12-28
+TIME: 21:17:30
 */
 
 
@@ -1114,7 +1114,7 @@ var cp1= proxy(
          */
         transformRenderingContextSet : function(ctx) {
             var m= this.matrix;
-            ctx.setTransform( m[0], m[3], m[1], m[4], m[2], m[5] );
+            ctx.setTransform( m[0], m[3], m[1], m[4], m[2]>>0, m[5]>>0 );
             return this;
         },
 
@@ -1124,7 +1124,7 @@ var cp1= proxy(
          */
         transformRenderingContext : function(ctx) {
             var m= this.matrix;
-            ctx.transform( m[0], m[3], m[1], m[4], m[2], m[5] );
+            ctx.transform( m[0], m[3], m[1], m[4], m[2]>>0, m[5]>>0 );
             return this;
         }
 
@@ -9179,6 +9179,105 @@ CAAT.registerKeyListener= function(f) {
     CAAT.keyListeners.push(f);
 };
 
+CAAT.Keys = {
+    ENTER:13,
+    BACKSPACE:8,
+    TAB:9,
+    SHIFT:16,
+    CTRL:17,
+    ALT:18,
+    PAUSE:19,
+    CAPSLOCK:20,
+    ESCAPE:27,
+    PAGEUP:33,
+    PAGEDOWN:34,
+    END:35,
+    HOME:36,
+    LEFT:37,
+    UP:38,
+    RIGHT:39,
+    DOWN:40,
+    INSERT:45,
+    DELETE:46,
+    0:48,
+    1:49,
+    2:50,
+    3:51,
+    4:52,
+    5:53,
+    6:54,
+    7:55,
+    8:56,
+    9:57,
+    a:65,
+    b:66,
+    c:67,
+    d:68,
+    e:69,
+    f:70,
+    g:71,
+    h:72,
+    i:73,
+    j:74,
+    k:75,
+    l:76,
+    m:77,
+    n:78,
+    o:79,
+    p:80,
+    q:81,
+    r:82,
+    s:83,
+    t:84,
+    u:85,
+    v:86,
+    w:87,
+    x:88,
+    y:89,
+    z:90,
+    SELECT:93,
+    NUMPAD0:96,
+    NUMPAD1:97,
+    NUMPAD2:98,
+    NUMPAD3:99,
+    NUMPAD4:100,
+    NUMPAD5:101,
+    NUMPAD6:102,
+    NUMPAD7:103,
+    NUMPAD8:104,
+    NUMPAD9:105,
+    MULTIPLY:106,
+    ADD:107,
+    SUBTRACT:109,
+    DECIMALPOINT:110,
+    DIVIDE:111,
+    F1:112,
+    F2:113,
+    F3:114,
+    F4:115,
+    F5:116,
+    F6:117,
+    F7:118,
+    F8:119,
+    F9:120,
+    F10:121,
+    F11:122,
+    F12:123,
+    NUMLOCK:144,
+    SCROLLLOCK:145,
+    SEMICOLON:186,
+    EQUALSIGN:187,
+    COMMA:188,
+    DASH:189,
+    PERIOD:190,
+    FORWARDSLASH:191,
+    GRAVEACCENT:192,
+    OPENBRACKET:219,
+    BACKSLASH:220,
+    CLOSEBRAKET:221,
+    SINGLEQUOTE:222
+};
+
 CAAT.SHIFT_KEY=    16;
 CAAT.CONTROL_KEY=  17;
 CAAT.ALT_KEY=      18;
@@ -9206,6 +9305,10 @@ CAAT.KeyEvent= function( keyCode, up_or_down, modifiers, originalEvent ) {
     this.action=  up_or_down;
     this.modifiers= modifiers;
     this.sourceEvent= originalEvent;
+
+    this.preventDefault= function() {
+        this.sourceEvent.preventDefault();
+    }
 
     this.getKeyCode= function() {
         return this.keyCode;
@@ -9251,8 +9354,6 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
         function(evt) {
             var key = (evt.which) ? evt.which : evt.keyCode;
 
-            evt.preventDefault();
-
             if ( key===CAAT.SHIFT_KEY ) {
                 CAAT.KEY_MODIFIERS.shift= true;
             } else if ( key===CAAT.CONTROL_KEY ) {
@@ -9277,8 +9378,6 @@ CAAT.GlobalEnableEvents= function __GlobalEnableEvents() {
 
     window.addEventListener('keyup',
         function(evt) {
-
-            evt.preventDefault();
 
             var key = (evt.which) ? evt.which : evt.keyCode;
             if ( key===CAAT.SHIFT_KEY ) {
@@ -9749,7 +9848,8 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 
             var ctx= director.ctx;
             ctx.save();
-            ctx.translate(((0.5 + x) | 0) + el.width, (0.5 + y) | 0);
+            //ctx.translate(((0.5 + x) | 0) + el.width, (0.5 + y) | 0);
+            ctx.translate( (x|0) + el.width, y|0 );
             ctx.scale(-1, 1);
 
 
@@ -9780,7 +9880,8 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 
             var ctx= director.ctx;
             ctx.save();
-            ctx.translate((x + 0.5) | 0, (0.5 + y + el.height) | 0);
+            //ctx.translate((x + 0.5) | 0, (0.5 + y + el.height) | 0);
+            ctx.translate( x|0, (y + el.height) | 0);
             ctx.scale(1, -1);
 
             ctx.drawImage(
@@ -9810,7 +9911,8 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 
             var ctx= director.ctx;
             ctx.save();
-            ctx.translate((x + 0.5) | 0, (0.5 + y + el.height) | 0);
+            //ctx.translate((x + 0.5) | 0, (0.5 + y + el.height) | 0);
+            ctx.translate( x | 0, (y + el.height) | 0);
             ctx.scale(1, -1);
             ctx.translate(el.width, 0);
             ctx.scale(-1, 1);
@@ -13648,7 +13750,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         /**
          * Enables/disables drawing of the contained path's bounding box.
          * @param show {boolean} whether to show the bounding box
-         * @param color {*string} optional parameter defining the path's bounding box stroke style.
+         * @param color {=string} optional parameter defining the path's bounding box stroke style.
          */
         showBoundingBox : function(show, color) {
             this.bOutline= show;

@@ -313,7 +313,8 @@
 
             var ctx= director.ctx;
             ctx.save();
-            ctx.translate(((0.5 + x) | 0) + el.width, (0.5 + y) | 0);
+            //ctx.translate(((0.5 + x) | 0) + el.width, (0.5 + y) | 0);
+            ctx.translate( (x|0) + el.width, y|0 );
             ctx.scale(-1, 1);
 
 
@@ -344,7 +345,8 @@
 
             var ctx= director.ctx;
             ctx.save();
-            ctx.translate((x + 0.5) | 0, (0.5 + y + el.height) | 0);
+            //ctx.translate((x + 0.5) | 0, (0.5 + y + el.height) | 0);
+            ctx.translate( x|0, (y + el.height) | 0);
             ctx.scale(1, -1);
 
             ctx.drawImage(
@@ -374,7 +376,8 @@
 
             var ctx= director.ctx;
             ctx.save();
-            ctx.translate((x + 0.5) | 0, (0.5 + y + el.height) | 0);
+            //ctx.translate((x + 0.5) | 0, (0.5 + y + el.height) | 0);
+            ctx.translate( x | 0, (y + el.height) | 0);
             ctx.scale(1, -1);
             ctx.translate(el.width, 0);
             ctx.scale(-1, 1);

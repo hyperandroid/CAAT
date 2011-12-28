@@ -1,3 +1,12 @@
+12/28/2011 *0.1 Build 422*
+--------------------------
+
+* deferred integer coordinate clamping to matrix's transformRenderingContextSet and transformRenderingContext methods.
+* disabled preventDefault on key events. Must be explicitly called by the developer otherwise, page reload, etc. could
+  be prevented.
+* added CAAT.Keys object with common key keyCodes.
+* added demo18 Keyboard management.
+
 12/26/2011 *0.1 Build 415*
 --------------------------
 

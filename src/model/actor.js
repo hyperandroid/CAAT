@@ -658,10 +658,17 @@
          * @return this
          */
 	    setBounds : function(x, y, w, h)  {
+            /*
             this.x= x|0;
             this.y= y|0;
             this.width= w|0;
             this.height= h|0;
+            */
+            this.x= x;
+            this.y= y;
+            this.width= w;
+            this.height= h;
+
             this.dirty= true;
 
             return this;
@@ -674,12 +681,17 @@
          * @return this
          */
 	    setLocation : function( x, y ) {
-
+/*
             this.x= x|0;
             this.y= y|0;
 
             this.oldX= x|0;
             this.oldY= y|0;
+*/
+            this.x= x;
+            this.y= y;
+            this.oldX= x;
+            this.oldY= y;
 
             this.dirty= true;
 
