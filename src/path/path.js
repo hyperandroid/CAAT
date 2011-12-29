@@ -1400,6 +1400,7 @@
                 this.pathSegments[i].endPath();
             }
 
+            this.extractPathPoints();
 
             return this;
 
@@ -1533,7 +1534,7 @@
          */
 		addBehavior : function( behavior )	{
 			this.behaviorList.push(behavior);
-            this.extractPathPoints();
+//            this.extractPathPoints();
             return this;
 		},
         /**
@@ -1572,7 +1573,7 @@
         },
 
         applyBehaviors : function(time) {
-            if (this.behaviorList.length) {
+//            if (this.behaviorList.length) {
                 for( var i=0; i<this.behaviorList.length; i++ )	{
                     this.behaviorList[i].apply(time,this);
                 }
@@ -1585,7 +1586,7 @@
                         this.matrix.transformCoord(
                             this.pathPoints[i].clone()), i);
                 }
-            }
+//            }
 
             return this;
         },

@@ -1123,9 +1123,9 @@
                 If we have a mask applied, apply behaviors as well.
              */
             if ( this.clipPath ) {
-                if ( this.clipPath.applyBehaviors ) {
+//                if ( this.clipPath.applyBehaviors ) {
                     this.clipPath.applyBehaviors(time);
-                }
+//                }
             }
 
             // transformation stuff.

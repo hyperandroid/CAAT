@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 422
+Version: 0.1 build: 429
 
 Created on:
-DATE: 2011-12-28
-TIME: 21:17:29
+DATE: 2011-12-29
+TIME: 16:44:00
 */
 
 
@@ -5788,9 +5788,9 @@ var cp1= proxy(
                 If we have a mask applied, apply behaviors as well.
              */
             if ( this.clipPath ) {
-                if ( this.clipPath.applyBehaviors ) {
+//                if ( this.clipPath.applyBehaviors ) {
                     this.clipPath.applyBehaviors(time);
-                }
+//                }
             }
 
             // transformation stuff.
@@ -14384,6 +14384,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 this.pathSegments[i].endPath();
             }
 
+            this.extractPathPoints();
 
             return this;
 
@@ -14517,7 +14518,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
          */
 		addBehavior : function( behavior )	{
 			this.behaviorList.push(behavior);
-            this.extractPathPoints();
+//            this.extractPathPoints();
             return this;
 		},
         /**
@@ -14556,7 +14557,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         },
 
         applyBehaviors : function(time) {
-            if (this.behaviorList.length) {
+//            if (this.behaviorList.length) {
                 for( var i=0; i<this.behaviorList.length; i++ )	{
                     this.behaviorList[i].apply(time,this);
                 }
@@ -14569,7 +14570,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                         this.matrix.transformCoord(
                             this.pathPoints[i].clone()), i);
                 }
-            }
+//            }
 
             return this;
         },

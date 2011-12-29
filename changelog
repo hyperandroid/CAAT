@@ -1,3 +1,9 @@
+12/29/2011 *0.1 Build 429*
+--------------------------
+
+* fixed the case in which a clipPath was not transformed properly unless it had a behavior applied. Thanks Rob Boerman
+  for spotting.
+
 12/28/2011 *0.1 Build 422*
 --------------------------
 
