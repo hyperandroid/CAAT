@@ -2268,7 +2268,6 @@
 
             if ( this.backgroundImage ) {   // cached
                 CAAT.TextActor.superclass.paint.call(this, director, time );
-                return ;
             }
 
 			if ( null===this.text) {
