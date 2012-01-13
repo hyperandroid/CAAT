@@ -50,7 +50,7 @@
 
     CAAT.Director.prototype = {
 
-        debug:              false,  // flag indicating debug mode. It will draw affedted screen areas.
+        debug:              false,  // flag indicating debug mode. It will draw affected screen areas.
 
         onRenderStart:      null,
         onRenderEnd:        null,

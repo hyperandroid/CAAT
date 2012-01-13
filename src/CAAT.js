@@ -8,7 +8,9 @@
 /**
  * @namespace
  */
-var CAAT= CAAT || {};
+var CAAT= CAAT || {
+	coordinateClampingEnabled: true	// flag indicating if actors coordinates are clamped to pixels.
+};
 
 /**
  * Common bind function. Allows to set an object's function as callback. Set for every function in the
