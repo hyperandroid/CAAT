@@ -21,8 +21,9 @@
         canvas: null,
         ctx:    null,
         statistics: null,
+        framerate: null,
 
-        SCALE:  50,
+        SCALE:  60,
 
         setScale : function(s) {
             this.scale= s;
@@ -32,6 +33,16 @@
         initialize: function(w,h) {
             this.width= w;
             this.height= h;
+
+            this.framerate = {
+                refreshInterval: CAAT.FPS_REFRESH || 500,   // refresh every ? ms, updating too quickly gives too large rounding errors
+                frames: 0,                                  // number offrames since last refresh
+                timeLastRefresh: 0,                         // When was the framerate counter refreshed last
+                fps: 0,                                     // current framerate
+                prevFps: -1,                                // previously drawn FPS
+                fpsMin: 1000,                               // minimum measured framerate
+                fpsMax: 0,                                  // maximum measured framerate
+            };
 
             this.canvas= document.createElement('canvas');
             this.canvas.width= w;
@@ -53,6 +64,18 @@
 
         debugInfo : function( statistics ) {
             this.statistics= statistics;
+
+            /* Update the framerate counter */
+            this.framerate.frames++;
+            if ( CAAT.RAF > this.framerate.timeLastRefresh + this.framerate.refreshInterval ) {
+                this.framerate.fps = Math.round( ( this.framerate.frames * 1000 ) / ( CAAT.RAF - this.framerate.timeLastRefresh ) );
+                this.framerate.fpsMin = this.framerate.frames > 0 ? Math.min( this.framerate.fpsMin, this.framerate.fps ) : this.framerate.fpsMin;
+                this.framerate.fpsMax = Math.max( this.framerate.fpsMax, this.framerate.fps );
+
+                this.framerate.timeLastRefresh = CAAT.RAF;
+                this.framerate.frames = 0;
+            }
+
             this.paint();
         },
 
@@ -87,11 +110,18 @@
             ctx.lineTo( this.width+.5, t );
             ctx.stroke();
 
-            ctx.strokeStyle= CAAT.FRAME_TIME<16 ? 'green' : CAAT.FRAME_TIME<25 ? 'yellow' : 'red';
+            var fps = this.height-(this.framerate.fps/this.SCALE*this.height);
+            if (-1===this.framerate.prevFps) {
+                this.framerate.prevFps= fps;
+            }
+
+            ctx.strokeStyle= 'red';//this.framerate.fps<15 ? 'red' : this.framerate.fps<30 ? 'yellow' : 'green';
             ctx.beginPath();
-            ctx.moveTo( this.width-.5, this.height );
-            ctx.lineTo( this.width-.5, this.height-(CAAT.FRAME_TIME*this.height/this.SCALE) );
+            ctx.moveTo( this.width, fps );
+            ctx.lineTo( this.width-.5, this.framerate.prevFps );
             ctx.stroke();
+
+            this.framerate.prevFps= fps;
 
             var t1= this.height-(CAAT.REQUEST_ANIMATION_FRAME_TIME/this.SCALE*this.height);
             if (-1===this.prevRAF)   {
@@ -100,19 +130,20 @@
 
             ctx.strokeStyle= 'rgba(255,0,255,.5)';
             ctx.beginPath();
-            ctx.moveTo( this.width-.5, t1 );
+            ctx.moveTo( this.width, t1 );
             ctx.lineTo( this.width-.5, this.prevRAF );
             ctx.stroke();
 
             this.prevRAF= t1;
 
             ctx.fillStyle='rgba(255,0,0,.75)';
-            ctx.fillRect( 0,0,180,15);
+            ctx.fillRect( 0,0,300,15);
             ctx.fillStyle='white';
             ctx.fillText(
                     '  Total: '+this.statistics.size_total+
                     '  Active: '+this.statistics.size_active+
-                    '  Draws: '+this.statistics.draws,
+                    '  Draws: '+this.statistics.draws+
+                    '  Framerate: '+this.framerate.fps+' (min:'+this.framerate.fpsMin+', max:'+this.framerate.fpsMax+')',
                     0,
                     12 );
         }
