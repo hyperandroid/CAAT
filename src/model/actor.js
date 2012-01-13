@@ -1707,17 +1707,16 @@
             var dmvm= director.modelViewMatrix;
 
             ctx.save();
-            dmvm.transformRenderingContextSet( ctx );
+//            dmvm.transformRenderingContextSet( ctx );
 
             CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
             if ( !this.isGlobalAlpha ) {
                 this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
             }
-//            ctx.restore();
 
             for( var actor= this.activeChildren; actor; actor=actor.__next ) {
-                dmvm.transformRenderingContextSet( ctx );
                 if ( actor.visible ) {
+                    dmvm.transformRenderingContextSet( ctx );
                     ctx.save();
                     actor.paintActor(director,time);
                     ctx.restore();

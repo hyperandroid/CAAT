@@ -5,6 +5,7 @@
   speeds things up on mobile. A call to this method must be performed previously to creating any CAAT.Matrix object,
   begin the beginning of your application the suitable place.
 * Added current scene time to mouseEvent.
+* Removed some unneeded consuming code.
 
 12/29/2011 *0.1 Build 429*
 --------------------------
