@@ -1,3 +1,11 @@
+01/13/2012 *0.1 Build 437*
+--------------------------
+
+* Added method CAAT.setCoordinateClamping( bool ) which controls the to-integer coordinate clamping procedure. This
+  speeds things up on mobile. A call to this method must be performed previously to creating any CAAT.Matrix object,
+  begin the beginning of your application the suitable place.
+* Added current scene time to mouseEvent.
+
 12/29/2011 *0.1 Build 429*
 --------------------------
 

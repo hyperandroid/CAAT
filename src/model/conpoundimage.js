@@ -163,7 +163,7 @@
          * @return this
          */
         setOffsetX : function(x) {
-            this.offsetX= x|0;
+            this.offsetX= x;
             return this;
         },
         /**
@@ -173,7 +173,7 @@
          * @return this
          */
         setOffsetY : function(y) {
-            this.offsetY= y|0;
+            this.offsetY= y;
             return this;
         },
         setOffset : function( x,y ) {

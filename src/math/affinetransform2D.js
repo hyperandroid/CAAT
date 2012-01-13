@@ -828,11 +828,36 @@
 
             return this;
         },
+
+        transformRenderingContextSet : null,
+
+        transformRenderingContext : null,
+
         /**
          *
          * @param ctx
          */
-        transformRenderingContextSet : function(ctx) {
+        transformRenderingContextSet_NoClamp : function(ctx) {
+            var m= this.matrix;
+            ctx.setTransform( m[0], m[3], m[1], m[4], m[2], m[5] );
+            return this;
+        },
+
+        /**
+         *
+         * @param ctx
+         */
+        transformRenderingContext_NoClamp : function(ctx) {
+            var m= this.matrix;
+            ctx.transform( m[0], m[3], m[1], m[4], m[2], m[5] );
+            return this;
+        },
+
+        /**
+         *
+         * @param ctx
+         */
+        transformRenderingContextSet_Clamp : function(ctx) {
             var m= this.matrix;
             ctx.setTransform( m[0], m[3], m[1], m[4], m[2]>>0, m[5]>>0 );
             return this;
@@ -842,13 +867,17 @@
          *
          * @param ctx
          */
-        transformRenderingContext : function(ctx) {
+        transformRenderingContext_Clamp : function(ctx) {
             var m= this.matrix;
             ctx.transform( m[0], m[3], m[1], m[4], m[2]>>0, m[5]>>0 );
             return this;
         }
 
 	};
+
+    CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
+    CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
+
 })();
 
 (function() {

@@ -1373,7 +1373,8 @@
                         pos.y,
                         e,
                         lactor,
-                        this.screenMousePoint));
+                        this.screenMousePoint,
+                        this.currentScene.time));
             }
 
             if (!this.dragging && null !== lactor) {
@@ -1384,7 +1385,8 @@
                             pos.y,
                             e,
                             lactor,
-                            this.screenMousePoint));
+                            this.screenMousePoint,
+                            this.currentScene.time));
                 }
             }
 
@@ -1429,7 +1431,8 @@
                             lactor,
                             new CAAT.Point(
                                 this.screenMousePoint.x,
-                                this.screenMousePoint.y)));
+                                this.screenMousePoint.y),
+                            this.currentScene.time));
 
                 this.prevMousePoint.x= pos.x;
                 this.prevMousePoint.y= pos.y;
@@ -1448,7 +1451,8 @@
                                 pos.y,
                                 e,
                                 lactor,
-                                this.screenMousePoint));
+                                this.screenMousePoint,
+                                this.currentScene.time));
                         this.in_ = false;
                     }
 
@@ -1459,7 +1463,8 @@
                                 pos.y,
                                 e,
                                 lactor,
-                                this.screenMousePoint));
+                                this.screenMousePoint,
+                                this.currentScene.time));
                         this.in_ = true;
                     }
                 }
@@ -1485,7 +1490,8 @@
                             pos.y,
                             e,
                             this.lastSelectedActor,
-                            this.screenMousePoint));
+                            this.screenMousePoint,
+                            this.currentScene.time));
                 }
 
                 if (null !== lactor) {
@@ -1498,7 +1504,8 @@
                             pos.y,
                             e,
                             lactor,
-                            this.screenMousePoint));
+                            this.screenMousePoint,
+                            this.currentScene.time));
                 }
             }
 
@@ -1513,7 +1520,8 @@
                         pos.y,
                         e,
                         lactor,
-                        this.screenMousePoint));
+                        this.screenMousePoint,
+                        this.currentScene.time));
             }
 
             this.lastSelectedActor = lactor;
@@ -1532,7 +1540,8 @@
                                 pos.y,
                                 e,
                                 this.lastSelectedActor,
-                                this.screenMousePoint);
+                                this.screenMousePoint,
+                                this.currentScene.time);
 
                 this.lastSelectedActor.mouseExit(ev);
                 this.lastSelectedActor.mouseOut(ev);
@@ -1566,7 +1575,8 @@
                             pos.y,
                             e,
                             lactor,
-                            this.screenMousePoint);
+                            this.screenMousePoint,
+                            this.currentScene.time);
 
                     lactor.mouseOver(ev);
                     lactor.mouseEnter(ev);
@@ -1583,7 +1593,8 @@
                         pos.y,
                         e,
                         lactor,
-                        this.screenMousePoint);
+                        this.screenMousePoint,
+                        this.currentScene.time);
 
                 lactor.mouseOver(ev);
                 lactor.mouseEnter(ev);
@@ -1605,7 +1616,8 @@
                             this.mousePoint.y,
                             e,
                             this.lastSelectedActor,
-                            this.screenMousePoint));
+                            this.screenMousePoint,
+                            this.currentScene.time));
             }
         },
 

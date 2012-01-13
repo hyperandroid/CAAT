@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 429
+Version: 0.1 build: 437
 
 Created on:
-DATE: 2011-12-29
-TIME: 16:44:00
+DATE: 2012-01-13
+TIME: 16:40:58
 */
 
 
@@ -1108,11 +1108,36 @@ var cp1= proxy(
 
             return this;
         },
+
+        transformRenderingContextSet : null,
+
+        transformRenderingContext : null,
+
         /**
          *
          * @param ctx
          */
-        transformRenderingContextSet : function(ctx) {
+        transformRenderingContextSet_NoClamp : function(ctx) {
+            var m= this.matrix;
+            ctx.setTransform( m[0], m[3], m[1], m[4], m[2], m[5] );
+            return this;
+        },
+
+        /**
+         *
+         * @param ctx
+         */
+        transformRenderingContext_NoClamp : function(ctx) {
+            var m= this.matrix;
+            ctx.transform( m[0], m[3], m[1], m[4], m[2], m[5] );
+            return this;
+        },
+
+        /**
+         *
+         * @param ctx
+         */
+        transformRenderingContextSet_Clamp : function(ctx) {
             var m= this.matrix;
             ctx.setTransform( m[0], m[3], m[1], m[4], m[2]>>0, m[5]>>0 );
             return this;
@@ -1122,13 +1147,17 @@ var cp1= proxy(
          *
          * @param ctx
          */
-        transformRenderingContext : function(ctx) {
+        transformRenderingContext_Clamp : function(ctx) {
             var m= this.matrix;
             ctx.transform( m[0], m[3], m[1], m[4], m[2]>>0, m[5]>>0 );
             return this;
         }
 
 	};
+
+    CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
+    CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
+
 })();
 
 (function() {
@@ -8559,7 +8588,8 @@ var cp1= proxy(
                         pos.y,
                         e,
                         lactor,
-                        this.screenMousePoint));
+                        this.screenMousePoint,
+                        this.currentScene.time));
             }
 
             if (!this.dragging && null !== lactor) {
@@ -8570,7 +8600,8 @@ var cp1= proxy(
                             pos.y,
                             e,
                             lactor,
-                            this.screenMousePoint));
+                            this.screenMousePoint,
+                            this.currentScene.time));
                 }
             }
 
@@ -8615,7 +8646,8 @@ var cp1= proxy(
                             lactor,
                             new CAAT.Point(
                                 this.screenMousePoint.x,
-                                this.screenMousePoint.y)));
+                                this.screenMousePoint.y),
+                            this.currentScene.time));
 
                 this.prevMousePoint.x= pos.x;
                 this.prevMousePoint.y= pos.y;
@@ -8634,7 +8666,8 @@ var cp1= proxy(
                                 pos.y,
                                 e,
                                 lactor,
-                                this.screenMousePoint));
+                                this.screenMousePoint,
+                                this.currentScene.time));
                         this.in_ = false;
                     }
 
@@ -8645,7 +8678,8 @@ var cp1= proxy(
                                 pos.y,
                                 e,
                                 lactor,
-                                this.screenMousePoint));
+                                this.screenMousePoint,
+                                this.currentScene.time));
                         this.in_ = true;
                     }
                 }
@@ -8671,7 +8705,8 @@ var cp1= proxy(
                             pos.y,
                             e,
                             this.lastSelectedActor,
-                            this.screenMousePoint));
+                            this.screenMousePoint,
+                            this.currentScene.time));
                 }
 
                 if (null !== lactor) {
@@ -8684,7 +8719,8 @@ var cp1= proxy(
                             pos.y,
                             e,
                             lactor,
-                            this.screenMousePoint));
+                            this.screenMousePoint,
+                            this.currentScene.time));
                 }
             }
 
@@ -8699,7 +8735,8 @@ var cp1= proxy(
                         pos.y,
                         e,
                         lactor,
-                        this.screenMousePoint));
+                        this.screenMousePoint,
+                        this.currentScene.time));
             }
 
             this.lastSelectedActor = lactor;
@@ -8718,7 +8755,8 @@ var cp1= proxy(
                                 pos.y,
                                 e,
                                 this.lastSelectedActor,
-                                this.screenMousePoint);
+                                this.screenMousePoint,
+                                this.currentScene.time);
 
                 this.lastSelectedActor.mouseExit(ev);
                 this.lastSelectedActor.mouseOut(ev);
@@ -8752,7 +8790,8 @@ var cp1= proxy(
                             pos.y,
                             e,
                             lactor,
-                            this.screenMousePoint);
+                            this.screenMousePoint,
+                            this.currentScene.time);
 
                     lactor.mouseOver(ev);
                     lactor.mouseEnter(ev);
@@ -8769,7 +8808,8 @@ var cp1= proxy(
                         pos.y,
                         e,
                         lactor,
-                        this.screenMousePoint);
+                        this.screenMousePoint,
+                        this.currentScene.time);
 
                 lactor.mouseOver(ev);
                 lactor.mouseEnter(ev);
@@ -8791,7 +8831,8 @@ var cp1= proxy(
                             this.mousePoint.y,
                             e,
                             this.lastSelectedActor,
-                            this.screenMousePoint));
+                            this.screenMousePoint,
+                            this.currentScene.time));
             }
         },
 
@@ -9062,7 +9103,7 @@ var cp1= proxy(
 
         sourceEvent:    null,
 
-		init : function( x,y,sourceEvent,source,screenPoint ) {
+		init : function( x,y,sourceEvent,source,screenPoint,time ) {
 			this.point.set(x,y);
 			this.source=        source;
 			this.screenPoint=   screenPoint;
@@ -9073,6 +9114,7 @@ var cp1= proxy(
             this.sourceEvent=   sourceEvent;
             this.x=             x;
             this.y=             y;
+            this.time=          time;
 			return this;
 		},
 		isAltDown : function() {
@@ -9092,6 +9134,16 @@ var cp1= proxy(
         }
 	};
 })();
+
+CAAT.setCoordinateClamping= function( clamp ) {
+    if ( clamp ) {
+        CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
+        CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
+    } else {
+        CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
+        CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
+    }
+};
 
 /**
  * Box2D point meter conversion ratio.
@@ -9147,7 +9199,7 @@ CAAT.windowResizeListeners= [];
 
 /**
  * Register an object as resize callback.
- * @param f {object{windowResized(width{number},height{number})}}
+ * @param f { function( windowResized(width{number},height{number})} ) }
  */
 CAAT.registerResizeListener= function(f) {
     CAAT.windowResizeListeners.push(f);
@@ -9698,7 +9750,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
          * @return this
          */
         setOffsetX : function(x) {
-            this.offsetX= x|0;
+            this.offsetX= x;
             return this;
         },
         /**
@@ -9708,7 +9760,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
          * @return this
          */
         setOffsetY : function(y) {
-            this.offsetY= y|0;
+            this.offsetY= y;
             return this;
         },
         setOffset : function( x,y ) {
