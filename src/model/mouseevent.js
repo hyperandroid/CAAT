@@ -37,7 +37,7 @@
 
         sourceEvent:    null,
 
-		init : function( x,y,sourceEvent,source,screenPoint ) {
+		init : function( x,y,sourceEvent,source,screenPoint,time ) {
 			this.point.set(x,y);
 			this.source=        source;
 			this.screenPoint=   screenPoint;
@@ -48,6 +48,7 @@
             this.sourceEvent=   sourceEvent;
             this.x=             x;
             this.y=             y;
+            this.time=          time;
 			return this;
 		},
 		isAltDown : function() {
@@ -67,6 +68,16 @@
         }
 	};
 })();
+
+CAAT.setCoordinateClamping= function( clamp ) {
+    if ( clamp ) {
+        CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
+        CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
+    } else {
+        CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
+        CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
+    }
+};
 
 /**
  * Box2D point meter conversion ratio.
@@ -122,7 +133,7 @@ CAAT.windowResizeListeners= [];
 
 /**
  * Register an object as resize callback.
- * @param f {object{windowResized(width{number},height{number})}}
+ * @param f { function( windowResized(width{number},height{number})} ) }
  */
 CAAT.registerResizeListener= function(f) {
     CAAT.windowResizeListeners.push(f);

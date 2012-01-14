@@ -56,6 +56,16 @@
 		return this;
 	};
 
+    CAAT.Actor.ANCHOR_CENTER=	    0;      // constant values to determine different affine transform
+    CAAT.Actor.ANCHOR_TOP=			1;      // anchors.
+    CAAT.Actor.ANCHOR_BOTTOM=		2;
+    CAAT.Actor.ANCHOR_LEFT=			3;
+    CAAT.Actor.ANCHOR_RIGHT=		4;
+    CAAT.Actor.ANCHOR_TOP_LEFT=		5;
+    CAAT.Actor.ANCHOR_TOP_RIGHT=	6;
+    CAAT.Actor.ANCHOR_BOTTOM_LEFT=	7;
+    CAAT.Actor.ANCHOR_BOTTOM_RIGHT=	8;
+    CAAT.Actor.ANCHOR_CUSTOM=       9;
 
 	CAAT.Actor.prototype= {
 
@@ -1697,17 +1707,16 @@
             var dmvm= director.modelViewMatrix;
 
             ctx.save();
-            dmvm.transformRenderingContextSet( ctx );
+//            dmvm.transformRenderingContextSet( ctx );
 
             CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
             if ( !this.isGlobalAlpha ) {
                 this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
             }
-//            ctx.restore();
 
             for( var actor= this.activeChildren; actor; actor=actor.__next ) {
-                dmvm.transformRenderingContextSet( ctx );
                 if ( actor.visible ) {
+                    dmvm.transformRenderingContextSet( ctx );
                     ctx.save();
                     actor.paintActor(director,time);
                     ctx.restore();

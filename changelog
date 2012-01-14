@@ -1,3 +1,15 @@
+01/13/2012 *0.1 Build 523*
+--------------------------
+
+* Added method CAAT.setCoordinateClamping( bool ) which controls the to-integer coordinate clamping procedure. This
+  speeds things up on mobile. A call to this method must be performed previously to creating any CAAT.Matrix object,
+  begin the beginning of your application the suitable place.
+* Added current scene time to mouseEvent.
+* Removed some unneeded consuming code.
+* Modified CAAT.Debug object to show more info. Added file documentation/debug/debug_template.html with the needed
+  html code for Debug info to be shown. By default, the performance canvas will take window.innerWidth width and it
+  won't resize its size.
+
 12/29/2011 *0.1 Build 429*
 --------------------------
 
