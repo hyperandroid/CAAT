@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 437
+Version: 0.1 build: 523
 
 Created on:
-DATE: 2012-01-13
-TIME: 16:40:58
+DATE: 2012-01-14
+TIME: 00:57:52
 */
 
 
@@ -4592,13 +4592,26 @@ var cp1= proxy(
 
     CAAT.Debug.prototype= {
 
-        width:  0,
-        height: 0,
-        canvas: null,
-        ctx:    null,
-        statistics: null,
+        width:              0,
+        height:             0,
+        canvas:             null,
+        ctx:                null,
+        statistics:         null,
+        framerate:          null,
+        textContainer:      null,
+        textFPS:            null,
+        textEntitiesTotal:  null,
+        textEntitiesActive: null,
+        textDraws:          null,
+        textDrawTime:       null,
+        textRAFTime:        null,
 
-        SCALE:  50,
+        frameTimeAcc :      0,
+        frameRAFAcc :       0,
+
+        canDebug:           false,
+
+        SCALE:  60,
 
         setScale : function(s) {
             this.scale= s;
@@ -4606,10 +4619,27 @@ var cp1= proxy(
         },
 
         initialize: function(w,h) {
+            w= window.innerWidth;
+
             this.width= w;
             this.height= h;
 
-            this.canvas= document.createElement('canvas');
+            this.framerate = {
+                refreshInterval: CAAT.FPS_REFRESH || 500,   // refresh every ? ms, updating too quickly gives too large rounding errors
+                frames: 0,                                  // number offrames since last refresh
+                timeLastRefresh: 0,                         // When was the framerate counter refreshed last
+                fps: 0,                                     // current framerate
+                prevFps: -1,                                // previously drawn FPS
+                fpsMin: 1000,                               // minimum measured framerate
+                fpsMax: 0                                   // maximum measured framerate
+            };
+
+            this.canvas= document.getElementById('caat-debug-canvas');
+            if ( null===this.canvas ) {
+                this.canDebug= false;
+                return;
+            }
+
             this.canvas.width= w;
             this.canvas.height=h;
             this.ctx= this.canvas.getContext('2d');
@@ -4617,24 +4647,57 @@ var cp1= proxy(
             this.ctx.fillStyle= 'black';
             this.ctx.fillRect(0,0,this.width,this.height);
 
-            var dom= document.getElementById('caat-debug');
-            if ( null===dom ) {
-                document.body.appendChild( this.canvas );
-            } else {
-                dom.appendChild( this.canvas );
-            }
+            this.textFPS= document.getElementById("textFPS");
+            this.textDrawTime= document.getElementById("textDrawTime");
+            this.textRAFTime= document.getElementById("textRAFTime");
+            this.textEntitiesTotal= document.getElementById("textEntitiesTotal");
+            this.textEntitiesActive= document.getElementById("textEntitiesActive");
+            this.textDraws= document.getElementById("textDraws");
+
+            this.canDebug= true;
 
             return this;
         },
 
         debugInfo : function( statistics ) {
+            if (!this.canDebug ) {
+                return;
+            }
+
             this.statistics= statistics;
-            this.paint();
+
+            this.frameTimeAcc+= CAAT.FRAME_TIME;
+            this.frameRAFAcc+= CAAT.REQUEST_ANIMATION_FRAME_TIME;
+
+            /* Update the framerate counter */
+            this.framerate.frames++;
+            if ( CAAT.RAF > this.framerate.timeLastRefresh + this.framerate.refreshInterval ) {
+                this.framerate.fps = ( ( this.framerate.frames * 1000 ) / ( CAAT.RAF - this.framerate.timeLastRefresh ) ) | 0;
+                this.framerate.fpsMin = this.framerate.frames > 0 ? Math.min( this.framerate.fpsMin, this.framerate.fps ) : this.framerate.fpsMin;
+                this.framerate.fpsMax = Math.max( this.framerate.fpsMax, this.framerate.fps );
+
+                this.textFPS.innerHTML= this.framerate.fps;
+
+                var value= ((this.frameTimeAcc*100/this.framerate.frames)|0)/100;
+                this.frameTimeAcc=0;
+                this.textDrawTime.innerHTML= value;
+
+                var value2= ((this.frameRAFAcc*100/this.framerate.frames)|0)/100;
+                this.frameRAFAcc=0;
+                this.textRAFTime.innerHTML= value2;
+
+                this.framerate.timeLastRefresh = CAAT.RAF;
+                this.framerate.frames = 0;
+
+                this.paint(value2);
+            }
+
+            this.textEntitiesTotal.innerHTML= this.statistics.size_total;
+            this.textEntitiesActive.innerHTML= this.statistics.size_active;
+            this.textDraws.innerHTML= this.statistics.draws;
         },
 
-        prevRAF: -1,
-
-        paint : function() {
+        paint : function( rafValue ) {
             var ctx= this.ctx;
             var t=0;
 
@@ -4649,48 +4712,40 @@ var cp1= proxy(
             ctx.lineTo( this.width-.5, this.height );
             ctx.stroke();
 
-            ctx.strokeStyle= 'rgba(0,255,0,.8)';
+            ctx.strokeStyle= '#a22';
             ctx.beginPath();
-            t= this.height-((15/this.SCALE*this.height)>>0)-.5;
+            t= this.height-((20/this.SCALE*this.height)>>0)-.5;
             ctx.moveTo( .5, t );
             ctx.lineTo( this.width+.5, t );
             ctx.stroke();
 
-            ctx.strokeStyle= 'rgba(255,255,0,.8)';
+            ctx.strokeStyle= '#aa2';
             ctx.beginPath();
-            t= this.height-((25/this.SCALE*this.height)>>0)-.5;
+            t= this.height-((30/this.SCALE*this.height)>>0)-.5;
             ctx.moveTo( .5, t );
             ctx.lineTo( this.width+.5, t );
             ctx.stroke();
 
-            ctx.strokeStyle= CAAT.FRAME_TIME<16 ? 'green' : CAAT.FRAME_TIME<25 ? 'yellow' : 'red';
-            ctx.beginPath();
-            ctx.moveTo( this.width-.5, this.height );
-            ctx.lineTo( this.width-.5, this.height-(CAAT.FRAME_TIME*this.height/this.SCALE) );
-            ctx.stroke();
-
-            var t1= this.height-(CAAT.REQUEST_ANIMATION_FRAME_TIME/this.SCALE*this.height);
-            if (-1===this.prevRAF)   {
-                this.prevRAF= t1;
+            var fps = Math.min( this.height-(this.framerate.fps/this.SCALE*this.height), 60 );
+            if (-1===this.framerate.prevFps) {
+                this.framerate.prevFps= fps|0;
             }
 
-            ctx.strokeStyle= 'rgba(255,0,255,.5)';
+            ctx.strokeStyle= '#0ff';//this.framerate.fps<15 ? 'red' : this.framerate.fps<30 ? 'yellow' : 'green';
             ctx.beginPath();
-            ctx.moveTo( this.width-.5, t1 );
-            ctx.lineTo( this.width-.5, this.prevRAF );
+            ctx.moveTo( this.width, (fps|0)-.5 );
+            ctx.lineTo( this.width, this.framerate.prevFps-.5 );
             ctx.stroke();
 
-            this.prevRAF= t1;
+            this.framerate.prevFps= fps;
 
-            ctx.fillStyle='rgba(255,0,0,.75)';
-            ctx.fillRect( 0,0,180,15);
-            ctx.fillStyle='white';
-            ctx.fillText(
-                    '  Total: '+this.statistics.size_total+
-                    '  Active: '+this.statistics.size_active+
-                    '  Draws: '+this.statistics.draws,
-                    0,
-                    12 );
+
+            var t1= ((this.height-(rafValue/this.SCALE*this.height))>>0)-.5;
+            ctx.strokeStyle= '#ff0';
+            ctx.beginPath();
+            ctx.moveTo( this.width, t1 );
+            ctx.lineTo( this.width, t1 );
+            ctx.stroke();
         }
     };
 })();/**

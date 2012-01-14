@@ -1,0 +1,97 @@
+<!DOCTYPE HTML5>
+<html>
+<head>
+
+    <style type="text/css">
+
+        .caat_debug_bullet {
+            display:inline-block;
+            background-color:#f00;
+            width:6px;
+            height:10px;
+            margin-left:4px;
+            margin-right:4px;
+        }
+
+        .caat_debug_description {
+            font-size:11px;
+            font-family: helvetica, arial;
+            color: #aaa;
+            display: inline-block;
+        }
+
+        .caat_debug_value {
+            font-size:11px;
+            font-family: helvetica, arial;
+            color: #fff;
+            width:25px;
+            text-align: right;
+            display: inline-block;
+            margin-right: .3em;
+        }
+
+        .caat_debug_menu {
+
+            font-family: helvetica, arial;
+            font-size: 12px;
+            font-weight: bold;
+            color: #888;
+            border: 1px solid #888;
+            padding: 2px;
+            float: left;
+        }
+    </style>
+
+    <title>Sample debug CAAT template</title>
+
+</head>
+<body bgcolor="#000" style="margin:0; padding:0;" >
+
+    <div id="caat-debug" style="position:fixed; bottom:0; left:0; width:100%;">
+        <div style="width:100%;">
+            <div class="caat_debug_menu">CAAT Performance</div>
+        </div>
+
+        <div id="caat-debug-performance">
+            <canvas id="caat-debug-canvas" height="60"></canvas>
+
+            <div>
+                <span>
+                    <span class="caat_debug_bullet" style="background-color:#f00;"></span>
+                    <span class="caat_debug_description">FPS: </span>
+                    <span class="caat_debug_value" id="textFPS">48</span>
+                </span>
+                <span>
+                    <span class="caat_debug_bullet" style="background-color:#0f0;"></span>
+                    <span class="caat_debug_description">Draw Time: </span>
+                    <span class="caat_debug_value" id="textDrawTime">5.46</span>
+                    <span class="caat_debug_description">ms.</span>
+                </span>
+                <span>
+                    <span class="caat_debug_bullet" style="background-color:#0f0;"></span>
+                    <span class="caat_debug_description">RAF Time:</span>
+                    <span class="caat_debug_value" id="textRAFTime">20.76</span>
+                    <span class="caat_debug_description">ms.</span>
+                </span>
+                <span>
+                    <span class="caat_debug_bullet" style="background-color:#0ff;"></span>
+                    <span class="caat_debug_description">Entities Total: </span>
+                    <span class="caat_debug_value" id="textEntitiesTotal">41</span>
+                </span>
+                <span>
+                    <span class="caat_debug_bullet" style="background-color:#0ff;"></span>
+                    <span class="caat_debug_description">Entities Active: </span>
+                    <span class="caat_debug_value" id="textEntitiesActive">37</span>
+                </span>
+                <span>
+                    <span class="caat_debug_bullet" style="background-color:#00f;"></span>
+                    <span class="caat_debug_description">Draws: </span>
+                    <span class="caat_debug_value" id="textDraws">0</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+
+</body>
+</html>

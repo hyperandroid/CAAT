@@ -116,7 +116,7 @@
 
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
-                var dd= new CAAT.Debug().initialize( this.width, 100 );
+                var dd= new CAAT.Debug().initialize( this.width, 60 );
                 this.debugInfo= dd.debugInfo.bind(dd);
             }
         },
