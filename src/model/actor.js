@@ -1094,7 +1094,7 @@
         drawScreenBoundingBox : function( director, time ) {
             if ( null!==this.AABB && this.inFrame ) {
                 var s= this.AABB;
-                director.ctx.strokeRect( s.x, s.y, s.width, s.height );
+                director.ctx.strokeRect( s.x|0, s.y|0, s.width|0, s.height|0 );
             }
         },
         /**

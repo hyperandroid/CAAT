@@ -402,8 +402,8 @@
          * <code>director.addImage(id,image,true)</code> to finally command the director to create texture pages.
          *
          * @param id {string|object} an identitifier to retrieve the image with
-         * @param image {Image|Canvas} image to add to cache
-         * @param noUpdateGL {*boolean} unless otherwise stated, the director will
+         * @param image {Image|HTMLCanvasElement} image to add to cache
+         * @param noUpdateGL {!boolean} unless otherwise stated, the director will
          *  try to recreate the texture pages.
          */
         addImage : function( id, image, noUpdateGL ) {
@@ -520,7 +520,7 @@
              * draw director active scenes.
              */
             var ne = this.childrenList.length;
-            var i, tt;
+            var i, tt, c;
             if (this.glEnabled) {
 
                 this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -528,7 +528,7 @@
                 this.uvIndex = 0;
 
                 for (i = 0; i < ne; i++) {
-                    var c = this.childrenList[i];
+                    c = this.childrenList[i];
                     if (c.isInAnimationFrame(this.time)) {
                         tt = c.time - c.start_time;
                         if ( c.onRenderStart ) {
@@ -562,7 +562,7 @@
                 }
 
                 for (i = 0; i < ne; i++) {
-                    var c= this.childrenList[i];
+                    c= this.childrenList[i];
 
                     if (c.isInAnimationFrame(this.time)) {
                         tt = c.time - c.start_time;
@@ -576,6 +576,7 @@
                             c.onRenderEnd(tt);
                         }
                         this.ctx.restore();
+
                         if (CAAT.DEBUGBB) {
                             this.ctx.strokeStyle = CAAT.DEBUGBBCOLOR;
                             c.drawScreenBoundingBox(this, tt);
@@ -1559,7 +1560,7 @@
         __mouseOverHandler : function(e) {
 
             var lactor;
-            var pos;
+            var pos, ev;
             this.getCanvasCoord(this.mousePoint, e);
 
             if ( null==this.lastSelectedActor ) {
@@ -1570,7 +1571,7 @@
                     pos = lactor.viewToModel(
                         new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
 
-                    var ev= new CAAT.MouseEvent().init(
+                    ev= new CAAT.MouseEvent().init(
                             pos.x,
                             pos.y,
                             e,
@@ -1584,11 +1585,11 @@
 
                 this.lastSelectedActor= lactor;
             } else {
-                var lactor= this.lastSelectedActor;
+                lactor= this.lastSelectedActor;
                 pos = lactor.viewToModel(
                     new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
 
-                var ev= new CAAT.MouseEvent().init(
+                ev= new CAAT.MouseEvent().init(
                         pos.x,
                         pos.y,
                         e,
@@ -1606,10 +1607,10 @@
 
             this.getCanvasCoord(this.mousePoint, e);
             if (null !== this.lastSelectedActor) {
-
+/*
                 var pos = this.lastSelectedActor.viewToModel(
                     new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
-
+*/
                 this.lastSelectedActor.mouseDblClick(
                     new CAAT.MouseEvent().init(
                             this.mousePoint.x,
