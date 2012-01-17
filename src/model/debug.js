@@ -289,6 +289,7 @@
                     "            CAAT.director[0].setMusicEnabled(bool);"+
                     "        } );"+
                     "        initCheck( \"control-aabb\", CAAT.DEBUGBB, function(e,bool) {"+
+                    "            CAAT.director[0].currentScene.dirty= true;"+
                     "            CAAT.DEBUGBB= bool;"+
                     "        } );"+
                     "        setupTabs();" );
@@ -305,7 +306,7 @@
             this.canvas.height=h;
             this.ctx= this.canvas.getContext('2d');
 
-            this.ctx.fillStyle= 'rgba(0,0,0,0.5)';
+            this.ctx.fillStyle= '#000';
             this.ctx.fillRect(0,0,this.width,this.height);
 
             this.textFPS= document.getElementById("textFPS");

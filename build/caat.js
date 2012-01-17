@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 555
+Version: 0.1 build: 560
 
 Created on:
 DATE: 2012-01-17
-TIME: 00:52:19
+TIME: 00:59:46
 */
 
 
@@ -4864,6 +4864,7 @@ var cp1= proxy(
                     "            CAAT.director[0].setMusicEnabled(bool);"+
                     "        } );"+
                     "        initCheck( \"control-aabb\", CAAT.DEBUGBB, function(e,bool) {"+
+                    "            CAAT.director[0].currentScene.dirty= true;"+
                     "            CAAT.DEBUGBB= bool;"+
                     "        } );"+
                     "        setupTabs();" );
@@ -4880,7 +4881,7 @@ var cp1= proxy(
             this.canvas.height=h;
             this.ctx= this.canvas.getContext('2d');
 
-            this.ctx.fillStyle= 'rgba(0,0,0,0.5)';
+            this.ctx.fillStyle= '#000';
             this.ctx.fillRect(0,0,this.width,this.height);
 
             this.textFPS= document.getElementById("textFPS");

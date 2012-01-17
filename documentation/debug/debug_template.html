@@ -254,6 +254,7 @@
         } );
         initCheck( "control-aabb", CAAT.DEBUGBB, function(e,bool) {
             CAAT.DEBUGBB= bool;
+            CAAT.director[0].currentScene.dirty= true;
         } );
 
         setupTabs();
