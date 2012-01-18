@@ -88,8 +88,10 @@ CAAT.PMR= 64;
  * Allow visual debugging artifacts.
  */
 CAAT.DEBUG= false;
-CAAT.DEBUGBB= false;    // debug bounding boxes.
-CAAT.DEBUGBBCOLOR='red';
+CAAT.DEBUGBB= false;
+CAAT.DEBUGBBBCOLOR='#00f';
+CAAT.DEBUGAABB= false;    // debug bounding boxes.
+CAAT.DEBUGAABBCOLOR='#f00';
 
 /**
  * Log function which deals with window's Console object.

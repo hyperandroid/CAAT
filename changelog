@@ -1,8 +1,15 @@
+01/18/2012 *0.1 Build 607*
+--------------------------
+
+* Enabled iOS rotate/scale gestures.
+* Corrected a bug which prevented drag-enabled actors to be dragged with gestures.
+* Added setGestureEnabled and isGestureEnabled methods to allow iOS gestures zoom/rotate.
+* Added bounding box and differentiated it from AA bounding box.
+
 01/16/2012 *0.1 Build 555*
 --------------------------
 
 * Improved debug panel.
-
 
 01/13/2012 *0.1 Build 523*
 --------------------------

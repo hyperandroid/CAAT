@@ -127,6 +127,8 @@
 
             var cc= new CAAT.ActorContainer().
                 setBounds( 0,0,director.width,director.height );
+            cc.setGestureEnabled(true);
+
             scene.addChild(cc);
 
             var coords= new CAAT.TextActor().
@@ -187,6 +189,8 @@
                     setRotation( Math.PI*2*Math.random() ).
                     setScale( sc, sc ).
                     setFillStyle('#ff3fff');
+
+                p.setGestureEnabled(true);
 
                 p.mouseEnter= function(ev) {
                     this.pointed= true;

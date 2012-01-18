@@ -151,7 +151,7 @@
             "    <div id=\"caat-debug\">"+
             "        <div id=\"debug_tabs\">"+
             "            <span class=\"tab_max_min\" onCLick=\"javascript: var debug = document.getElementById('debug_tabs_content');if (debug.className === 'debug_tabs_content_visible') {debug.className = 'debug_tabs_content_hidden'} else {debug.className = 'debug_tabs_content_visible'}\"> CAAT Debug panel </span>"+
-            "            <span id=\"caat-debug-tab0\" class=\"debug_tab debug_tab_selected\">CAAT Performance</span>"+
+            "            <span id=\"caat-debug-tab0\" class=\"debug_tab debug_tab_selected\">Performance</span>"+
             "            <span id=\"caat-debug-tab1\" class=\"debug_tab debug_tab_not_selected\">Controls</span>"+
             "            <span class=\"caat_debug_indicator\">"+
             "                <span class=\"caat_debug_bullet\" style=\"background-color:#0f0;\"></span>"+
@@ -204,6 +204,10 @@
             "                    </div>"+
             "                    <div>"+
             "                        <span id=\"control-aabb\"></span>"+
+            "                        <span class=\"checkbox_description\">AA Bounding Boxes</span>"+
+            "                    </div>"+
+            "                    <div>"+
+            "                        <span id=\"control-bb\"></span>"+
             "                        <span class=\"checkbox_description\">Bounding Boxes</span>"+
             "                    </div>"+
             "                </div>"+
@@ -288,7 +292,11 @@
                     "        initCheck( \"control-music\", CAAT.director[0].isMusicEnabled(), function(e, bool) {"+
                     "            CAAT.director[0].setMusicEnabled(bool);"+
                     "        } );"+
-                    "        initCheck( \"control-aabb\", CAAT.DEBUGBB, function(e,bool) {"+
+                    "        initCheck( \"control-aabb\", CAAT.DEBUGAABB, function(e,bool) {"+
+                    "            CAAT.director[0].currentScene.dirty= true;"+
+                    "            CAAT.DEBUGAABB= bool;"+
+                    "        } );"+
+                    "        initCheck( \"control-bb\", CAAT.DEBUGBB, function(e,bool) {"+
                     "            CAAT.director[0].currentScene.dirty= true;"+
                     "            CAAT.DEBUGBB= bool;"+
                     "        } );"+

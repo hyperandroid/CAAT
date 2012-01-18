@@ -140,6 +140,16 @@
 
         __next:                 null,
 
+        __d_ax:                 -1,     // for drag-enabled actors.
+        __d_ay:                 -1,
+        gestureEnabled:         false,
+
+        setGestureEnabled : function( enable ) {
+            this.gestureEnabled= !!enable;
+        },
+        isGestureEnabled : function() {
+            return this.gestureEnabled;
+        },
         getId : function()  {
             return this.id;
         },
@@ -918,6 +928,8 @@
          */
 	    enableDrag : function() {
 
+            var me= this;
+
 			this.ax= 0;
 			this.ay= 0;
 			this.mx= 0;
@@ -1094,7 +1106,20 @@
         drawScreenBoundingBox : function( director, time ) {
             if ( null!==this.AABB && this.inFrame ) {
                 var s= this.AABB;
-                director.ctx.strokeRect( s.x|0, s.y|0, s.width|0, s.height|0 );
+                var ctx= director.ctx;
+                ctx.strokeStyle= CAAT.DEBUGAABBCOLOR;
+                ctx.strokeRect( .5+(s.x|0), .5+(s.y|0), s.width|0, s.height|0 );
+                if ( CAAT.DEBUGBB ) {
+                    var vv= this.viewVertices;
+                    ctx.beginPath(  );
+                    ctx.lineTo( vv[0].x, vv[0].y );
+                    ctx.lineTo( vv[1].x, vv[1].y );
+                    ctx.lineTo( vv[2].x, vv[2].y );
+                    ctx.lineTo( vv[3].x, vv[3].y );
+                    ctx.closePath();
+                    ctx.strokeStyle= CAAT.DEBUGBBCOLOR;
+                    ctx.stroke();
+                }
             }
         },
         /**
@@ -1249,7 +1274,7 @@
                 this.worldModelViewMatrix.identity();
             }
 
-            if ( (CAAT.DEBUGBB || glEnabled) && (this.dirty || this.wdirty) ) {
+            if ( (CAAT.DEBUGAABB || glEnabled) && (this.dirty || this.wdirty) ) {
                 this.setScreenBounds();
             }
             this.dirty= false;
