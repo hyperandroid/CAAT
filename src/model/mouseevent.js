@@ -448,8 +448,8 @@ CAAT.loop= function(fps) {
     }
 }
 
-
-CAAT.RAF=                       0;    // requestAnimationFrame time reference.
+CAAT.FPS_REFRESH= 500;  // debug panel update time.
+CAAT.RAF= 0;            // requestAnimationFrame time reference.
 CAAT.REQUEST_ANIMATION_FRAME_TIME=   0;
 /**
  * Make a frame for each director instance present in the system.
