@@ -159,7 +159,7 @@ CAAT.modules.splash.ShowDefaultSplash= function( width, height, runHere, minTime
                      */
                     new CAAT.ImagePreloader().loadImages(
                             imagesURL,
-                            splashScene.loadedImage(counter, images)
+                            splashScene.loadedImage
                     );
                 } else {
                     splashScene.loadedImage(0,null);
