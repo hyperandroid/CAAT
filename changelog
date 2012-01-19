@@ -1,3 +1,9 @@
+01/19/2012 *0.1 Build 610*
+--------------------------
+
+* Fixed a but which prevented scaled directors to properly show bounding boxes.
+* Merged fix for template with splash screen.
+
 01/18/2012 *0.1 Build 607*
 --------------------------
 

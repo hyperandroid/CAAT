@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 607
+Version: 0.1 build: 611
 
 Created on:
-DATE: 2012-01-18
-TIME: 23:17:20
+DATE: 2012-01-19
+TIME: 22:26:20
 */
 
 
@@ -8095,6 +8095,7 @@ var cp1= proxy(
                         if (CAAT.DEBUGAABB) {
                             this.ctx.globalAlpha= 1;
                             this.ctx.globalCompositeOperation= 'source-over';
+                            this.modelViewMatrix.transformRenderingContextSet( this.ctx );
                             c.drawScreenBoundingBox(this, tt);
                         }
 

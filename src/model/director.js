@@ -583,6 +583,7 @@
                         if (CAAT.DEBUGAABB) {
                             this.ctx.globalAlpha= 1;
                             this.ctx.globalCompositeOperation= 'source-over';
+                            this.modelViewMatrix.transformRenderingContextSet( this.ctx );
                             c.drawScreenBoundingBox(this, tt);
                         }
 
