@@ -37,22 +37,22 @@ CAAT.modules.splash.createSplashScene= function (director, showTime, sceneCreati
     var time=           new Date().getTime();
 
     scene.addChild(
-            new CAAT.ImageActor().
-                setImage(
+            new CAAT.Actor().
+                setBackgroundImage(
                     director.getImage('splash'))
             );
 
     scene.addChild(
-            ladingActor= new CAAT.ImageActor().
-                setImage(ladingImg).
+            ladingActor= new CAAT.Actor().
+                setBackgroundImage(ladingImg).
                 setLocation(
                     director.width-ladingImg.width-10,
                     director.height-ladingImg.height-30 )
             );
 
     scene.addChild(
-            oActor= new CAAT.ImageActor().
-                setImage(oImg).
+            oActor= new CAAT.Actor().
+                setBackgroundImage(oImg).
                 setLocation( ladingActor.x+20, ladingActor.y+10 ).
                 addBehavior(
                     new CAAT.RotateBehavior().
