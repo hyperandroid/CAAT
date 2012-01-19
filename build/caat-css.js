@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 560
+Version: 0.1 build: 607
 
 Created on:
-DATE: 2012-01-17
-TIME: 00:59:47
+DATE: 2012-01-18
+TIME: 23:17:20
 */
 
 
@@ -4727,7 +4727,7 @@ var cp1= proxy(
             "    <div id=\"caat-debug\">"+
             "        <div id=\"debug_tabs\">"+
             "            <span class=\"tab_max_min\" onCLick=\"javascript: var debug = document.getElementById('debug_tabs_content');if (debug.className === 'debug_tabs_content_visible') {debug.className = 'debug_tabs_content_hidden'} else {debug.className = 'debug_tabs_content_visible'}\"> CAAT Debug panel </span>"+
-            "            <span id=\"caat-debug-tab0\" class=\"debug_tab debug_tab_selected\">CAAT Performance</span>"+
+            "            <span id=\"caat-debug-tab0\" class=\"debug_tab debug_tab_selected\">Performance</span>"+
             "            <span id=\"caat-debug-tab1\" class=\"debug_tab debug_tab_not_selected\">Controls</span>"+
             "            <span class=\"caat_debug_indicator\">"+
             "                <span class=\"caat_debug_bullet\" style=\"background-color:#0f0;\"></span>"+
@@ -4780,6 +4780,10 @@ var cp1= proxy(
             "                    </div>"+
             "                    <div>"+
             "                        <span id=\"control-aabb\"></span>"+
+            "                        <span class=\"checkbox_description\">AA Bounding Boxes</span>"+
+            "                    </div>"+
+            "                    <div>"+
+            "                        <span id=\"control-bb\"></span>"+
             "                        <span class=\"checkbox_description\">Bounding Boxes</span>"+
             "                    </div>"+
             "                </div>"+
@@ -4864,7 +4868,11 @@ var cp1= proxy(
                     "        initCheck( \"control-music\", CAAT.director[0].isMusicEnabled(), function(e, bool) {"+
                     "            CAAT.director[0].setMusicEnabled(bool);"+
                     "        } );"+
-                    "        initCheck( \"control-aabb\", CAAT.DEBUGBB, function(e,bool) {"+
+                    "        initCheck( \"control-aabb\", CAAT.DEBUGAABB, function(e,bool) {"+
+                    "            CAAT.director[0].currentScene.dirty= true;"+
+                    "            CAAT.DEBUGAABB= bool;"+
+                    "        } );"+
+                    "        initCheck( \"control-bb\", CAAT.DEBUGBB, function(e,bool) {"+
                     "            CAAT.director[0].currentScene.dirty= true;"+
                     "            CAAT.DEBUGBB= bool;"+
                     "        } );"+
@@ -7618,6 +7626,9 @@ var cp1= proxy(
         resize:             1,
         onResizeCallback:   null,
 
+        __gestureScale :    0,
+        __gestureRotation : 0,
+
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
                 var dd= new CAAT.Debug().initialize( this.width, 60 );
@@ -8081,8 +8092,9 @@ var cp1= proxy(
                         }
                         this.ctx.restore();
 
-                        if (CAAT.DEBUGBB) {
-                            this.ctx.strokeStyle = CAAT.DEBUGBBCOLOR;
+                        if (CAAT.DEBUGAABB) {
+                            this.ctx.globalAlpha= 1;
+                            this.ctx.globalCompositeOperation= 'source-over';
                             c.drawScreenBoundingBox(this, tt);
                         }
 
@@ -9149,11 +9161,43 @@ var cp1= proxy(
 
             e.preventDefault();
 
+            if ( this.gesturing ) {
+                return;
+            }
+
             for( var i=0; i<e.targetTouches.length; i++ ) {
                 if ( !i ) {
                     this.__mouseMoveHandler(e.targetTouches[i]);
                 }
             }
+        },
+
+        __gestureStart : function( scale, rotation ) {
+            this.gesturing= true;
+            this.__gestureRotation= this.lastSelectedActor.rotationAngle;
+            this.__gestureSX= this.lastSelectedActor.scaleX - 1;
+            this.__gestureSY= this.lastSelectedActor.scaleY - 1;
+        },
+
+        __gestureChange : function( scale, rotation ) {
+            if ( typeof scale==='undefined' || typeof rotation==='undefined' ) {
+                return;
+            }
+
+            if ( this.lastSelectedActor!==null && this.lastSelectedActor.isGestureEnabled() ) {
+                this.lastSelectedActor.setRotation( rotation*Math.PI/180 + this.__gestureRotation );
+
+                this.lastSelectedActor.setScale(
+                    this.__gestureSX + scale,
+                    this.__gestureSY + scale );
+            }
+
+        },
+
+        __gestureEnd : function( scale, rotation ) {
+            this.gesturing= false;
+            this.__gestureRotation= 0;
+            this.__gestureScale= 0;
         },
 
         addHandlers: function(canvas) {
@@ -9197,9 +9241,15 @@ var cp1= proxy(
             canvas.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
             canvas.addEventListener("gesturestart", function(e) {
                 e.preventDefault();
+                me.__gestureStart( e.scale, e.rotation );
+            }, false );
+            canvas.addEventListener("gestureend", function(e) {
+                e.preventDefault();
+                me.__gestureEnd( e.scale, e.rotation );
             }, false );
             canvas.addEventListener("gesturechange", function(e) {
                 e.preventDefault();
+                me.__gestureChange( e.scale, e.rotation );
             }, false );
         },
 
@@ -9444,8 +9494,10 @@ CAAT.PMR= 64;
  * Allow visual debugging artifacts.
  */
 CAAT.DEBUG= false;
-CAAT.DEBUGBB= false;    // debug bounding boxes.
-CAAT.DEBUGBBCOLOR='red';
+CAAT.DEBUGBB= false;
+CAAT.DEBUGBBBCOLOR='#00f';
+CAAT.DEBUGAABB= false;    // debug bounding boxes.
+CAAT.DEBUGAABBCOLOR='#f00';
 
 /**
  * Log function which deals with window's Console object.

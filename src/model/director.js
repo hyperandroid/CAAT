@@ -114,6 +114,9 @@
         resize:             1,
         onResizeCallback:   null,
 
+        __gestureScale :    0,
+        __gestureRotation : 0,
+
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
                 var dd= new CAAT.Debug().initialize( this.width, 60 );
@@ -577,8 +580,9 @@
                         }
                         this.ctx.restore();
 
-                        if (CAAT.DEBUGBB) {
-                            this.ctx.strokeStyle = CAAT.DEBUGBBCOLOR;
+                        if (CAAT.DEBUGAABB) {
+                            this.ctx.globalAlpha= 1;
+                            this.ctx.globalCompositeOperation= 'source-over';
                             c.drawScreenBoundingBox(this, tt);
                         }
 
@@ -1645,11 +1649,43 @@
 
             e.preventDefault();
 
+            if ( this.gesturing ) {
+                return;
+            }
+
             for( var i=0; i<e.targetTouches.length; i++ ) {
                 if ( !i ) {
                     this.__mouseMoveHandler(e.targetTouches[i]);
                 }
             }
+        },
+
+        __gestureStart : function( scale, rotation ) {
+            this.gesturing= true;
+            this.__gestureRotation= this.lastSelectedActor.rotationAngle;
+            this.__gestureSX= this.lastSelectedActor.scaleX - 1;
+            this.__gestureSY= this.lastSelectedActor.scaleY - 1;
+        },
+
+        __gestureChange : function( scale, rotation ) {
+            if ( typeof scale==='undefined' || typeof rotation==='undefined' ) {
+                return;
+            }
+
+            if ( this.lastSelectedActor!==null && this.lastSelectedActor.isGestureEnabled() ) {
+                this.lastSelectedActor.setRotation( rotation*Math.PI/180 + this.__gestureRotation );
+
+                this.lastSelectedActor.setScale(
+                    this.__gestureSX + scale,
+                    this.__gestureSY + scale );
+            }
+
+        },
+
+        __gestureEnd : function( scale, rotation ) {
+            this.gesturing= false;
+            this.__gestureRotation= 0;
+            this.__gestureScale= 0;
         },
 
         addHandlers: function(canvas) {
@@ -1693,9 +1729,15 @@
             canvas.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
             canvas.addEventListener("gesturestart", function(e) {
                 e.preventDefault();
+                me.__gestureStart( e.scale, e.rotation );
+            }, false );
+            canvas.addEventListener("gestureend", function(e) {
+                e.preventDefault();
+                me.__gestureEnd( e.scale, e.rotation );
             }, false );
             canvas.addEventListener("gesturechange", function(e) {
                 e.preventDefault();
+                me.__gestureChange( e.scale, e.rotation );
             }, false );
         },
 
