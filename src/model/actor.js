@@ -45,9 +45,11 @@
 
         this.modelViewMatrix=       new CAAT.Matrix();
         this.worldModelViewMatrix=  new CAAT.Matrix();
+        /*
         this.modelViewMatrixI=      new CAAT.Matrix();
         this.worldModelViewMatrixI= new CAAT.Matrix();
         this.tmpMatrix=             new CAAT.Matrix();
+        */
 
         this.resetTransform();
         this.setScale(1,1);
@@ -69,7 +71,7 @@
 
 	CAAT.Actor.prototype= {
 
-        tmpMatrix :             null,
+//        tmpMatrix :             null,
 
         lifecycleListenerList:	null,   // Array of life cycle listener
 

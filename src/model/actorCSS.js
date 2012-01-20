@@ -48,16 +48,18 @@
 
         this.modelViewMatrix=       new CAAT.Matrix();
         this.worldModelViewMatrix=  new CAAT.Matrix();
+        /*
         this.modelViewMatrixI=      new CAAT.Matrix();
         this.worldModelViewMatrixI= new CAAT.Matrix();
         this.tmpMatrix=             new CAAT.Matrix();
+        */
 
 		return this;
 	};
 
 	CAAT.Actor.prototype= {
 
-        tmpMatrix :             null,
+//        tmpMatrix :             null,
 
         lifecycleListenerList:	null,   // Array of life cycle listener
         behaviorList:           null,   // Array of behaviors to apply to the Actor

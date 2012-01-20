@@ -1,3 +1,11 @@
+01/20/2012 *0.1 Build 631*
+--------------------------
+
+* Added methods initializeAsFontMap, drawString, stringWidth to CAAT.SpriteImage. Those methods allow to
+  draw strings via textured fonts. Every character will be defined besides x,y,width,height in texture,
+  by xoffset, yoffset, xadvance.
+* Removed unneeded actor initialization inverse matrices.
+
 01/19/2012 *0.1 Build 627*
 --------------------------
 

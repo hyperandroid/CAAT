@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 628
+Version: 0.1 build: 632
 
 Created on:
-DATE: 2012-01-20
-TIME: 02:02:22
+DATE: 2012-01-21
+TIME: 00:52:31
 */
 
 
@@ -5037,9 +5037,11 @@ var cp1= proxy(
 
         this.modelViewMatrix=       new CAAT.Matrix();
         this.worldModelViewMatrix=  new CAAT.Matrix();
+        /*
         this.modelViewMatrixI=      new CAAT.Matrix();
         this.worldModelViewMatrixI= new CAAT.Matrix();
         this.tmpMatrix=             new CAAT.Matrix();
+        */
 
         this.resetTransform();
         this.setScale(1,1);
@@ -5061,7 +5063,7 @@ var cp1= proxy(
 
 	CAAT.Actor.prototype= {
 
-        tmpMatrix :             null,
+//        tmpMatrix :             null,
 
         lifecycleListenerList:	null,   // Array of life cycle listener
 
@@ -10955,12 +10957,13 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 
 (function() {
 
-    CAAT.SpriteImageHelper= function(x,y,w,h) {
+    CAAT.SpriteImageHelper= function(x,y,w,h, iw, ih) {
         this.x=         x;
         this.y=         y;
         this.width=     w;
         this.height=    h;
 
+        this.setGL( x/iw, y/ih, (x+w-1)/iw, (y+h-1)/ih );
         return this;
     };
 
@@ -11182,7 +11185,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                     var u1 = u + w;
                     var v1 = v + h;
 
-                    helper= new CAAT.SpriteImageHelper().setGL(
+                    helper= new CAAT.SpriteImageHelper(u,v,(u1-u),(v1-v),tp.width,tp.height).setGL(
                         u / tp.width,
                         v / tp.height,
                         u1 / tp.width,
@@ -11196,7 +11199,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                     sx0 = ((i % this.columns) | 0) * this.singleWidth;
                     sy0 = ((i / this.columns) | 0) * this.singleHeight;
 
-                    helper= new CAAT.SpriteImageHelper( sx0, sy0, this.singleWidth, this.singleHeight );
+                    helper= new CAAT.SpriteImageHelper( sx0, sy0, this.singleWidth, this.singleHeight, image.width, image.height  );
                     this.mapInfo[i]= helper;
                 }
             }
@@ -11574,7 +11577,9 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                     value.x,
                     value.y,
                     value.width,
-                    value.height
+                    value.height,
+                    image.width,
+                    image.height
                 );
 
                 this.mapInfo[key]= helper;
@@ -11588,6 +11593,80 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             }
 
             return this;
+        },
+
+        /**
+         *
+         * @param image
+         * @param map
+         */
+        initializeAsFontMap : function( image, map ) {
+            this.initialize( image, 1, 1 );
+
+            var key;
+            var helper;
+            var count=0;
+
+            for( key in map ) {
+                var value= map[key];
+
+                helper= new CAAT.SpriteImageHelper(
+                    value.x,
+                    value.y,
+                    value.width,
+                    value.height,
+                    image.width,
+                    image.height
+                );
+
+                helper.xoffset= typeof value.xoffset==='undefined' ? 0 : value.xoffset;
+                helper.yoffset= typeof value.yoffset==='undefined' ? 0 : value.yoffset;
+                helper.xadvance= typeof value.xadvance==='undefined' ? value.width : value.xadvance;
+
+                this.mapInfo[key]= helper;
+
+                // set a default spriteIndex
+                if ( !count ) {
+                    this.setAnimationImageIndex( [key] );
+                }
+
+                count++;
+            }
+
+            return this;
+        },
+
+        stringWidth : function( str ) {
+            var i,l,w=0,charInfo;
+
+            for( i=0, l=str.length; i<l; i++ ) {
+                  charInfo= this.mapInfo[ str.charAt(i) ];
+                  if ( charInfo ) {
+                      w+= charInfo.xadvance;
+                  }
+            }
+
+            return w;
+        },
+
+        drawString : function( ctx, str, x, y ) {
+            var i, l, charInfo, w;
+
+            for( i=0, l=str.length; i<l; i++ ) {
+                  charInfo= this.mapInfo[ str.charAt(i) ];
+                  if ( charInfo ) {
+                      w= charInfo.width;
+                      ctx.drawImage(
+                          this.image,
+                          charInfo.x, charInfo.y,
+                          w, charInfo.height,
+
+                          x + charInfo.xoffset, y + charInfo.yoffset,
+                          w, charInfo.height );
+
+                      x+= charInfo.xadvance;
+                  }
+              }
         }
 
         
