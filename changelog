@@ -1,3 +1,11 @@
+01/19/2012 *0.1 Build 627*
+--------------------------
+
+* Added clip paths capability to be scaled accordingly to director's affine transform.
+* Modified CAAT.Path bounding box to keep track of path's position. So if a clip path is defined as:
+  new CAAT.Path().beginPath(200,200).addRectangleTo(300,300).endPath() there's no need to still apply the workaround
+  of setting a behavior to show it properly.
+
 01/19/2012 *0.1 Build 610*
 --------------------------
 

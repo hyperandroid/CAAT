@@ -31,8 +31,8 @@
             this.height=    -1;
             this.x=         0;
             this.y=         0;
-            this.width=     0;
-            this.height=    0;
+            this.x1=        0;
+            this.y1=        0;
             return this;
         },
         /**

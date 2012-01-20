@@ -111,6 +111,7 @@
 			}
 
             // thanks yodesoft.com for spotting the first point is out of the BB
+            rectangle.setEmpty();
             rectangle.union( this.coordlist[0].x, this.coordlist[0].y );
 
 			var pt= new CAAT.Point();

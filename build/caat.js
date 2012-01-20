@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 611
+Version: 0.1 build: 628
 
 Created on:
-DATE: 2012-01-19
-TIME: 22:26:19
+DATE: 2012-01-20
+TIME: 02:02:22
 */
 
 
@@ -45,7 +45,7 @@ var CAAT= CAAT || {};
  * Common bind function. Allows to set an object's function as callback. Set for every function in the
  * javascript context.
  */
-Function.prototype.bind= function() {
+Function.prototype.bind= Function.prototype.bind || function() {
     var fn=     this;                                   // the function
     var args=   Array.prototype.slice.call(arguments);  // copy the arguments.
     var obj=    args.shift();                           // first parameter will be context 'this'
@@ -1521,8 +1521,8 @@ var cp1= proxy(
             this.height=    -1;
             this.x=         0;
             this.y=         0;
-            this.width=     0;
-            this.height=    0;
+            this.x1=        0;
+            this.y1=        0;
             return this;
         },
         /**
@@ -1728,6 +1728,7 @@ var cp1= proxy(
 			}
 
             // thanks yodesoft.com for spotting the first point is out of the BB
+            rectangle.setEmpty();
             rectangle.union( this.coordlist[0].x, this.coordlist[0].y );
 
 			var pt= new CAAT.Point();
@@ -2195,7 +2196,7 @@ var cp1= proxy(
         translate : function(x,y,z) {
             this.x+= x;
             this.y+= y;
-            this.z+= z||0;
+            this.z+= z;
 
             return this;
         },
@@ -6300,7 +6301,7 @@ var cp1= proxy(
                 if (!this.clipPath ) {
                     ctx.rect(0,0,this.width,this.height);
                 } else {
-                    this.clipPath.applyAsPath(ctx);
+                    this.clipPath.applyAsPath(director);
                 }
                 ctx.clip();
             }
@@ -13555,7 +13556,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
          *
          * @param ctx {RenderingContext2D}
          */
-        applyAsPath : function(ctx) {},
+        applyAsPath : function(director) {},
 
         /**
          * Transform this path with the given affinetransform matrix.
@@ -13589,8 +13590,8 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         points:             null,
 		newPosition:		null,   // spare holder for getPosition coordinate return.
 
-        applyAsPath : function(ctx) {
-            ctx.lineTo( this.points[0].x, this.points[1].y );
+        applyAsPath : function(director) {
+            director.ctx.lineTo( this.points[0].x, this.points[1].y );
         },
         setPoint : function( point, index ) {
             if ( index===0 ) {
@@ -13776,8 +13777,8 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 		curve:	            null,   // a CAAT.Bezier instance.
 		newPosition:		null,   // spare holder for getPosition coordinate return.
 
-        applyAsPath : function(ctx) {
-            this.curve.applyAsPath(ctx);
+        applyAsPath : function(director, ctx) {
+            this.curve.applyAsPath(director, ctx);
             return this;
         },
         setPoint : function( point, index ) {
@@ -13962,7 +13963,8 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         bbox:               null,
         newPosition:        null,   // spare point for calculations
 
-        applyAsPath : function(ctx) {
+        applyAsPath : function(director) {
+            var ctx= director.ctx;
             //ctx.rect( this.bbox.x, this.bbox.y, this.bbox.width, this.bbox.height );
             if ( this.cw ) {
                 ctx.lineTo( this.points[0].x, this.points[0].y );
@@ -14202,8 +14204,9 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             }
 
             this.bbox.setEmpty();
+            var minx= Number.MAX_VALUE, miny= Number.MAX_VALUE, maxx= Number.MIN_VALUE, maxy= Number.MIN_VALUE;
             for( var i=0; i<4; i++ ) {
-			    this.bbox.union( this.points[i].x, this.points[i].y );
+                this.bbox.union( this.points[i].x, this.points[i].y );
             }
 
             this.length= 2*this.bbox.width + 2*this.bbox.height;
@@ -14333,7 +14336,13 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         width:                      0,
         height:                     0,
 
-        applyAsPath : function(ctx) {
+        clipOffsetX             :   0,
+        clipOffsetY             :   0,
+
+        applyAsPath : function(director) {
+            var ctx= director.ctx;
+
+            director.modelViewMatrix.transformRenderingContext( ctx );
             ctx.beginPath();
             ctx.globalCompositeOperation= 'source-out';
             ctx.moveTo(
@@ -14341,7 +14350,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 this.getFirstPathSegment().startCurvePosition().y
             );
             for( var i=0; i<this.pathSegments.length; i++ ) {
-                this.pathSegments[i].applyAsPath(ctx);
+                this.pathSegments[i].applyAsPath(director);
             }
             ctx.globalCompositeOperation= 'source-over';
             return this;
@@ -14779,18 +14788,34 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             this.bbox.setEmpty();
             this.points= [];
 
+            var xmin= Number.MAX_VALUE, ymin= Number.MAX_VALUE;
 			for( i=0; i<this.pathSegments.length; i++ ) {
 				this.pathSegments[i].updatePath(point);
                 this.length+= this.pathSegments[i].getLength();
                 this.bbox.unionRectangle( this.pathSegments[i].bbox );
 
                 for( j=0; j<this.pathSegments[i].numControlPoints(); j++ ) {
-                    this.points.push( this.pathSegments[i].getControlPoint( j ) );
+                    var pt= this.pathSegments[i].getControlPoint( j );
+                    this.points.push( pt );
+                    if ( pt.x < xmin ) {
+                        xmin= pt.x;
+                    }
+                    if ( pt.y < ymin ) {
+                        ymin= pt.y;
+                    }
                 }
 			}
 
+            this.clipOffsetX= -xmin;
+            this.clipOffsetY= -ymin;
+
             this.width= this.bbox.width;
             this.height= this.bbox.height;
+            this.setLocation( this.bbox.x, this.bbox.y );
+            this.bbox.x= 0;
+            this.bbox.y= 0;
+            this.bbox.x1= this.width;
+            this.bbox.y1= this.height;
 
             this.pathSegmentStartTime=      [];
             this.pathSegmentDurationTime=   [];
@@ -14996,7 +15021,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 for (i = 0; i < this.numControlPoints(); i++) {
                     this.setPoint(
                         this.matrix.transformCoord(
-                            this.pathPoints[i].clone()), i);
+                            this.pathPoints[i].clone().translate( this.clipOffsetX, this.clipOffsetY )), i);
                 }
 //            }
 

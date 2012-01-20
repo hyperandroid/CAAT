@@ -1309,7 +1309,7 @@
                 if (!this.clipPath ) {
                     ctx.rect(0,0,this.width,this.height);
                 } else {
-                    this.clipPath.applyAsPath(ctx);
+                    this.clipPath.applyAsPath(director);
                 }
                 ctx.clip();
             }
