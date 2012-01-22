@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2010-2011 Ibon Tolosana [@hyperandroid]
+Copyright (c) 2010-2011-2012 Ibon Tolosana [@hyperandroid]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 632
+Version: 0.2 build: 18
 
 Created on:
-DATE: 2012-01-21
-TIME: 00:52:32
+DATE: 2012-01-22
+TIME: 17:57:15
 */
 
 
@@ -1614,6 +1614,22 @@ var cp1= proxy(
             this.union( rectangle.x,  rectangle.y1 );
             this.union( rectangle.x1, rectangle.y1 );
             return this;
+        },
+        intersects : function( r ) {
+            if ( r.x1< this.x ) {
+                return false;
+            }
+            if ( r.x > this.x1 ) {
+                return false;
+            }
+            if ( r.y1< this.y ) {
+                return false;
+            }
+            if ( r.y> this.y1 ) {
+                return false;
+            }
+
+            return true;
         }
 	};
 })();/**
@@ -5022,10 +5038,9 @@ var cp1= proxy(
      */
 	CAAT.Actor = function() {
 		this.behaviorList=          [];
-//        this.keyframesList=         [];
+
         this.lifecycleListenerList= [];
         this.scaleAnchor=           this.ANCHOR_CENTER;
-        this.rotateAnchor=          this.ANCHOR_CENTER;
         this.behaviorList=          [];
 
         this.domElement=            document.createElement('div');
@@ -5041,23 +5056,14 @@ var cp1= proxy(
 
         this.modelViewMatrix=       new CAAT.Matrix();
         this.worldModelViewMatrix=  new CAAT.Matrix();
-        /*
-        this.modelViewMatrixI=      new CAAT.Matrix();
-        this.worldModelViewMatrixI= new CAAT.Matrix();
-        this.tmpMatrix=             new CAAT.Matrix();
-        */
 
 		return this;
 	};
 
 	CAAT.Actor.prototype= {
 
-//        tmpMatrix :             null,
-
         lifecycleListenerList:	null,   // Array of life cycle listener
         behaviorList:           null,   // Array of behaviors to apply to the Actor
-
-//        keyframesList:          null,
 		x:						0,      // x position on parent. In parent's local coord. system.
 		y:						0,      // y position on parent. In parent's local coord. system.
 		width:					0,      // Actor's width. In parent's local coord. system.
@@ -5463,7 +5469,6 @@ var cp1= proxy(
          */
         resetTransform : function () {
             this.rotationAngle=0;
-            this.rotateAnchor=0;
             this.rotationX=.5;
             this.rotationY=.5;
             this.scaleX=1;
@@ -5527,49 +5532,36 @@ var cp1= proxy(
 
 			switch( anchor ) {
             case this.ANCHOR_CENTER:
-//                tx= this.width/2;
-//                ty= this.height/2;
                     tx= .5;
                     ty= .5;
                 break;
             case this.ANCHOR_TOP:
-//                tx= this.width/2;
-                    tx= .5;
+                tx= .5;
                 ty= 0;
                 break;
             case this.ANCHOR_BOTTOM:
-//                tx= this.width/2;
-//                ty= this.height;
-                    tx= .5;
-                    ty= 1;
+                tx= .5;
+                ty= 1;
                 break;
             case this.ANCHOR_LEFT:
-//                tx= 0;
-//                ty= this.height/2;
-                    tx= 0;
-                    ty= .5;
+                tx= 0;
+                ty= .5;
                 break;
             case this.ANCHOR_RIGHT:
-//                tx= this.width;
-//                ty= this.height/2;
-                    tx= 1;
-                    ty= .5;
+                tx= 1;
+                ty= .5;
                 break;
             case this.ANCHOR_TOP_RIGHT:
-//                tx= this.width;
-                    tx= 1;
+                tx= 1;
                 ty= 0;
                 break;
             case this.ANCHOR_BOTTOM_LEFT:
                 tx= 0;
-//                ty= this.height;
-                    ty= 1;
+                ty= 1;
                 break;
             case this.ANCHOR_BOTTOM_RIGHT:
-//                tx= this.width;
-//                ty= this.height;
-                    tx= 1;
-                    ty= 1;
+                tx= 1;
+                ty= 1;
                 break;
             case this.ANCHOR_TOP_LEFT:
                 tx= 0;
@@ -7558,10 +7550,19 @@ var cp1= proxy(
         this.lastSelectedActor = null;
         this.dragging = false;
 
+        this.cDirtyRects= [];
+        this.dirtyRects= [];
+        for( var i=0; i<64; i++ ) {
+            this.dirtyRects.push( new CAAT.Rectangle() );
+        }
+        this.dirtyRectsIndex=   0;
+
         return this;
     };
 
 
+    CAAT.Director.CLEAR_DIRTY_RECTS= 1;
+    CAAT.Director.CLEAR_ALL=         true;
 
     CAAT.Director.prototype = {
 
@@ -7627,10 +7628,15 @@ var cp1= proxy(
         RESIZE_BOTH:        8,
         RESIZE_PROPORTIONAL:16,
         resize:             1,
-        onResizeCallback:   null,
+        onResizeCallback    :   null,
 
-        __gestureScale :    0,
-        __gestureRotation : 0,
+        __gestureScale      :   0,
+        __gestureRotation   :   0,
+
+        dirtyRects          :   null,
+        cDirtyRects         :   null,
+        dirtyRectsIndex     :   0,
+        dirtyRectsEnabled   :   false,
 
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
@@ -8039,6 +8045,8 @@ var cp1= proxy(
              */
             var ne = this.childrenList.length;
             var i, tt, c;
+            var ctx= this.ctx;
+
             if (this.glEnabled) {
 
                 this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -8072,11 +8080,24 @@ var cp1= proxy(
                 this.glFlush();
 
             } else {
-                this.ctx.globalAlpha = 1;
-                this.ctx.globalCompositeOperation = 'source-over';
+                ctx.globalAlpha = 1;
+                ctx.globalCompositeOperation = 'source-over';
 
-                if (this.clear) {
-                    this.ctx.clearRect(0, 0, this.width, this.height);
+                ctx.save();
+                if ( this.dirtyRectsEnabled ) {
+
+                    ctx.beginPath();
+ctx.rect(0,0,100,40);
+                    var dr= this.cDirtyRects;
+                    for( i=0; i<dr.length; i++ ) {
+                        var drr= dr[i];
+                        if ( !drr.isEmpty() ) {
+                            ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
+                        }
+                    }
+                    ctx.clip();
+                } else if (this.clear===true ) {
+                    ctx.clearRect(0, 0, this.width, this.height);
                 }
 
                 for (i = 0; i < ne; i++) {
@@ -8084,7 +8105,7 @@ var cp1= proxy(
 
                     if (c.isInAnimationFrame(this.time)) {
                         tt = c.time - c.start_time;
-                        this.ctx.save();
+                        ctx.save();
 
                         if ( c.onRenderStart ) {
                             c.onRenderStart(tt);
@@ -8093,12 +8114,12 @@ var cp1= proxy(
                         if ( c.onRenderEnd ) {
                             c.onRenderEnd(tt);
                         }
-                        this.ctx.restore();
+                        ctx.restore();
 
                         if (CAAT.DEBUGAABB) {
-                            this.ctx.globalAlpha= 1;
-                            this.ctx.globalCompositeOperation= 'source-over';
-                            this.modelViewMatrix.transformRenderingContextSet( this.ctx );
+                            ctx.globalAlpha= 1;
+                            ctx.globalCompositeOperation= 'source-over';
+                            this.modelViewMatrix.transformRenderingContextSet( ctx );
                             c.drawScreenBoundingBox(this, tt);
                         }
 
@@ -8113,6 +8134,8 @@ var cp1= proxy(
 
                     }
                 }
+
+                ctx.restore();
             }
 
             this.frameCounter++;
@@ -8126,7 +8149,10 @@ var cp1= proxy(
          * @param time {number} director time.
          */
         animate : function(director, time) {
-            this.setModelViewMatrix(this.glEnabled);
+            this.setModelViewMatrix(this);
+
+            this.dirtyRectsIndex= -1;
+            this.cDirtyRects= [];
 
             var cl= this.childrenList;
             var cli;
@@ -8137,6 +8163,65 @@ var cp1= proxy(
             }
 
             return this;
+        },
+        /**
+         * Before calling this method, check if this.dirtyRectsEnabled is true.
+
+         *
+         * @param rectangle {CAAT.Rectangle}
+         */
+        addDirtyRect : function( rectangle ) {
+
+            if ( rectangle.isEmpty() ) {
+                return;
+            }
+
+            var i, dr, j, drj;
+            var cdr= this.cDirtyRects;
+            for( i=0; i<cdr.length; i++ ) {
+                dr= cdr[i];
+                if ( dr.intersects( rectangle ) ) {
+                    dr.unionRectangle( rectangle );
+
+                    for( j=0; j<cdr.length; j++ ) {
+                        if ( j!==i ) {
+                            drj= cdr[j];
+                            if ( drj.intersects( dr ) ) {
+                                dr.unionRectangle( drj );
+                                drj.setEmpty();
+                            }
+                        }
+                    }
+
+                    for( j=0; j<cdr.length; j++ ) {
+                        if ( cdr[j].isEmpty() ) {
+                            cdr.splice( j, 1 );
+                        }
+                    }
+
+                    return;
+                }
+            }
+
+            this.dirtyRectsIndex++;
+
+            if ( this.dirtyRectsIndex>=this.dirtyRects.length ) {
+                for( i=0; i<32; i++ ) {
+                    this.dirtyRects.push( new CAAT.Rectangle() );
+                }
+            }
+
+            var r= this.dirtyRects[ this.dirtyRectsIndex ];
+
+            r.x= rectangle.x;
+            r.y= rectangle.y;
+            r.x1= rectangle.x1;
+            r.y1= rectangle.y1;
+            r.width= rectangle.width;
+            r.height= rectangle.height;
+
+            this.cDirtyRects.push( r );
+
         },
         /**
          * This method draws an Scene to an offscreen canvas. This offscreen canvas is also a child of
@@ -8743,6 +8828,9 @@ var cp1= proxy(
          */
         setClear : function(clear) {
             this.clear = clear;
+            if ( this.clear===CAAT.Director.CLEAR_DIRTY_RECTS ) {
+                this.dirtyRectsEnabled= true;
+            }
             return this;
         },
         /**

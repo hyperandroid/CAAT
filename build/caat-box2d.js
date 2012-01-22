@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2010-2011 Ibon Tolosana [@hyperandroid]
+Copyright (c) 2010-2011-2012 Ibon Tolosana [@hyperandroid]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 632
+Version: 0.2 build: 18
 
 Created on:
-DATE: 2012-01-21
-TIME: 00:52:32
+DATE: 2012-01-22
+TIME: 17:57:15
 */
 
 

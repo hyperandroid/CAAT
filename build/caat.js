@@ -1,7 +1,7 @@
 /*
 The MIT License
 
-Copyright (c) 2010-2011 Ibon Tolosana [@hyperandroid]
+Copyright (c) 2010-2011-2012 Ibon Tolosana [@hyperandroid]
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.1 build: 632
+Version: 0.2 build: 18
 
 Created on:
-DATE: 2012-01-21
-TIME: 00:52:31
+DATE: 2012-01-22
+TIME: 17:57:14
 */
 
 
@@ -1613,6 +1613,22 @@ var cp1= proxy(
             this.union( rectangle.x,  rectangle.y1 );
             this.union( rectangle.x1, rectangle.y1 );
             return this;
+        },
+        intersects : function( r ) {
+            if ( r.x1< this.x ) {
+                return false;
+            }
+            if ( r.x > this.x1 ) {
+                return false;
+            }
+            if ( r.y1< this.y ) {
+                return false;
+            }
+            if ( r.y> this.y1 ) {
+                return false;
+            }
+
+            return true;
         }
 	};
 })();/**
@@ -5033,7 +5049,6 @@ var cp1= proxy(
         ];
 
         this.scaleAnchor=           this.ANCHOR_CENTER;
-        this.rotateAnchor=          this.ANCHOR_CENTER;
 
         this.modelViewMatrix=       new CAAT.Matrix();
         this.worldModelViewMatrix=  new CAAT.Matrix();
@@ -5138,6 +5153,11 @@ var cp1= proxy(
         __d_ay:                 -1,
         gestureEnabled:         false,
 
+        invalid             :   true,
+
+        invalidate : function() {
+            this.invalid= true;
+        },
         setGestureEnabled : function( enable ) {
             this.gestureEnabled= !!enable;
         },
@@ -5362,48 +5382,6 @@ var cp1= proxy(
             }
         },
         /**
-         * Calculates the 2D bounding box in canvas coordinates of the Actor.
-         * This bounding box takes into account the transformations applied hierarchically for
-         * each Scene Actor.
-         *
-         * @private
-         *
-         */
-        setScreenBounds : function() {
-
-            this.viewVertices[0].set(0,          0);
-            this.viewVertices[1].set(this.width, 0);
-            this.viewVertices[2].set(this.width, this.height);
-            this.viewVertices[3].set(0,          this.height);
-
-            this.modelToView( this.viewVertices );
-
-            var xmin= Number.MAX_VALUE, xmax=Number.MIN_VALUE;
-            var ymin= Number.MAX_VALUE, ymax=Number.MIN_VALUE;
-
-            for( var i=0; i<4; i++ ) {
-                if ( this.viewVertices[i].x < xmin ) {
-                    xmin=this.viewVertices[i].x;
-                }
-                if ( this.viewVertices[i].x > xmax ) {
-                    xmax=this.viewVertices[i].x;
-                }
-                if ( this.viewVertices[i].y < ymin ) {
-                    ymin=this.viewVertices[i].y;
-                }
-                if ( this.viewVertices[i].y > ymax ) {
-                    ymax=this.viewVertices[i].y;
-                }
-            }
-
-            this.AABB.x= xmin;
-            this.AABB.y= ymin;
-            this.AABB.width=  (xmax-xmin);
-            this.AABB.height= (ymax-ymin);
-
-            return this;
-        },
-        /**
          * Sets this Actor as Expired.
          * If this is a Container, all the contained Actors won't be nor drawn nor will receive
          * any event. That is, expiring an Actor means totally taking it out the Scene's timeline.
@@ -5481,7 +5459,6 @@ var cp1= proxy(
          */
 		resetTransform : function () {
 			this.rotationAngle=0;
-			this.rotateAnchor=0;
 			this.rotationX=.5;
 			this.rotationY=.5;
 			this.scaleX=1;
@@ -5857,13 +5834,25 @@ var cp1= proxy(
          *
          */
         modelToView : function(point) {
+
+            var tm= this.worldModelViewMatrix.matrix;
+
             if ( point instanceof Array ) {
                 for( var i=0; i<point.length; i++ ) {
-                    this.worldModelViewMatrix.transformCoord(point[i]);
+                    //this.worldModelViewMatrix.transformCoord(point[i]);
+                    var pt= point[i];
+                    var x= pt.x;
+                    var y= pt.y;
+                    pt.x= x*tm[0] + y*tm[1] + tm[2];
+                    pt.y= x*tm[3] + y*tm[4] + tm[5];
                 }
             }
             else {
-                this.worldModelViewMatrix.transformCoord(point);
+//                this.worldModelViewMatrix.transformCoord(point);
+                var x= point.x;
+                var y= point.y;
+                point.x= x*tm[0] + y*tm[1] + tm[2];
+                point.y= x*tm[3] + y*tm[4] + tm[5];
             }
 
             return point;
@@ -6140,25 +6129,16 @@ var cp1= proxy(
                 this.oldY= this.y;
             }
 
-            /**
-             * better avoid using behaviors
-             * @deprecated
-             */
 			for( i=0; i<this.behaviorList.length; i++ )	{
 				this.behaviorList[i].apply(time,this);
 			}
 
-            /*
-                If we have a mask applied, apply behaviors as well.
-             */
             if ( this.clipPath ) {
-//                if ( this.clipPath.applyBehaviors ) {
-                    this.clipPath.applyBehaviors(time);
-//                }
+                this.clipPath.applyBehaviors(time);
             }
 
             // transformation stuff.
-            this.setModelViewMatrix(director.glEnabled);
+            this.setModelViewMatrix(director);
 
             this.inFrame= true;
 
@@ -6166,10 +6146,23 @@ var cp1= proxy(
 		},
         /**
          * Set this model view matrix if the actor is Dirty.
-         * 
+         *
+             mm[2]+= this.x;
+             mm[5]+= this.y;
+             if ( this.rotationAngle ) {
+                 this.modelViewMatrix.multiply( m.setTranslate( this.rotationX, this.rotationY) );
+                 this.modelViewMatrix.multiply( m.setRotation( this.rotationAngle ) );
+                 this.modelViewMatrix.multiply( m.setTranslate( -this.rotationX, -this.rotationY) );                    c= Math.cos( this.rotationAngle );
+             }
+             if ( this.scaleX!=1 || this.scaleY!=1 && (this.scaleTX || this.scaleTY )) {
+                 this.modelViewMatrix.multiply( m.setTranslate( this.scaleTX , this.scaleTY ) );
+                 this.modelViewMatrix.multiply( m.setScale( this.scaleX, this.scaleY ) );
+                 this.modelViewMatrix.multiply( m.setTranslate( -this.scaleTX , -this.scaleTY ) );
+             }
+         *
          * @return this
          */
-        setModelViewMatrix : function(glEnabled) {
+        setModelViewMatrix : function(director) {
             var c,s,_m00,_m01,_m10,_m11;
             var mm0, mm1, mm2, mm3, mm4, mm5;
             var mm;
@@ -6235,24 +6228,7 @@ var cp1= proxy(
                 mm[3]= mm3;
                 mm[4]= mm4;
                 mm[5]= mm5;
-
-/*
-                mm[2]+= this.x;
-                mm[5]+= this.y;
-                if ( this.rotationAngle ) {
-//                    this.modelViewMatrix.multiply( m.setTranslate( this.rotationX, this.rotationY) );
-//                    this.modelViewMatrix.multiply( m.setRotation( this.rotationAngle ) );
-//                    this.modelViewMatrix.multiply( m.setTranslate( -this.rotationX, -this.rotationY) );                    c= Math.cos( this.rotationAngle );
-                }
-                if ( this.scaleX!=1 || this.scaleY!=1 && (this.scaleTX || this.scaleTY )) {
-//                    this.modelViewMatrix.multiply( m.setTranslate( this.scaleTX , this.scaleTY ) );
-//                    this.modelViewMatrix.multiply( m.setScale( this.scaleX, this.scaleY ) );
-//                    this.modelViewMatrix.multiply( m.setTranslate( -this.scaleTX , -this.scaleTY ) );
-
-                }
-*/
             }
-
 
             if ( this.parent ) {
                 if ( this.dirty || this.parent.wdirty ) {
@@ -6264,15 +6240,70 @@ var cp1= proxy(
                 if ( this.dirty ) {
                     this.wdirty= true;
                 }
-                //this.worldModelViewMatrix.copy( this.modelViewMatrix );
+
                 this.worldModelViewMatrix.identity();
             }
 
-            if ( (CAAT.DEBUGAABB || glEnabled) && (this.dirty || this.wdirty) ) {
+            //if ( (CAAT.DEBUGAABB || glEnabled) && (this.dirty || this.wdirty ) ) {
+            // BUGBUG no hacer cuando no sea necesario.
+            if ( this.dirty || this.wdirty || this.invalid ) {
+                if ( director.dirtyRectsEnabled ) {
+                    director.addDirtyRect( this.AABB );
+                }
                 this.setScreenBounds();
+                if ( director.dirtyRectsEnabled ) {
+                    director.addDirtyRect( this.AABB );
+                }
             }
             this.dirty= false;
+            this.invalid= false;
 
+            return this;
+        },
+        /**
+         * Calculates the 2D bounding box in canvas coordinates of the Actor.
+         * This bounding box takes into account the transformations applied hierarchically for
+         * each Scene Actor.
+         *
+         * @private
+         *
+         */
+        setScreenBounds : function() {
+
+            var vv= this.viewVertices;
+
+            vv[0].set(0,          0);
+            vv[1].set(this.width, 0);
+            vv[2].set(this.width, this.height);
+            vv[3].set(0,          this.height);
+
+            this.modelToView( this.viewVertices );
+
+            var xmin= Number.MAX_VALUE, xmax=Number.MIN_VALUE;
+            var ymin= Number.MAX_VALUE, ymax=Number.MIN_VALUE;
+
+            for( var i=0; i<4; i++ ) {
+                if ( vv[i].x < xmin ) {
+                    xmin=vv[i].x;
+                }
+                if ( vv[i].x > xmax ) {
+                    xmax=vv[i].x;
+                }
+                if ( vv[i].y < ymin ) {
+                    ymin=vv[i].y;
+                }
+                if ( vv[i].y > ymax ) {
+                    ymax=vv[i].y;
+                }
+            }
+
+            var AABB= this.AABB;
+            AABB.x= xmin;
+            AABB.y= ymin;
+            AABB.x1= xmax;
+            AABB.y1= ymax;
+            AABB.width=  (xmax-xmin);
+            AABB.height= (ymax-ymin);
 
             return this;
         },
@@ -6296,6 +6327,9 @@ var cp1= proxy(
             this.frameAlpha= this.parent ? this.parent.frameAlpha*this.alpha : 1;
             ctx.globalAlpha= this.frameAlpha;
 
+            director.modelViewMatrix.transformRenderingContextSet( ctx );
+            ctx.save();
+
             this.worldModelViewMatrix.transformRenderingContext(ctx);
 
             if ( this.clip ) {
@@ -6309,6 +6343,8 @@ var cp1= proxy(
             }
 
             this.paint(director, time);
+
+            ctx.restore();
 
             return true;
         },
@@ -6723,10 +6759,6 @@ var cp1= proxy(
             }
 
             var ctx= director.ctx;
-            var dmvm= director.modelViewMatrix;
-
-            ctx.save();
-//            dmvm.transformRenderingContextSet( ctx );
 
             CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
             if ( !this.isGlobalAlpha ) {
@@ -6735,13 +6767,9 @@ var cp1= proxy(
 
             for( var actor= this.activeChildren; actor; actor=actor.__next ) {
                 if ( actor.visible ) {
-                    dmvm.transformRenderingContextSet( ctx );
-                    ctx.save();
                     actor.paintActor(director,time);
-                    ctx.restore();
                 }
             }
-            ctx.restore();
 
             return true;
         },
@@ -6846,7 +6874,11 @@ var cp1= proxy(
             }
 
             for( i=0, l=markDelete.length; i<l; i++ ) {
-                markDelete[i].destroy(time);
+                var md= markDelete[i];
+                md.destroy(time);
+                if ( !director.dirtyRectsEnabled ) {
+                    director.addDirtyRect( md.AABB );
+                }
             }
 
             return true;
@@ -8575,10 +8607,19 @@ var cp1= proxy(
         this.lastSelectedActor = null;
         this.dragging = false;
 
+        this.cDirtyRects= [];
+        this.dirtyRects= [];
+        for( var i=0; i<64; i++ ) {
+            this.dirtyRects.push( new CAAT.Rectangle() );
+        }
+        this.dirtyRectsIndex=   0;
+
         return this;
     };
 
 
+    CAAT.Director.CLEAR_DIRTY_RECTS= 1;
+    CAAT.Director.CLEAR_ALL=         true;
 
     CAAT.Director.prototype = {
 
@@ -8644,10 +8685,15 @@ var cp1= proxy(
         RESIZE_BOTH:        8,
         RESIZE_PROPORTIONAL:16,
         resize:             1,
-        onResizeCallback:   null,
+        onResizeCallback    :   null,
 
-        __gestureScale :    0,
-        __gestureRotation : 0,
+        __gestureScale      :   0,
+        __gestureRotation   :   0,
+
+        dirtyRects          :   null,
+        cDirtyRects         :   null,
+        dirtyRectsIndex     :   0,
+        dirtyRectsEnabled   :   false,
 
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
@@ -9056,6 +9102,8 @@ var cp1= proxy(
              */
             var ne = this.childrenList.length;
             var i, tt, c;
+            var ctx= this.ctx;
+
             if (this.glEnabled) {
 
                 this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -9089,11 +9137,24 @@ var cp1= proxy(
                 this.glFlush();
 
             } else {
-                this.ctx.globalAlpha = 1;
-                this.ctx.globalCompositeOperation = 'source-over';
+                ctx.globalAlpha = 1;
+                ctx.globalCompositeOperation = 'source-over';
 
-                if (this.clear) {
-                    this.ctx.clearRect(0, 0, this.width, this.height);
+                ctx.save();
+                if ( this.dirtyRectsEnabled ) {
+
+                    ctx.beginPath();
+ctx.rect(0,0,100,40);
+                    var dr= this.cDirtyRects;
+                    for( i=0; i<dr.length; i++ ) {
+                        var drr= dr[i];
+                        if ( !drr.isEmpty() ) {
+                            ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
+                        }
+                    }
+                    ctx.clip();
+                } else if (this.clear===true ) {
+                    ctx.clearRect(0, 0, this.width, this.height);
                 }
 
                 for (i = 0; i < ne; i++) {
@@ -9101,7 +9162,7 @@ var cp1= proxy(
 
                     if (c.isInAnimationFrame(this.time)) {
                         tt = c.time - c.start_time;
-                        this.ctx.save();
+                        ctx.save();
 
                         if ( c.onRenderStart ) {
                             c.onRenderStart(tt);
@@ -9110,12 +9171,12 @@ var cp1= proxy(
                         if ( c.onRenderEnd ) {
                             c.onRenderEnd(tt);
                         }
-                        this.ctx.restore();
+                        ctx.restore();
 
                         if (CAAT.DEBUGAABB) {
-                            this.ctx.globalAlpha= 1;
-                            this.ctx.globalCompositeOperation= 'source-over';
-                            this.modelViewMatrix.transformRenderingContextSet( this.ctx );
+                            ctx.globalAlpha= 1;
+                            ctx.globalCompositeOperation= 'source-over';
+                            this.modelViewMatrix.transformRenderingContextSet( ctx );
                             c.drawScreenBoundingBox(this, tt);
                         }
 
@@ -9130,6 +9191,8 @@ var cp1= proxy(
 
                     }
                 }
+
+                ctx.restore();
             }
 
             this.frameCounter++;
@@ -9143,7 +9206,10 @@ var cp1= proxy(
          * @param time {number} director time.
          */
         animate : function(director, time) {
-            this.setModelViewMatrix(this.glEnabled);
+            this.setModelViewMatrix(this);
+
+            this.dirtyRectsIndex= -1;
+            this.cDirtyRects= [];
 
             var cl= this.childrenList;
             var cli;
@@ -9154,6 +9220,65 @@ var cp1= proxy(
             }
 
             return this;
+        },
+        /**
+         * Before calling this method, check if this.dirtyRectsEnabled is true.
+
+         *
+         * @param rectangle {CAAT.Rectangle}
+         */
+        addDirtyRect : function( rectangle ) {
+
+            if ( rectangle.isEmpty() ) {
+                return;
+            }
+
+            var i, dr, j, drj;
+            var cdr= this.cDirtyRects;
+            for( i=0; i<cdr.length; i++ ) {
+                dr= cdr[i];
+                if ( dr.intersects( rectangle ) ) {
+                    dr.unionRectangle( rectangle );
+
+                    for( j=0; j<cdr.length; j++ ) {
+                        if ( j!==i ) {
+                            drj= cdr[j];
+                            if ( drj.intersects( dr ) ) {
+                                dr.unionRectangle( drj );
+                                drj.setEmpty();
+                            }
+                        }
+                    }
+
+                    for( j=0; j<cdr.length; j++ ) {
+                        if ( cdr[j].isEmpty() ) {
+                            cdr.splice( j, 1 );
+                        }
+                    }
+
+                    return;
+                }
+            }
+
+            this.dirtyRectsIndex++;
+
+            if ( this.dirtyRectsIndex>=this.dirtyRects.length ) {
+                for( i=0; i<32; i++ ) {
+                    this.dirtyRects.push( new CAAT.Rectangle() );
+                }
+            }
+
+            var r= this.dirtyRects[ this.dirtyRectsIndex ];
+
+            r.x= rectangle.x;
+            r.y= rectangle.y;
+            r.x1= rectangle.x1;
+            r.y1= rectangle.y1;
+            r.width= rectangle.width;
+            r.height= rectangle.height;
+
+            this.cDirtyRects.push( r );
+
         },
         /**
          * This method draws an Scene to an offscreen canvas. This offscreen canvas is also a child of
@@ -9760,6 +9885,9 @@ var cp1= proxy(
          */
         setClear : function(clear) {
             this.clear = clear;
+            if ( this.clear===CAAT.Director.CLEAR_DIRTY_RECTS ) {
+                this.dirtyRectsEnabled= true;
+            }
             return this;
         },
         /**

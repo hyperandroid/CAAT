@@ -43,10 +43,19 @@
         this.lastSelectedActor = null;
         this.dragging = false;
 
+        this.cDirtyRects= [];
+        this.dirtyRects= [];
+        for( var i=0; i<64; i++ ) {
+            this.dirtyRects.push( new CAAT.Rectangle() );
+        }
+        this.dirtyRectsIndex=   0;
+
         return this;
     };
 
 
+    CAAT.Director.CLEAR_DIRTY_RECTS= 1;
+    CAAT.Director.CLEAR_ALL=         true;
 
     CAAT.Director.prototype = {
 
@@ -112,10 +121,15 @@
         RESIZE_BOTH:        8,
         RESIZE_PROPORTIONAL:16,
         resize:             1,
-        onResizeCallback:   null,
+        onResizeCallback    :   null,
 
-        __gestureScale :    0,
-        __gestureRotation : 0,
+        __gestureScale      :   0,
+        __gestureRotation   :   0,
+
+        dirtyRects          :   null,
+        cDirtyRects         :   null,
+        dirtyRectsIndex     :   0,
+        dirtyRectsEnabled   :   false,
 
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
@@ -524,6 +538,8 @@
              */
             var ne = this.childrenList.length;
             var i, tt, c;
+            var ctx= this.ctx;
+
             if (this.glEnabled) {
 
                 this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -557,11 +573,24 @@
                 this.glFlush();
 
             } else {
-                this.ctx.globalAlpha = 1;
-                this.ctx.globalCompositeOperation = 'source-over';
+                ctx.globalAlpha = 1;
+                ctx.globalCompositeOperation = 'source-over';
 
-                if (this.clear) {
-                    this.ctx.clearRect(0, 0, this.width, this.height);
+                ctx.save();
+                if ( this.dirtyRectsEnabled ) {
+
+                    ctx.beginPath();
+ctx.rect(0,0,100,40);
+                    var dr= this.cDirtyRects;
+                    for( i=0; i<dr.length; i++ ) {
+                        var drr= dr[i];
+                        if ( !drr.isEmpty() ) {
+                            ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
+                        }
+                    }
+                    ctx.clip();
+                } else if (this.clear===true ) {
+                    ctx.clearRect(0, 0, this.width, this.height);
                 }
 
                 for (i = 0; i < ne; i++) {
@@ -569,7 +598,7 @@
 
                     if (c.isInAnimationFrame(this.time)) {
                         tt = c.time - c.start_time;
-                        this.ctx.save();
+                        ctx.save();
 
                         if ( c.onRenderStart ) {
                             c.onRenderStart(tt);
@@ -578,12 +607,12 @@
                         if ( c.onRenderEnd ) {
                             c.onRenderEnd(tt);
                         }
-                        this.ctx.restore();
+                        ctx.restore();
 
                         if (CAAT.DEBUGAABB) {
-                            this.ctx.globalAlpha= 1;
-                            this.ctx.globalCompositeOperation= 'source-over';
-                            this.modelViewMatrix.transformRenderingContextSet( this.ctx );
+                            ctx.globalAlpha= 1;
+                            ctx.globalCompositeOperation= 'source-over';
+                            this.modelViewMatrix.transformRenderingContextSet( ctx );
                             c.drawScreenBoundingBox(this, tt);
                         }
 
@@ -598,6 +627,8 @@
 
                     }
                 }
+
+                ctx.restore();
             }
 
             this.frameCounter++;
@@ -611,7 +642,10 @@
          * @param time {number} director time.
          */
         animate : function(director, time) {
-            this.setModelViewMatrix(this.glEnabled);
+            this.setModelViewMatrix(this);
+
+            this.dirtyRectsIndex= -1;
+            this.cDirtyRects= [];
 
             var cl= this.childrenList;
             var cli;
@@ -622,6 +656,65 @@
             }
 
             return this;
+        },
+        /**
+         * Before calling this method, check if this.dirtyRectsEnabled is true.
+
+         *
+         * @param rectangle {CAAT.Rectangle}
+         */
+        addDirtyRect : function( rectangle ) {
+
+            if ( rectangle.isEmpty() ) {
+                return;
+            }
+
+            var i, dr, j, drj;
+            var cdr= this.cDirtyRects;
+            for( i=0; i<cdr.length; i++ ) {
+                dr= cdr[i];
+                if ( dr.intersects( rectangle ) ) {
+                    dr.unionRectangle( rectangle );
+
+                    for( j=0; j<cdr.length; j++ ) {
+                        if ( j!==i ) {
+                            drj= cdr[j];
+                            if ( drj.intersects( dr ) ) {
+                                dr.unionRectangle( drj );
+                                drj.setEmpty();
+                            }
+                        }
+                    }
+
+                    for( j=0; j<cdr.length; j++ ) {
+                        if ( cdr[j].isEmpty() ) {
+                            cdr.splice( j, 1 );
+                        }
+                    }
+
+                    return;
+                }
+            }
+
+            this.dirtyRectsIndex++;
+
+            if ( this.dirtyRectsIndex>=this.dirtyRects.length ) {
+                for( i=0; i<32; i++ ) {
+                    this.dirtyRects.push( new CAAT.Rectangle() );
+                }
+            }
+
+            var r= this.dirtyRects[ this.dirtyRectsIndex ];
+
+            r.x= rectangle.x;
+            r.y= rectangle.y;
+            r.x1= rectangle.x1;
+            r.y1= rectangle.y1;
+            r.width= rectangle.width;
+            r.height= rectangle.height;
+
+            this.cDirtyRects.push( r );
+
         },
         /**
          * This method draws an Scene to an offscreen canvas. This offscreen canvas is also a child of
@@ -1228,6 +1321,9 @@
          */
         setClear : function(clear) {
             this.clear = clear;
+            if ( this.clear===CAAT.Director.CLEAR_DIRTY_RECTS ) {
+                this.dirtyRectsEnabled= true;
+            }
             return this;
         },
         /**

@@ -1,3 +1,14 @@
+01/22/2012 *0.2 Build  18*
+--------------------------
+
+* Added dirty rectangles clear support.
+  To be enabled a call director.setClear( CAAT.Director.CLEAR_DIRTY_RECTS ); must be performed.
+  Every actor which changes affine transformation, either position, rotation or scale, will automatically
+  be invalidated. In you want any other actor to be explicitly invalidated, just call actor.invalidate();
+* Cleaned some ctx.save/restore code.
+* Modified license file to reflect copyright 2012.
+
+
 01/20/2012 *0.1 Build 631*
 --------------------------
 
@@ -17,7 +28,7 @@
 01/19/2012 *0.1 Build 610*
 --------------------------
 
-* Fixed a but which prevented scaled directors to properly show bounding boxes.
+* Fixed a bug which prevented scaled directors to properly show bounding boxes.
 * Merged fix for template with splash screen.
 
 01/18/2012 *0.1 Build 607*

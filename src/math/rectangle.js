@@ -123,6 +123,22 @@
             this.union( rectangle.x,  rectangle.y1 );
             this.union( rectangle.x1, rectangle.y1 );
             return this;
+        },
+        intersects : function( r ) {
+            if ( r.x1< this.x ) {
+                return false;
+            }
+            if ( r.x > this.x1 ) {
+                return false;
+            }
+            if ( r.y1< this.y ) {
+                return false;
+            }
+            if ( r.y> this.y1 ) {
+                return false;
+            }
+
+            return true;
         }
 	};
 })();
