@@ -1,6 +1,7 @@
-01/22/2012 *0.2 Build  18*
+01/22/2012 *0.2 Build  20*
 --------------------------
 
+* Removed some debug code.
 * Added dirty rectangles clear support.
   To be enabled a call director.setClear( CAAT.Director.CLEAR_DIRTY_RECTS ); must be performed.
   Every actor which changes affine transformation, either position, rotation or scale, will automatically

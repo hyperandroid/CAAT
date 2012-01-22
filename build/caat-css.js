@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.2 build: 18
+Version: 0.2 build: 20
 
 Created on:
 DATE: 2012-01-22
-TIME: 17:57:15
+TIME: 18:10:40
 */
 
 
@@ -7563,6 +7563,7 @@ var cp1= proxy(
 
     CAAT.Director.CLEAR_DIRTY_RECTS= 1;
     CAAT.Director.CLEAR_ALL=         true;
+    CAAT.Director.CLEAR_NONE=        false;
 
     CAAT.Director.prototype = {
 
@@ -8014,7 +8015,12 @@ var cp1= proxy(
             return this;
         },
 
-
+        /**
+         *
+         * Reset statistics information.
+         *
+         * @private
+         */
         resetStats : function() {
             this.statistics.size_total= 0;
             this.statistics.size_active=0;
@@ -8026,6 +8032,9 @@ var cp1= proxy(
          * The director is fed with the elapsed time value to maintain a virtual timeline.
          * This virtual timeline will provide each Scene with its own virtual timeline, and will only
          * feed time when the Scene is the current Scene, or is being switched.
+         *
+         * If dirty rectangles are enabled and canvas is used for rendering, the dirty rectangles will be
+         * set up as a single clip area.
          *
          * @param time {number} integer indicating the elapsed time between two consecutive frames of the
          * Director.
@@ -8087,7 +8096,6 @@ var cp1= proxy(
                 if ( this.dirtyRectsEnabled ) {
 
                     ctx.beginPath();
-ctx.rect(0,0,100,40);
                     var dr= this.cDirtyRects;
                     for( i=0; i<dr.length; i++ ) {
                         var drr= dr[i];
@@ -8165,8 +8173,17 @@ ctx.rect(0,0,100,40);
             return this;
         },
         /**
+         * Add a rectangle to the list of dirty screen areas which should be redrawn.
+         * This is the opposite method to clear the whole screen and repaint everything again.
+         * Despite i'm not very fond of dirty rectangles because it needs some extra calculations, this
+         * procedure has shown to be speeding things up under certain situations. Nevertheless it doesn't or
+         * even lowers performance under others, so it is a developer choice to activate them via a call to
+         * setClear( CAAT.Director.CLEAR_DIRTY_RECTS ).
+         *
+         * This function, not only tracks a list of dirty rectangles, but tries to optimize the list. Overlapping
+         * rectangles will be removed and intersecting ones will be unioned.
+         *
          * Before calling this method, check if this.dirtyRectsEnabled is true.
-
          *
          * @param rectangle {CAAT.Rectangle}
          */
@@ -8823,7 +8840,14 @@ ctx.rect(0,0,100,40);
         /**
          * This method states whether the director must clear background before rendering
          * each frame.
-         * @param clear {boolean} a boolean indicating whether to clear the screen before scene draw.
+         *
+         * The clearing method could be:
+         *  + CAAT.Director.CLEAR_ALL. previous to draw anything on screen the canvas will have clearRect called on it.
+         *  + CAAT.Director.CLEAR_DIRTY_RECTS. Actors marked as invalid, or which have been moved, rotated or scaled
+         *    will have their areas redrawn.
+         *  + CAAT.Director.CLEAR_NONE. clears nothing.
+         *
+         * @param clear {CAAT.Director.CLEAR_ALL |ÊCAAT.Director.CLEAR_NONE | CAAT.Director.CLEAR_DIRTY_RECTS}
          * @return this.
          */
         setClear : function(clear) {

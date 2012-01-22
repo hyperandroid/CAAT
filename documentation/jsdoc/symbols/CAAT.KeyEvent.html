@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - CAAT.Curve</title>
+		<title>JsDoc Reference - CAAT.KeyEvent</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -290,7 +290,7 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class CAAT.Curve
+				Class CAAT.KeyEvent
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -301,13 +301,13 @@ ul.inheritsList
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_math_bezier.js.html">bezier.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_model_mouseevent.js.html">mouseevent.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class CAAT.Curve.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class CAAT.KeyEvent.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -320,9 +320,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/CAAT.Curve.html#constructor">CAAT.Curve</a></b>()
+								<b><a href="../symbols/CAAT.KeyEvent.html#constructor">CAAT.KeyEvent</a></b>(keyCode, up_or_down, modifiers, originalEvent)
 							</div>
-							<div class="description">Curve class is the base for all curve solvers available in CAAT.</div>
+							<div class="description">Define a key event.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -336,7 +336,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class CAAT.Curve.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class CAAT.KeyEvent.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -349,7 +349,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#applyAsPath">applyAsPath</a></b>(ctx)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.KeyEvent.html#getAction">getAction</a></b>()
 								</div>
 								<div class="description"></div>
 							</td>
@@ -358,61 +358,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#calcLength">calcLength</a></b>()
-								</div>
-								<div class="description">Calculate the curve length by incrementally solving the curve every substep=CAAT.Curve.k.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#endCurvePosition">endCurvePosition</a></b>(point)
-								</div>
-								<div class="description">Return the first curve control point.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#getBoundingBox">getBoundingBox</a></b>(rectangle)
-								</div>
-								<div class="description">Calculates a curve bounding box.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#getContour">getContour</a></b>(numSamples)
-								</div>
-								<div class="description">Get an array of points defining the curve contour.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#getLength">getLength</a></b>()
-								</div>
-								<div class="description">Return the cached curve length.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#paint">paint</a></b>(director)
-								</div>
-								<div class="description">Paint the curve control points.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#setPoint">setPoint</a></b>(point, index)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.KeyEvent.html#getKeyCode">getKeyCode</a></b>()
 								</div>
 								<div class="description"></div>
 							</td>
@@ -421,7 +367,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#setPoints">setPoints</a></b>(points)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.KeyEvent.html#getSourceEvent">getSourceEvent</a></b>()
 								</div>
 								<div class="description"></div>
 							</td>
@@ -430,27 +376,45 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#solve">solve</a></b>(point, t)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.KeyEvent.html#isAltPressed">isAltPressed</a></b>()
 								</div>
-								<div class="description">This method must be overriden by subclasses.</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#startCurvePosition">startCurvePosition</a></b>(point)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.KeyEvent.html#isControlPressed">isControlPressed</a></b>()
 								</div>
-								<div class="description">Return the last curve control point.</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#update">update</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/CAAT.KeyEvent.html#isShiftPressed">isShiftPressed</a></b>()
 								</div>
-								<div class="description">Signal the curve has been modified and recalculate curve length.</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.KeyEvent.html#modifiers">modifiers</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.KeyEvent.html#preventDefault">preventDefault</a></b>()
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -471,17 +435,46 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>CAAT.Curve</b>()
+						<b>CAAT.KeyEvent</b>(keyCode, up_or_down, modifiers, originalEvent)
 				</div>
 				
 				<div class="description">
-					Curve class is the base for all curve solvers available in CAAT.
+					Define a key event.
 					
 				</div>
 				
 				
 				
 				
+					
+						<dl class="detailList">
+						<dt class="heading">Parameters:</dt>
+						
+							<dt>
+								 <b>keyCode</b>
+								
+							</dt>
+								<dd></dd>
+						
+							<dt>
+								 <b>up_or_down</b>
+								
+							</dt>
+								<dd></dd>
+						
+							<dt>
+								 <b>modifiers</b>
+								
+							</dt>
+								<dd></dd>
+						
+							<dt>
+								 <b>originalEvent</b>
+								
+							</dt>
+								<dd></dd>
+						
+						</dl>
 					
 					
 					
@@ -502,11 +495,11 @@ ul.inheritsList
 					Method Detail
 				</div>
 				
-					<a name="applyAsPath"> </a>
+					<a name="getAction"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>applyAsPath</b>(ctx)
+					<b>getAction</b>()
 					
 					</div>
 					<div class="description">
@@ -517,17 +510,6 @@ ul.inheritsList
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>ctx</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
 						
 						
 						
@@ -538,151 +520,21 @@ ul.inheritsList
 
 					<hr />
 				
-					<a name="calcLength"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{number}</span>
-					<b>calcLength</b>()
-					
-					</div>
-					<div class="description">
-						Calculate the curve length by incrementally solving the curve every substep=CAAT.Curve.k. This value defaults
-to .05 so at least 20 iterations will be performed.
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{number}</span> the approximate curve length.</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="endCurvePosition"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span>
-					<b>endCurvePosition</b>(point)
-					
-					</div>
-					<div class="description">
-						Return the first curve control point.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>point</b>
-									
-								</dt>
-								<dd>{CAAT.Point}</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span> </dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="getBoundingBox"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{<a href="../symbols/CAAT.Rectangle.html">CAAT.Rectangle</a>}</span>
-					<b>getBoundingBox</b>(rectangle)
-					
-					</div>
-					<div class="description">
-						Calculates a curve bounding box.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>rectangle</b>
-									
-								</dt>
-								<dd>{CAAT.Rectangle} a rectangle to hold the bounding box.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Rectangle.html">CAAT.Rectangle</a>}</span> the rectangle parameter.</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="getContour"> </a>
+					<a name="getKeyCode"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>getContour</b>(numSamples)
+					<b>getKeyCode</b>()
 					
 					</div>
 					<div class="description">
-						Get an array of points defining the curve contour.
+						
 						
 						
 					</div>
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>numSamples</b>
-									
-								</dt>
-								<dd>{number} number of segments to get.</dd>
-							
-							</dl>
 						
 						
 						
@@ -693,64 +545,21 @@ to .05 so at least 20 iterations will be performed.
 
 					<hr />
 				
-					<a name="getLength"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{number}</span>
-					<b>getLength</b>()
-					
-					</div>
-					<div class="description">
-						Return the cached curve length.
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{number}</span> the cached curve length.</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="paint"> </a>
+					<a name="getSourceEvent"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>paint</b>(director)
+					<b>getSourceEvent</b>()
 					
 					</div>
 					<div class="description">
-						Paint the curve control points.
+						
 						
 						
 					</div>
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>director</b>
-									
-								</dt>
-								<dd>{CAAT.Director}</dd>
-							
-							</dl>
 						
 						
 						
@@ -761,11 +570,11 @@ to .05 so at least 20 iterations will be performed.
 
 					<hr />
 				
-					<a name="setPoint"> </a>
+					<a name="isAltPressed"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>setPoint</b>(point, index)
+					<b>isAltPressed</b>()
 					
 					</div>
 					<div class="description">
@@ -776,23 +585,6 @@ to .05 so at least 20 iterations will be performed.
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>point</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>index</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
 						
 						
 						
@@ -803,11 +595,11 @@ to .05 so at least 20 iterations will be performed.
 
 					<hr />
 				
-					<a name="setPoints"> </a>
+					<a name="isControlPressed"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>setPoints</b>(points)
+					<b>isControlPressed</b>()
 					
 					</div>
 					<div class="description">
@@ -818,17 +610,6 @@ to .05 so at least 20 iterations will be performed.
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>points</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
 						
 						
 						
@@ -839,16 +620,15 @@ to .05 so at least 20 iterations will be performed.
 
 					<hr />
 				
-					<a name="solve"> </a>
+					<a name="isShiftPressed"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span>
-					<b>solve</b>(point, t)
+					
+					<b>isShiftPressed</b>()
 					
 					</div>
 					<div class="description">
-						This method must be overriden by subclasses. It is called whenever the curve must be solved for some time=t.
-The t parameter must be in the range 0..1
+						
 						
 						
 					</div>
@@ -856,48 +636,24 @@ The t parameter must be in the range 0..1
 					
 					
 						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>point</b>
-									
-								</dt>
-								<dd>{CAAT.Point} to store curve solution for t.</dd>
-							
-								<dt>
-									<b>t</b>
-									
-								</dt>
-								<dd>{number}</dd>
-							
-							</dl>
 						
 						
 						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span> the point parameter.</dd>
-							
-							</dl>
 						
 						
 						
 
 					<hr />
 				
-					<a name="startCurvePosition"> </a>
+					<a name="modifiers"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span>
-					<b>startCurvePosition</b>(point)
+					
+					<b>modifiers</b>()
 					
 					</div>
 					<div class="description">
-						Return the last curve control point.
+						
 						
 						
 					</div>
@@ -905,42 +661,24 @@ The t parameter must be in the range 0..1
 					
 					
 						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>point</b>
-									
-								</dt>
-								<dd>{CAAT.Point}</dd>
-							
-							</dl>
 						
 						
 						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span> </dd>
-							
-							</dl>
 						
 						
 						
 
 					<hr />
 				
-					<a name="update"> </a>
+					<a name="preventDefault"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>update</b>()
+					<b>preventDefault</b>()
 					
 					</div>
 					<div class="description">
-						Signal the curve has been modified and recalculate curve length.
+						
 						
 						
 					</div>
@@ -969,7 +707,7 @@ The t parameter must be in the range 0..1
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Jan 22 2012 18:11:06 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Jan 22 2012 18:11:08 GMT+0100 (CET)
 		</div>
 	</body>
 </html>
