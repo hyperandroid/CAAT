@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.2 build: 34
+Version: 0.2 build: 38
 
 Created on:
 DATE: 2012-01-23
-TIME: 18:06:09
+TIME: 23:04:31
 */
 
 
@@ -9153,7 +9153,7 @@ var cp1= proxy(
                 if ( this.dirtyRectsEnabled ) {
 
                     ctx.beginPath();
-
+ctx.rect(0,0,120,40);
                     var dr= this.cDirtyRects;
                     for( i=0; i<dr.length; i++ ) {
                         var drr= dr[i];
@@ -9255,18 +9255,27 @@ var cp1= proxy(
 
             var i, dr, j, drj;
             var cdr= this.cDirtyRects;
+
             for( i=0; i<cdr.length; i++ ) {
                 dr= cdr[i];
-                if ( dr.intersects( rectangle ) ) {
-                    dr.unionRectangle( rectangle );
+                if ( !dr.isEmpty() && dr.intersects( rectangle ) ) {
+                    var intersected= true;
+                    while( intersected ) {
+                        dr.unionRectangle( rectangle );
 
-                    for( j=0; j<cdr.length; j++ ) {
-                        if ( j!==i ) {
-                            drj= cdr[j];
-                            if ( drj.intersects( dr ) ) {
-                                dr.unionRectangle( drj );
-                                drj.setEmpty();
+                        for( j=0; j<cdr.length; j++ ) {
+                            if ( j!==i ) {
+                                drj= cdr[j];
+                                if ( !drj.isEmpty() && drj.intersects( dr ) ) {
+                                    dr.unionRectangle( drj );
+                                    drj.setEmpty();
+                                    break;
+                                }
                             }
+                        }
+
+                        if ( j==cdr.length ) {
+                            intersected= false;
                         }
                     }
 

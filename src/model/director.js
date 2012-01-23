@@ -589,7 +589,7 @@
                 if ( this.dirtyRectsEnabled ) {
 
                     ctx.beginPath();
-
+ctx.rect(0,0,120,40);
                     var dr= this.cDirtyRects;
                     for( i=0; i<dr.length; i++ ) {
                         var drr= dr[i];
@@ -691,18 +691,27 @@
 
             var i, dr, j, drj;
             var cdr= this.cDirtyRects;
+
             for( i=0; i<cdr.length; i++ ) {
                 dr= cdr[i];
-                if ( dr.intersects( rectangle ) ) {
-                    dr.unionRectangle( rectangle );
+                if ( !dr.isEmpty() && dr.intersects( rectangle ) ) {
+                    var intersected= true;
+                    while( intersected ) {
+                        dr.unionRectangle( rectangle );
 
-                    for( j=0; j<cdr.length; j++ ) {
-                        if ( j!==i ) {
-                            drj= cdr[j];
-                            if ( drj.intersects( dr ) ) {
-                                dr.unionRectangle( drj );
-                                drj.setEmpty();
+                        for( j=0; j<cdr.length; j++ ) {
+                            if ( j!==i ) {
+                                drj= cdr[j];
+                                if ( !drj.isEmpty() && drj.intersects( dr ) ) {
+                                    dr.unionRectangle( drj );
+                                    drj.setEmpty();
+                                    break;
+                                }
                             }
+                        }
+
+                        if ( j==cdr.length ) {
+                            intersected= false;
                         }
                     }
 

@@ -1,7 +1,7 @@
-01/22/2012 *0.2 Build  34*
+01/23/2012 *0.2 Build  38*
 --------------------------
 
-* Updated dirty rects code. Was drawing the whole scene. Sorry for the inconvenience.
+* Improved Dirty rects performance.
 
 01/22/2012 *0.2 Build  20*
 --------------------------
