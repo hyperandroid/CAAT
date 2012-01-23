@@ -1,3 +1,37 @@
+01/22/2012 *0.2 Build  20*
+--------------------------
+
+* Removed some debug code.
+* Added dirty rectangles clear support.
+  To be enabled a call director.setClear( CAAT.Director.CLEAR_DIRTY_RECTS ); must be performed.
+  Every actor which changes affine transformation, either position, rotation or scale, will automatically
+  be invalidated. In you want any other actor to be explicitly invalidated, just call actor.invalidate();
+* Cleaned some ctx.save/restore code.
+* Modified license file to reflect copyright 2012.
+
+
+01/20/2012 *0.1 Build 631*
+--------------------------
+
+* Added methods initializeAsFontMap, drawString, stringWidth to CAAT.SpriteImage. Those methods allow to
+  draw strings via textured fonts. Every character will be defined besides x,y,width,height in texture,
+  by xoffset, yoffset, xadvance.
+* Removed unneeded actor initialization inverse matrices.
+
+01/19/2012 *0.1 Build 627*
+--------------------------
+
+* Added clip paths capability to be scaled accordingly to director's affine transform.
+* Modified CAAT.Path bounding box to keep track of path's position. So if a clip path is defined as:
+  new CAAT.Path().beginPath(200,200).addRectangleTo(300,300).endPath() there's no need to still apply the workaround
+  of setting a behavior to show it properly.
+
+01/19/2012 *0.1 Build 610*
+--------------------------
+
+* Fixed a bug which prevented scaled directors to properly show bounding boxes.
+* Merged fix for template with splash screen.
+
 01/18/2012 *0.1 Build 607*
 --------------------------
 

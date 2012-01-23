@@ -43,10 +43,20 @@
         this.lastSelectedActor = null;
         this.dragging = false;
 
+        this.cDirtyRects= [];
+        this.dirtyRects= [];
+        for( var i=0; i<64; i++ ) {
+            this.dirtyRects.push( new CAAT.Rectangle() );
+        }
+        this.dirtyRectsIndex=   0;
+
         return this;
     };
 
 
+    CAAT.Director.CLEAR_DIRTY_RECTS= 1;
+    CAAT.Director.CLEAR_ALL=         true;
+    CAAT.Director.CLEAR_NONE=        false;
 
     CAAT.Director.prototype = {
 
@@ -112,10 +122,15 @@
         RESIZE_BOTH:        8,
         RESIZE_PROPORTIONAL:16,
         resize:             1,
-        onResizeCallback:   null,
+        onResizeCallback    :   null,
 
-        __gestureScale :    0,
-        __gestureRotation : 0,
+        __gestureScale      :   0,
+        __gestureRotation   :   0,
+
+        dirtyRects          :   null,
+        cDirtyRects         :   null,
+        dirtyRectsIndex     :   0,
+        dirtyRectsEnabled   :   false,
 
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
@@ -493,7 +508,12 @@
             return this;
         },
 
-
+        /**
+         *
+         * Reset statistics information.
+         *
+         * @private
+         */
         resetStats : function() {
             this.statistics.size_total= 0;
             this.statistics.size_active=0;
@@ -505,6 +525,9 @@
          * The director is fed with the elapsed time value to maintain a virtual timeline.
          * This virtual timeline will provide each Scene with its own virtual timeline, and will only
          * feed time when the Scene is the current Scene, or is being switched.
+         *
+         * If dirty rectangles are enabled and canvas is used for rendering, the dirty rectangles will be
+         * set up as a single clip area.
          *
          * @param time {number} integer indicating the elapsed time between two consecutive frames of the
          * Director.
@@ -524,6 +547,8 @@
              */
             var ne = this.childrenList.length;
             var i, tt, c;
+            var ctx= this.ctx;
+
             if (this.glEnabled) {
 
                 this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
@@ -557,11 +582,23 @@
                 this.glFlush();
 
             } else {
-                this.ctx.globalAlpha = 1;
-                this.ctx.globalCompositeOperation = 'source-over';
+                ctx.globalAlpha = 1;
+                ctx.globalCompositeOperation = 'source-over';
 
-                if (this.clear) {
-                    this.ctx.clearRect(0, 0, this.width, this.height);
+                ctx.save();
+                if ( this.dirtyRectsEnabled ) {
+
+                    ctx.beginPath();
+                    var dr= this.cDirtyRects;
+                    for( i=0; i<dr.length; i++ ) {
+                        var drr= dr[i];
+                        if ( !drr.isEmpty() ) {
+                            ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
+                        }
+                    }
+                    ctx.clip();
+                } else if (this.clear===true ) {
+                    ctx.clearRect(0, 0, this.width, this.height);
                 }
 
                 for (i = 0; i < ne; i++) {
@@ -569,7 +606,7 @@
 
                     if (c.isInAnimationFrame(this.time)) {
                         tt = c.time - c.start_time;
-                        this.ctx.save();
+                        ctx.save();
 
                         if ( c.onRenderStart ) {
                             c.onRenderStart(tt);
@@ -578,11 +615,12 @@
                         if ( c.onRenderEnd ) {
                             c.onRenderEnd(tt);
                         }
-                        this.ctx.restore();
+                        ctx.restore();
 
                         if (CAAT.DEBUGAABB) {
-                            this.ctx.globalAlpha= 1;
-                            this.ctx.globalCompositeOperation= 'source-over';
+                            ctx.globalAlpha= 1;
+                            ctx.globalCompositeOperation= 'source-over';
+                            this.modelViewMatrix.transformRenderingContextSet( ctx );
                             c.drawScreenBoundingBox(this, tt);
                         }
 
@@ -597,6 +635,8 @@
 
                     }
                 }
+
+                ctx.restore();
             }
 
             this.frameCounter++;
@@ -610,7 +650,10 @@
          * @param time {number} director time.
          */
         animate : function(director, time) {
-            this.setModelViewMatrix(this.glEnabled);
+            this.setModelViewMatrix(this);
+
+            this.dirtyRectsIndex= -1;
+            this.cDirtyRects= [];
 
             var cl= this.childrenList;
             var cli;
@@ -621,6 +664,74 @@
             }
 
             return this;
+        },
+        /**
+         * Add a rectangle to the list of dirty screen areas which should be redrawn.
+         * This is the opposite method to clear the whole screen and repaint everything again.
+         * Despite i'm not very fond of dirty rectangles because it needs some extra calculations, this
+         * procedure has shown to be speeding things up under certain situations. Nevertheless it doesn't or
+         * even lowers performance under others, so it is a developer choice to activate them via a call to
+         * setClear( CAAT.Director.CLEAR_DIRTY_RECTS ).
+         *
+         * This function, not only tracks a list of dirty rectangles, but tries to optimize the list. Overlapping
+         * rectangles will be removed and intersecting ones will be unioned.
+         *
+         * Before calling this method, check if this.dirtyRectsEnabled is true.
+         *
+         * @param rectangle {CAAT.Rectangle}
+         */
+        addDirtyRect : function( rectangle ) {
+
+            if ( rectangle.isEmpty() ) {
+                return;
+            }
+
+            var i, dr, j, drj;
+            var cdr= this.cDirtyRects;
+            for( i=0; i<cdr.length; i++ ) {
+                dr= cdr[i];
+                if ( dr.intersects( rectangle ) ) {
+                    dr.unionRectangle( rectangle );
+
+                    for( j=0; j<cdr.length; j++ ) {
+                        if ( j!==i ) {
+                            drj= cdr[j];
+                            if ( drj.intersects( dr ) ) {
+                                dr.unionRectangle( drj );
+                                drj.setEmpty();
+                            }
+                        }
+                    }
+
+                    for( j=0; j<cdr.length; j++ ) {
+                        if ( cdr[j].isEmpty() ) {
+                            cdr.splice( j, 1 );
+                        }
+                    }
+
+                    return;
+                }
+            }
+
+            this.dirtyRectsIndex++;
+
+            if ( this.dirtyRectsIndex>=this.dirtyRects.length ) {
+                for( i=0; i<32; i++ ) {
+                    this.dirtyRects.push( new CAAT.Rectangle() );
+                }
+            }
+
+            var r= this.dirtyRects[ this.dirtyRectsIndex ];
+
+            r.x= rectangle.x;
+            r.y= rectangle.y;
+            r.x1= rectangle.x1;
+            r.y1= rectangle.y1;
+            r.width= rectangle.width;
+            r.height= rectangle.height;
+
+            this.cDirtyRects.push( r );
+
         },
         /**
          * This method draws an Scene to an offscreen canvas. This offscreen canvas is also a child of
@@ -1222,11 +1333,21 @@
         /**
          * This method states whether the director must clear background before rendering
          * each frame.
-         * @param clear {boolean} a boolean indicating whether to clear the screen before scene draw.
+         *
+         * The clearing method could be:
+         *  + CAAT.Director.CLEAR_ALL. previous to draw anything on screen the canvas will have clearRect called on it.
+         *  + CAAT.Director.CLEAR_DIRTY_RECTS. Actors marked as invalid, or which have been moved, rotated or scaled
+         *    will have their areas redrawn.
+         *  + CAAT.Director.CLEAR_NONE. clears nothing.
+         *
+         * @param clear {CAAT.Director.CLEAR_ALL |ÊCAAT.Director.CLEAR_NONE | CAAT.Director.CLEAR_DIRTY_RECTS}
          * @return this.
          */
         setClear : function(clear) {
             this.clear = clear;
+            if ( this.clear===CAAT.Director.CLEAR_DIRTY_RECTS ) {
+                this.dirtyRectsEnabled= true;
+            }
             return this;
         },
         /**
