@@ -1,3 +1,8 @@
+01/22/2012 *0.2 Build  34*
+--------------------------
+
+* Updated dirty rects code. Was drawing the whole scene. Sorry for the inconvenience.
+
 01/22/2012 *0.2 Build  20*
 --------------------------
 

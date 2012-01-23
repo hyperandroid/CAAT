@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.2 build: 20
+Version: 0.2 build: 34
 
 Created on:
-DATE: 2012-01-22
-TIME: 18:10:39
+DATE: 2012-01-23
+TIME: 18:06:09
 */
 
 
@@ -6142,6 +6142,8 @@ var cp1= proxy(
 
             this.inFrame= true;
 
+
+
             return true;
 		},
         /**
@@ -6244,7 +6246,7 @@ var cp1= proxy(
                 this.worldModelViewMatrix.identity();
             }
 
-            //if ( (CAAT.DEBUGAABB || glEnabled) && (this.dirty || this.wdirty ) ) {
+//if ( (CAAT.DEBUGAABB || glEnabled) && (this.dirty || this.wdirty ) ) {
             // screen bounding boxes will always be calculated.
             if ( this.dirty || this.wdirty || this.invalid ) {
                 if ( director.dirtyRectsEnabled ) {
@@ -6257,8 +6259,6 @@ var cp1= proxy(
             }
             this.dirty= false;
             this.invalid= false;
-
-            return this;
         },
         /**
          * Calculates the 2D bounding box in canvas coordinates of the Actor.
@@ -6876,7 +6876,7 @@ var cp1= proxy(
             for( i=0, l=markDelete.length; i<l; i++ ) {
                 var md= markDelete[i];
                 md.destroy(time);
-                if ( !director.dirtyRectsEnabled ) {
+                if ( director.dirtyRectsEnabled ) {
                     director.addDirtyRect( md.AABB );
                 }
             }
@@ -9153,6 +9153,7 @@ var cp1= proxy(
                 if ( this.dirtyRectsEnabled ) {
 
                     ctx.beginPath();
+
                     var dr= this.cDirtyRects;
                     for( i=0; i<dr.length; i++ ) {
                         var drr= dr[i];
@@ -9216,6 +9217,8 @@ var cp1= proxy(
         animate : function(director, time) {
             this.setModelViewMatrix(this);
 
+            this.dirty= false;
+            this.invalid= false;
             this.dirtyRectsIndex= -1;
             this.cDirtyRects= [];
 

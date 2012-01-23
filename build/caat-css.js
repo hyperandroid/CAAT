@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.2 build: 20
+Version: 0.2 build: 34
 
 Created on:
-DATE: 2012-01-22
-TIME: 18:10:40
+DATE: 2012-01-23
+TIME: 18:06:09
 */
 
 
@@ -8096,6 +8096,7 @@ var cp1= proxy(
                 if ( this.dirtyRectsEnabled ) {
 
                     ctx.beginPath();
+
                     var dr= this.cDirtyRects;
                     for( i=0; i<dr.length; i++ ) {
                         var drr= dr[i];
@@ -8159,6 +8160,8 @@ var cp1= proxy(
         animate : function(director, time) {
             this.setModelViewMatrix(this);
 
+            this.dirty= false;
+            this.invalid= false;
             this.dirtyRectsIndex= -1;
             this.cDirtyRects= [];
 

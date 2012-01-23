@@ -589,6 +589,7 @@
                 if ( this.dirtyRectsEnabled ) {
 
                     ctx.beginPath();
+
                     var dr= this.cDirtyRects;
                     for( i=0; i<dr.length; i++ ) {
                         var drr= dr[i];
@@ -652,6 +653,8 @@
         animate : function(director, time) {
             this.setModelViewMatrix(this);
 
+            this.dirty= false;
+            this.invalid= false;
             this.dirtyRectsIndex= -1;
             this.cDirtyRects= [];
 
