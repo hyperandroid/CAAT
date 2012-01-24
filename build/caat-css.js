@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.2 build: 20
+Version: 0.2 build: 40
 
 Created on:
-DATE: 2012-01-22
-TIME: 18:10:40
+DATE: 2012-01-23
+TIME: 23:11:22
 */
 
 
@@ -8159,6 +8159,8 @@ var cp1= proxy(
         animate : function(director, time) {
             this.setModelViewMatrix(this);
 
+            this.dirty= false;
+            this.invalid= false;
             this.dirtyRectsIndex= -1;
             this.cDirtyRects= [];
 
@@ -8195,18 +8197,27 @@ var cp1= proxy(
 
             var i, dr, j, drj;
             var cdr= this.cDirtyRects;
+
             for( i=0; i<cdr.length; i++ ) {
                 dr= cdr[i];
-                if ( dr.intersects( rectangle ) ) {
-                    dr.unionRectangle( rectangle );
+                if ( !dr.isEmpty() && dr.intersects( rectangle ) ) {
+                    var intersected= true;
+                    while( intersected ) {
+                        dr.unionRectangle( rectangle );
 
-                    for( j=0; j<cdr.length; j++ ) {
-                        if ( j!==i ) {
-                            drj= cdr[j];
-                            if ( drj.intersects( dr ) ) {
-                                dr.unionRectangle( drj );
-                                drj.setEmpty();
+                        for( j=0; j<cdr.length; j++ ) {
+                            if ( j!==i ) {
+                                drj= cdr[j];
+                                if ( !drj.isEmpty() && drj.intersects( dr ) ) {
+                                    dr.unionRectangle( drj );
+                                    drj.setEmpty();
+                                    break;
+                                }
                             }
+                        }
+
+                        if ( j==cdr.length ) {
+                            intersected= false;
                         }
                     }
 

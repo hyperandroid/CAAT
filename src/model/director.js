@@ -652,6 +652,8 @@
         animate : function(director, time) {
             this.setModelViewMatrix(this);
 
+            this.dirty= false;
+            this.invalid= false;
             this.dirtyRectsIndex= -1;
             this.cDirtyRects= [];
 
@@ -688,18 +690,27 @@
 
             var i, dr, j, drj;
             var cdr= this.cDirtyRects;
+
             for( i=0; i<cdr.length; i++ ) {
                 dr= cdr[i];
-                if ( dr.intersects( rectangle ) ) {
-                    dr.unionRectangle( rectangle );
+                if ( !dr.isEmpty() && dr.intersects( rectangle ) ) {
+                    var intersected= true;
+                    while( intersected ) {
+                        dr.unionRectangle( rectangle );
 
-                    for( j=0; j<cdr.length; j++ ) {
-                        if ( j!==i ) {
-                            drj= cdr[j];
-                            if ( drj.intersects( dr ) ) {
-                                dr.unionRectangle( drj );
-                                drj.setEmpty();
+                        for( j=0; j<cdr.length; j++ ) {
+                            if ( j!==i ) {
+                                drj= cdr[j];
+                                if ( !drj.isEmpty() && drj.intersects( dr ) ) {
+                                    dr.unionRectangle( drj );
+                                    drj.setEmpty();
+                                    break;
+                                }
                             }
+                        }
+
+                        if ( j==cdr.length ) {
+                            intersected= false;
                         }
                     }
 

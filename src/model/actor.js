@@ -1134,6 +1134,8 @@
 
             this.inFrame= true;
 
+
+
             return true;
 		},
         /**
@@ -1236,7 +1238,7 @@
                 this.worldModelViewMatrix.identity();
             }
 
-            //if ( (CAAT.DEBUGAABB || glEnabled) && (this.dirty || this.wdirty ) ) {
+//if ( (CAAT.DEBUGAABB || glEnabled) && (this.dirty || this.wdirty ) ) {
             // screen bounding boxes will always be calculated.
             if ( this.dirty || this.wdirty || this.invalid ) {
                 if ( director.dirtyRectsEnabled ) {
@@ -1249,8 +1251,6 @@
             }
             this.dirty= false;
             this.invalid= false;
-
-            return this;
         },
         /**
          * Calculates the 2D bounding box in canvas coordinates of the Actor.
@@ -1868,7 +1868,7 @@
             for( i=0, l=markDelete.length; i<l; i++ ) {
                 var md= markDelete[i];
                 md.destroy(time);
-                if ( !director.dirtyRectsEnabled ) {
+                if ( director.dirtyRectsEnabled ) {
                     director.addDirtyRect( md.AABB );
                 }
             }
