@@ -176,7 +176,7 @@
                 this.coordlist[index]= point;
             }
         },
-        applyAsPath : function( ctx ) {
+        applyAsPath : function( director ) {
         }
 	};
 })();
@@ -199,12 +199,12 @@
 		
 		cubic:		false,
 
-        applyAsPath : function( ctx ) {
+        applyAsPath : function( director ) {
 
             var cc= this.coordlist;
 
             if ( this.cubic ) {
-                ctx.bezierCurveTo(
+                director.ctx.bezierCurveTo(
                     cc[1].x,
                     cc[1].y,
                     cc[2].x,
@@ -213,7 +213,7 @@
                     cc[3].y
                 );
             } else {
-                ctx.quadraticCurveTo(
+                director.ctx.quadraticCurveTo(
                     cc[1].x,
                     cc[1].y,
                     cc[2].x,

@@ -1,3 +1,9 @@
+01/24/2012 *0.2 Build  48*
+--------------------------
+
+* Fixed Path.applyAsPath which failed to execute.
+* Fixed Path.applyAsPath which wasn't applying the mask properly.
+
 01/23/2012 *0.2 Build  40*
 --------------------------
 

@@ -364,8 +364,8 @@
 		curve:	            null,   // a CAAT.Bezier instance.
 		newPosition:		null,   // spare holder for getPosition coordinate return.
 
-        applyAsPath : function(director, ctx) {
-            this.curve.applyAsPath(director, ctx);
+        applyAsPath : function(director) {
+            this.curve.applyAsPath(director);
             return this;
         },
         setPoint : function( point, index ) {

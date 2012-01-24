@@ -1320,7 +1320,6 @@
             ctx.globalAlpha= this.frameAlpha;
 
             director.modelViewMatrix.transformRenderingContextSet( ctx );
-            ctx.save();
 
             this.worldModelViewMatrix.transformRenderingContext(ctx);
 
@@ -1335,8 +1334,6 @@
             }
 
             this.paint(director, time);
-
-            ctx.restore();
 
             return true;
         },
@@ -1752,6 +1749,8 @@
 
             var ctx= director.ctx;
 
+            ctx.save();
+
             CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
             if ( !this.isGlobalAlpha ) {
                 this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
@@ -1762,6 +1761,8 @@
                     actor.paintActor(director,time);
                 }
             }
+
+            ctx.restore();
 
             return true;
         },
