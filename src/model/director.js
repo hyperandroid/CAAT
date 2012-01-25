@@ -589,6 +589,7 @@
                 if ( this.dirtyRectsEnabled ) {
 
                     ctx.beginPath();
+ctx.rect(0,0,120,40);
                     var dr= this.cDirtyRects;
                     for( i=0; i<dr.length; i++ ) {
                         var drr= dr[i];
@@ -606,7 +607,7 @@
 
                     if (c.isInAnimationFrame(this.time)) {
                         tt = c.time - c.start_time;
-                        ctx.save();
+//                        ctx.save();
 
                         if ( c.onRenderStart ) {
                             c.onRenderStart(tt);
@@ -615,7 +616,7 @@
                         if ( c.onRenderEnd ) {
                             c.onRenderEnd(tt);
                         }
-                        ctx.restore();
+//                        ctx.restore();
 
                         if (CAAT.DEBUGAABB) {
                             ctx.globalAlpha= 1;

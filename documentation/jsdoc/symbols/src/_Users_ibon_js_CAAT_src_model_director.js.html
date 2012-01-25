@@ -614,7 +614,7 @@
 <span class='line'>607</span> 
 <span class='line'>608</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">c.isInAnimationFrame</span><span class="PUNC">(</span><span class="NAME">this.time</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>609</span> </span><span class="WHIT">                        </span><span class="NAME">tt</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">c.time</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">c.start_time</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>610</span> </span><span class="WHIT">                        </span><span class="NAME">ctx.save</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>610</span> </span><span class="COMM">//                        ctx.save();</span><span class="WHIT">
 <span class='line'>611</span> 
 <span class='line'>612</span> </span><span class="WHIT">                        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">c.onRenderStart</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>613</span> </span><span class="WHIT">                            </span><span class="NAME">c.onRenderStart</span><span class="PUNC">(</span><span class="NAME">tt</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
@@ -623,7 +623,7 @@
 <span class='line'>616</span> </span><span class="WHIT">                        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">c.onRenderEnd</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>617</span> </span><span class="WHIT">                            </span><span class="NAME">c.onRenderEnd</span><span class="PUNC">(</span><span class="NAME">tt</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>618</span> </span><span class="WHIT">                        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>619</span> </span><span class="WHIT">                        </span><span class="NAME">ctx.restore</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>619</span> </span><span class="COMM">//                        ctx.restore();</span><span class="WHIT">
 <span class='line'>620</span> 
 <span class='line'>621</span> </span><span class="WHIT">                        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">CAAT.DEBUGAABB</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>622</span> </span><span class="WHIT">                            </span><span class="NAME">ctx.globalAlpha</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">

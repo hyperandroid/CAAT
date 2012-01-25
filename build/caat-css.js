@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.2 build: 40
+Version: 0.2 build: 49
 
 Created on:
-DATE: 2012-01-23
-TIME: 23:11:22
+DATE: 2012-01-24
+TIME: 23:32:49
 */
 
 
@@ -1810,7 +1810,7 @@ var cp1= proxy(
                 this.coordlist[index]= point;
             }
         },
-        applyAsPath : function( ctx ) {
+        applyAsPath : function( director ) {
         }
 	};
 })();
@@ -1833,12 +1833,12 @@ var cp1= proxy(
 		
 		cubic:		false,
 
-        applyAsPath : function( ctx ) {
+        applyAsPath : function( director ) {
 
             var cc= this.coordlist;
 
             if ( this.cubic ) {
-                ctx.bezierCurveTo(
+                director.ctx.bezierCurveTo(
                     cc[1].x,
                     cc[1].y,
                     cc[2].x,
@@ -1847,7 +1847,7 @@ var cp1= proxy(
                     cc[3].y
                 );
             } else {
-                ctx.quadraticCurveTo(
+                director.ctx.quadraticCurveTo(
                     cc[1].x,
                     cc[1].y,
                     cc[2].x,
@@ -8096,6 +8096,7 @@ var cp1= proxy(
                 if ( this.dirtyRectsEnabled ) {
 
                     ctx.beginPath();
+ctx.rect(0,0,120,40);
                     var dr= this.cDirtyRects;
                     for( i=0; i<dr.length; i++ ) {
                         var drr= dr[i];
@@ -8113,7 +8114,7 @@ var cp1= proxy(
 
                     if (c.isInAnimationFrame(this.time)) {
                         tt = c.time - c.start_time;
-                        ctx.save();
+//                        ctx.save();
 
                         if ( c.onRenderStart ) {
                             c.onRenderStart(tt);
@@ -8122,7 +8123,7 @@ var cp1= proxy(
                         if ( c.onRenderEnd ) {
                             c.onRenderEnd(tt);
                         }
-                        ctx.restore();
+//                        ctx.restore();
 
                         if (CAAT.DEBUGAABB) {
                             ctx.globalAlpha= 1;
@@ -12961,8 +12962,8 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 		curve:	            null,   // a CAAT.Bezier instance.
 		newPosition:		null,   // spare holder for getPosition coordinate return.
 
-        applyAsPath : function(director, ctx) {
-            this.curve.applyAsPath(director, ctx);
+        applyAsPath : function(director) {
+            this.curve.applyAsPath(director);
             return this;
         },
         setPoint : function( point, index ) {
