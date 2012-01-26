@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.2 build: 49
+Version: 0.2 build: 53
 
 Created on:
-DATE: 2012-01-24
-TIME: 23:32:48
+DATE: 2012-01-26
+TIME: 21:54:26
 */
 
 
@@ -6756,7 +6756,7 @@ var cp1= proxy(
             }
 
             var ctx= director.ctx;
-            
+
             ctx.save();
 
             CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
@@ -6998,6 +6998,21 @@ var cp1= proxy(
 
             return this;
 		},
+        /**
+         * Find the first actor with the supplied ID.
+         * This method is not recommended to be used since executes a linear search.
+         * @param id
+         */
+        findActorById : function(id) {
+            var cl= this.childrenList;
+            for( var i=0, l=cl.length; i<l; i++ ) {
+                if ( cl[i].id===id ) {
+                    return cl[i];
+                }
+            }
+
+            return null;
+        },
         /**
          * Private
          * Gets a contained Actor z-index on this ActorContainer.
@@ -8129,6 +8144,23 @@ var cp1= proxy(
 
             return null;
         },
+
+        /**
+         * Set an audio object volume.
+         * @param id {object} an audio Id
+         * @param volume {number} volume to set. The volume value is not checked.
+         *
+         * @return this
+         */
+        setVolume : function( id, volume ) {
+            var audio= this.getAudio(id);
+            if ( null!=audio ) {
+                audio.volume= volume;
+            }
+
+            return this;
+        },
+
         /**
          * Plays an audio file from the cache if any sound channel is available.
          * The playing sound will occupy a sound channel and when ends playing will leave
@@ -8147,6 +8179,7 @@ var cp1= proxy(
                 var channel= this.channels.shift();
                 channel.src= audio.src;
                 channel.load();
+                channel.volume= audio.volume;
                 channel.play();
                 this.workingChannels.push(channel);
             }
@@ -9152,9 +9185,7 @@ var cp1= proxy(
 
                 ctx.save();
                 if ( this.dirtyRectsEnabled ) {
-
                     ctx.beginPath();
-ctx.rect(0,0,120,40);
                     var dr= this.cDirtyRects;
                     for( i=0; i<dr.length; i++ ) {
                         var drr= dr[i];
@@ -9834,6 +9865,9 @@ ctx.rect(0,0,120,40);
         },
         isSoundEffectsEnabled : function() {
             return this.audioManager.isSoundEffectsEnabled();
+        },
+        setVolume : function( id, volume ) {
+            return this.audioManager.setVolume( id, volume );
         },
         /**
          * Removes Director's scenes.

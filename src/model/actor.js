@@ -1991,6 +1991,21 @@
             return this;
 		},
         /**
+         * Find the first actor with the supplied ID.
+         * This method is not recommended to be used since executes a linear search.
+         * @param id
+         */
+        findActorById : function(id) {
+            var cl= this.childrenList;
+            for( var i=0, l=cl.length; i<l; i++ ) {
+                if ( cl[i].id===id ) {
+                    return cl[i];
+                }
+            }
+
+            return null;
+        },
+        /**
          * Private
          * Gets a contained Actor z-index on this ActorContainer.
          *

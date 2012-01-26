@@ -256,6 +256,23 @@
 
             return null;
         },
+
+        /**
+         * Set an audio object volume.
+         * @param id {object} an audio Id
+         * @param volume {number} volume to set. The volume value is not checked.
+         *
+         * @return this
+         */
+        setVolume : function( id, volume ) {
+            var audio= this.getAudio(id);
+            if ( null!=audio ) {
+                audio.volume= volume;
+            }
+
+            return this;
+        },
+
         /**
          * Plays an audio file from the cache if any sound channel is available.
          * The playing sound will occupy a sound channel and when ends playing will leave
@@ -274,6 +291,7 @@
                 var channel= this.channels.shift();
                 channel.src= audio.src;
                 channel.load();
+                channel.volume= audio.volume;
                 channel.play();
                 this.workingChannels.push(channel);
             }

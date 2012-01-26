@@ -587,9 +587,7 @@
 
                 ctx.save();
                 if ( this.dirtyRectsEnabled ) {
-
                     ctx.beginPath();
-ctx.rect(0,0,120,40);
                     var dr= this.cDirtyRects;
                     for( i=0; i<dr.length; i++ ) {
                         var drr= dr[i];
@@ -1269,6 +1267,9 @@ ctx.rect(0,0,120,40);
         },
         isSoundEffectsEnabled : function() {
             return this.audioManager.isSoundEffectsEnabled();
+        },
+        setVolume : function( id, volume ) {
+            return this.audioManager.setVolume( id, volume );
         },
         /**
          * Removes Director's scenes.
