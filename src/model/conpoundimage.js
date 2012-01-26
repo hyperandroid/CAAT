@@ -646,11 +646,12 @@
         },
 
         /**
-         *
-         * @param image
-         * @param map
+         * This method takes the output generated from the tool at http://labs.hyperandroid.com/static/texture/spriter.html
+         * and creates a map into that image.
+         * @param image {Image|HTMLImageElement|Canvas} an image
+         * @param map {object} the map into the image to define subimages.
          */
-        initializeAsFontMap : function( image, map ) {
+        initializeFromMap : function( image, map ) {
             this.initialize( image, 1, 1 );
 
             var key;
@@ -669,10 +670,6 @@
                     image.height
                 );
 
-                helper.xoffset= typeof value.xoffset==='undefined' ? 0 : value.xoffset;
-                helper.yoffset= typeof value.yoffset==='undefined' ? 0 : value.yoffset;
-                helper.xadvance= typeof value.xadvance==='undefined' ? value.width : value.xadvance;
-
                 this.mapInfo[key]= helper;
 
                 // set a default spriteIndex
@@ -686,13 +683,72 @@
             return this;
         },
 
+        /**
+         *
+         * @param image
+         * @param map: array of {c: "a", width: 40}
+         */
+        initializeAsFontMap : function( image, chars ) {
+            this.initialize( image, 1, 1 );
+
+            var helper;
+                x=0;
+
+            for( var i=0;i<chars.length;i++ ) {
+                var value= chars[i];
+
+                helper= new CAAT.SpriteImageHelper(
+                    x,
+                    0,
+                    value.width,
+                    image.height,
+                    image.width,
+                    image.height
+                );
+
+                x += value.width;
+
+                this.mapInfo[chars[i].c]= helper;
+
+                // set a default spriteIndex
+                if ( !i ) {
+                    this.setAnimationImageIndex( [chars[i].c] );
+                }
+            }
+
+            return this;
+        },
+
+        /**
+         * This method creates a font sprite image based on a proportional font
+         * It assumes the font is evenly spaced in the image
+         * Example:
+         * var font =   new CAAT.SpriteImage().initializeAsMonoTypeFontMap(
+         *  director.getImage('numbers'),
+         *  "0123456789"
+         * );
+         */
+
+        initializeAsMonoTypeFontMap : function( image, chars ) {
+            var map = [];
+            var charArr = chars.split("");
+            
+            var w = image.width / charArr.length >> 0;
+
+            for( var i=0;i<charArr.length;i++ ) {
+                map.push({c: charArr[i], width: w });
+            }
+
+            return this.initializeAsFontMap(image,map);
+        },
+
         stringWidth : function( str ) {
             var i,l,w=0,charInfo;
 
             for( i=0, l=str.length; i<l; i++ ) {
                   charInfo= this.mapInfo[ str.charAt(i) ];
                   if ( charInfo ) {
-                      w+= charInfo.xadvance;
+                      w+= charInfo.width;
                   }
             }
 
@@ -701,9 +757,10 @@
 
         drawString : function( ctx, str, x, y ) {
             var i, l, charInfo, w;
-
-            for( i=0, l=str.length; i<l; i++ ) {
-                  charInfo= this.mapInfo[ str.charAt(i) ];
+            var charArr = str.split("");
+            
+            for( i=0; i<charArr.length; i++ ) {
+                charInfo= this.mapInfo[ charArr[i] ];
                   if ( charInfo ) {
                       w= charInfo.width;
                       ctx.drawImage(
@@ -711,10 +768,10 @@
                           charInfo.x, charInfo.y,
                           w, charInfo.height,
 
-                          x + charInfo.xoffset, y + charInfo.yoffset,
+                          x, y,
                           w, charInfo.height );
 
-                      x+= charInfo.xadvance;
+                      x+= charInfo.width;
                   }
               }
         }
