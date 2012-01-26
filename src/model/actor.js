@@ -2347,6 +2347,10 @@
             }
 
 			var canvas= director.crc;
+			
+			if (typeof this.font === 'object') {
+				return this.drawSpriteText(director,time);
+			}
 
 			if( null!==this.font ) {
 				canvas.font= this.font;
@@ -2439,6 +2443,63 @@
 				textWidth+= charWidth;
 			}
 		},
+		
+		/**
+         * Private.
+         * Draw the text using a sprited font instead of a canvas font.
+         * @param director a valid CAAT.Director instance.
+         * @param time an integer with the Scene time the Actor is being drawn.
+         */
+		drawSpriteText: function(director, time) {
+			if (null===this.path) {
+				this.font.drawString( director.ctx, this.text, 0, 0);
+			} else {
+				this.drawSpriteTextOnPath(director, time);
+			}
+		},
+		
+		/**
+         * Private.
+         * Draw the text traversing a path using a sprited font.
+         * @param director a valid CAAT.Director instance.
+         * @param time an integer with the Scene time the Actor is being drawn.
+         */
+		drawSpriteTextOnPath: function(director, time) {
+			var context= director.ctx;
+
+			var textWidth=this.sign * this.pathInterpolator.getPosition(
+                    (time%this.pathDuration)/this.pathDuration ).y * this.path.getLength() ;
+			var p0= new CAAT.Point(0,0,0);
+			var p1= new CAAT.Point(0,0,0);
+
+			for( var i=0; i<this.text.length; i++ ) {
+				var character= this.text[i].toString();
+				var charWidth= this.font.stringWidth(character); //context.measureText( caracter ).width;
+
+				var pathLength= this.path.getLength();
+
+				var currentCurveLength= charWidth/2 + textWidth;
+
+				p0= this.path.getPositionFromLength(currentCurveLength).clone();
+				p1= this.path.getPositionFromLength(currentCurveLength-0.1).clone();
+
+				var angle= Math.atan2( p0.y-p1.y, p0.x-p1.x );
+
+				context.save();
+
+				context.translate( (0.5+p0.x)|0, (0.5+p0.y)|0 );
+				context.rotate( angle );
+				
+				var y = this.textBaseline === "bottom" ? 0 - this.font.height : 0;
+				
+				this.font.drawString(context,character, 0, y);
+
+				context.restore();
+
+				textWidth+= charWidth;
+			}
+		},
+		
         /**
          * Set the path, interpolator and duration to draw the text on.
          * @param path a valid CAAT.Path instance.
