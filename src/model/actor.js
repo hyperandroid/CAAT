@@ -1840,8 +1840,8 @@
 
             var cl= this.childrenList;
             this.activeChildren= null;
-            this.size_active= 0;
-            this.size_total= 0;
+            this.size_active= 1;
+            this.size_total= 1;
             for( i=0; i<cl.length; i++ ) {
                 var actor= cl[i];
                 actor.time= time;
