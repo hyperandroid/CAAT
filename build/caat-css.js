@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.2 build: 53
+Version: 0.2 build: 58
 
 Created on:
-DATE: 2012-01-26
-TIME: 21:54:26
+DATE: 2012-01-27
+TIME: 13:57:36
 */
 
 
@@ -10723,10 +10723,20 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 
         /**
          *
-         * @param image
-         * @param map
+         * @param image {Image|HTMLImageElement|Canvas}
+         * @param map object with pairs "<a char>" : {
+         *              id      : {number},
+         *              height  : {number},
+         *              xoffset : {number},
+         *              letter  : {string},
+         *              yoffset : {number},
+         *              width   : {number},
+         *              xadvance: {number},
+         *              y       : {number},
+         *              x       : {number}
+         *          }
          */
-        initializeAsFontMap : function( image, map ) {
+        initializeAsGlyphDesigner : function( image, map ) {
             this.initialize( image, 1, 1 );
 
             var key;
@@ -10760,6 +10770,71 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             }
 
             return this;
+
+        },
+
+        /**
+         *
+         * @param image
+         * @param map: Array<{c: "a", width: 40}>
+         */
+        initializeAsFontMap : function( image, chars ) {
+            this.initialize( image, 1, 1 );
+
+            var helper;
+            var x=0;
+
+            for( var i=0;i<chars.length;i++ ) {
+                var value= chars[i];
+
+                helper= new CAAT.SpriteImageHelper(
+                    x,
+                    0,
+                    value.width,
+                    image.height,
+                    image.width,
+                    image.height
+                );
+
+                helper.xoffset= 0;
+                helper.yoffset= 0;
+                helper.xadvance= value.width;
+
+
+                x += value.width;
+
+                this.mapInfo[chars[i].c]= helper;
+
+                // set a default spriteIndex
+                if ( !i ) {
+                    this.setAnimationImageIndex( [chars[i].c] );
+                }
+            }
+
+            return this;
+        },
+
+        /**
+         * This method creates a font sprite image based on a proportional font
+         * It assumes the font is evenly spaced in the image
+         * Example:
+         * var font =   new CAAT.SpriteImage().initializeAsMonoTypeFontMap(
+         *  director.getImage('numbers'),
+         *  "0123456789"
+         * );
+         */
+
+        initializeAsMonoTypeFontMap : function( image, chars ) {
+            var map = [];
+            var charArr = chars.split("");
+            
+            var w = image.width / charArr.length >> 0;
+
+            for( var i=0;i<charArr.length;i++ ) {
+                map.push({c: charArr[i], width: w });
+            }
+
+            return this.initializeAsFontMap(image,map);
         },
 
         stringWidth : function( str ) {
@@ -10777,9 +10852,10 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 
         drawString : function( ctx, str, x, y ) {
             var i, l, charInfo, w;
-
-            for( i=0, l=str.length; i<l; i++ ) {
-                  charInfo= this.mapInfo[ str.charAt(i) ];
+            var charArr = str.split("");
+            
+            for( i=0; i<charArr.length; i++ ) {
+                charInfo= this.mapInfo[ charArr[i] ];
                   if ( charInfo ) {
                       w= charInfo.width;
                       ctx.drawImage(
@@ -10790,7 +10866,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                           x + charInfo.xoffset, y + charInfo.yoffset,
                           w, charInfo.height );
 
-                      x+= charInfo.xadvance;
+                      x+= charInfo.width;
                   }
               }
         }

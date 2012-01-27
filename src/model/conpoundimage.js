@@ -646,12 +646,21 @@
         },
 
         /**
-         * This method takes the output generated from the tool at http://labs.hyperandroid.com/static/texture/spriter.html
-         * and creates a map into that image.
-         * @param image {Image|HTMLImageElement|Canvas} an image
-         * @param map {object} the map into the image to define subimages.
+         *
+         * @param image {Image|HTMLImageElement|Canvas}
+         * @param map object with pairs "<a char>" : {
+         *              id      : {number},
+         *              height  : {number},
+         *              xoffset : {number},
+         *              letter  : {string},
+         *              yoffset : {number},
+         *              width   : {number},
+         *              xadvance: {number},
+         *              y       : {number},
+         *              x       : {number}
+         *          }
          */
-        initializeFromMap : function( image, map ) {
+        initializeAsGlyphDesigner : function( image, map ) {
             this.initialize( image, 1, 1 );
 
             var key;
@@ -670,6 +679,10 @@
                     image.height
                 );
 
+                helper.xoffset= typeof value.xoffset==='undefined' ? 0 : value.xoffset;
+                helper.yoffset= typeof value.yoffset==='undefined' ? 0 : value.yoffset;
+                helper.xadvance= typeof value.xadvance==='undefined' ? value.width : value.xadvance;
+
                 this.mapInfo[key]= helper;
 
                 // set a default spriteIndex
@@ -681,18 +694,19 @@
             }
 
             return this;
+
         },
 
         /**
          *
          * @param image
-         * @param map: array of {c: "a", width: 40}
+         * @param map: Array<{c: "a", width: 40}>
          */
         initializeAsFontMap : function( image, chars ) {
             this.initialize( image, 1, 1 );
 
             var helper;
-                x=0;
+            var x=0;
 
             for( var i=0;i<chars.length;i++ ) {
                 var value= chars[i];
@@ -705,6 +719,11 @@
                     image.width,
                     image.height
                 );
+
+                helper.xoffset= 0;
+                helper.yoffset= 0;
+                helper.xadvance= value.width;
+
 
                 x += value.width;
 
@@ -748,7 +767,7 @@
             for( i=0, l=str.length; i<l; i++ ) {
                   charInfo= this.mapInfo[ str.charAt(i) ];
                   if ( charInfo ) {
-                      w+= charInfo.width;
+                      w+= charInfo.xadvance;
                   }
             }
 
@@ -768,7 +787,7 @@
                           charInfo.x, charInfo.y,
                           w, charInfo.height,
 
-                          x, y,
+                          x + charInfo.xoffset, y + charInfo.yoffset,
                           w, charInfo.height );
 
                       x+= charInfo.width;
