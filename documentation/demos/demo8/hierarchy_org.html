@@ -208,7 +208,6 @@
 
             var cc = new CAAT.ActorContainer().
                     setBounds(550, 30, 150, 100).
-                    create().
                     enableEvents(false).
                     addBehavior(
                     new CAAT.RotateBehavior().
@@ -225,8 +224,7 @@
             var text = new CAAT.TextActor().
                     setFont("50px sans-serif").
                     setText("Hierarchycal").
-                    create().
-                    setFillStyle(gradient).
+                    setTextFillStyle(gradient).
                     setOutline(true).
                     calcTextSize(director).
                     cacheAsBitmap();
@@ -236,8 +234,7 @@
                     setFont("50px sans-serif").
                     setText("Rotations").
                     calcTextSize(director).
-                    create().
-                    setFillStyle(gradient).
+                    setTextFillStyle(gradient).
                     setOutline(true).
                     cacheAsBitmap();
             cc.addChild(text2.setLocation((cc.width - text2.width) / 2, 50));

@@ -107,6 +107,7 @@
         statistics: {
             size_total:         0,
             size_active:        0,
+            size_dirtyRects:    0,
             draws:              0
         },
         currentTexturePage: 0,
@@ -131,6 +132,7 @@
         cDirtyRects         :   null,
         dirtyRectsIndex     :   0,
         dirtyRectsEnabled   :   false,
+        nDirtyRects         :   0,
 
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
@@ -587,15 +589,22 @@
 
                 ctx.save();
                 if ( this.dirtyRectsEnabled ) {
-                    ctx.beginPath();
-                    var dr= this.cDirtyRects;
-                    for( i=0; i<dr.length; i++ ) {
-                        var drr= dr[i];
-                        if ( !drr.isEmpty() ) {
-                            ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
+                    if ( !CAAT.DEBUG_DIRTYRECTS ) {
+                        ctx.beginPath();
+                        this.nDirtyRects=0;
+                        var dr= this.cDirtyRects;
+                        for( i=0; i<dr.length; i++ ) {
+                            var drr= dr[i];
+                            if ( !drr.isEmpty() ) {
+                                ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
+                                this.nDirtyRects++;
+                            }
                         }
+                        ctx.clip();
+                    } else {
+                        ctx.clearRect(0, 0, this.width, this.height);
                     }
-                    ctx.clip();
+
                 } else if (this.clear===true ) {
                     ctx.clearRect(0, 0, this.width, this.height);
                 }
@@ -630,9 +639,27 @@
                         if ( CAAT.DEBUG ) {
                             this.statistics.size_total+= c.size_total;
                             this.statistics.size_active+= c.size_active;
+                            this.statistics.size_dirtyRects= this.nDirtyRects;
                         }
 
                     }
+                }
+
+                if ( CAAT.DEBUG && CAAT.DEBUG_DIRTYRECTS ) {
+                    ctx.beginPath();
+                    this.nDirtyRects=0;
+                    var dr= this.cDirtyRects;
+                    for( i=0; i<dr.length; i++ ) {
+                        var drr= dr[i];
+                        if ( !drr.isEmpty() ) {
+                            ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
+                            this.nDirtyRects++;
+                        }
+                    }
+                    ctx.clip();
+                    ctx.fillStyle='rgba(160,255,150,.4)';
+                    ctx.fillRect(0,0,this.width, this.height);
+
                 }
 
                 ctx.restore();
@@ -1977,6 +2004,7 @@
                     if ( CAAT.DEBUG ) {
                         this.statistics.size_total+= c.size_total;
                         this.statistics.size_active+= c.size_active;
+                        this.statistics.size_dirtyRects= this.nDirtyRects;
                     }
 
                 }

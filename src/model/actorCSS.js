@@ -104,6 +104,16 @@
 
         id:                     null,
 
+        __d_ax:                 -1,     // for drag-enabled actors.
+        __d_ay:                 -1,
+        gestureEnabled:         false,
+
+        setGestureEnabled : function( enable ) {
+            this.gestureEnabled= !!enable;
+        },
+        isGestureEnabled : function() {
+            return this.gestureEnabled;
+        },
         getId : function()  {
             return this.id;
         },

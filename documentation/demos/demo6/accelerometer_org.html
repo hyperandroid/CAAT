@@ -252,7 +252,7 @@
                     setFont("100px sans-serif").
                     setText("Rotate Device").
                     create().
-                    setFillStyle('red').
+                    setTextFillStyle('red').
                     setOutlineColor('#ffff00').
                     setOutline(true).
                     calcTextSize(director).
@@ -299,7 +299,7 @@
                     setFont("50px sans-serif").
                     setText("Accelerometer").
                     create().
-                    setFillStyle(gradient).
+                    setTextFillStyle(gradient).
                     setOutline(true).
                     calcTextSize(director).
                     cacheAsBitmap();
@@ -310,7 +310,7 @@
                     setText("Enabled").
                     calcTextSize(director).
                     create().
-                    setFillStyle(gradient).
+                    setTextFillStyle(gradient).
                     setOutline(true).
                     cacheAsBitmap();
             cc.addChild(text2.setLocation((cc.width - text2.width) / 2, 50));

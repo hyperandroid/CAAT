@@ -29,6 +29,7 @@
         textDraws:          null,
         textDrawTime:       null,
         textRAFTime:        null,
+        textDirtyRects:     null,
 
         frameTimeAcc :      0,
         frameRAFAcc :       0,
@@ -151,7 +152,7 @@
             "    <div id=\"caat-debug\">"+
             "        <div id=\"debug_tabs\">"+
             "            <span class=\"tab_max_min\" onCLick=\"javascript: var debug = document.getElementById('debug_tabs_content');if (debug.className === 'debug_tabs_content_visible') {debug.className = 'debug_tabs_content_hidden'} else {debug.className = 'debug_tabs_content_visible'}\"> CAAT Debug panel </span>"+
-            "            <span id=\"caat-debug-tab0\" class=\"debug_tab debug_tab_selected\">Performance</span>"+
+            "            <span id=\"caat-debug-tab0\" class=\"debug_tab debug_tab_selected\">CAAT Performance</span>"+
             "            <span id=\"caat-debug-tab1\" class=\"debug_tab debug_tab_not_selected\">Controls</span>"+
             "            <span class=\"caat_debug_indicator\">"+
             "                <span class=\"caat_debug_bullet\" style=\"background-color:#0f0;\"></span>"+
@@ -190,6 +191,11 @@
             "                        <span class=\"caat_debug_description\">Draws: </span>"+
             "                        <span class=\"caat_debug_value\" id=\"textDraws\">0</span>"+
             "                    </span>"+
+            "                    <span>"+
+            "                        <span class=\"caat_debug_bullet\" style=\"background-color:#00f;\"></span>"+
+            "                        <span class=\"caat_debug_description\">DirtyRects: </span>"+
+            "                        <span class=\"caat_debug_value\" id=\"textDirtyRects\">0</span>"+
+            "                    </span>"+
             "                </div>"+
             "            </div>"+
             "            <div id=\"caat-debug-tab1-content\">"+
@@ -209,6 +215,10 @@
             "                    <div>"+
             "                        <span id=\"control-bb\"></span>"+
             "                        <span class=\"checkbox_description\">Bounding Boxes</span>"+
+            "                    </div>"+
+            "                    <div>"+
+            "                        <span id=\"control-dr\"></span>"+
+            "                        <span class=\"checkbox_description\">Dirty Rects</span>"+
             "                    </div>"+
             "                </div>"+
             "            </div>"+
@@ -292,14 +302,20 @@
                     "        initCheck( \"control-music\", CAAT.director[0].isMusicEnabled(), function(e, bool) {"+
                     "            CAAT.director[0].setMusicEnabled(bool);"+
                     "        } );"+
-                    "        initCheck( \"control-aabb\", CAAT.DEBUGAABB, function(e,bool) {"+
-                    "            CAAT.director[0].currentScene.dirty= true;"+
+                    "        initCheck( \"control-aabb\", CAAT.DEBUGBB, function(e,bool) {"+
                     "            CAAT.DEBUGAABB= bool;"+
+                    "            CAAT.director[0].currentScene.dirty= true;"+
                     "        } );"+
                     "        initCheck( \"control-bb\", CAAT.DEBUGBB, function(e,bool) {"+
-                    "            CAAT.director[0].currentScene.dirty= true;"+
                     "            CAAT.DEBUGBB= bool;"+
+                    "            if ( bool ) {"+
+                    "                CAAT.DEBUGAABB= true;"+
+                    "            }"+
+                    "            CAAT.director[0].currentScene.dirty= true;"+
                     "        } );"+
+                    "        initCheck( \"control-dr\", CAAT.DEBUG_DIRTYRECTS , function( e,bool ) {"+
+                    "            CAAT.DEBUG_DIRTYRECTS= bool;"+
+                    "        });"+
                     "        setupTabs();" );
 
             }
@@ -323,6 +339,8 @@
             this.textEntitiesTotal= document.getElementById("textEntitiesTotal");
             this.textEntitiesActive= document.getElementById("textEntitiesActive");
             this.textDraws= document.getElementById("textDraws");
+            this.textDirtyRects= document.getElementById("textDirtyRects");
+
 
             this.canDebug= true;
 
@@ -360,6 +378,7 @@
 
             this.textEntitiesTotal.innerHTML= this.statistics.size_total;
             this.textEntitiesActive.innerHTML= this.statistics.size_active;
+            this.textDirtyRects.innerHTML= this.statistics.size_dirtyRects;
             this.textDraws.innerHTML= this.statistics.draws;
         },
 

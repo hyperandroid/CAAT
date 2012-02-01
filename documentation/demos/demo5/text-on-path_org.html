@@ -108,7 +108,9 @@
                     CAAT.modules.initialization.init(
                             800, 500,
                             'experiment-holder',
-                            [],
+                            [
+                                {id: "numbers", url: "numbers.png"}
+                            ],
                             textOnPath
                             );
                 },
@@ -130,7 +132,8 @@
             // actor de path para poder verlo y manipularlo
             var pa = new CAAT.PathActor().
                     setPath(p).
-                    setBounds(0, 0, director.canvas.width, director.canvas.height);
+                    setBounds(0, 0, director.canvas.width, director.canvas.height).
+                    setFillStyle( "#33e" );
             scene.addChild(pa);
 
             var gradient = director.crc.createLinearGradient(0, 0, 0, -40);
@@ -142,7 +145,7 @@
                 setFont("40px sans-serif").
                 setText("Text on path, easily traverse a path with text.").
                 setTextAlign("left").
-                setFillStyle(gradient).
+                setTextFillStyle(gradient).
                 setTextBaseline("bottom").
                 setPath(
                     p,
@@ -155,11 +158,18 @@
             gradient2.addColorStop(0.5, '#ff0000');
             gradient2.addColorStop(1, '#ffff00');
 
+            var font= new CAAT.SpriteImage().initializeAsMonoTypeFontMap(
+                     director.getImage('numbers'), "0123456789" );
+
             var text2 = new CAAT.TextActor().
                 setFont("40px sans-serif").
+                    /*
+                    setFont( font ).
+                    setText( "0123456789" ).
+                    */
                 setText("Text under path   :D").
                 setTextAlign("left").
-                setFillStyle(gradient2).
+                setTextFillStyle(gradient2).
                 setTextBaseline("top").
                 setPath(
                     p,
@@ -200,7 +210,7 @@
                     setText("Text on Path").
                     calcTextSize(director).
                     setTextAlign("center").
-                    setFillStyle(gradient).
+                    setTextFillStyle(gradient).
                     setOutline(true).
                     cacheAsBitmap();
             cc1.addChild(text.setLocation((cc1.width - text.width) / 2, 0));
@@ -210,7 +220,7 @@
                     setTextAlign("center").
                     setText("Interpolated").
                     calcTextSize(director).
-                    setFillStyle(gradient).
+                    setTextFillStyle(gradient).
                     setOutline(true).
                     cacheAsBitmap();
             cc1.addChild(text2.setLocation((cc1.width - text2.width) / 2, 40));
@@ -220,7 +230,7 @@
                     setTextAlign("center").
                     setText("As well").
                     calcTextSize(director).
-                    setFillStyle(gradient).
+                    setTextFillStyle(gradient).
                     setOutline(true).
                     cacheAsBitmap();
             cc1.addChild(text4.setLocation((cc1.width - text4.width) / 2, 80));

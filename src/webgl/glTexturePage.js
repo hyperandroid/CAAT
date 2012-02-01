@@ -142,11 +142,11 @@
 
             while( initialPosition<=this.scanMapHeight-height) {
 
-                // para buscar sitio se buscar‡ un sitio hasta el tama–o de alto del trozo.
+                // para buscar sitio se buscara un sitio hasta el tamano de alto del trozo.
                 // mas abajo no va a caber.
 
                 // fitHorizontalPosition es un array con todas las posiciones de este scan donde
-                // cabe un chunk de tama–o width.
+                // cabe un chunk de tamano width.
                 var fitHorizontalPositions= null;
                 var foundPositionOnScan=    false;
 
@@ -154,7 +154,7 @@
                     fitHorizontalPositions= this.scanMap[ initialPosition ].findWhereFits( width );
 
                     // si no es nulo el array de resultados, quiere decir que en alguno de los puntos
-                    // nos cabe un trozo de tama–o width.
+                    // nos cabe un trozo de tamano width.
                     if ( null!==fitHorizontalPositions && fitHorizontalPositions.length>0 ) {
                         foundPositionOnScan= true;
                         break;
@@ -162,9 +162,9 @@
                 }
 
                 if ( foundPositionOnScan ) {
-                    // j es el scan donde cabe un trozo de tama–o width.
+                    // j es el scan donde cabe un trozo de tamano width.
                     // comprobamos desde este scan que en todos los scan verticales cabe el trozo.
-                    // se comprueba que cabe en alguno de los tama–os que la rutina de busqueda horizontal
+                    // se comprueba que cabe en alguno de los tamanos que la rutina de busqueda horizontal
                     // nos ha devuelto antes.
 
                     var minInitialPosition=Number.MAX_VALUE;
@@ -192,7 +192,7 @@
                 }
             }
 
-            // no se ha podido encontrar un area en la textura para un trozo de tama–o width*height
+            // no se ha podido encontrar un area en la textura para un trozo de tamano width*height
             return null;
         },
         substract : function( x,y, width, height ) {
@@ -415,8 +415,8 @@
             var mod;
 
             // dejamos un poco de espacio para que las texturas no se pisen.
-            // coordenadas normalizadas 0..1 dan problemas cuando las texturas no est‡n
-            // alineadas a posici—n mod 4,8...
+            // coordenadas normalizadas 0..1 dan problemas cuando las texturas no estan
+            // alineadas a posicion mod 4,8...
             if ( w && this.padding ) {
                 mod= this.padding;
                 if ( w+mod<=this.width ) {
@@ -446,7 +446,7 @@
 
                 this.scan.substract(where.x,where.y,w,h);
             } else {
-                CAAT.log('Imagen ',img.src,' de tama–o ',img.width,img.height,' no cabe.');
+                CAAT.log('Imagen ',img.src,' de tamano ',img.width,img.height,' no cabe.');
             }
         },
         changeHeuristic : function(criteria) {

@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.2 build: 58
+Version: 0.2 build: 90
 
 Created on:
-DATE: 2012-01-27
-TIME: 13:57:35
+DATE: 2012-02-01
+TIME: 23:44:23
 */
 
 
@@ -3369,7 +3369,7 @@ var cp1= proxy(
                 if ( /*!bh.expired*/ bh.status!==CAAT.Behavior.Status.EXPIRED && !(bh instanceof CAAT.GenericBehavior) ) {
 
                     // ajustar tiempos:
-                    //  time es tiempo normalizado a duraci—n de comportamiento contenedor.
+                    //  time es tiempo normalizado a duracion de comportamiento contenedor.
                     //      1.- desnormalizar
                     time= referenceTime * this.behaviorDuration;
 
@@ -4621,6 +4621,7 @@ var cp1= proxy(
         textDraws:          null,
         textDrawTime:       null,
         textRAFTime:        null,
+        textDirtyRects:     null,
 
         frameTimeAcc :      0,
         frameRAFAcc :       0,
@@ -4743,7 +4744,7 @@ var cp1= proxy(
             "    <div id=\"caat-debug\">"+
             "        <div id=\"debug_tabs\">"+
             "            <span class=\"tab_max_min\" onCLick=\"javascript: var debug = document.getElementById('debug_tabs_content');if (debug.className === 'debug_tabs_content_visible') {debug.className = 'debug_tabs_content_hidden'} else {debug.className = 'debug_tabs_content_visible'}\"> CAAT Debug panel </span>"+
-            "            <span id=\"caat-debug-tab0\" class=\"debug_tab debug_tab_selected\">Performance</span>"+
+            "            <span id=\"caat-debug-tab0\" class=\"debug_tab debug_tab_selected\">CAAT Performance</span>"+
             "            <span id=\"caat-debug-tab1\" class=\"debug_tab debug_tab_not_selected\">Controls</span>"+
             "            <span class=\"caat_debug_indicator\">"+
             "                <span class=\"caat_debug_bullet\" style=\"background-color:#0f0;\"></span>"+
@@ -4782,6 +4783,11 @@ var cp1= proxy(
             "                        <span class=\"caat_debug_description\">Draws: </span>"+
             "                        <span class=\"caat_debug_value\" id=\"textDraws\">0</span>"+
             "                    </span>"+
+            "                    <span>"+
+            "                        <span class=\"caat_debug_bullet\" style=\"background-color:#00f;\"></span>"+
+            "                        <span class=\"caat_debug_description\">DirtyRects: </span>"+
+            "                        <span class=\"caat_debug_value\" id=\"textDirtyRects\">0</span>"+
+            "                    </span>"+
             "                </div>"+
             "            </div>"+
             "            <div id=\"caat-debug-tab1-content\">"+
@@ -4801,6 +4807,10 @@ var cp1= proxy(
             "                    <div>"+
             "                        <span id=\"control-bb\"></span>"+
             "                        <span class=\"checkbox_description\">Bounding Boxes</span>"+
+            "                    </div>"+
+            "                    <div>"+
+            "                        <span id=\"control-dr\"></span>"+
+            "                        <span class=\"checkbox_description\">Dirty Rects</span>"+
             "                    </div>"+
             "                </div>"+
             "            </div>"+
@@ -4884,14 +4894,20 @@ var cp1= proxy(
                     "        initCheck( \"control-music\", CAAT.director[0].isMusicEnabled(), function(e, bool) {"+
                     "            CAAT.director[0].setMusicEnabled(bool);"+
                     "        } );"+
-                    "        initCheck( \"control-aabb\", CAAT.DEBUGAABB, function(e,bool) {"+
-                    "            CAAT.director[0].currentScene.dirty= true;"+
+                    "        initCheck( \"control-aabb\", CAAT.DEBUGBB, function(e,bool) {"+
                     "            CAAT.DEBUGAABB= bool;"+
+                    "            CAAT.director[0].currentScene.dirty= true;"+
                     "        } );"+
                     "        initCheck( \"control-bb\", CAAT.DEBUGBB, function(e,bool) {"+
-                    "            CAAT.director[0].currentScene.dirty= true;"+
                     "            CAAT.DEBUGBB= bool;"+
+                    "            if ( bool ) {"+
+                    "                CAAT.DEBUGAABB= true;"+
+                    "            }"+
+                    "            CAAT.director[0].currentScene.dirty= true;"+
                     "        } );"+
+                    "        initCheck( \"control-dr\", CAAT.DEBUG_DIRTYRECTS , function( e,bool ) {"+
+                    "            CAAT.DEBUG_DIRTYRECTS= bool;"+
+                    "        });"+
                     "        setupTabs();" );
 
             }
@@ -4915,6 +4931,8 @@ var cp1= proxy(
             this.textEntitiesTotal= document.getElementById("textEntitiesTotal");
             this.textEntitiesActive= document.getElementById("textEntitiesActive");
             this.textDraws= document.getElementById("textDraws");
+            this.textDirtyRects= document.getElementById("textDirtyRects");
+
 
             this.canDebug= true;
 
@@ -4952,6 +4970,7 @@ var cp1= proxy(
 
             this.textEntitiesTotal.innerHTML= this.statistics.size_total;
             this.textEntitiesActive.innerHTML= this.statistics.size_active;
+            this.textDirtyRects.innerHTML= this.statistics.size_dirtyRects;
             this.textDraws.innerHTML= this.statistics.draws;
         },
 
@@ -5154,6 +5173,7 @@ var cp1= proxy(
         gestureEnabled:         false,
 
         invalid             :   true,
+        cached              :   false,  // has cacheAsBitmap been called ?
 
         invalidate : function() {
             this.invalid= true;
@@ -5451,6 +5471,7 @@ var cp1= proxy(
          */
 		setAlpha : function( alpha )	{
 			this.alpha= alpha;
+            this.invalidate();
             return this;
 		},
         /**
@@ -6140,6 +6161,18 @@ var cp1= proxy(
             // transformation stuff.
             this.setModelViewMatrix(director);
 
+            if ( this.dirty || this.wdirty || this.invalid ) {
+                if ( director.dirtyRectsEnabled ) {
+                    director.addDirtyRect( this.AABB );
+                }
+                this.setScreenBounds();
+                if ( director.dirtyRectsEnabled ) {
+                    director.addDirtyRect( this.AABB );
+                }
+            }
+            this.dirty= false;
+            this.invalid= false;
+
             this.inFrame= true;
 
 
@@ -6248,6 +6281,7 @@ var cp1= proxy(
 
 //if ( (CAAT.DEBUGAABB || glEnabled) && (this.dirty || this.wdirty ) ) {
             // screen bounding boxes will always be calculated.
+            /*
             if ( this.dirty || this.wdirty || this.invalid ) {
                 if ( director.dirtyRectsEnabled ) {
                     director.addDirtyRect( this.AABB );
@@ -6259,6 +6293,7 @@ var cp1= proxy(
             }
             this.dirty= false;
             this.invalid= false;
+            */
         },
         /**
          * Calculates the 2D bounding box in canvas coordinates of the Actor.
@@ -6271,17 +6306,80 @@ var cp1= proxy(
         setScreenBounds : function() {
 
             var vv= this.viewVertices;
+            var vvv;
 
-            vv[0].set(0,          0);
-            vv[1].set(this.width, 0);
-            vv[2].set(this.width, this.height);
-            vv[3].set(0,          this.height);
+            vvv= vv[0];
+            vvv.x=0;
+            vvv.y=0;
+            vvv= vv[1];
+            vvv.x=this.width;
+            vvv.y=0;
+            vvv= vv[2];
+            vvv.x=this.width;
+            vvv.y=this.height;
+            vvv= vv[3];
+            vvv.x=0;
+            vvv.y=this.height;
 
             this.modelToView( this.viewVertices );
 
             var xmin= Number.MAX_VALUE, xmax=Number.MIN_VALUE;
             var ymin= Number.MAX_VALUE, ymax=Number.MIN_VALUE;
 
+            vvv= vv[0];
+            if ( vvv.x < xmin ) {
+                xmin=vvv.x;
+            }
+            if ( vvv.x > xmax ) {
+                xmax=vvv.x;
+            }
+            if ( vvv.y < ymin ) {
+                ymin=vvv.y;
+            }
+            if ( vvv.y > ymax ) {
+                ymax=vvv.y;
+            }
+            var vvv= vv[1];
+            if ( vvv.x < xmin ) {
+                xmin=vvv.x;
+            }
+            if ( vvv.x > xmax ) {
+                xmax=vvv.x;
+            }
+            if ( vvv.y < ymin ) {
+                ymin=vvv.y;
+            }
+            if ( vvv.y > ymax ) {
+                ymax=vvv.y;
+            }
+            var vvv= vv[2];
+            if ( vvv.x < xmin ) {
+                xmin=vvv.x;
+            }
+            if ( vvv.x > xmax ) {
+                xmax=vvv.x;
+            }
+            if ( vvv.y < ymin ) {
+                ymin=vvv.y;
+            }
+            if ( vvv.y > ymax ) {
+                ymax=vvv.y;
+            }
+            var vvv= vv[3];
+            if ( vvv.x < xmin ) {
+                xmin=vvv.x;
+            }
+            if ( vvv.x > xmax ) {
+                xmax=vvv.x;
+            }
+            if ( vvv.y < ymin ) {
+                ymin=vvv.y;
+            }
+            if ( vvv.y > ymax ) {
+                ymax=vvv.y;
+            }
+
+/*
             for( var i=0; i<4; i++ ) {
                 if ( vv[i].x < xmin ) {
                     xmin=vv[i].x;
@@ -6296,7 +6394,7 @@ var cp1= proxy(
                     ymax=vv[i].y;
                 }
             }
-
+*/
             var AABB= this.AABB;
             AABB.x= xmin;
             AABB.y= ymin;
@@ -6525,6 +6623,9 @@ var cp1= proxy(
 
             this.paintActor(director,time);
             this.setBackgroundImage(canvas);
+
+            this.cached= true;
+
             return this;
         },
         /**
@@ -7190,6 +7291,7 @@ var cp1= proxy(
                                     // top, hanging, middle, alphabetic, ideographic, bottom.
                                     // defaults to "top".
 		fill:			    true,   // a boolean indicating whether the text should be filled.
+        textFillStyle   :   '#eee', // text fill color
 		text:			    null,   // a string with the text to draw.
 		textWidth:		    0,      // an integer indicating text width in pixels.
         textHeight:         0,      // an integer indicating text height in pixels.
@@ -7210,6 +7312,10 @@ var cp1= proxy(
          */
         setFill : function( fill ) {
             this.fill= fill;
+            return this;
+        },
+        setTextFillStyle : function( style ) {
+            this.textFillStyle= style;
             return this;
         },
         /**
@@ -7242,7 +7348,10 @@ var cp1= proxy(
          */
 		setText : function( sText ) {
 			this.text= sText;
-            this.setFont( this.font );
+            if ( null===this.text || this.text==="" ) {
+                this.width= this.height= 0;
+            }
+            this.calcTextSize( CAAT.director[0] );
 
             return this;
         },
@@ -7278,14 +7387,11 @@ var cp1= proxy(
         setFont : function(font) {
 
             if ( !font ) {
-                return this;
+                font= "10px sans-serif";
             }
 
             this.font= font;
-
-            if ( null===this.text || this.text==="" ) {
-                this.width= this.height= 0;
-            }
+            this.calcTextSize( CAAT.director[0] );
 
             return this;
 		},
@@ -7305,10 +7411,10 @@ var cp1= proxy(
 
             var ctx= director.ctx;
 
-            director.ctx.save();
-            director.ctx.font= this.font;
+            ctx.save();
+            ctx.font= this.font;
 
-            this.textWidth= director.crc.measureText( this.text ).width;
+            this.textWidth= ctx.measureText( this.text ).width;
             if (this.width===0) {
                 this.width= this.textWidth;
             }
@@ -7329,7 +7435,7 @@ var cp1= proxy(
                 this.height= this.textHeight;
             }
 
-            director.crc.restore();
+            ctx.restore();
 
             return this;
         },
@@ -7342,8 +7448,12 @@ var cp1= proxy(
          */
 		paint : function(director, time) {
 
-            if ( this.backgroundImage ) {   // cached
-                CAAT.TextActor.superclass.paint.call(this, director, time );
+            CAAT.TextActor.superclass.paint.call(this, director, time );
+
+            if ( this.cached ) {
+                // cacheAsBitmap sets this actor's background image as a representation of itself.
+                // So if after drawing the background it was cached, we're done.
+                return;
             }
 
 			if ( null===this.text) {
@@ -7354,24 +7464,27 @@ var cp1= proxy(
                 this.calcTextSize(director);
             }
 
-			var canvas= director.crc;
+			var ctx= director.ctx;
 			
 			if (typeof this.font === 'object') {
 				return this.drawSpriteText(director,time);
 			}
 
 			if( null!==this.font ) {
-				canvas.font= this.font;
+				ctx.font= this.font;
 			}
 			if ( null!==this.textAlign ) {
-				canvas.textAlign= this.textAlign;
+				ctx.textAlign= this.textAlign;
 			}
 			if ( null!==this.textBaseline ) {
-				canvas.textBaseline= this.textBaseline;
+				ctx.textBaseline= this.textBaseline;
 			}
-			if ( null!==this.fillStyle ) {
-				canvas.fillStyle= this.fillStyle;
+			if ( this.fill && null!==this.textFillStyle ) {
+                ctx.fillStyle= this.textFillStyle;
 			}
+            if ( this.outline && null!==this.outlineColor ) {
+                ctx.strokeStyle= this.outlineColor;
+            }
 
 			if (null===this.path) {
 
@@ -7383,23 +7496,23 @@ var cp1= proxy(
                 }
 
 				if ( this.fill ) {
-					canvas.fillText( this.text, tx, 0 );
+					ctx.fillText( this.text, tx, 0 );
 					if ( this.outline ) {
 
 						// firefox necesita beginPath, si no, dibujara ademas el cuadrado del
 						// contenedor de los textos.
-						if ( null!==this.outlineColor ) {
-							canvas.strokeStyle= this.outlineColor;
-						}
-						canvas.beginPath();
-						canvas.strokeText( this.text, tx, 0 );
+//						if ( null!==this.outlineColor ) {
+//							ctx.strokeStyle= this.outlineColor;
+//						}
+						ctx.beginPath();
+						ctx.strokeText( this.text, tx, 0 );
 					}
 				} else {
 					if ( null!==this.outlineColor ) {
-						canvas.strokeStyle= this.outlineColor;
+						ctx.strokeStyle= this.outlineColor;
 					}
-                    canvas.beginPath();
-					canvas.strokeText( this.text, tx, 0 );
+                    ctx.beginPath();
+					ctx.strokeText( this.text, tx, 0 );
 				}
 			}
 			else {
@@ -7414,7 +7527,7 @@ var cp1= proxy(
          */
 		drawOnPath : function(director, time) {
 
-			var canvas= director.crc;
+			var ctx= director.ctx;
 
 			var textWidth=this.sign * this.pathInterpolator.getPosition(
                     (time%this.pathDuration)/this.pathDuration ).y * this.path.getLength() ;
@@ -7423,10 +7536,7 @@ var cp1= proxy(
 
 			for( var i=0; i<this.text.length; i++ ) {
 				var caracter= this.text[i].toString();
-				var charWidth= canvas.measureText( caracter ).width;
-
-				var pathLength= this.path.getLength();
-
+				var charWidth= ctx.measureText( caracter ).width;
 				var currentCurveLength= charWidth/2 + textWidth;
 
 				p0= this.path.getPositionFromLength(currentCurveLength).clone();
@@ -7434,19 +7544,19 @@ var cp1= proxy(
 
 				var angle= Math.atan2( p0.y-p1.y, p0.x-p1.x );
 
-				canvas.save();
+				ctx.save();
 
-					canvas.translate( (0.5+p0.x)|0, (0.5+p0.y)|0 );
-					canvas.rotate( angle );
+					ctx.translate( (0.5+p0.x)|0, (0.5+p0.y)|0 );
+					ctx.rotate( angle );
                     if ( this.fill ) {
-					    canvas.fillText(caracter,0,0);
+					    ctx.fillText(caracter,0,0);
                     }
                     if ( this.outline ) {
-                        canvas.strokeStyle= this.outlineColor;
-                        canvas.strokeText(caracter,0,0);
+//                        ctx.strokeStyle= this.outlineColor;
+                        ctx.strokeText(caracter,0,0);
                     }
 
-				canvas.restore();
+				ctx.restore();
 
 				textWidth+= charWidth;
 			}
@@ -8766,6 +8876,7 @@ var cp1= proxy(
         statistics: {
             size_total:         0,
             size_active:        0,
+            size_dirtyRects:    0,
             draws:              0
         },
         currentTexturePage: 0,
@@ -8790,6 +8901,7 @@ var cp1= proxy(
         cDirtyRects         :   null,
         dirtyRectsIndex     :   0,
         dirtyRectsEnabled   :   false,
+        nDirtyRects         :   0,
 
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
@@ -9246,15 +9358,22 @@ var cp1= proxy(
 
                 ctx.save();
                 if ( this.dirtyRectsEnabled ) {
-                    ctx.beginPath();
-                    var dr= this.cDirtyRects;
-                    for( i=0; i<dr.length; i++ ) {
-                        var drr= dr[i];
-                        if ( !drr.isEmpty() ) {
-                            ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
+                    if ( !CAAT.DEBUG_DIRTYRECTS ) {
+                        ctx.beginPath();
+                        this.nDirtyRects=0;
+                        var dr= this.cDirtyRects;
+                        for( i=0; i<dr.length; i++ ) {
+                            var drr= dr[i];
+                            if ( !drr.isEmpty() ) {
+                                ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
+                                this.nDirtyRects++;
+                            }
                         }
+                        ctx.clip();
+                    } else {
+                        ctx.clearRect(0, 0, this.width, this.height);
                     }
-                    ctx.clip();
+
                 } else if (this.clear===true ) {
                     ctx.clearRect(0, 0, this.width, this.height);
                 }
@@ -9289,9 +9408,27 @@ var cp1= proxy(
                         if ( CAAT.DEBUG ) {
                             this.statistics.size_total+= c.size_total;
                             this.statistics.size_active+= c.size_active;
+                            this.statistics.size_dirtyRects= this.nDirtyRects;
                         }
 
                     }
+                }
+
+                if ( CAAT.DEBUG && CAAT.DEBUG_DIRTYRECTS ) {
+                    ctx.beginPath();
+                    this.nDirtyRects=0;
+                    var dr= this.cDirtyRects;
+                    for( i=0; i<dr.length; i++ ) {
+                        var drr= dr[i];
+                        if ( !drr.isEmpty() ) {
+                            ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
+                            this.nDirtyRects++;
+                        }
+                    }
+                    ctx.clip();
+                    ctx.fillStyle='rgba(160,255,150,.4)';
+                    ctx.fillRect(0,0,this.width, this.height);
+
                 }
 
                 ctx.restore();
@@ -10636,6 +10773,7 @@ var cp1= proxy(
                     if ( CAAT.DEBUG ) {
                         this.statistics.size_total+= c.size_total;
                         this.statistics.size_active+= c.size_active;
+                        this.statistics.size_dirtyRects= this.nDirtyRects;
                     }
 
                 }
@@ -10779,6 +10917,7 @@ CAAT.DEBUGBB= false;
 CAAT.DEBUGBBBCOLOR='#00f';
 CAAT.DEBUGAABB= false;    // debug bounding boxes.
 CAAT.DEBUGAABBCOLOR='#f00';
+CAAT.DEBUG_DIRTYRECTS=false;
 
 /**
  * Log function which deals with window's Console object.
@@ -17112,11 +17251,11 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
 
             while( initialPosition<=this.scanMapHeight-height) {
 
-                // para buscar sitio se buscar‡ un sitio hasta el tama–o de alto del trozo.
+                // para buscar sitio se buscara un sitio hasta el tamano de alto del trozo.
                 // mas abajo no va a caber.
 
                 // fitHorizontalPosition es un array con todas las posiciones de este scan donde
-                // cabe un chunk de tama–o width.
+                // cabe un chunk de tamano width.
                 var fitHorizontalPositions= null;
                 var foundPositionOnScan=    false;
 
@@ -17124,7 +17263,7 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
                     fitHorizontalPositions= this.scanMap[ initialPosition ].findWhereFits( width );
 
                     // si no es nulo el array de resultados, quiere decir que en alguno de los puntos
-                    // nos cabe un trozo de tama–o width.
+                    // nos cabe un trozo de tamano width.
                     if ( null!==fitHorizontalPositions && fitHorizontalPositions.length>0 ) {
                         foundPositionOnScan= true;
                         break;
@@ -17132,9 +17271,9 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
                 }
 
                 if ( foundPositionOnScan ) {
-                    // j es el scan donde cabe un trozo de tama–o width.
+                    // j es el scan donde cabe un trozo de tamano width.
                     // comprobamos desde este scan que en todos los scan verticales cabe el trozo.
-                    // se comprueba que cabe en alguno de los tama–os que la rutina de busqueda horizontal
+                    // se comprueba que cabe en alguno de los tamanos que la rutina de busqueda horizontal
                     // nos ha devuelto antes.
 
                     var minInitialPosition=Number.MAX_VALUE;
@@ -17162,7 +17301,7 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
                 }
             }
 
-            // no se ha podido encontrar un area en la textura para un trozo de tama–o width*height
+            // no se ha podido encontrar un area en la textura para un trozo de tamano width*height
             return null;
         },
         substract : function( x,y, width, height ) {
@@ -17385,8 +17524,8 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
             var mod;
 
             // dejamos un poco de espacio para que las texturas no se pisen.
-            // coordenadas normalizadas 0..1 dan problemas cuando las texturas no est‡n
-            // alineadas a posici—n mod 4,8...
+            // coordenadas normalizadas 0..1 dan problemas cuando las texturas no estan
+            // alineadas a posicion mod 4,8...
             if ( w && this.padding ) {
                 mod= this.padding;
                 if ( w+mod<=this.width ) {
@@ -17416,7 +17555,7 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
 
                 this.scan.substract(where.x,where.y,w,h);
             } else {
-                CAAT.log('Imagen ',img.src,' de tama–o ',img.width,img.height,' no cabe.');
+                CAAT.log('Imagen ',img.src,' de tamano ',img.width,img.height,' no cabe.');
             }
         },
         changeHeuristic : function(criteria) {
