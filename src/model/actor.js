@@ -146,6 +146,7 @@
         gestureEnabled:         false,
 
         invalid             :   true,
+        cached              :   false,  // has cacheAsBitmap been called ?
 
         invalidate : function() {
             this.invalid= true;
@@ -443,6 +444,7 @@
          */
 		setAlpha : function( alpha )	{
 			this.alpha= alpha;
+            this.invalidate();
             return this;
 		},
         /**
@@ -1132,6 +1134,18 @@
             // transformation stuff.
             this.setModelViewMatrix(director);
 
+            if ( this.dirty || this.wdirty || this.invalid ) {
+                if ( director.dirtyRectsEnabled ) {
+                    director.addDirtyRect( this.AABB );
+                }
+                this.setScreenBounds();
+                if ( director.dirtyRectsEnabled ) {
+                    director.addDirtyRect( this.AABB );
+                }
+            }
+            this.dirty= false;
+            this.invalid= false;
+
             this.inFrame= true;
 
 
@@ -1240,6 +1254,7 @@
 
 //if ( (CAAT.DEBUGAABB || glEnabled) && (this.dirty || this.wdirty ) ) {
             // screen bounding boxes will always be calculated.
+            /*
             if ( this.dirty || this.wdirty || this.invalid ) {
                 if ( director.dirtyRectsEnabled ) {
                     director.addDirtyRect( this.AABB );
@@ -1251,6 +1266,7 @@
             }
             this.dirty= false;
             this.invalid= false;
+            */
         },
         /**
          * Calculates the 2D bounding box in canvas coordinates of the Actor.
@@ -1263,17 +1279,80 @@
         setScreenBounds : function() {
 
             var vv= this.viewVertices;
+            var vvv;
 
-            vv[0].set(0,          0);
-            vv[1].set(this.width, 0);
-            vv[2].set(this.width, this.height);
-            vv[3].set(0,          this.height);
+            vvv= vv[0];
+            vvv.x=0;
+            vvv.y=0;
+            vvv= vv[1];
+            vvv.x=this.width;
+            vvv.y=0;
+            vvv= vv[2];
+            vvv.x=this.width;
+            vvv.y=this.height;
+            vvv= vv[3];
+            vvv.x=0;
+            vvv.y=this.height;
 
             this.modelToView( this.viewVertices );
 
             var xmin= Number.MAX_VALUE, xmax=Number.MIN_VALUE;
             var ymin= Number.MAX_VALUE, ymax=Number.MIN_VALUE;
 
+            vvv= vv[0];
+            if ( vvv.x < xmin ) {
+                xmin=vvv.x;
+            }
+            if ( vvv.x > xmax ) {
+                xmax=vvv.x;
+            }
+            if ( vvv.y < ymin ) {
+                ymin=vvv.y;
+            }
+            if ( vvv.y > ymax ) {
+                ymax=vvv.y;
+            }
+            var vvv= vv[1];
+            if ( vvv.x < xmin ) {
+                xmin=vvv.x;
+            }
+            if ( vvv.x > xmax ) {
+                xmax=vvv.x;
+            }
+            if ( vvv.y < ymin ) {
+                ymin=vvv.y;
+            }
+            if ( vvv.y > ymax ) {
+                ymax=vvv.y;
+            }
+            var vvv= vv[2];
+            if ( vvv.x < xmin ) {
+                xmin=vvv.x;
+            }
+            if ( vvv.x > xmax ) {
+                xmax=vvv.x;
+            }
+            if ( vvv.y < ymin ) {
+                ymin=vvv.y;
+            }
+            if ( vvv.y > ymax ) {
+                ymax=vvv.y;
+            }
+            var vvv= vv[3];
+            if ( vvv.x < xmin ) {
+                xmin=vvv.x;
+            }
+            if ( vvv.x > xmax ) {
+                xmax=vvv.x;
+            }
+            if ( vvv.y < ymin ) {
+                ymin=vvv.y;
+            }
+            if ( vvv.y > ymax ) {
+                ymax=vvv.y;
+            }
+
+/*
             for( var i=0; i<4; i++ ) {
                 if ( vv[i].x < xmin ) {
                     xmin=vv[i].x;
@@ -1288,7 +1367,7 @@
                     ymax=vv[i].y;
                 }
             }
-
+*/
             var AABB= this.AABB;
             AABB.x= xmin;
             AABB.y= ymin;
@@ -1517,6 +1596,9 @@
 
             this.paintActor(director,time);
             this.setBackgroundImage(canvas);
+
+            this.cached= true;
+
             return this;
         },
         /**
@@ -2182,6 +2264,7 @@
                                     // top, hanging, middle, alphabetic, ideographic, bottom.
                                     // defaults to "top".
 		fill:			    true,   // a boolean indicating whether the text should be filled.
+        textFillStyle   :   '#eee', // text fill color
 		text:			    null,   // a string with the text to draw.
 		textWidth:		    0,      // an integer indicating text width in pixels.
         textHeight:         0,      // an integer indicating text height in pixels.
@@ -2202,6 +2285,10 @@
          */
         setFill : function( fill ) {
             this.fill= fill;
+            return this;
+        },
+        setTextFillStyle : function( style ) {
+            this.textFillStyle= style;
             return this;
         },
         /**
@@ -2234,7 +2321,10 @@
          */
 		setText : function( sText ) {
 			this.text= sText;
-            this.setFont( this.font );
+            if ( null===this.text || this.text==="" ) {
+                this.width= this.height= 0;
+            }
+            this.calcTextSize( CAAT.director[0] );
 
             return this;
         },
@@ -2270,14 +2360,11 @@
         setFont : function(font) {
 
             if ( !font ) {
-                return this;
+                font= "10px sans-serif";
             }
 
             this.font= font;
-
-            if ( null===this.text || this.text==="" ) {
-                this.width= this.height= 0;
-            }
+            this.calcTextSize( CAAT.director[0] );
 
             return this;
 		},
@@ -2297,10 +2384,10 @@
 
             var ctx= director.ctx;
 
-            director.ctx.save();
-            director.ctx.font= this.font;
+            ctx.save();
+            ctx.font= this.font;
 
-            this.textWidth= director.crc.measureText( this.text ).width;
+            this.textWidth= ctx.measureText( this.text ).width;
             if (this.width===0) {
                 this.width= this.textWidth;
             }
@@ -2321,7 +2408,7 @@
                 this.height= this.textHeight;
             }
 
-            director.crc.restore();
+            ctx.restore();
 
             return this;
         },
@@ -2334,8 +2421,12 @@
          */
 		paint : function(director, time) {
 
-            if ( this.backgroundImage ) {   // cached
-                CAAT.TextActor.superclass.paint.call(this, director, time );
+            CAAT.TextActor.superclass.paint.call(this, director, time );
+
+            if ( this.cached ) {
+                // cacheAsBitmap sets this actor's background image as a representation of itself.
+                // So if after drawing the background it was cached, we're done.
+                return;
             }
 
 			if ( null===this.text) {
@@ -2346,24 +2437,27 @@
                 this.calcTextSize(director);
             }
 
-			var canvas= director.crc;
+			var ctx= director.ctx;
 			
 			if (typeof this.font === 'object') {
 				return this.drawSpriteText(director,time);
 			}
 
 			if( null!==this.font ) {
-				canvas.font= this.font;
+				ctx.font= this.font;
 			}
 			if ( null!==this.textAlign ) {
-				canvas.textAlign= this.textAlign;
+				ctx.textAlign= this.textAlign;
 			}
 			if ( null!==this.textBaseline ) {
-				canvas.textBaseline= this.textBaseline;
+				ctx.textBaseline= this.textBaseline;
 			}
-			if ( null!==this.fillStyle ) {
-				canvas.fillStyle= this.fillStyle;
+			if ( this.fill && null!==this.textFillStyle ) {
+                ctx.fillStyle= this.textFillStyle;
 			}
+            if ( this.outline && null!==this.outlineColor ) {
+                ctx.strokeStyle= this.outlineColor;
+            }
 
 			if (null===this.path) {
 
@@ -2375,23 +2469,23 @@
                 }
 
 				if ( this.fill ) {
-					canvas.fillText( this.text, tx, 0 );
+					ctx.fillText( this.text, tx, 0 );
 					if ( this.outline ) {
 
 						// firefox necesita beginPath, si no, dibujara ademas el cuadrado del
 						// contenedor de los textos.
-						if ( null!==this.outlineColor ) {
-							canvas.strokeStyle= this.outlineColor;
-						}
-						canvas.beginPath();
-						canvas.strokeText( this.text, tx, 0 );
+//						if ( null!==this.outlineColor ) {
+//							ctx.strokeStyle= this.outlineColor;
+//						}
+						ctx.beginPath();
+						ctx.strokeText( this.text, tx, 0 );
 					}
 				} else {
 					if ( null!==this.outlineColor ) {
-						canvas.strokeStyle= this.outlineColor;
+						ctx.strokeStyle= this.outlineColor;
 					}
-                    canvas.beginPath();
-					canvas.strokeText( this.text, tx, 0 );
+                    ctx.beginPath();
+					ctx.strokeText( this.text, tx, 0 );
 				}
 			}
 			else {
@@ -2406,7 +2500,7 @@
          */
 		drawOnPath : function(director, time) {
 
-			var canvas= director.crc;
+			var ctx= director.ctx;
 
 			var textWidth=this.sign * this.pathInterpolator.getPosition(
                     (time%this.pathDuration)/this.pathDuration ).y * this.path.getLength() ;
@@ -2415,10 +2509,7 @@
 
 			for( var i=0; i<this.text.length; i++ ) {
 				var caracter= this.text[i].toString();
-				var charWidth= canvas.measureText( caracter ).width;
-
-				var pathLength= this.path.getLength();
-
+				var charWidth= ctx.measureText( caracter ).width;
 				var currentCurveLength= charWidth/2 + textWidth;
 
 				p0= this.path.getPositionFromLength(currentCurveLength).clone();
@@ -2426,19 +2517,19 @@
 
 				var angle= Math.atan2( p0.y-p1.y, p0.x-p1.x );
 
-				canvas.save();
+				ctx.save();
 
-					canvas.translate( (0.5+p0.x)|0, (0.5+p0.y)|0 );
-					canvas.rotate( angle );
+					ctx.translate( (0.5+p0.x)|0, (0.5+p0.y)|0 );
+					ctx.rotate( angle );
                     if ( this.fill ) {
-					    canvas.fillText(caracter,0,0);
+					    ctx.fillText(caracter,0,0);
                     }
                     if ( this.outline ) {
-                        canvas.strokeStyle= this.outlineColor;
-                        canvas.strokeText(caracter,0,0);
+//                        ctx.strokeStyle= this.outlineColor;
+                        ctx.strokeText(caracter,0,0);
                     }
 
-				canvas.restore();
+				ctx.restore();
 
 				textWidth+= charWidth;
 			}

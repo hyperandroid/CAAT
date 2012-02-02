@@ -1,3 +1,14 @@
+02/01/2012 *0.2 Build  90*
+--------------------------
+
+* Refactored CAAT.TextActor object so that it can have background style or image.
+* Added method setTextFillStyle to determine text fill style. The old setFillStyle method does not affect text anymore
+  but actor's background.
+* Removed some non ansi characters from sourcecode comments.
+* Added setGestureEnabled and isGestureEnabled methods to CAAT.Actor on CSS renderer.
+* TextActor recalculates its size when font or text is changed.
+* Added DirtyRects info to Debug panel. Number of rects, and on-screen representation.
+
 01/26/2012 *0.2 Build  52*
 --------------------------
 

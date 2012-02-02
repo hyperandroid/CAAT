@@ -92,6 +92,7 @@ CAAT.DEBUGBB= false;
 CAAT.DEBUGBBBCOLOR='#00f';
 CAAT.DEBUGAABB= false;    // debug bounding boxes.
 CAAT.DEBUGAABBCOLOR='#f00';
+CAAT.DEBUG_DIRTYRECTS=false;
 
 /**
  * Log function which deals with window's Console object.

@@ -512,7 +512,7 @@
                 if ( /*!bh.expired*/ bh.status!==CAAT.Behavior.Status.EXPIRED && !(bh instanceof CAAT.GenericBehavior) ) {
 
                     // ajustar tiempos:
-                    //  time es tiempo normalizado a duraci—n de comportamiento contenedor.
+                    //  time es tiempo normalizado a duracion de comportamiento contenedor.
                     //      1.- desnormalizar
                     time= referenceTime * this.behaviorDuration;
 
