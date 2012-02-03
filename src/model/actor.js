@@ -2380,6 +2380,12 @@
          */
         calcTextSize : function(director) {
 
+            if ( typeof this.text==='undefined' || null===this.text || ""===this.text ) {
+                this.textWidth= 0;
+                this.textHeight= 0;
+                return this;
+            }
+
             if ( director.glEnabled ) {
                 return this;
             }

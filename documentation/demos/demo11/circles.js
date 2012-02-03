@@ -38,8 +38,7 @@ function __scene10_text(director, scene) {
     var text = new CAAT.TextActor().
             setFont("50px sans-serif").
             setText("PackedCircle").
-            create().
-            setFillStyle(gradient).
+            setTextFillStyle(gradient).
             setOutline(true).
             calcTextSize(director);
     cc.addChild(text.cacheAsBitmap().setLocation((cc.width - text.textWidth) / 2, 0));
@@ -48,8 +47,7 @@ function __scene10_text(director, scene) {
             setFont("30px sans-serif").
             setText("Collision demo").
             calcTextSize(director).
-            create().
-            setFillStyle(gradient).
+            setTextFillStyle(gradient).
             setOutline(true);
     cc.addChild(text2.cacheAsBitmap().setLocation((cc.width - text2.textWidth) / 2, 50));
 }
