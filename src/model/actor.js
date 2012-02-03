@@ -44,11 +44,6 @@
 
         this.modelViewMatrix=       new CAAT.Matrix();
         this.worldModelViewMatrix=  new CAAT.Matrix();
-        /*
-        this.modelViewMatrixI=      new CAAT.Matrix();
-        this.worldModelViewMatrixI= new CAAT.Matrix();
-        this.tmpMatrix=             new CAAT.Matrix();
-        */
 
         this.resetTransform();
         this.setScale(1,1);
@@ -69,8 +64,6 @@
     CAAT.Actor.ANCHOR_CUSTOM=       9;
 
 	CAAT.Actor.prototype= {
-
-//        tmpMatrix :             null,
 
         lifecycleListenerList:	null,   // Array of life cycle listener
 
@@ -148,6 +141,13 @@
         invalid             :   true,
         cached              :   false,  // has cacheAsBitmap been called ?
 
+        collides            :   false,
+        collidesAsRect      :   true,
+
+        setupCollission : function( collides, isCircular ) {
+            this.collides= collides;
+            this.collidesAsRect= !isCircular;
+        },
         invalidate : function() {
             this.invalid= true;
         },
@@ -1148,7 +1148,9 @@
 
             this.inFrame= true;
 
-
+            if ( this.collides ) {
+                director.addCollidingActor(this);
+            }
 
             return true;
 		},

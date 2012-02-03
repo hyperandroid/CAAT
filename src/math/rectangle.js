@@ -125,6 +125,10 @@
             return this;
         },
         intersects : function( r ) {
+            if ( r.isEmpty() || this.isEmpty() ) {
+                return false;
+            }
+
             if ( r.x1< this.x ) {
                 return false;
             }
@@ -139,6 +143,20 @@
             }
 
             return true;
+        },
+        intersect : function( i, r ) {
+            if ( typeof r==='undefined' ) {
+                r= new CAAT.Rectangle();
+            }
+
+            r.x= Math.max( this.x, i.x );
+            r.y= Math.max( this.y, i.y );
+            r.x1=Math.min( this.x1, i.x1 );
+            r.y1=Math.min( this.y1, i.y1 );
+            r.width= r.x1-r.x;
+            r.height=r.y1-r.y;
+
+            return r;
         }
 	};
 })();
