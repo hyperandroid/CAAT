@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.2 build: 90
+Version: 0.3 build: 7
 
 Created on:
-DATE: 2012-02-01
-TIME: 23:44:23
+DATE: 2012-02-03
+TIME: 16:34:12
 */
 
 
@@ -1615,6 +1615,10 @@ var cp1= proxy(
             return this;
         },
         intersects : function( r ) {
+            if ( r.isEmpty() || this.isEmpty() ) {
+                return false;
+            }
+
             if ( r.x1< this.x ) {
                 return false;
             }
@@ -1629,6 +1633,20 @@ var cp1= proxy(
             }
 
             return true;
+        },
+        intersect : function( i, r ) {
+            if ( typeof r==='undefined' ) {
+                r= new CAAT.Rectangle();
+            }
+
+            r.x= Math.max( this.x, i.x );
+            r.y= Math.max( this.y, i.y );
+            r.x1=Math.min( this.x1, i.x1 );
+            r.y1=Math.min( this.y1, i.y1 );
+            r.width= r.x1-r.x;
+            r.height=r.y1-r.y;
+
+            return r;
         }
 	};
 })();/**
@@ -2370,6 +2388,96 @@ var cp1= proxy(
                     " z:" + String(Math.round(Math.floor(this.z*10))/10);
 		}
 	};
+})();/**
+ * Created by Ibon Tolosana - @hyperandroid
+ * User: ibon
+ * Date: 02/02/12
+ * Time: 19:29
+ */
+
+(function() {
+
+    CAAT.QuadTree= function() {
+        return this;
+    };
+
+    var QT_MAX_ELEMENTS=    1;
+    var QT_MIN_WIDTH=       32;
+
+    CAAT.QuadTree.prototype= {
+
+        bgActors      :   null,
+
+        quadData    :   null,
+
+        create : function( l,t, r,b, backgroundElements ) {
+
+            var cx= (l+r)/2;
+            var cy= (t+b)/2;
+
+            this.x=         l;
+            this.y=         t;
+            this.x1=        r;
+            this.y1=        b;
+            this.width=     r-l;
+            this.height=    b-t;
+
+            this.bgActors= this.__getOverlappingActorList( backgroundElements );
+
+            if ( this.bgActors.length <= QT_MAX_ELEMENTS || this.width <= QT_MIN_WIDTH  ) {
+                return this;
+            }
+
+            this.quadData= new Array(4);
+            this.quadData[0]= new CAAT.QuadTree().create( l,t,cx,cy, this.bgActors );  // TL
+            this.quadData[1]= new CAAT.QuadTree().create( cx,t,r,cy, this.bgActors );  // TR
+            this.quadData[2]= new CAAT.QuadTree().create( l,cy,cx,b, this.bgActors );  // BL
+            this.quadData[3]= new CAAT.QuadTree().create( cx,cy,r,b, this.bgActors );
+
+            return this;
+        },
+
+        __getOverlappingActorList : function( actorList ) {
+            var tmpList= [];
+            for( var i=0, l=actorList.length; i<l; i++ ) {
+                var actor= actorList[i];
+                if ( this.intersects( actor.AABB ) ) {
+                    tmpList.push( actor );
+                }
+            }
+            return tmpList;
+        },
+
+        getOverlappingActors : function( rectangle ) {
+            var i,j,l;
+            var overlappingActors= [];
+            var qoverlappingActors;
+            var actors= this.bgActors;
+            var actor;
+
+            if ( this.quadData ) {
+                for( i=0; i<4; i++ ) {
+                    if ( this.quadData[i].intersects( rectangle ) ) {
+                        qoverlappingActors= this.quadData[i].getOverlappingActors(rectangle);
+                        for( j=0,l=qoverlappingActors.length; j<l; j++ ) {
+                            overlappingActors.push( qoverlappingActors[j] );
+                        }
+                    }
+                }
+            } else {
+                for( i=0, l=actors.length; i<l; i++ ) {
+                    actor= actors[i];
+                    if ( rectangle.intersects( actor.AABB ) ) {
+                        overlappingActors.push( actor );
+                    }
+                }
+            }
+
+            return overlappingActors;
+        }
+    };
+
+    extend( CAAT.QuadTree, CAAT.Rectangle );
 })();/**
  * See LICENSE file.
  *
@@ -5071,11 +5179,6 @@ var cp1= proxy(
 
         this.modelViewMatrix=       new CAAT.Matrix();
         this.worldModelViewMatrix=  new CAAT.Matrix();
-        /*
-        this.modelViewMatrixI=      new CAAT.Matrix();
-        this.worldModelViewMatrixI= new CAAT.Matrix();
-        this.tmpMatrix=             new CAAT.Matrix();
-        */
 
         this.resetTransform();
         this.setScale(1,1);
@@ -5096,8 +5199,6 @@ var cp1= proxy(
     CAAT.Actor.ANCHOR_CUSTOM=       9;
 
 	CAAT.Actor.prototype= {
-
-//        tmpMatrix :             null,
 
         lifecycleListenerList:	null,   // Array of life cycle listener
 
@@ -5175,6 +5276,13 @@ var cp1= proxy(
         invalid             :   true,
         cached              :   false,  // has cacheAsBitmap been called ?
 
+        collides            :   false,
+        collidesAsRect      :   true,
+
+        setupCollission : function( collides, isCircular ) {
+            this.collides= collides;
+            this.collidesAsRect= !isCircular;
+        },
         invalidate : function() {
             this.invalid= true;
         },
@@ -6175,7 +6283,9 @@ var cp1= proxy(
 
             this.inFrame= true;
 
-
+            if ( this.collides ) {
+                director.addCollidingActor(this);
+            }
 
             return true;
 		},
@@ -7404,6 +7514,12 @@ var cp1= proxy(
          * @return this
          */
         calcTextSize : function(director) {
+
+            if ( typeof this.text==='undefined' || null===this.text || ""===this.text ) {
+                this.textWidth= 0;
+                this.textHeight= 0;
+                return this;
+            }
 
             if ( director.glEnabled ) {
                 return this;
@@ -8903,6 +9019,18 @@ var cp1= proxy(
         dirtyRectsEnabled   :   false,
         nDirtyRects         :   0,
 
+        collidingActors     :   null,
+
+        solveCollissions : function() {
+            if ( !this.collidingActors.length ) {
+                return;
+            }
+
+
+        },
+        addCollidingActor : function( actor ) {
+            this.collidingActors.push( actor );
+        },
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
                 var dd= new CAAT.Debug().initialize( this.width, 60 );
@@ -9365,6 +9493,7 @@ var cp1= proxy(
                         for( i=0; i<dr.length; i++ ) {
                             var drr= dr[i];
                             if ( !drr.isEmpty() ) {
+                                //ctx.rect( (drr.x|0)+.5, (drr.y|0)+.5, 1+(drr.width|0), 1+(drr.height|0) );
                                 ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
                                 this.nDirtyRects++;
                             }
@@ -9451,6 +9580,7 @@ var cp1= proxy(
             this.invalid= false;
             this.dirtyRectsIndex= -1;
             this.cDirtyRects= [];
+            this.collidingActors= [];
 
             var cl= this.childrenList;
             var cli;
@@ -9459,6 +9589,8 @@ var cp1= proxy(
                 var tt = cli.time - cli.start_time;
                 cli.animate(this, tt);
             }
+
+            this.solveCollissions();
 
             return this;
         },

@@ -134,6 +134,18 @@
         dirtyRectsEnabled   :   false,
         nDirtyRects         :   0,
 
+        collidingActors     :   null,
+
+        solveCollissions : function() {
+            if ( !this.collidingActors.length ) {
+                return;
+            }
+
+
+        },
+        addCollidingActor : function( actor ) {
+            this.collidingActors.push( actor );
+        },
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
                 var dd= new CAAT.Debug().initialize( this.width, 60 );
@@ -596,6 +608,7 @@
                         for( i=0; i<dr.length; i++ ) {
                             var drr= dr[i];
                             if ( !drr.isEmpty() ) {
+                                //ctx.rect( (drr.x|0)+.5, (drr.y|0)+.5, 1+(drr.width|0), 1+(drr.height|0) );
                                 ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
                                 this.nDirtyRects++;
                             }
@@ -682,6 +695,7 @@
             this.invalid= false;
             this.dirtyRectsIndex= -1;
             this.cDirtyRects= [];
+            this.collidingActors= [];
 
             var cl= this.childrenList;
             var cli;
@@ -690,6 +704,8 @@
                 var tt = cli.time - cli.start_time;
                 cli.animate(this, tt);
             }
+
+            this.solveCollissions();
 
             return this;
         },
