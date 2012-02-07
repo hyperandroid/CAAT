@@ -262,7 +262,10 @@
          * @return this
          */
         initialize : function(width, height, canvas, proxy) {
-            canvas = canvas || document.createElement('canvas');
+            if ( !canvas ) {
+              canvas= document.createElement('canvas');
+              document.body.appendChild(canvas);
+            }
             this.canvas = canvas;
 
             if ( typeof proxy==='undefined' ) {
