@@ -1,11 +1,10 @@
-02/03/2012 *0.3 Build   6*
+02/03/2012 *0.3 Build   1*
 --------------------------
 
 * Added math/Quadtree object.
 * Added Demo19 showcasing some collision detection mechanism.
 * Modified debug panel to show affected cleared dirty rectangles.
 * Modified math/Rectangle object and added intersect method which extract intersection from any two given rectangles.
-* Fixed an issue which prevented cachedAsBitmap TextActor not show properly.
 
 02/01/2012 *0.2 Build  90*
 --------------------------

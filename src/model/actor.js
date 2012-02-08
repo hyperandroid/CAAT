@@ -1434,17 +1434,6 @@
 
             var m= this.worldModelViewMatrix.matrix;
             ctx.setTransform( m[0], m[3], m[1], m[4], m[2], m[5], this.frameAlpha );
-
-            if ( this.clip ) {
-                ctx.beginPath();
-                if (!this.clipPath ) {
-                    ctx.rect(0,0,this.width,this.height);
-                } else {
-                    this.clipPath.applyAsPath(director);
-                }
-                ctx.clip();
-            }
-
             this.paint(director, time);
             return true;
         },

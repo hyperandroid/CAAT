@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.3 build: 7
+Version: 0.3 build: 2
 
 Created on:
 DATE: 2012-02-03
-TIME: 16:34:12
+TIME: 12:36:01
 */
 
 
@@ -7514,12 +7514,6 @@ var cp1= proxy(
          * @return this
          */
         calcTextSize : function(director) {
-
-            if ( typeof this.text==='undefined' || null===this.text || ""===this.text ) {
-                this.textWidth= 0;
-                this.textHeight= 0;
-                return this;
-            }
 
             if ( director.glEnabled ) {
                 return this;
