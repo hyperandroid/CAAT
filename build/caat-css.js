@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.3 build: 7
+Version: 0.3 build: 65
 
 Created on:
-DATE: 2012-02-03
-TIME: 16:34:13
+DATE: 2012-02-09
+TIME: 20:35:01
 */
 
 
@@ -2411,7 +2411,14 @@ var cp1= proxy(
 
         quadData    :   null,
 
-        create : function( l,t, r,b, backgroundElements ) {
+        create : function( l,t, r,b, backgroundElements, minWidth, maxElements ) {
+
+            if ( typeof minWidth==='undefined' ) {
+                minWidth= QT_MIN_WIDTH;
+            }
+            if ( typeof maxElements==='undefined' ) {
+                maxElements= QT_MAX_ELEMENTS;
+            }
 
             var cx= (l+r)/2;
             var cy= (t+b)/2;
@@ -2425,7 +2432,7 @@ var cp1= proxy(
 
             this.bgActors= this.__getOverlappingActorList( backgroundElements );
 
-            if ( this.bgActors.length <= QT_MAX_ELEMENTS || this.width <= QT_MIN_WIDTH  ) {
+            if ( this.bgActors.length <= maxElements || this.width <= minWidth ) {
                 return this;
             }
 
@@ -3164,7 +3171,7 @@ var cp1= proxy(
          * Adds an observer to this behavior.
          * @param behaviorListener an observer instance.
          */
-		addListener : function( behaviorListener, actor ) {
+		addListener : function( behaviorListener ) {
             this.lifecycleListenerList.push(behaviorListener);
             return this;
 		},
@@ -4853,7 +4860,7 @@ var cp1= proxy(
             "    <div id=\"caat-debug\">"+
             "        <div id=\"debug_tabs\">"+
             "            <span class=\"tab_max_min\" onCLick=\"javascript: var debug = document.getElementById('debug_tabs_content');if (debug.className === 'debug_tabs_content_visible') {debug.className = 'debug_tabs_content_hidden'} else {debug.className = 'debug_tabs_content_visible'}\"> CAAT Debug panel </span>"+
-            "            <span id=\"caat-debug-tab0\" class=\"debug_tab debug_tab_selected\">CAAT Performance</span>"+
+            "            <span id=\"caat-debug-tab0\" class=\"debug_tab debug_tab_selected\">Performance</span>"+
             "            <span id=\"caat-debug-tab1\" class=\"debug_tab debug_tab_not_selected\">Controls</span>"+
             "            <span class=\"caat_debug_indicator\">"+
             "                <span class=\"caat_debug_bullet\" style=\"background-color:#0f0;\"></span>"+
@@ -5244,6 +5251,9 @@ var cp1= proxy(
         __d_ay:                 -1,
         gestureEnabled:         false,
 
+        setScreenBounds : function() {
+
+        },
         setGestureEnabled : function( enable ) {
             this.gestureEnabled= !!enable;
         },
@@ -5425,6 +5435,16 @@ var cp1= proxy(
             return this;
         },
         /**
+         * Center this actor at position (x,y).
+         * @param x {number} x position
+         * @param y {number} y position
+         *
+         * @return this
+         */
+        centerAt : function(x,y) {
+            return this.centerOn(x,y);
+        },
+        /**
          * Set this actor invisible.
          * The actor is animated but not visible.
          * A container won't show any of its children if set visible to false.
@@ -5447,7 +5467,7 @@ var cp1= proxy(
             }
 
             var value=
-
+                "translate("+this.x+"px,"+this.y+"px) "+
                 "rotate("+this.rotationAngle+"rad) scale("+this.scaleX+","+this.scaleY+")" +
                     imageop;
 
@@ -5831,9 +5851,11 @@ var cp1= proxy(
             this.x= x;
             this.y= y;
 
+            this.style3();
+/*
             this.style('left', x+'px');
             this.style('top',  y+'px');
-
+*/
             this.dirty= true;
 
             return this;
@@ -6304,6 +6326,8 @@ var cp1= proxy(
 
             this.setModelViewMatrix(false);
 
+            this.dirty= false;
+
             return true;
 		},
         /**
@@ -6386,7 +6410,7 @@ var cp1= proxy(
                 this.worldModelViewMatrix.identity();
             }
 
-            this.dirty= false;
+//            this.dirty= false;
 
 
             return this;
@@ -6478,6 +6502,7 @@ var cp1= proxy(
             this.setEnabled= function( enabled ) {
                 this.enabled= enabled;
                 this.setSpriteIndex( this.enabled ? this.iNormal : this.iDisabled );
+                return this;
             };
 
             /**
@@ -8294,7 +8319,15 @@ var cp1= proxy(
                         if ( c.onRenderStart ) {
                             c.onRenderStart(tt);
                         }
-                        c.paintActor(this, tt);
+
+                        if ( !CAAT.DEBUG_DIRTYRECTS && this.dirtyRectsEnabled ) {
+                            if ( this.nDirtyRects ) {
+                                c.paintActor(this, tt);
+                            }
+                        } else {
+                            c.paintActor(this, tt);
+                        }
+
                         if ( c.onRenderEnd ) {
                             c.onRenderEnd(tt);
                         }
@@ -8331,10 +8364,11 @@ var cp1= proxy(
                             this.nDirtyRects++;
                         }
                     }
-                    ctx.clip();
-                    ctx.fillStyle='rgba(160,255,150,.4)';
-                    ctx.fillRect(0,0,this.width, this.height);
-
+                    if ( this.nDirtyRects>0 ) {
+                        ctx.clip();
+                        ctx.fillStyle='rgba(160,255,150,.4)';
+                        ctx.fillRect(0,0,this.width, this.height);
+                    }
                 }
 
                 ctx.restore();
@@ -8352,6 +8386,7 @@ var cp1= proxy(
          */
         animate : function(director, time) {
             this.setModelViewMatrix(this);
+            this.setScreenBounds();
 
             this.dirty= false;
             this.invalid= false;
@@ -10865,6 +10900,10 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             }
         },
 
+        getMapInfo : function( index ) {
+            return this.mapInfo[ index ];
+        },
+
         /**
          * This method takes the output generated from the tool at http://labs.hyperandroid.com/static/texture/spriter.html
          * and creates a map into that image.
@@ -11048,7 +11087,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                           x + charInfo.xoffset, y + charInfo.yoffset,
                           w, charInfo.height );
 
-                      x+= charInfo.width;
+                      x+= charInfo.xadvance;
                   }
               }
         }
@@ -12557,7 +12596,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 
         var width= dst.width;
         var x=0, y=0, i=0, l=0;
-        var actor_max_h= Number.MIN_VALUE, actor_max_w= Number.MAX_VALUE;
+        var actor_max_h= -Number.MAX_VALUE, actor_max_w= Number.MAX_VALUE;
 
         // compute max/min actor list size.
         for( i=what_to_layout_array.length-1; i; i-=1 ) {
@@ -13666,7 +13705,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             }
 
             this.bbox.setEmpty();
-            var minx= Number.MAX_VALUE, miny= Number.MAX_VALUE, maxx= Number.MIN_VALUE, maxy= Number.MIN_VALUE;
+            var minx= Number.MAX_VALUE, miny= Number.MAX_VALUE, maxx= -Number.MAX_VALUE, maxy= -Number.MAX_VALUE;
             for( var i=0; i<4; i++ ) {
                 this.bbox.union( this.points[i].x, this.points[i].y );
             }
@@ -14151,6 +14190,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 time= 1+time;
             }
 
+            var found= false;
             for( var i=0; i<this.pathSegments.length; i++ ) {
                 if (this.pathSegmentStartTime[i]<=time && time<=this.pathSegmentStartTime[i]+this.pathSegmentDurationTime[i]) {
                     time= this.pathSegmentDurationTime[i] ?
@@ -14159,11 +14199,16 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                     var pointInPath= this.pathSegments[i].getPosition(time);
                     this.newPosition.x= pointInPath.x;
                     this.newPosition.y= pointInPath.y;
+                    found= true;
                     break;
                 }
             }
 
-			return this.newPosition;
+            /**
+             * !found means surely, a linear path with overlapping start and end points.
+             * In such case, a (0,0) point would be returned, so instead, return either start or ending point.
+             */
+			return found ? this.newPosition : this.endCurvePosition();
 		},
         /**
          * Analogously to the method getPosition, this method returns a CAAT.Point instance with

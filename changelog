@@ -1,3 +1,18 @@
+02/09/2012 *0.3 Build  64*
+--------------------------
+
+* Fixed setScreenBounds method which was calculating the bounding box erroneusly when in negative coords.
+  Note to self: Number.MIN_VALUE != -Number.MAX_VALUE !!!!.
+* Fixed the case where a path composed by one single segment with overlapping starting and ending point was returning
+  (0,0) as path traversal. Now returns one of the two overlapping points.
+* Added invalidation for actors which change their background's image sprite index (Canvas only)
+* Improved scene graph traversal to fast discard elements out of screen (AABB testing)
+* Improved matrix calculations for AABB Actors.
+* Changed CSS renderer setLocation semantics from style.left|top to [-vendorPrefix]-transform.
+* Added getMapInfo method on CAAT.SpriteImage. Thus I can access glypth/sub-image data by index.
+* Fixed a bug with dirtyRects which made the system draw the whole canvas when no area is affected (agh!!)
+* Modified CAAT.QuadTree object to allow for default parameters setup.
+
 02/03/2012 *0.3 Build   6*
 --------------------------
 

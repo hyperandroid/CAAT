@@ -632,7 +632,15 @@
                         if ( c.onRenderStart ) {
                             c.onRenderStart(tt);
                         }
-                        c.paintActor(this, tt);
+
+                        if ( !CAAT.DEBUG_DIRTYRECTS && this.dirtyRectsEnabled ) {
+                            if ( this.nDirtyRects ) {
+                                c.paintActor(this, tt);
+                            }
+                        } else {
+                            c.paintActor(this, tt);
+                        }
+
                         if ( c.onRenderEnd ) {
                             c.onRenderEnd(tt);
                         }
@@ -669,10 +677,11 @@
                             this.nDirtyRects++;
                         }
                     }
-                    ctx.clip();
-                    ctx.fillStyle='rgba(160,255,150,.4)';
-                    ctx.fillRect(0,0,this.width, this.height);
-
+                    if ( this.nDirtyRects>0 ) {
+                        ctx.clip();
+                        ctx.fillStyle='rgba(160,255,150,.4)';
+                        ctx.fillRect(0,0,this.width, this.height);
+                    }
                 }
 
                 ctx.restore();
@@ -690,6 +699,7 @@
          */
         animate : function(director, time) {
             this.setModelViewMatrix(this);
+            this.setScreenBounds();
 
             this.dirty= false;
             this.invalid= false;

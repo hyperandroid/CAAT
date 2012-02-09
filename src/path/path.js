@@ -791,7 +791,7 @@
             }
 
             this.bbox.setEmpty();
-            var minx= Number.MAX_VALUE, miny= Number.MAX_VALUE, maxx= Number.MIN_VALUE, maxy= Number.MIN_VALUE;
+            var minx= Number.MAX_VALUE, miny= Number.MAX_VALUE, maxx= -Number.MAX_VALUE, maxy= -Number.MAX_VALUE;
             for( var i=0; i<4; i++ ) {
                 this.bbox.union( this.points[i].x, this.points[i].y );
             }
@@ -1276,6 +1276,7 @@
                 time= 1+time;
             }
 
+            var found= false;
             for( var i=0; i<this.pathSegments.length; i++ ) {
                 if (this.pathSegmentStartTime[i]<=time && time<=this.pathSegmentStartTime[i]+this.pathSegmentDurationTime[i]) {
                     time= this.pathSegmentDurationTime[i] ?
@@ -1284,11 +1285,16 @@
                     var pointInPath= this.pathSegments[i].getPosition(time);
                     this.newPosition.x= pointInPath.x;
                     this.newPosition.y= pointInPath.y;
+                    found= true;
                     break;
                 }
             }
 
-			return this.newPosition;
+            /**
+             * !found means surely, a linear path with overlapping start and end points.
+             * In such case, a (0,0) point would be returned, so instead, return either start or ending point.
+             */
+			return found ? this.newPosition : this.endCurvePosition();
 		},
         /**
          * Analogously to the method getPosition, this method returns a CAAT.Point instance with

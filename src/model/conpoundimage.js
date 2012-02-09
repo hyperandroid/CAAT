@@ -607,6 +607,10 @@
             }
         },
 
+        getMapInfo : function( index ) {
+            return this.mapInfo[ index ];
+        },
+
         /**
          * This method takes the output generated from the tool at http://labs.hyperandroid.com/static/texture/spriter.html
          * and creates a map into that image.
@@ -790,7 +794,7 @@
                           x + charInfo.xoffset, y + charInfo.yoffset,
                           w, charInfo.height );
 
-                      x+= charInfo.width;
+                      x+= charInfo.xadvance;
                   }
               }
         }

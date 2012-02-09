@@ -9,7 +9,7 @@
 
         var width= dst.width;
         var x=0, y=0, i=0, l=0;
-        var actor_max_h= Number.MIN_VALUE, actor_max_w= Number.MAX_VALUE;
+        var actor_max_h= -Number.MAX_VALUE, actor_max_w= Number.MAX_VALUE;
 
         // compute max/min actor list size.
         for( i=what_to_layout_array.length-1; i; i-=1 ) {

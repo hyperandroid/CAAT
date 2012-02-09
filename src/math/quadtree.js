@@ -20,7 +20,14 @@
 
         quadData    :   null,
 
-        create : function( l,t, r,b, backgroundElements ) {
+        create : function( l,t, r,b, backgroundElements, minWidth, maxElements ) {
+
+            if ( typeof minWidth==='undefined' ) {
+                minWidth= QT_MIN_WIDTH;
+            }
+            if ( typeof maxElements==='undefined' ) {
+                maxElements= QT_MAX_ELEMENTS;
+            }
 
             var cx= (l+r)/2;
             var cy= (t+b)/2;
@@ -34,7 +41,7 @@
 
             this.bgActors= this.__getOverlappingActorList( backgroundElements );
 
-            if ( this.bgActors.length <= QT_MAX_ELEMENTS || this.width <= QT_MIN_WIDTH  ) {
+            if ( this.bgActors.length <= maxElements || this.width <= minWidth ) {
                 return this;
             }
 

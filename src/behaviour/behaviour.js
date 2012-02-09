@@ -198,7 +198,7 @@
          * Adds an observer to this behavior.
          * @param behaviorListener an observer instance.
          */
-		addListener : function( behaviorListener, actor ) {
+		addListener : function( behaviorListener ) {
             this.lifecycleListenerList.push(behaviorListener);
             return this;
 		},

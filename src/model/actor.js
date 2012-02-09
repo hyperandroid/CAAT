@@ -144,6 +144,9 @@
         collides            :   false,
         collidesAsRect      :   true,
 
+        isAA                :   true,   // is this actor/container Axis aligned ? if so, much faster inverse matrices
+                                        // can be calculated.
+
         setupCollission : function( collides, isCircular ) {
             this.collides= collides;
             this.collidesAsRect= !isCircular;
@@ -224,6 +227,7 @@
         setSpriteIndex: function(index) {
             if ( this.backgroundImage ) {
                 this.backgroundImage.setSpriteIndex(index);
+                this.invalidate();
             }
 
             return this;
@@ -1148,11 +1152,9 @@
 
             this.inFrame= true;
 
-            if ( this.collides ) {
-                director.addCollidingActor(this);
-            }
+            return this.AABB.intersects( director.AABB );
 
-            return true;
+            //return true;
 		},
         /**
          * Set this model view matrix if the actor is Dirty.
@@ -1178,10 +1180,9 @@
             var mm;
 
             this.wdirty= false;
+            mm= this.modelViewMatrix.matrix;
 
             if ( this.dirty ) {
-
-                mm= this.modelViewMatrix.matrix;
 
                 mm0= 1;
                 mm1= 0;
@@ -1241,18 +1242,31 @@
             }
 
             if ( this.parent ) {
+
+
+                this.isAA= this.rotationAngle===0 && this.scaleX===1 && this.scaleY===1 && this.parent.isAA;
+
                 if ( this.dirty || this.parent.wdirty ) {
                     this.worldModelViewMatrix.copy( this.parent.worldModelViewMatrix );
-                    this.worldModelViewMatrix.multiply( this.modelViewMatrix );
+                    if ( this.isAA ) {
+                        var mmm= this.worldModelViewMatrix.matrix;
+                        mmm[2]+= mm[2];
+                        mmm[5]+= mm[5];
+                    } else {
+                        this.worldModelViewMatrix.multiply( this.modelViewMatrix );
+                    }
                     this.wdirty= true;
                 }
+
             } else {
                 if ( this.dirty ) {
                     this.wdirty= true;
                 }
 
                 this.worldModelViewMatrix.identity();
+                this.isAA= this.rotationAngle===0 && this.scaleX===1 && this.scaleY===1;
             }
+
 
 //if ( (CAAT.DEBUGAABB || glEnabled) && (this.dirty || this.wdirty ) ) {
             // screen bounding boxes will always be calculated.
@@ -1280,7 +1294,21 @@
          */
         setScreenBounds : function() {
 
+            var AABB= this.AABB;
             var vv= this.viewVertices;
+
+            if ( this.isAA ) {
+                var m= this.worldModelViewMatrix.matrix;
+                AABB.x= m[2];
+                AABB.y= m[5];
+                AABB.x1= m[2] + this.width;
+                AABB.y1= m[5] + this.height;
+                AABB.width= AABB.x1-AABB.x;
+                AABB.height= AABB.y1-AABB.y;
+                return this;
+            }
+
+
             var vvv;
 
             vvv= vv[0];
@@ -1298,8 +1326,8 @@
 
             this.modelToView( this.viewVertices );
 
-            var xmin= Number.MAX_VALUE, xmax=Number.MIN_VALUE;
-            var ymin= Number.MAX_VALUE, ymax=Number.MIN_VALUE;
+            var xmin= Number.MAX_VALUE, xmax=-Number.MAX_VALUE;
+            var ymin= Number.MAX_VALUE, ymax=-Number.MAX_VALUE;
 
             vvv= vv[0];
             if ( vvv.x < xmin ) {
@@ -1354,23 +1382,6 @@
                 ymax=vvv.y;
             }
 
-/*
-            for( var i=0; i<4; i++ ) {
-                if ( vv[i].x < xmin ) {
-                    xmin=vv[i].x;
-                }
-                if ( vv[i].x > xmax ) {
-                    xmax=vv[i].x;
-                }
-                if ( vv[i].y < ymin ) {
-                    ymin=vv[i].y;
-                }
-                if ( vv[i].y > ymax ) {
-                    ymax=vv[i].y;
-                }
-            }
-*/
-            var AABB= this.AABB;
             AABB.x= xmin;
             AABB.y= ymin;
             AABB.x1= xmax;
@@ -1637,6 +1648,7 @@
             this.setEnabled= function( enabled ) {
                 this.enabled= enabled;
                 this.setSpriteIndex( this.enabled ? this.iNormal : this.iDisabled );
+                return this;
             };
 
             /**
@@ -1923,7 +1935,6 @@
             var markDelete= [];
 
             var cl= this.childrenList;
-            this.activeChildren= null;
             this.size_active= 1;
             this.size_total= 1;
             for( i=0; i<cl.length; i++ ) {

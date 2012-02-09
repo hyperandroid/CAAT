@@ -108,6 +108,9 @@
         __d_ay:                 -1,
         gestureEnabled:         false,
 
+        setScreenBounds : function() {
+
+        },
         setGestureEnabled : function( enable ) {
             this.gestureEnabled= !!enable;
         },
@@ -289,6 +292,16 @@
             return this;
         },
         /**
+         * Center this actor at position (x,y).
+         * @param x {number} x position
+         * @param y {number} y position
+         *
+         * @return this
+         */
+        centerAt : function(x,y) {
+            return this.centerOn(x,y);
+        },
+        /**
          * Set this actor invisible.
          * The actor is animated but not visible.
          * A container won't show any of its children if set visible to false.
@@ -311,7 +324,7 @@
             }
 
             var value=
-
+                "translate("+this.x+"px,"+this.y+"px) "+
                 "rotate("+this.rotationAngle+"rad) scale("+this.scaleX+","+this.scaleY+")" +
                     imageop;
 
@@ -695,9 +708,11 @@
             this.x= x;
             this.y= y;
 
+            this.style3();
+/*
             this.style('left', x+'px');
             this.style('top',  y+'px');
-
+*/
             this.dirty= true;
 
             return this;
@@ -1168,6 +1183,8 @@
 
             this.setModelViewMatrix(false);
 
+            this.dirty= false;
+
             return true;
 		},
         /**
@@ -1250,7 +1267,7 @@
                 this.worldModelViewMatrix.identity();
             }
 
-            this.dirty= false;
+//            this.dirty= false;
 
 
             return this;
@@ -1342,6 +1359,7 @@
             this.setEnabled= function( enabled ) {
                 this.enabled= enabled;
                 this.setSpriteIndex( this.enabled ? this.iNormal : this.iDisabled );
+                return this;
             };
 
             /**
