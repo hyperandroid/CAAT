@@ -144,6 +144,31 @@
 
             return true;
         },
+
+        intersectsRect : function( x,y,w,h ) {
+            if ( -1===w || -1===h ) {
+                return false;
+            }
+
+            var x1= x+w-1;
+            var y1= y+h-1;
+
+            if ( x1< this.x ) {
+                return false;
+            }
+            if ( x > this.x1 ) {
+                return false;
+            }
+            if ( y1< this.y ) {
+                return false;
+            }
+            if ( y> this.y1 ) {
+                return false;
+            }
+
+            return true;
+        },
+
         intersect : function( i, r ) {
             if ( typeof r==='undefined' ) {
                 r= new CAAT.Rectangle();

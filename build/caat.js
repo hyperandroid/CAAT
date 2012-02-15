@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.3 build: 65
+Version: 0.3 build: 139
 
 Created on:
-DATE: 2012-02-09
-TIME: 20:35:01
+DATE: 2012-02-15
+TIME: 23:45:16
 */
 
 
@@ -1634,6 +1634,31 @@ var cp1= proxy(
 
             return true;
         },
+
+        intersectsRect : function( x,y,w,h ) {
+            if ( -1===w || -1===h ) {
+                return false;
+            }
+
+            var x1= x+w-1;
+            var y1= y+h-1;
+
+            if ( x1< this.x ) {
+                return false;
+            }
+            if ( x > this.x1 ) {
+                return false;
+            }
+            if ( y1< this.y ) {
+                return false;
+            }
+            if ( y> this.y1 ) {
+                return false;
+            }
+
+            return true;
+        },
+
         intersect : function( i, r ) {
             if ( typeof r==='undefined' ) {
                 r= new CAAT.Rectangle();
@@ -2485,6 +2510,178 @@ var cp1= proxy(
     };
 
     extend( CAAT.QuadTree, CAAT.Rectangle );
+})();
+
+(function() {
+
+    CAAT.SpatialHash= function() {
+        return this;
+    };
+
+    CAAT.SpatialHash.prototype= {
+
+        elements    :   null,
+
+        width       :   null,
+        height      :   null,
+
+        rows        :   null,
+        columns     :   null,
+
+        xcache      :   null,
+        ycache      :   null,
+        xycache     :   null,
+
+        rectangle   :   null,
+        r0          :   null,
+        r1          :   null,
+
+        initialize : function( w,h, rows,columns ) {
+
+            var i, j;
+
+            this.elements= [];
+            for( i=0; i<rows*columns; i++ ) {
+                this.elements.push( [] );
+            }
+
+            this.width=     w;
+            this.height=    h;
+
+            this.rows=      rows;
+            this.columns=   columns;
+
+            this.xcache= [];
+            for( i=0; i<w; i++ ) {
+                this.xcache.push( (i/(w/columns))>>0 );
+            }
+
+            this.ycache= [];
+            for( i=0; i<h; i++ ) {
+                this.ycache.push( (i/(h/rows))>>0 );
+            }
+
+            this.xycache=[];
+            for( i=0; i<this.rows; i++ ) {
+
+                this.xycache.push( [] );
+                for( j=0; j<this.columns; j++ ) {
+                    this.xycache[i].push( j + i*columns  );
+                }
+            }
+
+            this.rectangle= new CAAT.Rectangle().setBounds( 0, 0, w, h );
+            this.r0=        new CAAT.Rectangle();
+            this.r1=        new CAAT.Rectangle();
+
+            return this;
+        },
+
+        clearObject : function() {
+            var i;
+
+            for( i=0; i<this.rows*this.columns; i++ ) {
+                this.elements[i]= [];
+            }
+
+            return this;
+        },
+
+        /**
+         * Add an element of the form { id, x,y,width,height, rectangular }
+         */
+        addObject : function( obj  ) {
+            var x= obj.x|0;
+            var y= obj.y|0;
+            var width= obj.width|0;
+            var height= obj.height|0;
+
+            var cells= this.__getCells( x,y,width,height );
+            for( var i=0; i<cells.length; i++ ) {
+                this.elements[ cells[i] ].push( obj );
+            }
+        },
+
+        __getCells : function( x,y,width,height ) {
+
+            var cells= [];
+            var i;
+
+            if ( this.rectangle.contains(x,y) ) {
+                cells.push( this.xycache[ this.ycache[y] ][ this.xcache[x] ] );
+            }
+
+            /**
+             * if both squares lay inside the same cell, it is not crossing a boundary.
+             */
+            if ( this.rectangle.contains(x+width-1,y+height-1) ) {
+                var c= this.xycache[ this.ycache[y+height-1] ][ this.xcache[x+width-1] ];
+                if ( c===cells[0] ) {
+                    return cells;
+                }
+                cells.push( c );
+            }
+
+            /**
+             * the other two AABB points lie inside the screen as well.
+             */
+            if ( this.rectangle.contains(x+width-1,y) ) {
+                var c= this.xycache[ this.ycache[y] ][ this.xcache[x+width-1] ];
+                if ( c===cells[0] || c===cells[1] ) {
+                    return cells;
+                }
+                cells.push(c);
+            }
+
+            // worst case, touching 4 screen cells.
+            if ( this.rectangle.contains(x+width-1,y+height-1) ) {
+                var c= this.xycache[ this.ycache[y+height-1] ][ this.xcache[x] ];
+                cells.push(c);
+            }
+
+            return cells;
+        },
+
+        /**
+         *
+         * @param x
+         * @param y
+         * @param w
+         * @param h
+         * @param oncollide function that returns boolean. if returns true, stop testing collision.
+         */
+        collide : function( x,y,w,h, oncollide ) {
+            x|=0;
+            y|=0;
+            w|=0;
+            h|=0;
+
+            var cells= this.__getCells( x,y,w,h );
+            var i,j,l;
+            var el= this.elements;
+
+            this.r0.setBounds( x,y,w,h );
+
+            for( i=0; i<cells.length; i++ ) {
+                var cell= cells[i];
+
+                var elcell= el[cell];
+                for( j=0, l=elcell.length; j<l; j++ ) {
+                    var obj= elcell[j];
+
+                    this.r1.setBounds( obj.x, obj.y, obj.width, obj.height );
+
+                    // collides
+                    if ( this.r0.intersects( this.r1 ) ) {
+                        if ( oncollide(obj) ) {
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+    };
 })();/**
  * See LICENSE file.
  *
@@ -3064,6 +3261,8 @@ var cp1= proxy(
 
         doValueApplication: true,
 
+        solved          :   true,
+
         setValueApplication : function( apply ) {
             this.doValueApplication= apply;
             return this;
@@ -3121,6 +3320,24 @@ var cp1= proxy(
 
             return this;
 		},
+        /**
+         * Sets behavior start time and duration but instead as setFrameTime which sets initial time as absolute time
+         * regarding scene's time, it uses a relative time offset from current scene time.
+         * a call to
+         *   setFrameTime( scene.time, duration ) is equivalent to
+         *   setDelayTime( 0, duration )
+         * @param delay {number}
+         * @param duration {number}
+         */
+        setDelayTime : function( delay, duration ) {
+            this.behaviorStartTime= delay;
+            this.behaviorDuration=  duration;
+            this.setStatus( CAAT.Behavior.Status.NOT_STARTED );
+            this.solved= false;
+
+            return this;
+
+        },
         setOutOfFrameTime : function() {
             this.setStatus( CAAT.Behavior.Status.EXPIRED );
             this.behaviorStartTime= Number.MAX_VALUE;
@@ -3144,6 +3361,11 @@ var cp1= proxy(
          * @param actor a CAAT.Actor instance the behavior is being applied to.
          */
 		apply : function( time, actor )	{
+
+            if ( !this.solved ) {
+                this.behaviorStartTime+= time;
+                this.solved= true;
+            }
 
             time+= this.timeOffset*this.behaviorDuration;
 
@@ -3206,7 +3428,7 @@ var cp1= proxy(
 
             var S= CAAT.Behavior.Status;
 
-			if ( /*this.expired*/ this.status===S.EXPIRED || this.behaviorStartTime<0 )	{
+			if ( this.status===S.EXPIRED || this.behaviorStartTime<0 )	{
 				return false;
 			}
 			
@@ -3229,7 +3451,7 @@ var cp1= proxy(
                 this.fireBehaviorStartedEvent(actor,time);
             }
 
-			return this.behaviorStartTime<=time && time<this.behaviorStartTime+this.behaviorDuration;
+			return this.behaviorStartTime<=time; // && time<this.behaviorStartTime+this.behaviorDuration;
 		},
 
         fireBehaviorStartedEvent : function(actor,time) {
@@ -3453,7 +3675,8 @@ var cp1= proxy(
                     bb.setExpired(actor,time-this.behaviorStartTime);
                 }
             }
-            this.fireBehaviorExpiredEvent(actor,time);
+            // already notified in base class.
+            // this.fireBehaviorExpiredEvent(actor,time);
             return this;
         },
 
@@ -4085,9 +4308,6 @@ var cp1= proxy(
 
         autoRotateOp:   CAAT.PathBehavior.autorotate.FREE,
 
-        translateX:     0,
-        translateY:     0,
-
         getPropertyName : function() {
             return "translate";
         },
@@ -4130,25 +4350,19 @@ var cp1= proxy(
         },
 
         /**
-         * This method set an extra offset for the actor traversing the path.
-         * in example, if you want an actor to traverse the path by its center, and not by default via its top-left corner,
-         * you should call <code>setTranslation(actor.width/2, actor.height/2);</code>.
-         *
-         * Displacement will be substracted from the tarrget coordinate.
-         *
+         * @see Acotr.setPositionAcchor
+         * @deprecated
          * @param tx a float with xoffset.
          * @param ty a float with yoffset.
          */
         setTranslation : function( tx, ty ) {
-            this.translateX= tx;
-            this.translateY= ty;
             return this;
         },
 
         calculateKeyFrameData : function( time ) {
             time= this.interpolator.getPosition(time).y;
             var point= this.path.getPosition(time);
-            return "translateX("+(point.x-this.translateX)+"px) translateY("+(point.y-this.translateY)+"px)" ;
+            return "translateX("+point.x+"px) translateY("+point.y+"px)" ;
         },
 
         calculateKeyFramesData : function(prefix, name, keyframessize) {
@@ -4207,7 +4421,7 @@ var cp1= proxy(
                 var ay= point.y-this.prevY;
 
                 if ( ax===0 && ay===0 ) {
-                    actor.setLocation( point.x-this.translateX, point.y-this.translateY );
+                    actor.setLocation( point.x, point.y );
                     return { x: actor.x, y: actor.y };
                 }
 
@@ -4245,12 +4459,12 @@ var cp1= proxy(
             }
 
             if ( this.doValueApplication ) {
-                actor.setLocation( point.x-this.translateX, point.y-this.translateY );
+                actor.setLocation( point.x, point.y );
                 return { x: actor.x, y: actor.y };
             } else {
                 return {
-                    x: point.x-this.translateX,
-                    y: point.y-this.translateY
+                    x: point.x,
+                    y: point.y
                 };
             }
 
@@ -5220,6 +5434,9 @@ var cp1= proxy(
 		clip:					false,  // should clip the Actor's content against its contour.
         clipPath:               null,
 
+        tAnchorX            :   0,
+        tAnchorY            :   0,
+
         scaleX:					0,      // transformation. width scale parameter
 		scaleY:					0,      // transformation. height scale parameter
 		scaleTX:				.50,      // transformation. scale anchor x position
@@ -5544,18 +5761,11 @@ var cp1= proxy(
         /**
          * Removes all behaviors from an Actor.
          * @return this
-         *
-         * @deprecated
          */
 		emptyBehaviorList : function() {
 			this.behaviorList=[];
             return this;
 		},
-/*
-        emptyKeyframesList : function() {
-            this.keyframesList= [];
-        },
-*/
         /**
          * Caches a fillStyle in the Actor.
          * @param style a valid Canvas rendering context fillStyle.
@@ -5653,8 +5863,8 @@ var cp1= proxy(
          * @return this
          */
 		setScale : function( sx, sy )    {
-			//this.setScaleAnchored( sx, sy, this.width/2, this.height/2 );
-            this.setScaleAnchored( sx, sy, .5, .5 );
+            this.scaleX=sx;
+            this.scaleY=sy;
             this.dirty= true;
             return this;
 		},
@@ -5718,6 +5928,26 @@ var cp1= proxy(
 
 			return {x: tx, y: ty};
 		},
+
+        setGlobalAnchor : function( ax, ay ) {
+            this.tAnchorX=  ax;
+            this.rotationX= ax;
+            this.scaleTX=   ax;
+
+            this.tAnchorY=  ay;
+            this.rotationY= ay;
+            this.scaleTY=   ay;
+
+            this.dirty= true;
+            return this;
+        },
+
+        setScaleAnchor : function( sax, say ) {
+            this.scaleTX= sax;
+            this.scaleTY= say;
+            this.dirty= true;
+            return this;
+        },
         /**
          * Modify the dimensions on an Actor.
          * The dimension will not affect the local coordinates system in opposition
@@ -5741,6 +5971,13 @@ var cp1= proxy(
 
             return this;
 		},
+
+        setRotationAnchor : function( rax, ray ) {
+            this.rotationX= ray;
+   	        this.rotationY= rax;
+            this.dirty= true;
+            return this;
+        },
         /**
          * A helper method for setRotationAnchored. This methods stablishes the center
          * of rotation to be the center of the Actor.
@@ -5749,7 +5986,8 @@ var cp1= proxy(
          * @return this
          */
 	    setRotation : function( angle )	{
-			this.setRotationAnchored( angle, .5, .5 ); //this.width/2, this.height/2 );
+            this.rotationAngle= angle;
+            this.dirty= true;
             return this;
 	    },
         /**
@@ -5761,8 +5999,8 @@ var cp1= proxy(
          */
 	    setRotationAnchored : function( angle, rx, ry ) {
 	        this.rotationAngle= angle;
-	        this.rotationX= rx?rx:0;
-	        this.rotationY= ry?ry:0;
+	        this.rotationX= rx;
+	        this.rotationY= ry;
             this.dirty= true;
             return this;
 	    },
@@ -5810,15 +6048,10 @@ var cp1= proxy(
          * @param x{number} a float indicating Actor's x position
          * @param y{number} a float indicating Actor's y position
          * @return this
+         *
+         * @deprecated
          */
 	    setLocation : function( x, y ) {
-/*
-            this.x= x|0;
-            this.y= y|0;
-
-            this.oldX= x|0;
-            this.oldY= y|0;
-*/
             this.x= x;
             this.y= y;
             this.oldX= x;
@@ -5828,6 +6061,25 @@ var cp1= proxy(
 
             return this;
 	    },
+
+        setPosition : function( x,y ) {
+            return this.setLocation( x,y );
+        },
+
+        setPositionAnchor : function( pax, pay ) {
+            this.tAnchorX=  pax;
+            this.tAnchorY=  pay;
+            return this;
+        },
+
+        setPositionAnchored : function( x,y,pax,pay ) {
+            this.setLocation( x,y );
+            this.tAnchorX=  pax;
+            this.tAnchorY=  pay;
+            return this;
+        },
+
+
         /**
          * This method is called by the Director to know whether the actor is on Scene time.
          * In case it was necessary, this method will notify any life cycle behaviors about
@@ -6278,7 +6530,7 @@ var cp1= proxy(
             }
 
             // transformation stuff.
-            this.setModelViewMatrix(director);
+            this.setModelViewMatrix();
 
             if ( this.dirty || this.wdirty || this.invalid ) {
                 if ( director.dirtyRectsEnabled ) {
@@ -6316,7 +6568,7 @@ var cp1= proxy(
          *
          * @return this
          */
-        setModelViewMatrix : function(director) {
+        setModelViewMatrix : function() {
             var c,s,_m00,_m01,_m10,_m11;
             var mm0, mm1, mm2, mm3, mm4, mm5;
             var mm;
@@ -6328,13 +6580,13 @@ var cp1= proxy(
 
                 mm0= 1;
                 mm1= 0;
-                mm2= mm[2];
+                //mm2= mm[2];
                 mm3= 0;
                 mm4= 1;
-                mm5= mm[5];
+                //mm5= mm[5];
 
-                mm2= this.x;
-                mm5= this.y;
+                mm2= this.x - this.tAnchorX * this.width ;
+                mm5= this.y - this.tAnchorY * this.height;
 
                 if ( this.rotationAngle ) {
 
@@ -6441,12 +6693,33 @@ var cp1= proxy(
 
             if ( this.isAA ) {
                 var m= this.worldModelViewMatrix.matrix;
-                AABB.x= m[2];
-                AABB.y= m[5];
-                AABB.x1= m[2] + this.width;
-                AABB.y1= m[5] + this.height;
-                AABB.width= AABB.x1-AABB.x;
-                AABB.height= AABB.y1-AABB.y;
+                var x= m[2];
+                var y= m[5];
+                var w= this.width;
+                var h= this.height;
+                AABB.x= x;
+                AABB.y= y;
+                AABB.x1= x + w;
+                AABB.y1= y + h;
+                AABB.width= w;
+                AABB.height= h;
+
+                if ( CAAT.GLRENDER ) {
+                    var vvv;
+                    vvv= vv[0];
+                    vvv.x=x;
+                    vvv.y=y;
+                    vvv= vv[1];
+                    vvv.x=x+w;
+                    vvv.y=y;
+                    vvv= vv[2];
+                    vvv.x=x+w;
+                    vvv.y=y+h;
+                    vvv= vv[3];
+                    vvv.x=x;
+                    vvv.y=y+h;
+                }
+
                 return this;
             }
 
@@ -6554,7 +6827,6 @@ var cp1= proxy(
             ctx.globalAlpha= this.frameAlpha;
 
             director.modelViewMatrix.transformRenderingContextSet( ctx );
-
             this.worldModelViewMatrix.transformRenderingContext(ctx);
 
             if ( this.clip ) {
@@ -7543,6 +7815,14 @@ var cp1= proxy(
                 return this;
             }
 
+            if ( this.font instanceof CAAT.SpriteImage ) {
+                this.textWidth= this.font.stringWidth( this.text );
+                this.textHeight=this.font.stringHeight();
+                this.width= this.textWidth;
+                this.height= this.textHeight;
+                return this;
+            }
+
             var ctx= director.ctx;
 
             ctx.save();
@@ -7600,7 +7880,7 @@ var cp1= proxy(
 
 			var ctx= director.ctx;
 			
-			if (typeof this.font === 'object') {
+			if ( this.font instanceof CAAT.SpriteImage ) {
 				return this.drawSpriteText(director,time);
 			}
 
@@ -7775,7 +8055,7 @@ var cp1= proxy(
 		}
 	};
 
-    extend( CAAT.TextActor, CAAT.ActorContainer, null);
+    extend( CAAT.TextActor, CAAT.Actor, null);
 })();
 
 (function() {
@@ -9037,18 +9317,6 @@ var cp1= proxy(
         dirtyRectsEnabled   :   false,
         nDirtyRects         :   0,
 
-        collidingActors     :   null,
-
-        solveCollissions : function() {
-            if ( !this.collidingActors.length ) {
-                return;
-            }
-
-
-        },
-        addCollidingActor : function( actor ) {
-            this.collidingActors.push( actor );
-        },
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
                 var dd= new CAAT.Debug().initialize( this.width, 60 );
@@ -9226,6 +9494,7 @@ var cp1= proxy(
                 this.gl = canvas.getContext("experimental-webgl"/*, {antialias: false}*/);
                 this.gl.viewportWidth = width;
                 this.gl.viewportHeight = height;
+                CAAT.GLRENDER= true;
             } catch(e) {
             }
 
@@ -9504,6 +9773,8 @@ var cp1= proxy(
 
                 ctx.save();
                 if ( this.dirtyRectsEnabled ) {
+                    this.modelViewMatrix.transformRenderingContext( ctx );
+
                     if ( !CAAT.DEBUG_DIRTYRECTS ) {
                         ctx.beginPath();
                         this.nDirtyRects=0;
@@ -9569,7 +9840,7 @@ var cp1= proxy(
                     }
                 }
 
-                if ( CAAT.DEBUG && CAAT.DEBUG_DIRTYRECTS ) {
+                if ( this.nDirtyRects>0 && CAAT.DEBUG && CAAT.DEBUG_DIRTYRECTS ) {
                     ctx.beginPath();
                     this.nDirtyRects=0;
                     var dr= this.cDirtyRects;
@@ -9580,11 +9851,10 @@ var cp1= proxy(
                             this.nDirtyRects++;
                         }
                     }
-                    if ( this.nDirtyRects>0 ) {
-                        ctx.clip();
-                        ctx.fillStyle='rgba(160,255,150,.4)';
-                        ctx.fillRect(0,0,this.width, this.height);
-                    }
+
+                    ctx.clip();
+                    ctx.fillStyle='rgba(160,255,150,.4)';
+                    ctx.fillRect(0,0,this.width, this.height);
                 }
 
                 ctx.restore();
@@ -9608,7 +9878,6 @@ var cp1= proxy(
             this.invalid= false;
             this.dirtyRectsIndex= -1;
             this.cDirtyRects= [];
-            this.collidingActors= [];
 
             var cl= this.childrenList;
             var cli;
@@ -9617,8 +9886,6 @@ var cp1= proxy(
                 var tt = cli.time - cli.start_time;
                 cli.animate(this, tt);
             }
-
-            this.solveCollissions();
 
             return this;
         },
@@ -11069,6 +11336,8 @@ CAAT.setCoordinateClamping= function( clamp ) {
  */
 CAAT.PMR= 64;
 
+CAAT.GLRENDER= false;
+
 /**
  * Allow visual debugging artifacts.
  */
@@ -12285,6 +12554,25 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             }
 
             return w;
+        },
+
+        stringHeight : function() {
+            if ( this.fontHeight ) {
+                return this.fontHeight;
+            }
+
+            var y= 0;
+            for( var i in this.mapInfo ) {
+                var mi= this.mapInfo[i];
+
+                var h= mi.height+mi.yoffset;
+                if ( h>y ) {
+                    y=h;
+                }
+            }
+
+            this.fontHeight= y;
+            return this.fontHeight;
         },
 
         drawString : function( ctx, str, x, y ) {
@@ -15039,6 +15327,9 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         sb_scaleAnchorX:            .5,
         sb_scaleAnchorY:            .5,
 
+        tAnchorX:                   0,
+        tAnchorY:                   0,
+
         /** translate behavior info **/
         tb_x:                       0,
         tb_y:                       0,
@@ -15771,8 +16062,8 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             mm3= 0;
             mm4= 1;
 
-            mm2= this.tb_x - bbx;
-            mm5= this.tb_y - bby;
+            mm2= this.tb_x - bbx - this.tAnchorX * bbw;
+            mm5= this.tb_y - bby - this.tAnchorY * bbh;
 
             if ( this.rb_angle ) {
 
@@ -15832,11 +16123,52 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             return this;
         },
 
+        setRotationAnchor : function( ax, ay ) {
+            this.rb_rotateAnchorX= ax;
+            this.rb_rotateAnchorY= ay;
+        },
+
+        setRotation : function( angle ) {
+            this.rb_angle= angle;
+        },
+
         setScaleAnchored : function( scaleX, scaleY, sx, sy ) {
             this.sb_scaleX= scaleX;
             this.sb_scaleAnchorX= sx;
             this.sb_scaleY= scaleY;
             this.sb_scaleAnchorY= sy;
+            return this;
+        },
+
+        setScale : function( sx, sy ) {
+            this.sb_scaleX= sx;
+            this.sb_scaleY= sy;
+            return this;
+        },
+
+        setScaleAnchor : function( ax, ay ) {
+            this.sb_scaleAnchorX= ax;
+            this.sb_scaleAnchorY= ay;
+            return this;
+        },
+
+        setPositionAnchor : function( ax, ay ) {
+            this.tAnchorX= ax;
+            this.tAnchorY= ay;
+            return this;
+        },
+
+        setPositionAnchored : function( x,y,ax,ay ) {
+            this.tb_x= x;
+            this.tb_y= y;
+            this.tAnchorX= ax;
+            this.tAnchorY= ay;
+            return this;
+        },
+
+        setPosition : function( x,y ) {
+            this.tb_x= x;
+            this.tb_y= y;
             return this;
         },
 

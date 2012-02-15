@@ -92,6 +92,8 @@
 
         doValueApplication: true,
 
+        solved          :   true,
+
         setValueApplication : function( apply ) {
             this.doValueApplication= apply;
             return this;
@@ -149,6 +151,24 @@
 
             return this;
 		},
+        /**
+         * Sets behavior start time and duration but instead as setFrameTime which sets initial time as absolute time
+         * regarding scene's time, it uses a relative time offset from current scene time.
+         * a call to
+         *   setFrameTime( scene.time, duration ) is equivalent to
+         *   setDelayTime( 0, duration )
+         * @param delay {number}
+         * @param duration {number}
+         */
+        setDelayTime : function( delay, duration ) {
+            this.behaviorStartTime= delay;
+            this.behaviorDuration=  duration;
+            this.setStatus( CAAT.Behavior.Status.NOT_STARTED );
+            this.solved= false;
+
+            return this;
+
+        },
         setOutOfFrameTime : function() {
             this.setStatus( CAAT.Behavior.Status.EXPIRED );
             this.behaviorStartTime= Number.MAX_VALUE;
@@ -172,6 +192,11 @@
          * @param actor a CAAT.Actor instance the behavior is being applied to.
          */
 		apply : function( time, actor )	{
+
+            if ( !this.solved ) {
+                this.behaviorStartTime+= time;
+                this.solved= true;
+            }
 
             time+= this.timeOffset*this.behaviorDuration;
 
@@ -234,7 +259,7 @@
 
             var S= CAAT.Behavior.Status;
 
-			if ( /*this.expired*/ this.status===S.EXPIRED || this.behaviorStartTime<0 )	{
+			if ( this.status===S.EXPIRED || this.behaviorStartTime<0 )	{
 				return false;
 			}
 			
@@ -257,7 +282,7 @@
                 this.fireBehaviorStartedEvent(actor,time);
             }
 
-			return this.behaviorStartTime<=time && time<this.behaviorStartTime+this.behaviorDuration;
+			return this.behaviorStartTime<=time; // && time<this.behaviorStartTime+this.behaviorDuration;
 		},
 
         fireBehaviorStartedEvent : function(actor,time) {
@@ -481,7 +506,8 @@
                     bb.setExpired(actor,time-this.behaviorStartTime);
                 }
             }
-            this.fireBehaviorExpiredEvent(actor,time);
+            // already notified in base class.
+            // this.fireBehaviorExpiredEvent(actor,time);
             return this;
         },
 
@@ -1113,9 +1139,6 @@
 
         autoRotateOp:   CAAT.PathBehavior.autorotate.FREE,
 
-        translateX:     0,
-        translateY:     0,
-
         getPropertyName : function() {
             return "translate";
         },
@@ -1158,25 +1181,19 @@
         },
 
         /**
-         * This method set an extra offset for the actor traversing the path.
-         * in example, if you want an actor to traverse the path by its center, and not by default via its top-left corner,
-         * you should call <code>setTranslation(actor.width/2, actor.height/2);</code>.
-         *
-         * Displacement will be substracted from the tarrget coordinate.
-         *
+         * @see Acotr.setPositionAcchor
+         * @deprecated
          * @param tx a float with xoffset.
          * @param ty a float with yoffset.
          */
         setTranslation : function( tx, ty ) {
-            this.translateX= tx;
-            this.translateY= ty;
             return this;
         },
 
         calculateKeyFrameData : function( time ) {
             time= this.interpolator.getPosition(time).y;
             var point= this.path.getPosition(time);
-            return "translateX("+(point.x-this.translateX)+"px) translateY("+(point.y-this.translateY)+"px)" ;
+            return "translateX("+point.x+"px) translateY("+point.y+"px)" ;
         },
 
         calculateKeyFramesData : function(prefix, name, keyframessize) {
@@ -1235,7 +1252,7 @@
                 var ay= point.y-this.prevY;
 
                 if ( ax===0 && ay===0 ) {
-                    actor.setLocation( point.x-this.translateX, point.y-this.translateY );
+                    actor.setLocation( point.x, point.y );
                     return { x: actor.x, y: actor.y };
                 }
 
@@ -1273,12 +1290,12 @@
             }
 
             if ( this.doValueApplication ) {
-                actor.setLocation( point.x-this.translateX, point.y-this.translateY );
+                actor.setLocation( point.x, point.y );
                 return { x: actor.x, y: actor.y };
             } else {
                 return {
-                    x: point.x-this.translateX,
-                    y: point.y-this.translateY
+                    x: point.x,
+                    y: point.y
                 };
             }
 

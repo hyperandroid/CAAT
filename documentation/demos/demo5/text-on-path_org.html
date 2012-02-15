@@ -53,6 +53,7 @@
                     <ul>
                         <li>Constructing a Path and adding segments to it.</li>
                         <li>Showing a path by associating it to a PathActor.</li>
+                        <li>Sprited fonts as text with TextActor.</li>
                         <li>Path management by calling setInteractive method.</li>
                         <li>Setting up a TextActor.</li>
                         <li>Setting a path for a TextActor</li>
@@ -133,7 +134,7 @@
             var pa = new CAAT.PathActor().
                     setPath(p).
                     setBounds(0, 0, director.canvas.width, director.canvas.height).
-                    setFillStyle( "#33e" );
+                    setFillStyle( "#77f" );
             scene.addChild(pa);
 
             var gradient = director.crc.createLinearGradient(0, 0, 0, -40);
@@ -162,12 +163,8 @@
                      director.getImage('numbers'), "0123456789" );
 
             var text2 = new CAAT.TextActor().
-                setFont("40px sans-serif").
-                    /*
-                    setFont( font ).
-                    setText( "0123456789" ).
-                    */
-                setText("Text under path   :D").
+                setFont( font ).
+                setText( "0123456789" ).
                 setTextAlign("left").
                 setTextFillStyle(gradient2).
                 setTextBaseline("top").

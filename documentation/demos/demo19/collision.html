@@ -60,7 +60,9 @@
                         <li>Multi key-press mechanishm.</li>
                         <li>Character movement in pixels/sec.</li>
                         <li>Built-in Quadtree usage.</li>
+                        <li>Built-in Spatialhash usage.</li>
                         <li>Quadtree collision zone identification.</li>
+                        <li>Spatial Hashmap collision zone identification.</li>
                     </ul>
                 </div>
             </div>
@@ -117,6 +119,10 @@
         var r0=                 new CAAT.Rectangle();
         var r1=                 new CAAT.Rectangle();
 
+        var enemies=            null;
+
+        var hash;
+
         var levelW= 24;
         var levelH= 15;
         var TW=32;
@@ -126,7 +132,9 @@
 
             var director= new CAAT.Director().
                     initialize( 800,500, document.getElementById('experiment-canvas') ).
-                    setClear( CAAT.Director.CLEAR_DIRTY_RECTS );    //  enable dirty rects cleaning
+                    setClear( CAAT.Director.CLEAR_ALL );    //  enable dirty rects cleaning
+
+            hash= new CAAT.SpatialHash().initialize( director.width, director.height, 10, 16 );
 
             var scene= director.createScene();
             scene.setFillStyle( '#fff' );
@@ -251,7 +259,7 @@
                     new CAAT.Interpolator().createExponentialInInterpolator(3,true)
             ];
 
-            var enemies= [];
+            enemies= [];
             for( var i=0; i<NUM_ENEMIES; i++ ) {
 
                 /**
@@ -306,15 +314,29 @@
                 function(time, ttime, timerTask) {
 
                     var max= Math.max( levelW, levelH );
-                    entitiesCollision= new CAAT.QuadTree().create( 0,0,max*TW,max*TH, enemies );
 
-                    var collide= entitiesCollision.getOverlappingActors( new CAAT.Rectangle().setBounds( hero.x, hero.y, hero.width, hero.height) );
-                    if ( collide.length ) {
-                        // collision with enemies.
-                        hero.setLocation( 112, 112 );
+                    hash.clearObject();
+                    for( var i=0; i<enemies.length; i++ ) {
+                        var enemy= enemies[i].AABB;
+
+                        hash.addObject( {
+                            id          : i,
+                            x           : enemy.x,
+                            y           : enemy.y,
+                            width       : enemy.width,
+                            height      : enemy.height,
+                            rectangular : true
+                        });
                     }
+
+                    hash.collide( hero.x, hero.y, hero.width, hero.height, function(collide_width) {
+                        hero.setLocation(112,112);
+                        return true;
+                    })
+
                 },
                 null);
+
         }
 
         function __createHero( scene ) {
@@ -369,6 +391,7 @@
             for( i=0; i<levelH; i++ ) {
                 for( j=0; j<levelW; j++ ) {
                     if ( level.charAt(j + i*levelW)==='1' ) {
+
                         ctx.fillRect( j*TW, i*TH, TW, TH );
                         entities.push( { AABB : new CAAT.Rectangle().setBounds( j*TW, i*TH, TW, TH ) } );
                     }

@@ -78,6 +78,9 @@
 		clip:					false,  // should clip the Actor's content against its contour.
         clipPath:               null,
 
+        tAnchorX            :   0,
+        tAnchorY            :   0,
+
         scaleX:					0,      // transformation. width scale parameter
 		scaleY:					0,      // transformation. height scale parameter
 		scaleTX:				.50,      // transformation. scale anchor x position
@@ -402,18 +405,11 @@
         /**
          * Removes all behaviors from an Actor.
          * @return this
-         *
-         * @deprecated
          */
 		emptyBehaviorList : function() {
 			this.behaviorList=[];
             return this;
 		},
-/*
-        emptyKeyframesList : function() {
-            this.keyframesList= [];
-        },
-*/
         /**
          * Caches a fillStyle in the Actor.
          * @param style a valid Canvas rendering context fillStyle.
@@ -511,8 +507,8 @@
          * @return this
          */
 		setScale : function( sx, sy )    {
-			//this.setScaleAnchored( sx, sy, this.width/2, this.height/2 );
-            this.setScaleAnchored( sx, sy, .5, .5 );
+            this.scaleX=sx;
+            this.scaleY=sy;
             this.dirty= true;
             return this;
 		},
@@ -576,6 +572,26 @@
 
 			return {x: tx, y: ty};
 		},
+
+        setGlobalAnchor : function( ax, ay ) {
+            this.tAnchorX=  ax;
+            this.rotationX= ax;
+            this.scaleTX=   ax;
+
+            this.tAnchorY=  ay;
+            this.rotationY= ay;
+            this.scaleTY=   ay;
+
+            this.dirty= true;
+            return this;
+        },
+
+        setScaleAnchor : function( sax, say ) {
+            this.scaleTX= sax;
+            this.scaleTY= say;
+            this.dirty= true;
+            return this;
+        },
         /**
          * Modify the dimensions on an Actor.
          * The dimension will not affect the local coordinates system in opposition
@@ -599,6 +615,13 @@
 
             return this;
 		},
+
+        setRotationAnchor : function( rax, ray ) {
+            this.rotationX= ray;
+   	        this.rotationY= rax;
+            this.dirty= true;
+            return this;
+        },
         /**
          * A helper method for setRotationAnchored. This methods stablishes the center
          * of rotation to be the center of the Actor.
@@ -607,7 +630,8 @@
          * @return this
          */
 	    setRotation : function( angle )	{
-			this.setRotationAnchored( angle, .5, .5 ); //this.width/2, this.height/2 );
+            this.rotationAngle= angle;
+            this.dirty= true;
             return this;
 	    },
         /**
@@ -619,8 +643,8 @@
          */
 	    setRotationAnchored : function( angle, rx, ry ) {
 	        this.rotationAngle= angle;
-	        this.rotationX= rx?rx:0;
-	        this.rotationY= ry?ry:0;
+	        this.rotationX= rx;
+	        this.rotationY= ry;
             this.dirty= true;
             return this;
 	    },
@@ -668,15 +692,10 @@
          * @param x{number} a float indicating Actor's x position
          * @param y{number} a float indicating Actor's y position
          * @return this
+         *
+         * @deprecated
          */
 	    setLocation : function( x, y ) {
-/*
-            this.x= x|0;
-            this.y= y|0;
-
-            this.oldX= x|0;
-            this.oldY= y|0;
-*/
             this.x= x;
             this.y= y;
             this.oldX= x;
@@ -686,6 +705,25 @@
 
             return this;
 	    },
+
+        setPosition : function( x,y ) {
+            return this.setLocation( x,y );
+        },
+
+        setPositionAnchor : function( pax, pay ) {
+            this.tAnchorX=  pax;
+            this.tAnchorY=  pay;
+            return this;
+        },
+
+        setPositionAnchored : function( x,y,pax,pay ) {
+            this.setLocation( x,y );
+            this.tAnchorX=  pax;
+            this.tAnchorY=  pay;
+            return this;
+        },
+
+
         /**
          * This method is called by the Director to know whether the actor is on Scene time.
          * In case it was necessary, this method will notify any life cycle behaviors about
@@ -1136,7 +1174,7 @@
             }
 
             // transformation stuff.
-            this.setModelViewMatrix(director);
+            this.setModelViewMatrix();
 
             if ( this.dirty || this.wdirty || this.invalid ) {
                 if ( director.dirtyRectsEnabled ) {
@@ -1174,7 +1212,7 @@
          *
          * @return this
          */
-        setModelViewMatrix : function(director) {
+        setModelViewMatrix : function() {
             var c,s,_m00,_m01,_m10,_m11;
             var mm0, mm1, mm2, mm3, mm4, mm5;
             var mm;
@@ -1186,13 +1224,13 @@
 
                 mm0= 1;
                 mm1= 0;
-                mm2= mm[2];
+                //mm2= mm[2];
                 mm3= 0;
                 mm4= 1;
-                mm5= mm[5];
+                //mm5= mm[5];
 
-                mm2= this.x;
-                mm5= this.y;
+                mm2= this.x - this.tAnchorX * this.width ;
+                mm5= this.y - this.tAnchorY * this.height;
 
                 if ( this.rotationAngle ) {
 
@@ -1299,12 +1337,33 @@
 
             if ( this.isAA ) {
                 var m= this.worldModelViewMatrix.matrix;
-                AABB.x= m[2];
-                AABB.y= m[5];
-                AABB.x1= m[2] + this.width;
-                AABB.y1= m[5] + this.height;
-                AABB.width= AABB.x1-AABB.x;
-                AABB.height= AABB.y1-AABB.y;
+                var x= m[2];
+                var y= m[5];
+                var w= this.width;
+                var h= this.height;
+                AABB.x= x;
+                AABB.y= y;
+                AABB.x1= x + w;
+                AABB.y1= y + h;
+                AABB.width= w;
+                AABB.height= h;
+
+                if ( CAAT.GLRENDER ) {
+                    var vvv;
+                    vvv= vv[0];
+                    vvv.x=x;
+                    vvv.y=y;
+                    vvv= vv[1];
+                    vvv.x=x+w;
+                    vvv.y=y;
+                    vvv= vv[2];
+                    vvv.x=x+w;
+                    vvv.y=y+h;
+                    vvv= vv[3];
+                    vvv.x=x;
+                    vvv.y=y+h;
+                }
+
                 return this;
             }
 
@@ -1412,7 +1471,6 @@
             ctx.globalAlpha= this.frameAlpha;
 
             director.modelViewMatrix.transformRenderingContextSet( ctx );
-
             this.worldModelViewMatrix.transformRenderingContext(ctx);
 
             if ( this.clip ) {
@@ -2401,6 +2459,14 @@
                 return this;
             }
 
+            if ( this.font instanceof CAAT.SpriteImage ) {
+                this.textWidth= this.font.stringWidth( this.text );
+                this.textHeight=this.font.stringHeight();
+                this.width= this.textWidth;
+                this.height= this.textHeight;
+                return this;
+            }
+
             var ctx= director.ctx;
 
             ctx.save();
@@ -2458,7 +2524,7 @@
 
 			var ctx= director.ctx;
 			
-			if (typeof this.font === 'object') {
+			if ( this.font instanceof CAAT.SpriteImage ) {
 				return this.drawSpriteText(director,time);
 			}
 
@@ -2633,7 +2699,7 @@
 		}
 	};
 
-    extend( CAAT.TextActor, CAAT.ActorContainer, null);
+    extend( CAAT.TextActor, CAAT.Actor, null);
 })();
 
 (function() {

@@ -778,6 +778,25 @@
             return w;
         },
 
+        stringHeight : function() {
+            if ( this.fontHeight ) {
+                return this.fontHeight;
+            }
+
+            var y= 0;
+            for( var i in this.mapInfo ) {
+                var mi= this.mapInfo[i];
+
+                var h= mi.height+mi.yoffset;
+                if ( h>y ) {
+                    y=h;
+                }
+            }
+
+            this.fontHeight= y;
+            return this.fontHeight;
+        },
+
         drawString : function( ctx, str, x, y ) {
             var i, l, charInfo, w;
             var charArr = str.split("");
