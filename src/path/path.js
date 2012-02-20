@@ -31,7 +31,7 @@
     };
 
     CAAT.PathSegment.prototype =  {
-        color:  'black',
+        color:  '#000',
         length: 0,
         bbox:   null,
         parent: null,
@@ -149,7 +149,21 @@
          * Transform this path with the given affinetransform matrix.
          * @param matrix
          */
-        transform : function(matrix) {}
+        transform : function(matrix) {},
+
+        drawHandle : function( ctx, x, y ) {
+            var w= CAAT.Curve.prototype.HANDLE_SIZE/2;
+            ctx.fillRect( x-w, y-w, w*2, w*2 );
+            /*
+            ctx.arc(
+                this.points[0].x,
+                this.points[0].y,
+                CAAT.Curve.prototype.HANDLE_SIZE/2,
+                0,
+                2*Math.PI,
+                false) ;
+                            */
+        }
     };
 
 })();
@@ -258,6 +272,9 @@
 
 			return this.newPosition;
 		},
+        getPositionFromLength : function( len ) {
+            return this.getPosition( len/this.length );
+        },
         /**
          * Returns initial path segment point's x coordinate.
          * @return {number}
@@ -280,20 +297,23 @@
          */
 		paint : function(director, bDrawHandles) {
 			
-			var canvas= director.crc;
+			var ctx= director.ctx;
 
-            canvas.save();
+            ctx.save();
 
-            canvas.strokeStyle= this.color;
-			canvas.beginPath();
-			canvas.moveTo( this.points[0].x, this.points[0].y );
-			canvas.lineTo( this.points[1].x, this.points[1].y );
-			canvas.stroke();
+            ctx.strokeStyle= this.color;
+			ctx.beginPath();
+			ctx.moveTo( this.points[0].x, this.points[0].y );
+			ctx.lineTo( this.points[1].x, this.points[1].y );
+			ctx.stroke();
 
             if ( bDrawHandles ) {
-                canvas.globalAlpha=0.5;
-                canvas.fillStyle='#7f7f00';
-                canvas.beginPath();
+                ctx.globalAlpha=0.5;
+                ctx.fillStyle='#7f7f00';
+                ctx.beginPath();
+                this.drawHandle( ctx, this.points[0].x, this.points[0].y );
+                this.drawHandle( ctx, this.points[1].x, this.points[1].y );
+                /*
                 canvas.arc(
                         this.points[0].x,
                         this.points[0].y,
@@ -309,9 +329,10 @@
                         2*Math.PI,
                         false) ;
                 canvas.fill();
+                */
             }
 
-            canvas.restore();
+            ctx.restore();
 		},
         /**
          * Get the number of control points. For this type of path segment, start and
@@ -481,7 +502,7 @@
 		paint : function( director,bDrawHandles ) {
             this.curve.drawHandles= bDrawHandles;
             director.ctx.strokeStyle= this.color;
-			this.curve.paint(director);
+			this.curve.paint(director,bDrawHandles);
 		},
         /**
          * @inheritDoc
@@ -714,21 +735,23 @@
          */
 		paint : function(director, bDrawHandles) {
 
-			var canvas= director.crc;
+			var ctx= director.ctx;
 
-            canvas.save();
+            ctx.save();
 
-            canvas.strokeStyle= this.color;
-			canvas.beginPath();
-			canvas.strokeRect(
+            ctx.strokeStyle= this.color;
+			ctx.beginPath();
+			ctx.strokeRect(
                 this.bbox.x, this.bbox.y,
                 this.bbox.width, this.bbox.height );
 
             if ( bDrawHandles ) {
-                canvas.globalAlpha=0.5;
-                canvas.fillStyle='#7f7f00';
+                ctx.globalAlpha=0.5;
+                ctx.fillStyle='#7f7f00';
 
                 for( var i=0; i<this.points.length; i++ ) {
+                    this.drawHandle( ctx, this.points[i].x, this.points[i].y );
+                    /*
                     canvas.beginPath();
                     canvas.arc(
                             this.points[i].x,
@@ -738,11 +761,12 @@
                             2*Math.PI,
                             false) ;
                     canvas.fill();
+                    */
                 }
 
             }
 
-            canvas.restore();
+            ctx.restore();
 		},
         /**
          * Get the number of control points. For this type of path segment, start and
@@ -1047,6 +1071,28 @@
 
             return this;
         },
+        setCatmullRom : function( points, closed ) {
+            if ( closed ) {
+                points = points.slice(0)
+                points.unshift(points[points.length-1])
+                points.push(points[1])
+                points.push(points[2])
+            }
+
+            for( var i=1; i<points.length-2; i++ ) {
+
+                var segment= new CAAT.CurvePath().setColor("#000").setParent(this);
+                var cm= new CAAT.CatmullRom().setCurve(
+                    points[ i-1 ],
+                    points[ i ],
+                    points[ i+1 ],
+                    points[ i+2 ]
+                );
+                segment.curve= cm;
+                this.pathSegments.push(segment);
+            }
+            return this;
+        },
         /**
          * Add a CAAT.PathSegment instance to this path.
          * @param pathSegment {CAAT.PathSegment}
@@ -1279,6 +1325,7 @@
                 time= 1+time;
             }
 
+            /*
             var found= false;
             for( var i=0; i<this.pathSegments.length; i++ ) {
                 if (this.pathSegmentStartTime[i]<=time && time<=this.pathSegmentStartTime[i]+this.pathSegmentDurationTime[i]) {
@@ -1293,11 +1340,40 @@
                 }
             }
 
-            /**
-             * !found means surely, a linear path with overlapping start and end points.
-             * In such case, a (0,0) point would be returned, so instead, return either start or ending point.
-             */
 			return found ? this.newPosition : this.endCurvePosition();
+			*/
+
+
+            var ps= this.pathSegments;
+            var psst= this.pathSegmentStartTime;
+            var psdt= this.pathSegmentDurationTime;
+            var l=  0;
+            var r=  ps.length;
+            var m;
+            var np= this.newPosition;
+            var psstv;
+            while( l!==r ) {
+
+                m= ((r+l)/2)|0;
+                psstv= psst[m];
+                if ( psstv<=time && time<=psstv+psdt[m]) {
+                    time= psdt[m] ?
+                            (time-psstv)/psdt[m] :
+                            0;
+
+                    var pointInPath= ps[m].getPosition(time);
+                    np.x= pointInPath.x;
+                    np.y= pointInPath.y;
+                    return np;
+                } else if ( time<psstv ) {
+                    r= m;
+                } else /*if ( time>=psstv )*/ {
+                    l= m+1;
+                }
+            }
+            return this.endCurvePosition();
+
+
 		},
         /**
          * Analogously to the method getPosition, this method returns a CAAT.Point instance with
@@ -1377,7 +1453,7 @@
          * Indicates that some path control point has changed, and that the path must recalculate
          * its internal data, ie: length and bbox.
          */
-		updatePath : function(point) {
+		updatePath : function(point, callback) {
             var i,j;
 
             this.length=0;
@@ -1435,6 +1511,10 @@
 
             this.extractPathPoints();
 
+            if ( typeof callback!=='undefined' ) {
+                callback(this);
+            }
+
             return this;
 
 		},
@@ -1471,7 +1551,7 @@
          * @param x {number}
          * @param y {number}
          */
-		drag : function(x,y) {
+		drag : function(x,y,callback) {
             if (!this.interactive) {
                 return;
             }
@@ -1491,7 +1571,7 @@
 			this.ax= x;
 			this.ay= y;
 
-			this.updatePath(this.point);
+			this.updatePath(this.point,callback);
 		},
         /**
          * Returns a collection of CAAT.Point objects which conform a path's contour.
@@ -1757,6 +1837,22 @@
             this.tb_x= x;
             this.tb_y= y;
             return this;
+        },
+
+        flatten : function( npatches, closed ) {
+            var point= this.getPositionFromLength(0);
+            var path= new CAAT.Path().beginPath( point.x, point.y );
+            for( var i=0; i<npatches; i++ ) {
+                point= this.getPositionFromLength(i/npatches*this.length);
+                path.addLineTo( point.x, point.y  );
+            }
+            if ( closed) {
+                path.closePath();
+            } else {
+                path.endPath();
+            }
+
+            return path;
         }
 
     };

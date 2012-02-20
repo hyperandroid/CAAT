@@ -533,7 +533,7 @@ coordinate to startCurvePosition coordinate</del>.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Path.html#drag">drag</a></b>(x, y)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Path.html#drag">drag</a></b>(x, y, callback)
 								</div>
 								<div class="description">Drags a path's control point.</div>
 							</td>
@@ -570,6 +570,15 @@ coordinate to startCurvePosition coordinate</del>.</div>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Path.html#extractPathPoints">extractPathPoints</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Path.html#flatten">flatten</a></b>(npatches, closed)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -715,6 +724,15 @@ the coordinate on the path that corresponds to the given length.</div>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Path.html#setATMatrix">setATMatrix</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Path.html#setCatmullRom">setCatmullRom</a></b>(points, closed)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -885,7 +903,7 @@ the coordinate on the path that corresponds to the given length.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Path.html#updatePath">updatePath</a></b>(point)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Path.html#updatePath">updatePath</a></b>(point, callback)
 								</div>
 								<div class="description">Indicates that some path control point has changed, and that the path must recalculate
 its internal data, ie: length and bbox.</div>
@@ -898,7 +916,7 @@ its internal data, ie: length and bbox.</div>
 				
 				
 				<dl class="inheritsList">
-				<dt>Methods borrowed from class <a href="../symbols/CAAT.PathSegment.html">CAAT.PathSegment</a>: </dt><dd><a href="../symbols/CAAT.PathSegment.html#getBoundingBox">getBoundingBox</a>, <a href="../symbols/CAAT.PathSegment.html#getLength">getLength</a>, <a href="../symbols/CAAT.PathSegment.html#setColor">setColor</a>, <a href="../symbols/CAAT.PathSegment.html#setParent">setParent</a>, <a href="../symbols/CAAT.PathSegment.html#transform">transform</a></dd>
+				<dt>Methods borrowed from class <a href="../symbols/CAAT.PathSegment.html">CAAT.PathSegment</a>: </dt><dd><a href="../symbols/CAAT.PathSegment.html#drawHandle">drawHandle</a>, <a href="../symbols/CAAT.PathSegment.html#getBoundingBox">getBoundingBox</a>, <a href="../symbols/CAAT.PathSegment.html#getLength">getLength</a>, <a href="../symbols/CAAT.PathSegment.html#setColor">setColor</a>, <a href="../symbols/CAAT.PathSegment.html#setParent">setParent</a>, <a href="../symbols/CAAT.PathSegment.html#transform">transform</a></dd>
 				</dl>
 				
 			
@@ -1698,7 +1716,7 @@ to be the first path segment's first control point.
 					<div class="fixedFont">
 					
 					
-					<b>drag</b>(x, y)
+					<b>drag</b>(x, y, callback)
 					
 					</div>
 					<div class="description">
@@ -1726,6 +1744,12 @@ method will do nothing, regardless the user is dragging on the CAAT.PathActor de
 									
 								</dt>
 								<dd>{number}</dd>
+							
+								<dt>
+									<b>callback</b>
+									
+								</dt>
+								<dd></dd>
 							
 							</dl>
 						
@@ -1855,6 +1879,48 @@ method closePath) which calls this method as well.
 					
 					
 					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="flatten"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>flatten</b>(npatches, closed)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>npatches</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>closed</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
 						
 						
 						
@@ -2420,6 +2486,48 @@ If the Behavior is not present at the actor behavior collection nothing happends
 					
 					
 					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setCatmullRom"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setCatmullRom</b>(points, closed)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>points</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>closed</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
 						
 						
 						
@@ -3299,7 +3407,7 @@ this path's already set points.
 					<div class="fixedFont">
 					
 					
-					<b>updatePath</b>(point)
+					<b>updatePath</b>(point, callback)
 					
 					</div>
 					<div class="description">
@@ -3317,6 +3425,12 @@ its internal data, ie: length and bbox.
 							
 								<dt>
 									<b>point</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>callback</b>
 									
 								</dt>
 								<dd></dd>
@@ -3344,7 +3458,7 @@ its internal data, ie: length and bbox.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Feb 15 2012 23:45:47 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Feb 20 2012 23:56:03 GMT+0100 (CET)
 		</div>
 	</body>
 </html>

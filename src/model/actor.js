@@ -2196,6 +2196,11 @@
 
             return this;
 		},
+        removeFirstChild : function() {
+            var first= this.childrenList.shift();
+            first.parent= null;
+            return first;
+        },
         /**
          * @private
          *
@@ -2663,7 +2668,7 @@
 
 				context.save();
 
-				context.translate( (0.5+p0.x)|0, (0.5+p0.y)|0 );
+				context.translate( p0.x|0, p0.y|0 );
 				context.rotate( angle );
 				
 				var y = this.textBaseline === "bottom" ? 0 - this.font.height : 0;

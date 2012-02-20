@@ -1,3 +1,10 @@
+02/21/2012 *0.3 Build 180*
+--------------------------
+
+* Fixed (at last) Catmull Rom splines as CAAT.Path objects.
+* Added CAAT.Path.flatten method to turn a compound path of patches into a polyline.
+* Added CAAT.PathActor.setOnUpdateCallback
+
 02/10/2012 *0.3 Build 138*
 --------------------------
 
@@ -13,7 +20,7 @@
 * Fixed CAAT.ContainerBehavior that on expiration notified twice behavior expiration event (one from base class, and another
   one from the container itself).
 * Fixed CAAT.TextActor issue when drawing text with CAAT.SpriteImage
-* Clip Paths also honor the new method setPositionAnchor in CAAT.Actor. Added methods setRotationAnchor, setRotation,
+* Clip Paths also honors the new method setPositionAnchor in CAAT.Actor. Added methods setRotationAnchor, setRotation,
   setScaleAnchor, setScale, setPosition, setPositionAnchor to CAAT.Path.
 * Added global flag CAAT.GLRENDER.
 

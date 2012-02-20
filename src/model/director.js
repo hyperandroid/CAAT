@@ -297,7 +297,11 @@
          */
         initializeGL : function(width, height, canvas, proxy) {
 
-            canvas = canvas || document.createElement('canvas');
+            if ( !canvas ) {
+              canvas= document.createElement('canvas');
+              document.body.appendChild(canvas);
+            }
+
             canvas.width = width;
             canvas.height = height;
 
