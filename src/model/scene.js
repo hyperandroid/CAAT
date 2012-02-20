@@ -493,5 +493,5 @@
         }
 	};
 
-    extend( CAAT.Scene, CAAT.ActorContainer, null);
+    extend( CAAT.Scene, CAAT.ActorContainer );
 })();

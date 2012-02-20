@@ -40,6 +40,14 @@
         this.domElement.style['-webkit-transition']='all 0s linear';
         this.style( 'display', 'none');
 
+        this.AABB= new CAAT.Rectangle();
+        this.viewVertices= [
+                new CAAT.Point(0,0,0),
+                new CAAT.Point(0,0,0),
+                new CAAT.Point(0,0,0),
+                new CAAT.Point(0,0,0)
+        ];
+
         this.setVisible(true);
         this.resetTransform();
         this.setScale(1,1);
@@ -63,6 +71,8 @@
 		duration:				Number.MAX_VALUE,   // Actor duration in Scene time
 		clip:					false,  // should clip the Actor's content against its contour.
 
+        tAnchorX            :   0,
+        tAnchorY            :   0,
         scaleX:					0,      // transformation. width scale parameter
 		scaleY:					0,      // transformation. height scale parameter
 		scaleTX:				.50,    // transformation. scale anchor x position
@@ -108,6 +118,117 @@
         __d_ay:                 -1,
         gestureEnabled:         false,
 
+        AABB            :       null,
+        viewVertices:           null,   // model to view transformed vertices.
+        isAA            :       true,
+
+        /**
+          * Calculates the 2D bounding box in canvas coordinates of the Actor.
+          * This bounding box takes into account the transformations applied hierarchically for
+          * each Scene Actor.
+          *
+          * @private
+          *
+          */
+         setScreenBounds : function() {
+
+             var AABB= this.AABB;
+             var vv= this.viewVertices;
+
+             if ( this.isAA ) {
+                 var m= this.worldModelViewMatrix.matrix;
+                 AABB.x= m[2];
+                 AABB.y= m[5];
+                 AABB.x1= m[2] + this.width;
+                 AABB.y1= m[5] + this.height;
+                 AABB.width= AABB.x1-AABB.x;
+                 AABB.height= AABB.y1-AABB.y;
+                 return this;
+             }
+
+
+             var vvv;
+
+             vvv= vv[0];
+             vvv.x=0;
+             vvv.y=0;
+             vvv= vv[1];
+             vvv.x=this.width;
+             vvv.y=0;
+             vvv= vv[2];
+             vvv.x=this.width;
+             vvv.y=this.height;
+             vvv= vv[3];
+             vvv.x=0;
+             vvv.y=this.height;
+
+             this.modelToView( this.viewVertices );
+
+             var xmin= Number.MAX_VALUE, xmax=-Number.MAX_VALUE;
+             var ymin= Number.MAX_VALUE, ymax=-Number.MAX_VALUE;
+
+             vvv= vv[0];
+             if ( vvv.x < xmin ) {
+                 xmin=vvv.x;
+             }
+             if ( vvv.x > xmax ) {
+                 xmax=vvv.x;
+             }
+             if ( vvv.y < ymin ) {
+                 ymin=vvv.y;
+             }
+             if ( vvv.y > ymax ) {
+                 ymax=vvv.y;
+             }
+             var vvv= vv[1];
+             if ( vvv.x < xmin ) {
+                 xmin=vvv.x;
+             }
+             if ( vvv.x > xmax ) {
+                 xmax=vvv.x;
+             }
+             if ( vvv.y < ymin ) {
+                 ymin=vvv.y;
+             }
+             if ( vvv.y > ymax ) {
+                 ymax=vvv.y;
+             }
+             var vvv= vv[2];
+             if ( vvv.x < xmin ) {
+                 xmin=vvv.x;
+             }
+             if ( vvv.x > xmax ) {
+                 xmax=vvv.x;
+             }
+             if ( vvv.y < ymin ) {
+                 ymin=vvv.y;
+             }
+             if ( vvv.y > ymax ) {
+                 ymax=vvv.y;
+             }
+             var vvv= vv[3];
+             if ( vvv.x < xmin ) {
+                 xmin=vvv.x;
+             }
+             if ( vvv.x > xmax ) {
+                 xmax=vvv.x;
+             }
+             if ( vvv.y < ymin ) {
+                 ymin=vvv.y;
+             }
+             if ( vvv.y > ymax ) {
+                 ymax=vvv.y;
+             }
+
+             AABB.x= xmin;
+             AABB.y= ymin;
+             AABB.x1= xmax;
+             AABB.y1= ymax;
+             AABB.width=  (xmax-xmin);
+             AABB.height= (ymax-ymin);
+
+             return this;
+        },
         setGestureEnabled : function( enable ) {
             this.gestureEnabled= !!enable;
         },
@@ -289,6 +410,16 @@
             return this;
         },
         /**
+         * Center this actor at position (x,y).
+         * @param x {number} x position
+         * @param y {number} y position
+         *
+         * @return this
+         */
+        centerAt : function(x,y) {
+            return this.centerOn(x,y);
+        },
+        /**
          * Set this actor invisible.
          * The actor is animated but not visible.
          * A container won't show any of its children if set visible to false.
@@ -311,7 +442,7 @@
             }
 
             var value=
-
+                "translate("+this.x+"px,"+this.y+"px) "+
                 "rotate("+this.rotationAngle+"rad) scale("+this.scaleX+","+this.scaleY+")" +
                     imageop;
 
@@ -582,21 +713,46 @@
 
             return { x: anchors[anchor*2], y: anchors[anchor*2+1] };
         },
+
+        setGlobalAnchor : function( ax, ay ) {
+            this.tAnchorX=  ax;
+            this.rotationX= ax;
+            this.scaleTX=   ax;
+
+            this.tAnchorY=  ay;
+            this.rotationY= ay;
+            this.scaleTY=   ay;
+
+            this.dirty= true;
+            return this;
+        },
+
+        setScaleAnchor : function( sax, say ) {
+            this.rotationX= sax;
+            this.rotationY= say;
+            this.scaleTX=   sax;
+            this.scaleTY=   say;
+
+            this.style3();
+
+            this.dirty= true;
+            return this;
+        },
         /**
          * Modify the dimensions on an Actor.
          * The dimension will not affect the local coordinates system in opposition
          * to setSize or setBounds.
          *
-         * @param sx a float indicating a width size multiplier.
-         * @param sy a float indicating a height size multiplier.
-         * @param anchor an integer indicating the anchor to perform the Scale operation.
+         * @param sx {number} width scale.
+         * @param sy {number} height scale.
+         * @param anchorx {number} x anchor to perform the Scale operation.
+         * @param anchory {number} y anchor to perform the Scale operation.
          *
          * @return this;
          */
 		setScaleAnchored : function( sx, sy, anchorx, anchory )    {
-
-			this.rotationX= anchorx;
-			this.rotationY= anchory;
+            this.rotationX= anchorx;
+            this.rotationY= anchory;
             this.scaleTX=   anchorx;
             this.scaleTY=   anchory;
 
@@ -609,6 +765,9 @@
 
             return this;
 		},
+
+
+
         /**
          * A helper method for setRotationAnchored. This methods stablishes the center
          * of rotation to be the center of the Actor.
@@ -617,27 +776,30 @@
          * @return this
          */
 	    setRotation : function( angle )	{
-			this.setRotationAnchored( angle, .5, .5 );
+            this.rotationAngle= angle;
+            this.style3( );
+            this.dirty= true;
             return this;
 	    },
-        /**
-         * This method sets Actor rotation around a given position.
-         * @param angle a float indicating the angle in radians to rotate the Actor.
-         * @param rx
-         * @param ry
-         * @return this;
-         */
-	    setRotationAnchored : function( angle, rx, ry ) {
-	        this.rotationAngle= angle;
-	        this.rotationX= rx?rx:0;
-	        this.rotationY= ry?ry:0;
 
+        setRotationAnchor : function( rax, ray ) {
+            this.rotationX= ray;
+   	        this.rotationY= rax;
+            this.style3( );
+            this.dirty= true;
+            return this;
+        },
+
+        setRotationAnchored : function( angle, rx, ry ) {
+   	        this.rotationAngle= angle;
+   	        this.rotationX= rx;
+   	        this.rotationY= ry;
             this.style3( );
 
             this.dirty= true;
-
             return this;
-	    },
+   	    },
+
         /**
          * Sets an Actor's dimension
          * @param w a float indicating Actor's width.
@@ -680,6 +842,29 @@
 
             return this;
 	    },
+
+
+        setPosition : function( x,y ) {
+            return this.setLocation( x,y );
+        },
+
+        setPositionAnchor : function( pax, pay ) {
+            this.tAnchorX=  pax;
+            this.tAnchorY=  pay;
+            this.style3();
+            this.dirty= true;
+            return this;
+        },
+
+        setPositionAnchored : function( x,y,pax,pay ) {
+            this.setLocation( x,y );
+            this.tAnchorX=  pax;
+            this.tAnchorY=  pay;
+            return this;
+        },
+
+
+
         /**
          * This method sets the position of an Actor inside its parent.
          *
@@ -695,9 +880,11 @@
             this.x= x;
             this.y= y;
 
+            this.style3();
+/*
             this.style('left', x+'px');
             this.style('top',  y+'px');
-
+*/
             this.dirty= true;
 
             return this;
@@ -1168,13 +1355,21 @@
 
             this.setModelViewMatrix(false);
 
-            return true;
+            if ( this.dirty || this.wdirty || this.invalid ) {
+                this.setScreenBounds();
+            }
+
+            this.dirty= false;
+
+            //return true;
+            return this.AABB.intersects( director.AABB );
 		},
         /**
          * Set this model view matrix if the actor is Dirty.
          *
          * @return this
          */
+            /*
         setModelViewMatrix : function(glEnabled) {
             var c,s,_m00,_m01,_m10,_m11;
             var mm0, mm1, mm2, mm3, mm4, mm5;
@@ -1250,11 +1445,107 @@
                 this.worldModelViewMatrix.identity();
             }
 
-            this.dirty= false;
+//            this.dirty= false;
 
 
             return this;
+        },*/
+
+        setModelViewMatrix : function() {
+            var c,s,_m00,_m01,_m10,_m11;
+            var mm0, mm1, mm2, mm3, mm4, mm5;
+            var mm;
+
+            this.wdirty= false;
+            mm= this.modelViewMatrix.matrix;
+
+            if ( this.dirty ) {
+
+                mm0= 1;
+                mm1= 0;
+                //mm2= mm[2];
+                mm3= 0;
+                mm4= 1;
+                //mm5= mm[5];
+
+                mm2= this.x - this.tAnchorX * this.width ;
+                mm5= this.y - this.tAnchorY * this.height;
+
+                if ( this.rotationAngle ) {
+
+                    var rx= this.rotationX*this.width;
+                    var ry= this.rotationY*this.height;
+
+                    mm2+= mm0*rx + mm1*ry;
+                    mm5+= mm3*rx + mm4*ry;
+
+                    c= Math.cos( this.rotationAngle );
+                    s= Math.sin( this.rotationAngle );
+                    _m00= mm0;
+                    _m01= mm1;
+                    _m10= mm3;
+                    _m11= mm4;
+                    mm0=  _m00*c + _m01*s;
+                    mm1= -_m00*s + _m01*c;
+                    mm3=  _m10*c + _m11*s;
+                    mm4= -_m10*s + _m11*c;
+
+                    mm2+= -mm0*rx - mm1*ry;
+                    mm5+= -mm3*rx - mm4*ry;
+                }
+                if ( this.scaleX!=1 || this.scaleY!=1 ) {
+
+                    var sx= this.scaleTX*this.width;
+                    var sy= this.scaleTY*this.height;
+
+                    mm2+= mm0*sx + mm1*sy;
+                    mm5+= mm3*sx + mm4*sy;
+
+                    mm0= mm0*this.scaleX;
+                    mm1= mm1*this.scaleY;
+                    mm3= mm3*this.scaleX;
+                    mm4= mm4*this.scaleY;
+
+                    mm2+= -mm0*sx - mm1*sy;
+                    mm5+= -mm3*sx - mm4*sy;
+                }
+
+                mm[0]= mm0;
+                mm[1]= mm1;
+                mm[2]= mm2;
+                mm[3]= mm3;
+                mm[4]= mm4;
+                mm[5]= mm5;
+            }
+
+            if ( this.parent ) {
+
+
+                this.isAA= this.rotationAngle===0 && this.scaleX===1 && this.scaleY===1 && this.parent.isAA;
+
+                if ( this.dirty || this.parent.wdirty ) {
+                    this.worldModelViewMatrix.copy( this.parent.worldModelViewMatrix );
+                    if ( this.isAA ) {
+                        var mmm= this.worldModelViewMatrix.matrix;
+                        mmm[2]+= mm[2];
+                        mmm[5]+= mm[5];
+                    } else {
+                        this.worldModelViewMatrix.multiply( this.modelViewMatrix );
+                    }
+                    this.wdirty= true;
+                }
+
+            } else {
+                if ( this.dirty ) {
+                    this.wdirty= true;
+                }
+
+                this.worldModelViewMatrix.identity();
+                this.isAA= this.rotationAngle===0 && this.scaleX===1 && this.scaleY===1;
+            }
+
         },
+
         /**
          * @private.
          * This method will be called by the Director to set the whole Actor pre-render process.
@@ -1342,6 +1633,7 @@
             this.setEnabled= function( enabled ) {
                 this.enabled= enabled;
                 this.setSpriteIndex( this.enabled ? this.iNormal : this.iDisabled );
+                return this;
             };
 
             /**

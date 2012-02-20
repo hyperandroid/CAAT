@@ -84,6 +84,8 @@ CAAT.setCoordinateClamping= function( clamp ) {
  */
 CAAT.PMR= 64;
 
+CAAT.GLRENDER= false;
+
 /**
  * Allow visual debugging artifacts.
  */

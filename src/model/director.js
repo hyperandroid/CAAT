@@ -134,18 +134,6 @@
         dirtyRectsEnabled   :   false,
         nDirtyRects         :   0,
 
-        collidingActors     :   null,
-
-        solveCollissions : function() {
-            if ( !this.collidingActors.length ) {
-                return;
-            }
-
-
-        },
-        addCollidingActor : function( actor ) {
-            this.collidingActors.push( actor );
-        },
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
                 var dd= new CAAT.Debug().initialize( this.width, 60 );
@@ -262,7 +250,10 @@
          * @return this
          */
         initialize : function(width, height, canvas, proxy) {
-            canvas = canvas || document.createElement('canvas');
+            if ( !canvas ) {
+              canvas= document.createElement('canvas');
+              document.body.appendChild(canvas);
+            }
             this.canvas = canvas;
 
             if ( typeof proxy==='undefined' ) {
@@ -323,6 +314,7 @@
                 this.gl = canvas.getContext("experimental-webgl"/*, {antialias: false}*/);
                 this.gl.viewportWidth = width;
                 this.gl.viewportHeight = height;
+                CAAT.GLRENDER= true;
             } catch(e) {
             }
 
@@ -601,6 +593,8 @@
 
                 ctx.save();
                 if ( this.dirtyRectsEnabled ) {
+                    this.modelViewMatrix.transformRenderingContext( ctx );
+
                     if ( !CAAT.DEBUG_DIRTYRECTS ) {
                         ctx.beginPath();
                         this.nDirtyRects=0;
@@ -632,7 +626,15 @@
                         if ( c.onRenderStart ) {
                             c.onRenderStart(tt);
                         }
-                        c.paintActor(this, tt);
+
+                        if ( !CAAT.DEBUG_DIRTYRECTS && this.dirtyRectsEnabled ) {
+                            if ( this.nDirtyRects ) {
+                                c.paintActor(this, tt);
+                            }
+                        } else {
+                            c.paintActor(this, tt);
+                        }
+
                         if ( c.onRenderEnd ) {
                             c.onRenderEnd(tt);
                         }
@@ -658,7 +660,7 @@
                     }
                 }
 
-                if ( CAAT.DEBUG && CAAT.DEBUG_DIRTYRECTS ) {
+                if ( this.nDirtyRects>0 && CAAT.DEBUG && CAAT.DEBUG_DIRTYRECTS ) {
                     ctx.beginPath();
                     this.nDirtyRects=0;
                     var dr= this.cDirtyRects;
@@ -669,10 +671,10 @@
                             this.nDirtyRects++;
                         }
                     }
+
                     ctx.clip();
                     ctx.fillStyle='rgba(160,255,150,.4)';
                     ctx.fillRect(0,0,this.width, this.height);
-
                 }
 
                 ctx.restore();
@@ -690,12 +692,12 @@
          */
         animate : function(director, time) {
             this.setModelViewMatrix(this);
+            this.setScreenBounds();
 
             this.dirty= false;
             this.invalid= false;
             this.dirtyRectsIndex= -1;
             this.cDirtyRects= [];
-            this.collidingActors= [];
 
             var cl= this.childrenList;
             var cli;
@@ -704,8 +706,6 @@
                 var tt = cli.time - cli.start_time;
                 cli.animate(this, tt);
             }
-
-            this.solveCollissions();
 
             return this;
         },

@@ -160,12 +160,14 @@
                                 director.width - 100, director.height - 10,
                                 100, director.height - 10,
                                 100, director.height / 2).
-                                closePath(),
+                                closePath().
+                                setPositionAnchor(.5,.5),
 
                         new CAAT.Path().
                                 beginPath(100,100).
                                 addRectangleTo( director.width-100, director.height-100 ).
-                                endPath(),
+                                endPath().
+                                setPositionAnchor(.5,.5),
 
                         new CAAT.Path().
                                 beginPath(200,200).
@@ -174,7 +176,8 @@
                                 addQuadricTo( 400,400, 350,200 ).
                                 addCubicTo( 100,300, 300,450, 10,400).
                                 addQuadricTo( 40,200, 200,200 ).
-                                closePath()
+                                closePath().
+                                setPositionAnchor(.5,.5)
 
                     ];
 
@@ -184,7 +187,6 @@
                         setValues( path2 ).
                         setFrameTime( 0,15000 ).
                         setCycle( true )
-                        .setTranslation( path[i].width/2, path[i].height/2 )
                 ).addBehavior(
                     new CAAT.RotateBehavior().
                         setValues( 0,Math.PI*2, .5, .5 ).
@@ -208,6 +210,7 @@
             gr.mouseClick= function(e) {
                 pathIndex++;
                 gr.setClip( true, path[ pathIndex%path.length ] );
+
             }
         }
 

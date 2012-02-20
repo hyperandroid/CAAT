@@ -54,6 +54,7 @@
                     </p>
                     <ul>
                         <li>Constructing a Path and adding segments to it.</li>
+                        <li>Setting positional anchors.</li>
                         <li>What does a call to <code>closePath</code> means in opposition to <code>endPath</code>.</li>
                         <li>Showing a path by associating it to a PathActor.</li>
                         <li>Path management by calling setInteractive method.</li>
@@ -232,15 +233,17 @@
                             true).
                     setAnimationImageIndex([0,1,2,1]).
                     setChangeFPS(300).
-                    enableEvents(false);
+                    enableEvents(false).
+                    setId(111);
+
+            fish.setPositionAnchor(.5, .5);
 
             // path measurer behaviour
             var pb = new CAAT.PathBehavior().
                     setPath(path).
                     setFrameTime(0, 20000).
                     setCycle(true).
-                    setAutoRotate(true, CAAT.PathBehavior.autorotate.LEFT_TO_RIGHT).
-                    setTranslation(fish.width / 2, fish.height / 2);
+                    setAutoRotate(true, CAAT.PathBehavior.autorotate.LEFT_TO_RIGHT);
 
             fish.addBehavior(pb);
 

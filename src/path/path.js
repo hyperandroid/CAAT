@@ -791,7 +791,7 @@
             }
 
             this.bbox.setEmpty();
-            var minx= Number.MAX_VALUE, miny= Number.MAX_VALUE, maxx= Number.MIN_VALUE, maxy= Number.MIN_VALUE;
+            var minx= Number.MAX_VALUE, miny= Number.MAX_VALUE, maxx= -Number.MAX_VALUE, maxy= -Number.MAX_VALUE;
             for( var i=0; i<4; i++ ) {
                 this.bbox.union( this.points[i].x, this.points[i].y );
             }
@@ -907,6 +907,9 @@
         sb_scaleY:                  1,
         sb_scaleAnchorX:            .5,
         sb_scaleAnchorY:            .5,
+
+        tAnchorX:                   0,
+        tAnchorY:                   0,
 
         /** translate behavior info **/
         tb_x:                       0,
@@ -1276,6 +1279,7 @@
                 time= 1+time;
             }
 
+            var found= false;
             for( var i=0; i<this.pathSegments.length; i++ ) {
                 if (this.pathSegmentStartTime[i]<=time && time<=this.pathSegmentStartTime[i]+this.pathSegmentDurationTime[i]) {
                     time= this.pathSegmentDurationTime[i] ?
@@ -1284,11 +1288,16 @@
                     var pointInPath= this.pathSegments[i].getPosition(time);
                     this.newPosition.x= pointInPath.x;
                     this.newPosition.y= pointInPath.y;
+                    found= true;
                     break;
                 }
             }
 
-			return this.newPosition;
+            /**
+             * !found means surely, a linear path with overlapping start and end points.
+             * In such case, a (0,0) point would be returned, so instead, return either start or ending point.
+             */
+			return found ? this.newPosition : this.endCurvePosition();
 		},
         /**
          * Analogously to the method getPosition, this method returns a CAAT.Point instance with
@@ -1634,8 +1643,8 @@
             mm3= 0;
             mm4= 1;
 
-            mm2= this.tb_x - bbx;
-            mm5= this.tb_y - bby;
+            mm2= this.tb_x - bbx - this.tAnchorX * bbw;
+            mm5= this.tb_y - bby - this.tAnchorY * bbh;
 
             if ( this.rb_angle ) {
 
@@ -1695,11 +1704,52 @@
             return this;
         },
 
+        setRotationAnchor : function( ax, ay ) {
+            this.rb_rotateAnchorX= ax;
+            this.rb_rotateAnchorY= ay;
+        },
+
+        setRotation : function( angle ) {
+            this.rb_angle= angle;
+        },
+
         setScaleAnchored : function( scaleX, scaleY, sx, sy ) {
             this.sb_scaleX= scaleX;
             this.sb_scaleAnchorX= sx;
             this.sb_scaleY= scaleY;
             this.sb_scaleAnchorY= sy;
+            return this;
+        },
+
+        setScale : function( sx, sy ) {
+            this.sb_scaleX= sx;
+            this.sb_scaleY= sy;
+            return this;
+        },
+
+        setScaleAnchor : function( ax, ay ) {
+            this.sb_scaleAnchorX= ax;
+            this.sb_scaleAnchorY= ay;
+            return this;
+        },
+
+        setPositionAnchor : function( ax, ay ) {
+            this.tAnchorX= ax;
+            this.tAnchorY= ay;
+            return this;
+        },
+
+        setPositionAnchored : function( x,y,ax,ay ) {
+            this.tb_x= x;
+            this.tb_y= y;
+            this.tAnchorX= ax;
+            this.tAnchorY= ay;
+            return this;
+        },
+
+        setPosition : function( x,y ) {
+            this.tb_x= x;
+            this.tb_y= y;
             return this;
         },
 

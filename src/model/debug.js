@@ -152,7 +152,7 @@
             "    <div id=\"caat-debug\">"+
             "        <div id=\"debug_tabs\">"+
             "            <span class=\"tab_max_min\" onCLick=\"javascript: var debug = document.getElementById('debug_tabs_content');if (debug.className === 'debug_tabs_content_visible') {debug.className = 'debug_tabs_content_hidden'} else {debug.className = 'debug_tabs_content_visible'}\"> CAAT Debug panel </span>"+
-            "            <span id=\"caat-debug-tab0\" class=\"debug_tab debug_tab_selected\">CAAT Performance</span>"+
+            "            <span id=\"caat-debug-tab0\" class=\"debug_tab debug_tab_selected\">Performance</span>"+
             "            <span id=\"caat-debug-tab1\" class=\"debug_tab debug_tab_not_selected\">Controls</span>"+
             "            <span class=\"caat_debug_indicator\">"+
             "                <span class=\"caat_debug_bullet\" style=\"background-color:#0f0;\"></span>"+

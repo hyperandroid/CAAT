@@ -1,10 +1,45 @@
-02/03/2012 *0.3 Build   1*
+02/10/2012 *0.3 Build 138*
+--------------------------
+
+* Deprecated CAAT.PathBehavior.setTranslation function in favor of CAAT.Actor.setPositionAnchor function.
+* Deprecated method setLocation in favor of setPosition.
+* Added translation anchor. setpositionAnchor, setPosition.
+* Added methods setRotationAnchor, setScaleAnchor, setGlobalAnchor to CAAT.Actor.
+* Fixed bug with dirty rects and scaled canvas. It wasn't repainting the correct screen areas.
+* Added CAAT.SpatialHash object.
+* Added Behavior.setDelayTime( delay, duration ). This method applies the behavior after delay ms from current scene time
+  so there's no need to know currentScene time to set a behavior anymore.
+* Added CAAT.SpriteImage.stringHeight method which gives the highest char height on the sprite image atlas map.
+* Fixed CAAT.ContainerBehavior that on expiration notified twice behavior expiration event (one from base class, and another
+  one from the container itself).
+* Fixed CAAT.TextActor issue when drawing text with CAAT.SpriteImage
+* Clip Paths also honor the new method setPositionAnchor in CAAT.Actor. Added methods setRotationAnchor, setRotation,
+  setScaleAnchor, setScale, setPosition, setPositionAnchor to CAAT.Path.
+* Added global flag CAAT.GLRENDER.
+
+02/09/2012 *0.3 Build  64*
+--------------------------
+
+* Fixed setScreenBounds method which was calculating the bounding box erroneously when in negative coordinates.
+  Note to self: Number.MIN_VALUE != -Number.MAX_VALUE !!!!.
+* Fixed the case where a path composed by one single segment with overlapping starting and ending point was returning
+  (0,0) as path traversal. Now returns one of the two overlapping points.
+* Added invalidation for actors which change their background's image sprite index (Canvas only)
+* Improved scene graph traversal to fast discard elements out of screen (AABB testing)
+* Improved matrix calculations for AABB Actors.
+* Changed CSS renderer setLocation semantics from style.left|top to [-vendorPrefix]-transform.
+* Added getMapInfo method on CAAT.SpriteImage. Thus I can access glypth/sub-image data by index.
+* Fixed a bug with dirtyRects which made the system draw the whole canvas when no area is affected (agh!!)
+* Modified CAAT.QuadTree object to allow for default parameters setup.
+
+02/03/2012 *0.3 Build   6*
 --------------------------
 
 * Added math/Quadtree object.
 * Added Demo19 showcasing some collision detection mechanism.
 * Modified debug panel to show affected cleared dirty rectangles.
 * Modified math/Rectangle object and added intersect method which extract intersection from any two given rectangles.
+* Fixed an issue which prevented cachedAsBitmap TextActor not show properly.
 
 02/01/2012 *0.2 Build  90*
 --------------------------
@@ -15,7 +50,7 @@
 * Removed some non ansi characters from sourcecode comments.
 * Added setGestureEnabled and isGestureEnabled methods to CAAT.Actor on CSS renderer.
 * TextActor recalculates its size when font or text is changed.
-* Added DirtyRects info to Debug panel. Number of rects, and on-screen representation.
+* Added DirtyRects info to Debug panel. Number of rectangles, and on-screen representation.
 
 01/26/2012 *0.2 Build  52*
 --------------------------
