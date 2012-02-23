@@ -1495,6 +1495,9 @@
             // transformar coordenada inversamente con affine transform de director.
 
             var pt= new CAAT.Point( posx, posy );
+            if ( !this.modelViewMatrixI ) {
+                this.modelViewMatrixI= this.modelViewMatrix.getInverse();
+            }
             this.modelViewMatrixI.transformCoord(pt);
             posx= pt.x;
             posy= pt.y
@@ -1587,6 +1590,8 @@
             var lactor;
             var pos;
 
+            var ct= this.currentScene ? this.currentScene.time : 0;
+
             // drag
 
             if (this.isMouseDown && null !== this.lastSelectedActor) {
@@ -1618,7 +1623,7 @@
                             new CAAT.Point(
                                 this.screenMousePoint.x,
                                 this.screenMousePoint.y),
-                            this.currentScene.time));
+                            ct));
 
                 this.prevMousePoint.x= pos.x;
                 this.prevMousePoint.y= pos.y;
@@ -1638,7 +1643,7 @@
                                 e,
                                 lactor,
                                 this.screenMousePoint,
-                                this.currentScene.time));
+                                ct));
                         this.in_ = false;
                     }
 
@@ -1650,7 +1655,7 @@
                                 e,
                                 lactor,
                                 this.screenMousePoint,
-                                this.currentScene.time));
+                                ct));
                         this.in_ = true;
                     }
                 }
@@ -1677,7 +1682,7 @@
                             e,
                             this.lastSelectedActor,
                             this.screenMousePoint,
-                            this.currentScene.time));
+                            ct));
                 }
 
                 if (null !== lactor) {
@@ -1691,7 +1696,7 @@
                             e,
                             lactor,
                             this.screenMousePoint,
-                            this.currentScene.time));
+                            ct));
                 }
             }
 
@@ -1707,7 +1712,7 @@
                         e,
                         lactor,
                         this.screenMousePoint,
-                        this.currentScene.time));
+                        ct));
             }
 
             this.lastSelectedActor = lactor;
@@ -1762,7 +1767,7 @@
                             e,
                             lactor,
                             this.screenMousePoint,
-                            this.currentScene.time);
+                            this.currentScane ? this.currentScene.time : 0);
 
                     lactor.mouseOver(ev);
                     lactor.mouseEnter(ev);

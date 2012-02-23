@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.3 build: 209
+Version: 0.3 build: 213
 
 Created on:
 DATE: 2012-02-23
-TIME: 17:04:09
+TIME: 17:38:26
 */
 
 
@@ -10682,6 +10682,9 @@ var cp1= proxy(
             // transformar coordenada inversamente con affine transform de director.
 
             var pt= new CAAT.Point( posx, posy );
+            if ( !this.modelViewMatrixI ) {
+                this.modelViewMatrixI= this.modelViewMatrix.getInverse();
+            }
             this.modelViewMatrixI.transformCoord(pt);
             posx= pt.x;
             posy= pt.y
@@ -10774,6 +10777,8 @@ var cp1= proxy(
             var lactor;
             var pos;
 
+            var ct= this.currentScene ? this.currentScene.time : 0;
+
             // drag
 
             if (this.isMouseDown && null !== this.lastSelectedActor) {
@@ -10805,7 +10810,7 @@ var cp1= proxy(
                             new CAAT.Point(
                                 this.screenMousePoint.x,
                                 this.screenMousePoint.y),
-                            this.currentScene.time));
+                            ct));
 
                 this.prevMousePoint.x= pos.x;
                 this.prevMousePoint.y= pos.y;
@@ -10825,7 +10830,7 @@ var cp1= proxy(
                                 e,
                                 lactor,
                                 this.screenMousePoint,
-                                this.currentScene.time));
+                                ct));
                         this.in_ = false;
                     }
 
@@ -10837,7 +10842,7 @@ var cp1= proxy(
                                 e,
                                 lactor,
                                 this.screenMousePoint,
-                                this.currentScene.time));
+                                ct));
                         this.in_ = true;
                     }
                 }
@@ -10864,7 +10869,7 @@ var cp1= proxy(
                             e,
                             this.lastSelectedActor,
                             this.screenMousePoint,
-                            this.currentScene.time));
+                            ct));
                 }
 
                 if (null !== lactor) {
@@ -10878,7 +10883,7 @@ var cp1= proxy(
                             e,
                             lactor,
                             this.screenMousePoint,
-                            this.currentScene.time));
+                            ct));
                 }
             }
 
@@ -10894,7 +10899,7 @@ var cp1= proxy(
                         e,
                         lactor,
                         this.screenMousePoint,
-                        this.currentScene.time));
+                        ct));
             }
 
             this.lastSelectedActor = lactor;
@@ -10949,7 +10954,7 @@ var cp1= proxy(
                             e,
                             lactor,
                             this.screenMousePoint,
-                            this.currentScene.time);
+                            this.currentScane ? this.currentScene.time : 0);
 
                     lactor.mouseOver(ev);
                     lactor.mouseEnter(ev);
