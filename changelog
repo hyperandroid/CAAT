@@ -1,3 +1,19 @@
+02/23/2012 *0.3 Build 208*
+--------------------------
+
+* Added to CAAT.Scene the following methods:
+   + findActorAtPosition(CAAT.Point) : custom actor find procedure. This is overriden to attend at the priority input lists.
+   + enableInputList(number) :  number of priority lists to set for this scene. A priority list is a list of actors to
+                                which are suitable to receive input first. If no actor on the priority lists are under
+                                the cursor, the whole scene graph is traversed instead.
+   + addActorToInputList( actor, index, position ) : add an actor to a given priority list at certain position.
+   + emptyInputList( index ) : remove all elements from a list.
+   + removeActorFromInputList( actor, index ) : remove an actor from a list, or if no index list is supplied remove
+       the actor from every list in which appears.
+* Fixed Actor.setImageTransformation( CAAT.SpriteImage.prototype.TR_TILE ) which didn't honor actor position and offset
+  to appropriately place the tiling image. Also the performance sink when using this flag with huge actors's been fixed.
+
+
 02/21/2012 *0.3 Build 180*
 --------------------------
 

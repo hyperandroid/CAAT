@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.3 build: 181
+Version: 0.3 build: 209
 
 Created on:
-DATE: 2012-02-20
-TIME: 23:55:34
+DATE: 2012-02-23
+TIME: 17:04:09
 */
 
 
@@ -8871,6 +8871,7 @@ var cp1= proxy(
          */
         animate : function(director, time) {
             this.setModelViewMatrix(this);
+            this.modelViewMatrixI= this.modelViewMatrix.getInverse();
             this.setScreenBounds();
 
             this.dirty= false;
@@ -9669,7 +9670,6 @@ var cp1= proxy(
             // transformar coordenada inversamente con affine transform de director.
 
             var pt= new CAAT.Point( posx, posy );
-            this.modelViewMatrixI= this.modelViewMatrix.getInverse();
             this.modelViewMatrixI.transformCoord(pt);
             posx= pt.x;
             posy= pt.y
@@ -11047,29 +11047,32 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             this.setSpriteIndexAtTime(time);
             var el= this.mapInfo[this.spriteIndex];
 
+            var r= new CAAT.Rectangle();
+            this.ownerActor.AABB.intersect( director.AABB, r );
+
             var w= this.getWidth();
             var h= this.getHeight();
-            var xoff= this.offsetX % w;
+            var xoff= (this.offsetX-this.ownerActor.x) % w;
             if ( xoff> 0 ) {
                 xoff= xoff-w;
             }
-            var yoff= this.offsetY % h;
+            var yoff= (this.offsetY-this.ownerActor.y) % h;
             if ( yoff> 0 ) {
                 yoff= yoff-h;
             }
 
-            var nw= (((this.ownerActor.width-xoff)/w)>>0)+1;
-            var nh= (((this.ownerActor.height-yoff)/h)>>0)+1;
+            var nw= (((r.width-xoff)/w)>>0)+1;
+            var nh= (((r.height-yoff)/h)>>0)+1;
             var i,j;
             var ctx= director.ctx;
 
             for( i=0; i<nh; i++ ) {
                 for( j=0; j<nw; j++ ) {
-                    director.ctx.drawImage(
+                    ctx.drawImage(
                         this.image,
                         el.x, el.y,
                         el.width, el.height,
-                        (x+xoff+j*el.width)>>0, (y+yoff+i*el.height)>>0,
+                        (r.x-this.ownerActor.x+xoff+j*el.width)>>0, (r.y-this.ownerActor.y+yoff+i*el.height)>>0,
                         el.width, el.height);
                 }
             }

@@ -696,6 +696,7 @@
          */
         animate : function(director, time) {
             this.setModelViewMatrix(this);
+            this.modelViewMatrixI= this.modelViewMatrix.getInverse();
             this.setScreenBounds();
 
             this.dirty= false;
@@ -1494,7 +1495,6 @@
             // transformar coordenada inversamente con affine transform de director.
 
             var pt= new CAAT.Point( posx, posy );
-            this.modelViewMatrixI= this.modelViewMatrix.getInverse();
             this.modelViewMatrixI.transformCoord(pt);
             posx= pt.x;
             posy= pt.y

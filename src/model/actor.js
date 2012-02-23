@@ -928,7 +928,7 @@
          * @return null if the point is not inside the Actor. The Actor otherwise.
          */
 	    findActorAtPosition : function(point) {
-			if ( !this.mouseEnabled || !this.isInAnimationFrame(this.time) ) {
+			if ( !this.visible || !this.mouseEnabled || !this.isInAnimationFrame(this.time) ) {
 				return null;
 			}
 
@@ -1876,7 +1876,6 @@
                 cl[i].drawScreenBoundingBox(director,time);
             }
             CAAT.ActorContainer.superclass.drawScreenBoundingBox.call(this,director,time);
-
         },
         /**
          * Removes all children from this ActorContainer.

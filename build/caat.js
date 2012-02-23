@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.3 build: 181
+Version: 0.3 build: 209
 
 Created on:
-DATE: 2012-02-20
-TIME: 23:55:33
+DATE: 2012-02-23
+TIME: 17:04:09
 */
 
 
@@ -6284,7 +6284,7 @@ var cp1= proxy(
          * @return null if the point is not inside the Actor. The Actor otherwise.
          */
 	    findActorAtPosition : function(point) {
-			if ( !this.mouseEnabled || !this.isInAnimationFrame(this.time) ) {
+			if ( !this.visible || !this.mouseEnabled || !this.isInAnimationFrame(this.time) ) {
 				return null;
 			}
 
@@ -7232,7 +7232,6 @@ var cp1= proxy(
                 cl[i].drawScreenBoundingBox(director,time);
             }
             CAAT.ActorContainer.superclass.drawScreenBoundingBox.call(this,director,time);
-
         },
         /**
          * Removes all children from this ActorContainer.
@@ -9884,6 +9883,7 @@ var cp1= proxy(
          */
         animate : function(director, time) {
             this.setModelViewMatrix(this);
+            this.modelViewMatrixI= this.modelViewMatrix.getInverse();
             this.setScreenBounds();
 
             this.dirty= false;
@@ -10682,7 +10682,6 @@ var cp1= proxy(
             // transformar coordenada inversamente con affine transform de director.
 
             var pt= new CAAT.Point( posx, posy );
-            this.modelViewMatrixI= this.modelViewMatrix.getInverse();
             this.modelViewMatrixI.transformCoord(pt);
             posx= pt.x;
             posy= pt.y
@@ -12060,29 +12059,32 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             this.setSpriteIndexAtTime(time);
             var el= this.mapInfo[this.spriteIndex];
 
+            var r= new CAAT.Rectangle();
+            this.ownerActor.AABB.intersect( director.AABB, r );
+
             var w= this.getWidth();
             var h= this.getHeight();
-            var xoff= this.offsetX % w;
+            var xoff= (this.offsetX-this.ownerActor.x) % w;
             if ( xoff> 0 ) {
                 xoff= xoff-w;
             }
-            var yoff= this.offsetY % h;
+            var yoff= (this.offsetY-this.ownerActor.y) % h;
             if ( yoff> 0 ) {
                 yoff= yoff-h;
             }
 
-            var nw= (((this.ownerActor.width-xoff)/w)>>0)+1;
-            var nh= (((this.ownerActor.height-yoff)/h)>>0)+1;
+            var nw= (((r.width-xoff)/w)>>0)+1;
+            var nh= (((r.height-yoff)/h)>>0)+1;
             var i,j;
             var ctx= director.ctx;
 
             for( i=0; i<nh; i++ ) {
                 for( j=0; j<nw; j++ ) {
-                    director.ctx.drawImage(
+                    ctx.drawImage(
                         this.image,
                         el.x, el.y,
                         el.width, el.height,
-                        (x+xoff+j*el.width)>>0, (y+yoff+i*el.height)>>0,
+                        (r.x-this.ownerActor.x+xoff+j*el.width)>>0, (r.y-this.ownerActor.y+yoff+i*el.height)>>0,
                         el.width, el.height);
                 }
             }
@@ -13293,6 +13295,122 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                 ctx.fillStyle= this.fillStyle;
                 ctx.fillRect(0,0,this.width,this.height );
             }
+        },
+        /**
+         * Find a pointed actor at position point.
+         * This method tries lo find the correctly pointed actor in two different ways.
+         *  + first of all, if inputList is defined, it will look for an actor in it.
+         *  + if no inputList is defined, it will traverse the scene graph trying to find a pointed actor.
+         * @param point <CAAT.Point>
+         */
+        findActorAtPosition : function(point) {
+            var i,j;
+
+            var p= new CAAT.Point();
+
+            if ( this.inputList ) {
+                var il= this.inputList;
+                for( i=0; i<il.length; i++ ) {
+                    var ill= il[i];
+                    for( j=0; j<ill.length; j++ ) {
+                        p.set(point.x, point.y);
+                        var modelViewMatrixI= ill[j].worldModelViewMatrix.getInverse();
+                        modelViewMatrixI.transformCoord(p);
+                        if ( ill[j].contains(p.x, p.y) ) {
+                            return ill[j];
+                        }
+                    }
+                }
+            }
+
+            p.set(point.x, point.y);
+            return CAAT.Scene.superclass.findActorAtPosition.call(this,p);
+        },
+
+        /**
+         * Enable a number of input lists.
+         * These lists are set in case the developer doesn't want the to traverse the scene graph to find the pointed
+         * actor. The lists are a shortcut whete the developer can set what actors to look for input at first instance.
+         * The system will traverse the whole lists in order trying to find a pointed actor.
+         *
+         * Elements are added to each list either in head or tail.
+         *
+         * @param size <number> number of lists.
+         */
+        enableInputList : function( size ) {
+            this.inputList= [];
+            for( var i=0; i<size; i++ ) {
+                this.inputList.push([]);
+            }
+
+            return this;
+        },
+
+        /**
+         * Add an actor to a given inputList.
+         * @param actor <CAAT.Actor> an actor instance
+         * @param index <number> the inputList index to add the actor to. This value will be clamped to the number of
+         * available lists.
+         * @param position <number> the position on the selected inputList to add the actor at. This value will be
+         * clamped to the number of available lists.
+         */
+        addActorToInputList : function( actor, index, position ) {
+            if ( index<0 ) index=0; else if ( index>=this.inputList.length ) index= this.inputList.length-1;
+            var il= this.inputList[index];
+
+            if ( typeof position==="undefined" || position>=il.length ) {
+                il.push( actor );
+            } else if (position<=0) {
+                il.unshift( actor );
+            } else {
+                il.splice( position, 0, actor );
+            }
+
+            return this;
+        },
+
+        /**
+         * Remove all elements from an input list.
+         * @param index <number> the inputList index to add the actor to. This value will be clamped to the number of
+         * available lists so take care when emptying a non existant inputList index since you could end up emptying
+         * an undesired input list.
+         */
+        emptyInputList : function( index ) {
+            if ( index<0 ) index=0; else if ( index>=this.inputList.length ) index= this.inputList.length-1;
+            this.inputList[index]= [];
+            return this;
+        },
+
+        /**
+         * remove an actor from a given input list index.
+         * If no index is supplied, the actor will be removed from every input list.
+         * @param actor <CAAT.Actor>
+         * @param index <!number> an optional input list index. This value will be clamped to the number of
+         * available lists.
+         */
+        removeActorFromInputList : function( actor, index ) {
+            if ( typeof index==="undefined" ) {
+                var i,j;
+                for( i=0; i<this.inputList.length; i++ ) {
+                    var il= this.inputList[i];
+                    for( j=0; j<il.length; j++ ) {
+                        if ( il[j]==actor ) {
+                            il.splice( j,1 );
+                        }
+                    }
+                }
+                return this;
+            }
+
+            if ( index<0 ) index=0; else if ( index>=this.inputList.length ) index= this.inputList.length-1;
+            var il= this.inputList[index];
+            for( j=0; j<il.length; j++ ) {
+                if ( il[j]==actor ) {
+                    il.splice( j,1 );
+                }
+            }
+
+            return this;
         }
 	};
 
