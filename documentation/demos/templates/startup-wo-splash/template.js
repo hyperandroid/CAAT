@@ -29,38 +29,49 @@ CAAT.modules.initialization= CAAT.modules.initialization || {};
 
 CAAT.modules.initialization.init= function( width, height, runHere, imagesURL, onEndLoading )   {
 
-    /**
-     * infere whether runhere is on a DIV, canvas, or none at all.
-     * If none at all, just append the created canvas to the document.
-     */
-    var isCanvas= false;
     var canvascontainer= document.getElementById(runHere);
+    var director;
 
-    if ( canvascontainer ) {
-        if ( canvascontainer instanceof HTMLDivElement ) {
-            isCanvas= false;
-        } else if ( canvascontainer instanceof HTMLCanvasElement ) {
-            isCanvas= true;
-        } else {
-            canvascontainer= document.body;
+    if ( CAAT.__CSS__ ) {   // css renderer
+        if ( canvascontainer ) {
+            if ( false===canvascontainer instanceof HTMLDivElement ) {
+                canvascontainer= null;
+            }
         }
-    } else {
-        canvascontainer= document.createElement('div');
-        document.body.appendChild(canvascontainer);
-    }
-    
-    /**
-     * create a director.
-     */
-    var director = new CAAT.Director().
+
+        if ( canvascontainer===null ) {
+            canvascontainer= document.createElement('div'); // create a new DIV
+            document.body.appendChild(canvascontainer);
+        }
+
+        director= new CAAT.Director().
             initialize(
                 width||800,
                 height||600,
-                isCanvas?canvascontainer:undefined)
-            ;
+                canvascontainer);
 
-    if ( !isCanvas ) {
-        canvascontainer.appendChild( director.canvas );
+    } else {
+
+        if ( canvascontainer ) {
+            if ( canvascontainer instanceof HTMLDivElement ) {
+                var ncanvascontainer= document.createElement("canvas");
+                canvascontainer.appendChild(ncanvascontainer);
+                canvascontainer= ncanvascontainer;
+            } else if ( false==canvascontainer instanceof HTMLCanvasElement ) {
+                var ncanvascontainer= document.createElement("canvas");
+                document.body.appendChild(ncanvascontainer);
+                canvascontainer= ncanvascontainer;
+            }
+        } else {
+            canvascontainer= document.createElement('canvas');
+            document.body.appendChild(canvascontainer);
+        }
+
+        director= new CAAT.Director().
+                initialize(
+                    width||800,
+                    height||600,
+                    canvascontainer);
     }
 
     /**

@@ -5,7 +5,7 @@
     <title></title>
 </head>
 <body>
-    <script type="text/javascript" src="../../lib/caat.js"></script>
+    <script type="text/javascript" src="../../../../build/caat-css.js"></script>
     <script type="text/javascript" src="template.js"></script>
     <script type="text/javascript">
         (function() {
@@ -24,13 +24,12 @@
                     var g = (255 * Math.random()) >> 0;
                     var b = (255 * Math.random()) >> 0;
                     scene.addChild(
-                            new CAAT.ShapeActor().
-                                    setShape(CAAT.ShapeActor.prototype.SHAPE_CIRCLE).
+                            new CAAT.Actor().
                                     setBounds(
-                                    (director.width * Math.random()) >> 0,
-                                    (director.height * Math.random()) >> 0,
-                                    w,
-                                    w).
+                                        (director.width * Math.random()) >> 0,
+                                        (director.height * Math.random()) >> 0,
+                                        w,
+                                        w).
                                     setFillStyle('rgb(' + r + ',' + g + ',' + b + ')')
                             );
                 }

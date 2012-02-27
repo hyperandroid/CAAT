@@ -134,6 +134,8 @@
         dirtyRectsEnabled   :   false,
         nDirtyRects         :   0,
 
+        stopped             :   false,  // is stopped, this director will do nothing.
+
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
                 var dd= new CAAT.Debug().initialize( this.width, 60 );
@@ -267,11 +269,11 @@
             this.timeline = new Date().getTime();
 
             // transition scene
-            this.transitionScene = new CAAT.Scene().create().setBounds(0, 0, width, height);
+            this.transitionScene = new CAAT.Scene().setBounds(0, 0, width, height);
             var transitionCanvas = document.createElement('canvas');
             transitionCanvas.width = width;
             transitionCanvas.height = height;
-            var transitionImageActor = new CAAT.Actor().create().setBackgroundImage(transitionCanvas);
+            var transitionImageActor = new CAAT.Actor().setBackgroundImage(transitionCanvas);
             this.transitionScene.ctx = transitionCanvas.getContext('2d');
             this.transitionScene.addChildImmediately(transitionImageActor);
             this.transitionScene.setEaseListener(this);
@@ -625,7 +627,7 @@
 
                     if (c.isInAnimationFrame(this.time)) {
                         tt = c.time - c.start_time;
-//                        ctx.save();
+                        ctx.save();
 
                         if ( c.onRenderStart ) {
                             c.onRenderStart(tt);
@@ -642,7 +644,7 @@
                         if ( c.onRenderEnd ) {
                             c.onRenderEnd(tt);
                         }
-//                        ctx.restore();
+                        ctx.restore();
 
                         if (CAAT.DEBUGAABB) {
                             ctx.globalAlpha= 1;
@@ -930,7 +932,8 @@
             var ssin = this.scenes[ inSceneIndex ];
             var sout = this.scenes[ outSceneIndex ];
 
-            if (!this.glEnabled && !navigator.browser==='iOS') {
+//            if (!this.glEnabled && navigator.browser!=='iOS') {
+            if ( !CAAT.__CSS__ && !this.glEnabled ) {
                 this.worldModelViewMatrix.transformRenderingContext(this.transitionScene.ctx);
                 this.renderToContext(this.transitionScene.ctx, sout);
                 sout = this.transitionScene;
@@ -1361,6 +1364,11 @@
          * the animation at.
          */
         renderFrame : function(fps, callback) {
+
+            if (this.stopped) {
+                return;
+            }
+
             var t = new Date().getTime(),
                     delta = t - this.timeline;
 
@@ -1476,6 +1484,17 @@
             var posx = 0;
             var posy = 0;
             if (!e) e = window.event;
+
+            if ( e.offsetX || e.offsetY ) {
+
+                posx= e.offsetX;
+                posy= e.offsetY;
+
+                point.set(posx, posy);
+                this.screenMousePoint.set(posx, posy);
+
+                return;
+            }
 
             if (e.pageX || e.pageY) {
                 posx = e.pageX;

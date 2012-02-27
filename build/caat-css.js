@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.3 build: 213
+Version: 0.3 build: 231
 
 Created on:
-DATE: 2012-02-23
-TIME: 17:38:26
+DATE: 2012-02-27
+TIME: 23:21:07
 */
 
 
@@ -2415,12 +2415,12 @@ var cp1= proxy(
 		}
 	};
 })();/**
- * Created by Ibon Tolosana - @hyperandroid
- * User: ibon
- * Date: 02/02/12
- * Time: 19:29
- */
-
+ * See LICENSE file.
+ *
+ * This file contains the definition for objects QuadTree and HashMap.
+ * Quadtree offers an exact list of collisioning areas, while HashMap offers a list of potentially colliding elements.
+ *
+ **/
 (function() {
 
     CAAT.QuadTree= function() {
@@ -8309,6 +8309,8 @@ var cp1= proxy(
         dirtyRectsEnabled   :   false,
         nDirtyRects         :   0,
 
+        stopped             :   false,  // is stopped, this director will do nothing.
+
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
                 var dd= new CAAT.Debug().initialize( this.width, 60 );
@@ -8442,11 +8444,11 @@ var cp1= proxy(
             this.timeline = new Date().getTime();
 
             // transition scene
-            this.transitionScene = new CAAT.Scene().create().setBounds(0, 0, width, height);
+            this.transitionScene = new CAAT.Scene().setBounds(0, 0, width, height);
             var transitionCanvas = document.createElement('canvas');
             transitionCanvas.width = width;
             transitionCanvas.height = height;
-            var transitionImageActor = new CAAT.Actor().create().setBackgroundImage(transitionCanvas);
+            var transitionImageActor = new CAAT.Actor().setBackgroundImage(transitionCanvas);
             this.transitionScene.ctx = transitionCanvas.getContext('2d');
             this.transitionScene.addChildImmediately(transitionImageActor);
             this.transitionScene.setEaseListener(this);
@@ -8800,7 +8802,7 @@ var cp1= proxy(
 
                     if (c.isInAnimationFrame(this.time)) {
                         tt = c.time - c.start_time;
-//                        ctx.save();
+                        ctx.save();
 
                         if ( c.onRenderStart ) {
                             c.onRenderStart(tt);
@@ -8817,7 +8819,7 @@ var cp1= proxy(
                         if ( c.onRenderEnd ) {
                             c.onRenderEnd(tt);
                         }
-//                        ctx.restore();
+                        ctx.restore();
 
                         if (CAAT.DEBUGAABB) {
                             ctx.globalAlpha= 1;
@@ -9105,7 +9107,8 @@ var cp1= proxy(
             var ssin = this.scenes[ inSceneIndex ];
             var sout = this.scenes[ outSceneIndex ];
 
-            if (!this.glEnabled && !navigator.browser==='iOS') {
+//            if (!this.glEnabled && navigator.browser!=='iOS') {
+            if ( !CAAT.__CSS__ && !this.glEnabled ) {
                 this.worldModelViewMatrix.transformRenderingContext(this.transitionScene.ctx);
                 this.renderToContext(this.transitionScene.ctx, sout);
                 sout = this.transitionScene;
@@ -9536,6 +9539,11 @@ var cp1= proxy(
          * the animation at.
          */
         renderFrame : function(fps, callback) {
+
+            if (this.stopped) {
+                return;
+            }
+
             var t = new Date().getTime(),
                     delta = t - this.timeline;
 
@@ -9651,6 +9659,17 @@ var cp1= proxy(
             var posx = 0;
             var posy = 0;
             if (!e) e = window.event;
+
+            if ( e.offsetX || e.offsetY ) {
+
+                posx= e.offsetX;
+                posy= e.offsetY;
+
+                point.set(posx, posy);
+                this.screenMousePoint.set(posx, posy);
+
+                return;
+            }
 
             if (e.pageX || e.pageY) {
                 posx = e.pageX;
@@ -13160,7 +13179,12 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         }
 
     };
-})();
+})();/**
+ * See LICENSE file.
+ *
+ * This class generates an in-memory image with the representation of a drawn list of characters.
+ *
+ **/
 (function() {
 
     /**

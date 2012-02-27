@@ -1,4 +1,9 @@
-
+/**
+ * See LICENSE file.
+ *
+ * This class generates an in-memory image with the representation of a drawn list of characters.
+ *
+ **/
 (function() {
 
     /**

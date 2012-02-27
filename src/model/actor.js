@@ -63,6 +63,9 @@
     CAAT.Actor.ANCHOR_BOTTOM_RIGHT=	8;
     CAAT.Actor.ANCHOR_CUSTOM=       9;
 
+    CAAT.Actor.CACHE_SIMPLE=        1;
+    CAAT.Actor.CACHE_DEEP=          2;
+
 	CAAT.Actor.prototype= {
 
         lifecycleListenerList:	null,   // Array of life cycle listener
@@ -142,7 +145,7 @@
         gestureEnabled:         false,
 
         invalid             :   true,
-        cached              :   false,  // has cacheAsBitmap been called ?
+        cached              :   0,      // 0 no, CACHE_SIMPLE | CACHE_DEEP
 
         collides            :   false,
         collidesAsRect      :   true,
@@ -1651,9 +1654,10 @@
         /**
          *
          * @param time {Number=}
+         * @param stragegy {CAAT.Actor.CACHE_SIMPLE | CAAT.Actor.CACHE_DEEP}
          * @return this
          */
-        cacheAsBitmap : function(time) {
+        cacheAsBitmap : function(time, strategy) {
             time= time||0;
             var canvas= document.createElement('canvas');
             canvas.width= this.width;
@@ -1668,7 +1672,7 @@
             this.paintActor(director,time);
             this.setBackgroundImage(canvas);
 
-            this.cached= true;
+            this.cached= strategy ? strategy : CAAT.Actor.CACHE_SIMPLE;
 
             return this;
         },
@@ -1822,6 +1826,8 @@
 
 (function() {
 
+    var __CD= 2;
+
     /**
      * This class is a general container of CAAT.Actor instances. It extends the concept of an Actor
      * from a single entity on screen to a set of entities with a parent/children relationship among
@@ -1905,6 +1911,11 @@
             ctx.save();
 
             CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
+
+            if ( this.cached===__CD ) {
+                return;
+            }
+
             if ( !this.isGlobalAlpha ) {
                 this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
             }
@@ -1974,6 +1985,10 @@
 
             if (false===CAAT.ActorContainer.superclass.animate.call(this,director,time)) {
                 return false;
+            }
+
+            if ( this.cached===__CD ) {
+                return true;
             }
 
             var i,l;
@@ -2086,7 +2101,7 @@
 		},
 
         /**
-         * Recalc this container size by computin the union of every children bounding box.
+         * Recalc this container size by computing the union of every children bounding box.
          */
         recalcSize : function() {
             var bb= this.boundingBox;

@@ -1,3 +1,14 @@
+02/27/2012 *0.3 Build 230*
+--------------------------
+
+* Added e.offsetX/e.offsetY control on mouse events. Only available in webkit but a real life saver to get correct
+  on-canvas coordinate under the mouse.
+* Fixed template files. Now they can started with canvas/css.
+* Fixed a bug which made cached containers to draw their children.
+* Added a second parameter for cacheAsBitmap. This method indicates whether a container and its children have been
+  cached, meaning the container will be treated as a simple non Container Actor.
+
+
 02/23/2012 *0.3 Build 212*
 --------------------------
 
