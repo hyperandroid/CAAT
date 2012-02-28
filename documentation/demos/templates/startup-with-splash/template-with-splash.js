@@ -68,11 +68,11 @@ CAAT.modules.splash.createSplashScene= function (director, showTime, sceneCreati
     scene.loadedImage = function(count, images) {
         percent.setText( (images ? parseInt((count/images.count*100)>>0) : 100) +' %' );
         percent.calcTextSize(director);
-        percent.setFillStyle('white');
+        percent.setTextFillStyle('white');
         percent.setLocation( 10, 10 );
         percent.setLocation(
-                10+ladingActor.x + (ladingActor.width-percent.width)/2,
-                ladingActor.y+ladingActor.height-10 );
+                (10+ladingActor.x + (ladingActor.width-percent.width)/2)|0,
+                (ladingActor.y+ladingActor.height-10)|0 );
 
         if ( !images || count===images.length ) {
 
@@ -101,40 +101,51 @@ CAAT.modules.splash.createSplashScene= function (director, showTime, sceneCreati
 
 CAAT.modules.splash.ShowDefaultSplash= function( width, height, runHere, minTime, imagesURL, onEndSplash )   {
 
-    /**
-     * infere whether runhere is on a DIV, canvas, or none at all.
-     * If none at all, just append the created canvas to the document.
-     */
-    var isCanvas= false;
     var canvascontainer= document.getElementById(runHere);
+    var director;
 
-    if ( canvascontainer ) {
-        if ( canvascontainer instanceof HTMLDivElement ) {
-            isCanvas= false;
-        } else if ( canvascontainer instanceof HTMLCanvasElement ) {
-            isCanvas= true;
-        } else {
-            canvascontainer= document.body;
+    if ( CAAT.__CSS__ ) {   // css renderer
+        if ( canvascontainer ) {
+            if ( false===canvascontainer instanceof HTMLDivElement ) {
+                canvascontainer= null;
+            }
         }
-    } else {
-        canvascontainer= document.createElement('div');
-        document.body.appendChild(canvascontainer);
-    }
-    
-    /**
-     * create a director.
-     */
-    var director = new CAAT.Director().
+
+        if ( canvascontainer===null ) {
+            canvascontainer= document.createElement('div'); // create a new DIV
+            document.body.appendChild(canvascontainer);
+        }
+
+        director= new CAAT.Director().
             initialize(
                 width||800,
                 height||600,
-                isCanvas?canvascontainer:undefined).
-            setClear(false) // set director to NOT clearing the background
-            ;
+                canvascontainer);
 
-    if ( !isCanvas ) {
-        canvascontainer.appendChild( director.canvas );
+    } else {
+
+        if ( canvascontainer ) {
+            if ( canvascontainer instanceof HTMLDivElement ) {
+                var ncanvascontainer= document.createElement("canvas");
+                canvascontainer.appendChild(ncanvascontainer);
+                canvascontainer= ncanvascontainer;
+            } else if ( false==canvascontainer instanceof HTMLCanvasElement ) {
+                var ncanvascontainer= document.createElement("canvas");
+                document.body.appendChild(ncanvascontainer);
+                canvascontainer= ncanvascontainer;
+            }
+        } else {
+            canvascontainer= document.createElement('canvas');
+            document.body.appendChild(canvascontainer);
+        }
+
+        director= new CAAT.Director().
+                initialize(
+                    width||800,
+                    height||600,
+                    canvascontainer);
     }
+
 
     /**
      * Load splash images. It is supossed the splash has some images.

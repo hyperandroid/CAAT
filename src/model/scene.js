@@ -490,6 +490,122 @@
                 ctx.fillStyle= this.fillStyle;
                 ctx.fillRect(0,0,this.width,this.height );
             }
+        },
+        /**
+         * Find a pointed actor at position point.
+         * This method tries lo find the correctly pointed actor in two different ways.
+         *  + first of all, if inputList is defined, it will look for an actor in it.
+         *  + if no inputList is defined, it will traverse the scene graph trying to find a pointed actor.
+         * @param point <CAAT.Point>
+         */
+        findActorAtPosition : function(point) {
+            var i,j;
+
+            var p= new CAAT.Point();
+
+            if ( this.inputList ) {
+                var il= this.inputList;
+                for( i=0; i<il.length; i++ ) {
+                    var ill= il[i];
+                    for( j=0; j<ill.length; j++ ) {
+                        p.set(point.x, point.y);
+                        var modelViewMatrixI= ill[j].worldModelViewMatrix.getInverse();
+                        modelViewMatrixI.transformCoord(p);
+                        if ( ill[j].contains(p.x, p.y) ) {
+                            return ill[j];
+                        }
+                    }
+                }
+            }
+
+            p.set(point.x, point.y);
+            return CAAT.Scene.superclass.findActorAtPosition.call(this,p);
+        },
+
+        /**
+         * Enable a number of input lists.
+         * These lists are set in case the developer doesn't want the to traverse the scene graph to find the pointed
+         * actor. The lists are a shortcut whete the developer can set what actors to look for input at first instance.
+         * The system will traverse the whole lists in order trying to find a pointed actor.
+         *
+         * Elements are added to each list either in head or tail.
+         *
+         * @param size <number> number of lists.
+         */
+        enableInputList : function( size ) {
+            this.inputList= [];
+            for( var i=0; i<size; i++ ) {
+                this.inputList.push([]);
+            }
+
+            return this;
+        },
+
+        /**
+         * Add an actor to a given inputList.
+         * @param actor <CAAT.Actor> an actor instance
+         * @param index <number> the inputList index to add the actor to. This value will be clamped to the number of
+         * available lists.
+         * @param position <number> the position on the selected inputList to add the actor at. This value will be
+         * clamped to the number of available lists.
+         */
+        addActorToInputList : function( actor, index, position ) {
+            if ( index<0 ) index=0; else if ( index>=this.inputList.length ) index= this.inputList.length-1;
+            var il= this.inputList[index];
+
+            if ( typeof position==="undefined" || position>=il.length ) {
+                il.push( actor );
+            } else if (position<=0) {
+                il.unshift( actor );
+            } else {
+                il.splice( position, 0, actor );
+            }
+
+            return this;
+        },
+
+        /**
+         * Remove all elements from an input list.
+         * @param index <number> the inputList index to add the actor to. This value will be clamped to the number of
+         * available lists so take care when emptying a non existant inputList index since you could end up emptying
+         * an undesired input list.
+         */
+        emptyInputList : function( index ) {
+            if ( index<0 ) index=0; else if ( index>=this.inputList.length ) index= this.inputList.length-1;
+            this.inputList[index]= [];
+            return this;
+        },
+
+        /**
+         * remove an actor from a given input list index.
+         * If no index is supplied, the actor will be removed from every input list.
+         * @param actor <CAAT.Actor>
+         * @param index <!number> an optional input list index. This value will be clamped to the number of
+         * available lists.
+         */
+        removeActorFromInputList : function( actor, index ) {
+            if ( typeof index==="undefined" ) {
+                var i,j;
+                for( i=0; i<this.inputList.length; i++ ) {
+                    var il= this.inputList[i];
+                    for( j=0; j<il.length; j++ ) {
+                        if ( il[j]==actor ) {
+                            il.splice( j,1 );
+                        }
+                    }
+                }
+                return this;
+            }
+
+            if ( index<0 ) index=0; else if ( index>=this.inputList.length ) index= this.inputList.length-1;
+            var il= this.inputList[index];
+            for( j=0; j<il.length; j++ ) {
+                if ( il[j]==actor ) {
+                    il.splice( j,1 );
+                }
+            }
+
+            return this;
         }
 	};
 

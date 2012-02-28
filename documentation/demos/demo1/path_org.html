@@ -107,6 +107,7 @@
          * Startup it all up when the document is ready.
          * Change for your favorite frameworks initialization code.
          */
+        CAAT.DEBUG=1;
         window.addEventListener(
                 'load',
                 function() {
@@ -114,7 +115,8 @@
                             800, 500,
                             'experiment-holder',
                             [
-                                {id:'fish', url:'../demo-resources/img/anim2.png'}
+                                {id:'fish', url:'../demo-resources/img/anim2.png'},
+                                {id:'score', url: "../demo-resources/img/numerospuntos.png"}
                             ],
                             __scene1
                             );
@@ -208,20 +210,60 @@
 
             var scene = director.createScene();
 
+            var dw= director.width;
+            var dh= director.height;
+
+
+            var i;
+            var R= (Math.min( dw,dh ) - 40)/2;
+            var pp= [];
+            var angle;
+            var NP=7;
+            for( i=0; i<NP; i++ ) {
+                angle= i*Math.PI/(NP);
+
+                pp.push( new CAAT.Point(
+                        dw/2 + R*Math.cos(angle + (Math.PI*(i%2)) ) ,
+                        dh/2 + R*Math.sin(angle + (Math.PI*(i%2))) ) );
+
+            }
+
             var path= new CAAT.Path().
-                            beginPath(200, 200).
-                            addCubicTo(300, 15, 400, 10, 500, 200).
-                            addQuadricTo(550, 300, 450, 350).
-                            addQuadricTo(400, 400, 350, 200).
-                            addCubicTo(100, 300, 300, 450, 10, 400).
-                            addQuadricTo(40, 200, 200, 200).
-                            closePath();
-            /**
-             * Show a Path on screen and allow manipulation of its path by showing handles.
-             */
-            var pa = new CAAT.PathActor().
-                    setBounds(0, 0, 800, director.canvas.height).
-                    setPath(path);
+                setCatmullRom(
+                    pp,
+                    true
+                ).
+                endPath();
+
+            var pa= new CAAT.PathActor().
+                    setSize( director.width, director.height ).
+                    setPath( path ).
+                    setInteractive(true).
+                    setOnUpdateCallback( function(path) {
+                        var np = path.flatten(200, true);
+                        text2.setPath(
+                                np,
+                                new CAAT.Interpolator().createLinearInterpolator(false),
+                                20000)
+                    });
+
+            var fontScore= new CAAT.SpriteImage().
+                initializeAsMonoTypeFontMap(
+                    director.getImage("score"),
+                    "0123456789,p/*-"
+                );
+            var text2 = new CAAT.TextActor().
+                setFont( fontScore ).
+                setText( "0123456789" ).
+                setTextAlign("left").
+                setTextBaseline("top").
+                setPath(
+                    path,
+                    new CAAT.Interpolator().createLinearInterpolator(false),
+                    20000).
+                setPathTraverseDirection( CAAT.TextActor.TRAVERSE_PATH_BACKWARD );
+            scene.addChild(text2);
+
 
             /**
              * Create a fish which will traverse the path.
@@ -259,9 +301,9 @@
 
         function addDescription(director, scene) {
             var cc1 = new CAAT.ActorContainer().
-                    setBounds(0, 30, 280, 110).
-                    create().
+                    setBounds(140, 80, 280, 110).
                     enableEvents(false);
+            cc1.setPositionAnchor(.5,.5);
             scene.addChild(cc1);
 
             cc1.addBehavior(
@@ -285,7 +327,7 @@
                     setTextFillStyle(gradient).
                     setOutline(true).
                     cacheAsBitmap();
-            cc1.addChild(text.setLocation((cc1.width - text.textWidth) / 2, 0));
+            cc1.addChild(text.setLocation((cc1.width - text.textWidth) / 2, 0) );
 
             var text2 = new CAAT.TextActor().
                 setFont("20px sans-serif").

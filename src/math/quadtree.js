@@ -1,10 +1,10 @@
 /**
- * Created by Ibon Tolosana - @hyperandroid
- * User: ibon
- * Date: 02/02/12
- * Time: 19:29
- */
-
+ * See LICENSE file.
+ *
+ * This file contains the definition for objects QuadTree and HashMap.
+ * Quadtree offers an exact list of collisioning areas, while HashMap offers a list of potentially colliding elements.
+ *
+ **/
 (function() {
 
     CAAT.QuadTree= function() {

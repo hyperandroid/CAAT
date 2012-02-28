@@ -51,6 +51,7 @@
                         <li>Control+Drag to rotate actors.</li>
                         <li>Shift+Alt to unevenly scale actors.</li>
                         <li>Pinch, rotate and drag on iOS with native gestures.</li>
+                        <li>Priority input lists usage.</li>
                     </ul>
                 </div>
                 <div>
@@ -66,6 +67,8 @@
                         </li>
                         <li>TextActor optimization by caching it as bitmap.</li>
                         <li>Manipulating Actors zorder.</li>
+                        <li>How to set a priority input list. In this sample the blue actor will get input prioritized
+                        to any other rectangles and its cointained children before the blue rectangle itself.</li>
                     </ul>
                 </div>
             </div>
@@ -116,7 +119,9 @@
                     CAAT.modules.initialization.init(
                             800, 500,
                             'experiment-holder',
-                            [],
+                            [
+
+                            ],
                             __coordinates
                             );
                 },
@@ -125,6 +130,7 @@
         function __coordinates(director) {
 
             var scene= director.createScene();
+
 
             var cc= new CAAT.ActorContainer().
                 setBounds( 0,0,director.width,director.height );
@@ -176,6 +182,8 @@
                 parent.setZOrder(actor,Number.MAX_VALUE);
             };
 
+            scene.enableInputList(2);
+
             var np = 20;
             var s = 80;
             for ( var i = 0; i < np; i++) {
@@ -189,7 +197,7 @@
                         s).
                     setRotation( Math.PI*2*Math.random() ).
                     setScale( sc, sc ).
-                    setFillStyle('#ff3fff');
+                    setFillStyle( i===0 ? '#00f' : '#ff3fff');
 
                 p.setGestureEnabled(true);
 
@@ -284,6 +292,13 @@
                 p.mouseMove= mouseMoveHandler;
                 p0.mouseMove= mouseMoveHandler;
                 p1.mouseMove= mouseMoveHandler;
+
+                if (i===0) {
+                    scene.addActorToInputList(p,1);
+                    scene.addActorToInputList(p0,0);
+                    scene.addActorToInputList(p1,0);
+                }
+
             }
 
             cc.__mouseMove= scene.mouseMove;

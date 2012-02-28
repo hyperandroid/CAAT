@@ -1,3 +1,37 @@
+02/27/2012 *0.3 Build 230*
+--------------------------
+
+* Added e.offsetX/e.offsetY control on mouse events. Only available in webkit but a real life saver to get correct
+  on-canvas coordinate under the mouse.
+* Fixed template files. Now they can started with canvas/css.
+* Fixed a bug which made cached containers to draw their children.
+* Added a second parameter for cacheAsBitmap. This method indicates whether a container and its children have been
+  cached, meaning the container will be treated as a simple non Container Actor.
+
+
+02/23/2012 *0.3 Build 212*
+--------------------------
+
+* Added to CAAT.Scene the following methods:
+   + findActorAtPosition(CAAT.Point) : custom actor find procedure. This is overriden to attend at the priority input lists.
+   + enableInputList(number) :  number of priority lists to set for this scene. A priority list is a list of actors to
+                                which are suitable to receive input first. If no actor on the priority lists are under
+                                the cursor, the whole scene graph is traversed instead.
+   + addActorToInputList( actor, index, position ) : add an actor to a given priority list at certain position.
+   + emptyInputList( index ) : remove all elements from a list.
+   + removeActorFromInputList( actor, index ) : remove an actor from a list, or if no index list is supplied remove
+       the actor from every list in which appears.
+* Fixed Actor.setImageTransformation( CAAT.SpriteImage.prototype.TR_TILE ) which didn't honor actor position and offset
+  to appropriately place the tiling image. Also the performance sink when using this flag with huge actors's been fixed.
+* Fixed an issue when entering scene gets mouse input.
+
+02/21/2012 *0.3 Build 180*
+--------------------------
+
+* Fixed (at last) Catmull Rom splines as CAAT.Path objects.
+* Added CAAT.Path.flatten method to turn a compound path of patches into a polyline.
+* Added CAAT.PathActor.setOnUpdateCallback
+
 02/10/2012 *0.3 Build 138*
 --------------------------
 
@@ -13,7 +47,7 @@
 * Fixed CAAT.ContainerBehavior that on expiration notified twice behavior expiration event (one from base class, and another
   one from the container itself).
 * Fixed CAAT.TextActor issue when drawing text with CAAT.SpriteImage
-* Clip Paths also honor the new method setPositionAnchor in CAAT.Actor. Added methods setRotationAnchor, setRotation,
+* Clip Paths also honors the new method setPositionAnchor in CAAT.Actor. Added methods setRotationAnchor, setRotation,
   setScaleAnchor, setScale, setPosition, setPositionAnchor to CAAT.Path.
 * Added global flag CAAT.GLRENDER.
 
