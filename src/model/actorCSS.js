@@ -395,6 +395,8 @@
             this.transformation= it;
             if ( it===CAAT.SpriteImage.prototype.TR_FIXED_TO_SIZE ) {
                 this.style( 'background-size', '100%' );
+            } else if (it===CAAT.SpriteImage.prototype.TR_NONE) {
+                this.style( 'background-size', 'auto' );
             }
             return this;
         },
