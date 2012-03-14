@@ -49,7 +49,7 @@
          * @param callback_loaded_one_image {function( imageloader {CAAT.ImagePreloader}, counter {number}, images {{ id:{string}, image: {Image}}} )}
          * function to call on every image load.
          */
-        loadImages: function( aImages, callback_loaded_one_image ) {
+        loadImages: function( aImages, callback_loaded_one_image, callback_error ) {
 
             if (!aImages) {
                 if (callback_loaded_one_image ) {
@@ -69,6 +69,15 @@
                     me.imageCounter++;
                     me.notificationCallback(me.imageCounter, me.images);
                 };
+
+                this.images[i].image.onerror= (function(index) {
+                        return function(e) {
+                            if ( callback_error ) {
+                                callback_error( e, index );
+                            }
+                        }
+                    })(i);
+
                 this.images[i].image.src= aImages[i].url;
             }
 

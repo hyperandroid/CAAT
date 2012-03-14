@@ -1481,20 +1481,49 @@
          */
         getCanvasCoord : function(point, e) {
 
+            var pt= new CAAT.Point( );
             var posx = 0;
             var posy = 0;
             if (!e) e = window.event;
 
-            if ( e.offsetX || e.offsetY ) {
-
+            if ( e.offsetX ) {
                 posx= e.offsetX;
                 posy= e.offsetY;
+
+                if ( !CAAT.__CSS__ ) {
+                    var pt= new CAAT.Point( posx, posy );
+                    if ( !this.modelViewMatrixI ) {
+                        this.modelViewMatrixI= this.modelViewMatrix.getInverse();
+                    }
+                    this.modelViewMatrixI.transformCoord(pt);
+                    posx= pt.x;
+                    posy= pt.y
+                }
+
+                point.set(posx, posy);
+                this.screenMousePoint.set(posx, posy);
+
+                return;
+            } else if ( e.layerX ) {
+                posx= e.layerX;
+                posy= e.layerY;
+
+                if ( !CAAT.__CSS__ ) {
+                    var pt= new CAAT.Point( posx, posy );
+                    if ( !this.modelViewMatrixI ) {
+                        this.modelViewMatrixI= this.modelViewMatrix.getInverse();
+                    }
+                    this.modelViewMatrixI.transformCoord(pt);
+                    posx= pt.x;
+                    posy= pt.y
+                }
 
                 point.set(posx, posy);
                 this.screenMousePoint.set(posx, posy);
 
                 return;
             }
+
 
             if (e.pageX || e.pageY) {
                 posx = e.pageX;
@@ -1513,13 +1542,16 @@
             //////////////
             // transformar coordenada inversamente con affine transform de director.
 
-            var pt= new CAAT.Point( posx, posy );
-            if ( !this.modelViewMatrixI ) {
-                this.modelViewMatrixI= this.modelViewMatrix.getInverse();
+            if ( !CAAT.__CSS__ ) {
+                pt.x= posx;
+                pt.y= posy;
+                if ( !this.modelViewMatrixI ) {
+                    this.modelViewMatrixI= this.modelViewMatrix.getInverse();
+                }
+                this.modelViewMatrixI.transformCoord(pt);
+                posx= pt.x;
+                posy= pt.y
             }
-            this.modelViewMatrixI.transformCoord(pt);
-            posx= pt.x;
-            posy= pt.y
 
             point.set(posx, posy);
             this.screenMousePoint.set(posx, posy);
@@ -1739,6 +1771,10 @@
 
         __mouseOutHandler : function(e) {
 
+            if ( this.dragging ) {
+                return;
+            }
+
             if (null !== this.lastSelectedActor ) {
 
                 this.getCanvasCoord(this.mousePoint, e);
@@ -1755,18 +1791,22 @@
 
                 this.lastSelectedActor.mouseExit(ev);
                 this.lastSelectedActor.mouseOut(ev);
-
                 if ( !this.dragging ) {
                     this.lastSelectedActor = null;
                 }
             } else {
                 this.isMouseDown = false;
                 this.in_ = false;
+
             }
 
         },
 
         __mouseOverHandler : function(e) {
+
+            if (this.dragging ) {
+                return;
+            }
 
             var lactor;
             var pos, ev;
@@ -1786,7 +1826,7 @@
                             e,
                             lactor,
                             this.screenMousePoint,
-                            this.currentScane ? this.currentScene.time : 0);
+                            this.currentScene ? this.currentScene.time : 0);
 
                     lactor.mouseOver(ev);
                     lactor.mouseEnter(ev);
@@ -1898,31 +1938,36 @@
             var me= this;
 
             canvas.addEventListener('mouseup', function(e) {
+//console.log("up "+e.target);
                 e.preventDefault();
                 me.__mouseUpHandler(e);
             }, false );
 
             canvas.addEventListener('mousedown', function(e) {
+//console.log("down "+e.target);
                 e.preventDefault();
                 me.__mouseDownHandler(e);
             }, false );
 
             canvas.addEventListener('mouseover',function(e) {
                 e.preventDefault();
+//console.log("over"+e.target);
                 me.__mouseOverHandler(e);
             }, false);
 
             canvas.addEventListener('mouseout',function(e) {
                 e.preventDefault();
+//console.log("out"+e.target);
                 me.__mouseOutHandler(e);
             }, false);
 
             canvas.addEventListener('mousemove',
-            function(e) {
-                e.preventDefault();
-                me.__mouseMoveHandler(e);
-            },
-            false);
+                function(e) {
+                    e.preventDefault();
+//console.log("move "+e.target);
+                    me.__mouseMoveHandler(e);
+                },
+                false);
 
             canvas.addEventListener("dblclick", function(e) {
                 e.preventDefault();

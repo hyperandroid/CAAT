@@ -130,23 +130,39 @@
             
             addMask( director, scene, gr );
             createFish(director,scene,gr);
-
-
-
         }
 
         function addMask(director, scene, gr) {
+
+
+            var dw= director.width;
+            var dh= director.height;
+
+
+            var i;
+            var R= (Math.min( dw,dh ) - 40)/2;
+            var pp= [];
+            var angle;
+            var NP=5;
+            for( i=0; i<NP; i++ ) {
+                angle= i*Math.PI/(NP);
+
+                pp.push( new CAAT.Point(
+                        dw/2 + R*Math.cos(angle + (Math.PI*(i%2)) ) ,
+                        dh/2 + R*Math.sin(angle + (Math.PI*(i%2))) ) );
+
+            }
+            var pp2= [];
+            for( i=0; i<pp.length; i++ ) {
+                pp2.push(new CAAT.Point( pp[i].x, pp[i].y ) );
+            }
+
             var path2= new CAAT.Path().
-                                beginPath(200,director.height/2).
-                                addCubicTo(
-                                    200,10,
-                                    director.width-200,10,
-                                    director.width-200,director.height/2 ).
-                                addCubicTo(
-                                    director.width-200,director.height-10,
-                                    200, director.height-10,
-                                    200, director.height/2 ).
-                                closePath();
+                setCatmullRom(
+                    pp,
+                    true
+                ).
+                endPath();
 
             var path =
                     [
@@ -170,15 +186,12 @@
                                 setPositionAnchor(.5,.5),
 
                         new CAAT.Path().
-                                beginPath(200,200).
-                                addCubicTo( 300,15, 400,10, 550,250 ).
-                                addQuadricTo( 550,300, 450,350 ).
-                                addQuadricTo( 400,400, 350,200 ).
-                                addCubicTo( 100,300, 300,450, 10,400).
-                                addQuadricTo( 40,200, 200,200 ).
-                                closePath().
+                                setCatmullRom(
+                                    pp2,
+                                    true
+                                ).
+                                endPath().
                                 setPositionAnchor(.5,.5)
-
                     ];
 
             for( var i=0; i<path.length; i++ ) {

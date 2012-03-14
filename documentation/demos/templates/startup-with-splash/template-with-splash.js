@@ -62,17 +62,7 @@ CAAT.modules.splash.createSplashScene= function (director, showTime, sceneCreati
                     )
             );
 
-    var percent= new CAAT.TextActor().create().setFont('15px sans-serif');
-    scene.addChild(percent);
-
     scene.loadedImage = function(count, images) {
-        percent.setText( (images ? parseInt((count/images.count*100)>>0) : 100) +' %' );
-        percent.calcTextSize(director);
-        percent.setTextFillStyle('white');
-        percent.setLocation( 10, 10 );
-        percent.setLocation(
-                (10+ladingActor.x + (ladingActor.width-percent.width)/2)|0,
-                (ladingActor.y+ladingActor.height-10)|0 );
 
         if ( !images || count===images.length ) {
 
