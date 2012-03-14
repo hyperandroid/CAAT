@@ -351,6 +351,24 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CatmullRom.html#applyAsPath">applyAsPath</a></b>(director)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CatmullRom.html#endCurvePosition">endCurvePosition</a></b>()
+								</div>
+								<div class="description">Return the first curve control point.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.CatmullRom.html#paint">paint</a></b>(director)
 								</div>
 								<div class="description">Paint the contour by solving again the entire curve.</div>
@@ -360,7 +378,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.CatmullRom.html#setCurve">setCurve</a></b>(points, p1, p2, p3)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CatmullRom.html#setCurve">setCurve</a></b>(p0, p1, p2, p3)
 								</div>
 								<div class="description">Set curve control points.</div>
 							</td>
@@ -375,13 +393,22 @@ ul.inheritsList
 							</td>
 						</tr>
 					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.CatmullRom.html#startCurvePosition">startCurvePosition</a></b>()
+								</div>
+								<div class="description">Return the last curve control point.</div>
+							</td>
+						</tr>
+					
 					</tbody>
 				</table>
 				
 				
 				
 				<dl class="inheritsList">
-				<dt>Methods borrowed from class <a href="../symbols/CAAT.Curve.html">CAAT.Curve</a>: </dt><dd><a href="../symbols/CAAT.Curve.html#applyAsPath">applyAsPath</a>, <a href="../symbols/CAAT.Curve.html#calcLength">calcLength</a>, <a href="../symbols/CAAT.Curve.html#endCurvePosition">endCurvePosition</a>, <a href="../symbols/CAAT.Curve.html#getBoundingBox">getBoundingBox</a>, <a href="../symbols/CAAT.Curve.html#getContour">getContour</a>, <a href="../symbols/CAAT.Curve.html#getLength">getLength</a>, <a href="../symbols/CAAT.Curve.html#setPoint">setPoint</a>, <a href="../symbols/CAAT.Curve.html#setPoints">setPoints</a>, <a href="../symbols/CAAT.Curve.html#startCurvePosition">startCurvePosition</a>, <a href="../symbols/CAAT.Curve.html#update">update</a></dd>
+				<dt>Methods borrowed from class <a href="../symbols/CAAT.Curve.html">CAAT.Curve</a>: </dt><dd><a href="../symbols/CAAT.Curve.html#calcLength">calcLength</a>, <a href="../symbols/CAAT.Curve.html#getBoundingBox">getBoundingBox</a>, <a href="../symbols/CAAT.Curve.html#getContour">getContour</a>, <a href="../symbols/CAAT.Curve.html#getLength">getLength</a>, <a href="../symbols/CAAT.Curve.html#setPoint">setPoint</a>, <a href="../symbols/CAAT.Curve.html#setPoints">setPoints</a>, <a href="../symbols/CAAT.Curve.html#update">update</a></dd>
 				</dl>
 				
 			
@@ -430,6 +457,74 @@ A complete spline should be managed with CAAT.Path.setCatmullRom with a complete
 					Method Detail
 				</div>
 				
+					<a name="applyAsPath"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>applyAsPath</b>(director)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>director</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="endCurvePosition"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span>
+					<b>endCurvePosition</b>()
+					
+					</div>
+					<div class="description">
+						Return the first curve control point.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name="paint"> </a>
 					<div class="fixedFont">
 					
@@ -470,7 +565,7 @@ A complete spline should be managed with CAAT.Path.setCatmullRom with a complete
 					<div class="fixedFont">
 					
 					
-					<b>setCurve</b>(points, p1, p2, p3)
+					<b>setCurve</b>(p0, p1, p2, p3)
 					
 					</div>
 					<div class="description">
@@ -486,28 +581,28 @@ A complete spline should be managed with CAAT.Path.setCatmullRom with a complete
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>points</b>
+									<b>p0</b>
 									
 								</dt>
-								<dd>Array<CAAT.Point></dd>
+								<dd><CAAT.Point></dd>
 							
 								<dt>
 									<b>p1</b>
 									
 								</dt>
-								<dd></dd>
+								<dd><CAAT.Point></dd>
 							
 								<dt>
 									<b>p2</b>
 									
 								</dt>
-								<dd></dd>
+								<dd><CAAT.Point></dd>
 							
 								<dt>
 									<b>p3</b>
 									
 								</dt>
-								<dd></dd>
+								<dd><CAAT.Point></dd>
 							
 							</dl>
 						
@@ -560,6 +655,38 @@ A complete spline should be managed with CAAT.Path.setCatmullRom with a complete
 						
 						
 
+					<hr />
+				
+					<a name="startCurvePosition"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span>
+					<b>startCurvePosition</b>()
+					
+					</div>
+					<div class="description">
+						Return the last curve control point.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
 					
 				
 			
@@ -574,7 +701,7 @@ A complete spline should be managed with CAAT.Path.setCatmullRom with a complete
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Feb 27 2012 23:21:34 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Mar 14 2012 14:49:23 GMT+0100 (CET)
 		</div>
 	</body>
 </html>
