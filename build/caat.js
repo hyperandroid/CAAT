@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.3 build: 267
+Version: 0.3 build: 280
 
 Created on:
-DATE: 2012-03-14
-TIME: 14:48:52
+DATE: 2012-03-15
+TIME: 02:10:28
 */
 
 
@@ -10059,8 +10059,10 @@ var cp1= proxy(
                  *   5.- paint the scene
                  *   6.- restore world model view matrix.
                  */
+                var matmv= this.modelViewMatrix;
                 var matwmv=  this.worldModelViewMatrix;
                 this.worldModelViewMatrix= new CAAT.Matrix();
+                this.modelViewMatrix= this.worldModelViewMatrix;
                 this.wdirty= true;
                     scene.animate(this, scene.time);
                     if ( scene.onRenderStart ) {
@@ -10071,6 +10073,7 @@ var cp1= proxy(
                         scene.onRenderEnd(scene.time);
                     }
                 this.worldModelViewMatrix = matwmv;
+                this.modelViewMatrix= matmv;
 
                 ctx.restore();
 
@@ -11307,6 +11310,8 @@ var cp1= proxy(
                     if ( c.onRenderStart ) {
                         c.onRenderStart(tt);
                     }
+
+                    c.paintActor(this, tt);
 
                     if ( c.onRenderEnd ) {
                         c.onRenderEnd(tt);

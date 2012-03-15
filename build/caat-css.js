@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.3 build: 267
+Version: 0.3 build: 280
 
 Created on:
-DATE: 2012-03-14
-TIME: 14:48:52
+DATE: 2012-03-15
+TIME: 02:10:28
 */
 
 
@@ -5767,6 +5767,12 @@ var cp1= proxy(
             }
             return this;
         },
+        setChangeFPS : function(time) {
+            if ( this.backgroundImage ) {
+                this.backgroundImage.setChangeFPS(time);
+            }
+            return this;
+        },
         /**
          * This method has no effect on ActorCSS
          * @param it any value from CAAT.Actor.TR_*
@@ -6939,6 +6945,16 @@ var cp1= proxy(
          * @return boolean indicating whether the Actor isInFrameTime
          */
         paintActor : function(director, time) {
+            var bi= this.backgroundImage;
+            if ( bi ) {
+                var pi= bi.spriteIndex;
+                bi.setSpriteIndexAtTime(time);
+                if ( pi!=bi.spriteIndex ) {
+                    this.setSpriteIndex( bi.spriteIndex );
+                }
+
+            }
+
             return true;
         },
         /**
@@ -7179,6 +7195,14 @@ var cp1= proxy(
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          */
         paintActor : function(director, time ) {
+            CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
+
+            for( var actor= this.activeChildren; actor; actor=actor.__next ) {
+                if ( actor.visible ) {
+                    actor.paintActor(director,time);
+                }
+            }
+
             return true;
         },
         /**
@@ -9034,8 +9058,10 @@ var cp1= proxy(
                  *   5.- paint the scene
                  *   6.- restore world model view matrix.
                  */
+                var matmv= this.modelViewMatrix;
                 var matwmv=  this.worldModelViewMatrix;
                 this.worldModelViewMatrix= new CAAT.Matrix();
+                this.modelViewMatrix= this.worldModelViewMatrix;
                 this.wdirty= true;
                     scene.animate(this, scene.time);
                     if ( scene.onRenderStart ) {
@@ -9046,6 +9072,7 @@ var cp1= proxy(
                         scene.onRenderEnd(scene.time);
                     }
                 this.worldModelViewMatrix = matwmv;
+                this.modelViewMatrix= matmv;
 
                 ctx.restore();
 
@@ -10282,6 +10309,8 @@ var cp1= proxy(
                     if ( c.onRenderStart ) {
                         c.onRenderStart(tt);
                     }
+
+                    c.paintActor(this, tt);
 
                     if ( c.onRenderEnd ) {
                         c.onRenderEnd(tt);
