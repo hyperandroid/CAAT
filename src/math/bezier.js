@@ -4,7 +4,7 @@
  * Classes to solve and draw curves.
  * Curve is the superclass of
  *  + Bezier (quadric and cubic)
- *  + TODO: Catmull Rom
+ *  + CatmullRom
  *
  *
  **/
@@ -37,6 +37,7 @@
                 return;
             }
 
+            var cl= this.coordlist;
 			var ctx= director.ctx;
 		
 			// control points
@@ -44,12 +45,12 @@
 			ctx.beginPath();
 			
 			ctx.strokeStyle='#a0a0a0';
-			ctx.moveTo( this.coordlist[0].x, this.coordlist[0].y );
-			ctx.lineTo( this.coordlist[1].x, this.coordlist[1].y );
+			ctx.moveTo( cl[0].x, cl[0].y );
+			ctx.lineTo( cl[1].x, cl[1].y );
 			ctx.stroke();
 			if ( this.cubic ) {
-				ctx.moveTo( this.coordlist[2].x, this.coordlist[2].y );
-				ctx.lineTo( this.coordlist[3].x, this.coordlist[3].y );
+				ctx.moveTo( cl[2].x, cl[2].y );
+				ctx.lineTo( cl[3].x, cl[3].y );
 				ctx.stroke();
 			} 
 
@@ -58,18 +59,7 @@
             for( var i=0; i<this.coordlist.length; i++ ) {
                 ctx.fillStyle='#7f7f00';
                 var w= CAAT.Curve.prototype.HANDLE_SIZE/2;
-                ctx.fillRect( this.coordlist[i].x-w, this.coordlist[i].y-w, w*2, w*2 );
-                /*
-                ctx.beginPath();
-                ctx.arc(
-                        this.coordlist[i].x,
-                        this.coordlist[i].y,
-                        this.HANDLE_SIZE/2,
-                        0,
-                        2*Math.PI,
-                        false) ;
-                ctx.fill();
-                */
+                ctx.fillRect( cl[i].x-w, cl[i].y-w, w*2, w*2 );
             }
 
 			ctx.restore();
@@ -134,7 +124,7 @@
          * @return {number} the approximate curve length.
          */
 		calcLength : function() {
-			var x1,x2,y1,y2;
+			var x1,y1;
 			x1 = this.coordlist[0].x;
 			y1 = this.coordlist[0].y;
 			var llength=0;
@@ -158,18 +148,16 @@
 		},
         /**
          * Return the first curve control point.
-         * @param point {CAAT.Point}
          * @return {CAAT.Point}
          */
-		endCurvePosition : function(point) {
+		endCurvePosition : function() {
 			return this.coordlist[ this.coordlist.length-1 ];
 		},
         /**
          * Return the last curve control point.
-         * @param point {CAAT.Point}
          * @return {CAAT.Point}
          */
-		startCurvePosition : function(point) {
+		startCurvePosition : function() {
 			return this.coordlist[ 0 ];
 		},
 
@@ -181,6 +169,10 @@
                 this.coordlist[index]= point;
             }
         },
+        /**
+         *
+         * @param director <=CAAT.Director>
+         */
         applyAsPath : function( director ) {
         }
 	};
@@ -450,7 +442,10 @@
 
         /**
          * Set curve control points.
-         * @param points Array<CAAT.Point>
+         * @param p0 <CAAT.Point>
+         * @param p1 <CAAT.Point>
+         * @param p2 <CAAT.Point>
+         * @param p3 <CAAT.Point>
          */
 		setCurve : function( p0, p1, p2, p3 ) {
 
@@ -514,6 +509,35 @@
 
 			return point;
 
+		},
+
+        applyAsPath : function( director ) {
+
+            var ctx= director.ctx;
+
+            var point= new CAAT.Point();
+
+            for(var t=this.k;t<=1+this.k;t+=this.k){
+                this.solve(point,t);
+                ctx.lineTo(point.x,point.y);
+            }
+
+            return this;
+        },
+
+        /**
+         * Return the first curve control point.
+         * @return {CAAT.Point}
+         */
+		endCurvePosition : function() {
+			return this.coordlist[ this.coordlist.length-2 ];
+		},
+        /**
+         * Return the last curve control point.
+         * @return {CAAT.Point}
+         */
+		startCurvePosition : function() {
+			return this.coordlist[ 1 ];
 		}
 	};
 

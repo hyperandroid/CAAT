@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.3 build: 231
+Version: 0.3 build: 280
 
 Created on:
-DATE: 2012-02-27
-TIME: 23:21:07
+DATE: 2012-03-15
+TIME: 02:10:28
 */
 
 
@@ -1681,7 +1681,7 @@ var cp1= proxy(
  * Classes to solve and draw curves.
  * Curve is the superclass of
  *  + Bezier (quadric and cubic)
- *  + TODO: Catmull Rom
+ *  + CatmullRom
  *
  *
  **/
@@ -1714,6 +1714,7 @@ var cp1= proxy(
                 return;
             }
 
+            var cl= this.coordlist;
 			var ctx= director.ctx;
 		
 			// control points
@@ -1721,12 +1722,12 @@ var cp1= proxy(
 			ctx.beginPath();
 			
 			ctx.strokeStyle='#a0a0a0';
-			ctx.moveTo( this.coordlist[0].x, this.coordlist[0].y );
-			ctx.lineTo( this.coordlist[1].x, this.coordlist[1].y );
+			ctx.moveTo( cl[0].x, cl[0].y );
+			ctx.lineTo( cl[1].x, cl[1].y );
 			ctx.stroke();
 			if ( this.cubic ) {
-				ctx.moveTo( this.coordlist[2].x, this.coordlist[2].y );
-				ctx.lineTo( this.coordlist[3].x, this.coordlist[3].y );
+				ctx.moveTo( cl[2].x, cl[2].y );
+				ctx.lineTo( cl[3].x, cl[3].y );
 				ctx.stroke();
 			} 
 
@@ -1735,18 +1736,7 @@ var cp1= proxy(
             for( var i=0; i<this.coordlist.length; i++ ) {
                 ctx.fillStyle='#7f7f00';
                 var w= CAAT.Curve.prototype.HANDLE_SIZE/2;
-                ctx.fillRect( this.coordlist[i].x-w, this.coordlist[i].y-w, w*2, w*2 );
-                /*
-                ctx.beginPath();
-                ctx.arc(
-                        this.coordlist[i].x,
-                        this.coordlist[i].y,
-                        this.HANDLE_SIZE/2,
-                        0,
-                        2*Math.PI,
-                        false) ;
-                ctx.fill();
-                */
+                ctx.fillRect( cl[i].x-w, cl[i].y-w, w*2, w*2 );
             }
 
 			ctx.restore();
@@ -1811,7 +1801,7 @@ var cp1= proxy(
          * @return {number} the approximate curve length.
          */
 		calcLength : function() {
-			var x1,x2,y1,y2;
+			var x1,y1;
 			x1 = this.coordlist[0].x;
 			y1 = this.coordlist[0].y;
 			var llength=0;
@@ -1835,18 +1825,16 @@ var cp1= proxy(
 		},
         /**
          * Return the first curve control point.
-         * @param point {CAAT.Point}
          * @return {CAAT.Point}
          */
-		endCurvePosition : function(point) {
+		endCurvePosition : function() {
 			return this.coordlist[ this.coordlist.length-1 ];
 		},
         /**
          * Return the last curve control point.
-         * @param point {CAAT.Point}
          * @return {CAAT.Point}
          */
-		startCurvePosition : function(point) {
+		startCurvePosition : function() {
 			return this.coordlist[ 0 ];
 		},
 
@@ -1858,6 +1846,10 @@ var cp1= proxy(
                 this.coordlist[index]= point;
             }
         },
+        /**
+         *
+         * @param director <=CAAT.Director>
+         */
         applyAsPath : function( director ) {
         }
 	};
@@ -2127,7 +2119,10 @@ var cp1= proxy(
 
         /**
          * Set curve control points.
-         * @param points Array<CAAT.Point>
+         * @param p0 <CAAT.Point>
+         * @param p1 <CAAT.Point>
+         * @param p2 <CAAT.Point>
+         * @param p3 <CAAT.Point>
          */
 		setCurve : function( p0, p1, p2, p3 ) {
 
@@ -2191,6 +2186,35 @@ var cp1= proxy(
 
 			return point;
 
+		},
+
+        applyAsPath : function( director ) {
+
+            var ctx= director.ctx;
+
+            var point= new CAAT.Point();
+
+            for(var t=this.k;t<=1+this.k;t+=this.k){
+                this.solve(point,t);
+                ctx.lineTo(point.x,point.y);
+            }
+
+            return this;
+        },
+
+        /**
+         * Return the first curve control point.
+         * @return {CAAT.Point}
+         */
+		endCurvePosition : function() {
+			return this.coordlist[ this.coordlist.length-2 ];
+		},
+        /**
+         * Return the last curve control point.
+         * @return {CAAT.Point}
+         */
+		startCurvePosition : function() {
+			return this.coordlist[ 1 ];
 		}
 	};
 
@@ -5743,6 +5767,12 @@ var cp1= proxy(
             }
             return this;
         },
+        setChangeFPS : function(time) {
+            if ( this.backgroundImage ) {
+                this.backgroundImage.setChangeFPS(time);
+            }
+            return this;
+        },
         /**
          * This method has no effect on ActorCSS
          * @param it any value from CAAT.Actor.TR_*
@@ -5752,6 +5782,8 @@ var cp1= proxy(
             this.transformation= it;
             if ( it===CAAT.SpriteImage.prototype.TR_FIXED_TO_SIZE ) {
                 this.style( 'background-size', '100%' );
+            } else if (it===CAAT.SpriteImage.prototype.TR_NONE) {
+                this.style( 'background-size', 'auto' );
             }
             return this;
         },
@@ -6913,6 +6945,16 @@ var cp1= proxy(
          * @return boolean indicating whether the Actor isInFrameTime
          */
         paintActor : function(director, time) {
+            var bi= this.backgroundImage;
+            if ( bi ) {
+                var pi= bi.spriteIndex;
+                bi.setSpriteIndexAtTime(time);
+                if ( pi!=bi.spriteIndex ) {
+                    this.setSpriteIndex( bi.spriteIndex );
+                }
+
+            }
+
             return true;
         },
         /**
@@ -7153,6 +7195,14 @@ var cp1= proxy(
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          */
         paintActor : function(director, time ) {
+            CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
+
+            for( var actor= this.activeChildren; actor; actor=actor.__next ) {
+                if ( actor.visible ) {
+                    actor.paintActor(director,time);
+                }
+            }
+
             return true;
         },
         /**
@@ -7454,7 +7504,7 @@ var cp1= proxy(
                 }
 
                 for( var i=0,l=cl.length; i<l; i++ ) {
-                    cl[i].domElement.style['z-index']= i;
+                    cl[i].domElement.style.zIndex = i;
                 }
             }
         }
@@ -9008,8 +9058,10 @@ var cp1= proxy(
                  *   5.- paint the scene
                  *   6.- restore world model view matrix.
                  */
+                var matmv= this.modelViewMatrix;
                 var matwmv=  this.worldModelViewMatrix;
                 this.worldModelViewMatrix= new CAAT.Matrix();
+                this.modelViewMatrix= this.worldModelViewMatrix;
                 this.wdirty= true;
                     scene.animate(this, scene.time);
                     if ( scene.onRenderStart ) {
@@ -9020,6 +9072,7 @@ var cp1= proxy(
                         scene.onRenderEnd(scene.time);
                     }
                 this.worldModelViewMatrix = matwmv;
+                this.modelViewMatrix= matmv;
 
                 ctx.restore();
 
@@ -9656,20 +9709,49 @@ var cp1= proxy(
          */
         getCanvasCoord : function(point, e) {
 
+            var pt= new CAAT.Point( );
             var posx = 0;
             var posy = 0;
             if (!e) e = window.event;
 
-            if ( e.offsetX || e.offsetY ) {
-
+            if ( e.offsetX ) {
                 posx= e.offsetX;
                 posy= e.offsetY;
+
+                if ( !CAAT.__CSS__ ) {
+                    var pt= new CAAT.Point( posx, posy );
+                    if ( !this.modelViewMatrixI ) {
+                        this.modelViewMatrixI= this.modelViewMatrix.getInverse();
+                    }
+                    this.modelViewMatrixI.transformCoord(pt);
+                    posx= pt.x;
+                    posy= pt.y
+                }
+
+                point.set(posx, posy);
+                this.screenMousePoint.set(posx, posy);
+
+                return;
+            } else if ( e.layerX ) {
+                posx= e.layerX;
+                posy= e.layerY;
+
+                if ( !CAAT.__CSS__ ) {
+                    var pt= new CAAT.Point( posx, posy );
+                    if ( !this.modelViewMatrixI ) {
+                        this.modelViewMatrixI= this.modelViewMatrix.getInverse();
+                    }
+                    this.modelViewMatrixI.transformCoord(pt);
+                    posx= pt.x;
+                    posy= pt.y
+                }
 
                 point.set(posx, posy);
                 this.screenMousePoint.set(posx, posy);
 
                 return;
             }
+
 
             if (e.pageX || e.pageY) {
                 posx = e.pageX;
@@ -9688,13 +9770,16 @@ var cp1= proxy(
             //////////////
             // transformar coordenada inversamente con affine transform de director.
 
-            var pt= new CAAT.Point( posx, posy );
-            if ( !this.modelViewMatrixI ) {
-                this.modelViewMatrixI= this.modelViewMatrix.getInverse();
+            if ( !CAAT.__CSS__ ) {
+                pt.x= posx;
+                pt.y= posy;
+                if ( !this.modelViewMatrixI ) {
+                    this.modelViewMatrixI= this.modelViewMatrix.getInverse();
+                }
+                this.modelViewMatrixI.transformCoord(pt);
+                posx= pt.x;
+                posy= pt.y
             }
-            this.modelViewMatrixI.transformCoord(pt);
-            posx= pt.x;
-            posy= pt.y
 
             point.set(posx, posy);
             this.screenMousePoint.set(posx, posy);
@@ -9914,6 +9999,10 @@ var cp1= proxy(
 
         __mouseOutHandler : function(e) {
 
+            if ( this.dragging ) {
+                return;
+            }
+
             if (null !== this.lastSelectedActor ) {
 
                 this.getCanvasCoord(this.mousePoint, e);
@@ -9930,18 +10019,22 @@ var cp1= proxy(
 
                 this.lastSelectedActor.mouseExit(ev);
                 this.lastSelectedActor.mouseOut(ev);
-
                 if ( !this.dragging ) {
                     this.lastSelectedActor = null;
                 }
             } else {
                 this.isMouseDown = false;
                 this.in_ = false;
+
             }
 
         },
 
         __mouseOverHandler : function(e) {
+
+            if (this.dragging ) {
+                return;
+            }
 
             var lactor;
             var pos, ev;
@@ -9961,7 +10054,7 @@ var cp1= proxy(
                             e,
                             lactor,
                             this.screenMousePoint,
-                            this.currentScane ? this.currentScene.time : 0);
+                            this.currentScene ? this.currentScene.time : 0);
 
                     lactor.mouseOver(ev);
                     lactor.mouseEnter(ev);
@@ -10073,31 +10166,36 @@ var cp1= proxy(
             var me= this;
 
             canvas.addEventListener('mouseup', function(e) {
+//console.log("up "+e.target);
                 e.preventDefault();
                 me.__mouseUpHandler(e);
             }, false );
 
             canvas.addEventListener('mousedown', function(e) {
+//console.log("down "+e.target);
                 e.preventDefault();
                 me.__mouseDownHandler(e);
             }, false );
 
             canvas.addEventListener('mouseover',function(e) {
                 e.preventDefault();
+//console.log("over"+e.target);
                 me.__mouseOverHandler(e);
             }, false);
 
             canvas.addEventListener('mouseout',function(e) {
                 e.preventDefault();
+//console.log("out"+e.target);
                 me.__mouseOutHandler(e);
             }, false);
 
             canvas.addEventListener('mousemove',
-            function(e) {
-                e.preventDefault();
-                me.__mouseMoveHandler(e);
-            },
-            false);
+                function(e) {
+                    e.preventDefault();
+//console.log("move "+e.target);
+                    me.__mouseMoveHandler(e);
+                },
+                false);
 
             canvas.addEventListener("dblclick", function(e) {
                 e.preventDefault();
@@ -10211,6 +10309,8 @@ var cp1= proxy(
                     if ( c.onRenderStart ) {
                         c.onRenderStart(tt);
                     }
+
+                    c.paintActor(this, tt);
 
                     if ( c.onRenderEnd ) {
                         c.onRenderEnd(tt);
@@ -11248,9 +11348,12 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
         getCurrentSpriteImageCSSPosition : function() {
             var el= this.mapInfo[this.spriteIndex];
 
-            return '-'+(el.x-this.offsetX)+'px '+
-                   '-'+(el.y-this.offsetY)+'px '+
-                    (this.transformation===this.TR_TILE ? '' : 'no-repeat');
+            var x= -(el.x-this.offsetX);
+            var y= -(el.y-this.offsetY);
+
+            return ''+x+'px '+
+                   y+'px '+
+                    (this.ownerActor.transformation===this.TR_TILE ? 'repeat' : 'no-repeat');
         },
         /**
          * Get the number of subimages in this compoundImage
@@ -11677,7 +11780,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
          * @param callback_loaded_one_image {function( imageloader {CAAT.ImagePreloader}, counter {number}, images {{ id:{string}, image: {Image}}} )}
          * function to call on every image load.
          */
-        loadImages: function( aImages, callback_loaded_one_image ) {
+        loadImages: function( aImages, callback_loaded_one_image, callback_error ) {
 
             if (!aImages) {
                 if (callback_loaded_one_image ) {
@@ -11697,6 +11800,15 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                     me.imageCounter++;
                     me.notificationCallback(me.imageCounter, me.images);
                 };
+
+                this.images[i].image.onerror= (function(index) {
+                        return function(e) {
+                            if ( callback_error ) {
+                                callback_error( e, index );
+                            }
+                        }
+                    })(i);
+
                 this.images[i].image.src= aImages[i].url;
             }
 
@@ -13252,6 +13364,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 
         create : function( chars, padding ) {
 
+            padding= padding | 0;
             this.padding= padding;
 
             var canvas= document.createElement('canvas');
@@ -13304,6 +13417,28 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             this.height= this.image.height;
 
             return this;
+        },
+
+        setAsSpriteImage : function() {
+            var cm= [];
+            var _index= 0;
+            for( var i in this.charMap ) {
+                var _char= i;
+                var charData= this.charMap[i];
+
+                cm[i]={
+                    id: _index++,
+                    height: this.height,
+                    xoffset: 0,
+                    letter: _char,
+                    yoffset: 0,
+                    width: charData.width,
+                    xadvance: charData.width,
+                    x: charData.x,
+                    y: 0
+                };
+            }
+            return new CAAT.SpriteImage().initializeAsGlyphDesigner( this.image, cm );
         },
 
         stringWidth : function( str ) {

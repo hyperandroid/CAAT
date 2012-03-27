@@ -50,7 +50,44 @@
 <div class="section">
     <h1>CAAT.Actor</h1>
 
-    <h2>Actor Events</h2>
+    <div>
+        <h2>Input system</h2>
+        <div>
+            CAAT input system works in two ways.
+        </div>
+        <div>
+            By default every scene graph actor has input enabled (mouse/touch). The system traverses the scene graph
+            in-orderly trying to find what Actor will have input events routed to. The main issue with this way of
+            input routing is that children which lie out of its parent bounds won't be able to have input events
+            routed to them. To prevent this, a <span class="code">CAAT.ActorContainer</span> can be created with
+            <span class="code">CAAT.ActorContainer.AddHint.CONFORM</span> so that it will conform its size by computing
+            their children bounding box.
+        </div>
+        <div>
+            The other way of going with input are input lists. Those lists, managed by the methods
+            <ul>
+                <li><span class="apicode">enableInputList(number)</span>: number of priority lists to set for this scene. A priority list is a list of actors to
+                                                which are suitable to receive input first. If no actor on the priority lists are under
+                                                the cursor, the whole scene graph is traversed instead.
+                <li><span class="apicode">addActorToInputList( actor, index, position )</span>: add an actor to a given priority list at certain position.
+                <li><span class="apicode">emptyInputList( index )</span>: remove all elements from a list.
+                <li><span class="apicode">removeActorFromInputList( actor, index )</span>: remove an actor from the list identified by index.
+            </ul>
+        </div>
+        <div>
+            The input lists change the input semantics so that the developer can decide what scene graph actors
+            will have immediately tested whether must have input sent or not. <span class="important">This procedure bypasses the container
+            size restriction</span> making non proritized actors behave as if they were not on screen regarding input
+            events.
+        </div>
+        <div>
+            To globally disable input for every scene actor, you can set <span class="apicode">CAAT.Actor.prototype.mouseEnabled= false;</span>
+            and then a call to <span class="apicode">actor.enableEvents(true);</span> must be explicitly issued to
+            enable input to be redirected to any given actor.
+        </div>
+    </div>
+
+    <h2>Actor Input Events</h2>
 
     <p>An Actor instance has mouse events enabled by default. The mouse control methods are the following:</p>
     <ul>

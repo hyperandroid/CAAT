@@ -386,6 +386,12 @@
             }
             return this;
         },
+        setChangeFPS : function(time) {
+            if ( this.backgroundImage ) {
+                this.backgroundImage.setChangeFPS(time);
+            }
+            return this;
+        },
         /**
          * This method has no effect on ActorCSS
          * @param it any value from CAAT.Actor.TR_*
@@ -395,6 +401,8 @@
             this.transformation= it;
             if ( it===CAAT.SpriteImage.prototype.TR_FIXED_TO_SIZE ) {
                 this.style( 'background-size', '100%' );
+            } else if (it===CAAT.SpriteImage.prototype.TR_NONE) {
+                this.style( 'background-size', 'auto' );
             }
             return this;
         },
@@ -1556,6 +1564,16 @@
          * @return boolean indicating whether the Actor isInFrameTime
          */
         paintActor : function(director, time) {
+            var bi= this.backgroundImage;
+            if ( bi ) {
+                var pi= bi.spriteIndex;
+                bi.setSpriteIndexAtTime(time);
+                if ( pi!=bi.spriteIndex ) {
+                    this.setSpriteIndex( bi.spriteIndex );
+                }
+
+            }
+
             return true;
         },
         /**
@@ -1796,6 +1814,14 @@
          * @param time an integer indicating the Scene time when the bounding box is to be drawn.
          */
         paintActor : function(director, time ) {
+            CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
+
+            for( var actor= this.activeChildren; actor; actor=actor.__next ) {
+                if ( actor.visible ) {
+                    actor.paintActor(director,time);
+                }
+            }
+
             return true;
         },
         /**
@@ -2097,7 +2123,7 @@
                 }
 
                 for( var i=0,l=cl.length; i<l; i++ ) {
-                    cl[i].domElement.style['z-index']= i;
+                    cl[i].domElement.style.zIndex = i;
                 }
             }
         }

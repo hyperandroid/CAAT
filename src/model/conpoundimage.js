@@ -446,9 +446,12 @@
         getCurrentSpriteImageCSSPosition : function() {
             var el= this.mapInfo[this.spriteIndex];
 
-            return '-'+(el.x-this.offsetX)+'px '+
-                   '-'+(el.y-this.offsetY)+'px '+
-                    (this.transformation===this.TR_TILE ? '' : 'no-repeat');
+            var x= -(el.x-this.offsetX);
+            var y= -(el.y-this.offsetY);
+
+            return ''+x+'px '+
+                   y+'px '+
+                    (this.ownerActor.transformation===this.TR_TILE ? 'repeat' : 'no-repeat');
         },
         /**
          * Get the number of subimages in this compoundImage

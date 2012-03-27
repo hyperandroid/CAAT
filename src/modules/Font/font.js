@@ -71,6 +71,7 @@
 
         create : function( chars, padding ) {
 
+            padding= padding | 0;
             this.padding= padding;
 
             var canvas= document.createElement('canvas');
@@ -123,6 +124,28 @@
             this.height= this.image.height;
 
             return this;
+        },
+
+        setAsSpriteImage : function() {
+            var cm= [];
+            var _index= 0;
+            for( var i in this.charMap ) {
+                var _char= i;
+                var charData= this.charMap[i];
+
+                cm[i]={
+                    id: _index++,
+                    height: this.height,
+                    xoffset: 0,
+                    letter: _char,
+                    yoffset: 0,
+                    width: charData.width,
+                    xadvance: charData.width,
+                    x: charData.x,
+                    y: 0
+                };
+            }
+            return new CAAT.SpriteImage().initializeAsGlyphDesigner( this.image, cm );
         },
 
         stringWidth : function( str ) {

@@ -1,3 +1,20 @@
+*03/13/2012 0.3 Build 279*
+--------------------------
+
+* Merged Karl Westin pull requests.
+* Fixed CAAT.Actor with sprite sheet on CSS renderer which didn't update the sprite index based on time.
+
+*03/13/2012 0.3 Build 264*
+--------------------------
+
+* Fixed TR_TILE semantics on CSS which prevented to shift properly with a call to setImageOffset.
+* Fixed template with splash when using CSS renderer.
+* Changed demo16 masking.
+* Fixed some code ambiguities at Font object.
+* Added onError function to imagepreloader object.
+* Changed tutorial 1 info.
+* Changed tutorial 2.1 Input.
+
 02/27/2012 *0.3 Build 230*
 --------------------------
 

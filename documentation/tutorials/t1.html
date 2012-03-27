@@ -61,68 +61,71 @@
                 </p>
 
                 <p>
-                    In the library bundle under the build folder you'll find two files caat.js (needed to render with
+                    Under the build folder you'll find two files caat.js (needed to render with
                     Canvas or WebGL) and caat-css.js to render with DOM+CSS. There're subtle differences
                     between all three rendering technologies but you'll show no difference if using
                     CAAT's out-of-the-box animation elements.
                 </p>
-
                 <p>
-                    Once the rendering engine's been chosen (use caat.js file which covers all possibilities), simply
-                    include it
-                    on your html file:
+                    In this folder, you can also access caat-box2d.js which is optioanlly used to bind box2d with
+                    standard CAAT actor objects, as well as minified versions of all those files.
+                </p>
+                <p>
+                    Located under documentation/demos/tempates folder you could find located two different template
+                    files. Those template files are an starting point which set themselves up for canva/gl and css
+                    renderers. The developer could use the code in the folder  <a href="../demos/templates/startup-wo-splash/template.html" target="_blank">documentation/demos/tempates/startup-wo-splash</a>
+                    as an starting point. The code in the folder <a href="../demos/templates/startup-with-splash/template-with-splash.html" target="_blank">documentation/demos/tempates/startup-with-splash</a>
+                    can be used as an starting point for an application with splash.
                 </p>
 
-                <div class="code">
-        <pre class="brush: js; auto-links: false; toolbar: false;">
-            <script type="text/javascript" src="../lib/caat.js"></script>
-        </pre>
+                <p>
+                    The neede steps to setup up a basic CAAT project are:
+                </p>
+
+                <div>
+                    <ul>1. Include the desired renderer library file. In example: </ul>
+                    <div class="code">
+                        <pre class="brush: js; auto-links: false; toolbar: false;">
+                            <script type="text/javascript" src="../lib/caat.js"></script>
+                        </pre>
+                    </div>
+                    <ul>2. Create a director object.</ul>
+                    <ul>3. Create an scene object.</ul>
+                    <ul>4. Add some Actors to the scene object.</ul>
+                    <ul>5. Start the animation loop.</ul>
                 </div>
-                <p>Make sure to change the path '../../build/' to your needs.</p>
             </div>
 
             <div class="section">
-                <h2>CAAT Templates</h2>
-
-                <p>
-                    To make starting with CAAT easier, there are two out-of-the-box generated templates.
-                    They are located in the CAAT-Samples file bundle under the <strong>templates</strong> folder.
-                    Use them as the start point to create a custom CAAT application.
-                <ul>
-                    <li>One template will simply launch the scene after loading located under the
-                        folder <strong>startup-wo-splash</strong>.
-                    </li>
-                    <li>Another version which will show an splash screen, keep it shown at least for 3 seconds, and
-                        then get the created CAAT scene in. It is located under the folder
-                        <strong>startup-with-splash</strong>.
-                    </li>
-                </ul>
-                </p>
-            </div>
-
-            <div class="section">
-                <h2>How to start</h2>
+                <h2>CAAT Startup example</h2>
 
                 <p>One of the minimum CAAT library setup programs could be this one:
 
 
                 <div class="code">
     <pre class="brush: js; auto-links: false; toolbar: false;">
+
+        // create a director object
         var director = new CAAT.Director().initialize(
                 100,    // 100 pixels wide
                 100,    // 100 pixels across
-                document.getElementById('_c1'));
+                document.getElementById('_c1')
+        );
 
+        // add a scene object to the director.
         var scene=     director.createScene();
 
+        // create a CAAT actor
         var circle=    new CAAT.ShapeActor().
                 setLocation(20,20).
                 setSize(60,60).
                 setFillStyle('#ff0000').
                 setStrokeStyle('#000000');
 
+        // add it to the scene
         scene.addChild(circle);
 
+        // start the animation loop
         CAAT.loop(1);
     </pre>
                 </div>
@@ -131,29 +134,12 @@
 
                 <p>Despite its simplicity, some facts must be taken into account:
                 <ol>
-                    <li>When using CAAT, it's mandatory to create a CAAT.Director instance. The Director is the entry
-                        point
-                        to
-                        CAAT.
-                    <li>You must explictly supply a canvas size in pixels. In this example 100 by 100 pixels.</li>
-                    <li>The director will perform animations in a HTML document canvas element. We can supply a
-                        reference to
-                        a
-                        canvas,
-                        or simple issue a <strong>new CAAT.Director().initialize(100,100)</strong> command and let the
-                        director
-                        create a canvas for us.
-                    </li>
+                    <li>If using a Canvas/GL renderer CAAT renders on a Canvas object. You can supply one at
+                    CAAT.Director object creation time, or let CAAT create and add one for you.</li>
                     <li>The Director instance is fed with scenes. CAAT.Scene instances are advanced actor containers.
-                        We'll
-                        see
-                        how the Director manages Scenes, and how to elegantly switch from one to the other.
-                    <li>Scenes are fed with CAAT.Actor instances. Indeed, as much as needed.
-                    <li>CAAT.Actor instances and its subinstances (ShapeActor, SpriteActor, etc.) have a lifecycle, so
-                        it
-                        must
-                        be explicitly stated the call to create method.
-                    <li>We must call director.loop to signal CAAT to start delivering content to the canvas.
+                        We'll see how the Director manages Scenes, and how to elegantly switch from one to the other.
+                    <li>Scenes are fed with CAAT.Actor and CAAT.ActorContainer instances in a hierarchycal fashion.
+                    <li>CAAT.loop must be called to start CAAT event loop.
                 </ol>
 
                 <p>And that's it, our red circle:
@@ -186,17 +172,13 @@
                 <div class="section">
                     <p>In this other example, we're not specifying a DOM canvas element to the Director instantiation.
                         The
-                        director itself will create one for us
-                        and we'll be responsible for adding the element to the desired position in the DOM.</p>
+                        director itself will create and append one to the DOM.</p>
 
                     <div class="code">
         <pre class="brush: js; auto-links: false; toolbar: false;">
     // We are not pointing any canvas in the director creation statement,
     // so the director will create a Canvas for us.
     var director2 = new CAAT.Director().initialize(100,100);
-
-    // add the canvas to the document:
-    document.getElementById('div_canvas2').appendChild( director2.canvas );
 
     var scene2=     director.createScene();
     var circle2=    new CAAT.ShapeActor().
