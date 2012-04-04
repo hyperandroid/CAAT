@@ -190,7 +190,7 @@
         __getCells : function( x,y,width,height ) {
 
             var cells= [];
-            var i;
+            var i, c;
 
             if ( this.rectangle.contains(x,y) ) {
                 cells.push( this.xycache[ this.ycache[y] ][ this.xcache[x] ] );
@@ -200,7 +200,7 @@
              * if both squares lay inside the same cell, it is not crossing a boundary.
              */
             if ( this.rectangle.contains(x+width-1,y+height-1) ) {
-                var c= this.xycache[ this.ycache[y+height-1] ][ this.xcache[x+width-1] ];
+                c= this.xycache[ this.ycache[y+height-1] ][ this.xcache[x+width-1] ];
                 if ( c===cells[0] ) {
                     return cells;
                 }
@@ -211,7 +211,7 @@
              * the other two AABB points lie inside the screen as well.
              */
             if ( this.rectangle.contains(x+width-1,y) ) {
-                var c= this.xycache[ this.ycache[y] ][ this.xcache[x+width-1] ];
+                c= this.xycache[ this.ycache[y] ][ this.xcache[x+width-1] ];
                 if ( c===cells[0] || c===cells[1] ) {
                     return cells;
                 }
@@ -220,7 +220,7 @@
 
             // worst case, touching 4 screen cells.
             if ( this.rectangle.contains(x+width-1,y+height-1) ) {
-                var c= this.xycache[ this.ycache[y+height-1] ][ this.xcache[x] ];
+                c= this.xycache[ this.ycache[y+height-1] ][ this.xcache[x] ];
                 cells.push(c);
             }
 

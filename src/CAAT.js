@@ -22,5 +22,5 @@ Function.prototype.bind= Function.prototype.bind || function() {
         return fn.apply(
                 obj,
                 args.concat(Array.prototype.slice.call(arguments)));
-    }
+    };
 };

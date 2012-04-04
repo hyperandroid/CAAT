@@ -60,7 +60,7 @@
             return this;
         },
         setBounds : function( x,y,w,h ) {
-            this.setLocation( x, y )
+            this.setLocation( x, y );
             this.setDimension( w, h );
             return this;
         },
