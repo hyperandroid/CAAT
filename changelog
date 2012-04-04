@@ -1,8 +1,15 @@
-*03/13/2012 0.3 Build 279*
+*04/05/2012 0.4 Build 1  *
 --------------------------
 
 * Merged Karl Westin pull requests.
 * Fixed CAAT.Actor with sprite sheet on CSS renderer which didn't update the sprite index based on time.
+* Added paintChunk to CAAT.SpriteImage which allows to draw arbitrary image regions.
+* Fixed CSS renderer issues when scaled up.
+* Added demo 20 : flight control.
+* Added demo 21 : preliminary CAAT tile based engine. Canvas only.
+* Modidied some demos.
+* Added preliminary inspector module.
+* Added CAAT.NO_RAF to avoid RAF in favour of setInterval.
 
 *03/13/2012 0.3 Build 264*
 --------------------------

@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.3 build: 280
+Version: 0.4 build: 2
 
 Created on:
-DATE: 2012-03-15
-TIME: 02:10:28
+DATE: 2012-04-05
+TIME: 00:20:03
 */
 
 
@@ -55,6 +55,25 @@ Function.prototype.bind= Function.prototype.bind || function() {
                 args.concat(Array.prototype.slice.call(arguments)));
     }
 };
+
+/*
+Array.prototype.forEach = Array.prototype.forEach || function (fun) {
+    var i;
+    var len= this.length;
+
+    if (typeof fun!=="function") {
+        throw new TypeError();
+    }
+
+    var thisp = arguments[1];
+    for (i= 0; i<len; i++) {
+        if (i in this) {
+            fun.call(thisp, this[i], i, this);
+        }
+    }
+};
+    */
+
 CAAT.__CSS__=1;
 /**
  * See LICENSE file.
@@ -278,7 +297,9 @@ var cp1= proxy(
 
             return -1;
         });
- **//**
+ **/
+
+/**
  * See LICENSE file.
  *
  * Manages every Actor affine transformations.
@@ -1620,16 +1641,16 @@ var cp1= proxy(
                 return false;
             }
 
-            if ( r.x1< this.x ) {
+            if ( r.x1<= this.x ) {
                 return false;
             }
-            if ( r.x > this.x1 ) {
+            if ( r.x >= this.x1 ) {
                 return false;
             }
-            if ( r.y1< this.y ) {
+            if ( r.y1<= this.y ) {
                 return false;
             }
-            if ( r.y> this.y1 ) {
+            if ( r.y>= this.y1 ) {
                 return false;
             }
 
@@ -2665,6 +2686,36 @@ var cp1= proxy(
             }
 
             return cells;
+        },
+
+        solveCollision : function( callback ) {
+            var i,j,k;
+
+            for( i=0; i<this.elements.length; i++ ) {
+                var cell= this.elements[i];
+
+                if ( cell.length>1 ) {  // at least 2 elements could collide
+                    this._solveCollisionCell( cell, callback );
+                }
+            }
+        },
+
+        _solveCollisionCell : function( cell, callback ) {
+            var i,j;
+
+            for( i=0; i<cell.length; i++ ) {
+
+                var pivot= cell[i];
+                this.r0.setBounds( pivot.x, pivot.y, pivot.width, pivot.height );
+
+                for( j=i+1; j<cell.length; j++ ) {
+                    var c= cell[j];
+
+                    if ( this.r0.intersects( this.r1.setBounds( c.x, c.y, c.width, c.height ) ) ) {
+                        callback( pivot, c );
+                    }
+                }
+            }
         },
 
         /**
@@ -8633,6 +8684,8 @@ var cp1= proxy(
             this.tpH = tpH || 2048;
 
             this.updateGLPages();
+
+            return this;
         },
         updateGLPages : function() {
             if (this.glEnabled) {
@@ -9770,7 +9823,7 @@ var cp1= proxy(
             //////////////
             // transformar coordenada inversamente con affine transform de director.
 
-            if ( !CAAT.__CSS__ ) {
+//            if ( !CAAT.__CSS__ ) {
                 pt.x= posx;
                 pt.y= posy;
                 if ( !this.modelViewMatrixI ) {
@@ -9779,7 +9832,7 @@ var cp1= proxy(
                 this.modelViewMatrixI.transformCoord(pt);
                 posx= pt.x;
                 posy= pt.y
-            }
+//            }
 
             point.set(posx, posy);
             this.screenMousePoint.set(posx, posy);
@@ -10556,6 +10609,7 @@ CAAT.Keys = {
     PAUSE:19,
     CAPSLOCK:20,
     ESCAPE:27,
+//    SPACE:32,
     PAGEUP:33,
     PAGEDOWN:34,
     END:35,
@@ -10809,7 +10863,7 @@ CAAT.loop= function(fps) {
 
     CAAT.FPS= fps || 60;
     CAAT.renderEnabled= true;
-    if (CAAT.NO_PERF) {
+    if (CAAT.NO_RAF) {
         setInterval(
                 function() {
                     var t= new Date().getTime();
@@ -11313,6 +11367,20 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             var el= this.mapInfo[this.spriteIndex];
 
             director.ctx.drawImage(
+                this.image,
+                el.x, el.y,
+                el.width, el.height,
+                (this.offsetX+x)>>0, (this.offsetY+y)>>0,
+                el.width, el.height);
+
+            return this;
+        },
+        paintChunk : function( ctx, dx,dy, x, y, w, h ) {
+            ctx.drawImage( this.image, x,y,w,h, dx,dy,w,h );
+        },
+        paintTile : function(ctx, index, x, y) {
+            var el= this.mapInfo[index];
+            ctx.drawImage(
                 this.image,
                 el.x, el.y,
                 el.width, el.height,
@@ -13489,6 +13557,82 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
     };
 
 })();
+
+/**
+ * See LICENSE file.
+ *
+ *
+ *
+ */
+/*
+(function() {
+    CAAT.modules.Inspector= function() {
+        return this;
+    };
+
+
+
+    CAAT.modules.Inspector.prototype= {
+
+        initialize : function(root) {
+
+            if ( !root ) {
+                root= CAAT;
+            }
+
+            CAAT.log("Analyzing "+root.toString()+" for reflection info.");
+            for( var clazz in root ) {
+                if ( root[clazz].__reflectionInfo ) {
+                    CAAT.log("  Extracting reflection info for: "+root[clazz] );
+                    this.extractReflectionInfo( root[clazz] );
+                }
+            }
+        },
+
+        extractReflectionInfo : function( object ) {
+            var ri= object.__reflectionInfo;
+            var key;
+            var i;
+            var __removeEmpty= function( el, index, array ) {
+                array[index]= array[index].trim();
+                if ( array[index]==="" ) array.splice(index,1);
+            };
+
+            for( key in ri ) {
+                var metadata= ri[key];
+                CAAT.log("    reflection info for: "+key+"="+metadata );
+
+                var ks= key.split(",");
+                var data= metadata.split(",");
+
+                ks.forEach( __removeEmpty );
+                data.forEach( __removeEmpty );
+
+                if ( ks.length===1 ) {  // one property.
+                    data.forEach( function( el, index, array ) {
+                        // el is each metadata definition of the form: key:value
+                        var operation= el.split(":");
+                        operation.forEach( __removeEmpty );
+                        if ( operation.length!=2 ) {
+                            CAAT.log("      ERR. operation: "+el+" wrong format");
+                        } else {
+                            if ( operation[0]==="set" ) {
+                                CAAT.log("set="+operation[1]);
+                            } else if ( operation[0]==="get" ) {
+                                CAAT.log("get="+operation[1]);
+                            } else if ( operation[0]==="type" ) {
+                                CAAT.log("type="+operation[1]);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+    };
+
+})();
+    */
 
 /**
  * See LICENSE file.

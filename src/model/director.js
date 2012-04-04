@@ -408,6 +408,8 @@
             this.tpH = tpH || 2048;
 
             this.updateGLPages();
+
+            return this;
         },
         updateGLPages : function() {
             if (this.glEnabled) {
@@ -1545,7 +1547,7 @@
             //////////////
             // transformar coordenada inversamente con affine transform de director.
 
-            if ( !CAAT.__CSS__ ) {
+//            if ( !CAAT.__CSS__ ) {
                 pt.x= posx;
                 pt.y= posy;
                 if ( !this.modelViewMatrixI ) {
@@ -1554,7 +1556,7 @@
                 this.modelViewMatrixI.transformCoord(pt);
                 posx= pt.x;
                 posy= pt.y
-            }
+//            }
 
             point.set(posx, posy);
             this.screenMousePoint.set(posx, posy);
