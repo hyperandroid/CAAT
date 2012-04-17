@@ -910,6 +910,10 @@
          */
         modelToView : function(point) {
 
+            if ( this.dirty ) {
+                this.setModelViewMatrix();
+            }
+
             var tm= this.worldModelViewMatrix.matrix;
 
             if ( point instanceof Array ) {
@@ -939,6 +943,10 @@
          * @param otherActor {CAAT.Actor}
          */
         modelToModel : function( point, otherActor )   {
+            if ( this.dirty ) {
+                this.setModelViewMatrix();
+            }
+
             return otherActor.viewToModel( this.modelToView( point ) );
         },
         /**
@@ -954,6 +962,9 @@
          *
          */
 		viewToModel : function(point) {
+            if ( this.dirty ) {
+                this.setModelViewMatrix();
+            }
             this.worldModelViewMatrixI= this.worldModelViewMatrix.getInverse();
             this.worldModelViewMatrixI.transformCoord(point);
 			return point;
@@ -2653,7 +2664,9 @@
 			for( var i=0; i<this.text.length; i++ ) {
 				var caracter= this.text[i].toString();
 				var charWidth= ctx.measureText( caracter ).width;
-				var currentCurveLength= charWidth/2 + textWidth;
+
+                // guonjien: remove "+charWidth/2" since it destroys the kerning. and he's right!!!. thanks.
+				var currentCurveLength= textWidth;
 
 				p0= this.path.getPositionFromLength(currentCurveLength).clone();
 				p1= this.path.getPositionFromLength(currentCurveLength-0.1).clone();
@@ -2662,7 +2675,7 @@
 
 				ctx.save();
 
-					ctx.translate( (0.5+p0.x)|0, (0.5+p0.y)|0 );
+					ctx.translate( p0.x>>0, p0.y>>0 );
 					ctx.rotate( angle );
                     if ( this.fill ) {
 					    ctx.fillText(caracter,0,0);

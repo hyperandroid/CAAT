@@ -1,3 +1,11 @@
+*04/17/2012 0.4 Build 8  *
+--------------------------
+
+* Under certain situations, modelToModel, modelToView and viewToModel could give unexpected results.
+  specially when removing/adding actors in the same frame. Added a dirtiness test on those functions to have
+  correct values.
+* TextActor, as guonjian spotted, when drawing text on a path, kerning was destroyed. Fixed.
+
 *04/05/2012 0.4 Build 1  *
 --------------------------
 

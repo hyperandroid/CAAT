@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 2
+Version: 0.4 build: 9
 
 Created on:
-DATE: 2012-04-05
-TIME: 00:20:03
+DATE: 2012-04-17
+TIME: 23:31:05
 */
 
 
@@ -6341,6 +6341,10 @@ var cp1= proxy(
          */
         modelToView : function(point) {
 
+            if ( this.dirty ) {
+                this.setModelViewMatrix();
+            }
+
             var tm= this.worldModelViewMatrix.matrix;
 
             if ( point instanceof Array ) {
@@ -6370,6 +6374,10 @@ var cp1= proxy(
          * @param otherActor {CAAT.Actor}
          */
         modelToModel : function( point, otherActor )   {
+            if ( this.dirty ) {
+                this.setModelViewMatrix();
+            }
+
             return otherActor.viewToModel( this.modelToView( point ) );
         },
         /**
@@ -6385,6 +6393,9 @@ var cp1= proxy(
          *
          */
 		viewToModel : function(point) {
+            if ( this.dirty ) {
+                this.setModelViewMatrix();
+            }
             this.worldModelViewMatrixI= this.worldModelViewMatrix.getInverse();
             this.worldModelViewMatrixI.transformCoord(point);
 			return point;
@@ -8084,7 +8095,9 @@ var cp1= proxy(
 			for( var i=0; i<this.text.length; i++ ) {
 				var caracter= this.text[i].toString();
 				var charWidth= ctx.measureText( caracter ).width;
-				var currentCurveLength= charWidth/2 + textWidth;
+
+                // guonjien: remove "+charWidth/2" since it destroys the kerning. and he's right!!!. thanks.
+				var currentCurveLength= textWidth;
 
 				p0= this.path.getPositionFromLength(currentCurveLength).clone();
 				p1= this.path.getPositionFromLength(currentCurveLength-0.1).clone();
@@ -8093,7 +8106,7 @@ var cp1= proxy(
 
 				ctx.save();
 
-					ctx.translate( (0.5+p0.x)|0, (0.5+p0.y)|0 );
+					ctx.translate( p0.x>>0, p0.y>>0 );
 					ctx.rotate( angle );
                     if ( this.fill ) {
 					    ctx.fillText(caracter,0,0);
