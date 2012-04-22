@@ -335,6 +335,24 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_global_.html#isArray">isArray</a></b>(input)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_global_.html#isString">isString</a></b>(input)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/_global_.html#makeFrustum">makeFrustum</a></b>(left, right, bottom, top, znear, zfar, viewportHeight)
 								</div>
 								<div class="description"></div>
@@ -362,9 +380,54 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_global_.html#proxify">proxify</a></b>(ns, preMethod, postMethod, errorMethod, getter, setter)
+								</div>
+								<div class="description">proxy sample usage
+
+var c0= new Meetup.C1(5);
+
+var cp1= proxy(
+        c1,
+        function() {
+            console.log('pre method on object: ',
+                    arguments[0].object.toString(),
+                    arguments[0].method,
+                    arguments[0].arguments );
+        },
+        function() {
+            console.log('post method on object: ',
+                    arguments[0].object.toString(),
+                    arguments[0].method,
+                    arguments[0].arguments );
+
+        },
+        function() {
+            console.log('exception on object: ',
+                    arguments[0].object.toString(),
+                    arguments[0].method,
+                    arguments[0].arguments,
+                    arguments[0].exception);
+
+            return -1;
+        });</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/_global_.html#proxy">proxy</a></b>(object, preMethod, postMethod, errorMethod)
 								</div>
 								<div class="description">Dynamic Proxy for an object or wrap/decorate a function.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/_global_.html#proxyObject">proxyObject</a></b>(object, preMethod, postMethod, errorMethod, getter, setter)
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -424,6 +487,84 @@ Extend a prototype with another to form a classical OOP inheritance procedure.
 									
 								</dt>
 								<dd>{object} Prototype to be extended (derived class).</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="isArray"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>isArray</b>(input)
+					
+					</div>
+					<div class="description">
+						
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_core_class.js.html">class.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>input</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="isString"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>isString</b>(input)
+					
+					</div>
+					<div class="description">
+						
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_core_class.js.html">class.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>input</b>
+									
+								</dt>
+								<dd></dd>
 							
 							</dl>
 						
@@ -643,6 +784,102 @@ Extend a prototype with another to form a classical OOP inheritance procedure.
 
 					<hr />
 				
+					<a name="proxify"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>proxify</b>(ns, preMethod, postMethod, errorMethod, getter, setter)
+					
+					</div>
+					<div class="description">
+						proxy sample usage
+
+var c0= new Meetup.C1(5);
+
+var cp1= proxy(
+        c1,
+        function() {
+            console.log('pre method on object: ',
+                    arguments[0].object.toString(),
+                    arguments[0].method,
+                    arguments[0].arguments );
+        },
+        function() {
+            console.log('post method on object: ',
+                    arguments[0].object.toString(),
+                    arguments[0].method,
+                    arguments[0].arguments );
+
+        },
+        function() {
+            console.log('exception on object: ',
+                    arguments[0].object.toString(),
+                    arguments[0].method,
+                    arguments[0].arguments,
+                    arguments[0].exception);
+
+            return -1;
+        });
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_core_class.js.html">class.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>ns</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>preMethod</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>postMethod</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>errorMethod</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>getter</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>setter</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="proxy"> </a>
 					<div class="fixedFont">
 					
@@ -698,6 +935,75 @@ Extend a prototype with another to form a classical OOP inheritance procedure.
 						
 						
 
+					<hr />
+				
+					<a name="proxyObject"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>proxyObject</b>(object, preMethod, postMethod, errorMethod, getter, setter)
+					
+					</div>
+					<div class="description">
+						
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_core_class.js.html">class.js</a>.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>object</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>preMethod</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>postMethod</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>errorMethod</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>getter</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>setter</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
 					
 				
 			
@@ -712,7 +1018,7 @@ Extend a prototype with another to form a classical OOP inheritance procedure.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Apr 05 2012 00:20:43 GMT+0200 (CEST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Apr 22 2012 09:57:44 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>

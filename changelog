@@ -1,3 +1,12 @@
+*04/22/2012 0.4 Build 36 *
+--------------------------
+
+* Removed layerX/layerY code from cursor on-screen coordinate recognition. It was giving wrong values.
+* Added proxyfy and proxyObject functions.
+* Input systen has been promoted from canvas element to window. This way you can drag out of the canvas boundaries.
+  The system honors touch events.
+
+
 *04/17/2012 0.4 Build 8  *
 --------------------------
 

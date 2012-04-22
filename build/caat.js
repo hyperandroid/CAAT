@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 9
+Version: 0.4 build: 37
 
 Created on:
-DATE: 2012-04-17
-TIME: 23:31:05
+DATE: 2012-04-22
+TIME: 09:57:15
 */
 
 
@@ -40,7 +40,6 @@ TIME: 23:31:05
  * @namespace
  */
 var CAAT= CAAT || {};
-
 /**
  * Common bind function. Allows to set an object's function as callback. Set for every function in the
  * javascript context.
@@ -56,23 +55,9 @@ Function.prototype.bind= Function.prototype.bind || function() {
     }
 };
 
-/*
-Array.prototype.forEach = Array.prototype.forEach || function (fun) {
-    var i;
-    var len= this.length;
+isArray= function(input) { return typeof(input)=='object'&&(input instanceof Array); };
+isString= function(input){ return typeof(input)=='string'; };
 
-    if (typeof fun!=="function") {
-        throw new TypeError();
-    }
-
-    var thisp = arguments[1];
-    for (i= 0; i<len; i++) {
-        if (i in this) {
-            fun.call(thisp, this[i], i, this);
-        }
-    }
-};
-    */
 
 /**
  * See LICENSE file.
@@ -152,6 +137,7 @@ function proxy(object, preMethod, postMethod, errorMethod) {
         }
 
         return (function(fn) {
+
             var proxyfn= function() {
                 if ( preMethod ) {
                     preMethod({
@@ -165,7 +151,7 @@ function proxy(object, preMethod, postMethod, errorMethod) {
                     // everything went right on function call, then call
                     // post-method hook if present
                     if ( postMethod ) {
-                        postMethod({
+                        retValue= postMethod({
                                 fn: fn,
                                 arguments:  Array.prototype.slice.call(arguments)} );
                     }
@@ -187,6 +173,23 @@ function proxy(object, preMethod, postMethod, errorMethod) {
                 return retValue;
             };
             proxyfn.__isProxy= true;
+
+            for( var method in fn ) {
+                if ( typeof fn[method]!=="function" ) {
+                    if (method!=="__object" && method!=="__isProxy") {
+                        (function(proxyfn, fn) {
+                            proxyfn.__defineGetter__( method, function() {
+                                return fn[method];
+                            });
+                            proxyfn.__defineSetter__( method, function(vale) {
+                                fn[method]= vale;
+                            });
+                        })(proxyfn, fn);
+                    }
+                }
+            }
+
+
             return proxyfn;
 
         })(object);
@@ -197,8 +200,8 @@ function proxy(object, preMethod, postMethod, errorMethod) {
      * If it is a previously created proxy, return the proxy itself.
      */
     if ( !typeof object==='object' ||
-            object.constructor===Array ||
-            object.constructor===String ||
+            isArray(object) ||
+            isString(object) ||
             object.__isProxy ) {
 
         return object;
@@ -215,6 +218,7 @@ function proxy(object, preMethod, postMethod, errorMethod) {
 
     // For every element in the object to be proxied
     for( var method in object ) {
+
         // only function members
         if ( typeof object[method]==='function' ) {
             // add to the proxy object a method of equal signature to the
@@ -261,6 +265,17 @@ function proxy(object, preMethod, postMethod, errorMethod) {
                     return retValue;
                 };
             })(proxy,object[method],method);
+        } else {
+            if (method!=="__object" && method!=="__isProxy") {
+                (function(proxy, method) {
+                    proxy.__defineGetter__( method, function() {
+                        return proxy.__object[method];
+                    });
+                    proxy.__defineSetter__( method, function(vale) {
+                        proxy.__object[method]= vale;
+                    });
+                })(proxy, method);
+            }
         }
     }
 
@@ -298,7 +313,159 @@ var cp1= proxy(
         });
  **/
 
-/**
+function proxify( ns, preMethod, postMethod, errorMethod, getter, setter ) {
+
+    var nns= "__"+ns+"__";
+
+    var obj= window;
+    var path= ns.split(".");
+    while( path.length>1) {
+        obj= obj[ path.shift() ];
+    }
+
+    window[nns] = obj[path];
+
+    (function(obj,path, nns,ns) {
+        var newC= function() {
+            console.log("Creating object of type proxy["+ns+"]");
+            var obj= new window[nns]( Array.prototype.slice.call(arguments) );
+
+            obj.____name= ns;
+            return proxyObject( obj, preMethod, postMethod, errorMethod, getter, setter );
+
+        };
+
+        // set new constructor function prototype as previous one.
+        newC.prototype= window[nns].prototype;
+
+        for( var method in obj[path] ) {
+            if ( typeof obj[path][method]!=="function" ) {
+                if (method!=="__object" && method!=="__isProxy") {
+                    (function(prevConstructor, method, newC) {
+                        newC.__defineGetter__( method, function() {
+                            return prevConstructor[method];
+                        });
+                        newC.__defineSetter__( method, function(vale) {
+                            prevConstructor[method]= vale;
+                        });
+                    })(obj[path],method,newC);
+                }
+            }
+        }
+
+        obj[path]= newC;
+
+    })(obj,path,nns,ns);
+
+}
+
+function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter) {
+
+    /**
+     * If not a function then only non privitive objects can be proxied.
+     * If it is a previously created proxy, return the proxy itself.
+     */
+    if ( !typeof object==='object' ||
+            isArray(object) ||
+            isString(object) ||
+            object.__isProxy ) {
+
+        return object;
+    }
+
+    // hold the proxied object as member. Needed to assign proper
+    // context on proxy method call.
+    object.$proxy__isProxy= true;
+
+    // For every element in the object to be proxied
+    for( var method in object ) {
+
+        if ( method==="constructor" ) {
+            continue;
+        }
+
+        // only function members
+        if ( typeof object[method]==='function' ) {
+
+            var fn= object[method];
+            object["$proxy__"+method]= fn;
+
+            object[method]= (function(object,fn,fnname) {
+                return function() {
+
+                    var args= Array.prototype.slice.call(arguments);
+
+                    // call pre-method hook if present.
+                    if ( preMethod ) {
+                        preMethod({
+                                object:     object,
+                                objectName: object.____name,
+                                method:     fnname,
+                                arguments:  args } );
+                    }
+                    var retValue= null;
+                    try {
+                        // apply original object call with proxied object as
+                        // function context.
+                        retValue= fn.apply( object, args );
+                        // everything went right on function call, the call
+                        // post-method hook if present
+                        if ( postMethod ) {
+                            var rr= postMethod({
+                                    object:     object,
+                                    objectName: object.____name,
+                                    method:     fnname,
+                                    arguments:  args } );
+                            if ( typeof rr!=="undefined" ) {
+                                //retValue= rr;
+                            }
+                        }
+                    } catch(e) {
+                        // an exeception was thrown, call exception-method hook if
+                        // present and return its result as execution result.
+                        if( errorMethod ) {
+                            retValue= errorMethod({
+                                object:     object,
+                                objectName: object.____name,
+                                method:     fnname,
+                                arguments:  args,
+                                exception:  e} );
+                        } else {
+                            // since there's no error hook, just throw the exception
+                            throw e;
+                        }
+                    }
+
+                    // return original returned value to the caller.
+                    return retValue;
+                };
+            })(object,fn,method);
+        } else {
+            if ( method!=="____name" ) {
+                (function(object, attribute, getter, setter) {
+
+                    object["$proxy__"+attribute]= object[attribute];
+
+                    object.__defineGetter__( attribute, function() {
+                        if ( getter) {
+                            getter( object.____name, attribute );
+                        }
+                        return object["$proxy__"+attribute];
+                    });
+                    object.__defineSetter__( attribute, function (value) {
+                        object["$proxy__"+attribute] = value;
+                        if ( setter ) {
+                            setter( object.____name, attribute, value );
+                        }
+                    });
+                })( object, method, getter, setter );
+            }
+        }
+    }
+
+    // return our newly created and populated with functions proxied object.
+    return object;
+}/**
  * See LICENSE file.
  *
  * Manages every Actor affine transformations.
@@ -10819,28 +10986,10 @@ var cp1= proxy(
             var posx = 0;
             var posy = 0;
             if (!e) e = window.event;
-
+/*
             if ( e.offsetX ) {
-                posx= e.offsetX;
-                posy= e.offsetY;
-
-                if ( !CAAT.__CSS__ ) {
-                    var pt= new CAAT.Point( posx, posy );
-                    if ( !this.modelViewMatrixI ) {
-                        this.modelViewMatrixI= this.modelViewMatrix.getInverse();
-                    }
-                    this.modelViewMatrixI.transformCoord(pt);
-                    posx= pt.x;
-                    posy= pt.y
-                }
-
-                point.set(posx, posy);
-                this.screenMousePoint.set(posx, posy);
-
-                return;
-            } else if ( e.layerX ) {
-                posx= e.layerX;
-                posy= e.layerY;
+                posx= e.offsetX - this.canvas.offsetX;
+                posy= e.offsetY - this.canvas.offsetY;
 
                 if ( !CAAT.__CSS__ ) {
                     var pt= new CAAT.Point( posx, posy );
@@ -10857,7 +11006,7 @@ var cp1= proxy(
 
                 return;
             }
-
+*/
 
             if (e.pageX || e.pageY) {
                 posx = e.pageX;
@@ -10868,7 +11017,7 @@ var cp1= proxy(
                 posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
             }
 
-            var offset= this.getOffset(e.target);
+            var offset= this.getOffset(this.canvas);
 
             posx-= offset.x;
             posy-= offset.y;
@@ -10970,7 +11119,7 @@ var cp1= proxy(
         },
 
         __mouseMoveHandler : function(e) {
-            this.getCanvasCoord(this.mousePoint, e);
+            //this.getCanvasCoord(this.mousePoint, e);
 
             var lactor;
             var pos;
@@ -11144,7 +11293,6 @@ var cp1= proxy(
 
             var lactor;
             var pos, ev;
-            this.getCanvasCoord(this.mousePoint, e);
 
             if ( null==this.lastSelectedActor ) {
                 lactor= this.findActorAtPosition( this.mousePoint );
@@ -11212,29 +11360,50 @@ var cp1= proxy(
          */
         __touchStartHandler : function(e) {
 
-            e.preventDefault();
-            e= e.targetTouches[0]
-            this.__mouseDownHandler(e);
+            if ( e.target===this.canvas ) {
+                e.preventDefault();
+                e= e.targetTouches[0];
+
+                var mp= this.mousePoint;
+                this.getCanvasCoord(mp, e);
+                if ( mp.x<0 || mp.y<0 || mp.x>=this.width || mp.y>=this.height ) {
+                    return;
+                }
+
+                this.touching= true;
+
+                this.__mouseDownHandler(e);
+            }
         },
 
         __touchEndHandler : function(e) {
 
-            e.preventDefault();
-            e= e.changedTouches[0];
-            this.__mouseUpHandler(e);
+            if ( this.touching ) {
+                e.preventDefault();
+                e= e.changedTouches[0];
+                var mp= this.mousePoint;
+                this.getCanvasCoord(mp, e);
+
+                this.touching= false;
+
+                this.__mouseUpHandler(e);
+            }
         },
 
         __touchMoveHandler : function(e) {
 
-            e.preventDefault();
+            if ( this.touching ) {
+                e.preventDefault();
 
-            if ( this.gesturing ) {
-                return;
-            }
+                if ( this.gesturing ) {
+                    return;
+                }
 
-            for( var i=0; i<e.targetTouches.length; i++ ) {
-                if ( !i ) {
-                    this.__mouseMoveHandler(e.targetTouches[i]);
+                for( var i=0; i<e.targetTouches.length; i++ ) {
+                    var ee= e.targetTouches[i];
+                    var mp= this.mousePoint;
+                    this.getCanvasCoord(mp, ee);
+                    this.__mouseMoveHandler(ee);
                 }
             }
         },
@@ -11271,57 +11440,96 @@ var cp1= proxy(
 
             var me= this;
 
-            canvas.addEventListener('mouseup', function(e) {
-//console.log("up "+e.target);
-                e.preventDefault();
-                me.__mouseUpHandler(e);
+            window.addEventListener('mouseup', function(e) {
+                if ( me.touching ) {
+                    e.preventDefault();
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    me.__mouseUpHandler(e);
+                }
             }, false );
 
-            canvas.addEventListener('mousedown', function(e) {
-//console.log("down "+e.target);
-                e.preventDefault();
-                me.__mouseDownHandler(e);
+            window.addEventListener('mousedown', function(e) {
+                if ( e.target===canvas ) {
+                    e.preventDefault();
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    if ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) {
+                        return;
+                    }
+                    me.touching= true;
+
+                    me.__mouseDownHandler(e);
+                }
             }, false );
 
-            canvas.addEventListener('mouseover',function(e) {
-                e.preventDefault();
-//console.log("over"+e.target);
-                me.__mouseOverHandler(e);
+            window.addEventListener('mouseover',function(e) {
+                if ( e.target===canvas && !me.dragging ) {
+                    e.preventDefault();
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    if ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) {
+                        return;
+                    }
+
+                    me.__mouseOverHandler(e);
+                }
             }, false);
 
-            canvas.addEventListener('mouseout',function(e) {
-                e.preventDefault();
-//console.log("out"+e.target);
-                me.__mouseOutHandler(e);
+            window.addEventListener('mouseout',function(e) {
+                if ( e.target===canvas && !me.dragging ) {
+                    e.preventDefault();
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    me.__mouseOutHandler(e);
+                }
             }, false);
 
-            canvas.addEventListener('mousemove',
+            window.addEventListener('mousemove',
                 function(e) {
                     e.preventDefault();
-//console.log("move "+e.target);
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    if ( !me.dragging && ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) ) {
+                        return;
+                    }
                     me.__mouseMoveHandler(e);
                 },
                 false);
 
-            canvas.addEventListener("dblclick", function(e) {
-                e.preventDefault();
-                me.__mouseDBLClickHandler(e);
+            window.addEventListener("dblclick", function(e) {
+                if ( e.target===canvas ) {
+                    e.preventDefault();
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    if ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) {
+                        return;
+                    }
+
+                    me.__mouseDBLClickHandler(e);
+                }
             }, false);
 
-            canvas.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
-            canvas.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
-            canvas.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
-            canvas.addEventListener("gesturestart", function(e) {
-                e.preventDefault();
-                me.__gestureStart( e.scale, e.rotation );
+            window.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
+            window.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
+            window.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
+            window.addEventListener("gesturestart", function(e) {
+                if ( e.target===canvas ) {
+                    e.preventDefault();
+                    me.__gestureStart( e.scale, e.rotation );
+                }
             }, false );
-            canvas.addEventListener("gestureend", function(e) {
-                e.preventDefault();
-                me.__gestureEnd( e.scale, e.rotation );
+            window.addEventListener("gestureend", function(e) {
+                if ( e.target===canvas ) {
+                    e.preventDefault();
+                    me.__gestureEnd( e.scale, e.rotation );
+                }
             }, false );
-            canvas.addEventListener("gesturechange", function(e) {
-                e.preventDefault();
-                me.__gestureChange( e.scale, e.rotation );
+            window.addEventListener("gesturechange", function(e) {
+                if ( e.target===canvas ) {
+                    e.preventDefault();
+                    me.__gestureChange( e.scale, e.rotation );
+                }
             }, false );
         },
 

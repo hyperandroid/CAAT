@@ -1490,28 +1490,10 @@
             var posx = 0;
             var posy = 0;
             if (!e) e = window.event;
-
+/*
             if ( e.offsetX ) {
-                posx= e.offsetX;
-                posy= e.offsetY;
-
-                if ( !CAAT.__CSS__ ) {
-                    var pt= new CAAT.Point( posx, posy );
-                    if ( !this.modelViewMatrixI ) {
-                        this.modelViewMatrixI= this.modelViewMatrix.getInverse();
-                    }
-                    this.modelViewMatrixI.transformCoord(pt);
-                    posx= pt.x;
-                    posy= pt.y
-                }
-
-                point.set(posx, posy);
-                this.screenMousePoint.set(posx, posy);
-
-                return;
-            } else if ( e.layerX ) {
-                posx= e.layerX;
-                posy= e.layerY;
+                posx= e.offsetX - this.canvas.offsetX;
+                posy= e.offsetY - this.canvas.offsetY;
 
                 if ( !CAAT.__CSS__ ) {
                     var pt= new CAAT.Point( posx, posy );
@@ -1528,7 +1510,7 @@
 
                 return;
             }
-
+*/
 
             if (e.pageX || e.pageY) {
                 posx = e.pageX;
@@ -1539,7 +1521,7 @@
                 posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
             }
 
-            var offset= this.getOffset(e.target);
+            var offset= this.getOffset(this.canvas);
 
             posx-= offset.x;
             posy-= offset.y;
@@ -1641,7 +1623,7 @@
         },
 
         __mouseMoveHandler : function(e) {
-            this.getCanvasCoord(this.mousePoint, e);
+            //this.getCanvasCoord(this.mousePoint, e);
 
             var lactor;
             var pos;
@@ -1815,7 +1797,6 @@
 
             var lactor;
             var pos, ev;
-            this.getCanvasCoord(this.mousePoint, e);
 
             if ( null==this.lastSelectedActor ) {
                 lactor= this.findActorAtPosition( this.mousePoint );
@@ -1883,29 +1864,50 @@
          */
         __touchStartHandler : function(e) {
 
-            e.preventDefault();
-            e= e.targetTouches[0]
-            this.__mouseDownHandler(e);
+            if ( e.target===this.canvas ) {
+                e.preventDefault();
+                e= e.targetTouches[0];
+
+                var mp= this.mousePoint;
+                this.getCanvasCoord(mp, e);
+                if ( mp.x<0 || mp.y<0 || mp.x>=this.width || mp.y>=this.height ) {
+                    return;
+                }
+
+                this.touching= true;
+
+                this.__mouseDownHandler(e);
+            }
         },
 
         __touchEndHandler : function(e) {
 
-            e.preventDefault();
-            e= e.changedTouches[0];
-            this.__mouseUpHandler(e);
+            if ( this.touching ) {
+                e.preventDefault();
+                e= e.changedTouches[0];
+                var mp= this.mousePoint;
+                this.getCanvasCoord(mp, e);
+
+                this.touching= false;
+
+                this.__mouseUpHandler(e);
+            }
         },
 
         __touchMoveHandler : function(e) {
 
-            e.preventDefault();
+            if ( this.touching ) {
+                e.preventDefault();
 
-            if ( this.gesturing ) {
-                return;
-            }
+                if ( this.gesturing ) {
+                    return;
+                }
 
-            for( var i=0; i<e.targetTouches.length; i++ ) {
-                if ( !i ) {
-                    this.__mouseMoveHandler(e.targetTouches[i]);
+                for( var i=0; i<e.targetTouches.length; i++ ) {
+                    var ee= e.targetTouches[i];
+                    var mp= this.mousePoint;
+                    this.getCanvasCoord(mp, ee);
+                    this.__mouseMoveHandler(ee);
                 }
             }
         },
@@ -1942,57 +1944,96 @@
 
             var me= this;
 
-            canvas.addEventListener('mouseup', function(e) {
-//console.log("up "+e.target);
-                e.preventDefault();
-                me.__mouseUpHandler(e);
+            window.addEventListener('mouseup', function(e) {
+                if ( me.touching ) {
+                    e.preventDefault();
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    me.__mouseUpHandler(e);
+                }
             }, false );
 
-            canvas.addEventListener('mousedown', function(e) {
-//console.log("down "+e.target);
-                e.preventDefault();
-                me.__mouseDownHandler(e);
+            window.addEventListener('mousedown', function(e) {
+                if ( e.target===canvas ) {
+                    e.preventDefault();
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    if ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) {
+                        return;
+                    }
+                    me.touching= true;
+
+                    me.__mouseDownHandler(e);
+                }
             }, false );
 
-            canvas.addEventListener('mouseover',function(e) {
-                e.preventDefault();
-//console.log("over"+e.target);
-                me.__mouseOverHandler(e);
+            window.addEventListener('mouseover',function(e) {
+                if ( e.target===canvas && !me.dragging ) {
+                    e.preventDefault();
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    if ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) {
+                        return;
+                    }
+
+                    me.__mouseOverHandler(e);
+                }
             }, false);
 
-            canvas.addEventListener('mouseout',function(e) {
-                e.preventDefault();
-//console.log("out"+e.target);
-                me.__mouseOutHandler(e);
+            window.addEventListener('mouseout',function(e) {
+                if ( e.target===canvas && !me.dragging ) {
+                    e.preventDefault();
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    me.__mouseOutHandler(e);
+                }
             }, false);
 
-            canvas.addEventListener('mousemove',
+            window.addEventListener('mousemove',
                 function(e) {
                     e.preventDefault();
-//console.log("move "+e.target);
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    if ( !me.dragging && ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) ) {
+                        return;
+                    }
                     me.__mouseMoveHandler(e);
                 },
                 false);
 
-            canvas.addEventListener("dblclick", function(e) {
-                e.preventDefault();
-                me.__mouseDBLClickHandler(e);
+            window.addEventListener("dblclick", function(e) {
+                if ( e.target===canvas ) {
+                    e.preventDefault();
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    if ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) {
+                        return;
+                    }
+
+                    me.__mouseDBLClickHandler(e);
+                }
             }, false);
 
-            canvas.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
-            canvas.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
-            canvas.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
-            canvas.addEventListener("gesturestart", function(e) {
-                e.preventDefault();
-                me.__gestureStart( e.scale, e.rotation );
+            window.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
+            window.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
+            window.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
+            window.addEventListener("gesturestart", function(e) {
+                if ( e.target===canvas ) {
+                    e.preventDefault();
+                    me.__gestureStart( e.scale, e.rotation );
+                }
             }, false );
-            canvas.addEventListener("gestureend", function(e) {
-                e.preventDefault();
-                me.__gestureEnd( e.scale, e.rotation );
+            window.addEventListener("gestureend", function(e) {
+                if ( e.target===canvas ) {
+                    e.preventDefault();
+                    me.__gestureEnd( e.scale, e.rotation );
+                }
             }, false );
-            canvas.addEventListener("gesturechange", function(e) {
-                e.preventDefault();
-                me.__gestureChange( e.scale, e.rotation );
+            window.addEventListener("gesturechange", function(e) {
+                if ( e.target===canvas ) {
+                    e.preventDefault();
+                    me.__gestureChange( e.scale, e.rotation );
+                }
             }, false );
         },
 
