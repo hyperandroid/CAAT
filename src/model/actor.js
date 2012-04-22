@@ -130,6 +130,7 @@
         frameAlpha:             1,      // hierarchically calculated alpha for this Actor.
 		expired:				false,  // set when the actor has been expired
 		discardable:			false,  // set when you want this actor to be removed if expired
+        frozen:                 false,  // if frozen, actor won't be animated
 		pointed:				false,  // is the mouse pointer inside this actor
 		mouseEnabled:			true,   // events enabled ?
 
@@ -879,6 +880,27 @@
          */
         setDiscardable : function( discardable ) {
             this.discardable= discardable;
+            return this;
+        },
+        /**
+         * Freeze actor.
+         * The actor will be kept on the screen but won't be animated.
+         * Has the same effect and potential performance benefits as setting Actor.animate to an empty function, 
+         * except the animate function doesn't get lost in the process.
+         * It also reads better.
+         * @return this
+         */
+        freeze: function () {
+            this.frozen = true;
+            return this;
+        },
+        /**
+         * Unfreeze actor.
+         * Removes actor from frozen state and resumes animation.
+         * @return this
+         */
+        unfreeze: function () {
+            this.frozen = false;
             return this;
         },
         /**
@@ -2063,7 +2085,7 @@
                 var actor= cl[i];
                 actor.time= time;
                 this.size_total+= actor.size_total;
-                if ( actor.animate(director, time) ) {
+                if (!actor.frozen && actor.animate(director, time) ) {
                     if ( !this.activeChildren ) {
                         this.activeChildren= actor;
                         actor.__next= null;
