@@ -1,0 +1,113 @@
+body {
+    margin:     0;
+    padding:    0;
+    background: #fff;
+    font-family: 'Lucida Grande', Geneva;
+    font-size:  12px;
+}
+
+h1 {
+    border-bottom: 1px solid #888;
+    line-height: 1.5em;
+}
+
+#page {
+    margin: 0 auto;
+    position: relative;
+    width: 950px;
+}
+
+#page-tutorial {
+    margin: 0 auto;
+    position: relative;
+    width: 970px;
+}
+
+
+#header {
+    height: 10px;
+    width: 950px;
+}
+
+#header-tutorial {
+    height: 10px;
+    width: 970px;
+}
+
+
+#experiment h1 {
+ font:normal 16pt Arial;
+ color:#FFFFFF;
+ text-shadow:
+            0 1px 0 #ccc,
+            0 2px 0 #c9c9c9,
+            0 3px 0 #bbb,
+            0 4px 0 #b9b9b9,
+            0 5px 0 #aaa,
+            0 6px 1px rgba(0,0,0,.1),
+            0 0 5px rgba(0,0,0,.1),
+            0 1px 3px rgba(0,0,0,.3),
+            0 3px 5px rgba(0,0,0,.2),
+            0 5px 10px rgba(0,0,0,.25),
+            0 10px 10px rgba(0,0,0,.2);
+            
+ border: 0;
+}
+
+
+#content #menu {
+    float: left;
+    width: 130px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+#content #menu-tutorial {
+    float: left;
+    width: 150px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
+#content #experiment {
+    float: left;
+    width: 800px;
+}
+
+#content #experiment #experiment-holder {
+    width: 800px;
+    margin: 0 auto;
+    padding: 0;
+    border: 1px solid #000;
+}
+
+#content #tutorial {
+    float: left;
+    width: 800px;
+}
+
+#menu ul {
+    padding: 4px 0 !important;
+    overflow: hidden;
+    margin: 0;
+}
+
+#menu li {
+    text-indent: 0px;
+    margin-left: 0;
+}
+
+a {
+    text-decoration: none;
+    color: #55f;
+}
+
+a:hover {
+    background: #55f;
+    color: #fff;
+}
+
+#menu .indented {
+    text-indent: 15px; !important;
+}

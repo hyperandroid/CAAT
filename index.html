@@ -1,91 +1,116 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-  <meta charset='utf-8'>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Caat by hyperandroid</title>
 
-  <title>hyperandroid/CAAT @ GitHub</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="stylesheets/hyper.css">
 
-  <style type="text/css">
-    body {
-      margin-top: 1.0em;
-      background-color: #ffffff;
-      font-family: Helvetica, Arial, FreeSans, san-serif;
-      color: #000000;
-    }
-    #container {
-      margin: 0 auto;
-      width: 700px;
-    }
-    h1 { font-size: 3.8em; color: #000000; margin-bottom: 3px; }
-    h1 .small { font-size: 0.4em; }
-    h1 a { text-decoration: none }
-    h2 { font-size: 1.5em; color: #000000; }
-    h3 { text-align: center; color: #000000; }
-    a { color: #000000; }
-    .description { font-size: 1.2em; margin-bottom: 30px; margin-top: 30px; font-style: italic;}
-    .download { float: right; }
-    pre { background: #000; color: #fff; padding: 15px;}
-    hr { border: 0; width: 80%; border-bottom: 1px solid #aaa}
-    .footer { text-align:center; padding-top:30px; font-style: italic; }
-  </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 </head>
-
 <body>
-  <a href="https://github.com/hyperandroid/CAAT"><img style="position: absolute; top: 0; right: 0; border: 0;" src="http://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub" /></a>
+<div class="wrapper">
+    <header>
+        <h1>Caat</h1>
 
-  <div id="container">
+        <p>Canvas Advanced Animation Toolkit</p>
 
-    <div class="download">
-      <a href="https://github.com/hyperandroid/CAAT/zipball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/zip.png"></a>
-      <a href="https://github.com/hyperandroid/CAAT/tarball/master">
-        <img border="0" width="90" src="https://github.com/images/modules/download/tar.png"></a>
-    </div>
+        <p class="view"><a href="https://github.com/hyperandroid/CAAT">View the Project on GitHub
+            <small>hyperandroid/CAAT</small>
+        </a></p>
+        <ul>
+            <li><a href="https://github.com/hyperandroid/CAAT/zipball/master">Download <strong>ZIP File</strong></a>
+            </li>
+            <li><a href="https://github.com/hyperandroid/CAAT/tarball/master">Download <strong>TAR Ball</strong></a>
+            </li>
+            <li><a href="https://github.com/hyperandroid/CAAT">Fork On <strong>GitHub</strong></a></li>
+        </ul>
+    </header>
 
-    <h1><a href="https://github.com/hyperandroid/CAAT">CAAT</a>
-      <span class="small">by <a href="https://github.com/hyperandroid">hyperandroid</a></span></h1>
 
-    <div class="description">
-      Canvas Advanced Animation Toolkit
-    </div>
+    <section>
+        <h3>Canvas Advanced Animation Toolkit</h3>
+        <p>
+            CAAT is an scene graph director-based animation framework for javascript.
+        </p>
+            Based in the concept of a timeline, offers a powerful animation environment featuring:
+            <ul>
+                <li>Scenes.</li>
+                <li>Input abstraction, where touch, mouse, keyboard and accelerometer coexist.</li>
+                <li>Screen resolution abstraction, where you can make your games up/down scale gracefully.</li>
+                <li>Multi render technology, making your games render with Canvas, WebGL or CSS transparently.</li>
+                <li>Clipping masks.</li>
+                <li>Hierarchycal applied affine transformations, or containers inside containers inside contrainer.</li>
+                <li>Behaviors, or how to define easily on a timely basis complex mixtures of translations,
+                    rotations, scalations.</li>
+                <li>Easing functions for behaviors, or how to make that path traversal feel more natural.</li>
+                <li>Easily define (very) complex paths.</li>
+                <li>Box2D integration.</li>
+                <li>...</li>
+            </ul>
+        </p>
 
-    
+        <h4>Samples</h4>
+        <div>
+            <a href="documentation/demos/demo1/path_org.html"><img class="image_h" src="thumbs/demo1.png" alt="Path management"></a>
+            <a href="documentation/demos/demo2/fishpond_org.html"><img class="image_h" src="thumbs/demo2.png" alt="Procedural fishpond"></a>
+            <a href="documentation/demos/demo3/sprites_org.html"><img class="image_h" src="thumbs/demo3.png" alt="Sprites traversing a random path"></a>
+            <a href="documentation/demos/demo4/coordinates_org.html"><img class="image_h" src="thumbs/demo4.png" alt="Pixel perfect collistion detection with mouse"></a>
+            <a href="documentation/demos/demo5/text-on-path_org.html"><img class="image_h" src="thumbs/demo5.png" alt="Sprites traversing a random path"></a>
+            <a href="documentation/demos/demo6/accelerometer_org.html"><img class="image_h" src="thumbs/demo6.png" alt="Sprites traversing a random path"></a>
+            <a href="documentation/demos/demo7/anchors_org.html"><img class="image_h" src="thumbs/demo7.png" alt="Sprites traversing a random path"></a>
+            <a href="documentation/demos/demo8/hierarchy_org.html"><img class="image_h" src="thumbs/demo8.png" alt="Sprites traversing a random path"></a>
+            <a href="documentation/demos/demo9/behaviors_org.html"><img class="image_h" src="thumbs/demo9.png" alt="Sprites traversing a random path"></a>
+            <a href="documentation/demos/demo10/garden_org.html"><img class="image_h" src="thumbs/demo10.png" alt="Sprites traversing a random path"></a>
+            <a href="documentation/demos/demo11/circles_org.html"><img class="image_h" src="thumbs/demo11.png" alt="Sprites traversing a random path"></a>
+            <a href="documentation/demos/demo12/box2d_org.html"><img class="image_h" src="thumbs/demo12.png" alt="Sprites traversing a random path"></a>
+            <a href="documentation/demos/demo12+1/transitions_org.html"><img class="image_h" src="thumbs/demo13.png" alt="Sprites traversing a random path"></a>
+            <a href="documentation/demos/demo14/timers_org.html"><img class="image_h" src="thumbs/demo14.png" alt="Sprites traversing a random path"></a>
+            <a href="documentation/demos/demo15/logofrenzy_org.html"><img class="image_h" src="thumbs/demo15.png" alt="Sprites traversing a random path"></a>
+        </div>
 
-    
+        <h4>Featured</h4>
+        <div>
 
-    
+        </div>
 
-    
-      <h2>License</h2>
-      <p>MIT Licensed</p>
-    
+        <div>
+            <h3>Support or Contact</h3>
 
-    
-      <h2>Authors</h2>
-      <p>hyperandroid (hyperandroid@gmail.com)      </p>
-    
+            <p>Contact info: <a href="mailto:hyperandroid@gmail.com">hyperandroid@gmail.com</a> or
+                <a href="https://twitter.com/hyperandroid">@hyperandroid</a>
+                <a href="https://twitter.com/caatjs">@caatjs</a></p>
+        </div>
+    </section>
 
-    
-      <h2>Contact</h2>
-      <p> (hyperandroid@gmail.com)<br/>      </p>
-    
+    <footer>
+        <p>This project is maintained by <a href="https://github.com/hyperandroid">hyperandroid</a></p>
 
-    <h2>Download</h2>
-    <p>
-      You can download this project in either
-      <a href="https://github.com/hyperandroid/CAAT/zipball/master">zip</a> or
-      <a href="https://github.com/hyperandroid/CAAT/tarball/master">tar formats.
-    </p>
-    <p>You can also clone the project with <a href="http://git-scm.com">Git</a>
-      by running:
-      <pre>$ git clone git://github.com/hyperandroid/CAAT</pre>
-    </p>
+        <p>
+            <small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a>
+            </small>
+        </p>
+    </footer>
+</div>
 
-    <div class="footer">
-      get the source code on GitHub : <a href="https://github.com/hyperandroid/CAAT">hyperandroid/CAAT</a>
-    </div>
-
-  </div>
+<script src="javascripts/scale.fix.js"></script>
+<script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+    try {
+        var pageTracker = _gat._getTracker("UA-17485141-1");
+        pageTracker._trackPageview();
+    } catch (err) {
+    }
+</script>
 
 </body>
 </html>

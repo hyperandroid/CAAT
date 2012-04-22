@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17485141-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    <title>CAAT example: Actors across a Path and Interpolators</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Path management</h1>
+            </div>
+            <div id="experiment-holder">
+                <iframe style="width: 820px; height: 570px" src="http://jsfiddle.net/hyperandroid/FbNfg/embedded/" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>Controls:</p>
+                    <ul>
+                        <li>Drag path handles.</li>
+                        <li>Click on interpolators to traverse the path with different velocities.</li>
+                    </ul>
+                </div>
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>Constructing a Path and adding segments to it.</li>
+                        <li>What does a call to <code>closePath</code> means in opposition to <code>endPath</code>.</li>
+                        <li>Showing a path by associating it to a PathActor.</li>
+                        <li>Path management by calling setInteractive method.</li>
+                        <li>CAAT.Interpolator on path behavior.</li>
+                        <li>CompoundImage management.</li>
+                        <li>SpriteActor definition.</li>
+                        <li>Show interpolators by Wrapping them into InterpolatorActor.</li>
+                        <li>Management of CAAT.Dock actor to elegantly show interpolators.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+
+</html>

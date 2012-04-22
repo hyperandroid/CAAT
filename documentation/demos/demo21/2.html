@@ -1,0 +1,911 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17485141-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+    <title>CAAT example: Quadtree based collision detection</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Quadtree based collision detection</h1>
+            </div>
+            <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>
+                        Use the following controls:
+                    </p>
+                    <ul>
+                        <li>Cursor keys.</li>
+                    </ul>
+                </div>
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>Dirty-rectangles based canvas cleaning.</li>
+                        <li>Built-in key events dispatch.</li>
+                        <li>Multi key-press mechanishm.</li>
+                        <li>Character movement in pixels/sec.</li>
+                        <li>Built-in Quadtree usage.</li>
+                        <li>Built-in Spatialhash usage.</li>
+                        <li>Quadtree collision zone identification.</li>
+                        <li>Spatial Hashmap collision zone identification.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script type="text/javascript" src="../../../build/caat.js"></script>
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+    Number.prototype.sign= function() {
+        if ( this>0 ) {
+            return 1;
+        } else if (this<0 ) {
+            return -1;
+        }
+        return 0;
+    };
+
+    (function() {
+
+        CAAT.TileMapViewport= function() {
+            return this;
+        };
+
+        CAAT.TileMapViewport.prototype= {
+
+            vx          : 0,    // viewport x,y,w,h
+            vy          : 0,
+            vw          : 0,
+            vh          : 0,
+
+            triggerW    : 0,
+            triggerH    : 0,
+
+            mapWidth    : 0,
+            mapHeight   : 0,
+
+            /**
+             *
+             * @param w
+             * @param h
+             * @param triggerW value from 0..100
+             * @param triggerH value from 0..100
+             */
+            initialize  : function( w,h, triggerW, triggerH ) {
+                this.vx= 0;
+                this.vy= 0;
+                this.vw= w;
+                this.vh= h;
+                this.triggerW= (w*triggerW/100)>>0;
+                this.triggerH= (h*triggerH/100)>>0;
+
+                return this;
+            },
+
+            setMapSize : function( w, h ) {
+                this.mapWidth= w;
+                this.mapHeight= h;
+            },
+
+            /**
+             * mover el origen del viewport de mapa en funcion de donde se encuentre el player.
+             * @param x
+             * @param y
+             * @param map
+             */
+            movePlayerInPos : function( _x, _y, map ) {
+                // _x,_y estan en coordenadas de mapa.
+                var x= _x - this.vx;
+                var y= _y - this.vy;
+
+                var vx= this.vx;
+                var vy= this.vy;
+                var vw= this.vw;
+                var vh= this.vh;
+
+                // ajustar posiciones del viewport para que el player esté en camara.
+                var incX= 0;
+                if (x<this.triggerW || x> vw-this.triggerW) {
+                    incX= x<vw/2 ? x-this.triggerW : x-(vw-this.triggerW);
+                }
+
+                var incY= 0;
+                if ( y<this.triggerH || y> vh-this.triggerH ) {
+                    incY= y<vh/2 ? y-this.triggerH : y-(vh-this.triggerH);
+                }
+
+                vx+= incX;
+                vy+= incY;
+
+                if( incX===0 && incY===0 ) {
+                    return;
+                }
+
+                if ( vx<0 ) {
+                    vx=0;
+                } else if ( vx> this.mapWidth - vw ) {
+                    vx= this.mapWidth-vw;
+                }
+
+                if ( vy<0 ) {
+                    vy=0;
+                } else if ( vy> this.mapHeight - vh ) {
+                    vy= this.mapHeight - vh;
+                }
+
+                this.vx= vx;
+                this.vy= vy;
+            },
+
+            setContext : function( ctx ) {
+                ctx.translate( -this.vx, -this.vy );
+            },
+
+            x : function() {
+                return this.vx;
+            },
+
+            y : function() {
+                return this.vy;
+            },
+
+            width : function() {
+                return this.vw;
+            },
+
+            height : function() {
+                return this.vh;
+            }
+        }
+
+    })();
+
+    (function() {
+
+        CAAT.TileMap= function() {
+            CAAT.TileMap.superclass.constructor.call(this);
+
+            this.entities= [];
+
+            return this;
+        };
+
+        CAAT.TileMap.prototype= {
+            canvas      : null,     // offscreen image.
+            ctx         : null,     // offscreen context.
+
+            tileSize    : 0,        // tileSize
+
+            data        : null,     // map data
+            cdata       : null,     // map collision data
+
+            mapWidth    : 0,        // map width/height
+            mapHeight   : 0,
+
+            tileSet     : null,     // CAAT.SpriteImage
+            viewport    : null,     // CAAT.Rectangle.
+
+            entities    : null,
+            player      : null,
+
+            gravityX    : 0,
+            gravityY    : 1000,
+
+            create : function( tileSize, tileSet, viewWidth, viewHeight ) {
+
+                this.tileSize=  tileSize;
+                this.tileSet=   tileSet;
+                this.viewport=  new CAAT.TileMapViewport().initialize( viewWidth, viewHeight, 30, 30 );
+
+                var entities= this.createFakeMap();
+
+                this.canvas= document.createElement( "canvas" );
+                this.canvas.width= viewWidth;
+                this.canvas.height= viewHeight;
+                this.ctx=  this.canvas.getContext("2d");
+
+                this.setBackgroundImage( this.canvas );
+
+                return this;
+            },
+
+            createFakeMap : function() {
+                var i,j;
+
+                var r= 32;
+                var c= 52;
+
+                var level=
+                   //12345678901234567890123456789012
+                    "1111111111111111111111111111111111111111111111111111"+
+                    "1  11     11111      111                           1"+
+                    "1  11     1111                      1111           1"+
+                    "1          11    11   11      1111       1111      1"+
+                    "1                1    11 1111                 1111 1"+
+                    "1  11          11    111                           1"+
+                    "1  11        111    1111          1                1"+
+                    "1 11111111111      11            11                1"+
+                    "1 11111    11    111  11  11      11               1"+
+                    "1 1             1111   1      1   11  1111         1"+
+                    "1 1              1    11    1      11       111 1  1"+
+                    "1     111   1111 1  1111  1        11             11"+
+                    "1    111     11     11111                        1 1"+
+                    "1 1       11      111111 1                      1  1"+
+                    "1 111  111111    111111111111                  1   1"+
+                    "1 111 11111111  11111111111111                1    1"+
+                    "1                             1              1     1"+
+                    "1   11   11   11         1                  1      1"+
+                    "1   1111111111111111    11                 1       1"+
+                    "1   11   11   11   11   11                1        1"+
+                    "1   11   11   11   11 1111               1  1      1"+
+                    "1   11                1111              1   1      1"+
+                    "1   11   11111111111111111             1    1      1"+
+                    "1   11   11   11   11   11            1     1      1"+
+                    "1   1111      11   11   11           1      1      1"+
+                    "1   1111                11          1       1      1"+
+                    "1   1111111111111111    11         1        1      1"+
+                    "1   11   11   11   11   11        1         1      1"+
+                    "1   11   11   11   11   11       1          1      1"+
+                    "1   11   11   11      1111      1           1      1"+
+                    "1                     1111     1            1      1"+
+                    "1111111111111111111111111111111111111111111111111111";
+
+                this.data= [];
+                this.cdata= [];
+
+                var entities= [];
+
+                for( i=0; i<r; i++ ) {
+                    var row= [];
+                    var rowc= [];
+                    this.data.push( row );
+                    this.cdata.push( rowc );
+                    for( j=0; j<c; j++ ) {
+                        var cc= level.charAt( j+i*c );
+                        row.push( {
+                            tile    : cc!==' ' ? 1 : -1,    // -1 means no tile
+                            vx      : 0,
+                            vy      : 0
+                        });
+                        rowc.push( cc!==' ' ? 1 : 0 );
+
+                        if ( cc!==' ' ) {
+                            entities.push(
+                                {
+                                    AABB : new CAAT.Rectangle().setBounds(
+                                            j*this.tileSize,
+                                            i*this.tileSize,
+                                            this.tileSize,
+                                            this.tileSize ),
+                                    row :       i,
+                                    column :    j
+                                }
+                            );
+                        }
+                    }
+                }
+
+                this.mapWidth= c;
+                this.mapHeight= r;
+
+                this.viewport.setMapSize( this.mapWidth*this.tileSize, this.mapHeight*this.tileSize );
+
+                return entities;
+            },
+
+            cacheMap : function( ) {
+
+                var vp= this.viewport;
+
+                // clear drawing area
+                this.ctx.fillStyle='#fff';
+                this.ctx.fillRect(
+                        0,
+                        0,
+                        vp.width(),
+                        vp.height()
+                );
+
+
+                var c0= ( vp.x()/this.tileSize )>>0;
+                var c1= Math.ceil( ( vp.x()+vp.width() ) / this.tileSize );
+                c1= Math.min( c1, this.mapWidth );
+
+                var r0= ( vp.y()/this.tileSize )>>0;
+                var r1= Math.ceil( ( vp.y()+vp.height() ) / this.tileSize );
+                r1= Math.min( r1, this.mapHeight );
+
+                var i,j;
+
+                for( var i=r0; i<r1; i++ ) {
+                    for( var j=c0; j<c1; j++ ) {
+
+                        var x= j*this.tileSize - vp.x();
+                        var y= i*this.tileSize - vp.y();
+
+                        var t= this.data[i][j].tile;
+                        if ( -1!=t ) {
+                            this.tileSet.paintTile(
+                                    this.ctx,
+                                    t,
+                                    x,
+                                    y
+                            );
+                        }
+                    }
+                }
+
+                return this;
+            },
+
+            /**
+             *
+             * @param tileEntity <CAAT.TileEntity>
+             */
+            addEntity : function( tileEntity ) {
+                this.entities.push( tileEntity );
+                return this;
+            },
+
+            setPlayer : function( player ) {
+                this.player= player;
+                return this.addEntity( player );
+            },
+
+            tick : function( t, ctx ) {
+                for( var i=0; i<this.entities.length; i++ ) {
+                    this.entities[i].tick( t, this );
+                }
+
+                this.viewport.movePlayerInPos( this.player.x, this.player.y, this );
+                this.cacheMap();
+            },
+
+            /**
+             *
+             * x,y:     object position
+             * w,h:     object dimension
+             * nx,ny:   object new desired position
+             *
+             * @return
+             * <{
+             *      x: <number>,
+             *      y: <number>
+             * }>
+             */
+            handleCollision : function( x,y, w,h, sx,sy ) {
+
+
+                var res= {
+                    x: x,
+                    y: y,
+                    xCollides: false,
+                    yCollides: false
+                };
+
+                var vx= sx-x;
+                var vy= sy-y;
+
+                var steps = Math.ceil(Math.max(Math.abs(vx), Math.abs(vy)) / this.tileSize);
+
+                if( steps > 1 ) {
+                    var sx= vx/steps;
+                    var sy= vy/steps;
+
+                    for( var i=0; i<steps; i++ ) {
+                        this._handleCollision( x,y,w,h,sx,sy, res );
+                        x= res.x;
+                        y= res.y;
+
+                        if ( res.xCollides && res.yCollides ) {
+                            return res;
+                        }
+                    }
+
+                } else {
+                    this._handleCollision( x,y,w,h,vx,vy, res );
+                }
+
+                return res;
+            },
+
+            _handleCollision : function( x,y,w,h, vx,vy, res ) {
+
+                var ts= this.tileSize;
+
+                res.x+= vx;
+                res.y+= vy;
+
+                if( vx ) {
+                    var fr = (y / ts)>>0;                // first/last row for this entity size and pos.
+                    var lr = Math.ceil((y + h) / ts);    //
+                    var c;                                          // column in map
+
+                    if ( vx<0 ) { //  collides left ?
+                        c= ((x+vx)/ts)>>0;              // colisiona la parte izquierda
+                    } else {
+                        c= ((x+vx+w)/ts)>>0;            // colision derecha: x + ancho + vx
+                    }
+
+                    if( fr >= 0 && lr < this.mapHeight && c >= 0 && c < this.mapWidth ) {
+                        for( var r = fr; r < lr; r++ ) {
+                            if( this.cdata[r][c] ) {
+                                res.xCollides = true;
+                                res.x = c * ts + ((vx < 0) ? ts : -w );
+                                break;
+                            }
+                        }
+                    }
+
+/*
+                    var pxOffsetX = (vx > 0 ? w : 0);
+                    var tileOffsetX = (vx < 0 ? this.tileSize : 0);
+                    var firstTileY = (y / this.tileSize)>>0;
+                    var lastTileY = Math.ceil((y + h) / this.tileSize);
+                    var tileX = ((x + vx + pxOffsetX) / this.tileSize)>>0;
+
+                    if( lastTileY >= 0 && firstTileY < this.mapHeight && tileX >= 0 && tileX < this.mapWidth ) {
+                        for( var tileY = firstTileY; tileY < lastTileY; tileY++ ) {
+                            if( this.cdata[tileY][tileX] ) {
+                                res.xCollides = true;
+                                res.x = tileX * this.tileSize - pxOffsetX + tileOffsetX;
+                                break;
+                            }
+                        }
+                    }
+*/
+                }
+
+                if( vy ) {
+
+                    var fc= (res.x/ts)>>0;              // first/last column in map for this entity pos/size
+                    var lc= Math.ceil((res.x+w)/ts);
+                    var r;
+                    if ( vy<0 ) {
+                        r= (( y + vy )/ts)>>0;
+                    } else {
+                        r= (( y+ vy + h ) / ts )>>0;
+                    }
+
+                    if ( fc>=0 && lc<this.mapWidth && r>=0 && r<this.mapHeight ) {
+                        for( var c= fc; c<lc; c++ ) {
+                            if ( this.cdata[r][c] ) {
+                                res.yCollides= true;
+                                res.y= r * ts + (vy>0 ? -h : ts  );
+                            }
+                        }
+                    }
+
+                    /*
+                    var pxOffsetY = (vy > 0 ? h : 0);
+                    var tileOffsetY = (vy < 0 ? this.tileSize : 0);
+                    var firstTileX = (res.x / this.tileSize)>>0;
+                    var lastTileX = Math.ceil((res.x + w) / this.tileSize);
+                    var tileY = ((y + vy + pxOffsetY) / this.tileSize)>>0;
+
+                    // Still inside this collision map?
+                    if( lastTileX >= 0 && firstTileX < this.mapWidth && tileY >= 0 && tileY < this.mapHeight ) {
+                        for( var tileX = firstTileX; tileX < lastTileX; tileX++ ) {
+                            if( this.cdata[tileY][tileX] ) {
+                                res.yCollides= true;
+                                res.y = tileY * this.tileSize - pxOffsetY + tileOffsetY;
+                                break;
+                            }
+                        }
+                    }
+                    */
+                }
+            },
+
+            nothingBelow : function( x, w, y ) {
+
+                var ft = (x / this.tileSize)>>0;            // first tile horiontally
+                var lt = Math.ceil((x + w) / this.tileSize);// last tile horizontally
+                var r = (y / this.tileSize)>>0;             // tile row
+
+                if( lt >= 0 && ft < this.mapWidth && r >= 0 && r < this.mapHeight ) {
+                    for( var c = ft; c < lt; c++ ) {
+                        if( this.cdata[r][c] ) {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            },
+
+            paint : function( director, time ) {
+                CAAT.TileMap.superclass.paint.call( this, director, time );
+
+                this.viewport.setContext( director.ctx );
+                for( var i=0; i<this.entities.length; i++ ) {
+                    this.entities[i].paint( director.ctx );
+                }
+            }
+
+        };
+
+        extend( CAAT.TileMap, CAAT.Actor );
+
+    })();
+
+    (function() {
+        CAAT.BaseEntity= function() {
+            return this;
+        };
+
+        CAAT.BaseEntity.prototype= {
+            x           : 0,
+            y           : 0,
+            width       : 0,
+            height      : 0,
+
+            maxVX       : 100,
+            maxVY       : 100,
+
+            vX          : 0,    // velocity vector
+            vY          : 0,
+
+            pvx         : 0,    // previous velocity vector
+            pvy         : 0,
+
+            frictionX   : 0,    // friction value
+            frictionY   : 0,
+
+            accelX      : 0,    // acceleration vector
+            accelY      : 0,
+
+            bounciness  : 0,    // bounce factor
+
+            setBounds : function( x,y,w,h ) {
+                this.x= x;
+                this.y= y;
+                this.width= w;
+                this.height= h;
+                return this;
+            },
+
+            tick : function( t, map ) {
+
+            }
+        };
+
+    })();
+
+    (function() {
+
+        CAAT.TileEntity= function() {
+
+            var keys=[0,0,0,0];
+            var me= this;
+
+            CAAT.registerKeyListener( function kl( keyEvent ) {
+
+                var kc= keyEvent.getKeyCode();
+
+                if ( kc===CAAT.Keys.LEFT ) {
+                    keyEvent.preventDefault();
+                    keys[0]= ( keyEvent.getAction()==='up' ) ? 0 : 1;
+                    if ( keys[0] ^ keys[1] ) {
+                        //me.setImageTransformation( keys[0] ? CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL : CAAT.SpriteImage.prototype.TR_NONE );
+                    }
+
+                    me.requestWalk= keys[0] ? -1 : 0;
+                }
+                if ( kc===CAAT.Keys.RIGHT ) {
+                    keyEvent.preventDefault();
+                    keys[1]= ( keyEvent.getAction()==='up' ) ? 0 : 1;
+                    if ( keys[0] ^ keys[1] ) {
+                        //me.setImageTransformation( keys[1] ? CAAT.SpriteImage.prototype.TR_NONE : CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL );
+                    }
+
+                    me.requestWalk= keys[1] ? 1 : 0;
+                }
+
+                if ( kc===CAAT.Keys.x ) {
+                    keyEvent.preventDefault();
+                    if ( keyEvent.getAction()==='down' ) {
+                        me.requestJump= true;
+                        /*
+                        if ( me.status===CAAT.TileEntity.ST_STAND ) {
+                            me.setJump( me.scene.time );
+                        }
+                        */
+                    } else {
+                        me.requestJump= false;
+                    }
+                }
+
+            });
+
+            return this;
+        };
+
+        var TIMER_RES= 1000;
+
+        CAAT.TileEntity.ST_FALL=    0;
+        CAAT.TileEntity.ST_STAND=   1;
+        CAAT.TileEntity.ST_JUMP=    2;
+
+        CAAT.TileEntity.prototype= {
+
+            status      : 0,    // fall
+
+            jumpVel     : 400,
+            requestJump : false,
+            requestWalk : 0,
+
+            dt          : 0,
+
+            incVX : function() {
+                this.vX+= 10;
+                if ( this.vX> this.maxVX ) {
+                    this.vX= this.maxVX;
+                } else if ( this.vX< -this.maxVX ) {
+                    this.vX= -this.maxVX;
+                }
+            },
+
+            decVX : function() {
+                this.vX-= 10;
+                if ( this.vX> this.maxVX ) {
+                    this.vX= this.maxVX;
+                } else if ( this.vX< -this.maxVX ) {
+                    this.vX= -this.maxVX;
+                }
+
+            },
+
+            setStand : function() {
+                this.status= CAAT.TileEntity.ST_STAND;
+            },
+
+            setJump : function() {
+                this.status= CAAT.TileEntity.ST_JUMP;
+                this.vY= -this.jumpVel;
+            },
+
+            setFall : function() {
+                this.status= CAAT.TileEntity.ST_JUMP;
+                this.vY= 0;
+            },
+
+            tick : function( t, map ) {
+
+                var _dt= (t-this.dt)/TIMER_RES;
+
+                var sx= this.x;
+                var sy= this.y;
+
+                this.vX+= map.gravityX * _dt;
+                sx+= this.vX*_dt;
+                if ( this.requestWalk ) {
+                    if ( this.requestWalk>0 ) {
+                        this.incVX();
+                    } else {
+                        this.decVX();
+                    }
+                } else {
+                    if ( this.vX>0 ) {
+                        this.vX-= 1;
+                        if ( this.vX<0 ) {
+                            this.vX=0;
+                        }
+                    } else {
+                        this.vX+= 1;
+                        if ( this.vX>0 ) {
+                            this.vX=0;
+                        }
+
+                    }
+                }
+
+                this.vY+= map.gravityY * _dt * (this.status===CAAT.TileEntity.ST_STAND ? 0 : 1) ;
+                sy+= this.vY*_dt;
+
+                var cr= map.handleCollision(
+                        this.x, this.y,
+                        this.width, this.height,
+                        sx,
+                        sy
+                );
+
+                var vx= sx-this.x;
+                var vy= sy-this.y;
+
+                if ( cr.xCollides ) {
+                    this.vX= 0;
+                }
+
+                if ( this.status===CAAT.TileEntity.ST_STAND && this.requestJump ) {
+                    this.setJump();
+                } else {
+                    if ( cr.yCollides ) {
+                        if( vy.sign()===map.gravityY.sign() ) {
+
+                            if ( this.requestJump ) {
+                                this.setJump();
+                            } else {
+
+                                this.status= CAAT.TileEntity.ST_JUMP;
+                                this.vY= -this.vY*0.5;
+                                if ( this.vY>-10 & this.vY<10 ) {
+                                    this.vY= 0;
+                                    this.setStand();
+                                }
+                            }
+                        }
+                        else {
+                            this.vY= 0;
+                        }
+                    }
+
+                    // no colisiona y esta sobre tierra, a caer neng.
+                    if ( !cr.xCollides && !cr.yCollides && this.status===CAAT.TileEntity.ST_STAND ) {
+
+                        if ( map.nothingBelow(cr.x,this.width,cr.y+this.height+1) ) {
+                            this.setFall();
+                        } else {
+                            var c= (cr.x/map.tileSize)>>0;
+                            var r= ((cr.y+this.height+1)/map.tileSize)>>0;
+
+                            this.vX+= map.data[r][c].vx;
+                            this.vY+= map.data[r][c].vy;
+                        }
+                    }
+                }
+
+                this.x= cr.x;
+                this.y= cr.y;
+
+                this.dt= t;
+            },
+
+            paint : function( ctx ) {
+                ctx.fillStyle='#f0f';
+                ctx.fillRect( this.x, this.y, this.width, this.height );
+            }
+
+        };
+
+        extend( CAAT.TileEntity, CAAT.BaseEntity );
+
+    })();
+
+
+
+    (function() {
+        CAAT.DEBUG=1;
+
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener('load', __load, false);
+
+        function __load() {
+            new CAAT.ImagePreloader().loadImages(
+                [
+                    { id : "tileset", url: "tiles.png" }
+                ],
+                function( count, images ) {
+                    if ( count===images.length ) {
+                        __start( images );
+                    }
+                },
+                function( img ) {
+                    alert("Image "+img+" does not exist.");
+                }
+            );
+        }
+
+
+        var director;
+        var map;
+        var hero;
+
+        function __start( images ) {
+
+            director= new CAAT.Director().
+                    initialize( 800,500, document.getElementById('experiment-canvas') ).
+                    setClear( CAAT.Director.CLEAR_ALL ).
+                    setImagesCache( images );
+
+            var scene= director.createScene();
+            scene.setFillStyle( '#fff' );
+
+            map= new CAAT.TileMap().create(
+                        32,
+                        new CAAT.SpriteImage().initialize(
+                                director.getImage("tileset"),
+                                4,
+                                6),
+                        800,
+                        500 ).
+                    cacheMap();
+            scene.addChild( map );
+
+            scene.onRenderStart= function( time ) {
+                    map.tick( time );
+                };
+
+            __createHero( scene );
+
+            CAAT.loop(60);
+
+        }
+
+        function __createHero( scene ) {
+
+            hero= new CAAT.TileEntity().
+                setBounds(240,40,16,24);
+            map.setPlayer( hero );
+
+        }
+    })();
+</script>
+</html>
