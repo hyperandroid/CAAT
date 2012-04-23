@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 37
+Version: 0.4 build: 60
 
 Created on:
-DATE: 2012-04-22
-TIME: 09:57:15
+DATE: 2012-04-23
+TIME: 06:40:05
 */
 
 
@@ -9053,7 +9053,6 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                         for( i=0; i<dr.length; i++ ) {
                             var drr= dr[i];
                             if ( !drr.isEmpty() ) {
-                                //ctx.rect( (drr.x|0)+.5, (drr.y|0)+.5, 1+(drr.width|0), 1+(drr.height|0) );
                                 ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
                                 this.nDirtyRects++;
                             }
@@ -9257,15 +9256,17 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
              * draw actors on scene.
              */
             if (scene.isInAnimationFrame(this.time)) {
+                ctx.setTransform(1,0,0,1, 0,0);
+
                 ctx.globalAlpha = 1;
                 ctx.globalCompositeOperation = 'source-over';
                 ctx.clearRect(0, 0, this.width, this.height);
-                ctx.setTransform(1,0,0, 0,1,0);
 
                 var octx = this.ctx;
                 var ocrc = this.crc;
 
-                this.ctx = this.crc = ctx;
+                this.ctx = ctx;
+                this.crc = ctx;
                 ctx.save();
 
                 /**
@@ -9380,9 +9381,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             var ssin = this.scenes[ inSceneIndex ];
             var sout = this.scenes[ outSceneIndex ];
 
-//            if (!this.glEnabled && navigator.browser!=='iOS') {
             if ( !CAAT.__CSS__ && !this.glEnabled ) {
-                this.worldModelViewMatrix.transformRenderingContext(this.transitionScene.ctx);
                 this.renderToContext(this.transitionScene.ctx, sout);
                 sout = this.transitionScene;
             }
@@ -9933,27 +9932,6 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             var posx = 0;
             var posy = 0;
             if (!e) e = window.event;
-/*
-            if ( e.offsetX ) {
-                posx= e.offsetX - this.canvas.offsetX;
-                posy= e.offsetY - this.canvas.offsetY;
-
-                if ( !CAAT.__CSS__ ) {
-                    var pt= new CAAT.Point( posx, posy );
-                    if ( !this.modelViewMatrixI ) {
-                        this.modelViewMatrixI= this.modelViewMatrix.getInverse();
-                    }
-                    this.modelViewMatrixI.transformCoord(pt);
-                    posx= pt.x;
-                    posy= pt.y
-                }
-
-                point.set(posx, posy);
-                this.screenMousePoint.set(posx, posy);
-
-                return;
-            }
-*/
 
             if (e.pageX || e.pageY) {
                 posx = e.pageX;
@@ -9972,16 +9950,14 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             //////////////
             // transformar coordenada inversamente con affine transform de director.
 
-//            if ( !CAAT.__CSS__ ) {
-                pt.x= posx;
-                pt.y= posy;
-                if ( !this.modelViewMatrixI ) {
-                    this.modelViewMatrixI= this.modelViewMatrix.getInverse();
-                }
-                this.modelViewMatrixI.transformCoord(pt);
-                posx= pt.x;
-                posy= pt.y
-//            }
+            pt.x= posx;
+            pt.y= posy;
+            if ( !this.modelViewMatrixI ) {
+                this.modelViewMatrixI= this.modelViewMatrix.getInverse();
+            }
+            this.modelViewMatrixI.transformCoord(pt);
+            posx= pt.x;
+            posy= pt.y
 
             point.set(posx, posy);
             this.screenMousePoint.set(posx, posy);
@@ -10076,20 +10052,18 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             // drag
 
             if (this.isMouseDown && null !== this.lastSelectedActor) {
-/*
-                // check for mouse move threshold.
-                if (!this.dragging) {
-                    if (Math.abs(this.prevMousePoint.x - this.mousePoint.x) < CAAT.DRAG_THRESHOLD_X &&
-                        Math.abs(this.prevMousePoint.y - this.mousePoint.y) < CAAT.DRAG_THRESHOLD_Y) {
-                        return;
-                    }
-                }
-*/
-
 
                 lactor = this.lastSelectedActor;
                 pos = lactor.viewToModel(
                     new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+
+                // check for mouse move threshold.
+                if (!this.dragging) {
+                    if (Math.abs(this.prevMousePoint.x - pos.x) < CAAT.DRAG_THRESHOLD_X &&
+                        Math.abs(this.prevMousePoint.y - pos.y) < CAAT.DRAG_THRESHOLD_Y) {
+                        return;
+                    }
+                }
 
                 this.dragging = true;
 
@@ -10195,6 +10169,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                         this.screenMousePoint,
                         ct));
             }
+
+            this.prevMousePoint.x= pos.x;
+            this.prevMousePoint.y= pos.y;
 
             this.lastSelectedActor = lactor;
         },
@@ -10390,15 +10367,23 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             window.addEventListener('mouseup', function(e) {
                 if ( me.touching ) {
                     e.preventDefault();
+                    e.cancelBubble = true;
+                    if (e.stopPropagation) e.stopPropagation();
+
                     var mp= me.mousePoint;
                     me.getCanvasCoord(mp, e);
                     me.__mouseUpHandler(e);
+
+                    me.touching= false;
                 }
             }, false );
 
             window.addEventListener('mousedown', function(e) {
                 if ( e.target===canvas ) {
                     e.preventDefault();
+                    e.cancelBubble = true;
+                    if (e.stopPropagation) e.stopPropagation();
+
                     var mp= me.mousePoint;
                     me.getCanvasCoord(mp, e);
                     if ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) {
@@ -10413,6 +10398,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             window.addEventListener('mouseover',function(e) {
                 if ( e.target===canvas && !me.dragging ) {
                     e.preventDefault();
+                    e.cancelBubble = true;
+                    if (e.stopPropagation) e.stopPropagation();
+
                     var mp= me.mousePoint;
                     me.getCanvasCoord(mp, e);
                     if ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) {
@@ -10426,6 +10414,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             window.addEventListener('mouseout',function(e) {
                 if ( e.target===canvas && !me.dragging ) {
                     e.preventDefault();
+                    e.cancelBubble = true;
+                    if (e.stopPropagation) e.stopPropagation();
+
                     var mp= me.mousePoint;
                     me.getCanvasCoord(mp, e);
                     me.__mouseOutHandler(e);
@@ -10435,6 +10426,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             window.addEventListener('mousemove',
                 function(e) {
                     e.preventDefault();
+                    e.cancelBubble = true;
+                    if (e.stopPropagation) e.stopPropagation();
+
                     var mp= me.mousePoint;
                     me.getCanvasCoord(mp, e);
                     if ( !me.dragging && ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) ) {
@@ -10447,6 +10441,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             window.addEventListener("dblclick", function(e) {
                 if ( e.target===canvas ) {
                     e.preventDefault();
+                    e.cancelBubble = true;
+                    if (e.stopPropagation) e.stopPropagation();
                     var mp= me.mousePoint;
                     me.getCanvasCoord(mp, e);
                     if ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) {
@@ -11746,6 +11742,11 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             return this;
         },
 
+        resetAnimationTime : function() {
+            this.prevAnimationTime=  -1;
+            return this;
+        },
+
         /**
          * Set the sprite animation images index. This method accepts an array of objects which define indexes to
          * subimages inside this sprite image.
@@ -11760,6 +11761,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 		setAnimationImageIndex : function( aAnimationImageIndex ) {
 			this.animationImageIndex= aAnimationImageIndex;
 			this.spriteIndex= aAnimationImageIndex[0];
+            this.prevAnimationTime= -1;
 
             return this;
 		},

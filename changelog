@@ -1,3 +1,12 @@
+*04/22/2012 0.4 Build 59 *
+--------------------------
+
+* Fixed demo 12+1, which led strange results regarding lines. Damn beginPath().
+* Added threshold values for drag operations.
+* Fixed bubbling with window input system. MouseUp was not releasing a flag.
+* The method setAnimationImageIndex now resets animation timeout so spritesheet will show first frame.
+* Added method resetAnimationTime on Actor and SpriteImage to reset animation sprite sheet time.
+
 *04/22/2012 0.4 Build 36 *
 --------------------------
 

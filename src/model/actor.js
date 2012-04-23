@@ -306,6 +306,14 @@
             }
             return this;
         },
+
+        resetAnimationTime : function() {
+            if ( this.backgroundImage ) {
+                this.backgroundImage.resetAnimationTime();
+            }
+            return this;
+        },
+
         setChangeFPS : function(time) {
             if ( this.backgroundImage ) {
                 this.backgroundImage.setChangeFPS(time);

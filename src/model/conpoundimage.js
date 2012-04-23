@@ -582,6 +582,11 @@
             return this;
         },
 
+        resetAnimationTime : function() {
+            this.prevAnimationTime=  -1;
+            return this;
+        },
+
         /**
          * Set the sprite animation images index. This method accepts an array of objects which define indexes to
          * subimages inside this sprite image.
@@ -596,6 +601,7 @@
 		setAnimationImageIndex : function( aAnimationImageIndex ) {
 			this.animationImageIndex= aAnimationImageIndex;
 			this.spriteIndex= aAnimationImageIndex[0];
+            this.prevAnimationTime= -1;
 
             return this;
 		},
