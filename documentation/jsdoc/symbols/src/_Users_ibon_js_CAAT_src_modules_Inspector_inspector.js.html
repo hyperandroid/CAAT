@@ -1,0 +1,84 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/**
+<span class='line'>  2</span>  * See LICENSE file.
+<span class='line'>  3</span>  *
+<span class='line'>  4</span>  *
+<span class='line'>  5</span>  *
+<span class='line'>  6</span>  */</span><span class="WHIT">
+<span class='line'>  7</span> </span><span class="COMM">/*
+<span class='line'>  8</span> (function() {
+<span class='line'>  9</span>     CAAT.modules.Inspector= function() {
+<span class='line'> 10</span>         return this;
+<span class='line'> 11</span>     };
+<span class='line'> 12</span> 
+<span class='line'> 13</span> 
+<span class='line'> 14</span> 
+<span class='line'> 15</span>     CAAT.modules.Inspector.prototype= {
+<span class='line'> 16</span> 
+<span class='line'> 17</span>         initialize : function(root) {
+<span class='line'> 18</span> 
+<span class='line'> 19</span>             if ( !root ) {
+<span class='line'> 20</span>                 root= CAAT;
+<span class='line'> 21</span>             }
+<span class='line'> 22</span> 
+<span class='line'> 23</span>             CAAT.log("Analyzing "+root.toString()+" for reflection info.");
+<span class='line'> 24</span>             for( var clazz in root ) {
+<span class='line'> 25</span>                 if ( root[clazz].__reflectionInfo ) {
+<span class='line'> 26</span>                     CAAT.log("  Extracting reflection info for: "+root[clazz] );
+<span class='line'> 27</span>                     this.extractReflectionInfo( root[clazz] );
+<span class='line'> 28</span>                 }
+<span class='line'> 29</span>             }
+<span class='line'> 30</span>         },
+<span class='line'> 31</span> 
+<span class='line'> 32</span>         extractReflectionInfo : function( object ) {
+<span class='line'> 33</span>             var ri= object.__reflectionInfo;
+<span class='line'> 34</span>             var key;
+<span class='line'> 35</span>             var i;
+<span class='line'> 36</span>             var __removeEmpty= function( el, index, array ) {
+<span class='line'> 37</span>                 array[index]= array[index].trim();
+<span class='line'> 38</span>                 if ( array[index]==="" ) array.splice(index,1);
+<span class='line'> 39</span>             };
+<span class='line'> 40</span> 
+<span class='line'> 41</span>             for( key in ri ) {
+<span class='line'> 42</span>                 var metadata= ri[key];
+<span class='line'> 43</span>                 CAAT.log("    reflection info for: "+key+"="+metadata );
+<span class='line'> 44</span> 
+<span class='line'> 45</span>                 var ks= key.split(",");
+<span class='line'> 46</span>                 var data= metadata.split(",");
+<span class='line'> 47</span> 
+<span class='line'> 48</span>                 ks.forEach( __removeEmpty );
+<span class='line'> 49</span>                 data.forEach( __removeEmpty );
+<span class='line'> 50</span> 
+<span class='line'> 51</span>                 if ( ks.length===1 ) {  // one property.
+<span class='line'> 52</span>                     data.forEach( function( el, index, array ) {
+<span class='line'> 53</span>                         // el is each metadata definition of the form: key:value
+<span class='line'> 54</span>                         var operation= el.split(":");
+<span class='line'> 55</span>                         operation.forEach( __removeEmpty );
+<span class='line'> 56</span>                         if ( operation.length!=2 ) {
+<span class='line'> 57</span>                             CAAT.log("      ERR. operation: "+el+" wrong format");
+<span class='line'> 58</span>                         } else {
+<span class='line'> 59</span>                             if ( operation[0]==="set" ) {
+<span class='line'> 60</span>                                 CAAT.log("set="+operation[1]);
+<span class='line'> 61</span>                             } else if ( operation[0]==="get" ) {
+<span class='line'> 62</span>                                 CAAT.log("get="+operation[1]);
+<span class='line'> 63</span>                             } else if ( operation[0]==="type" ) {
+<span class='line'> 64</span>                                 CAAT.log("type="+operation[1]);
+<span class='line'> 65</span>                             }
+<span class='line'> 66</span>                         }
+<span class='line'> 67</span>                     });
+<span class='line'> 68</span>                 }
+<span class='line'> 69</span>             }
+<span class='line'> 70</span>         }
+<span class='line'> 71</span> 
+<span class='line'> 72</span>     };
+<span class='line'> 73</span> 
+<span class='line'> 74</span> })();
+<span class='line'> 75</span>     */</span><span class="WHIT">
+<span class='line'> 76</span> 
+<span class='line'> 77</span> </span></pre></body></html>
