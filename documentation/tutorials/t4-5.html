@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+    <script type="text/javascript">
+
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-17485141-1']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+
+    </script>
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 4 - Director utils</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>Director</h1>
+            <h2>Utils</h2>
+
+            <p>
+                The director object exposes some utility methods to know what environment it is
+                being played. Methods such us
+            </p>
+            <p>
+                <span class="apicode">getBrowserName()</span>. Get the running browser name.
+            </p>
+            <p>
+                <span class="apicode">getBrowserVersion()</span>. Get the running browser version.
+            </p>
+            <p>
+                <span class="apicode">getOSName()</span>. Get the operating system name.
+            </p>
+            <p>
+                <span class="apicode">getRendererType()</span>. Get the director rendering technology.
+                Will return either 'CSS','CANVAS' or 'WEBGL';
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

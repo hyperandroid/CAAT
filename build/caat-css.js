@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 60
+Version: 0.4 build: 74
 
 Created on:
-DATE: 2012-04-23
-TIME: 06:40:05
+DATE: 2012-04-30
+TIME: 22:35:50
 */
 
 
@@ -1018,6 +1018,11 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         this.matrix= [
             1.0,0.0,0.0,
             0.0,1.0,0.0, 0.0,0.0,1.0 ];
+
+        if ( Float32Array ) {
+            this.matrix= new Float32Array(this.matrix);
+        }
+
 		return this;
 	};
 	
@@ -10711,6 +10716,11 @@ CAAT.setCoordinateClamping= function( clamp ) {
         CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
     }
 };
+
+
+CAAT.RENDER_MODE_CONTINUOUS=    1;              // redraw every frame
+CAAT.RENDER_MODE_DIRTY=         2;              // suitable for evented CAAT.
+CAAT.RENDER_MODE= CAAT.RENDER_MODE_CONTINUOUS;
 
 /**
  * Box2D point meter conversion ratio.
