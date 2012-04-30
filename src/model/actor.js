@@ -2362,7 +2362,6 @@
                         index= cl.length;
                     }
 
-                    //cl.splice( index, 1, nActor );
                     cl.splice( index, 0, nActor[0] );
                 }
             }

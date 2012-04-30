@@ -79,6 +79,11 @@ CAAT.setCoordinateClamping= function( clamp ) {
     }
 };
 
+
+CAAT.RENDER_MODE_CONTINUOUS=    1;              // redraw every frame
+CAAT.RENDER_MODE_DIRTY=         2;              // suitable for evented CAAT.
+CAAT.RENDER_MODE= CAAT.RENDER_MODE_CONTINUOUS;
+
 /**
  * Box2D point meter conversion ratio.
  */

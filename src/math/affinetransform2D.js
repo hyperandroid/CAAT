@@ -550,6 +550,11 @@
         this.matrix= [
             1.0,0.0,0.0,
             0.0,1.0,0.0, 0.0,0.0,1.0 ];
+
+        if ( Float32Array ) {
+            this.matrix= new Float32Array(this.matrix);
+        }
+
 		return this;
 	};
 	

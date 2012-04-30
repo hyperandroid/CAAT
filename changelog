@@ -1,3 +1,9 @@
+*04/22/2012 0.4 Build 63 *
+--------------------------
+
+* Minor code fixes.
+* Added Float32Array where available to manange AF matrices.
+
 *04/22/2012 0.4 Build 59 *
 --------------------------
 
