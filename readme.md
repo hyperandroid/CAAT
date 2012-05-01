@@ -1,4 +1,4 @@
-**CAAT: Canvas Advanced Animation Tookit**
+##CAAT: Canvas Advanced Animation Tookit##
 
 CAAT is a director-based Scene graph manager.
 
