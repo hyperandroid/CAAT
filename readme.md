@@ -8,7 +8,7 @@ Follow the official twitter account <a href="http://twitter.com/caatjs" class="t
 
 ## Github Pages ##
 
-Visit <a href="hyperandroid.github.com/CAAT">CAAT's github pages</a>, including:
+Visit <a href="http://hyperandroid.github.com/CAAT">CAAT's github pages</a>, including:
 
 * <a href="http://hyperandroid.github.com/CAAT/documentation/demos">Demos</a>
 * <a href="http://hyperandroid.github.com/CAAT/documentation/tutorials/t0.html">Tutorials</a>
