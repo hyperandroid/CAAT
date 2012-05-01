@@ -11,7 +11,7 @@ Follow the official twitter account <a href="http://twitter.com/caatjs" class="t
 Visit <a href="hyperandroid.github.com/CAAT">CAAT's github pages</a>, including:
 
 * <a href="http://hyperandroid.github.com/CAAT/documentation/demos">Demos</a>
-* <a href="http://hyperandroid.github.com/CAAT/documentation/tutorials/tut0.html">Tutorials</a>
+* <a href="http://hyperandroid.github.com/CAAT/documentation/tutorials/t0.html">Tutorials</a>
 * <a href="http://hyperandroid.github.com/CAAT/documentation/jsdoc">API</a>
 
 ## HOW TO ##
