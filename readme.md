@@ -6,8 +6,16 @@ It is able to render using Canvas, WebGL and CSS without making changes to the a
 
 Follow the official twitter account <a href="http://twitter.com/caatjs" class="twitter-follow-button" data-show-count="false">@caatjs</a>
 
+## Github Pages ##
+
+Visit <a href="hyperandroid.github.com/CAAT">CAAT's github pages</a>, including:
+
+* <a href="http://hyperandroid.github.com/CAAT/documentation/demos">Demos</a>
+* <a href="http://hyperandroid.github.com/CAAT/documentation/tutorials/tut0">Tutorials</a>
+* <a href="http://hyperandroid.github.com/CAAT/documentation/jsdoc">API</a>
+
 ## HOW TO ##
-<a href="http://hyperandroid.github.com/CAAT/documentation/tutorial/t0.html">Tutorials can be found here.</a>
+<a href="http://hyperandroid.github.com/CAAT/documentation/tutorials/t0.html">Tutorials can be found here.</a>
 
 ## Examples and sample code ##
 
