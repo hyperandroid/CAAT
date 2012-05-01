@@ -2,16 +2,14 @@
 
 CAAT is a director-based Scene graph manager.
 
-It is able to render using Canvas, WebGL and CSS w/o making changes to the developments that sit on top of it.
+It is able to render using Canvas, WebGL and CSS without making changes to the applications that sit on top of it.
 
 Follow the official twitter account <a href="http://twitter.com/caatjs" class="twitter-follow-button" data-show-count="false">@caatjs</a>
 
 ## HOW TO ##
-Tutorials can be found here [http://labs.hyperandroid.com/static/CAAT-Samples/tutorials/t0.html](http://labs.hyperandroid.com/static/CAAT-Samples/tutorials/t0.html)
+<a href="http://hyperandroid.github.com/CAAT/documentation/tutorial/t0.html">Tutorials can be found here.</a>
 
 ## Examples and sample code ##
-
-[http://labs.hyperandroid.com/static/CAAT-Samples/demos/demo1/path.html](http://labs.hyperandroid.com/static/CAAT-Samples/demos/demo1/path.html)
 
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo1/path_org.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo1.png" alt="Path management"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo2/fishpond_org.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo2.png" alt="Procedural fishpond"></a>
