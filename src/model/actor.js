@@ -52,6 +52,39 @@
 		return this;
 	};
 
+    /**
+     * Reflection information needed to use the inspector.
+     * Each key defined identifies an object field. For each field, it could be specified:
+     *   + get  : accessor function or field name. if ended with () a function will be assumed.
+     *   + set  : mutator function or field name. if ended with () a function will be assumed.
+     *   + type : field or accessor function return type.
+     *
+     * If not get or set method is defined, the inspector will assume either the field can't be read and/or set.
+     * If neither get and set are defined, the property will be avoided.
+     *
+     * The key can contain a set of comma separated values. This means these properties must be set/modified
+     * at once in the inspector editor field (if any). The way these functions will be set will be by calling
+     * the set method (must be a method) as previously defined.
+     */
+    CAAT.Actor.__reflectionInfo= {
+        "x"                 : "set:setX(), get:x, type:number",
+        "cached"            : "get:isCached(), type:boolean",
+        "scaleX,scaleY"     : "set:setScale(), type:number"
+        /*
+        "y"                 : "setY,w",
+        "width"             : "setWidth,w",
+        "height"            : "setHeight,w",
+        "start_time"        : "setStartTime,w",
+        "duration"          : "setDuration,w",
+        "clip"              : "setClip,w",
+        "rotationAngle"     : "setRotation,w",
+        "alpha"             : "setAlpha,w",
+        "isGlobalAlpha"     : "isGlobalAlpha,w",
+        "visible"           : "isVisible",
+        "id"                : "getId",
+        "backgroundImage"   : ""*/
+    };
+
     CAAT.Actor.ANCHOR_CENTER=	    0;      // constant values to determine different affine transform
     CAAT.Actor.ANCHOR_TOP=			1;      // anchors.
     CAAT.Actor.ANCHOR_BOTTOM=		2;
@@ -153,6 +186,9 @@
         isAA                :   true,   // is this actor/container Axis aligned ? if so, much faster inverse matrices
                                         // can be calculated.
 
+        isVisible : function() {
+            return this.isVisible;
+        },
         setupCollission : function( collides, isCircular ) {
             this.collides= collides;
             this.collidesAsRect= !isCircular;
@@ -270,6 +306,14 @@
             }
             return this;
         },
+
+        resetAnimationTime : function() {
+            if ( this.backgroundImage ) {
+                this.backgroundImage.resetAnimationTime();
+            }
+            return this;
+        },
+
         setChangeFPS : function(time) {
             if ( this.backgroundImage ) {
                 this.backgroundImage.setChangeFPS(time);
@@ -874,9 +918,11 @@
          */
         modelToView : function(point) {
 
-            var tm= this.worldModelViewMatrix.matrix,
-                x,
-                y;
+            if ( this.dirty ) {
+                this.setModelViewMatrix();
+            }
+
+            var tm= this.worldModelViewMatrix.matrix;
 
             if ( point instanceof Array ) {
                 for( var i=0; i<point.length; i++ ) {
@@ -905,6 +951,10 @@
          * @param otherActor {CAAT.Actor}
          */
         modelToModel : function( point, otherActor )   {
+            if ( this.dirty ) {
+                this.setModelViewMatrix();
+            }
+
             return otherActor.viewToModel( this.modelToView( point ) );
         },
         /**
@@ -920,6 +970,9 @@
          *
          */
 		viewToModel : function(point) {
+            if ( this.dirty ) {
+                this.setModelViewMatrix();
+            }
             this.worldModelViewMatrixI= this.worldModelViewMatrix.getInverse();
             this.worldModelViewMatrixI.transformCoord(point);
 			return point;
@@ -1668,6 +1721,7 @@
                 modelViewMatrix: new CAAT.Matrix()
             };
 
+            this.cached= false;
             this.paintActor(director,time);
             this.setBackgroundImage(canvas);
 
@@ -1816,11 +1870,11 @@
             return this;
         }
 	};
-
+/*
     if ( CAAT.NO_PERF ) {
         CAAT.Actor.prototype.paintActor= CAAT.Actor.prototype.__paintActor;
     }
-
+*/
 })();
 
 (function() {
@@ -1921,7 +1975,9 @@
 
             for( var actor= this.activeChildren; actor; actor=actor.__next ) {
                 if ( actor.visible ) {
+                    ctx.save();
                     actor.paintActor(director,time);
+                    ctx.restore();
                 }
             }
 
@@ -2303,17 +2359,16 @@
                         index= cl.length;
                     }
 
-                    //cl.splice( index, 1, nActor );
                     cl.splice( index, 0, nActor[0] );
                 }
             }
         }
 	};
-
+/*
     if ( CAAT.NO_PERF ) {
         CAAT.ActorContainer.prototype.paintActor= CAAT.ActorContainer.prototype.__paintActor;
     }
-    
+*/
     extend( CAAT.ActorContainer, CAAT.Actor, null);
 
 })();
@@ -2614,7 +2669,9 @@
 			for( var i=0; i<this.text.length; i++ ) {
 				var caracter= this.text[i].toString();
 				var charWidth= ctx.measureText( caracter ).width;
-				var currentCurveLength= charWidth/2 + textWidth;
+
+                // guonjien: remove "+charWidth/2" since it destroys the kerning. and he's right!!!. thanks.
+				var currentCurveLength= textWidth;
 
 				p0= this.path.getPositionFromLength(currentCurveLength).clone();
 				p1= this.path.getPositionFromLength(currentCurveLength-0.1).clone();
@@ -2623,7 +2680,7 @@
 
 				ctx.save();
 
-					ctx.translate( (0.5+p0.x)|0, (0.5+p0.y)|0 );
+					ctx.translate( p0.x>>0, p0.y>>0 );
 					ctx.rotate( angle );
                     if ( this.fill ) {
 					    ctx.fillText(caracter,0,0);

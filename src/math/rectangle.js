@@ -129,16 +129,16 @@
                 return false;
             }
 
-            if ( r.x1< this.x ) {
+            if ( r.x1<= this.x ) {
                 return false;
             }
-            if ( r.x > this.x1 ) {
+            if ( r.x >= this.x1 ) {
                 return false;
             }
-            if ( r.y1< this.y ) {
+            if ( r.y1<= this.y ) {
                 return false;
             }
-            if ( r.y> this.y1 ) {
+            if ( r.y>= this.y1 ) {
                 return false;
             }
 

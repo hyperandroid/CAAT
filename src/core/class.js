@@ -1,4 +1,23 @@
 /**
+ * Common bind function. Allows to set an object's function as callback. Set for every function in the
+ * javascript context.
+ */
+Function.prototype.bind= Function.prototype.bind || function() {
+    var fn=     this;                                   // the function
+    var args=   Array.prototype.slice.call(arguments);  // copy the arguments.
+    var obj=    args.shift();                           // first parameter will be context 'this'
+    return function() {
+        return fn.apply(
+                obj,
+                args.concat(Array.prototype.slice.call(arguments)));
+    }
+};
+
+isArray= function(input) { return typeof(input)=='object'&&(input instanceof Array); };
+isString= function(input){ return typeof(input)=='string'; };
+
+
+/**
  * See LICENSE file.
  *
  * Extend a prototype with another to form a classical OOP inheritance procedure.
@@ -76,6 +95,7 @@ function proxy(object, preMethod, postMethod, errorMethod) {
         }
 
         return (function(fn) {
+
             var proxyfn= function() {
                 if ( preMethod ) {
                     preMethod({
@@ -89,7 +109,7 @@ function proxy(object, preMethod, postMethod, errorMethod) {
                     // everything went right on function call, then call
                     // post-method hook if present
                     if ( postMethod ) {
-                        postMethod({
+                        retValue= postMethod({
                                 fn: fn,
                                 arguments:  Array.prototype.slice.call(arguments)} );
                     }
@@ -111,6 +131,23 @@ function proxy(object, preMethod, postMethod, errorMethod) {
                 return retValue;
             };
             proxyfn.__isProxy= true;
+
+            for( var method in fn ) {
+                if ( typeof fn[method]!=="function" ) {
+                    if (method!=="__object" && method!=="__isProxy") {
+                        (function(proxyfn, fn) {
+                            proxyfn.__defineGetter__( method, function() {
+                                return fn[method];
+                            });
+                            proxyfn.__defineSetter__( method, function(vale) {
+                                fn[method]= vale;
+                            });
+                        })(proxyfn, fn);
+                    }
+                }
+            }
+
+
             return proxyfn;
 
         })(object);
@@ -121,8 +158,8 @@ function proxy(object, preMethod, postMethod, errorMethod) {
      * If it is a previously created proxy, return the proxy itself.
      */
     if ( !typeof object==='object' ||
-            object.constructor===Array ||
-            object.constructor===String ||
+            isArray(object) ||
+            isString(object) ||
             object.__isProxy ) {
 
         return object;
@@ -139,6 +176,7 @@ function proxy(object, preMethod, postMethod, errorMethod) {
 
     // For every element in the object to be proxied
     for( var method in object ) {
+
         // only function members
         if ( typeof object[method]==='function' ) {
             // add to the proxy object a method of equal signature to the
@@ -185,6 +223,17 @@ function proxy(object, preMethod, postMethod, errorMethod) {
                     return retValue;
                 };
             })(proxy,object[method],method);
+        } else {
+            if (method!=="__object" && method!=="__isProxy") {
+                (function(proxy, method) {
+                    proxy.__defineGetter__( method, function() {
+                        return proxy.__object[method];
+                    });
+                    proxy.__defineSetter__( method, function(vale) {
+                        proxy.__object[method]= vale;
+                    });
+                })(proxy, method);
+            }
         }
     }
 
@@ -221,3 +270,157 @@ var cp1= proxy(
             return -1;
         });
  **/
+
+function proxify( ns, preMethod, postMethod, errorMethod, getter, setter ) {
+
+    var nns= "__"+ns+"__";
+
+    var obj= window;
+    var path= ns.split(".");
+    while( path.length>1) {
+        obj= obj[ path.shift() ];
+    }
+
+    window[nns] = obj[path];
+
+    (function(obj,path, nns,ns) {
+        var newC= function() {
+            console.log("Creating object of type proxy["+ns+"]");
+            var obj= new window[nns]( Array.prototype.slice.call(arguments) );
+
+            obj.____name= ns;
+            return proxyObject( obj, preMethod, postMethod, errorMethod, getter, setter );
+
+        };
+
+        // set new constructor function prototype as previous one.
+        newC.prototype= window[nns].prototype;
+
+        for( var method in obj[path] ) {
+            if ( typeof obj[path][method]!=="function" ) {
+                if (method!=="__object" && method!=="__isProxy") {
+                    (function(prevConstructor, method, newC) {
+                        newC.__defineGetter__( method, function() {
+                            return prevConstructor[method];
+                        });
+                        newC.__defineSetter__( method, function(vale) {
+                            prevConstructor[method]= vale;
+                        });
+                    })(obj[path],method,newC);
+                }
+            }
+        }
+
+        obj[path]= newC;
+
+    })(obj,path,nns,ns);
+
+}
+
+function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter) {
+
+    /**
+     * If not a function then only non privitive objects can be proxied.
+     * If it is a previously created proxy, return the proxy itself.
+     */
+    if ( !typeof object==='object' ||
+            isArray(object) ||
+            isString(object) ||
+            object.__isProxy ) {
+
+        return object;
+    }
+
+    // hold the proxied object as member. Needed to assign proper
+    // context on proxy method call.
+    object.$proxy__isProxy= true;
+
+    // For every element in the object to be proxied
+    for( var method in object ) {
+
+        if ( method==="constructor" ) {
+            continue;
+        }
+
+        // only function members
+        if ( typeof object[method]==='function' ) {
+
+            var fn= object[method];
+            object["$proxy__"+method]= fn;
+
+            object[method]= (function(object,fn,fnname) {
+                return function() {
+
+                    var args= Array.prototype.slice.call(arguments);
+
+                    // call pre-method hook if present.
+                    if ( preMethod ) {
+                        preMethod({
+                                object:     object,
+                                objectName: object.____name,
+                                method:     fnname,
+                                arguments:  args } );
+                    }
+                    var retValue= null;
+                    try {
+                        // apply original object call with proxied object as
+                        // function context.
+                        retValue= fn.apply( object, args );
+                        // everything went right on function call, the call
+                        // post-method hook if present
+                        if ( postMethod ) {
+                            var rr= postMethod({
+                                    object:     object,
+                                    objectName: object.____name,
+                                    method:     fnname,
+                                    arguments:  args } );
+                            if ( typeof rr!=="undefined" ) {
+                                //retValue= rr;
+                            }
+                        }
+                    } catch(e) {
+                        // an exeception was thrown, call exception-method hook if
+                        // present and return its result as execution result.
+                        if( errorMethod ) {
+                            retValue= errorMethod({
+                                object:     object,
+                                objectName: object.____name,
+                                method:     fnname,
+                                arguments:  args,
+                                exception:  e} );
+                        } else {
+                            // since there's no error hook, just throw the exception
+                            throw e;
+                        }
+                    }
+
+                    // return original returned value to the caller.
+                    return retValue;
+                };
+            })(object,fn,method);
+        } else {
+            if ( method!=="____name" ) {
+                (function(object, attribute, getter, setter) {
+
+                    object["$proxy__"+attribute]= object[attribute];
+
+                    object.__defineGetter__( attribute, function() {
+                        if ( getter) {
+                            getter( object.____name, attribute );
+                        }
+                        return object["$proxy__"+attribute];
+                    });
+                    object.__defineSetter__( attribute, function (value) {
+                        object["$proxy__"+attribute] = value;
+                        if ( setter ) {
+                            setter( object.____name, attribute, value );
+                        }
+                    });
+                })( object, method, getter, setter );
+            }
+        }
+    }
+
+    // return our newly created and populated with functions proxied object.
+    return object;
+}

@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.3 build: 280
+Version: 0.4 build: 68
 
 Created on:
-DATE: 2012-03-15
-TIME: 02:10:28
+DATE: 2012-05-01
+TIME: 01:03:47
 */
 
 
@@ -40,7 +40,6 @@ TIME: 02:10:28
  * @namespace
  */
 var CAAT= CAAT || {};
-
 /**
  * Common bind function. Allows to set an object's function as callback. Set for every function in the
  * javascript context.
@@ -55,6 +54,11 @@ Function.prototype.bind= Function.prototype.bind || function() {
                 args.concat(Array.prototype.slice.call(arguments)));
     }
 };
+
+isArray= function(input) { return typeof(input)=='object'&&(input instanceof Array); };
+isString= function(input){ return typeof(input)=='string'; };
+
+
 /**
  * See LICENSE file.
  *
@@ -133,6 +137,7 @@ function proxy(object, preMethod, postMethod, errorMethod) {
         }
 
         return (function(fn) {
+
             var proxyfn= function() {
                 if ( preMethod ) {
                     preMethod({
@@ -146,7 +151,7 @@ function proxy(object, preMethod, postMethod, errorMethod) {
                     // everything went right on function call, then call
                     // post-method hook if present
                     if ( postMethod ) {
-                        postMethod({
+                        retValue= postMethod({
                                 fn: fn,
                                 arguments:  Array.prototype.slice.call(arguments)} );
                     }
@@ -168,6 +173,23 @@ function proxy(object, preMethod, postMethod, errorMethod) {
                 return retValue;
             };
             proxyfn.__isProxy= true;
+
+            for( var method in fn ) {
+                if ( typeof fn[method]!=="function" ) {
+                    if (method!=="__object" && method!=="__isProxy") {
+                        (function(proxyfn, fn) {
+                            proxyfn.__defineGetter__( method, function() {
+                                return fn[method];
+                            });
+                            proxyfn.__defineSetter__( method, function(vale) {
+                                fn[method]= vale;
+                            });
+                        })(proxyfn, fn);
+                    }
+                }
+            }
+
+
             return proxyfn;
 
         })(object);
@@ -178,8 +200,8 @@ function proxy(object, preMethod, postMethod, errorMethod) {
      * If it is a previously created proxy, return the proxy itself.
      */
     if ( !typeof object==='object' ||
-            object.constructor===Array ||
-            object.constructor===String ||
+            isArray(object) ||
+            isString(object) ||
             object.__isProxy ) {
 
         return object;
@@ -196,6 +218,7 @@ function proxy(object, preMethod, postMethod, errorMethod) {
 
     // For every element in the object to be proxied
     for( var method in object ) {
+
         // only function members
         if ( typeof object[method]==='function' ) {
             // add to the proxy object a method of equal signature to the
@@ -242,6 +265,17 @@ function proxy(object, preMethod, postMethod, errorMethod) {
                     return retValue;
                 };
             })(proxy,object[method],method);
+        } else {
+            if (method!=="__object" && method!=="__isProxy") {
+                (function(proxy, method) {
+                    proxy.__defineGetter__( method, function() {
+                        return proxy.__object[method];
+                    });
+                    proxy.__defineSetter__( method, function(vale) {
+                        proxy.__object[method]= vale;
+                    });
+                })(proxy, method);
+            }
         }
     }
 
@@ -277,7 +311,161 @@ var cp1= proxy(
 
             return -1;
         });
- **//**
+ **/
+
+function proxify( ns, preMethod, postMethod, errorMethod, getter, setter ) {
+
+    var nns= "__"+ns+"__";
+
+    var obj= window;
+    var path= ns.split(".");
+    while( path.length>1) {
+        obj= obj[ path.shift() ];
+    }
+
+    window[nns] = obj[path];
+
+    (function(obj,path, nns,ns) {
+        var newC= function() {
+            console.log("Creating object of type proxy["+ns+"]");
+            var obj= new window[nns]( Array.prototype.slice.call(arguments) );
+
+            obj.____name= ns;
+            return proxyObject( obj, preMethod, postMethod, errorMethod, getter, setter );
+
+        };
+
+        // set new constructor function prototype as previous one.
+        newC.prototype= window[nns].prototype;
+
+        for( var method in obj[path] ) {
+            if ( typeof obj[path][method]!=="function" ) {
+                if (method!=="__object" && method!=="__isProxy") {
+                    (function(prevConstructor, method, newC) {
+                        newC.__defineGetter__( method, function() {
+                            return prevConstructor[method];
+                        });
+                        newC.__defineSetter__( method, function(vale) {
+                            prevConstructor[method]= vale;
+                        });
+                    })(obj[path],method,newC);
+                }
+            }
+        }
+
+        obj[path]= newC;
+
+    })(obj,path,nns,ns);
+
+}
+
+function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter) {
+
+    /**
+     * If not a function then only non privitive objects can be proxied.
+     * If it is a previously created proxy, return the proxy itself.
+     */
+    if ( !typeof object==='object' ||
+            isArray(object) ||
+            isString(object) ||
+            object.__isProxy ) {
+
+        return object;
+    }
+
+    // hold the proxied object as member. Needed to assign proper
+    // context on proxy method call.
+    object.$proxy__isProxy= true;
+
+    // For every element in the object to be proxied
+    for( var method in object ) {
+
+        if ( method==="constructor" ) {
+            continue;
+        }
+
+        // only function members
+        if ( typeof object[method]==='function' ) {
+
+            var fn= object[method];
+            object["$proxy__"+method]= fn;
+
+            object[method]= (function(object,fn,fnname) {
+                return function() {
+
+                    var args= Array.prototype.slice.call(arguments);
+
+                    // call pre-method hook if present.
+                    if ( preMethod ) {
+                        preMethod({
+                                object:     object,
+                                objectName: object.____name,
+                                method:     fnname,
+                                arguments:  args } );
+                    }
+                    var retValue= null;
+                    try {
+                        // apply original object call with proxied object as
+                        // function context.
+                        retValue= fn.apply( object, args );
+                        // everything went right on function call, the call
+                        // post-method hook if present
+                        if ( postMethod ) {
+                            var rr= postMethod({
+                                    object:     object,
+                                    objectName: object.____name,
+                                    method:     fnname,
+                                    arguments:  args } );
+                            if ( typeof rr!=="undefined" ) {
+                                //retValue= rr;
+                            }
+                        }
+                    } catch(e) {
+                        // an exeception was thrown, call exception-method hook if
+                        // present and return its result as execution result.
+                        if( errorMethod ) {
+                            retValue= errorMethod({
+                                object:     object,
+                                objectName: object.____name,
+                                method:     fnname,
+                                arguments:  args,
+                                exception:  e} );
+                        } else {
+                            // since there's no error hook, just throw the exception
+                            throw e;
+                        }
+                    }
+
+                    // return original returned value to the caller.
+                    return retValue;
+                };
+            })(object,fn,method);
+        } else {
+            if ( method!=="____name" ) {
+                (function(object, attribute, getter, setter) {
+
+                    object["$proxy__"+attribute]= object[attribute];
+
+                    object.__defineGetter__( attribute, function() {
+                        if ( getter) {
+                            getter( object.____name, attribute );
+                        }
+                        return object["$proxy__"+attribute];
+                    });
+                    object.__defineSetter__( attribute, function (value) {
+                        object["$proxy__"+attribute] = value;
+                        if ( setter ) {
+                            setter( object.____name, attribute, value );
+                        }
+                    });
+                })( object, method, getter, setter );
+            }
+        }
+    }
+
+    // return our newly created and populated with functions proxied object.
+    return object;
+}/**
  * See LICENSE file.
  *
  * Manages every Actor affine transformations.
@@ -829,6 +1017,11 @@ var cp1= proxy(
         this.matrix= [
             1.0,0.0,0.0,
             0.0,1.0,0.0, 0.0,0.0,1.0 ];
+
+        if ( Float32Array ) {
+            this.matrix= new Float32Array(this.matrix);
+        }
+
 		return this;
 	};
 	
@@ -1619,16 +1812,16 @@ var cp1= proxy(
                 return false;
             }
 
-            if ( r.x1< this.x ) {
+            if ( r.x1<= this.x ) {
                 return false;
             }
-            if ( r.x > this.x1 ) {
+            if ( r.x >= this.x1 ) {
                 return false;
             }
-            if ( r.y1< this.y ) {
+            if ( r.y1<= this.y ) {
                 return false;
             }
-            if ( r.y> this.y1 ) {
+            if ( r.y>= this.y1 ) {
                 return false;
             }
 
@@ -2664,6 +2857,36 @@ var cp1= proxy(
             }
 
             return cells;
+        },
+
+        solveCollision : function( callback ) {
+            var i,j,k;
+
+            for( i=0; i<this.elements.length; i++ ) {
+                var cell= this.elements[i];
+
+                if ( cell.length>1 ) {  // at least 2 elements could collide
+                    this._solveCollisionCell( cell, callback );
+                }
+            }
+        },
+
+        _solveCollisionCell : function( cell, callback ) {
+            var i,j;
+
+            for( i=0; i<cell.length; i++ ) {
+
+                var pivot= cell[i];
+                this.r0.setBounds( pivot.x, pivot.y, pivot.width, pivot.height );
+
+                for( j=i+1; j<cell.length; j++ ) {
+                    var c= cell[j];
+
+                    if ( this.r0.intersects( this.r1.setBounds( c.x, c.y, c.width, c.height ) ) ) {
+                        callback( pivot, c );
+                    }
+                }
+            }
         },
 
         /**
@@ -5432,6 +5655,39 @@ var cp1= proxy(
 		return this;
 	};
 
+    /**
+     * Reflection information needed to use the inspector.
+     * Each key defined identifies an object field. For each field, it could be specified:
+     *   + get  : accessor function or field name. if ended with () a function will be assumed.
+     *   + set  : mutator function or field name. if ended with () a function will be assumed.
+     *   + type : field or accessor function return type.
+     *
+     * If not get or set method is defined, the inspector will assume either the field can't be read and/or set.
+     * If neither get and set are defined, the property will be avoided.
+     *
+     * The key can contain a set of comma separated values. This means these properties must be set/modified
+     * at once in the inspector editor field (if any). The way these functions will be set will be by calling
+     * the set method (must be a method) as previously defined.
+     */
+    CAAT.Actor.__reflectionInfo= {
+        "x"                 : "set:setX(), get:x, type:number",
+        "cached"            : "get:isCached(), type:boolean",
+        "scaleX,scaleY"     : "set:setScale(), type:number"
+        /*
+        "y"                 : "setY,w",
+        "width"             : "setWidth,w",
+        "height"            : "setHeight,w",
+        "start_time"        : "setStartTime,w",
+        "duration"          : "setDuration,w",
+        "clip"              : "setClip,w",
+        "rotationAngle"     : "setRotation,w",
+        "alpha"             : "setAlpha,w",
+        "isGlobalAlpha"     : "isGlobalAlpha,w",
+        "visible"           : "isVisible",
+        "id"                : "getId",
+        "backgroundImage"   : ""*/
+    };
+
     CAAT.Actor.ANCHOR_CENTER=	    0;      // constant values to determine different affine transform
     CAAT.Actor.ANCHOR_TOP=			1;      // anchors.
     CAAT.Actor.ANCHOR_BOTTOM=		2;
@@ -5533,6 +5789,9 @@ var cp1= proxy(
         isAA                :   true,   // is this actor/container Axis aligned ? if so, much faster inverse matrices
                                         // can be calculated.
 
+        isVisible : function() {
+            return this.isVisible;
+        },
         setupCollission : function( collides, isCircular ) {
             this.collides= collides;
             this.collidesAsRect= !isCircular;
@@ -5650,6 +5909,14 @@ var cp1= proxy(
             }
             return this;
         },
+
+        resetAnimationTime : function() {
+            if ( this.backgroundImage ) {
+                this.backgroundImage.resetAnimationTime();
+            }
+            return this;
+        },
+
         setChangeFPS : function(time) {
             if ( this.backgroundImage ) {
                 this.backgroundImage.setChangeFPS(time);
@@ -6254,6 +6521,10 @@ var cp1= proxy(
          */
         modelToView : function(point) {
 
+            if ( this.dirty ) {
+                this.setModelViewMatrix();
+            }
+
             var tm= this.worldModelViewMatrix.matrix;
 
             if ( point instanceof Array ) {
@@ -6283,6 +6554,10 @@ var cp1= proxy(
          * @param otherActor {CAAT.Actor}
          */
         modelToModel : function( point, otherActor )   {
+            if ( this.dirty ) {
+                this.setModelViewMatrix();
+            }
+
             return otherActor.viewToModel( this.modelToView( point ) );
         },
         /**
@@ -6298,6 +6573,9 @@ var cp1= proxy(
          *
          */
 		viewToModel : function(point) {
+            if ( this.dirty ) {
+                this.setModelViewMatrix();
+            }
             this.worldModelViewMatrixI= this.worldModelViewMatrix.getInverse();
             this.worldModelViewMatrixI.transformCoord(point);
 			return point;
@@ -7049,6 +7327,7 @@ var cp1= proxy(
                 modelViewMatrix: new CAAT.Matrix()
             };
 
+            this.cached= false;
             this.paintActor(director,time);
             this.setBackgroundImage(canvas);
 
@@ -7197,11 +7476,11 @@ var cp1= proxy(
             return this;
         }
 	};
-
+/*
     if ( CAAT.NO_PERF ) {
         CAAT.Actor.prototype.paintActor= CAAT.Actor.prototype.__paintActor;
     }
-
+*/
 })();
 
 (function() {
@@ -7302,7 +7581,9 @@ var cp1= proxy(
 
             for( var actor= this.activeChildren; actor; actor=actor.__next ) {
                 if ( actor.visible ) {
+                    ctx.save();
                     actor.paintActor(director,time);
+                    ctx.restore();
                 }
             }
 
@@ -7684,17 +7965,16 @@ var cp1= proxy(
                         index= cl.length;
                     }
 
-                    //cl.splice( index, 1, nActor );
                     cl.splice( index, 0, nActor[0] );
                 }
             }
         }
 	};
-
+/*
     if ( CAAT.NO_PERF ) {
         CAAT.ActorContainer.prototype.paintActor= CAAT.ActorContainer.prototype.__paintActor;
     }
-    
+*/
     extend( CAAT.ActorContainer, CAAT.Actor, null);
 
 })();
@@ -7994,7 +8274,9 @@ var cp1= proxy(
 			for( var i=0; i<this.text.length; i++ ) {
 				var caracter= this.text[i].toString();
 				var charWidth= ctx.measureText( caracter ).width;
-				var currentCurveLength= charWidth/2 + textWidth;
+
+                // guonjien: remove "+charWidth/2" since it destroys the kerning. and he's right!!!. thanks.
+				var currentCurveLength= textWidth;
 
 				p0= this.path.getPositionFromLength(currentCurveLength).clone();
 				p1= this.path.getPositionFromLength(currentCurveLength-0.1).clone();
@@ -8003,7 +8285,7 @@ var cp1= proxy(
 
 				ctx.save();
 
-					ctx.translate( (0.5+p0.x)|0, (0.5+p0.y)|0 );
+					ctx.translate( p0.x>>0, p0.y>>0 );
 					ctx.rotate( angle );
                     if ( this.fill ) {
 					    ctx.fillText(caracter,0,0);
@@ -9634,6 +9916,8 @@ var cp1= proxy(
             this.tpH = tpH || 2048;
 
             this.updateGLPages();
+
+            return this;
         },
         updateGLPages : function() {
             if (this.glEnabled) {
@@ -9834,7 +10118,6 @@ var cp1= proxy(
                         for( i=0; i<dr.length; i++ ) {
                             var drr= dr[i];
                             if ( !drr.isEmpty() ) {
-                                //ctx.rect( (drr.x|0)+.5, (drr.y|0)+.5, 1+(drr.width|0), 1+(drr.height|0) );
                                 ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
                                 this.nDirtyRects++;
                             }
@@ -10038,15 +10321,17 @@ var cp1= proxy(
              * draw actors on scene.
              */
             if (scene.isInAnimationFrame(this.time)) {
+                ctx.setTransform(1,0,0,1, 0,0);
+
                 ctx.globalAlpha = 1;
                 ctx.globalCompositeOperation = 'source-over';
                 ctx.clearRect(0, 0, this.width, this.height);
-                ctx.setTransform(1,0,0, 0,1,0);
 
                 var octx = this.ctx;
                 var ocrc = this.crc;
 
-                this.ctx = this.crc = ctx;
+                this.ctx = ctx;
+                this.crc = ctx;
                 ctx.save();
 
                 /**
@@ -10161,9 +10446,7 @@ var cp1= proxy(
             var ssin = this.scenes[ inSceneIndex ];
             var sout = this.scenes[ outSceneIndex ];
 
-//            if (!this.glEnabled && navigator.browser!=='iOS') {
             if ( !CAAT.__CSS__ && !this.glEnabled ) {
-                this.worldModelViewMatrix.transformRenderingContext(this.transitionScene.ctx);
                 this.renderToContext(this.transitionScene.ctx, sout);
                 sout = this.transitionScene;
             }
@@ -10715,45 +10998,6 @@ var cp1= proxy(
             var posy = 0;
             if (!e) e = window.event;
 
-            if ( e.offsetX ) {
-                posx= e.offsetX;
-                posy= e.offsetY;
-
-                if ( !CAAT.__CSS__ ) {
-                    var pt= new CAAT.Point( posx, posy );
-                    if ( !this.modelViewMatrixI ) {
-                        this.modelViewMatrixI= this.modelViewMatrix.getInverse();
-                    }
-                    this.modelViewMatrixI.transformCoord(pt);
-                    posx= pt.x;
-                    posy= pt.y
-                }
-
-                point.set(posx, posy);
-                this.screenMousePoint.set(posx, posy);
-
-                return;
-            } else if ( e.layerX ) {
-                posx= e.layerX;
-                posy= e.layerY;
-
-                if ( !CAAT.__CSS__ ) {
-                    var pt= new CAAT.Point( posx, posy );
-                    if ( !this.modelViewMatrixI ) {
-                        this.modelViewMatrixI= this.modelViewMatrix.getInverse();
-                    }
-                    this.modelViewMatrixI.transformCoord(pt);
-                    posx= pt.x;
-                    posy= pt.y
-                }
-
-                point.set(posx, posy);
-                this.screenMousePoint.set(posx, posy);
-
-                return;
-            }
-
-
             if (e.pageX || e.pageY) {
                 posx = e.pageX;
                 posy = e.pageY;
@@ -10763,7 +11007,7 @@ var cp1= proxy(
                 posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
             }
 
-            var offset= this.getOffset(e.target);
+            var offset= this.getOffset(this.canvas);
 
             posx-= offset.x;
             posy-= offset.y;
@@ -10771,16 +11015,14 @@ var cp1= proxy(
             //////////////
             // transformar coordenada inversamente con affine transform de director.
 
-            if ( !CAAT.__CSS__ ) {
-                pt.x= posx;
-                pt.y= posy;
-                if ( !this.modelViewMatrixI ) {
-                    this.modelViewMatrixI= this.modelViewMatrix.getInverse();
-                }
-                this.modelViewMatrixI.transformCoord(pt);
-                posx= pt.x;
-                posy= pt.y
+            pt.x= posx;
+            pt.y= posy;
+            if ( !this.modelViewMatrixI ) {
+                this.modelViewMatrixI= this.modelViewMatrix.getInverse();
             }
+            this.modelViewMatrixI.transformCoord(pt);
+            posx= pt.x;
+            posy= pt.y
 
             point.set(posx, posy);
             this.screenMousePoint.set(posx, posy);
@@ -10865,7 +11107,7 @@ var cp1= proxy(
         },
 
         __mouseMoveHandler : function(e) {
-            this.getCanvasCoord(this.mousePoint, e);
+            //this.getCanvasCoord(this.mousePoint, e);
 
             var lactor;
             var pos;
@@ -10875,20 +11117,18 @@ var cp1= proxy(
             // drag
 
             if (this.isMouseDown && null !== this.lastSelectedActor) {
-/*
-                // check for mouse move threshold.
-                if (!this.dragging) {
-                    if (Math.abs(this.prevMousePoint.x - this.mousePoint.x) < CAAT.DRAG_THRESHOLD_X &&
-                        Math.abs(this.prevMousePoint.y - this.mousePoint.y) < CAAT.DRAG_THRESHOLD_Y) {
-                        return;
-                    }
-                }
-*/
-
 
                 lactor = this.lastSelectedActor;
                 pos = lactor.viewToModel(
                     new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+
+                // check for mouse move threshold.
+                if (!this.dragging) {
+                    if (Math.abs(this.prevMousePoint.x - pos.x) < CAAT.DRAG_THRESHOLD_X &&
+                        Math.abs(this.prevMousePoint.y - pos.y) < CAAT.DRAG_THRESHOLD_Y) {
+                        return;
+                    }
+                }
 
                 this.dragging = true;
 
@@ -10995,6 +11235,9 @@ var cp1= proxy(
                         ct));
             }
 
+            this.prevMousePoint.x= pos.x;
+            this.prevMousePoint.y= pos.y;
+
             this.lastSelectedActor = lactor;
         },
 
@@ -11039,7 +11282,6 @@ var cp1= proxy(
 
             var lactor;
             var pos, ev;
-            this.getCanvasCoord(this.mousePoint, e);
 
             if ( null==this.lastSelectedActor ) {
                 lactor= this.findActorAtPosition( this.mousePoint );
@@ -11107,29 +11349,50 @@ var cp1= proxy(
          */
         __touchStartHandler : function(e) {
 
-            e.preventDefault();
-            e= e.targetTouches[0]
-            this.__mouseDownHandler(e);
+            if ( e.target===this.canvas ) {
+                e.preventDefault();
+                e= e.targetTouches[0];
+
+                var mp= this.mousePoint;
+                this.getCanvasCoord(mp, e);
+                if ( mp.x<0 || mp.y<0 || mp.x>=this.width || mp.y>=this.height ) {
+                    return;
+                }
+
+                this.touching= true;
+
+                this.__mouseDownHandler(e);
+            }
         },
 
         __touchEndHandler : function(e) {
 
-            e.preventDefault();
-            e= e.changedTouches[0];
-            this.__mouseUpHandler(e);
+            if ( this.touching ) {
+                e.preventDefault();
+                e= e.changedTouches[0];
+                var mp= this.mousePoint;
+                this.getCanvasCoord(mp, e);
+
+                this.touching= false;
+
+                this.__mouseUpHandler(e);
+            }
         },
 
         __touchMoveHandler : function(e) {
 
-            e.preventDefault();
+            if ( this.touching ) {
+                e.preventDefault();
 
-            if ( this.gesturing ) {
-                return;
-            }
+                if ( this.gesturing ) {
+                    return;
+                }
 
-            for( var i=0; i<e.targetTouches.length; i++ ) {
-                if ( !i ) {
-                    this.__mouseMoveHandler(e.targetTouches[i]);
+                for( var i=0; i<e.targetTouches.length; i++ ) {
+                    var ee= e.targetTouches[i];
+                    var mp= this.mousePoint;
+                    this.getCanvasCoord(mp, ee);
+                    this.__mouseMoveHandler(ee);
                 }
             }
         },
@@ -11166,57 +11429,115 @@ var cp1= proxy(
 
             var me= this;
 
-            canvas.addEventListener('mouseup', function(e) {
-//console.log("up "+e.target);
-                e.preventDefault();
-                me.__mouseUpHandler(e);
+            window.addEventListener('mouseup', function(e) {
+                if ( me.touching ) {
+                    e.preventDefault();
+                    e.cancelBubble = true;
+                    if (e.stopPropagation) e.stopPropagation();
+
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    me.__mouseUpHandler(e);
+
+                    me.touching= false;
+                }
             }, false );
 
-            canvas.addEventListener('mousedown', function(e) {
-//console.log("down "+e.target);
-                e.preventDefault();
-                me.__mouseDownHandler(e);
+            window.addEventListener('mousedown', function(e) {
+                if ( e.target===canvas ) {
+                    e.preventDefault();
+                    e.cancelBubble = true;
+                    if (e.stopPropagation) e.stopPropagation();
+
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    if ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) {
+                        return;
+                    }
+                    me.touching= true;
+
+                    me.__mouseDownHandler(e);
+                }
             }, false );
 
-            canvas.addEventListener('mouseover',function(e) {
-                e.preventDefault();
-//console.log("over"+e.target);
-                me.__mouseOverHandler(e);
+            window.addEventListener('mouseover',function(e) {
+                if ( e.target===canvas && !me.dragging ) {
+                    e.preventDefault();
+                    e.cancelBubble = true;
+                    if (e.stopPropagation) e.stopPropagation();
+
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    if ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) {
+                        return;
+                    }
+
+                    me.__mouseOverHandler(e);
+                }
             }, false);
 
-            canvas.addEventListener('mouseout',function(e) {
-                e.preventDefault();
-//console.log("out"+e.target);
-                me.__mouseOutHandler(e);
+            window.addEventListener('mouseout',function(e) {
+                if ( e.target===canvas && !me.dragging ) {
+                    e.preventDefault();
+                    e.cancelBubble = true;
+                    if (e.stopPropagation) e.stopPropagation();
+
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    me.__mouseOutHandler(e);
+                }
             }, false);
 
-            canvas.addEventListener('mousemove',
+            window.addEventListener('mousemove',
                 function(e) {
                     e.preventDefault();
-//console.log("move "+e.target);
+                    e.cancelBubble = true;
+                    if (e.stopPropagation) e.stopPropagation();
+
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    if ( !me.dragging && ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) ) {
+                        return;
+                    }
                     me.__mouseMoveHandler(e);
                 },
                 false);
 
-            canvas.addEventListener("dblclick", function(e) {
-                e.preventDefault();
-                me.__mouseDBLClickHandler(e);
+            window.addEventListener("dblclick", function(e) {
+                if ( e.target===canvas ) {
+                    e.preventDefault();
+                    e.cancelBubble = true;
+                    if (e.stopPropagation) e.stopPropagation();
+                    var mp= me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    if ( mp.x<0 || mp.y<0 || mp.x>=me.width || mp.y>=me.height ) {
+                        return;
+                    }
+
+                    me.__mouseDBLClickHandler(e);
+                }
             }, false);
 
-            canvas.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
-            canvas.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
-            canvas.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
-            canvas.addEventListener("gesturestart", function(e) {
-                e.preventDefault();
-                me.__gestureStart( e.scale, e.rotation );
+            window.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
+            window.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
+            window.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
+            window.addEventListener("gesturestart", function(e) {
+                if ( e.target===canvas ) {
+                    e.preventDefault();
+                    me.__gestureStart( e.scale, e.rotation );
+                }
             }, false );
-            canvas.addEventListener("gestureend", function(e) {
-                e.preventDefault();
-                me.__gestureEnd( e.scale, e.rotation );
+            window.addEventListener("gestureend", function(e) {
+                if ( e.target===canvas ) {
+                    e.preventDefault();
+                    me.__gestureEnd( e.scale, e.rotation );
+                }
             }, false );
-            canvas.addEventListener("gesturechange", function(e) {
-                e.preventDefault();
-                me.__gestureChange( e.scale, e.rotation );
+            window.addEventListener("gesturechange", function(e) {
+                if ( e.target===canvas ) {
+                    e.preventDefault();
+                    me.__gestureChange( e.scale, e.rotation );
+                }
             }, false );
         },
 
@@ -11456,6 +11777,11 @@ CAAT.setCoordinateClamping= function( clamp ) {
     }
 };
 
+
+CAAT.RENDER_MODE_CONTINUOUS=    1;              // redraw every frame
+CAAT.RENDER_MODE_DIRTY=         2;              // suitable for evented CAAT.
+CAAT.RENDER_MODE= CAAT.RENDER_MODE_CONTINUOUS;
+
 /**
  * Box2D point meter conversion ratio.
  */
@@ -11557,6 +11883,7 @@ CAAT.Keys = {
     PAUSE:19,
     CAPSLOCK:20,
     ESCAPE:27,
+//    SPACE:32,
     PAGEUP:33,
     PAGEDOWN:34,
     END:35,
@@ -11810,7 +12137,7 @@ CAAT.loop= function(fps) {
 
     CAAT.FPS= fps || 60;
     CAAT.renderEnabled= true;
-    if (CAAT.NO_PERF) {
+    if (CAAT.NO_RAF) {
         setInterval(
                 function() {
                     var t= new Date().getTime();
@@ -12322,6 +12649,20 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 
             return this;
         },
+        paintChunk : function( ctx, dx,dy, x, y, w, h ) {
+            ctx.drawImage( this.image, x,y,w,h, dx,dy,w,h );
+        },
+        paintTile : function(ctx, index, x, y) {
+            var el= this.mapInfo[index];
+            ctx.drawImage(
+                this.image,
+                el.x, el.y,
+                el.width, el.height,
+                (this.offsetX+x)>>0, (this.offsetY+y)>>0,
+                el.width, el.height);
+
+            return this;
+        },
         /**
          * Draws the subimage pointed by imageIndex scaled to the size of w and h.
          * @param canvas a canvas context.
@@ -12471,6 +12812,11 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             return this;
         },
 
+        resetAnimationTime : function() {
+            this.prevAnimationTime=  -1;
+            return this;
+        },
+
         /**
          * Set the sprite animation images index. This method accepts an array of objects which define indexes to
          * subimages inside this sprite image.
@@ -12485,6 +12831,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 		setAnimationImageIndex : function( aAnimationImageIndex ) {
 			this.animationImageIndex= aAnimationImageIndex;
 			this.spriteIndex= aAnimationImageIndex[0];
+            this.prevAnimationTime= -1;
 
             return this;
 		},
@@ -14607,6 +14954,82 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
     };
 
 })();
+
+/**
+ * See LICENSE file.
+ *
+ *
+ *
+ */
+/*
+(function() {
+    CAAT.modules.Inspector= function() {
+        return this;
+    };
+
+
+
+    CAAT.modules.Inspector.prototype= {
+
+        initialize : function(root) {
+
+            if ( !root ) {
+                root= CAAT;
+            }
+
+            CAAT.log("Analyzing "+root.toString()+" for reflection info.");
+            for( var clazz in root ) {
+                if ( root[clazz].__reflectionInfo ) {
+                    CAAT.log("  Extracting reflection info for: "+root[clazz] );
+                    this.extractReflectionInfo( root[clazz] );
+                }
+            }
+        },
+
+        extractReflectionInfo : function( object ) {
+            var ri= object.__reflectionInfo;
+            var key;
+            var i;
+            var __removeEmpty= function( el, index, array ) {
+                array[index]= array[index].trim();
+                if ( array[index]==="" ) array.splice(index,1);
+            };
+
+            for( key in ri ) {
+                var metadata= ri[key];
+                CAAT.log("    reflection info for: "+key+"="+metadata );
+
+                var ks= key.split(",");
+                var data= metadata.split(",");
+
+                ks.forEach( __removeEmpty );
+                data.forEach( __removeEmpty );
+
+                if ( ks.length===1 ) {  // one property.
+                    data.forEach( function( el, index, array ) {
+                        // el is each metadata definition of the form: key:value
+                        var operation= el.split(":");
+                        operation.forEach( __removeEmpty );
+                        if ( operation.length!=2 ) {
+                            CAAT.log("      ERR. operation: "+el+" wrong format");
+                        } else {
+                            if ( operation[0]==="set" ) {
+                                CAAT.log("set="+operation[1]);
+                            } else if ( operation[0]==="get" ) {
+                                CAAT.log("get="+operation[1]);
+                            } else if ( operation[0]==="type" ) {
+                                CAAT.log("type="+operation[1]);
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+    };
+
+})();
+    */
 
 /**
  * See LICENSE file.

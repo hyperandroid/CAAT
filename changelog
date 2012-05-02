@@ -1,8 +1,47 @@
-*03/13/2012 0.3 Build 279*
+*04/22/2012 0.4 Build 63 *
+--------------------------
+
+* Minor code fixes.
+* Added Float32Array where available to manange AF matrices.
+
+*04/22/2012 0.4 Build 59 *
+--------------------------
+
+* Fixed demo 12+1, which led strange results regarding lines. Damn beginPath().
+* Added threshold values for drag operations.
+* Fixed bubbling with window input system. MouseUp was not releasing a flag.
+* The method setAnimationImageIndex now resets animation timeout so spritesheet will show first frame.
+* Added method resetAnimationTime on Actor and SpriteImage to reset animation sprite sheet time.
+
+*04/22/2012 0.4 Build 36 *
+--------------------------
+
+* Removed layerX/layerY code from cursor on-screen coordinate recognition. It was giving wrong values.
+* Added proxyfy and proxyObject functions.
+* Input systen has been promoted from canvas element to window. This way you can drag out of the canvas boundaries.
+  The system honors touch events.
+
+
+*04/17/2012 0.4 Build 8  *
+--------------------------
+
+* Under certain situations, modelToModel, modelToView and viewToModel could give unexpected results.
+  specially when removing/adding actors in the same frame. Added a dirtiness test on those functions to have
+  correct values.
+* TextActor, as guonjian spotted, when drawing text on a path, kerning was destroyed. Fixed.
+
+*04/05/2012 0.4 Build 1  *
 --------------------------
 
 * Merged Karl Westin pull requests.
 * Fixed CAAT.Actor with sprite sheet on CSS renderer which didn't update the sprite index based on time.
+* Added paintChunk to CAAT.SpriteImage which allows to draw arbitrary image regions.
+* Fixed CSS renderer issues when scaled up.
+* Added demo 20 : flight control.
+* Added demo 21 : preliminary CAAT tile based engine. Canvas only.
+* Modidied some demos.
+* Added preliminary inspector module.
+* Added CAAT.NO_RAF to avoid RAF in favour of setInterval.
 
 *03/13/2012 0.3 Build 264*
 --------------------------

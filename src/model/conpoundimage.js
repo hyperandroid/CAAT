@@ -419,6 +419,20 @@
 
             return this;
         },
+        paintChunk : function( ctx, dx,dy, x, y, w, h ) {
+            ctx.drawImage( this.image, x,y,w,h, dx,dy,w,h );
+        },
+        paintTile : function(ctx, index, x, y) {
+            var el= this.mapInfo[index];
+            ctx.drawImage(
+                this.image,
+                el.x, el.y,
+                el.width, el.height,
+                (this.offsetX+x)>>0, (this.offsetY+y)>>0,
+                el.width, el.height);
+
+            return this;
+        },
         /**
          * Draws the subimage pointed by imageIndex scaled to the size of w and h.
          * @param canvas a canvas context.
@@ -568,6 +582,11 @@
             return this;
         },
 
+        resetAnimationTime : function() {
+            this.prevAnimationTime=  -1;
+            return this;
+        },
+
         /**
          * Set the sprite animation images index. This method accepts an array of objects which define indexes to
          * subimages inside this sprite image.
@@ -582,6 +601,7 @@
 		setAnimationImageIndex : function( aAnimationImageIndex ) {
 			this.animationImageIndex= aAnimationImageIndex;
 			this.spriteIndex= aAnimationImageIndex[0];
+            this.prevAnimationTime= -1;
 
             return this;
 		},

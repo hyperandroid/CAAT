@@ -1,0 +1,301 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+
+    <title>CAAT example: Quadtree based collision detection</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Quadtree based collision detection</h1>
+            </div>
+            <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>
+                        Use the following controls:
+                    </p>
+                    <ul>
+                        <li>Cursor keys.</li>
+                    </ul>
+                </div>
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script type="text/javascript" src="../../../build/caat.js"></script>
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    var FC= {};
+
+    (function() {
+        FC.Board= function() {
+            FC.Board.superclass.constructor.call(this);
+            return this;
+        };
+
+        FC.Board.prototype= {
+
+            points          : null,
+            inPlane         : false,
+            currentPlane    : null,
+            pathActor       : null,
+            lx              : null,
+            ly              : null,
+            tl              : null,
+            MT              : 50,
+            DT              : 20,
+            __index         : 0,
+
+
+            create : function( director, scene ) {
+
+                var me= this;
+
+                this.setBounds(0,0,director.width,director.height);
+                scene.addChild( this );
+
+                this.pathActor= new CAAT.PathActor().
+                        setBounds(0,0,director.width,director.height).
+                        enableEvents(false).
+                        setInteractive(false);
+
+                this.pathActor.paint= function( director, time ) {
+                    CAAT.PathActor.prototype.paint.call(this,director,time);
+
+                    for( i=0; i<me.childrenList.length; i++ ) {
+                        var el= this[me.childrenList[i].id];
+                        if ( el ) {
+                            el.paint( director );
+                        }
+                    }
+                };
+
+                scene.addChild( this.pathActor );
+
+                var N=6;
+                for( var i=0; i<N; i++ ) {
+                    var i0= N>>1;
+                    this.addFlight(
+                            Math.random() * director.width,
+                            i<i0 ? 0 : director.height,
+                            Math.random() * director.width,
+                            i<i0 ? director.height : 0 );
+                }
+
+                return this;
+            },
+
+            addFlight : function( x, y, x1, y1 ) {
+                var f= new CAAT.Actor().
+                        setFillStyle('#00f').
+                        setLocation( x, y ).
+                        setSize( 30,30 ).
+                        setPositionAnchor(.5,.5).
+                        addBehavior(
+                            new CAAT.PathBehavior().
+                                setValues( new CAAT.Path().setLinear( x,y,x1,y1).setInteractive(false) ).
+                                setDelayTime(0,30000).
+                                setAutoRotate(true, CAAT.PathBehavior.autorotate.LEFT_TO_RIGHT)
+                        ).
+                        enableEvents( false ).
+                        setId('__plane'+this.__index++);
+                this.addChild( f );
+            },
+
+            mouseDown : function(e) {
+                var x= e.x;
+                var y= e.y;
+
+                var point= new CAAT.Point();
+                for( var i=0; i<this.childrenList.length; i++ ) {
+                    point.set( x, y );
+
+                    var modelViewMatrixI= this.childrenList[i].modelViewMatrix.getInverse();
+                    modelViewMatrixI.transformCoord(point);
+
+        	        if (this.childrenList[i].contains(point.x, point.y)) {
+                        this.inPlane= true;
+                        this.currentPlane= this.childrenList[i];
+                        this.currentPlane.fillStyle='#ff0';
+
+                        this.points= [];
+                        this.points.push( new CAAT.Point(x,y) );
+                        this.lx= x;
+                        this.ly= y;
+                        this.tl= this.time;
+                        return;
+                    }
+                }
+            },
+
+            mouseUp : function(e) {
+                if ( !this.inPlane ) {
+                    return;
+                }
+
+                this.points.shift();
+                this.points.unshift( new CAAT.Point( this.currentPlane.x, this.currentPlane.y ) );
+                this.points.unshift( new CAAT.Point( this.currentPlane.x, this.currentPlane.y ) );   // yes twice
+
+                this.points.push( new CAAT.Point( e.x, e.y ) );
+
+                var p= new CAAT.Path().
+                    setCatmullRom(this.points, false).
+                    endPath().
+                    flatten(20, false);
+
+
+                var pp= [];
+                for( var i=0; i<p.getNumSegments(); i++ ) {
+                    pp.push( p.getSegment(i).startCurvePosition() );
+                }
+                pp.push( new CAAT.Point( e.x, e.y ) );
+                pp.push( new CAAT.Point( e.x, e.y ) );
+
+                this.points= pp;
+                p= new CAAT.Path().setCatmullRom( pp, false ).endPath();
+
+                this.pathActor[this.currentPlane.id]= p.setInteractive(false);
+
+                this.currentPlane.
+                    emptyBehaviorList().
+                    addBehavior(
+                    new CAAT.PathBehavior().
+                            setValues( p ).
+                            setDelayTime(0,30000).
+                            setAutoRotate(true, CAAT.PathBehavior.autorotate.LEFT_TO_RIGHT)
+                );
+
+                this.inPlane= false;
+                this.currentPlane.fillStyle='#00f';
+                this.points= [];
+                this.pathActor.setPath( null );
+            },
+
+            mouseDrag : function(e) {
+                if ( !this.inPlane ) {
+                    return;
+                }
+
+                var ps= this.points;
+
+                var x= e.x - this.lx;
+                var y= e.y - this.ly;
+
+                if ( Math.sqrt(x*x+y*y)<this.DT ) { // distancia peque–a, promediar puntos.
+                    ps[ ps.length-1 ].x= e.x;
+                    ps[ ps.length-1 ].y= e.y;
+                    if ( this.pathActor.path ) {
+                        var ppp= this.pathActor.path.getLastPathSegment().endCurvePosition();
+                        ppp.x= e.x;
+                        ppp.y= e.y;
+                    }
+                    return;
+                }
+
+
+                if ( this.time-this.tl< this.MT ) {
+                    return;
+                }
+
+
+                this.lx= e.x;
+                this.ly= e.y;
+
+                ps.push( new CAAT.Point( e.x, e.y ) );
+
+                var p= new CAAT.Path().
+                        beginPath( ps[0].x, ps[0].y );
+                for( var i=1, l=ps.length; i<l; i++ ) {
+                    p.addLineTo( ps[i].x, ps[i].y );
+                }
+                p.endPath().setInteractive(false);
+                this.pathActor.setPath( p );
+
+            }
+        };
+
+        extend( FC.Board, CAAT.ActorContainer );
+
+    })();
+
+    (function() {
+        CAAT.DEBUG=1;
+
+        function __start() {
+            var director= new CAAT.Director().initialize(800, 500, document.getElementById("experiment-canvas"));
+
+            var scene= director.createScene();
+
+            var board= new FC.Board().create( director, scene );
+
+            CAAT.loop(60);
+        }
+
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener('load', __start, false);
+
+    })();
+
+</script>
+</html>

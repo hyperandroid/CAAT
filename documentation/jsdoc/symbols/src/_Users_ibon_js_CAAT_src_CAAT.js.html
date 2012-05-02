@@ -16,19 +16,4 @@
 <span class='line'>  9</span>  * @namespace
 <span class='line'> 10</span>  */</span><span class="WHIT">
 <span class='line'> 11</span> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">CAAT</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CAAT</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 12</span> 
-<span class='line'> 13</span> </span><span class="COMM">/**
-<span class='line'> 14</span>  * Common bind function. Allows to set an object's function as callback. Set for every function in the
-<span class='line'> 15</span>  * javascript context.
-<span class='line'> 16</span>  */</span><span class="WHIT">
-<span class='line'> 17</span> </span><span class="NAME">Function.prototype.bind</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Function.prototype.bind</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 18</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">fn</span><span class="PUNC">=</span><span class="WHIT">     </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">                                   </span><span class="COMM">// the function</span><span class="WHIT">
-<span class='line'> 19</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">args</span><span class="PUNC">=</span><span class="WHIT">   </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">  </span><span class="COMM">// copy the arguments.</span><span class="WHIT">
-<span class='line'> 20</span> </span><span class="WHIT">    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">obj</span><span class="PUNC">=</span><span class="WHIT">    </span><span class="NAME">args.shift</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">                           </span><span class="COMM">// first parameter will be context 'this'</span><span class="WHIT">
-<span class='line'> 21</span> </span><span class="WHIT">    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'> 22</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">fn.apply</span><span class="PUNC">(</span><span class="WHIT">
-<span class='line'> 23</span> </span><span class="WHIT">                </span><span class="NAME">obj</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'> 24</span> </span><span class="WHIT">                </span><span class="NAME">args.concat</span><span class="PUNC">(</span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 25</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'> 26</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'> 27</span> </span></pre></body></html>
+<span class='line'> 12</span> </span></pre></body></html>

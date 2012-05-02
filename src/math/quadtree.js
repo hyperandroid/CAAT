@@ -227,6 +227,36 @@
             return cells;
         },
 
+        solveCollision : function( callback ) {
+            var i,j,k;
+
+            for( i=0; i<this.elements.length; i++ ) {
+                var cell= this.elements[i];
+
+                if ( cell.length>1 ) {  // at least 2 elements could collide
+                    this._solveCollisionCell( cell, callback );
+                }
+            }
+        },
+
+        _solveCollisionCell : function( cell, callback ) {
+            var i,j;
+
+            for( i=0; i<cell.length; i++ ) {
+
+                var pivot= cell[i];
+                this.r0.setBounds( pivot.x, pivot.y, pivot.width, pivot.height );
+
+                for( j=i+1; j<cell.length; j++ ) {
+                    var c= cell[j];
+
+                    if ( this.r0.intersects( this.r1.setBounds( c.x, c.y, c.width, c.height ) ) ) {
+                        callback( pivot, c );
+                    }
+                }
+            }
+        },
+
         /**
          *
          * @param x

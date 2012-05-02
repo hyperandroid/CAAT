@@ -197,13 +197,11 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.ActorContainer.html">CAAT.ActorContainer</a></li>
 	
+	<li><a href="../symbols/CAAT.AlphaBehavior.html">CAAT.AlphaBehavior</a></li>
+	
 	<li><a href="../symbols/CAAT.AudioManager.html">CAAT.AudioManager</a></li>
 	
-	<li><a href="../symbols/CAAT.B2DBodyActor.html">CAAT.B2DBodyActor</a></li>
-	
-	<li><a href="../symbols/CAAT.B2DCircularBody.html">CAAT.B2DCircularBody</a></li>
-	
-	<li><a href="../symbols/CAAT.B2DPolygonBody.html">CAAT.B2DPolygonBody</a></li>
+	<li><a href="../symbols/CAAT.Behavior.html">CAAT.Behavior</a></li>
 	
 	<li><a href="../symbols/CAAT.Bezier.html">CAAT.Bezier</a></li>
 	
@@ -213,6 +211,10 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Color.RGB.html">CAAT.Color.RGB</a></li>
 	
+	<li><a href="../symbols/CAAT.ColorBehavior.html">CAAT.ColorBehavior</a></li>
+	
+	<li><a href="../symbols/CAAT.ContainerBehavior.html">CAAT.ContainerBehavior</a></li>
+	
 	<li><a href="../symbols/CAAT.Curve.html">CAAT.Curve</a></li>
 	
 	<li><a href="../symbols/CAAT.CurvePath.html">CAAT.CurvePath</a></li>
@@ -220,6 +222,8 @@ ul.inheritsList
 	<li><a href="../symbols/CAAT.Director.html">CAAT.Director</a></li>
 	
 	<li><a href="../symbols/CAAT.Font.html">CAAT.Font</a></li>
+	
+	<li><a href="../symbols/CAAT.GenericBehavior.html">CAAT.GenericBehavior</a></li>
 	
 	<li><a href="../symbols/CAAT.IMActor.html">CAAT.IMActor</a></li>
 	
@@ -261,11 +265,19 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.PathActor.html">CAAT.PathActor</a></li>
 	
+	<li><a href="../symbols/CAAT.PathBehavior.html">CAAT.PathBehavior</a></li>
+	
 	<li><a href="../symbols/CAAT.PathSegment.html">CAAT.PathSegment</a></li>
 	
 	<li><a href="../symbols/CAAT.Point.html">CAAT.Point</a></li>
 	
 	<li><a href="../symbols/CAAT.Rectangle.html">CAAT.Rectangle</a></li>
+	
+	<li><a href="../symbols/CAAT.RotateBehavior.html">CAAT.RotateBehavior</a></li>
+	
+	<li><a href="../symbols/CAAT.Scale1Behavior.html">CAAT.Scale1Behavior</a></li>
+	
+	<li><a href="../symbols/CAAT.ScaleBehavior.html">CAAT.ScaleBehavior</a></li>
 	
 	<li><a href="../symbols/CAAT.Scene.html">CAAT.Scene</a></li>
 	
@@ -330,6 +342,34 @@ ul.inheritsList
 			
 
 <!-- ============================== properties summary ===================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class CAAT.Actor.">
+					<caption>Field Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								CAAT.Actor.<b><a href="../symbols/CAAT.Actor.html#.__reflectionInfo">__reflectionInfo</a></b>
+								</div>
+								<div class="description">Reflection information needed to use the inspector.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
 			
 
 <!-- ============================== methods summary ======================== -->
@@ -607,6 +647,15 @@ whether the parameter point coordinate lies inside the Actor.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#isVisible">isVisible</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#modelToModel">modelToModel</a></b>(point, otherActor)
 								</div>
 								<div class="description">Transform a local coordinate point on this Actor's coordinate system into
@@ -764,6 +813,15 @@ another point in otherActor's coordinate system.</div>
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#removeListener">removeListener</a></b>(actorListener)
 								</div>
 								<div class="description">Removes an Actor's life cycle listener.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#resetAnimationTime">resetAnimationTime</a></b>()
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -1198,6 +1256,44 @@ It defines an entity able to:
 			
 
 <!-- ============================== field details ========================== -->		
+			
+				<div class="sectionTitle">
+					Field Detail
+				</div>
+				
+					<a name=".__reflectionInfo"> </a>
+					<div class="fixedFont">&lt;private&gt; &lt;static&gt; 
+					
+					
+					<span class="light">CAAT.Actor.</span><b>__reflectionInfo</b>
+					
+					</div>
+					<div class="description">
+						Reflection information needed to use the inspector.
+Each key defined identifies an object field. For each field, it could be specified:
+  + get  : accessor function or field name. if ended with () a function will be assumed.
+  + set  : mutator function or field name. if ended with () a function will be assumed.
+  + type : field or accessor function return type.
+
+If not get or set method is defined, the inspector will assume either the field can't be read and/or set.
+If neither get and set are defined, the property will be avoided.
+
+The key can contain a set of comma separated values. This means these properties must be set/modified
+at once in the inspector editor field (if any). The way these functions will be set will be by calling
+the set method (must be a method) as previously defined.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					
+				
 			
 
 <!-- ============================== method details ========================= -->		
@@ -2311,6 +2407,31 @@ an Actor expiration.
 
 					<hr />
 				
+					<a name="isVisible"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>isVisible</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="modelToModel"> </a>
 					<div class="fixedFont">
 					
@@ -2995,6 +3116,31 @@ It will only remove the first occurrence of the given actorListener.
 								<dd>{object} an Actor's life cycle listener.</dd>
 							
 							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="resetAnimationTime"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>resetAnimationTime</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
 						
 						
 						
@@ -4934,7 +5080,7 @@ actor's world model view matrix.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Mar 14 2012 14:49:22 GMT+0100 (CET)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Tue May 01 2012 01:10:43 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>
