@@ -1051,11 +1051,6 @@
             var alpha= (this.startAlpha+time*(this.endAlpha-this.startAlpha));
             if ( this.doValueApplication ) {
                 actor.setAlpha( alpha );
-                if (actor.childrenList && actor.childrenList.length > 0) {
-                    for (var i=0;i<actor.childrenList.length;i++) {
-                        actor.childrenList[i].setAlpha( alpha );
-                    }
-                }
             }
             return alpha;
         },

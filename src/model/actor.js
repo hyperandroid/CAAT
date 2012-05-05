@@ -2362,7 +2362,22 @@
                     cl.splice( index, 0, nActor[0] );
                 }
             }
-        }
+        },
+
+		/**
+         * Stablishes the Alpha transparency for the Actor.
+         * If it globalAlpha enabled, this alpha will the maximum alpha for every contained actors.
+         * The alpha must be between 0 and 1.
+         * ActorContainer applies alpha to children recusively
+         * @param alpha a float indicating the alpha value.
+         * @return this
+         */
+		setAlpha : function( alpha )	{
+			for (var i=0;i<this.childrenList.length;i++) {
+				this.childrenList[i].setAlpha( alpha );
+			}
+			return CAAT.ActorContainer.superclass.setAlpha.call( this, alpha );
+		},
 	};
 /*
     if ( CAAT.NO_PERF ) {
