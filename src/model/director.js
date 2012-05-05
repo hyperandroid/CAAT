@@ -560,7 +560,7 @@
              * draw director active scenes.
              */
             var ne = this.childrenList.length;
-            var i, tt, c;
+            var i, tt, c, dr, drr;
             var ctx= this.ctx;
 
             if (this.glEnabled) {
@@ -606,9 +606,9 @@
                     if ( !CAAT.DEBUG_DIRTYRECTS ) {
                         ctx.beginPath();
                         this.nDirtyRects=0;
-                        var dr= this.cDirtyRects;
+                        dr= this.cDirtyRects;
                         for( i=0; i<dr.length; i++ ) {
-                            var drr= dr[i];
+                            drr= dr[i];
                             if ( !drr.isEmpty() ) {
                                 ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
                                 this.nDirtyRects++;
@@ -670,9 +670,9 @@
                 if ( this.nDirtyRects>0 && CAAT.DEBUG && CAAT.DEBUG_DIRTYRECTS ) {
                     ctx.beginPath();
                     this.nDirtyRects=0;
-                    var dr= this.cDirtyRects;
+                    dr= this.cDirtyRects;
                     for( i=0; i<dr.length; i++ ) {
-                        var drr= dr[i];
+                        drr= dr[i];
                         if ( !drr.isEmpty() ) {
                             ctx.rect( drr.x|0, drr.y|0, 1+(drr.width|0), 1+(drr.height|0) );
                             this.nDirtyRects++;
@@ -1413,7 +1413,7 @@
          *    will have their areas redrawn.
          *  + CAAT.Director.CLEAR_NONE. clears nothing.
          *
-         * @param clear {CAAT.Director.CLEAR_ALL |ÊCAAT.Director.CLEAR_NONE | CAAT.Director.CLEAR_DIRTY_RECTS}
+         * @param clear {CAAT.Director.CLEAR_ALL |ÃŠCAAT.Director.CLEAR_NONE | CAAT.Director.CLEAR_DIRTY_RECTS}
          * @return this.
          */
         setClear : function(clear) {
@@ -1448,7 +1448,7 @@
                 }
 
 //                if (!/^(relative|absolute|fixed)$/.test(style)) {
-                if (!/^(fixed)$/.test(style)) {
+                if (!(/^(fixed)$/.test(style))) {
                     x += node[left];
                     y+= node[top];
                     node = node[parent];
@@ -1484,7 +1484,7 @@
          * @param e {MouseEvent} a mouse event from an input event.
          */
         getCanvasCoord : function(point, e) {
-
+			// TODO: RB: local redeclaration of pt that's only valid in the subscope, not on line 1549 where it's used again
             var pt= new CAAT.Point( );
             var posx = 0;
             var posy = 0;
@@ -1567,7 +1567,7 @@
                 pos = lactor.viewToModel(
                     new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
                 if ( lactor.actionPerformed && lactor.contains(pos.x, pos.y) ) {
-                    lactor.actionPerformed(e)
+                    lactor.actionPerformed(e);
                 }
 
                 lactor.mouseUp(

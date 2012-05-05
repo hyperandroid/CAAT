@@ -64,7 +64,7 @@
          * Transparent means that every scan pixel is alpha=0.
          * @param image
          * @param threshold {integer} any value below or equal to this will be optimized.
-         * @param !areas { object{ top<boolean>, bottom<boolean>, left<boolean, right<boolean> }Ê}
+         * @param !areas { object{ top<boolean>, bottom<boolean>, left<boolean, right<boolean> }ÃŠ}
          */
     CAAT.modules.ImageUtil.optimize= function(image, threshold, areas ) {
         threshold>>=0;
@@ -207,6 +207,6 @@
         }
 
         return canvas;
-    }
+    };
 
 })();

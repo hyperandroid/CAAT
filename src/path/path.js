@@ -839,7 +839,7 @@
 
             return this;
         }
-    }
+    };
 
     extend( CAAT.ShapePath, CAAT.PathSegment );
 
@@ -923,14 +923,14 @@
 
         /** rotation behavior info **/
         rb_angle:                   0,
-        rb_rotateAnchorX:           .5,
-        rb_rotateAnchorY:           .5,
+        rb_rotateAnchorX:           0.5,
+        rb_rotateAnchorY:           0.5,
 
         /** scale behavior info **/
         sb_scaleX:                  1,
         sb_scaleY:                  1,
-        sb_scaleAnchorX:            .5,
-        sb_scaleAnchorY:            .5,
+        sb_scaleAnchorX:            0.5,
+        sb_scaleAnchorY:            0.5,
 
         tAnchorX:                   0,
         tAnchorY:                   0,
@@ -1073,10 +1073,10 @@
         },
         setCatmullRom : function( points, closed ) {
             if ( closed ) {
-                points = points.slice(0)
-                points.unshift(points[points.length-1])
-                points.push(points[1])
-                points.push(points[2])
+                points = points.slice(0);
+                points.unshift(points[points.length-1]);
+                points.push(points[1]);
+                points.push(points[2]);
             }
 
             for( var i=1; i<points.length-2; i++ ) {
@@ -1492,7 +1492,6 @@
             this.pathSegmentStartTime=      [];
             this.pathSegmentDurationTime=   [];
             
-            var i;
             for( i=0; i<this.pathSegments.length; i++) {
                 this.pathSegmentStartTime.push(0);
                 this.pathSegmentDurationTime.push(0);
@@ -1716,7 +1715,7 @@
             var bbw= bbox.width  ;
             var bbh= bbox.height ;
             var bbx= bbox.x;
-            var bby= bbox.y
+            var bby= bbox.y;
 
             mm0= 1;
             mm1= 0;

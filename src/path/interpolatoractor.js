@@ -80,6 +80,7 @@
                 canvas.strokeStyle= this.strokeStyle;
                 canvas.stroke();
             }
+            return this;
         },
         /**
          * Return the represented interpolator.

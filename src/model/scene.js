@@ -584,10 +584,11 @@
          * available lists.
          */
         removeActorFromInputList : function( actor, index ) {
+			var il;
             if ( typeof index==="undefined" ) {
                 var i,j;
                 for( i=0; i<this.inputList.length; i++ ) {
-                    var il= this.inputList[i];
+                    il= this.inputList[i];
                     for( j=0; j<il.length; j++ ) {
                         if ( il[j]==actor ) {
                             il.splice( j,1 );
@@ -598,7 +599,7 @@
             }
 
             if ( index<0 ) index=0; else if ( index>=this.inputList.length ) index= this.inputList.length-1;
-            var il= this.inputList[index];
+            il= this.inputList[index];
             for( j=0; j<il.length; j++ ) {
                 if ( il[j]==actor ) {
                     il.splice( j,1 );

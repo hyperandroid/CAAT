@@ -305,7 +305,7 @@ CAAT.KeyEvent= function( keyCode, up_or_down, modifiers, originalEvent ) {
 
     this.preventDefault= function() {
         this.sourceEvent.preventDefault();
-    }
+    };
 
     this.getKeyCode= function() {
         return this.keyCode;
@@ -457,7 +457,7 @@ CAAT.loop= function(fps) {
     } else {
         CAAT.renderFrame();
     }
-}
+};
 
 CAAT.FPS_REFRESH= 500;  // debug panel update time.
 CAAT.RAF= 0;            // requestAnimationFrame time reference.
@@ -479,7 +479,7 @@ CAAT.renderFrame= function() {
     CAAT.RAF= new Date().getTime();
 
     window.requestAnimFrame(CAAT.renderFrame, 0 );
-}
+};
 
 /**
  * Set browser cursor. The preferred method for cursor change is this method.

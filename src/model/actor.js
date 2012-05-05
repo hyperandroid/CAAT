@@ -119,13 +119,13 @@
 
         scaleX:					0,      // transformation. width scale parameter
 		scaleY:					0,      // transformation. height scale parameter
-		scaleTX:				.50,      // transformation. scale anchor x position
-		scaleTY:				.50,      // transformation. scale anchor y position
+		scaleTX:				0.50,      // transformation. scale anchor x position
+		scaleTY:				0.50,      // transformation. scale anchor y position
 		scaleAnchor:			0,      // transformation. scale anchor
 		rotationAngle:			0,      // transformation. rotation angle in radians
-		rotationY:				.50,      // transformation. rotation center y
+		rotationY:				0.50,      // transformation. rotation center y
         alpha:					1,      // alpha transparency value
-        rotationX:				.50,      // transformation. rotation center x
+        rotationX:				0.50,      // transformation. rotation center x
         isGlobalAlpha:          false,  // is this a global alpha
         frameAlpha:             1,      // hierarchically calculated alpha for this Actor.
 		expired:				false,  // set when the actor has been expired
@@ -500,12 +500,12 @@
          */
 		resetTransform : function () {
 			this.rotationAngle=0;
-			this.rotationX=.5;
-			this.rotationY=.5;
+			this.rotationX=0.5;
+			this.rotationY=0.5;
 			this.scaleX=1;
 			this.scaleY=1;
-			this.scaleTX=.5;
-			this.scaleTY=.5;
+			this.scaleTX=0.5;
+			this.scaleTY=0.5;
 			this.scaleAnchor=0;
             this.oldX=-1;
             this.oldY=-1;
@@ -562,8 +562,8 @@
         getAnchorPercent : function( anchor ) {
 
             var anchors=[
-                .50,.50,   .50,0,  .50,1.00,
-                0,.50,   1.00,.50, 0,0,
+                0.50,0.50,   0.50,0,  0.50,1.00,
+                0,0.50,   1.00,0.50, 0,0,
                 1.00,0,  0,1.00,  1.00,1.00
             ];
 
@@ -580,24 +580,24 @@
 
 			switch( anchor ) {
             case this.ANCHOR_CENTER:
-                tx= .5;
-                ty= .5;
+                tx= 0.5;
+                ty= 0.5;
                 break;
             case this.ANCHOR_TOP:
-                tx= .5;
+                tx= 0.5;
                 ty= 0;
                 break;
             case this.ANCHOR_BOTTOM:
-                tx= .5;
+                tx= 0.5;
                 ty= 1;
                 break;
             case this.ANCHOR_LEFT:
                 tx= 0;
-                ty= .5;
+                ty= 0.5;
                 break;
             case this.ANCHOR_RIGHT:
                 tx= 1;
-                ty= .5;
+                ty= 0.5;
                 break;
             case this.ANCHOR_TOP_RIGHT:
                 tx= 1;
@@ -928,16 +928,16 @@
                 for( var i=0; i<point.length; i++ ) {
                     //this.worldModelViewMatrix.transformCoord(point[i]);
                     var pt= point[i];
-                    var x= pt.x;
-                    var y= pt.y;
+                    x= pt.x;
+                    y= pt.y;
                     pt.x= x*tm[0] + y*tm[1] + tm[2];
                     pt.y= x*tm[3] + y*tm[4] + tm[5];
                 }
             }
             else {
 //                this.worldModelViewMatrix.transformCoord(point);
-                var x= point.x;
-                var y= point.y;
+                x= point.x;
+                y= point.y;
                 point.x= x*tm[0] + y*tm[1] + tm[2];
                 point.y= x*tm[3] + y*tm[4] + tm[5];
             }
@@ -1185,7 +1185,7 @@
                 var s= this.AABB;
                 var ctx= director.ctx;
                 ctx.strokeStyle= CAAT.DEBUGAABBCOLOR;
-                ctx.strokeRect( .5+(s.x|0), .5+(s.y|0), s.width|0, s.height|0 );
+                ctx.strokeRect( 0.5+(s.x|0), 0.5+(s.y|0), s.width|0, s.height|0 );
                 if ( CAAT.DEBUGBB ) {
                     var vv= this.viewVertices;
                     ctx.beginPath(  );
@@ -1392,6 +1392,7 @@
 
             var AABB= this.AABB;
             var vv= this.viewVertices;
+            var vvv;
 
             if ( this.isAA ) {
                 var m= this.worldModelViewMatrix.matrix;
@@ -1407,7 +1408,6 @@
                 AABB.height= h;
 
                 if ( CAAT.GLRENDER ) {
-                    var vvv;
                     vvv= vv[0];
                     vvv.x=x;
                     vvv.y=y;
@@ -1424,9 +1424,6 @@
 
                 return this;
             }
-
-
-            var vvv;
 
             vvv= vv[0];
             vvv.x=0;
@@ -1459,7 +1456,7 @@
             if ( vvv.y > ymax ) {
                 ymax=vvv.y;
             }
-            var vvv= vv[1];
+            vvv= vv[1];
             if ( vvv.x < xmin ) {
                 xmin=vvv.x;
             }
@@ -1472,7 +1469,7 @@
             if ( vvv.y > ymax ) {
                 ymax=vvv.y;
             }
-            var vvv= vv[2];
+            vvv= vv[2];
             if ( vvv.x < xmin ) {
                 xmin=vvv.x;
             }
@@ -1485,7 +1482,7 @@
             if ( vvv.y > ymax ) {
                 ymax=vvv.y;
             }
-            var vvv= vv[3];
+            vvv= vv[3];
             if ( vvv.x < xmin ) {
                 xmin=vvv.x;
             }
@@ -1969,7 +1966,7 @@
             CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
 
             if ( this.cached===__CD ) {
-                return;
+                return true;
             }
 
             if ( !this.isGlobalAlpha ) {
@@ -2025,7 +2022,7 @@
             for( c= this.activeChildren; c; c=c.__next ) {
                 c.paintActorGL(director,time);
             }
-
+            return true;
         },
         /**
          * Private.
@@ -2365,7 +2362,22 @@
                     cl.splice( index, 0, nActor[0] );
                 }
             }
-        }
+        },
+
+		/**
+         * Stablishes the Alpha transparency for the Actor.
+         * If it globalAlpha enabled, this alpha will the maximum alpha for every contained actors.
+         * The alpha must be between 0 and 1.
+         * ActorContainer applies alpha to children recusively
+         * @param alpha a float indicating the alpha value.
+         * @return this
+         */
+		setAlpha : function( alpha )	{
+			for (var i=0;i<this.childrenList.length;i++) {
+				this.childrenList[i].setAlpha( alpha );
+			}
+			return CAAT.ActorContainer.superclass.setAlpha.call( this, alpha );
+		},
 	};
 /*
     if ( CAAT.NO_PERF ) {
@@ -2587,11 +2599,11 @@
             if ( this.cached ) {
                 // cacheAsBitmap sets this actor's background image as a representation of itself.
                 // So if after drawing the background it was cached, we're done.
-                return;
+                return true;
             }
 
 			if ( null===this.text) {
-				return;
+				return true;
 			}
 
             if ( this.textWidth===0 || this.textHeight===0 ) {
@@ -2652,6 +2664,7 @@
 			else {
 				this.drawOnPath(director,time);
 			}
+			return true;
 		},
         /**
          * Private.

@@ -282,7 +282,7 @@
                 this.cubic= true;
                 this.update();
             } else {
-                throw 'points must be an array of 3 or 4 CAAT.Point instances.'
+                throw 'points must be an array of 3 or 4 CAAT.Point instances.';
             }
 
             return this;
@@ -499,10 +499,10 @@
 			var c= this.coordlist;
 
             // Handy from CAKE. Thanks.
-            var af = ((-t+2)*t-1)*t*0.5
-            var bf = (((3*t-5)*t)*t+2)*0.5
-            var cf = ((-3*t+4)*t+1)*t*0.5
-            var df = ((t-1)*t*t)*0.5
+            var af = ((-t+2)*t-1)*t*0.5;
+            var bf = (((3*t-5)*t)*t+2)*0.5;
+            var cf = ((-3*t+4)*t+1)*t*0.5;
+            var df = ((t-1)*t*t)*0.5;
 
             point.x= c[0].x * af + c[1].x * bf + c[2].x * cf + c[3].x * df;
             point.y= c[0].y * af + c[1].y * bf + c[2].y * cf + c[3].y * df;

@@ -25,7 +25,7 @@
 
             debugDraw.SetSprite(director.ctx);
             debugDraw.SetDrawScale(CAAT.PMR);
-            debugDraw.SetFillAlpha(.5);
+            debugDraw.SetFillAlpha(0.5);
             debugDraw.SetLineThickness(1.0);
             debugDraw.SetFlags(0x0001 | 0x0002);
 
@@ -55,12 +55,12 @@
         /**
          * Body restitution.
          */
-        restitution:        .5,
+        restitution:        0.5,
 
         /**
          * Body friction.
          */
-        friction:           .5,
+        friction:           0.5,
 
         /**
          * Body dentisy
@@ -189,8 +189,8 @@
 
             if ( bodyData ) {
                 this.check( bodyData, 'density', 1 );
-                this.check( bodyData, 'friction', .5 );
-                this.check( bodyData, 'restitution', .2 );
+                this.check( bodyData, 'friction', 0.5 );
+                this.check( bodyData, 'restitution', 0.2 );
                 this.check( bodyData, 'bodyType', Box2D.Dynamics.b2Body.b2_staticBody );
                 this.check( bodyData, 'userData', {} );
                 this.check( bodyData, 'image', null );

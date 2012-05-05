@@ -675,8 +675,8 @@
 	
 		startAngle:	0,  // behavior start angle
 		endAngle:	0,  // behavior end angle
-        anchorX:    .50,  // rotation center x.
-        anchorY:    .50,  // rotation center y.
+        anchorX:    0.50,  // rotation center x.
+        anchorY:    0.50,  // rotation center y.
 
         getPropertyName : function() {
             return "rotate";
@@ -904,8 +904,8 @@
         endScaleX:      1,
         startScaleY:    1,
         endScaleY:	    1,
-        anchorX:        .50,
-        anchorY:        .50,
+        anchorX:        0.50,
+        anchorY:        0.50,
 
         getPropertyName : function() {
             return "scale";
@@ -916,7 +916,7 @@
          * 
          * @param time the time to apply the scale for.
          * @param actor the target actor to Scale.
-         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}Ê}</code>
+         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}ÃŠ}</code>
          */
 		setForTime : function(time,actor) {
 
@@ -1228,7 +1228,7 @@
          * If autoRotate=true, the actor is rotated as well. The rotation anchor will (if set) always be ANCHOR_CENTER.
          * @param time an integer indicating the time the behavior is being applied at.
          * @param actor a CAAT.Actor instance to be translated.
-         * @return {object} an object of the form <code>{ x: {float}, y: {float}Ê}</code>.
+         * @return {object} an object of the form <code>{ x: {float}, y: {float}ÃŠ}</code>.
          */
 		setForTime : function(time,actor) {
 
@@ -1358,8 +1358,8 @@
 	CAAT.Scale1Behavior.prototype= {
         startScale: 1,
         endScale:   1,
-        anchorX:    .50,
-        anchorY:    .50,
+        anchorX:    0.50,
+        anchorY:    0.50,
 
         sx          : 1,
         sy          : 1,
@@ -1375,7 +1375,7 @@
          *
          * @param time the time to apply the scale for.
          * @param actor the target actor to Scale.
-         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}Ê}</code>
+         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}ÃŠ}</code>
          */
 		setForTime : function(time,actor) {
 

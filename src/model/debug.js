@@ -323,7 +323,7 @@
             this.canvas= document.getElementById('caat-debug-canvas');
             if ( null===this.canvas ) {
                 this.canDebug= false;
-                return;
+                return this;
             }
 
             this.canvas.width= w;
@@ -393,22 +393,22 @@
 
             ctx.strokeStyle= 'black';
             ctx.beginPath();
-            ctx.moveTo( this.width-.5, 0 );
-            ctx.lineTo( this.width-.5, this.height );
+            ctx.moveTo( this.width-0.5, 0 );
+            ctx.lineTo( this.width-0.5, this.height );
             ctx.stroke();
 
             ctx.strokeStyle= '#a22';
             ctx.beginPath();
-            t= this.height-((20/this.SCALE*this.height)>>0)-.5;
-            ctx.moveTo( .5, t );
-            ctx.lineTo( this.width+.5, t );
+            t= this.height-((20/this.SCALE*this.height)>>0)-0.5;
+            ctx.moveTo( 0.5, t );
+            ctx.lineTo( this.width+0.5, t );
             ctx.stroke();
 
             ctx.strokeStyle= '#aa2';
             ctx.beginPath();
-            t= this.height-((30/this.SCALE*this.height)>>0)-.5;
-            ctx.moveTo( .5, t );
-            ctx.lineTo( this.width+.5, t );
+            t= this.height-((30/this.SCALE*this.height)>>0)-0.5;
+            ctx.moveTo( 0.5, t );
+            ctx.lineTo( this.width+0.5, t );
             ctx.stroke();
 
             var fps = Math.min( this.height-(this.framerate.fps/this.SCALE*this.height), 59 );
@@ -418,14 +418,14 @@
 
             ctx.strokeStyle= '#0ff';//this.framerate.fps<15 ? 'red' : this.framerate.fps<30 ? 'yellow' : 'green';
             ctx.beginPath();
-            ctx.moveTo( this.width, (fps|0)-.5 );
-            ctx.lineTo( this.width, this.framerate.prevFps-.5 );
+            ctx.moveTo( this.width, (fps|0)-0.5 );
+            ctx.lineTo( this.width, this.framerate.prevFps-0.5 );
             ctx.stroke();
 
             this.framerate.prevFps= fps;
 
 
-            var t1= ((this.height-(rafValue/this.SCALE*this.height))>>0)-.5;
+            var t1= ((this.height-(rafValue/this.SCALE*this.height))>>0)-0.5;
             ctx.strokeStyle= '#ff0';
             ctx.beginPath();
             ctx.moveTo( this.width, t1 );

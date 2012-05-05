@@ -75,7 +75,7 @@
                             if ( callback_error ) {
                                 callback_error( e, index );
                             }
-                        }
+                        };
                     })(i);
 
                 this.images[i].image.src= aImages[i].url;

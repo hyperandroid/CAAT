@@ -75,13 +75,13 @@
         tAnchorY            :   0,
         scaleX:					0,      // transformation. width scale parameter
 		scaleY:					0,      // transformation. height scale parameter
-		scaleTX:				.50,    // transformation. scale anchor x position
-		scaleTY:				.50,    // transformation. scale anchor y position
+		scaleTX:				0.50,    // transformation. scale anchor x position
+		scaleTY:				0.50,    // transformation. scale anchor y position
 		scaleAnchor:			0,      // transformation. scale anchor
 		rotationAngle:			0,      // transformation. rotation angle in radians
-		rotationY:				.50,    // transformation. rotation center y
+		rotationY:				0.50,    // transformation. rotation center y
         alpha:					1,      // alpha transparency value
-        rotationX:				.50,    // transformation. rotation center x
+        rotationX:				0.50,    // transformation. rotation center x
         isGlobalAlpha:          false,  // is this a global alpha
         frameAlpha:             1,      // hierarchically calculated alpha for this Actor.
 		expired:				false,  // set when the actor has been expired
@@ -180,7 +180,7 @@
              if ( vvv.y > ymax ) {
                  ymax=vvv.y;
              }
-             var vvv= vv[1];
+             vvv= vv[1];
              if ( vvv.x < xmin ) {
                  xmin=vvv.x;
              }
@@ -193,7 +193,7 @@
              if ( vvv.y > ymax ) {
                  ymax=vvv.y;
              }
-             var vvv= vv[2];
+             vvv= vv[2];
              if ( vvv.x < xmin ) {
                  xmin=vvv.x;
              }
@@ -206,7 +206,7 @@
              if ( vvv.y > ymax ) {
                  ymax=vvv.y;
              }
-             var vvv= vv[3];
+             vvv= vv[3];
              if ( vvv.x < xmin ) {
                  xmin=vvv.x;
              }
@@ -609,12 +609,12 @@
          */
         resetTransform : function () {
             this.rotationAngle=0;
-            this.rotationX=.5;
-            this.rotationY=.5;
+            this.rotationX=0.5;
+            this.rotationY=0.5;
             this.scaleX=1;
             this.scaleY=1;
-            this.scaleTX=.5;
-            this.scaleTY=.5;
+            this.scaleTX=0.5;
+            this.scaleTY=0.5;
             this.scaleAnchor=0;
             this.oldX=-1;
             this.oldY=-1;
@@ -658,7 +658,7 @@
          * @return this
          */
 		setScale : function( sx, sy )    {
-			this.setScaleAnchored( sx, sy, .5, .5 );
+			this.setScaleAnchored( sx, sy, 0.5, 0.5 );
             return this;
 		},
         /**
@@ -672,24 +672,24 @@
 
 			switch( anchor ) {
             case this.ANCHOR_CENTER:
-                    tx= .5;
-                    ty= .5;
+                    tx= 0.5;
+                    ty= 0.5;
                 break;
             case this.ANCHOR_TOP:
-                tx= .5;
+                tx= 0.5;
                 ty= 0;
                 break;
             case this.ANCHOR_BOTTOM:
-                tx= .5;
+                tx= 0.5;
                 ty= 1;
                 break;
             case this.ANCHOR_LEFT:
                 tx= 0;
-                ty= .5;
+                ty= 0.5;
                 break;
             case this.ANCHOR_RIGHT:
                 tx= 1;
-                ty= .5;
+                ty= 0.5;
                 break;
             case this.ANCHOR_TOP_RIGHT:
                 tx= 1;
@@ -714,8 +714,8 @@
         getAnchorPercent : function( anchor ) {
 
             var anchors=[
-                .50,.50,   .50,0,  .50,1.00,
-                0,.50,   1.00,.50, 0,0,
+                0.50,0.50,   0.50,0,  0.50,1.00,
+                0,0.50,   1.00,0.50, 0,0,
                 1.00,0,  0,1.00,  1.00,1.00
             ];
 
@@ -1018,7 +1018,7 @@
          * @param behavior {CAAT.Behavior} a CAAT.Behavior instance.
          */
         removeBehaviour : function( behavior ) {
-            var c=this.behaviorList
+            var c=this.behaviorList;
             var n= c.length-1;
             while(n) {
                 if ( c[n]===behavior ) {
