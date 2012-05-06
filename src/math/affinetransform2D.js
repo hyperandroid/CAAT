@@ -551,7 +551,7 @@
             1.0,0.0,0.0,
             0.0,1.0,0.0, 0.0,0.0,1.0 ];
 
-        if ( Float32Array ) {
+        if ( typeof Float32Array!=="undefined" ) {
             this.matrix= new Float32Array(this.matrix);
         }
 

@@ -932,7 +932,7 @@ and bring in scene number 5).</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Director.html#renderFrame">renderFrame</a></b>(fps, callback)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Director.html#renderFrame">renderFrame</a></b>()
 								</div>
 								<div class="description">Starts the director animation.If no scene is explicitly selected, the current Scene will
 be the first scene added to the Director.</div>
@@ -949,11 +949,29 @@ be the first scene added to the Director.</div>
 						</tr>
 					
 						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Director.html#requestRepaint">requestRepaint</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
 							<td class="attributes">&lt;private&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Director.html#resetStats">resetStats</a></b>()
 								</div>
 								<div class="description">Reset statistics information.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Director.html#resetTimeline">resetTimeline</a></b>()
+								</div>
+								<div class="description">If the director has renderingMode: DIRTY, the timeline must be reset to register accurate frame measurement.</div>
 							</td>
 						</tr>
 					
@@ -1007,6 +1025,15 @@ each frame.</div>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Director.html#setMusicEnabled">setMusicEnabled</a></b>(enabled)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Director.html#setRenderMode">setRenderMode</a></b>(mode)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -3692,7 +3719,7 @@ Director.</dd>
 					<div class="fixedFont">
 					
 					
-					<b>renderFrame</b>(fps, callback)
+					<b>renderFrame</b>()
 					
 					</div>
 					<div class="description">
@@ -3709,24 +3736,6 @@ context are available). A value of 60 is a high frame rate and should not be exc
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>fps</b>
-									
-								</dt>
-								<dd>{number} integer value indicating the target frames per second to run
-the animation at.</dd>
-							
-								<dt>
-									<b>callback</b>
-									
-								</dt>
-								<dd></dd>
-							
-							</dl>
 						
 						
 						
@@ -3787,6 +3796,31 @@ Though a high performance increase, we should keep an eye on memory consumption.
 
 					<hr />
 				
+					<a name="requestRepaint"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>requestRepaint</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="resetStats"> </a>
 					<div class="fixedFont">&lt;private&gt; 
 					
@@ -3796,6 +3830,31 @@ Though a high performance increase, we should keep an eye on memory consumption.
 					</div>
 					<div class="description">
 						Reset statistics information.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="resetTimeline"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>resetTimeline</b>()
+					
+					</div>
+					<div class="description">
+						If the director has renderingMode: DIRTY, the timeline must be reset to register accurate frame measurement.
 						
 						
 					</div>
@@ -4064,6 +4123,42 @@ The clearing method could be:
 							
 								<dt>
 									<b>enabled</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setRenderMode"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setRenderMode</b>(mode)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>mode</b>
 									
 								</dt>
 								<dd></dd>
@@ -4488,7 +4583,7 @@ It will apply random values for anchor and transition type.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Tue May 01 2012 01:10:44 GMT+0200 (CEST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun May 06 2012 23:27:46 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>

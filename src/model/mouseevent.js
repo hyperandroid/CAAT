@@ -80,10 +80,6 @@ CAAT.setCoordinateClamping= function( clamp ) {
 };
 
 
-CAAT.RENDER_MODE_CONTINUOUS=    1;              // redraw every frame
-CAAT.RENDER_MODE_DIRTY=         2;              // suitable for evented CAAT.
-CAAT.RENDER_MODE= CAAT.RENDER_MODE_CONTINUOUS;
-
 /**
  * Box2D point meter conversion ratio.
  */
@@ -468,7 +464,10 @@ CAAT.REQUEST_ANIMATION_FRAME_TIME=   0;
 CAAT.renderFrame= function() {
     var t= new Date().getTime();
     for( var i=0, l=CAAT.director.length; i<l; i++ ) {
-        CAAT.director[i].renderFrame();
+        var dr= CAAT.director[i];
+        if ( dr.renderMode===CAAT.Director.RENDER_MODE_CONTINUOUS || dr.needsRepaint ) {
+            dr.renderFrame();
+        }
     }
     t= new Date().getTime()-t;
     CAAT.FRAME_TIME= t;

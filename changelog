@@ -1,3 +1,10 @@
+*05/06/2012 0.4 Build 66 *
+--------------------------
+
+* Added Float32Array undefined check.
+* Added initial director renderMode flags.
+* Added proxify("Contructor_function") and proxyObject() functions.
+
 *04/22/2012 0.4 Build 63 *
 --------------------------
 

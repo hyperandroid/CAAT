@@ -54,6 +54,9 @@
     };
 
 
+    CAAT.Director.RENDER_MODE_CONTINUOUS=    1;              // redraw every frame
+    CAAT.Director.RENDER_MODE_DIRTY=         2;              // suitable for evented CAAT.
+
     CAAT.Director.CLEAR_DIRTY_RECTS= 1;
     CAAT.Director.CLEAR_ALL=         true;
     CAAT.Director.CLEAR_NONE=        false;
@@ -61,6 +64,9 @@
     CAAT.Director.prototype = {
 
         debug:              false,  // flag indicating debug mode. It will draw affedted screen areas.
+
+        renderMode      :   CAAT.Director.RENDER_MODE_CONTINUOUS,
+
 
         onRenderStart:      null,
         onRenderEnd:        null,
@@ -78,7 +84,9 @@
         scenes:             null,   // Scenes collection. An array.
         currentScene:       null,   // The current Scene. This and only this will receive events.
         canvas:             null,   // The canvas the Director draws on.
-        crc:                null,    // @deprecated. canvas rendering context
+
+        // @deprecated
+        crc:                null,   // canvas rendering context
         ctx:                null,   // refactoring crc for a more convenient name
         time:               0,      // virtual actor time.
         timeline:           0,      // global director timeline.
@@ -135,6 +143,19 @@
         nDirtyRects         :   0,
 
         stopped             :   false,  // is stopped, this director will do nothing.
+
+        needsRepaint        : false,    // for rendering mode = dirty, this flags means, paint another frame
+
+        requestRepaint : function() {
+            this.needsRepaint= true;
+        },
+
+        setRenderMode : function( mode ) {
+            if ( mode===CAAT.Director.RENDER_MODE_CONTINUOUS || mode===CAAT.Director.RENDER_MODE_DIRTY ) {
+                this.renderMode= mode;
+            }
+            return this;
+        },
 
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
@@ -1364,10 +1385,8 @@
          * expense of cpu power at least until hardware accelerated canvas rendering
          * context are available). A value of 60 is a high frame rate and should not be exceeded.
          *
-         * @param fps {number} integer value indicating the target frames per second to run
-         * the animation at.
          */
-        renderFrame : function(fps, callback) {
+        renderFrame : function() {
 
             if (this.stopped) {
                 return;
@@ -1394,13 +1413,23 @@
             if ( this.debugInfo ) {
                 this.debugInfo(this.statistics);
             }
-            
+
             this.timeline = t;
 
             if (this.onRenderEnd) {
                 this.onRenderEnd(delta);
             }
+
+            this.needsRepaint= false;
         },
+
+        /**
+         * If the director has renderingMode: DIRTY, the timeline must be reset to register accurate frame measurement.
+         */
+        resetTimeline : function() {
+            this.timeline= new Date().getTime();
+        },
+
         endLoop : function () {
         },
         /**
