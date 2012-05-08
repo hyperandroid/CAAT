@@ -28,8 +28,8 @@
      * @constructor
      */
 	CAAT.Actor = function() {
-		this.behaviorList=          [];
-
+        this.behaviorList=          [];
+        this.styleCache = {};
         this.lifecycleListenerList= [];
         this.scaleAnchor=           this.ANCHOR_CENTER;
         this.behaviorList=          [];
@@ -63,44 +63,44 @@
 
         lifecycleListenerList:	null,   // Array of life cycle listener
         behaviorList:           null,   // Array of behaviors to apply to the Actor
-		x:						0,      // x position on parent. In parent's local coord. system.
-		y:						0,      // y position on parent. In parent's local coord. system.
-		width:					0,      // Actor's width. In parent's local coord. system.
-		height:					0,      // Actor's height. In parent's local coord. system.
-		start_time:				0,      // Start time in Scene time.
-		duration:				Number.MAX_VALUE,   // Actor duration in Scene time
-		clip:					false,  // should clip the Actor's content against its contour.
+        x:						0,      // x position on parent. In parent's local coord. system.
+        y:						0,      // y position on parent. In parent's local coord. system.
+        width:					0,      // Actor's width. In parent's local coord. system.
+        height:					0,      // Actor's height. In parent's local coord. system.
+        start_time:				0,      // Start time in Scene time.
+        duration:				Number.MAX_VALUE,   // Actor duration in Scene time
+        clip:					false,  // should clip the Actor's content against its contour.
 
         tAnchorX            :   0,
         tAnchorY            :   0,
         scaleX:					0,      // transformation. width scale parameter
-		scaleY:					0,      // transformation. height scale parameter
-		scaleTX:				.50,    // transformation. scale anchor x position
-		scaleTY:				.50,    // transformation. scale anchor y position
-		scaleAnchor:			0,      // transformation. scale anchor
-		rotationAngle:			0,      // transformation. rotation angle in radians
-		rotationY:				.50,    // transformation. rotation center y
+        scaleY:					0,      // transformation. height scale parameter
+        scaleTX:				.50,    // transformation. scale anchor x position
+        scaleTY:				.50,    // transformation. scale anchor y position
+        scaleAnchor:			0,      // transformation. scale anchor
+        rotationAngle:			0,      // transformation. rotation angle in radians
+        rotationY:				.50,    // transformation. rotation center y
         alpha:					1,      // alpha transparency value
         rotationX:				.50,    // transformation. rotation center x
         isGlobalAlpha:          false,  // is this a global alpha
         frameAlpha:             1,      // hierarchically calculated alpha for this Actor.
-		expired:				false,  // set when the actor has been expired
-		discardable:			false,  // set when you want this actor to be removed if expired
+        expired:				false,  // set when the actor has been expired
+        discardable:			false,  // set when you want this actor to be removed if expired
 
         domParent:              null,
         domElement:             null,
 
         visible:                true,
 
-		ANCHOR_CENTER:			0,      // constant values to determine different affine transform
-		ANCHOR_TOP:				1,      // anchors.
-		ANCHOR_BOTTOM:			2,
-		ANCHOR_LEFT:			3,
-		ANCHOR_RIGHT:			4,
-		ANCHOR_TOP_LEFT:		5,
-		ANCHOR_TOP_RIGHT:		6,
-		ANCHOR_BOTTOM_LEFT:		7,
-		ANCHOR_BOTTOM_RIGHT:	8,
+        ANCHOR_CENTER:			0,      // constant values to determine different affine transform
+        ANCHOR_TOP:				1,      // anchors.
+        ANCHOR_BOTTOM:			2,
+        ANCHOR_LEFT:			3,
+        ANCHOR_RIGHT:			4,
+        ANCHOR_TOP_LEFT:		5,
+        ANCHOR_TOP_RIGHT:		6,
+        ANCHOR_BOTTOM_LEFT:		7,
+        ANCHOR_BOTTOM_RIGHT:	8,
         ANCHOR_CUSTOM:          9,
 
         mouseEnabled:           true,
@@ -180,7 +180,7 @@
              if ( vvv.y > ymax ) {
                  ymax=vvv.y;
              }
-             var vvv= vv[1];
+             vvv= vv[1];
              if ( vvv.x < xmin ) {
                  xmin=vvv.x;
              }
@@ -193,7 +193,7 @@
              if ( vvv.y > ymax ) {
                  ymax=vvv.y;
              }
-             var vvv= vv[2];
+             vvv= vv[2];
              if ( vvv.x < xmin ) {
                  xmin=vvv.x;
              }
@@ -206,7 +206,7 @@
              if ( vvv.y > ymax ) {
                  ymax=vvv.y;
              }
-             var vvv= vv[3];
+             vvv= vv[3];
              if ( vvv.x < xmin ) {
                  xmin=vvv.x;
              }
@@ -440,7 +440,10 @@
             return this;
         },
         style : function(attr,value) {
-            this.domElement.style[attr]= value;
+            if (value !== this.styleCache[attr]) {
+                this.styleCache[attr] = value;
+                this.domElement.style[attr]= value;
+            }
         },
         style3 : function() {
 
@@ -449,34 +452,45 @@
                 imageop=' scale(-1,1) ';
             }
 
+            this.rotationAngle = Math.round(this.rotationAngle * 100)/100;
+
             var value=
                 "translate("+this.x+"px,"+this.y+"px) "+
                 "rotate("+this.rotationAngle+"rad) scale("+this.scaleX+","+this.scaleY+")" +
                     imageop;
 
-            this.domElement.style['-ms-transform']=     value;
-            this.domElement.style['-webkit-transform']= "translate3d(0,0,0) " + value;
-            this.domElement.style.OTransform=      value;
-            this.domElement.style.MozTransform=         value;
-            this.domElement.style['transform']=         value;
+            if (value !== this.styleCache['transform']) {
+                this.domElement.style['-ms-transform']=     value;
+                this.domElement.style['-webkit-transform']= "translate3d(0,0,0) " + value;
+                this.domElement.style.OTransform=           value;
+                this.domElement.style.MozTransform=         value;
+                this.domElement.style['transform']=         value;
+                this.styleCache['transform'] = value;
+            }
 
             var anchor= ''+(this.rotationX*100)+'% '+
                            (this.rotationY*100)+'% ';
 
-            this.domElement.style['transform-origin']=          anchor;
-            this.domElement.style['-webkit-transform-origin']=  anchor;
-            this.domElement.style['-ms-transform-origin']=      anchor;
-            this.domElement.style.OTransformOrigin=             anchor;
-            this.domElement.style.MozTransformOrigin=           anchor;
+            if (anchor !== this.styleCache['transform-origin']) {
+                this.domElement.style['transform-origin']=          anchor;
+                this.domElement.style['-webkit-transform-origin']=  anchor;
+                this.domElement.style['-ms-transform-origin']=      anchor;
+                this.domElement.style.OTransformOrigin=             anchor;
+                this.domElement.style.MozTransformOrigin=           anchor;
+                this.styleCache['transform-origin'] = anchor;
+            }
 
             return this;
         },
         styleAlpha : function(alpha) {
-            this.domElement.style['filter']=        'alpha(opacity='+((this.alpha*100)>>0)+')';
-            this.domElement.style.Oopacity=    this.alpha;
-            this.domElement.style.MozOpacity=  this.alpha;
-            this.domElement.style['-khtml-opacity']=this.alpha;
-            this.domElement.style.opacity=      this.alpha;
+            if(this.alpha !== this.styleCache['opacity']) {
+                this.domElement.style['filter']=        'alpha(opacity='+((this.alpha*100)>>0)+')';
+                this.domElement.style.Oopacity=          this.alpha;
+                this.domElement.style.MozOpacity=        this.alpha;
+                this.domElement.style['-khtml-opacity']= this.alpha;
+                this.domElement.style.opacity=           this.alpha;
+                this.styleCache['opacity'] =             this.alpha;
+            }
 
             return this;
         },
