@@ -286,9 +286,10 @@
 		},
 
         fireBehaviorStartedEvent : function(actor,time) {
-            for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
-                if ( this.lifecycleListenerList[i].behaviorStarted ) {
-                    this.lifecycleListenerList[i].behaviorStarted(this,time,actor);
+            for( var i= 0, l=this.lifecycleListenerList.length; i<l; i++ )	{
+                var b=this.lifecycleListenerList[i];
+                if ( b.behaviorStarted ) {
+                    b.behaviorStarted(this,time,actor);
                 }
             }
         },
@@ -298,13 +299,14 @@
          * @param actor a CAAT.Actor instance
          * @param time an integer with the scene time the behavior was expired at.
          */
-		fireBehaviorExpiredEvent : function(actor,time)	{
-			for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
-          if(this.lifecycleListenerList[i].behaviorExpired) {
-             this.lifecycleListenerList[i].behaviorExpired(this,time,actor);
-          }
-			}
-		},
+        fireBehaviorExpiredEvent:function (actor, time) {
+            for (var i = 0, l = this.lifecycleListenerList.length; i < l; i++) {
+                var b=this.lifecycleListenerList[i];
+                if (b.behaviorExpired) {
+                    b.behaviorExpired(this, time, actor);
+                }
+            }
+        },
         /**
          * Notify observers about behavior being applied.
          * @param actor a CAAT.Actor instance the behavior is being applied to.
@@ -314,9 +316,10 @@
          * @param value the value being set for actor properties. each behavior will supply with its own value version.
          */
         fireBehaviorAppliedEvent : function(actor,time,normalizedTime,value)	{
-            for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
-                if (this.lifecycleListenerList[i].behaviorApplied) {
-                    this.lifecycleListenerList[i].behaviorApplied(this,time,normalizedTime,actor,value);
+            for( var i= 0, l=this.lifecycleListenerList.length; i<l; i++ )	{
+                var b= this.lifecycleListenerList[i];
+                if (b.behaviorApplied) {
+                    b.behaviorApplied(this,time,normalizedTime,actor,value);
                 }
             }
         },
@@ -918,7 +921,7 @@
          * 
          * @param time the time to apply the scale for.
          * @param actor the target actor to Scale.
-         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}Ê}</code>
+         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}ï¿½}</code>
          */
 		setForTime : function(time,actor) {
 
@@ -1230,7 +1233,7 @@
          * If autoRotate=true, the actor is rotated as well. The rotation anchor will (if set) always be ANCHOR_CENTER.
          * @param time an integer indicating the time the behavior is being applied at.
          * @param actor a CAAT.Actor instance to be translated.
-         * @return {object} an object of the form <code>{ x: {float}, y: {float}Ê}</code>.
+         * @return {object} an object of the form <code>{ x: {float}, y: {float}ï¿½}</code>.
          */
 		setForTime : function(time,actor) {
 
@@ -1377,7 +1380,7 @@
          *
          * @param time the time to apply the scale for.
          * @param actor the target actor to Scale.
-         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}Ê}</code>
+         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}ï¿½}</code>
          */
 		setForTime : function(time,actor) {
 
