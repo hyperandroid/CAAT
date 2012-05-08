@@ -300,7 +300,9 @@
          */
 		fireBehaviorExpiredEvent : function(actor,time)	{
 			for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
-				this.lifecycleListenerList[i].behaviorExpired(this,time,actor);
+          if(this.lifecycleListenerList[i].behaviorExpired) {
+             this.lifecycleListenerList[i].behaviorExpired(this,time,actor);
+          }
 			}
 		},
         /**
