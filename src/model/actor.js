@@ -10,6 +10,9 @@
 
 (function() {
 
+
+    var __index= 0;
+
     /**
      * This class is the base for all animable entities in CAAT.
      * It defines an entity able to:
@@ -48,6 +51,8 @@
         this.resetTransform();
         this.setScale(1,1);
         this.setRotation(0);
+
+        this.id= __index++;
 
 		return this;
 	};
@@ -185,6 +190,17 @@
 
         isAA                :   true,   // is this actor/container Axis aligned ? if so, much faster inverse matrices
                                         // can be calculated.
+
+        /**
+         * Touch Start only received when CAAT.TOUCH_BEHAVIOR= CAAT.TOUCH_AS_MULTITOUCH
+         * @param e <CAAT.TouchEvent>
+         */
+        touchStart : function(e) {
+        },
+        touchMove : function(e) {
+        },
+        touchEnd : function(e) {
+        },
 
         isVisible : function() {
             return this.isVisible;

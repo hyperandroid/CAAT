@@ -4,7 +4,7 @@
 <head>
     <script src="../../track.js" type="text/javascript"></script>
 
-    <title>CAAT example: Quadtree based collision detection</title>
+    <title>CAAT example: Path flattening and traversal</title>
 
     <link rel="stylesheet" href="../style/demo.css">
 
@@ -24,7 +24,7 @@
         </div>
         <div id="experiment">
             <div style="text-align:center">
-                <h1>Quadtree based collision detection</h1>
+                <h1>Path flattening and traversal</h1>
             </div>
             <div id="experiment-holder">
                 <canvas id="experiment-canvas"></canvas>
@@ -35,7 +35,7 @@
                         Use the following controls:
                     </p>
                     <ul>
-                        <li>Cursor keys.</li>
+                        <li>Drag moving rectangles and create a traversal path.</li>
                     </ul>
                 </div>
                 <div>
@@ -43,7 +43,7 @@
                         This demo features the following elements:
                     </p>
                     <ul>
-
+                        <li>Advanced path techniques: flattening, and optimizing.</li>
                     </ul>
                 </div>
             </div>
@@ -239,7 +239,7 @@
                 var x= e.x - this.lx;
                 var y= e.y - this.ly;
 
-                if ( Math.sqrt(x*x+y*y)<this.DT ) { // distancia peque–a, promediar puntos.
+                if ( Math.sqrt(x*x+y*y)<this.DT ) { // distancia pequeï¿½a, promediar puntos.
                     ps[ ps.length-1 ].x= e.x;
                     ps[ ps.length-1 ].y= e.y;
                     if ( this.pathActor.path ) {

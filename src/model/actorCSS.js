@@ -123,6 +123,17 @@
         isAA            :       true,
 
         /**
+         * Touch Start only received when CAAT.TOUCH_BEHAVIOR= CAAT.TOUCH_AS_MULTITOUCH
+         * @param e <CAAT.TouchEvent>
+         */
+        touchStart : function(e) {
+        },
+        touchMove : function(e) {
+        },
+        touchEnd : function(e) {
+        },
+
+        /**
           * Calculates the 2D bounding box in canvas coordinates of the Actor.
           * This bounding box takes into account the transformations applied hierarchically for
           * each Scene Actor.

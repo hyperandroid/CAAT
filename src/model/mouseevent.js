@@ -12,6 +12,96 @@
  *
  **/
 
+CAAT.TouchInfo= function( id, x, y, target ) {
+
+    this.identifier= id;
+    this.clientX= x;
+    this.pageX= x;
+    this.clientY= y;
+    this.pageY= y;
+    this.target= target;
+
+    return this;
+};
+
+(function() {
+    /**
+     * This function creates a mouse event that represents a touch or mouse event.
+     * @constructor
+     */
+	CAAT.TouchEvent = function() {
+        this.touches= [];
+        this.changedTouches= [];
+		return this;
+	};
+
+	CAAT.TouchEvent.prototype= {
+
+		time:			0,
+		source:			null,
+        sourceEvent:    null,
+
+        shift:          false,
+        control:        false,
+        alt:            false,
+        meta:           false,
+
+
+        touches         : null,
+        changedTouches  : null,
+
+		init : function( sourceEvent,source,time ) {
+
+			this.source=        source;
+            this.alt =          sourceEvent.altKey;
+            this.control =      sourceEvent.ctrlKey;
+            this.shift =        sourceEvent.shiftKey;
+            this.meta =         sourceEvent.metaKey;
+            this.sourceEvent=   sourceEvent;
+            this.time=          time;
+
+			return this;
+		},
+        /**
+         *
+         * @param touchInfo
+         *  <{
+         *      id : <number>,
+         *      point : {
+         *          x: <number>,
+         *          y: <number> }Ê
+         *  }>
+         * @return {*}
+         */
+        addTouch : function( touchInfo ) {
+            if ( -1===this.touches.indexOf( touchInfo ) ) {
+                this.touches.push( touchInfo );
+            }
+            return this;
+        },
+        addChangedTouch : function( touchInfo ) {
+            if ( -1===this.changedTouches.indexOf( touchInfo ) ) {
+                this.changedTouches.push( touchInfo );
+            }
+            return this;
+        },
+		isAltDown : function() {
+			return this.alt;
+		},
+		isControlDown : function() {
+			return this.control;
+		},
+		isShiftDown : function() {
+			return this.shift;
+		},
+        isMetaDown: function() {
+            return this.meta;
+        },
+        getSourceEvent : function() {
+            return this.sourceEvent;
+        }
+	};
+})();
 
 (function() {
     /**
@@ -21,6 +111,7 @@
 	CAAT.MouseEvent = function() {
 		this.point= new CAAT.Point(0,0,0);
 		this.screenPoint= new CAAT.Point(0,0,0);
+        this.touches= [];
 		return this;
 	};
 	
@@ -36,6 +127,8 @@
         meta:           false,
 
         sourceEvent:    null,
+
+        touches     :   null,
 
 		init : function( x,y,sourceEvent,source,screenPoint,time ) {
 			this.point.set(x,y);
@@ -79,6 +172,10 @@ CAAT.setCoordinateClamping= function( clamp ) {
     }
 };
 
+CAAT.TOUCH_AS_MOUSE=        1;
+CAAT.TOUCH_AS_MULTITOUCH=   2;
+
+CAAT.TOUCH_BEHAVIOR= CAAT.TOUCH_AS_MOUSE;
 
 /**
  * Box2D point meter conversion ratio.

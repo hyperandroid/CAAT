@@ -1,0 +1,148 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+
+    <title>CAAT example: Multitouch</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Quadtree based collision detection</h1>
+            </div>
+            <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>
+                        Use the following controls:
+                    </p>
+                    <ul>
+                        <li>Your fingers on a touch screen.</li>
+                    </ul>
+                </div>
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>Enabling multitouch.</li>
+                        <li>Managing multitouch events.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script type="text/javascript" src="../../../build/caat.js"></script>
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    (function() {
+        CAAT.DEBUG=1;
+        CAAT.TOUCH_BEHAVIOR= CAAT.TOUCH_AS_MULTITOUCH;
+
+        function __start() {
+
+            var img= document.createElement('img');
+            img.onload= function(ev) {
+
+                var director= new CAAT.Director().initialize(800, 500, document.getElementById("experiment-canvas"));
+
+                var scene= director.createScene();
+
+                var cc= new CAAT.ActorContainer().setBounds( 0,0,800,500).setId(99);
+                var W= img.width;
+                var H= img.height;
+                var colors= [ "#33f", "#3f3", "#f33", "#f3f" ];
+
+                scene.addChild( cc );
+
+                cc.touchStart= function( e ) {
+                    for( var i=0; i< e.changedTouches.length; i++ ) {
+                        var touch= e.changedTouches[i];
+                        var id= touch.identifier;
+                        var actor= new CAAT.Actor().
+                                setBackgroundImage( img ).
+                                enableEvents(false).
+                                setId( id ).
+                                setLocation( touch.pageX-W/2, touch.pageY-H/2 );
+
+                        cc.addChild( actor );
+                    }
+                };
+
+                cc.touchMove= function( e ) {
+                    for( var i=0; i< e.changedTouches.length; i++ ) {
+                        var actor= cc.findActorById(e.changedTouches[i].identifier);
+                        actor.setLocation(e.changedTouches[i].pageX-W/2, e.changedTouches[i].pageY-H/2);
+                    }
+                };
+
+                cc.touchEnd= function( e ) {
+                    for( var i=0; i< e.changedTouches.length; i++ ) {
+                        var actor= cc.findActorById(e.changedTouches[i].identifier);
+                        actor.destroy();
+                    }
+                };
+
+                CAAT.loop(60);
+            };
+
+            img.src= "logo_big.png";
+        }
+
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener('load', __start, false);
+
+    })();
+
+</script>
+</html>

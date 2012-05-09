@@ -49,6 +49,7 @@
             this.dirtyRects.push( new CAAT.Rectangle() );
         }
         this.dirtyRectsIndex=   0;
+        this.touches= {};
 
         return this;
     };
@@ -145,6 +146,8 @@
         stopped             :   false,  // is stopped, this director will do nothing.
 
         needsRepaint        : false,    // for rendering mode = dirty, this flags means, paint another frame
+
+        touches             : null,
 
         requestRepaint : function() {
             this.needsRepaint= true;
@@ -1946,6 +1949,232 @@
             this.__gestureScale= 0;
         },
 
+        /**
+         * Touches information.
+         * associate touch.id with an actor and original touch info.
+         */
+        touches : null,
+
+        __touchEndHandlerMT : function(e) {
+
+            e.preventDefault();
+
+            var i,j;
+            var recent= [];
+
+            /**
+             * extrae actores afectados, y coordenadas relativas para ellos.
+             * crear una coleccion touch-id : { actor, touch-event }
+             */
+            for( i=0; i< e.changedTouches.length; i++ ) {
+                var _touch= e.changedTouches[i];
+                var id= _touch.identifier;
+                recent.push( id );
+            }
+
+            /**
+             * para los touch identificados, extraer que actores se han afectado.
+             * crear eventos con la info de touch para cada uno.
+             */
+
+            var actors= {};
+            for( i=0; i<recent.length; i++ ) {
+                var touchId= recent[ i ];
+                if ( this.touches[ touchId ] ) {
+                    var actor= this.touches[ touchId ].actor;
+
+                    if ( !actors[actor.id] ) {
+                        actors[actor.id]= {
+                            actor: actor,
+                            touch: new CAAT.TouchEvent().init( e, actor, this.currentScene.time )
+                        };
+                    }
+
+                    var ev= actors[ actor.id ].touch;
+                    ev.addChangedTouch( this.touches[ touchId ].touch );
+                }
+            }
+
+            /**
+             * remove ended touch info.
+             */
+            for( i=0; i< e.changedTouches.length; i++ ) {
+                var touch= e.changedTouches[i];
+                var id= touch.identifier;
+                delete this.touches[id];
+            }
+
+            /**
+             * notificar a todos los actores.
+             */
+            for( var pr in actors ) {
+                var data= actors[pr];
+                var actor= data.actor;
+                var touch= data.touch;
+
+                for( var actorId in this.touches ) {
+                    var tt= this.touches[actorId]
+                    if ( tt.actor.id===actor.id ) {
+                        touch.addTouch( tt.touch );
+                    }
+                }
+
+                actor.touchEnd( touch );
+            }
+        },
+
+        __touchMoveHandlerMT : function(e) {
+            e.preventDefault();
+
+            var i;
+            var recent= [];
+
+            /**
+             * extrae actores afectados, y coordenadas relativas para ellos.
+             * crear una coleccion touch-id : { actor, touch-event }
+             */
+            for( i=0; i< e.changedTouches.length; i++ ) {
+                var touch= e.changedTouches[i];
+                var id= touch.identifier;
+                var mp= this.mousePoint;
+                this.getCanvasCoord(mp, touch);
+                if ( mp.x<0 || mp.y<0 || mp.x>=this.width || mp.y>=this.height ) {
+                    continue;
+                }
+
+                var actor= this.touches[ id ].actor;
+                mp= actor.viewToModel(mp);
+
+                this.touches[ id ]= {
+                    actor: actor,
+                    touch: new CAAT.TouchInfo( id, mp.x, mp.y, actor )
+                };
+
+                recent.push( id );
+            }
+
+            /**
+             * para los touch identificados, extraer que actores se han afectado.
+             * crear eventos con la info de touch para cada uno.
+             */
+
+            var actors= {};
+            for( i=0; i<recent.length; i++ ) {
+                var touchId= recent[ i ];
+                var actor= this.touches[ touchId ].actor;
+
+                if ( !actors[actor.id] ) {
+                    actors[actor.id]= {
+                        actor: actor,
+                        touch: new CAAT.TouchEvent().init( e, actor, this.currentScene.time )
+                    };
+                }
+
+                var ev= actors[ actor.id ].touch;
+                ev.addTouch( this.touches[ touchId ].touch );
+                ev.addChangedTouch( this.touches[ touchId ].touch );
+            }
+
+            /**
+             * notificar a todos los actores.
+             */
+            for( var pr in actors ) {
+                var data= actors[pr];
+                var actor= data.actor;
+                var touch= data.touch;
+
+                for( var actorId in this.touches ) {
+                    var tt= this.touches[actorId]
+                    if ( tt.actor.id===actor.id ) {
+                        touch.addTouch( tt.touch );
+                    }
+                }
+
+                actor.touchMove( touch );
+            }
+        },
+
+        __touchCancelHandleMT : function(e) {
+        },
+
+        __touchStartHandlerMT : function(e) {
+
+            e.preventDefault();
+
+            var i;
+            var recent= [];
+
+            /**
+             * extrae actores afectados, y coordenadas relativas para ellos.
+             * crear una coleccion touch-id : { actor, touch-event }
+             */
+            for( i=0; i< e.changedTouches.length; i++ ) {
+                var touch= e.changedTouches[i];
+                var id= touch.identifier;
+                var mp= this.mousePoint;
+                this.getCanvasCoord(mp, touch);
+                if ( mp.x<0 || mp.y<0 || mp.x>=this.width || mp.y>=this.height ) {
+                    continue;
+                }
+
+                var actor= this.findActorAtPosition(mp);
+                if ( actor!==null ) {
+                    mp= actor.viewToModel(mp);
+
+                    if ( !this.touches[ id ] ) {
+
+                        this.touches[ id ]= {
+                            actor: actor,
+                            touch: new CAAT.TouchInfo( id, mp.x, mp.y, actor )
+                        };
+
+                        recent.push( id );
+                    }
+                }
+            }
+
+            /**
+             * para los touch identificados, extraer que actores se han afectado.
+             * crear eventos con la info de touch para cada uno.
+             */
+
+            var actors= {};
+            for( i=0; i<recent.length; i++ ) {
+                var touchId= recent[ i ];
+                var actor= this.touches[ touchId ].actor;
+
+                if ( !actors[actor.id] ) {
+                    actors[actor.id]= {
+                        actor: actor,
+                        touch: new CAAT.TouchEvent().init( e, actor, this.currentScene.time )
+                    };
+                }
+
+                var ev= actors[ actor.id ].touch;
+                ev.addTouch( this.touches[ touchId ].touch );
+                ev.addChangedTouch( this.touches[ touchId ].touch );
+            }
+
+            /**
+             * notificar a todos los actores.
+             */
+            for( var pr in actors ) {
+                var data= actors[pr];
+                var actor= data.actor;
+                var touch= data.touch;
+
+                for( var actorId in this.touches ) {
+                    var tt= this.touches[actorId]
+                    if ( tt.actor.id===actor.id ) {
+                        touch.addTouch( tt.touch );
+                    }
+                }
+
+                actor.touchStart( touch );
+            }
+        },
+
+
         addHandlers: function(canvas) {
 
             var me= this;
@@ -2009,8 +2238,7 @@
                 }
             }, false);
 
-            window.addEventListener('mousemove',
-                function(e) {
+            window.addEventListener('mousemove', function(e) {
                     e.preventDefault();
                     e.cancelBubble = true;
                     if (e.stopPropagation) e.stopPropagation();
@@ -2021,8 +2249,7 @@
                         return;
                     }
                     me.__mouseMoveHandler(e);
-                },
-                false);
+                }, false);
 
             window.addEventListener("dblclick", function(e) {
                 if ( e.target===canvas ) {
@@ -2039,9 +2266,18 @@
                 }
             }, false);
 
-            window.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
-            window.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
-            window.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
+            if ( CAAT.TOUCH_BEHAVIOR === CAAT.TOUCH_AS_MOUSE ) {
+                window.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
+                window.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
+                window.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
+            } else if ( CAAT.TOUCH_BEHAVIOR === CAAT.TOUCH_AS_MULTITOUCH ) {
+
+                window.addEventListener("touchstart", this.__touchStartHandlerMT.bind(this), false );
+                window.addEventListener("touchmove", this.__touchMoveHandlerMT.bind(this), false );
+                window.addEventListener("touchend", this.__touchEndHandlerMT.bind(this), false );
+                window.addEventListener("touchcancel", this.__touchCancelHandleMT.bind(this), false );
+            }
+
             window.addEventListener("gesturestart", function(e) {
                 if ( e.target===canvas ) {
                     e.preventDefault();
