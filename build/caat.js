@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 82
+Version: 0.4 build: 91
 
 Created on:
 DATE: 2012-05-09
-TIME: 22:06:25
+TIME: 23:58:04
 */
 
 
@@ -10975,7 +10975,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          *    will have their areas redrawn.
          *  + CAAT.Director.CLEAR_NONE. clears nothing.
          *
-         * @param clear {CAAT.Director.CLEAR_ALL |ÊCAAT.Director.CLEAR_NONE | CAAT.Director.CLEAR_DIRTY_RECTS}
+         * @param clear {CAAT.Director.CLEAR_ALL |ï¿½CAAT.Director.CLEAR_NONE | CAAT.Director.CLEAR_DIRTY_RECTS}
          * @return this.
          */
         setClear : function(clear) {
@@ -11487,8 +11487,6 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
         __touchEndHandlerMT : function(e) {
 
-            e.preventDefault();
-
             var i,j;
             var recent= [];
 
@@ -11501,6 +11499,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 var id= _touch.identifier;
                 recent.push( id );
             }
+
 
             /**
              * para los touch identificados, extraer que actores se han afectado.
@@ -11566,21 +11565,21 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             for( i=0; i< e.changedTouches.length; i++ ) {
                 var touch= e.changedTouches[i];
                 var id= touch.identifier;
-                var mp= this.mousePoint;
-                this.getCanvasCoord(mp, touch);
-                if ( mp.x<0 || mp.y<0 || mp.x>=this.width || mp.y>=this.height ) {
-                    continue;
+
+                if ( this.touches[ id ] ) {
+                    var mp= this.mousePoint;
+                    this.getCanvasCoord(mp, touch);
+
+                    var actor= this.touches[ id ].actor;
+                    mp= actor.viewToModel(mp);
+
+                    this.touches[ id ]= {
+                        actor: actor,
+                        touch: new CAAT.TouchInfo( id, mp.x, mp.y, actor )
+                    };
+
+                    recent.push( id );
                 }
-
-                var actor= this.touches[ id ].actor;
-                mp= actor.viewToModel(mp);
-
-                this.touches[ id ]= {
-                    actor: actor,
-                    touch: new CAAT.TouchInfo( id, mp.x, mp.y, actor )
-                };
-
-                recent.push( id );
             }
 
             /**
@@ -11629,10 +11628,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
         __touchStartHandlerMT : function(e) {
 
-            e.preventDefault();
-
             var i;
             var recent= [];
+            var allInCanvas= true;
 
             /**
              * extrae actores afectados, y coordenadas relativas para ellos.
@@ -11644,6 +11642,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 var mp= this.mousePoint;
                 this.getCanvasCoord(mp, touch);
                 if ( mp.x<0 || mp.y<0 || mp.x>=this.width || mp.y>=this.height ) {
+                    allInCanvas= false;
                     continue;
                 }
 
@@ -11661,6 +11660,10 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                         recent.push( id );
                     }
                 }
+            }
+
+            if ( allInCanvas ) {
+                e.preventDefault();
             }
 
             /**
