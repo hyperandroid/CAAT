@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 68
+Version: 0.4 build: 82
 
 Created on:
-DATE: 2012-05-01
-TIME: 01:03:47
+DATE: 2012-05-09
+TIME: 22:06:25
 */
 
 
@@ -1019,7 +1019,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             1.0,0.0,0.0,
             0.0,1.0,0.0, 0.0,0.0,1.0 ];
 
-        if ( Float32Array ) {
+        if ( typeof Float32Array!=="undefined" ) {
             this.matrix= new Float32Array(this.matrix);
         }
 
@@ -3703,9 +3703,10 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 		},
 
         fireBehaviorStartedEvent : function(actor,time) {
-            for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
-                if ( this.lifecycleListenerList[i].behaviorStarted ) {
-                    this.lifecycleListenerList[i].behaviorStarted(this,time,actor);
+            for( var i= 0, l=this.lifecycleListenerList.length; i<l; i++ )	{
+                var b=this.lifecycleListenerList[i];
+                if ( b.behaviorStarted ) {
+                    b.behaviorStarted(this,time,actor);
                 }
             }
         },
@@ -3715,11 +3716,14 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @param actor a CAAT.Actor instance
          * @param time an integer with the scene time the behavior was expired at.
          */
-		fireBehaviorExpiredEvent : function(actor,time)	{
-			for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
-				this.lifecycleListenerList[i].behaviorExpired(this,time,actor);
-			}
-		},
+        fireBehaviorExpiredEvent:function (actor, time) {
+            for (var i = 0, l = this.lifecycleListenerList.length; i < l; i++) {
+                var b=this.lifecycleListenerList[i];
+                if (b.behaviorExpired) {
+                    b.behaviorExpired(this, time, actor);
+                }
+            }
+        },
         /**
          * Notify observers about behavior being applied.
          * @param actor a CAAT.Actor instance the behavior is being applied to.
@@ -3729,9 +3733,10 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @param value the value being set for actor properties. each behavior will supply with its own value version.
          */
         fireBehaviorAppliedEvent : function(actor,time,normalizedTime,value)	{
-            for( var i=0; i<this.lifecycleListenerList.length; i++ )	{
-                if (this.lifecycleListenerList[i].behaviorApplied) {
-                    this.lifecycleListenerList[i].behaviorApplied(this,time,normalizedTime,actor,value);
+            for( var i= 0, l=this.lifecycleListenerList.length; i<l; i++ )	{
+                var b= this.lifecycleListenerList[i];
+                if (b.behaviorApplied) {
+                    b.behaviorApplied(this,time,normalizedTime,actor,value);
                 }
             }
         },
@@ -4333,7 +4338,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * 
          * @param time the time to apply the scale for.
          * @param actor the target actor to Scale.
-         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}Ê}</code>
+         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}ï¿½}</code>
          */
 		setForTime : function(time,actor) {
 
@@ -4645,7 +4650,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * If autoRotate=true, the actor is rotated as well. The rotation anchor will (if set) always be ANCHOR_CENTER.
          * @param time an integer indicating the time the behavior is being applied at.
          * @param actor a CAAT.Actor instance to be translated.
-         * @return {object} an object of the form <code>{ x: {float}, y: {float}Ê}</code>.
+         * @return {object} an object of the form <code>{ x: {float}, y: {float}ï¿½}</code>.
          */
 		setForTime : function(time,actor) {
 
@@ -4792,7 +4797,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          *
          * @param time the time to apply the scale for.
          * @param actor the target actor to Scale.
-         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}Ê}</code>
+         * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}ï¿½}</code>
          */
 		setForTime : function(time,actor) {
 
@@ -4889,7 +4894,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
     };
 
     extend( CAAT.Scale1Behavior, CAAT.Behavior );
-})();/**
+})();
+/**
  * See LICENSE file.
  *
  * This object manages CSS3 transitions reflecting applying behaviors.
@@ -5632,8 +5638,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
      * @constructor
      */
 	CAAT.Actor = function() {
-		this.behaviorList=          [];
-
+        this.behaviorList=          [];
+        this.styleCache = {};
         this.lifecycleListenerList= [];
         this.scaleAnchor=           this.ANCHOR_CENTER;
         this.behaviorList=          [];
@@ -5667,44 +5673,44 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
         lifecycleListenerList:	null,   // Array of life cycle listener
         behaviorList:           null,   // Array of behaviors to apply to the Actor
-		x:						0,      // x position on parent. In parent's local coord. system.
-		y:						0,      // y position on parent. In parent's local coord. system.
-		width:					0,      // Actor's width. In parent's local coord. system.
-		height:					0,      // Actor's height. In parent's local coord. system.
-		start_time:				0,      // Start time in Scene time.
-		duration:				Number.MAX_VALUE,   // Actor duration in Scene time
-		clip:					false,  // should clip the Actor's content against its contour.
+        x:						0,      // x position on parent. In parent's local coord. system.
+        y:						0,      // y position on parent. In parent's local coord. system.
+        width:					0,      // Actor's width. In parent's local coord. system.
+        height:					0,      // Actor's height. In parent's local coord. system.
+        start_time:				0,      // Start time in Scene time.
+        duration:				Number.MAX_VALUE,   // Actor duration in Scene time
+        clip:					false,  // should clip the Actor's content against its contour.
 
         tAnchorX            :   0,
         tAnchorY            :   0,
         scaleX:					0,      // transformation. width scale parameter
-		scaleY:					0,      // transformation. height scale parameter
-		scaleTX:				.50,    // transformation. scale anchor x position
-		scaleTY:				.50,    // transformation. scale anchor y position
-		scaleAnchor:			0,      // transformation. scale anchor
-		rotationAngle:			0,      // transformation. rotation angle in radians
-		rotationY:				.50,    // transformation. rotation center y
+        scaleY:					0,      // transformation. height scale parameter
+        scaleTX:				.50,    // transformation. scale anchor x position
+        scaleTY:				.50,    // transformation. scale anchor y position
+        scaleAnchor:			0,      // transformation. scale anchor
+        rotationAngle:			0,      // transformation. rotation angle in radians
+        rotationY:				.50,    // transformation. rotation center y
         alpha:					1,      // alpha transparency value
         rotationX:				.50,    // transformation. rotation center x
         isGlobalAlpha:          false,  // is this a global alpha
         frameAlpha:             1,      // hierarchically calculated alpha for this Actor.
-		expired:				false,  // set when the actor has been expired
-		discardable:			false,  // set when you want this actor to be removed if expired
+        expired:				false,  // set when the actor has been expired
+        discardable:			false,  // set when you want this actor to be removed if expired
 
         domParent:              null,
         domElement:             null,
 
         visible:                true,
 
-		ANCHOR_CENTER:			0,      // constant values to determine different affine transform
-		ANCHOR_TOP:				1,      // anchors.
-		ANCHOR_BOTTOM:			2,
-		ANCHOR_LEFT:			3,
-		ANCHOR_RIGHT:			4,
-		ANCHOR_TOP_LEFT:		5,
-		ANCHOR_TOP_RIGHT:		6,
-		ANCHOR_BOTTOM_LEFT:		7,
-		ANCHOR_BOTTOM_RIGHT:	8,
+        ANCHOR_CENTER:			0,      // constant values to determine different affine transform
+        ANCHOR_TOP:				1,      // anchors.
+        ANCHOR_BOTTOM:			2,
+        ANCHOR_LEFT:			3,
+        ANCHOR_RIGHT:			4,
+        ANCHOR_TOP_LEFT:		5,
+        ANCHOR_TOP_RIGHT:		6,
+        ANCHOR_BOTTOM_LEFT:		7,
+        ANCHOR_BOTTOM_RIGHT:	8,
         ANCHOR_CUSTOM:          9,
 
         mouseEnabled:           true,
@@ -5725,6 +5731,17 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         AABB            :       null,
         viewVertices:           null,   // model to view transformed vertices.
         isAA            :       true,
+
+        /**
+         * Touch Start only received when CAAT.TOUCH_BEHAVIOR= CAAT.TOUCH_AS_MULTITOUCH
+         * @param e <CAAT.TouchEvent>
+         */
+        touchStart : function(e) {
+        },
+        touchMove : function(e) {
+        },
+        touchEnd : function(e) {
+        },
 
         /**
           * Calculates the 2D bounding box in canvas coordinates of the Actor.
@@ -5784,7 +5801,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
              if ( vvv.y > ymax ) {
                  ymax=vvv.y;
              }
-             var vvv= vv[1];
+             vvv= vv[1];
              if ( vvv.x < xmin ) {
                  xmin=vvv.x;
              }
@@ -5797,7 +5814,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
              if ( vvv.y > ymax ) {
                  ymax=vvv.y;
              }
-             var vvv= vv[2];
+             vvv= vv[2];
              if ( vvv.x < xmin ) {
                  xmin=vvv.x;
              }
@@ -5810,7 +5827,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
              if ( vvv.y > ymax ) {
                  ymax=vvv.y;
              }
-             var vvv= vv[3];
+             vvv= vv[3];
              if ( vvv.x < xmin ) {
                  xmin=vvv.x;
              }
@@ -6044,7 +6061,10 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             return this;
         },
         style : function(attr,value) {
-            this.domElement.style[attr]= value;
+            if (value !== this.styleCache[attr]) {
+                this.styleCache[attr] = value;
+                this.domElement.style[attr]= value;
+            }
         },
         style3 : function() {
 
@@ -6053,34 +6073,45 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 imageop=' scale(-1,1) ';
             }
 
+            this.rotationAngle = Math.round(this.rotationAngle * 100)/100;
+
             var value=
                 "translate("+this.x+"px,"+this.y+"px) "+
                 "rotate("+this.rotationAngle+"rad) scale("+this.scaleX+","+this.scaleY+")" +
                     imageop;
 
-            this.domElement.style['-ms-transform']=     value;
-            this.domElement.style['-webkit-transform']= "translate3d(0,0,0) " + value;
-            this.domElement.style.OTransform=      value;
-            this.domElement.style.MozTransform=         value;
-            this.domElement.style['transform']=         value;
+            if (value !== this.styleCache['transform']) {
+                this.domElement.style['-ms-transform']=     value;
+                this.domElement.style['-webkit-transform']= "translate3d(0,0,0) " + value;
+                this.domElement.style.OTransform=           value;
+                this.domElement.style.MozTransform=         value;
+                this.domElement.style['transform']=         value;
+                this.styleCache['transform'] = value;
+            }
 
             var anchor= ''+(this.rotationX*100)+'% '+
                            (this.rotationY*100)+'% ';
 
-            this.domElement.style['transform-origin']=          anchor;
-            this.domElement.style['-webkit-transform-origin']=  anchor;
-            this.domElement.style['-ms-transform-origin']=      anchor;
-            this.domElement.style.OTransformOrigin=             anchor;
-            this.domElement.style.MozTransformOrigin=           anchor;
+            if (anchor !== this.styleCache['transform-origin']) {
+                this.domElement.style['transform-origin']=          anchor;
+                this.domElement.style['-webkit-transform-origin']=  anchor;
+                this.domElement.style['-ms-transform-origin']=      anchor;
+                this.domElement.style.OTransformOrigin=             anchor;
+                this.domElement.style.MozTransformOrigin=           anchor;
+                this.styleCache['transform-origin'] = anchor;
+            }
 
             return this;
         },
         styleAlpha : function(alpha) {
-            this.domElement.style['filter']=        'alpha(opacity='+((this.alpha*100)>>0)+')';
-            this.domElement.style.Oopacity=    this.alpha;
-            this.domElement.style.MozOpacity=  this.alpha;
-            this.domElement.style['-khtml-opacity']=this.alpha;
-            this.domElement.style.opacity=      this.alpha;
+            if(this.alpha !== this.styleCache['opacity']) {
+                this.domElement.style['filter']=        'alpha(opacity='+((this.alpha*100)>>0)+')';
+                this.domElement.style.Oopacity=          this.alpha;
+                this.domElement.style.MozOpacity=        this.alpha;
+                this.domElement.style['-khtml-opacity']= this.alpha;
+                this.domElement.style.opacity=           this.alpha;
+                this.styleCache['opacity'] =             this.alpha;
+            }
 
             return this;
         },
@@ -8497,10 +8528,14 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.dirtyRects.push( new CAAT.Rectangle() );
         }
         this.dirtyRectsIndex=   0;
+        this.touches= {};
 
         return this;
     };
 
+
+    CAAT.Director.RENDER_MODE_CONTINUOUS=    1;              // redraw every frame
+    CAAT.Director.RENDER_MODE_DIRTY=         2;              // suitable for evented CAAT.
 
     CAAT.Director.CLEAR_DIRTY_RECTS= 1;
     CAAT.Director.CLEAR_ALL=         true;
@@ -8509,6 +8544,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
     CAAT.Director.prototype = {
 
         debug:              false,  // flag indicating debug mode. It will draw affedted screen areas.
+
+        renderMode      :   CAAT.Director.RENDER_MODE_CONTINUOUS,
+
 
         onRenderStart:      null,
         onRenderEnd:        null,
@@ -8526,7 +8564,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         scenes:             null,   // Scenes collection. An array.
         currentScene:       null,   // The current Scene. This and only this will receive events.
         canvas:             null,   // The canvas the Director draws on.
-        crc:                null,    // @deprecated. canvas rendering context
+
+        // @deprecated
+        crc:                null,   // canvas rendering context
         ctx:                null,   // refactoring crc for a more convenient name
         time:               0,      // virtual actor time.
         timeline:           0,      // global director timeline.
@@ -8583,6 +8623,21 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         nDirtyRects         :   0,
 
         stopped             :   false,  // is stopped, this director will do nothing.
+
+        needsRepaint        : false,    // for rendering mode = dirty, this flags means, paint another frame
+
+        touches             : null,
+
+        requestRepaint : function() {
+            this.needsRepaint= true;
+        },
+
+        setRenderMode : function( mode ) {
+            if ( mode===CAAT.Director.RENDER_MODE_CONTINUOUS || mode===CAAT.Director.RENDER_MODE_DIRTY ) {
+                this.renderMode= mode;
+            }
+            return this;
+        },
 
         checkDebug : function() {
             if ( CAAT.DEBUG ) {
@@ -9812,10 +9867,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * expense of cpu power at least until hardware accelerated canvas rendering
          * context are available). A value of 60 is a high frame rate and should not be exceeded.
          *
-         * @param fps {number} integer value indicating the target frames per second to run
-         * the animation at.
          */
-        renderFrame : function(fps, callback) {
+        renderFrame : function() {
 
             if (this.stopped) {
                 return;
@@ -9842,13 +9895,23 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             if ( this.debugInfo ) {
                 this.debugInfo(this.statistics);
             }
-            
+
             this.timeline = t;
 
             if (this.onRenderEnd) {
                 this.onRenderEnd(delta);
             }
+
+            this.needsRepaint= false;
         },
+
+        /**
+         * If the director has renderingMode: DIRTY, the timeline must be reset to register accurate frame measurement.
+         */
+        resetTimeline : function() {
+            this.timeline= new Date().getTime();
+        },
+
         endLoop : function () {
         },
         /**
@@ -10365,6 +10428,232 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.__gestureScale= 0;
         },
 
+        /**
+         * Touches information.
+         * associate touch.id with an actor and original touch info.
+         */
+        touches : null,
+
+        __touchEndHandlerMT : function(e) {
+
+            e.preventDefault();
+
+            var i,j;
+            var recent= [];
+
+            /**
+             * extrae actores afectados, y coordenadas relativas para ellos.
+             * crear una coleccion touch-id : { actor, touch-event }
+             */
+            for( i=0; i< e.changedTouches.length; i++ ) {
+                var _touch= e.changedTouches[i];
+                var id= _touch.identifier;
+                recent.push( id );
+            }
+
+            /**
+             * para los touch identificados, extraer que actores se han afectado.
+             * crear eventos con la info de touch para cada uno.
+             */
+
+            var actors= {};
+            for( i=0; i<recent.length; i++ ) {
+                var touchId= recent[ i ];
+                if ( this.touches[ touchId ] ) {
+                    var actor= this.touches[ touchId ].actor;
+
+                    if ( !actors[actor.id] ) {
+                        actors[actor.id]= {
+                            actor: actor,
+                            touch: new CAAT.TouchEvent().init( e, actor, this.currentScene.time )
+                        };
+                    }
+
+                    var ev= actors[ actor.id ].touch;
+                    ev.addChangedTouch( this.touches[ touchId ].touch );
+                }
+            }
+
+            /**
+             * remove ended touch info.
+             */
+            for( i=0; i< e.changedTouches.length; i++ ) {
+                var touch= e.changedTouches[i];
+                var id= touch.identifier;
+                delete this.touches[id];
+            }
+
+            /**
+             * notificar a todos los actores.
+             */
+            for( var pr in actors ) {
+                var data= actors[pr];
+                var actor= data.actor;
+                var touch= data.touch;
+
+                for( var actorId in this.touches ) {
+                    var tt= this.touches[actorId]
+                    if ( tt.actor.id===actor.id ) {
+                        touch.addTouch( tt.touch );
+                    }
+                }
+
+                actor.touchEnd( touch );
+            }
+        },
+
+        __touchMoveHandlerMT : function(e) {
+            e.preventDefault();
+
+            var i;
+            var recent= [];
+
+            /**
+             * extrae actores afectados, y coordenadas relativas para ellos.
+             * crear una coleccion touch-id : { actor, touch-event }
+             */
+            for( i=0; i< e.changedTouches.length; i++ ) {
+                var touch= e.changedTouches[i];
+                var id= touch.identifier;
+                var mp= this.mousePoint;
+                this.getCanvasCoord(mp, touch);
+                if ( mp.x<0 || mp.y<0 || mp.x>=this.width || mp.y>=this.height ) {
+                    continue;
+                }
+
+                var actor= this.touches[ id ].actor;
+                mp= actor.viewToModel(mp);
+
+                this.touches[ id ]= {
+                    actor: actor,
+                    touch: new CAAT.TouchInfo( id, mp.x, mp.y, actor )
+                };
+
+                recent.push( id );
+            }
+
+            /**
+             * para los touch identificados, extraer que actores se han afectado.
+             * crear eventos con la info de touch para cada uno.
+             */
+
+            var actors= {};
+            for( i=0; i<recent.length; i++ ) {
+                var touchId= recent[ i ];
+                var actor= this.touches[ touchId ].actor;
+
+                if ( !actors[actor.id] ) {
+                    actors[actor.id]= {
+                        actor: actor,
+                        touch: new CAAT.TouchEvent().init( e, actor, this.currentScene.time )
+                    };
+                }
+
+                var ev= actors[ actor.id ].touch;
+                ev.addTouch( this.touches[ touchId ].touch );
+                ev.addChangedTouch( this.touches[ touchId ].touch );
+            }
+
+            /**
+             * notificar a todos los actores.
+             */
+            for( var pr in actors ) {
+                var data= actors[pr];
+                var actor= data.actor;
+                var touch= data.touch;
+
+                for( var actorId in this.touches ) {
+                    var tt= this.touches[actorId]
+                    if ( tt.actor.id===actor.id ) {
+                        touch.addTouch( tt.touch );
+                    }
+                }
+
+                actor.touchMove( touch );
+            }
+        },
+
+        __touchCancelHandleMT : function(e) {
+        },
+
+        __touchStartHandlerMT : function(e) {
+
+            e.preventDefault();
+
+            var i;
+            var recent= [];
+
+            /**
+             * extrae actores afectados, y coordenadas relativas para ellos.
+             * crear una coleccion touch-id : { actor, touch-event }
+             */
+            for( i=0; i< e.changedTouches.length; i++ ) {
+                var touch= e.changedTouches[i];
+                var id= touch.identifier;
+                var mp= this.mousePoint;
+                this.getCanvasCoord(mp, touch);
+                if ( mp.x<0 || mp.y<0 || mp.x>=this.width || mp.y>=this.height ) {
+                    continue;
+                }
+
+                var actor= this.findActorAtPosition(mp);
+                if ( actor!==null ) {
+                    mp= actor.viewToModel(mp);
+
+                    if ( !this.touches[ id ] ) {
+
+                        this.touches[ id ]= {
+                            actor: actor,
+                            touch: new CAAT.TouchInfo( id, mp.x, mp.y, actor )
+                        };
+
+                        recent.push( id );
+                    }
+                }
+            }
+
+            /**
+             * para los touch identificados, extraer que actores se han afectado.
+             * crear eventos con la info de touch para cada uno.
+             */
+
+            var actors= {};
+            for( i=0; i<recent.length; i++ ) {
+                var touchId= recent[ i ];
+                var actor= this.touches[ touchId ].actor;
+
+                if ( !actors[actor.id] ) {
+                    actors[actor.id]= {
+                        actor: actor,
+                        touch: new CAAT.TouchEvent().init( e, actor, this.currentScene.time )
+                    };
+                }
+
+                var ev= actors[ actor.id ].touch;
+                ev.addTouch( this.touches[ touchId ].touch );
+                ev.addChangedTouch( this.touches[ touchId ].touch );
+            }
+
+            /**
+             * notificar a todos los actores.
+             */
+            for( var pr in actors ) {
+                var data= actors[pr];
+                var actor= data.actor;
+                var touch= data.touch;
+
+                for( var actorId in this.touches ) {
+                    var tt= this.touches[actorId]
+                    if ( tt.actor.id===actor.id ) {
+                        touch.addTouch( tt.touch );
+                    }
+                }
+
+                actor.touchStart( touch );
+            }
+        },
+
+
         addHandlers: function(canvas) {
 
             var me= this;
@@ -10428,8 +10717,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 }
             }, false);
 
-            window.addEventListener('mousemove',
-                function(e) {
+            window.addEventListener('mousemove', function(e) {
                     e.preventDefault();
                     e.cancelBubble = true;
                     if (e.stopPropagation) e.stopPropagation();
@@ -10440,8 +10728,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                         return;
                     }
                     me.__mouseMoveHandler(e);
-                },
-                false);
+                }, false);
 
             window.addEventListener("dblclick", function(e) {
                 if ( e.target===canvas ) {
@@ -10458,9 +10745,18 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 }
             }, false);
 
-            window.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
-            window.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
-            window.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
+            if ( CAAT.TOUCH_BEHAVIOR === CAAT.TOUCH_AS_MOUSE ) {
+                window.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
+                window.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
+                window.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
+            } else if ( CAAT.TOUCH_BEHAVIOR === CAAT.TOUCH_AS_MULTITOUCH ) {
+
+                window.addEventListener("touchstart", this.__touchStartHandlerMT.bind(this), false );
+                window.addEventListener("touchmove", this.__touchMoveHandlerMT.bind(this), false );
+                window.addEventListener("touchend", this.__touchEndHandlerMT.bind(this), false );
+                window.addEventListener("touchcancel", this.__touchCancelHandleMT.bind(this), false );
+            }
+
             window.addEventListener("gesturestart", function(e) {
                 if ( e.target===canvas ) {
                     e.preventDefault();
@@ -10650,6 +10946,96 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
  *
  **/
 
+CAAT.TouchInfo= function( id, x, y, target ) {
+
+    this.identifier= id;
+    this.clientX= x;
+    this.pageX= x;
+    this.clientY= y;
+    this.pageY= y;
+    this.target= target;
+
+    return this;
+};
+
+(function() {
+    /**
+     * This function creates a mouse event that represents a touch or mouse event.
+     * @constructor
+     */
+	CAAT.TouchEvent = function() {
+        this.touches= [];
+        this.changedTouches= [];
+		return this;
+	};
+
+	CAAT.TouchEvent.prototype= {
+
+		time:			0,
+		source:			null,
+        sourceEvent:    null,
+
+        shift:          false,
+        control:        false,
+        alt:            false,
+        meta:           false,
+
+
+        touches         : null,
+        changedTouches  : null,
+
+		init : function( sourceEvent,source,time ) {
+
+			this.source=        source;
+            this.alt =          sourceEvent.altKey;
+            this.control =      sourceEvent.ctrlKey;
+            this.shift =        sourceEvent.shiftKey;
+            this.meta =         sourceEvent.metaKey;
+            this.sourceEvent=   sourceEvent;
+            this.time=          time;
+
+			return this;
+		},
+        /**
+         *
+         * @param touchInfo
+         *  <{
+         *      id : <number>,
+         *      point : {
+         *          x: <number>,
+         *          y: <number> }Ê
+         *  }>
+         * @return {*}
+         */
+        addTouch : function( touchInfo ) {
+            if ( -1===this.touches.indexOf( touchInfo ) ) {
+                this.touches.push( touchInfo );
+            }
+            return this;
+        },
+        addChangedTouch : function( touchInfo ) {
+            if ( -1===this.changedTouches.indexOf( touchInfo ) ) {
+                this.changedTouches.push( touchInfo );
+            }
+            return this;
+        },
+		isAltDown : function() {
+			return this.alt;
+		},
+		isControlDown : function() {
+			return this.control;
+		},
+		isShiftDown : function() {
+			return this.shift;
+		},
+        isMetaDown: function() {
+            return this.meta;
+        },
+        getSourceEvent : function() {
+            return this.sourceEvent;
+        }
+	};
+})();
 
 (function() {
     /**
@@ -10659,6 +11045,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 	CAAT.MouseEvent = function() {
 		this.point= new CAAT.Point(0,0,0);
 		this.screenPoint= new CAAT.Point(0,0,0);
+        this.touches= [];
 		return this;
 	};
 	
@@ -10674,6 +11061,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         meta:           false,
 
         sourceEvent:    null,
+
+        touches     :   null,
 
 		init : function( x,y,sourceEvent,source,screenPoint,time ) {
 			this.point.set(x,y);
@@ -10717,10 +11106,10 @@ CAAT.setCoordinateClamping= function( clamp ) {
     }
 };
 
+CAAT.TOUCH_AS_MOUSE=        1;
+CAAT.TOUCH_AS_MULTITOUCH=   2;
 
-CAAT.RENDER_MODE_CONTINUOUS=    1;              // redraw every frame
-CAAT.RENDER_MODE_DIRTY=         2;              // suitable for evented CAAT.
-CAAT.RENDER_MODE= CAAT.RENDER_MODE_CONTINUOUS;
+CAAT.TOUCH_BEHAVIOR= CAAT.TOUCH_AS_MOUSE;
 
 /**
  * Box2D point meter conversion ratio.
@@ -11106,7 +11495,10 @@ CAAT.REQUEST_ANIMATION_FRAME_TIME=   0;
 CAAT.renderFrame= function() {
     var t= new Date().getTime();
     for( var i=0, l=CAAT.director.length; i<l; i++ ) {
-        CAAT.director[i].renderFrame();
+        var dr= CAAT.director[i];
+        if ( dr.renderMode===CAAT.Director.RENDER_MODE_CONTINUOUS || dr.needsRepaint ) {
+            dr.renderFrame();
+        }
     }
     t= new Date().getTime()-t;
     CAAT.FRAME_TIME= t;
