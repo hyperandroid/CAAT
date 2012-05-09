@@ -1445,7 +1445,7 @@
          *    will have their areas redrawn.
          *  + CAAT.Director.CLEAR_NONE. clears nothing.
          *
-         * @param clear {CAAT.Director.CLEAR_ALL |ÊCAAT.Director.CLEAR_NONE | CAAT.Director.CLEAR_DIRTY_RECTS}
+         * @param clear {CAAT.Director.CLEAR_ALL |ï¿½CAAT.Director.CLEAR_NONE | CAAT.Director.CLEAR_DIRTY_RECTS}
          * @return this.
          */
         setClear : function(clear) {
@@ -1957,8 +1957,6 @@
 
         __touchEndHandlerMT : function(e) {
 
-            e.preventDefault();
-
             var i,j;
             var recent= [];
 
@@ -1971,6 +1969,7 @@
                 var id= _touch.identifier;
                 recent.push( id );
             }
+
 
             /**
              * para los touch identificados, extraer que actores se han afectado.
@@ -2036,21 +2035,21 @@
             for( i=0; i< e.changedTouches.length; i++ ) {
                 var touch= e.changedTouches[i];
                 var id= touch.identifier;
-                var mp= this.mousePoint;
-                this.getCanvasCoord(mp, touch);
-                if ( mp.x<0 || mp.y<0 || mp.x>=this.width || mp.y>=this.height ) {
-                    continue;
+
+                if ( this.touches[ id ] ) {
+                    var mp= this.mousePoint;
+                    this.getCanvasCoord(mp, touch);
+
+                    var actor= this.touches[ id ].actor;
+                    mp= actor.viewToModel(mp);
+
+                    this.touches[ id ]= {
+                        actor: actor,
+                        touch: new CAAT.TouchInfo( id, mp.x, mp.y, actor )
+                    };
+
+                    recent.push( id );
                 }
-
-                var actor= this.touches[ id ].actor;
-                mp= actor.viewToModel(mp);
-
-                this.touches[ id ]= {
-                    actor: actor,
-                    touch: new CAAT.TouchInfo( id, mp.x, mp.y, actor )
-                };
-
-                recent.push( id );
             }
 
             /**
@@ -2099,10 +2098,9 @@
 
         __touchStartHandlerMT : function(e) {
 
-            e.preventDefault();
-
             var i;
             var recent= [];
+            var allInCanvas= true;
 
             /**
              * extrae actores afectados, y coordenadas relativas para ellos.
@@ -2114,6 +2112,7 @@
                 var mp= this.mousePoint;
                 this.getCanvasCoord(mp, touch);
                 if ( mp.x<0 || mp.y<0 || mp.x>=this.width || mp.y>=this.height ) {
+                    allInCanvas= false;
                     continue;
                 }
 
@@ -2131,6 +2130,10 @@
                         recent.push( id );
                     }
                 }
+            }
+
+            if ( allInCanvas ) {
+                e.preventDefault();
             }
 
             /**
