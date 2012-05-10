@@ -1,3 +1,18 @@
+*05/10/2012 0.4 Build 92 *
+--------------------------
+
+* Fixed multitouch. Actors can have setGestureEnabled(bool) and will be delivered independtly.
+  Each actor has been added the following method:
+    * touchStart( CAAT.TouchEvent )
+    * touchEnd( CAAT.TouchEvent )
+    * touchMove( CAAT.TouchEvent )
+    * gestureStart( rotation, ScaleX, scaleY )
+    * gestureChange( rotation, ScaleX, scaleY )
+    * gestureEnd( rotation, ScaleX, scaleY )
+
+  gestureChange, by default does rotation/zoon operations. Gestures will be notified after calling setGestureEnabled.
+  Touch methods will receive only its touch info, not the whole system's.
+
 *05/07/2012 0.4 Build 81 *
 --------------------------
 
