@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 91
+Version: 0.4 build: 95
 
 Created on:
-DATE: 2012-05-09
-TIME: 23:58:05
+DATE: 2012-05-10
+TIME: 17:58:56
 */
 
 
@@ -5742,6 +5742,18 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         },
         touchEnd : function(e) {
         },
+        gestureStart : function(rotation, scaleX, scaleY) {
+        },
+        gestureChange : function( rotation, scaleX, scaleY ) {
+            if ( this.gestureEnabled ) {
+                this.setRotation( rotation );
+                this.setScale( scaleX, scaleY );
+            }
+            return this;
+        },
+        gestureEnd : function( rotation, scaleX, scaleY ) {
+        },
+
 
         /**
           * Calculates the 2D bounding box in canvas coordinates of the Actor.
@@ -10436,6 +10448,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
         __touchEndHandlerMT : function(e) {
 
+            e.preventDefault();
+
             var i,j;
             var recent= [];
 
@@ -10502,6 +10516,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         },
 
         __touchMoveHandlerMT : function(e) {
+
             e.preventDefault();
 
             var i;
@@ -10573,9 +10588,12 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         },
 
         __touchCancelHandleMT : function(e) {
+            this.__touchEndHandlerMT(e);
         },
 
         __touchStartHandlerMT : function(e) {
+            e.preventDefault();
+
 
             var i;
             var recent= [];
@@ -10608,11 +10626,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
                         recent.push( id );
                     }
-                }
-            }
 
-            if ( allInCanvas ) {
-                e.preventDefault();
+                }
             }
 
             /**
@@ -10654,7 +10669,68 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
                 actor.touchStart( touch );
             }
+
         },
+
+        __findTouchFirstActor : function() {
+
+            var t= Number.MAX_VALUE;
+            var actor= null;
+            for( var pr in this.touches ) {
+
+                var touch= this.touches[pr];
+
+                if ( touch.touch.time && touch.touch.time < t && touch.actor.isGestureEnabled() ) {
+                    actor= touch.actor;
+                    t= touch.touch.time;
+                }
+            }
+            return actor;
+        },
+
+        __gesturedActor : null,
+        __touchGestureStartHandleMT : function( e ) {
+            var actor= this.__findTouchFirstActor();
+
+            if ( actor!==null && actor.isGestureEnabled() ) {
+                this.__gesturedActor= actor;
+                this.__gestureRotation= actor.rotationAngle;
+                this.__gestureSX= actor.scaleX - 1;
+                this.__gestureSY= actor.scaleY - 1;
+
+
+                actor.gestureStart(
+                    e.rotation* Math.PI / 180,
+                    e.scale + this.__gestureSX,
+                    e.scale + this.__gestureSY );
+            }
+        },
+
+        __touchGestureEndHandleMT : function( e ) {
+
+            if ( null!==this.__gesturedActor && this.__gesturedActor.isGestureEnabled()) {
+                this.__gesturedActor.gestureEnd(
+                    e.rotation* Math.PI / 180,
+                    e.scale + this.__gestureSX,
+                    e.scale + this.__gestureSY );
+            }
+
+            this.__gestureRotation= 0;
+            this.__gestureScale= 0;
+
+
+        },
+
+        __touchGestureChangeHandleMT : function( e ) {
+
+            if (this.__gesturedActor!== null && this.__gesturedActor.isGestureEnabled()) {
+                this.__gesturedActor.gestureChange(
+                    e.rotation* Math.PI / 180,
+                    this.__gestureSX + e.scale,
+                    this.__gestureSY + e.scale);
+            }
+        },
+
 
 
         addHandlers: function(canvas) {
@@ -10749,35 +10825,38 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             }, false);
 
             if ( CAAT.TOUCH_BEHAVIOR === CAAT.TOUCH_AS_MOUSE ) {
-                window.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
-                window.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
-                window.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
+                this.canvas.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
+                this.canvas.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
+                this.canvas.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
+                this.canvas.addEventListener("gesturestart", function(e) {
+                    if ( e.target===canvas ) {
+                        e.preventDefault();
+                        me.__gestureStart( e.scale, e.rotation );
+                    }
+                }, false );
+                this.canvas.addEventListener("gestureend", function(e) {
+                    if ( e.target===canvas ) {
+                        e.preventDefault();
+                        me.__gestureEnd( e.scale, e.rotation );
+                    }
+                }, false );
+                this.canvas.addEventListener("gesturechange", function(e) {
+                    if ( e.target===canvas ) {
+                        e.preventDefault();
+                        me.__gestureChange( e.scale, e.rotation );
+                    }
+                }, false );
             } else if ( CAAT.TOUCH_BEHAVIOR === CAAT.TOUCH_AS_MULTITOUCH ) {
+                this.canvas.addEventListener("touchstart", this.__touchStartHandlerMT.bind(this), false );
+                this.canvas.addEventListener("touchmove", this.__touchMoveHandlerMT.bind(this), false );
+                this.canvas.addEventListener("touchend", this.__touchEndHandlerMT.bind(this), false );
+                this.canvas.addEventListener("touchcancel", this.__touchCancelHandleMT.bind(this), false );
 
-                window.addEventListener("touchstart", this.__touchStartHandlerMT.bind(this), false );
-                window.addEventListener("touchmove", this.__touchMoveHandlerMT.bind(this), false );
-                window.addEventListener("touchend", this.__touchEndHandlerMT.bind(this), false );
-                window.addEventListener("touchcancel", this.__touchCancelHandleMT.bind(this), false );
+                this.canvas.addEventListener("gesturestart", this.__touchGestureStartHandleMT.bind(this), false );
+                this.canvas.addEventListener("gestureend", this.__touchGestureEndHandleMT.bind(this), false );
+                this.canvas.addEventListener("gesturechange", this.__touchGestureChangeHandleMT.bind(this), false );
             }
 
-            window.addEventListener("gesturestart", function(e) {
-                if ( e.target===canvas ) {
-                    e.preventDefault();
-                    me.__gestureStart( e.scale, e.rotation );
-                }
-            }, false );
-            window.addEventListener("gestureend", function(e) {
-                if ( e.target===canvas ) {
-                    e.preventDefault();
-                    me.__gestureEnd( e.scale, e.rotation );
-                }
-            }, false );
-            window.addEventListener("gesturechange", function(e) {
-                if ( e.target===canvas ) {
-                    e.preventDefault();
-                    me.__gestureChange( e.scale, e.rotation );
-                }
-            }, false );
         },
 
         enableEvents : function( onElement ) {
@@ -10957,6 +11036,7 @@ CAAT.TouchInfo= function( id, x, y, target ) {
     this.clientY= y;
     this.pageY= y;
     this.target= target;
+    this.time= new Date().getTime();
 
     return this;
 };
@@ -11006,7 +11086,7 @@ CAAT.TouchInfo= function( id, x, y, target ) {
          *      id : <number>,
          *      point : {
          *          x: <number>,
-         *          y: <number> }Ê
+         *          y: <number> }ï¿½
          *  }>
          * @return {*}
          */

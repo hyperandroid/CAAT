@@ -95,10 +95,10 @@
 
                 var scene= director.createScene();
 
-                var cc= new CAAT.ActorContainer().setBounds( 0,0,800,500).setId(99);
+                var cc= new CAAT.ActorContainer().setBounds( 0,0,800,500).setId(99).setGestureEnabled(false);
                 var W= img.width;
                 var H= img.height;
-                var colors= [ "#33f", "#3f3", "#f33", "#f3f" ];
+
 
                 scene.addChild( cc );
 
@@ -109,8 +109,9 @@
                         var actor= new CAAT.Actor().
                                 setBackgroundImage( img ).
                                 enableEvents(false).
+                                setGestureEnabled(false).
                                 setId( id ).
-                                setLocation( touch.pageX-W/2, touch.pageY-H/2 );
+                                setLocation( touch.pageX-W/2, touch.pageY-H/2);
 
                         cc.addChild( actor );
                     }
