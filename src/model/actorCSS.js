@@ -1672,9 +1672,9 @@
             this.setBackgroundImage(buttonImage, true);
 
             this.iNormal=       iNormal || 0;
-            this.iOver=         iOver || iNormal;
-            this.iPress=        iPress || iNormal;
-            this.iDisabled=     iDisabled || iNormal;
+            this.iOver=         iOver || this.iNormal;
+            this.iPress=        iPress || this.iNormal;
+            this.iDisabled=     iDisabled || this.iNormal;
             this.fnOnClick=     fn;
             this.enabled=       true;
 
@@ -1777,9 +1777,9 @@
 
             this.setButtonImageIndex= function(_normal, _over, _press, _disabled ) {
                 this.iNormal=    _normal;
-                this.iOver=      _over;
-                this.iPress=     _press;
-                this.iDisabled=  _disabled;
+                this.iOver=      _over || this.iNormal;
+                this.iPress=     _press|| this.iNormal;
+                this.iDisabled=  _disabled|| this.iNormal;
                 this.setSpriteIndex( this.iNormal );
                 return this;
             };

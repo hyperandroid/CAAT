@@ -1,4 +1,4 @@
-*05/10/2012 0.4 Build 94 *
+*05/10/2012 0.4 Build 96 *
 --------------------------
 
 * Fixed multitouch. Actors can have setGestureEnabled(bool) and will be delivered independtly.
@@ -16,6 +16,7 @@
   These functions will be called after switching CAAT.TOUCH_BEHAVIOR to CAAT.TOUCH_AS_MULTITOUCH
 
 * Fixed multitouch on ActorCSS.
+* Added check for button error. (Rob Boerman)
 
 *05/07/2012 0.4 Build 81 *
 --------------------------
