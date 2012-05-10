@@ -20,6 +20,7 @@ CAAT.TouchInfo= function( id, x, y, target ) {
     this.clientY= y;
     this.pageY= y;
     this.target= target;
+    this.time= new Date().getTime();
 
     return this;
 };
@@ -69,7 +70,7 @@ CAAT.TouchInfo= function( id, x, y, target ) {
          *      id : <number>,
          *      point : {
          *          x: <number>,
-         *          y: <number> }Ê
+         *          y: <number> }ï¿½
          *  }>
          * @return {*}
          */

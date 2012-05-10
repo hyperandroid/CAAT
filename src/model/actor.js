@@ -201,6 +201,17 @@
         },
         touchEnd : function(e) {
         },
+        gestureStart : function(rotation, scaleX, scaleY) {
+        },
+        gestureChange : function( rotation, scaleX, scaleY ) {
+            if ( this.gestureEnabled ) {
+                this.setRotation( rotation );
+                this.setScale( scaleX, scaleY );
+            }
+            return this;
+        },
+        gestureEnd : function( rotation, scaleX, scaleY ) {
+        },
 
         isVisible : function() {
             return this.isVisible;
@@ -214,6 +225,7 @@
         },
         setGestureEnabled : function( enable ) {
             this.gestureEnabled= !!enable;
+            return this;
         },
         isGestureEnabled : function() {
             return this.gestureEnabled;
