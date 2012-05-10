@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 93
+Version: 0.4 build: 97
 
 Created on:
 DATE: 2012-05-10
-TIME: 17:21:27
+TIME: 18:35:28
 */
 
 
@@ -7387,9 +7387,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.setBackgroundImage(buttonImage, true);
 
             this.iNormal=       iNormal || 0;
-            this.iOver=         iOver || iNormal;
-            this.iPress=        iPress || iNormal;
-            this.iDisabled=     iDisabled || iNormal;
+            this.iOver=         iOver || this.iNormal;
+            this.iPress=        iPress || this.iNormal;
+            this.iDisabled=     iDisabled || this.iNormal;
             this.fnOnClick=     fn;
             this.enabled=       true;
 
@@ -7499,10 +7499,10 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             };
 
             this.setButtonImageIndex= function(_normal, _over, _press, _disabled ) {
-                this.iNormal=    _normal;
-                this.iOver=      _over;
-                this.iPress=     _press;
-                this.iDisabled=  _disabled;
+                this.iNormal=    _normal || 0;
+                this.iOver=      _over || this.iNormal;
+                this.iPress=     _press || this.iNormal;
+                this.iDisabled=  _disabled || this.iNormal;
                 this.setSpriteIndex( this.iNormal );
                 return this;
             };
