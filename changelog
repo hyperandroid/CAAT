@@ -1,4 +1,4 @@
-*05/10/2012 0.4 Build 92 *
+*05/10/2012 0.4 Build 94 *
 --------------------------
 
 * Fixed multitouch. Actors can have setGestureEnabled(bool) and will be delivered independtly.
@@ -14,6 +14,8 @@
   Touch methods will receive only its touch info, not the whole system's.
 
   These functions will be called after switching CAAT.TOUCH_BEHAVIOR to CAAT.TOUCH_AS_MULTITOUCH
+
+* Fixed multitouch on ActorCSS.
 
 *05/07/2012 0.4 Build 81 *
 --------------------------

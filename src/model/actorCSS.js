@@ -132,6 +132,18 @@
         },
         touchEnd : function(e) {
         },
+        gestureStart : function(rotation, scaleX, scaleY) {
+        },
+        gestureChange : function( rotation, scaleX, scaleY ) {
+            if ( this.gestureEnabled ) {
+                this.setRotation( rotation );
+                this.setScale( scaleX, scaleY );
+            }
+            return this;
+        },
+        gestureEnd : function( rotation, scaleX, scaleY ) {
+        },
+
 
         /**
           * Calculates the 2D bounding box in canvas coordinates of the Actor.

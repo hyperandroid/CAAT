@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 93
+Version: 0.4 build: 95
 
 Created on:
 DATE: 2012-05-10
-TIME: 17:21:27
+TIME: 17:58:56
 */
 
 
@@ -5742,6 +5742,18 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         },
         touchEnd : function(e) {
         },
+        gestureStart : function(rotation, scaleX, scaleY) {
+        },
+        gestureChange : function( rotation, scaleX, scaleY ) {
+            if ( this.gestureEnabled ) {
+                this.setRotation( rotation );
+                this.setScale( scaleX, scaleY );
+            }
+            return this;
+        },
+        gestureEnd : function( rotation, scaleX, scaleY ) {
+        },
+
 
         /**
           * Calculates the 2D bounding box in canvas coordinates of the Actor.
