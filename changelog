@@ -13,6 +13,8 @@
   gestureChange, by default does rotation/zoon operations. Gestures will be notified after calling setGestureEnabled.
   Touch methods will receive only its touch info, not the whole system's.
 
+  These functions will be called after switching CAAT.TOUCH_BEHAVIOR to CAAT.TOUCH_AS_MULTITOUCH
+
 *05/07/2012 0.4 Build 81 *
 --------------------------
 
