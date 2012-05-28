@@ -1139,6 +1139,16 @@
 
             return this;
 	    },
+		disableDrag : function() {
+
+		    this.mouseEnter= function(mouseEvent) {};
+		    this.mouseExit = function(mouseEvent) {};
+		    this.mouseMove = function(mouseEvent) {};
+		    this.mouseUp = function(mouseEvent) {};
+		    this.mouseDrag = function(mouseEvent) {};
+
+		    return this;
+		},
         /**
          * Default mouseClick handler.
          * Mouse click events are received after a call to mouseUp method if no dragging was in progress.
