@@ -2416,6 +2416,12 @@
                     cl.splice( index, 0, nActor[0] );
                 }
             }
+        },
+		setRandomZOrder : function() {
+			var cl = this.childrenList;
+			for(var i=0;i<cl.length;i++) {
+				this.setZOrder(cl[i],Math.floor(Math.random() * (cl.length - 0 + 1) + 0));
+			}
         }
 	};
 /*
