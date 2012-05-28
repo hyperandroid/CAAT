@@ -764,6 +764,16 @@
 
             return this;
 	    },
+		setFullBounds : function(director) {
+			this.x = 0;
+			this.y = 0;
+			this.width = director.width;
+			this.height = director.height;
+			
+			this.dirty = true;
+			
+			return this;
+		},
         /**
          * This method sets the position of an Actor inside its parent.
          *
