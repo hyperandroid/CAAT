@@ -1320,8 +1320,8 @@
          * Plays the audio instance identified by the id.
          * @param id {object} the object used to store a sound in the audioCache.
          */
-        audioPlay : function(id) {
-            this.audioManager.play(id);
+        audioPlay : function(id,callback) {
+            this.audioManager.play(id,callback);
         },
         /**
          * Loops an audio instance identified by the id.
