@@ -2378,6 +2378,9 @@
         getNumActiveChildren : function() {
             return this.activeChildren.length;
         },
+		shuffleChildrens : function() {
+			this.childrenList.sort(function() { return Math.round(Math.random())-0.5; });
+		},
         /**
          * Returns the Actor at the iPosition(th) position.
          * @param iPosition an integer indicating the position array.
