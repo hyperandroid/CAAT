@@ -587,6 +587,9 @@
             this.dirty= true;
             return this;
 		},
+		flipX : function() {
+			this.setScale(-this.scaleX,this.scaleY);
+		},
         getAnchorPercent : function( anchor ) {
 
             var anchors=[
