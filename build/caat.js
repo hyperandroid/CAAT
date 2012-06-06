@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 98
+Version: 0.4 build: 100
 
 Created on:
-DATE: 2012-06-02
-TIME: 12:17:20
+DATE: 2012-06-06
+TIME: 11:58:38
 */
 
 
@@ -6738,6 +6738,16 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
             return this;
 	    },
+		disableDrag : function() {
+
+		    this.mouseEnter= function(mouseEvent) {};
+		    this.mouseExit = function(mouseEvent) {};
+		    this.mouseMove = function(mouseEvent) {};
+		    this.mouseUp = function(mouseEvent) {};
+		    this.mouseDrag = function(mouseEvent) {};
+
+		    return this;
+		},
         /**
          * Default mouseClick handler.
          * Mouse click events are received after a call to mouseUp method if no dragging was in progress.

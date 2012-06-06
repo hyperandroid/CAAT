@@ -1,8 +1,12 @@
+*06/06/2012 0.4 Build 99 *
+--------------------------
 
+* Created method Actor.disableDrag()
 * Created CAAT.currentDirector which always points to the current rendering director. If queried from any CAAT managed
   method it will point to a valid object.
 * Create CAAT.getCurrentScene() function. Gets current Director's current Scene.
 * Added more documentation.
+* Fixed CSS template and code run. Multitouch code broke compatibility.
 
 
 *05/10/2012 0.4 Build 96 *
