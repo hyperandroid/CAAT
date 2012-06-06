@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 100
+Version: 0.4 build: 102
 
 Created on:
 DATE: 2012-06-06
-TIME: 11:58:38
+TIME: 12:09:56
 */
 
 
@@ -5929,6 +5929,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          */
         setAnimationImageIndex : function( ii ) {
             if ( this.backgroundImage ) {
+                this.backgroundImage.resetAnimationTime();
                 this.backgroundImage.setAnimationImageIndex(ii);
             }
             return this;

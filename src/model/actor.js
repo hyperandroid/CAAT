@@ -320,6 +320,7 @@
          */
         setAnimationImageIndex : function( ii ) {
             if ( this.backgroundImage ) {
+                this.backgroundImage.resetAnimationTime();
                 this.backgroundImage.setAnimationImageIndex(ii);
             }
             return this;
