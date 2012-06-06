@@ -153,6 +153,10 @@
             this.needsRepaint= true;
         },
 
+        getCurrentScene : function() {
+            return this.currentScene;
+        },
+
         setRenderMode : function( mode ) {
             if ( mode===CAAT.Director.RENDER_MODE_CONTINUOUS || mode===CAAT.Director.RENDER_MODE_DIRTY ) {
                 this.renderMode= mode;
@@ -1391,6 +1395,8 @@
          */
         renderFrame : function() {
 
+            CAAT.currentDirector= this;
+
             if (this.stopped) {
                 return;
             }
@@ -2334,36 +2340,36 @@
             }, false);
 
             if ( CAAT.TOUCH_BEHAVIOR === CAAT.TOUCH_AS_MOUSE ) {
-                this.canvas.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
-                this.canvas.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
-                this.canvas.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
-                this.canvas.addEventListener("gesturestart", function(e) {
+                canvas.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
+                canvas.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
+                canvas.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
+                canvas.addEventListener("gesturestart", function(e) {
                     if ( e.target===canvas ) {
                         e.preventDefault();
                         me.__gestureStart( e.scale, e.rotation );
                     }
                 }, false );
-                this.canvas.addEventListener("gestureend", function(e) {
+                canvas.addEventListener("gestureend", function(e) {
                     if ( e.target===canvas ) {
                         e.preventDefault();
                         me.__gestureEnd( e.scale, e.rotation );
                     }
                 }, false );
-                this.canvas.addEventListener("gesturechange", function(e) {
+                canvas.addEventListener("gesturechange", function(e) {
                     if ( e.target===canvas ) {
                         e.preventDefault();
                         me.__gestureChange( e.scale, e.rotation );
                     }
                 }, false );
             } else if ( CAAT.TOUCH_BEHAVIOR === CAAT.TOUCH_AS_MULTITOUCH ) {
-                this.canvas.addEventListener("touchstart", this.__touchStartHandlerMT.bind(this), false );
-                this.canvas.addEventListener("touchmove", this.__touchMoveHandlerMT.bind(this), false );
-                this.canvas.addEventListener("touchend", this.__touchEndHandlerMT.bind(this), false );
-                this.canvas.addEventListener("touchcancel", this.__touchCancelHandleMT.bind(this), false );
+                canvas.addEventListener("touchstart", this.__touchStartHandlerMT.bind(this), false );
+                canvas.addEventListener("touchmove", this.__touchMoveHandlerMT.bind(this), false );
+                canvas.addEventListener("touchend", this.__touchEndHandlerMT.bind(this), false );
+                canvas.addEventListener("touchcancel", this.__touchCancelHandleMT.bind(this), false );
 
-                this.canvas.addEventListener("gesturestart", this.__touchGestureStartHandleMT.bind(this), false );
-                this.canvas.addEventListener("gestureend", this.__touchGestureEndHandleMT.bind(this), false );
-                this.canvas.addEventListener("gesturechange", this.__touchGestureChangeHandleMT.bind(this), false );
+                canvas.addEventListener("gesturestart", this.__touchGestureStartHandleMT.bind(this), false );
+                canvas.addEventListener("gestureend", this.__touchGestureEndHandleMT.bind(this), false );
+                canvas.addEventListener("gesturechange", this.__touchGestureChangeHandleMT.bind(this), false );
             }
 
         },

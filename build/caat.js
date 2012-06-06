@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 97
+Version: 0.4 build: 98
 
 Created on:
-DATE: 2012-05-10
-TIME: 18:35:28
+DATE: 2012-06-02
+TIME: 12:17:20
 */
 
 
@@ -325,10 +325,10 @@ function proxify( ns, preMethod, postMethod, errorMethod, getter, setter ) {
 
     window[nns] = obj[path];
 
-    (function(obj,path, nns,ns) {
+    (function(root,obj,path, nns,ns) {
         var newC= function() {
             console.log("Creating object of type proxy["+ns+"]");
-            var obj= new window[nns]( Array.prototype.slice.call(arguments) );
+            var obj= new root[nns]( Array.prototype.slice.call(arguments) );
 
             obj.____name= ns;
             return proxyObject( obj, preMethod, postMethod, errorMethod, getter, setter );
@@ -336,7 +336,7 @@ function proxify( ns, preMethod, postMethod, errorMethod, getter, setter ) {
         };
 
         // set new constructor function prototype as previous one.
-        newC.prototype= window[nns].prototype;
+        newC.prototype= root[nns].prototype;
 
         for( var method in obj[path] ) {
             if ( typeof obj[path][method]!=="function" ) {
@@ -355,7 +355,7 @@ function proxify( ns, preMethod, postMethod, errorMethod, getter, setter ) {
 
         obj[path]= newC;
 
-    })(obj,path,nns,ns);
+    })(window,obj,path,nns,ns);
 
 }
 
@@ -5681,22 +5681,12 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
      * the set method (must be a method) as previously defined.
      */
     CAAT.Actor.__reflectionInfo= {
-        "x"                 : "set:setX(), get:x, type:number",
-        "cached"            : "get:isCached(), type:boolean",
-        "scaleX,scaleY"     : "set:setScale(), type:number"
-        /*
-        "y"                 : "setY,w",
-        "width"             : "setWidth,w",
-        "height"            : "setHeight,w",
-        "start_time"        : "setStartTime,w",
-        "duration"          : "setDuration,w",
-        "clip"              : "setClip,w",
-        "rotationAngle"     : "setRotation,w",
-        "alpha"             : "setAlpha,w",
-        "isGlobalAlpha"     : "isGlobalAlpha,w",
-        "visible"           : "isVisible",
-        "id"                : "getId",
-        "backgroundImage"   : ""*/
+        "x"                 : "property:x, type:number",
+        "y"                 : "property:y, type:number",
+        "scaleX"            : "property:scaleX, type:number",
+        "scaleY"            : "property:scaleY, type:number",
+        "cached"            : "get:isCached(), type:boolean"
+
     };
 
     CAAT.Actor.ANCHOR_CENTER=	    0;      // constant values to determine different affine transform
@@ -5738,8 +5728,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 		scaleAnchor:			0,      // transformation. scale anchor
 		rotationAngle:			0,      // transformation. rotation angle in radians
 		rotationY:				.50,      // transformation. rotation center y
-        alpha:					1,      // alpha transparency value
         rotationX:				.50,      // transformation. rotation center x
+        alpha:					1,      // alpha transparency value
         isGlobalAlpha:          false,  // is this a global alpha
         frameAlpha:             1,      // hierarchically calculated alpha for this Actor.
 		expired:				false,  // set when the actor has been expired
@@ -9695,6 +9685,10 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.needsRepaint= true;
         },
 
+        getCurrentScene : function() {
+            return this.currentScene;
+        },
+
         setRenderMode : function( mode ) {
             if ( mode===CAAT.Director.RENDER_MODE_CONTINUOUS || mode===CAAT.Director.RENDER_MODE_DIRTY ) {
                 this.renderMode= mode;
@@ -10933,6 +10927,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          */
         renderFrame : function() {
 
+            CAAT.currentDirector= this;
+
             if (this.stopped) {
                 return;
             }
@@ -11876,36 +11872,36 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             }, false);
 
             if ( CAAT.TOUCH_BEHAVIOR === CAAT.TOUCH_AS_MOUSE ) {
-                this.canvas.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
-                this.canvas.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
-                this.canvas.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
-                this.canvas.addEventListener("gesturestart", function(e) {
+                canvas.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
+                canvas.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
+                canvas.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
+                canvas.addEventListener("gesturestart", function(e) {
                     if ( e.target===canvas ) {
                         e.preventDefault();
                         me.__gestureStart( e.scale, e.rotation );
                     }
                 }, false );
-                this.canvas.addEventListener("gestureend", function(e) {
+                canvas.addEventListener("gestureend", function(e) {
                     if ( e.target===canvas ) {
                         e.preventDefault();
                         me.__gestureEnd( e.scale, e.rotation );
                     }
                 }, false );
-                this.canvas.addEventListener("gesturechange", function(e) {
+                canvas.addEventListener("gesturechange", function(e) {
                     if ( e.target===canvas ) {
                         e.preventDefault();
                         me.__gestureChange( e.scale, e.rotation );
                     }
                 }, false );
             } else if ( CAAT.TOUCH_BEHAVIOR === CAAT.TOUCH_AS_MULTITOUCH ) {
-                this.canvas.addEventListener("touchstart", this.__touchStartHandlerMT.bind(this), false );
-                this.canvas.addEventListener("touchmove", this.__touchMoveHandlerMT.bind(this), false );
-                this.canvas.addEventListener("touchend", this.__touchEndHandlerMT.bind(this), false );
-                this.canvas.addEventListener("touchcancel", this.__touchCancelHandleMT.bind(this), false );
+                canvas.addEventListener("touchstart", this.__touchStartHandlerMT.bind(this), false );
+                canvas.addEventListener("touchmove", this.__touchMoveHandlerMT.bind(this), false );
+                canvas.addEventListener("touchend", this.__touchEndHandlerMT.bind(this), false );
+                canvas.addEventListener("touchcancel", this.__touchCancelHandleMT.bind(this), false );
 
-                this.canvas.addEventListener("gesturestart", this.__touchGestureStartHandleMT.bind(this), false );
-                this.canvas.addEventListener("gestureend", this.__touchGestureEndHandleMT.bind(this), false );
-                this.canvas.addEventListener("gesturechange", this.__touchGestureChangeHandleMT.bind(this), false );
+                canvas.addEventListener("gesturestart", this.__touchGestureStartHandleMT.bind(this), false );
+                canvas.addEventListener("gestureend", this.__touchGestureEndHandleMT.bind(this), false );
+                canvas.addEventListener("gesturechange", this.__touchGestureChangeHandleMT.bind(this), false );
             }
 
         },
@@ -12618,6 +12614,11 @@ CAAT.loop= function(fps) {
     } else {
         CAAT.renderFrame();
     }
+}
+
+CAAT.currentDirector;   // this variable always points to current director.
+CAAT.getCurrentScene= function() {
+    return CAAT.currentDirector.getCurrentScene();
 }
 
 CAAT.FPS_REFRESH= 500;  // debug panel update time.
@@ -15427,15 +15428,13 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
  *
  *
  */
-/*
+
 (function() {
-    CAAT.modules.Inspector= function() {
+    var Inspector= function() {
         return this;
     };
 
-
-
-    CAAT.modules.Inspector.prototype= {
+    Inspector.prototype= {
 
         initialize : function(root) {
 
@@ -15460,6 +15459,8 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 array[index]= array[index].trim();
                 if ( array[index]==="" ) array.splice(index,1);
             };
+
+            reflection[ object ]= {};
 
             for( key in ri ) {
                 var metadata= ri[key];
@@ -15494,10 +15495,15 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 
     };
 
-})();
-    */
+    var reflection= {};
 
-/**
+    var inspector= new Inspector();
+
+    CAAT.Inspector= {
+        extractReflectionInfo : inspector.extractReflectionInfo.bind(inspector)
+    };
+
+})();/**
  * See LICENSE file.
  *
  * Interpolator actor will draw interpolators on screen.

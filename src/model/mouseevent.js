@@ -553,6 +553,11 @@ CAAT.loop= function(fps) {
     }
 }
 
+CAAT.currentDirector;   // this variable always points to current director.
+CAAT.getCurrentScene= function() {
+    return CAAT.currentDirector.getCurrentScene();
+}
+
 CAAT.FPS_REFRESH= 500;  // debug panel update time.
 CAAT.RAF= 0;            // requestAnimationFrame time reference.
 CAAT.REQUEST_ANIMATION_FRAME_TIME=   0;

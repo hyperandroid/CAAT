@@ -78,6 +78,18 @@
                 With this code, as soon as the scene is activated the director won't clear its
                 background anymore.
             </p>
+            <div>
+                <p>
+                    Recently, CAAT has added more background clear modes. Right now, you can call
+                    <span class="apicode">director.setClear( CAAT.Director.CLEAR_XXX ).</span>. Accepted values are:
+                </p>
+                <li><span class="apicode">CAAT.Director.CLEAR_NONE</span>: the background is not cleared previous to draw a frame. Suitable when
+                    the scene has Actors which cover the whole background.
+                <li><span class="apicode">CAAT.Director.CLEAR_ALL</span>: the background will be cleared previous to draw a frame.</li>
+                <li><span class="apicode">CAAT.Director.CLEAR_DIRTY_RECTS</span>: the background will be cleared and repainted only in dirty areas.
+                    These areas will be optimized. Consider switching from CLEAR_DIRTY_RECTS to CLEAR_ALL when there're
+                    many areas to repaint (8 or more).
+            </div>
         </div>
     </div>
 </div>

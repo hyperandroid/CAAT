@@ -4,15 +4,13 @@
  *
  *
  */
-/*
+
 (function() {
-    CAAT.modules.Inspector= function() {
+    var Inspector= function() {
         return this;
     };
 
-
-
-    CAAT.modules.Inspector.prototype= {
+    Inspector.prototype= {
 
         initialize : function(root) {
 
@@ -37,6 +35,8 @@
                 array[index]= array[index].trim();
                 if ( array[index]==="" ) array.splice(index,1);
             };
+
+            reflection[ object ]= {};
 
             for( key in ri ) {
                 var metadata= ri[key];
@@ -71,6 +71,12 @@
 
     };
 
-})();
-    */
+    var reflection= {};
 
+    var inspector= new Inspector();
+
+    CAAT.Inspector= {
+        extractReflectionInfo : inspector.extractReflectionInfo.bind(inspector)
+    };
+
+})();

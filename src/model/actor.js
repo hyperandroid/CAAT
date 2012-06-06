@@ -72,22 +72,12 @@
      * the set method (must be a method) as previously defined.
      */
     CAAT.Actor.__reflectionInfo= {
-        "x"                 : "set:setX(), get:x, type:number",
-        "cached"            : "get:isCached(), type:boolean",
-        "scaleX,scaleY"     : "set:setScale(), type:number"
-        /*
-        "y"                 : "setY,w",
-        "width"             : "setWidth,w",
-        "height"            : "setHeight,w",
-        "start_time"        : "setStartTime,w",
-        "duration"          : "setDuration,w",
-        "clip"              : "setClip,w",
-        "rotationAngle"     : "setRotation,w",
-        "alpha"             : "setAlpha,w",
-        "isGlobalAlpha"     : "isGlobalAlpha,w",
-        "visible"           : "isVisible",
-        "id"                : "getId",
-        "backgroundImage"   : ""*/
+        "x"                 : "property:x, type:number",
+        "y"                 : "property:y, type:number",
+        "scaleX"            : "property:scaleX, type:number",
+        "scaleY"            : "property:scaleY, type:number",
+        "cached"            : "get:isCached(), type:boolean"
+
     };
 
     CAAT.Actor.ANCHOR_CENTER=	    0;      // constant values to determine different affine transform
@@ -129,8 +119,8 @@
 		scaleAnchor:			0,      // transformation. scale anchor
 		rotationAngle:			0,      // transformation. rotation angle in radians
 		rotationY:				.50,      // transformation. rotation center y
-        alpha:					1,      // alpha transparency value
         rotationX:				.50,      // transformation. rotation center x
+        alpha:					1,      // alpha transparency value
         isGlobalAlpha:          false,  // is this a global alpha
         frameAlpha:             1,      // hierarchically calculated alpha for this Actor.
 		expired:				false,  // set when the actor has been expired
