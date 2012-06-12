@@ -1804,7 +1804,7 @@
              * @ignore
              */
             this.actionPerformed= function(event) {
-                if ( this.enabled && null!==this.fnOnClick ) {
+                if ( this.enabled && typeof this.fnOnClick !== 'undefined') {
                     this.fnOnClick(this);
                 }
             };
