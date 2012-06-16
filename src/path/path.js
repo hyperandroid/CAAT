@@ -1511,7 +1511,7 @@
 
             this.extractPathPoints();
 
-            if ( typeof callback!=='undefined' ) {
+            if ( callback ) {
                 callback(this);
             }
 

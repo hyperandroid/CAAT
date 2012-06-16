@@ -7,17 +7,17 @@
  *
  **/
 
-(function() {
+(function () {
 
     /**
      * Class with color utilities.
      *
      * @constructor
      */
-	CAAT.Color = function() {
+	CAAT.Color = function () {
 		return this;
 	};
-	CAAT.Color.prototype= {
+	CAAT.Color.prototype = {
 		/**
 		 * HSV to RGB color conversion
 		 * <p>
@@ -29,11 +29,8 @@
          *
          * @static
 		 */
-		hsvToRgb: function(h, s, v)
-		{
-			var r, g, b;
-			var i;
-			var f, p, q, t;
+		hsvToRgb: function (h, s, v) {
+			var r, g, b, i, f, p, q, t;
 
 			// Make sure our arguments stay in-range
 			h = Math.max(0, Math.min(360, h));
@@ -47,7 +44,7 @@
 			s /= 100;
 			v /= 100;
 
-			if(s === 0) {
+			if (s === 0) {
 				// Achromatic (grey)
 				r = g = b = v;
 				return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
@@ -60,41 +57,41 @@
 			q = v * (1 - s * f);
 			t = v * (1 - s * (1 - f));
 
-			switch(i) {
-				case 0:
-					r = v;
-					g = t;
-					b = p;
-					break;
+			switch (i) {
+		    case 0:
+                r = v;
+                g = t;
+                b = p;
+                break;
 
-				case 1:
-					r = q;
-					g = v;
-					b = p;
-					break;
+            case 1:
+                r = q;
+                g = v;
+                b = p;
+                break;
 
-				case 2:
-					r = p;
-					g = v;
-					b = t;
-					break;
+            case 2:
+                r = p;
+                g = v;
+                b = t;
+                break;
 
-				case 3:
-					r = p;
-					g = q;
-					b = v;
-					break;
+            case 3:
+                r = p;
+                g = q;
+                b = v;
+                break;
 
-				case 4:
-					r = t;
-					g = p;
-					b = v;
-					break;
+            case 4:
+                r = t;
+                g = p;
+                b = v;
+                break;
 
-				default: // case 5:
-					r = v;
-					g = p;
-					b = q;
+            default: // case 5:
+                r = v;
+                g = p;
+                b = q;
 			}
 
 			return new CAAT.Color.RGB(Math.round(r * 255), Math.round(g * 255), Math.round(b * 255));
@@ -109,7 +106,7 @@
             RAMP_CHANNEL_RGB:       2,
             RAMP_CHANNEL_RGBA:      3,
             RAMP_CHANNEL_RGB_ARRAY: 4,
-            RAMP_CHANNEL_RGBA_ARRAY:5
+            RAMP_CHANNEL_RGBA_ARRAY: 5
         },
 
         /**
@@ -129,33 +126,48 @@
          * @return { r{number}, g{number}, b{number} } return an object with the new calculated color components.
          * @static
          */
-        interpolate : function( r0, g0, b0, r1, g1, b1, nsteps, step) {
-            if ( step<=0 ) {
+        interpolate : function (r0, g0, b0, r1, g1, b1, nsteps, step) {
+
+            var r, g, b;
+
+            if (step <= 0) {
                 return {
-                    r:r0,
-                    g:g0,
-                    b:b0
+                    r: r0,
+                    g: g0,
+                    b: b0
                 };
-            } else if ( step>=nsteps ) {
+            } else if (step >= nsteps) {
                 return {
-                    r:r1,
-                    g:g1,
-                    b:b1
+                    r: r1,
+                    g: g1,
+                    b: b1
                 };
             }
 
-            var r= (r0+ (r1-r0)/nsteps*step)>>0;
-            var g= (g0+ (g1-g0)/nsteps*step)>>0;
-            var b= (b0+ (b1-b0)/nsteps*step)>>0;
+            r = (r0 + (r1 - r0) / nsteps * step) >> 0;
+            g = (g0 + (g1 - g0) / nsteps * step) >> 0;
+            b = (b0 + (b1 - b0) / nsteps * step) >> 0;
 
-            if ( r>255 ) {r=255;} else if (r<0) {r=0;}
-            if ( g>255 ) {g=255;} else if (g<0) {g=0;}
-            if ( b>255 ) {b=255;} else if (b<0) {b=0;}
+            if (r > 255) {
+                r = 255;
+            } else if (r < 0) {
+                r = 0;
+            }
+            if (g > 255) {
+                g = 255;
+            } else if (g < 0) {
+                g = 0;
+            }
+            if (b > 255) {
+                b = 255;
+            } else if (b < 0) {
+                b = 0;
+            }
 
             return {
-                r:r,
-                g:g,
-                b:b
+                r: r,
+                g: g,
+                b: b
             };
         },
         /**
@@ -171,55 +183,57 @@
          *
          * @static
          */
-        makeRGBColorRamp : function( fromColorsArray, rampSize, returnType ) {
+        makeRGBColorRamp: function (fromColorsArray, rampSize, returnType) {
 
-            var ramp=   [];
-            var nc=     fromColorsArray.length-1;
-            var chunk=  rampSize/nc;
+            var ramp = [], nc = fromColorsArray.length - 1, chunk = rampSize / nc, i, j,
+                na, nr, ng, nb,
+                c, a0, r0, g0, b0,
+                c1, a1, r1, g1, b1,
+                da, dr, dg, db;
 
-            for( var i=0; i<nc; i++ ) {
-                var c= fromColorsArray[i];
-                var a0= (c>>24)&0xff;
-                var r0= (c&0xff0000)>>16;
-                var g0= (c&0xff00)>>8;
-                var b0= c&0xff;
+            for (i = 0; i < nc; i += 1) {
+                c = fromColorsArray[i];
+                a0 = (c >> 24) & 0xff;
+                r0 = (c & 0xff0000) >> 16;
+                g0 = (c & 0xff00) >> 8;
+                b0 = c & 0xff;
 
-                var c1= fromColorsArray[i+1];
-                var a1= (c1>>24)&0xff;
-                var r1= (c1&0xff0000)>>16;
-                var g1= (c1&0xff00)>>8;
-                var b1= c1&0xff;
+                c1 = fromColorsArray[i + 1];
+                a1 = (c1 >> 24) & 0xff;
+                r1 = (c1 & 0xff0000) >> 16;
+                g1 = (c1 & 0xff00) >> 8;
+                b1 = c1 & 0xff;
 
-                var da= (a1-a0)/chunk;
-                var dr= (r1-r0)/chunk;
-                var dg= (g1-g0)/chunk;
-                var db= (b1-b0)/chunk;
+                da = (a1 - a0) / chunk;
+                dr = (r1 - r0) / chunk;
+                dg = (g1 - g0) / chunk;
+                db = (b1 - b0) / chunk;
 
-                for( var j=0; j<chunk; j++ ) {
-                    var na= (a0+da*j)>>0;
-                    var nr= (r0+dr*j)>>0;
-                    var ng= (g0+dg*j)>>0;
-                    var nb= (b0+db*j)>>0;
+                for (j = 0; j < chunk; j += 1) {
+                    na = (a0 + da * j) >> 0;
+                    nr = (r0 + dr * j) >> 0;
+                    ng = (g0 + dg * j) >> 0;
+                    nb = (b0 + db * j) >> 0;
 
-                    switch( returnType ) {
-                        case this.RampEnumeration.RAMP_RGBA:
-                            ramp.push( 'argb('+na+','+nr+','+ng+','+nb+')' );
-                            break;
-                        case this.RampEnumeration.RAMP_RGB:
-                            ramp.push( 'rgb('+nr+','+ng+','+nb+')' );
-                            break;
-                        case this.RampEnumeration.RAMP_CHANNEL_RGB:
-                            ramp.push( 0xff000000 | nr<<16 | ng<<8 | nb );
-                            break;
-                        case this.RampEnumeration.RAMP_CHANNEL_RGBA:
-                            ramp.push( na<<24 | nr<<16 | ng<<8 | nb );
-                            break;
-                        case this.RampEnumeration.RAMP_CHANNEL_RGBA_ARRAY:
-                            ramp.push([ nr, ng, nb, na ]);
-                            break;
-                        case this.RampEnumeration.RAMP_CHANNEL_RGB_ARRAY:
-                            ramp.push([ nr, ng, nb ]);
-                            break;
+                    switch (returnType) {
+                    case this.RampEnumeration.RAMP_RGBA:
+                        ramp.push('argb(' + na + ',' + nr + ',' + ng + ',' + nb + ')');
+                        break;
+                    case this.RampEnumeration.RAMP_RGB:
+                        ramp.push('rgb(' + nr + ',' + ng + ',' + nb + ')');
+                        break;
+                    case this.RampEnumeration.RAMP_CHANNEL_RGB:
+                        ramp.push(0xff000000 | nr << 16 | ng << 8 | nb);
+                        break;
+                    case this.RampEnumeration.RAMP_CHANNEL_RGBA:
+                        ramp.push(na << 24 | nr << 16 | ng << 8 | nb);
+                        break;
+                    case this.RampEnumeration.RAMP_CHANNEL_RGBA_ARRAY:
+                        ramp.push([ nr, ng, nb, na ]);
+                        break;
+                    case this.RampEnumeration.RAMP_CHANNEL_RGB_ARRAY:
+                        ramp.push([ nr, ng, nb ]);
+                        break;
                     }
                 }
             }
@@ -259,4 +273,4 @@
 			return ('000000' + ((this.r << 16) + (this.g << 8) + this.b).toString(16)).slice(-6);
 		}
 	};
-})();
+}());

@@ -1,3 +1,9 @@
+*06/06/2012 0.4 Build 101 *
+--------------------------
+
+* To avoid seeing incomplete animation frames when new animation indexes are set a call to resetAnimationTime upon setAnimationImageIndex has been added.
+
+
 *06/06/2012 0.4 Build 99 *
 --------------------------
 
