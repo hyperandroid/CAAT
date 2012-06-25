@@ -936,27 +936,28 @@
          *
          */
         modelToView : function(point) {
+            var x, y, pt, tm;
 
             if ( this.dirty ) {
                 this.setModelViewMatrix();
             }
 
-            var tm= this.worldModelViewMatrix.matrix;
+            tm= this.worldModelViewMatrix.matrix;
 
             if ( point instanceof Array ) {
                 for( var i=0; i<point.length; i++ ) {
                     //this.worldModelViewMatrix.transformCoord(point[i]);
-                    var pt= point[i];
-                    var x= pt.x;
-                    var y= pt.y;
+                    pt= point[i];
+                    x= pt.x;
+                    y= pt.y;
                     pt.x= x*tm[0] + y*tm[1] + tm[2];
                     pt.y= x*tm[3] + y*tm[4] + tm[5];
                 }
             }
             else {
 //                this.worldModelViewMatrix.transformCoord(point);
-                var x= point.x;
-                var y= point.y;
+                x= point.x;
+                y= point.y;
                 point.x= x*tm[0] + y*tm[1] + tm[2];
                 point.y= x*tm[3] + y*tm[4] + tm[5];
             }
@@ -1024,12 +1025,8 @@
          */
 	    enableDrag : function() {
 
-            var me= this;
-
 			this.ax= 0;
 			this.ay= 0;
-			this.mx= 0;
-			this.my= 0;
 			this.asx=1;
 			this.asy=1;
 			this.ara=0;
@@ -1804,7 +1801,7 @@
              * @ignore
              */
             this.actionPerformed= function(event) {
-                if ( this.enabled && typeof this.fnOnClick !== 'undefined') {
+                if (this.enabled && this.fnOnClick) {
                     this.fnOnClick(this);
                 }
             };
