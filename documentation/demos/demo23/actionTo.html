@@ -23,7 +23,7 @@
         </div>
         <div id="experiment">
             <div style="text-align:center">
-                <h1>Quadtree based collision detection</h1>
+                <h1>Action To : moveTo, rotateTo, scaleTo, scaleXTo, scaleYTo</h1>
             </div>
             <div id="experiment-holder">
                 <canvas id="experiment-canvas"></canvas>
@@ -34,7 +34,7 @@
                         Use the following controls:
                     </p>
                     <ul>
-                        <li>Your fingers on a touch screen.</li>
+                        <li>Click on screen</li>
                     </ul>
                 </div>
                 <div>
@@ -42,8 +42,8 @@
                         This demo features the following elements:
                     </p>
                     <ul>
-                        <li>Enabling multitouch.</li>
-                        <li>Managing multitouch events.</li>
+                        <li>Calculate valid pointTo angle.</li>
+                        <li>Define incremental affine transformations with moveTo and rotateTo.</li>
                     </ul>
                 </div>
             </div>
@@ -96,41 +96,44 @@
                 var scene= director.createScene();
 
                 var cc= new CAAT.ActorContainer().setBounds( 0,0,800,500).setId(99).setGestureEnabled(false);
+
+                var trailSize= 10;
+                var logos= [];
+                for( var i=0; i<trailSize; i++ ) {
+                    var logo=
+                            new CAAT.Actor().
+                                    setBackgroundImage(img).
+                                    enableEvents(false).
+                                    setPositionAnchor(.5,.5).
+                                    setLocation( 400, 250).
+                                    setAlpha( 1-i/trailSize );
+                    logos.push(logo);
+                }
+                for( var i=logos.length-1; i>=0; i-=1 ) {
+                    cc.addChild(logos[i]);
+                }
+
                 var W= img.width;
                 var H= img.height;
 
-
                 scene.addChild( cc );
 
-                cc.touchStart= function( e ) {
-                    for( var i=0; i< e.changedTouches.length; i++ ) {
-                        var touch= e.changedTouches[i];
-                        var id= touch.identifier;
-                        var actor= new CAAT.Actor().
-                                setBackgroundImage( img ).
-                                enableEvents(false).
-                                setGestureEnabled(false).
-                                setId( id ).
-                                setLocation( touch.pageX-W/2, touch.pageY-H/2);
+                cc.mouseUp= function(e) {
+                    var pt= e.point;
+                    for( i =logos.length-1; i>=0; i-=1 ) {
 
-                        cc.addChild( actor );
+                        var logo= logos[i];
+                        if ( i!=0 ) {
+                            logo.x= logos[0].x;
+                            logo.y= logos[0].y;
+                        }
+                        logo.rotateTo(
+                                Math.atan2( pt.y-logo.y,  pt.x-logo.x ) + Math.PI/2,
+                                1000,
+                                i*50 );
+                        logo.moveTo( pt.x, pt.y, 1000, i*50 );
                     }
                 };
-
-                cc.touchMove= function( e ) {
-                    for( var i=0; i< e.changedTouches.length; i++ ) {
-                        var actor= cc.findActorById(e.changedTouches[i].identifier);
-                        actor.setLocation(e.changedTouches[i].pageX-W/2, e.changedTouches[i].pageY-H/2);
-                    }
-                };
-
-                cc.touchEnd= function( e ) {
-                    for( var i=0; i< e.changedTouches.length; i++ ) {
-                        var actor= cc.findActorById(e.changedTouches[i].identifier);
-                        actor.destroy();
-                    }
-                };
-
                 CAAT.loop(60);
             };
 

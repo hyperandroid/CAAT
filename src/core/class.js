@@ -374,9 +374,11 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                                     objectName: object.____name,
                                     method:     fnname,
                                     arguments:  args } );
+                            /*
                             if ( typeof rr!=="undefined" ) {
                                 //retValue= rr;
                             }
+                            */
                         }
                     } catch(e) {
                         // an exeception was thrown, call exception-method hook if

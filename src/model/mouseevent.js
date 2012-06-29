@@ -553,7 +553,7 @@ CAAT.loop= function(fps) {
     }
 }
 
-CAAT.currentDirector;   // this variable always points to current director.
+CAAT.currentDirector= null;   // this variable always points to current director.
 CAAT.getCurrentScene= function() {
     return CAAT.currentDirector.getCurrentScene();
 }

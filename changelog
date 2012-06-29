@@ -1,8 +1,14 @@
-*06/06/2012 0.4 Build 101 *
+*06/29/2012 0.4 Build 121 *
 --------------------------
 
 * To avoid seeing incomplete animation frames when new animation indexes are set a call to resetAnimationTime upon setAnimationImageIndex has been added.
-
+* CSS renderer: Fixed emptyChildren method.
+* CSS renderer: Fixed input proxy div reference. Now css renderer properly handles input position.
+* CSS renderer: Added control on Actor.setParent which prevents DOM hierarchy errors.
+* Added methods: moveTo, rotateTo, scaleTo, scaleXTo, scaleYTo which define incremental affine transformations.
+* Added setDiscardable method to behaviors which makes them auto remove from parent on expiration.
+* Added demo23: actionTo which shows moveTo/rotateTo example.
+* Fixed CSS renderer: setGestureEnabled returned undefined should be this.
 
 *06/06/2012 0.4 Build 99 *
 --------------------------

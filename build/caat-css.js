@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 103
+Version: 0.4 build: 122
 
 Created on:
-DATE: 2012-06-15
-TIME: 14:40:21
+DATE: 2012-06-29
+TIME: 21:18:42
 */
 
 
@@ -417,9 +417,11 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                                     objectName: object.____name,
                                     method:     fnname,
                                     arguments:  args } );
+                            /*
                             if ( typeof rr!=="undefined" ) {
                                 //retValue= rr;
                             }
+                            */
                         }
                     } catch(e) {
                         // an exeception was thrown, call exception-method hook if
@@ -3525,6 +3527,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
         solved: true,
 
+        discardable : false,    // is true, this behavior will be removed from the this.actor instance when it expires.
+
         setValueApplication: function (apply) {
             this.doValueApplication = apply;
             return this;
@@ -3780,6 +3784,10 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.status= CAAT.Behavior.Status.EXPIRED;
 			this.setForTime(this.interpolator.getPosition(1).y,actor);
 			this.fireBehaviorExpiredEvent(actor,time);
+
+            if ( this.discardable ) {
+                this.actor.removeBehavior( this );
+            }
 		},
         /**
          * This method must be overriden for every Behavior breed.
@@ -4791,6 +4799,12 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 		return this;
 	};
 
+    var AXIS_X= 0;
+    var AXIS_Y= 1;
+
+    CAAT.Scale1Behavior.AXIS_X= AXIS_X;
+    CAAT.Scale1Behavior.AXIS_Y= AXIS_Y;
+
 	CAAT.Scale1Behavior.prototype= {
         startScale: 1,
         endScale:   1,
@@ -4801,6 +4815,14 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         sy          : 1,
 
         applyOnX    : true,
+
+        applyOnAxis : function( axis ) {
+            if ( axis === AXIS_Y ) {
+                this.applyOnX= false;
+            } else {
+                this.applyOnX= true;
+            }
+        },
 
         getPropertyName : function() {
             return "scale";
@@ -5747,6 +5769,172 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         isAA            :       true,
 
         /**
+         * Move this actor to a position.
+         * It creates and adds a new PathBehavior.
+         * @param x {number} new x position
+         * @param y {number} new y position
+         * @param duration {number} time to take to get to new position
+         * @param delay {=number} time to wait before start moving
+         * @param interpolator {=CAAT.Interpolator} a CAAT.Interpolator instance
+         */
+        moveTo : function( x, y, duration, delay, interpolator ) {
+            var id= '__moveTo';
+            var b= this.getBehavior( id );
+            if ( !b ) {
+                b= new CAAT.PathBehavior().
+                    setId( id).
+                    setValues( new CAAT.LinearPath() );
+                this.addBehavior(b);
+            }
+
+            b.path.setInitialPosition( this.x, this.y ).setFinalPosition( x, y);
+            b.setDelayTime( delay ? delay : 0, duration);
+            if ( interpolator ) {
+                b.setInterpolator( interpolator );
+            }
+
+            return this;
+        },
+
+        /**
+         *
+         * @param angle {number} new rotation angle
+         * @param duration {number} time to rotate
+         * @param delay {=number} millis to start rotation
+         * @param anchorX {=number} rotation anchor x
+         * @param anchorY {=number} rotation anchor y
+         * @param interpolator {=CAAT.Interpolator}
+         * @return {*}
+         */
+        rotateTo : function( angle, duration, delay, anchorX, anchorY, interpolator ) {
+            var id= '__rotateTo';
+            var b= this.getBehavior( id );
+            if ( !b ) {
+                b= new CAAT.RotateBehavior().
+                    setId( id).
+                    setValues( 0, 0, .5,.5 );
+                this.addBehavior(b);
+            }
+
+            b.setValues( this.rotationAngle, angle, anchorX, anchorY ).
+                setDelayTime( delay ? delay : 0, duration);
+
+            if ( interpolator ) {
+                b.setInterpolator( interpolator );
+            }
+
+            return this;
+        },
+
+        /**
+         *
+         * @param scaleX {number} new X scale
+         * @param scaleY {number} new Y scale
+         * @param duration {number} time to rotate
+         * @param delay {=number} millis to start rotation
+         * @param anchorX {=number} rotation anchor x
+         * @param anchorY {=number} rotation anchor y
+         * @param interpolator {=CAAT.Interpolator}
+         * @return {*}
+         */
+        scaleTo : function( scaleX, scaleY, duration, delay, anchorX, anchorY, interpolator ) {
+            var id= '__scaleTo';
+            var b= this.getBehavior( id );
+            if ( !b ) {
+                b= new CAAT.ScaleBehavior().
+                    setId( id).
+                    setValues( 1,1,1,1, .5,.5 );
+                this.addBehavior(b);
+            }
+
+            b.setValues( this.scaleX, this.scaleY, scaleX, scaleY, anchorX, anchorY ).
+                setDelayTime( delay ? delay : 0, duration);
+
+            if ( interpolator ) {
+                b.setInterpolator( interpolator );
+            }
+
+            return this;
+        },
+
+        /**
+         *
+         * @param scaleX {number} new X scale
+         * @param duration {number} time to rotate
+         * @param delay {=number} millis to start rotation
+         * @param anchorX {=number} rotation anchor x
+         * @param anchorY {=number} rotation anchor y
+         * @param interpolator {=CAAT.Interpolator}
+         * @return {*}
+         */
+        scaleXTo : function( scaleX, duration, delay, anchorX, anchorY, interpolator ) {
+            return this.__scale1To(
+                CAAT.Scale1Behavior.AXIS_X,
+                scaleX,
+                duration,
+                delay,
+                anchorX,
+                anchorY,
+                interpolator
+            );
+        },
+
+        /**
+         *
+         * @param scaleY {number} new Y scale
+         * @param duration {number} time to rotate
+         * @param delay {=number} millis to start rotation
+         * @param anchorX {=number} rotation anchor x
+         * @param anchorY {=number} rotation anchor y
+         * @param interpolator {=CAAT.Interpolator}
+         * @return {*}
+         */
+        scaleYTo : function( scaleY, duration, delay, anchorX, anchorY, interpolator ) {
+            return this.__scale1To(
+                CAAT.Scale1Behavior.AXIS_Y,
+                scaleY,
+                duration,
+                delay,
+                anchorX,
+                anchorY,
+                interpolator
+            );
+        },
+
+        /**
+         * @param axis {CAAT.Scale1Behavior.AXIS_X|CAAT.Scale1Behavior.AXIS_Y} scale application axis
+         * @param scale {number} new Y scale
+         * @param duration {number} time to rotate
+         * @param delay {=number} millis to start rotation
+         * @param anchorX {=number} rotation anchor x
+         * @param anchorY {=number} rotation anchor y
+         * @param interpolator {=CAAT.Interpolator}
+         * @return {*}
+         */
+        __scale1To : function( axis, scale, duration, delay, anchorX, anchorY, interpolator ) {
+            var id= '__scaleXTo';
+            var b= this.getBehavior( id );
+            if ( !b ) {
+                b= new CAAT.Scale1Behavior().
+                    setId( id).
+                    setValues( 1,1, axis===CAAT.Scale1Behavior.AXIS_X, .5,.5 );
+                this.addBehavior(b);
+            }
+
+            b.setValues(
+                    axis ? this.scaleX : this.scaleY,
+                    scale,
+                    anchorX,
+                    anchorY ).
+                setDelayTime( delay ? delay : 0, duration);
+
+            if ( interpolator ) {
+                b.setInterpolator( interpolator );
+            }
+
+            return this;
+        },
+        /**
          * Touch Start only received when CAAT.TOUCH_BEHAVIOR= CAAT.TOUCH_AS_MULTITOUCH
          * @param e <CAAT.TouchEvent>
          */
@@ -5878,6 +6066,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         },
         setGestureEnabled : function( enable ) {
             this.gestureEnabled= !!enable;
+            return this;
         },
         isGestureEnabled : function() {
             return this.gestureEnabled;
@@ -5899,7 +6088,13 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          */
         setParent : function( parent ) {
             if ( this.parent ) {
-                this.domParent.removeChild(this.domElement);
+                try {
+                    this.domParent.removeChild(this.domElement);
+                } catch(e) {
+                    // when changing a parent, make sure the operation does not fail.
+                    // it may happen a root node has had removed its children and all the dom hierarchy
+                    // may have been lost.
+                }
             }
 
             this.parent= parent;
@@ -7430,7 +7625,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
      * @constructor
      * @extends CAAT.Actor
      */
-	CAAT.ActorContainer= function() {
+	CAAT.ActorContainer= function(hint) {
 		CAAT.ActorContainer.superclass.constructor.call(this);
 		this.childrenList=          [];
         this.pendingChildrenList=   [];
@@ -7462,7 +7657,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @return this
          */
         emptyChildren : function() {
-            this.parentNode.innerHTML='';
+            this.domElement.innerHTML='';
             this.childrenList= [];
 
             return this;
@@ -8652,7 +8847,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
         needsRepaint        : false,    // for rendering mode = dirty, this flags means, paint another frame
 
-        touches             : null,
+        touches             : null,     // Touches information. Associate touch.id with an actor and original touch info.
 
         requestRepaint : function() {
             this.needsRepaint= true;
@@ -8796,7 +8991,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             }
 
             this.setBounds(0, 0, width, height);
-            this.create();
+            this.enableEvents(proxy);
             this.enableEvents(proxy);
 
             this.timeline = new Date().getTime();
@@ -8859,7 +9054,6 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
             if (this.gl) {
                 this.canvas = canvas;
-                this.create();
                 this.setBounds(0, 0, width, height);
 
                 this.crc = this.ctx;
@@ -8904,7 +9098,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @return {CAAT.Scene}
          */
         createScene : function() {
-            var scene = new CAAT.Scene().create();
+            var scene = new CAAT.Scene();
             this.addScene(scene);
             return scene;
         },
@@ -10460,12 +10654,6 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.__gestureScale= 0;
         },
 
-        /**
-         * Touches information.
-         * associate touch.id with an actor and original touch info.
-         */
-        touches : null,
-
         __touchEndHandlerMT : function(e) {
 
             e.preventDefault();
@@ -11025,10 +11213,10 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.eventHandler.style.width=      ''+this.width+'px';
             this.eventHandler.style.height=     ''+this.height+'px';
 
-            var canvas= this.eventHandler;
+            this.canvas= this.eventHandler;
             this.in_ = false;
 
-            this.addHandlers(canvas);
+            this.addHandlers(this.canvas);
         };
     }
 
@@ -11589,7 +11777,7 @@ CAAT.loop= function(fps) {
     }
 }
 
-CAAT.currentDirector;   // this variable always points to current director.
+CAAT.currentDirector= null;   // this variable always points to current director.
 CAAT.getCurrentScene= function() {
     return CAAT.currentDirector.getCurrentScene();
 }

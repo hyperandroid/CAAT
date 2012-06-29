@@ -94,6 +94,8 @@
 
         solved: true,
 
+        discardable : false,    // is true, this behavior will be removed from the this.actor instance when it expires.
+
         setValueApplication: function (apply) {
             this.doValueApplication = apply;
             return this;
@@ -349,6 +351,10 @@
             this.status= CAAT.Behavior.Status.EXPIRED;
 			this.setForTime(this.interpolator.getPosition(1).y,actor);
 			this.fireBehaviorExpiredEvent(actor,time);
+
+            if ( this.discardable ) {
+                this.actor.removeBehavior( this );
+            }
 		},
         /**
          * This method must be overriden for every Behavior breed.
@@ -1360,6 +1366,12 @@
 		return this;
 	};
 
+    var AXIS_X= 0;
+    var AXIS_Y= 1;
+
+    CAAT.Scale1Behavior.AXIS_X= AXIS_X;
+    CAAT.Scale1Behavior.AXIS_Y= AXIS_Y;
+
 	CAAT.Scale1Behavior.prototype= {
         startScale: 1,
         endScale:   1,
@@ -1370,6 +1382,14 @@
         sy          : 1,
 
         applyOnX    : true,
+
+        applyOnAxis : function( axis ) {
+            if ( axis === AXIS_Y ) {
+                this.applyOnX= false;
+            } else {
+                this.applyOnX= true;
+            }
+        },
 
         getPropertyName : function() {
             return "scale";

@@ -182,6 +182,173 @@
                                         // can be calculated.
 
         /**
+         * Move this actor to a position.
+         * It creates and adds a new PathBehavior.
+         * @param x {number} new x position
+         * @param y {number} new y position
+         * @param duration {number} time to take to get to new position
+         * @param delay {=number} time to wait before start moving
+         * @param interpolator {=CAAT.Interpolator} a CAAT.Interpolator instance
+         */
+        moveTo : function( x, y, duration, delay, interpolator ) {
+            var id= '__moveTo';
+            var b= this.getBehavior( id );
+            if ( !b ) {
+                b= new CAAT.PathBehavior().
+                    setId( id).
+                    setValues( new CAAT.LinearPath() );
+                this.addBehavior(b);
+            }
+
+            b.path.setInitialPosition( this.x, this.y ).setFinalPosition( x, y);
+            b.setDelayTime( delay ? delay : 0, duration);
+            if ( interpolator ) {
+                b.setInterpolator( interpolator );
+            }
+
+            return this;
+        },
+
+        /**
+         *
+         * @param angle {number} new rotation angle
+         * @param duration {number} time to rotate
+         * @param delay {=number} millis to start rotation
+         * @param anchorX {=number} rotation anchor x
+         * @param anchorY {=number} rotation anchor y
+         * @param interpolator {=CAAT.Interpolator}
+         * @return {*}
+         */
+        rotateTo : function( angle, duration, delay, anchorX, anchorY, interpolator ) {
+            var id= '__rotateTo';
+            var b= this.getBehavior( id );
+            if ( !b ) {
+                b= new CAAT.RotateBehavior().
+                    setId( id).
+                    setValues( 0, 0, .5,.5 );
+                this.addBehavior(b);
+            }
+
+            b.setValues( this.rotationAngle, angle, anchorX, anchorY ).
+                setDelayTime( delay ? delay : 0, duration);
+
+            if ( interpolator ) {
+                b.setInterpolator( interpolator );
+            }
+
+            return this;
+        },
+
+        /**
+         *
+         * @param scaleX {number} new X scale
+         * @param scaleY {number} new Y scale
+         * @param duration {number} time to rotate
+         * @param delay {=number} millis to start rotation
+         * @param anchorX {=number} rotation anchor x
+         * @param anchorY {=number} rotation anchor y
+         * @param interpolator {=CAAT.Interpolator}
+         * @return {*}
+         */
+        scaleTo : function( scaleX, scaleY, duration, delay, anchorX, anchorY, interpolator ) {
+            var id= '__scaleTo';
+            var b= this.getBehavior( id );
+            if ( !b ) {
+                b= new CAAT.ScaleBehavior().
+                    setId( id).
+                    setValues( 1,1,1,1, .5,.5 );
+                this.addBehavior(b);
+            }
+
+            b.setValues( this.scaleX, this.scaleY, scaleX, scaleY, anchorX, anchorY ).
+                setDelayTime( delay ? delay : 0, duration);
+
+            if ( interpolator ) {
+                b.setInterpolator( interpolator );
+            }
+
+            return this;
+        },
+
+        /**
+         *
+         * @param scaleX {number} new X scale
+         * @param duration {number} time to rotate
+         * @param delay {=number} millis to start rotation
+         * @param anchorX {=number} rotation anchor x
+         * @param anchorY {=number} rotation anchor y
+         * @param interpolator {=CAAT.Interpolator}
+         * @return {*}
+         */
+        scaleXTo : function( scaleX, duration, delay, anchorX, anchorY, interpolator ) {
+            return this.__scale1To(
+                CAAT.Scale1Behavior.AXIS_X,
+                scaleX,
+                duration,
+                delay,
+                anchorX,
+                anchorY,
+                interpolator
+            );
+        },
+
+        /**
+         *
+         * @param scaleY {number} new Y scale
+         * @param duration {number} time to rotate
+         * @param delay {=number} millis to start rotation
+         * @param anchorX {=number} rotation anchor x
+         * @param anchorY {=number} rotation anchor y
+         * @param interpolator {=CAAT.Interpolator}
+         * @return {*}
+         */
+        scaleYTo : function( scaleY, duration, delay, anchorX, anchorY, interpolator ) {
+            return this.__scale1To(
+                CAAT.Scale1Behavior.AXIS_Y,
+                scaleY,
+                duration,
+                delay,
+                anchorX,
+                anchorY,
+                interpolator
+            );
+        },
+
+        /**
+         * @param axis {CAAT.Scale1Behavior.AXIS_X|CAAT.Scale1Behavior.AXIS_Y} scale application axis
+         * @param scale {number} new Y scale
+         * @param duration {number} time to rotate
+         * @param delay {=number} millis to start rotation
+         * @param anchorX {=number} rotation anchor x
+         * @param anchorY {=number} rotation anchor y
+         * @param interpolator {=CAAT.Interpolator}
+         * @return {*}
+         */
+        __scale1To : function( axis, scale, duration, delay, anchorX, anchorY, interpolator ) {
+            var id= '__scaleXTo';
+            var b= this.getBehavior( id );
+            if ( !b ) {
+                b= new CAAT.Scale1Behavior().
+                    setId( id).
+                    setValues( 1,1, axis===CAAT.Scale1Behavior.AXIS_X, .5,.5 );
+                this.addBehavior(b);
+            }
+
+            b.setValues(
+                    axis ? this.scaleX : this.scaleY,
+                    scale,
+                    anchorX,
+                    anchorY ).
+                setDelayTime( delay ? delay : 0, duration);
+
+            if ( interpolator ) {
+                b.setInterpolator( interpolator );
+            }
+
+            return this;
+        },
+
+        /**
          * Touch Start only received when CAAT.TOUCH_BEHAVIOR= CAAT.TOUCH_AS_MULTITOUCH
          * @param e <CAAT.TouchEvent>
          */
@@ -828,16 +995,6 @@
 	    contains : function(x, y) {
 	        return x>=0 && y>=0 && x<this.width && y<this.height;
 	    },
-        /**
-         * This method must be called explicitly by every CAAT Actor.
-         * Making the life cycle explicitly initiated has always been a good idea.
-         *
-         * @return this
-         * @deprecated no longer needed.
-         */
-		create : function()	{
-            return this;
-		},
 
         /**
          * Add a Behavior to the Actor.
@@ -845,8 +1002,6 @@
          *
          * @param behavior {CAAT.Behavior} a CAAT.Behavior instance
          * @return this
-         *
-         * @deprecated
          */
 		addBehavior : function( behavior )	{
 			this.behaviorList.push(behavior);
