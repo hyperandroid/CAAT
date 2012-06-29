@@ -182,6 +182,13 @@
                                         // can be calculated.
 
         /**
+         * @deprecated
+         * @return {*}
+         */
+        create : function() {
+            return this;
+        },
+        /**
          * Move this actor to a position.
          * It creates and adds a new PathBehavior.
          * @param x {number} new x position
