@@ -22,7 +22,6 @@ function __scene10_text(director, scene) {
 
     var cc = new CAAT.ActorContainer().
             setBounds(450, 30, 150, 100).
-            create().
             enableEvents(false).
             addBehavior(
             new CAAT.RotateBehavior().

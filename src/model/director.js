@@ -147,10 +147,14 @@
 
         needsRepaint        : false,    // for rendering mode = dirty, this flags means, paint another frame
 
-        touches             : null,
+        touches             : null,     // Touches information. Associate touch.id with an actor and original touch info.
 
         requestRepaint : function() {
             this.needsRepaint= true;
+        },
+
+        getCurrentScene : function() {
+            return this.currentScene;
         },
 
         setRenderMode : function( mode ) {
@@ -287,7 +291,7 @@
             }
 
             this.setBounds(0, 0, width, height);
-            this.create();
+            this.enableEvents(proxy);
             this.enableEvents(proxy);
 
             this.timeline = new Date().getTime();
@@ -350,7 +354,6 @@
 
             if (this.gl) {
                 this.canvas = canvas;
-                this.create();
                 this.setBounds(0, 0, width, height);
 
                 this.crc = this.ctx;
@@ -395,7 +398,7 @@
          * @return {CAAT.Scene}
          */
         createScene : function() {
-            var scene = new CAAT.Scene().create();
+            var scene = new CAAT.Scene();
             this.addScene(scene);
             return scene;
         },
@@ -1391,6 +1394,8 @@
          */
         renderFrame : function() {
 
+            CAAT.currentDirector= this;
+
             if (this.stopped) {
                 return;
             }
@@ -1949,12 +1954,6 @@
             this.__gestureScale= 0;
         },
 
-        /**
-         * Touches information.
-         * associate touch.id with an actor and original touch info.
-         */
-        touches : null,
-
         __touchEndHandlerMT : function(e) {
 
             e.preventDefault();
@@ -2334,36 +2333,36 @@
             }, false);
 
             if ( CAAT.TOUCH_BEHAVIOR === CAAT.TOUCH_AS_MOUSE ) {
-                this.canvas.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
-                this.canvas.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
-                this.canvas.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
-                this.canvas.addEventListener("gesturestart", function(e) {
+                canvas.addEventListener("touchstart",   this.__touchStartHandler.bind(this), false);
+                canvas.addEventListener("touchmove",    this.__touchMoveHandler.bind(this), false);
+                canvas.addEventListener("touchend",     this.__touchEndHandler.bind(this), false);
+                canvas.addEventListener("gesturestart", function(e) {
                     if ( e.target===canvas ) {
                         e.preventDefault();
                         me.__gestureStart( e.scale, e.rotation );
                     }
                 }, false );
-                this.canvas.addEventListener("gestureend", function(e) {
+                canvas.addEventListener("gestureend", function(e) {
                     if ( e.target===canvas ) {
                         e.preventDefault();
                         me.__gestureEnd( e.scale, e.rotation );
                     }
                 }, false );
-                this.canvas.addEventListener("gesturechange", function(e) {
+                canvas.addEventListener("gesturechange", function(e) {
                     if ( e.target===canvas ) {
                         e.preventDefault();
                         me.__gestureChange( e.scale, e.rotation );
                     }
                 }, false );
             } else if ( CAAT.TOUCH_BEHAVIOR === CAAT.TOUCH_AS_MULTITOUCH ) {
-                this.canvas.addEventListener("touchstart", this.__touchStartHandlerMT.bind(this), false );
-                this.canvas.addEventListener("touchmove", this.__touchMoveHandlerMT.bind(this), false );
-                this.canvas.addEventListener("touchend", this.__touchEndHandlerMT.bind(this), false );
-                this.canvas.addEventListener("touchcancel", this.__touchCancelHandleMT.bind(this), false );
+                canvas.addEventListener("touchstart", this.__touchStartHandlerMT.bind(this), false );
+                canvas.addEventListener("touchmove", this.__touchMoveHandlerMT.bind(this), false );
+                canvas.addEventListener("touchend", this.__touchEndHandlerMT.bind(this), false );
+                canvas.addEventListener("touchcancel", this.__touchCancelHandleMT.bind(this), false );
 
-                this.canvas.addEventListener("gesturestart", this.__touchGestureStartHandleMT.bind(this), false );
-                this.canvas.addEventListener("gestureend", this.__touchGestureEndHandleMT.bind(this), false );
-                this.canvas.addEventListener("gesturechange", this.__touchGestureChangeHandleMT.bind(this), false );
+                canvas.addEventListener("gesturestart", this.__touchGestureStartHandleMT.bind(this), false );
+                canvas.addEventListener("gestureend", this.__touchGestureEndHandleMT.bind(this), false );
+                canvas.addEventListener("gesturechange", this.__touchGestureChangeHandleMT.bind(this), false );
             }
 
         },
@@ -2514,10 +2513,10 @@
             this.eventHandler.style.width=      ''+this.width+'px';
             this.eventHandler.style.height=     ''+this.height+'px';
 
-            var canvas= this.eventHandler;
+            this.canvas= this.eventHandler;
             this.in_ = false;
 
-            this.addHandlers(canvas);
+            this.addHandlers(this.canvas);
         };
     }
 

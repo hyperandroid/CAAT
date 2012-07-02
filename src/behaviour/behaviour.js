@@ -15,7 +15,7 @@
  *
  **/
 
-(function() {
+(function () {
     /**
      * Behavior base class.
      *
@@ -57,8 +57,8 @@
      *
      * @constructor
      */
-    CAAT.Behavior= function() {
-		this.lifecycleListenerList=[];
+    CAAT.Behavior = function () {
+		this.lifecycleListenerList = [];
 		this.setDefaultInterpolator();
 		return this;
 	};
@@ -66,41 +66,43 @@
     /**
      * @enum
      */
-    CAAT.Behavior.Status= {
+    CAAT.Behavior.Status = {
         NOT_STARTED:    0,
         STARTED:        1,
         EXPIRED:        2
     };
 
-    var DefaultInterpolator=    new CAAT.Interpolator().createLinearInterpolator(false);
-    var DefaultPPInterpolator=  new CAAT.Interpolator().createLinearInterpolator(true);
+    var DefaultInterpolator = new CAAT.Interpolator().createLinearInterpolator(false);
+    var DefaultPPInterpolator = new CAAT.Interpolator().createLinearInterpolator(true);
 
-	CAAT.Behavior.prototype= {
-			
-		lifecycleListenerList:		null,   // observer list.
-		behaviorStartTime:	-1,             // scene time to start applying the behavior
-		behaviorDuration:	-1,             // behavior duration in ms.
-		cycleBehavior:		false,          // apply forever ?
+	CAAT.Behavior.prototype = {
 
-        status:             CAAT.Behavior.NOT_STARTED,
+		lifecycleListenerList: null,   // observer list.
+		behaviorStartTime: -1,             // scene time to start applying the behavior
+		behaviorDuration: -1,             // behavior duration in ms.
+		cycleBehavior: false,          // apply forever ?
 
-		interpolator:		null,           // behavior application function. linear by default.
-        actor:              null,           // actor the Behavior acts on.
-        id:                 0,              // an integer id suitable to identify this behavior by number.
+        status: CAAT.Behavior.NOT_STARTED,
 
-        timeOffset:         0,
+		interpolator: null,           // behavior application function. linear by default.
+        actor: null,           // actor the Behavior acts on.
+        id: 0,              // an integer id suitable to identify this behavior by number.
+
+        timeOffset: 0,
 
         doValueApplication: true,
 
-        solved          :   true,
+        solved: true,
 
-        setValueApplication : function( apply ) {
-            this.doValueApplication= apply;
+        discardable : false,    // is true, this behavior will be removed from the this.actor instance when it expires.
+
+        setValueApplication: function (apply) {
+            this.doValueApplication = apply;
             return this;
         },
 
-        setTimeOffset : function( offset ) {
-            this.timeOffset= offset;
+        setTimeOffset: function (offset) {
+            this.timeOffset = offset;
             return this;
         },
 
@@ -349,6 +351,10 @@
             this.status= CAAT.Behavior.Status.EXPIRED;
 			this.setForTime(this.interpolator.getPosition(1).y,actor);
 			this.fireBehaviorExpiredEvent(actor,time);
+
+            if ( this.discardable ) {
+                this.actor.removeBehavior( this );
+            }
 		},
         /**
          * This method must be overriden for every Behavior breed.
@@ -1360,6 +1366,12 @@
 		return this;
 	};
 
+    var AXIS_X= 0;
+    var AXIS_Y= 1;
+
+    CAAT.Scale1Behavior.AXIS_X= AXIS_X;
+    CAAT.Scale1Behavior.AXIS_Y= AXIS_Y;
+
 	CAAT.Scale1Behavior.prototype= {
         startScale: 1,
         endScale:   1,
@@ -1370,6 +1382,14 @@
         sy          : 1,
 
         applyOnX    : true,
+
+        applyOnAxis : function( axis ) {
+            if ( axis === AXIS_Y ) {
+                this.applyOnX= false;
+            } else {
+                this.applyOnX= true;
+            }
+        },
 
         getPropertyName : function() {
             return "scale";

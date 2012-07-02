@@ -283,10 +283,10 @@ function proxify( ns, preMethod, postMethod, errorMethod, getter, setter ) {
 
     window[nns] = obj[path];
 
-    (function(obj,path, nns,ns) {
+    (function(root,obj,path, nns,ns) {
         var newC= function() {
             console.log("Creating object of type proxy["+ns+"]");
-            var obj= new window[nns]( Array.prototype.slice.call(arguments) );
+            var obj= new root[nns]( Array.prototype.slice.call(arguments) );
 
             obj.____name= ns;
             return proxyObject( obj, preMethod, postMethod, errorMethod, getter, setter );
@@ -294,7 +294,7 @@ function proxify( ns, preMethod, postMethod, errorMethod, getter, setter ) {
         };
 
         // set new constructor function prototype as previous one.
-        newC.prototype= window[nns].prototype;
+        newC.prototype= root[nns].prototype;
 
         for( var method in obj[path] ) {
             if ( typeof obj[path][method]!=="function" ) {
@@ -313,7 +313,7 @@ function proxify( ns, preMethod, postMethod, errorMethod, getter, setter ) {
 
         obj[path]= newC;
 
-    })(obj,path,nns,ns);
+    })(window,obj,path,nns,ns);
 
 }
 
@@ -374,9 +374,11 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                                     objectName: object.____name,
                                     method:     fnname,
                                     arguments:  args } );
+                            /*
                             if ( typeof rr!=="undefined" ) {
                                 //retValue= rr;
                             }
+                            */
                         }
                     } catch(e) {
                         // an exeception was thrown, call exception-method hook if

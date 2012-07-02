@@ -1,3 +1,26 @@
+*06/29/2012 0.4 Build 125 *
+--------------------------
+
+* To avoid seeing incomplete animation frames when new animation indexes are set a call to resetAnimationTime upon setAnimationImageIndex has been added.
+* CSS renderer: Fixed emptyChildren method.
+* CSS renderer: Fixed input proxy div reference. Now css renderer properly handles input position.
+* CSS renderer: Added control on Actor.setParent which prevents DOM hierarchy errors.
+* Added methods: moveTo, rotateTo, scaleTo, scaleXTo, scaleYTo which define incremental affine transformations.
+* Added setDiscardable method to behaviors which makes them auto remove from parent on expiration.
+* Added demo23: actionTo which shows moveTo/rotateTo example.
+* Fixed CSS renderer: setGestureEnabled returned undefined should be this.
+
+*06/06/2012 0.4 Build 99 *
+--------------------------
+
+* Created method Actor.disableDrag()
+* Created CAAT.currentDirector which always points to the current rendering director. If queried from any CAAT managed
+  method it will point to a valid object.
+* Create CAAT.getCurrentScene() function. Gets current Director's current Scene.
+* Added more documentation.
+* Fixed CSS template and code run. Multitouch code broke compatibility.
+
+
 *05/10/2012 0.4 Build 96 *
 --------------------------
 
