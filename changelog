@@ -1,3 +1,8 @@
+*07/03/2012 0.4 Build 128 *
+--------------------------
+
+* Fixed a terrible bug which made input system work improperly. enableEvents was called two times in a row.
+
 *06/29/2012 0.4 Build 125 *
 --------------------------
 

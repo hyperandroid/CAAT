@@ -292,7 +292,6 @@
 
             this.setBounds(0, 0, width, height);
             this.enableEvents(proxy);
-            this.enableEvents(proxy);
 
             this.timeline = new Date().getTime();
 

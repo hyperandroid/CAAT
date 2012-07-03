@@ -22,11 +22,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 125
+Version: 0.4 build: 128
 
 Created on:
-DATE: 2012-06-29
-TIME: 22:17:17
+DATE: 2012-07-03
+TIME: 09:31:25
 */
 
 
@@ -215,7 +215,7 @@ __gestureRotation:0,dirtyRects:null,cDirtyRects:null,dirtyRectsIndex:0,dirtyRect
 getRenderType:function(){return this.glEnabled?"WEBGL":"CANVAS"},windowResized:function(a,b){switch(this.resize){case this.RESIZE_WIDTH:this.setBounds(0,0,a,this.height);break;case this.RESIZE_HEIGHT:this.setBounds(0,0,this.width,b);break;case this.RESIZE_BOTH:this.setBounds(0,0,a,b);break;case this.RESIZE_PROPORTIONAL:this.setScaleProportional(a,b)}this.glEnabled&&this.glReset();if(this.onResizeCallback)this.onResizeCallback(this,a,b)},setScaleProportional:function(a,b){var c=Math.min(a/this.referenceWidth,
 b/this.referenceHeight);this.setScaleAnchored(c,c,0,0);this.canvas.width=this.referenceWidth*c;this.canvas.height=this.referenceHeight*c;this.crc=this.ctx=this.canvas.getContext(this.glEnabled?"experimental-webgl":"2d");this.glEnabled&&this.glReset()},enableResizeEvents:function(a,b){a===this.RESIZE_BOTH||a===this.RESIZE_WIDTH||a===this.RESIZE_HEIGHT||a===this.RESIZE_PROPORTIONAL?(this.referenceWidth=this.width,this.referenceHeight=this.height,this.resize=a,CAAT.registerResizeListener(this),this.onResizeCallback=
 b,this.windowResized(window.innerWidth,window.innerHeight)):(CAAT.unregisterResizeListener(this),this.onResizeCallback=null)},setBounds:function(a,b,c,d){CAAT.Director.superclass.setBounds.call(this,a,b,c,d);this.canvas.width=c;this.canvas.height=d;this.crc=this.ctx=this.canvas.getContext(this.glEnabled?"experimental-webgl":"2d");for(a=0;a<this.scenes.length;a++)this.scenes[a].setBounds(0,0,c,d);this.glEnabled&&this.glReset();return this},initialize:function(a,b,c,d){c||(c=document.createElement("canvas"),
-document.body.appendChild(c));this.canvas=c;typeof d==="undefined"&&(d=c);this.setBounds(0,0,a,b);this.enableEvents(d);this.enableEvents(d);this.timeline=(new Date).getTime();this.transitionScene=(new CAAT.Scene).setBounds(0,0,a,b);c=document.createElement("canvas");c.width=a;c.height=b;a=(new CAAT.Actor).setBackgroundImage(c);this.transitionScene.ctx=c.getContext("2d");this.transitionScene.addChildImmediately(a);this.transitionScene.setEaseListener(this);this.checkDebug();return this},glReset:function(){this.pMatrix=
+document.body.appendChild(c));this.canvas=c;typeof d==="undefined"&&(d=c);this.setBounds(0,0,a,b);this.enableEvents(d);this.timeline=(new Date).getTime();this.transitionScene=(new CAAT.Scene).setBounds(0,0,a,b);c=document.createElement("canvas");c.width=a;c.height=b;a=(new CAAT.Actor).setBackgroundImage(c);this.transitionScene.ctx=c.getContext("2d");this.transitionScene.addChildImmediately(a);this.transitionScene.setEaseListener(this);this.checkDebug();return this},glReset:function(){this.pMatrix=
 makeOrtho(0,this.referenceWidth,this.referenceHeight,0,-1,1);this.gl.viewport(0,0,this.canvas.width,this.canvas.height);this.glColorProgram.setMatrixUniform(this.pMatrix);this.glTextureProgram.setMatrixUniform(this.pMatrix);this.gl.viewportWidth=this.canvas.width;this.gl.viewportHeight=this.canvas.height},initializeGL:function(a,b,c){c||(c=document.createElement("canvas"),document.body.appendChild(c));c.width=a;c.height=b;this.referenceWidth=a;this.referenceHeight=b;try{this.gl=c.getContext("experimental-webgl"),
 this.gl.viewportWidth=a,this.gl.viewportHeight=b,CAAT.GLRENDER=true}catch(d){}if(this.gl)this.canvas=c,this.setBounds(0,0,a,b),this.crc=this.ctx,this.enableEvents(c),this.timeline=(new Date).getTime(),this.glColorProgram=(new CAAT.ColorProgram(this.gl)).create().initialize(),this.glTextureProgram=(new CAAT.TextureProgram(this.gl)).create().initialize(),this.glTextureProgram.useProgram(),this.glReset(),this.coords=new Float32Array(6144),this.uv=new Float32Array(4096),this.gl.clearColor(0,0,0,255),
 this.front_to_back?(this.gl.clearDepth(1),this.gl.enable(this.gl.DEPTH_TEST),this.gl.depthFunc(this.gl.LESS)):this.gl.disable(this.gl.DEPTH_TEST),this.gl.enable(this.gl.BLEND),this.gl.blendFunc(this.gl.ONE,this.gl.ONE_MINUS_SRC_ALPHA),this.glEnabled=true,this.checkDebug();else return this.initialize(a,b,c);return this},createScene:function(){var a=new CAAT.Scene;this.addScene(a);return a},setImagesCache:function(a,b,c){var d;if(null!==this.glTextureManager)this.glTextureManager.deletePages(),this.glTextureManager=
