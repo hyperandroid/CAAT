@@ -41,6 +41,8 @@ Visit <a href="http://hyperandroid.github.com/CAAT">CAAT's github pages</a>, inc
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo20/flightcontrol.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo20.png" alt="Flightcontrol like demo"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo21/vvv.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo21.png" alt="TileMap engine preview"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo22/multitouch.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo22.png" alt="Multitouch"></a>
+<a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo23/actionTo.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo23.png" alt="Action To"></a>
+<a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo24/path.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo24.png" alt="Path Creation"></a>
 
 
 ##License##
