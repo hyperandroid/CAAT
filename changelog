@@ -1,3 +1,13 @@
+* 07/14/2012 0.4 Build 221*
+---------------------------
+
+* Fixed CAAT.Path bounding box.
+* Added ArcPath. This path segment represents a complete circular path.
+* Deprecated CAAT.ShapePath in favor of CAAT.RectPath
+* Added missing features to CAAT.RectPath.
+* Added buggy Path.arcTo method. Do not use.
+* Added demo24 which show how to build paths and combine them into more comples ones.
+
 *07/03/2012 0.4 Build 128 *
 --------------------------
 
@@ -24,7 +34,6 @@
 * Create CAAT.getCurrentScene() function. Gets current Director's current Scene.
 * Added more documentation.
 * Fixed CSS template and code run. Multitouch code broke compatibility.
-
 
 *05/10/2012 0.4 Build 96 *
 --------------------------

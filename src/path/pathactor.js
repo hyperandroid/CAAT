@@ -23,6 +23,7 @@
         outlineColor            : 'black',
         onUpdateCallback        : null,
         interactive             : false,
+        showBBox                : false,
 
         /**
          * Return the contained path.
@@ -31,6 +32,7 @@
         getPath : function() {
             return this.path;
         },
+
         /**
          * Sets the path to manage.
          * @param path {CAAT.PathSegment}
@@ -62,10 +64,21 @@
             ctx.strokeStyle='#000';
 			this.path.paint(director, this.interactive);
 
+            if ( this.bOutline ) {
+                ctx.strokeStyle= this.outlineColor;
+                ctx.strokeRect(
+                    this.pathBoundingRectangle.x,
+                    this.pathBoundingRectangle.y,
+                    this.pathBoundingRectangle.width,
+                    this.pathBoundingRectangle.height
+                );
+            }
+/*
 			if ( this.bOutline ) {
 				ctx.strokeStyle= this.outlineColor;
 				ctx.strokeRect(0,0,this.width,this.height);
 			}
+*/
 		},
         /**
          * Enables/disables drawing of the contained path's bounding box.
@@ -77,6 +90,7 @@
             if ( show && color ) {
                 this.outlineColor= color;
             }
+            return this;
         },
         /**
          * Set the contained path as interactive. This means it can be changed on the fly by manipulation
