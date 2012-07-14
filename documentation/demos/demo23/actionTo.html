@@ -1,0 +1,152 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+
+    <title>CAAT example: Multitouch</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Action To : moveTo, rotateTo, scaleTo, scaleXTo, scaleYTo</h1>
+            </div>
+            <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>
+                        Use the following controls:
+                    </p>
+                    <ul>
+                        <li>Click on screen</li>
+                    </ul>
+                </div>
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>Calculate valid pointTo angle.</li>
+                        <li>Define incremental affine transformations with moveTo and rotateTo.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script type="text/javascript" src="../../../build/caat.js"></script>
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    (function() {
+        CAAT.DEBUG=1;
+        CAAT.TOUCH_BEHAVIOR= CAAT.TOUCH_AS_MULTITOUCH;
+
+        function __start() {
+
+            var img= document.createElement('img');
+            img.onload= function(ev) {
+
+                var director= new CAAT.Director().initialize(800, 500, document.getElementById("experiment-canvas"));
+
+                var scene= director.createScene();
+
+                var cc= new CAAT.ActorContainer().setBounds( 0,0,800,500).setId(99).setGestureEnabled(false);
+
+                var trailSize= 10;
+                var logos= [];
+                for( var i=0; i<trailSize; i++ ) {
+                    var logo=
+                            new CAAT.Actor().
+                                    setBackgroundImage(img).
+                                    enableEvents(false).
+                                    setPositionAnchor(.5,.5).
+                                    setLocation( 400, 250).
+                                    setAlpha( 1-i/trailSize );
+                    logos.push(logo);
+                }
+                for( var i=logos.length-1; i>=0; i-=1 ) {
+                    cc.addChild(logos[i]);
+                }
+
+                var W= img.width;
+                var H= img.height;
+
+                scene.addChild( cc );
+
+                cc.mouseUp= function(e) {
+                    var pt= e.point;
+                    for( i =logos.length-1; i>=0; i-=1 ) {
+
+                        var logo= logos[i];
+                        if ( i!=0 ) {
+                            logo.x= logos[0].x;
+                            logo.y= logos[0].y;
+                        }
+                        logo.rotateTo(
+                                Math.atan2( pt.y-logo.y,  pt.x-logo.x ) + Math.PI/2,
+                                1000,
+                                i*50 );
+                        logo.moveTo( pt.x, pt.y, 1000, i*50 );
+                    }
+                };
+                CAAT.loop(60);
+            };
+
+            img.src= "../demo-resources/img/logo_big.png";
+        }
+
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener('load', __start, false);
+
+    })();
+
+</script>
+</html>
