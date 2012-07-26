@@ -574,6 +574,10 @@
          */
         render : function(time) {
 
+            if ( this.currentScene && this.currentScene.isPaused() ) {
+                return;
+            }
+
             this.time += time;
 
             this.animate(this,time);

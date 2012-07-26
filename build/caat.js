@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 222
+Version: 0.4 build: 230
 
 Created on:
-DATE: 2012-07-14
-TIME: 22:35:21
+DATE: 2012-07-26
+TIME: 23:48:25
 */
 
 
@@ -10314,6 +10314,10 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          */
         render : function(time) {
 
+            if ( this.currentScene && this.currentScene.isPaused() ) {
+                return;
+            }
+
             this.time += time;
 
             this.animate(this,time);
@@ -12783,6 +12787,22 @@ window.requestAnimFrame = (function(){
 })();
 
 CAAT.SET_INTERVAL=0;
+
+CAAT.endLoop= function() {
+    if ( CAAT.NO_RAF ) {
+        if ( CAAT.INTERVAL_ID!==null ) {
+            clearInterval( CAAT.INTERVAL_ID );
+        }
+    } else {
+        CAAT.ENDRAF= true;
+    }
+
+    CAAT.renderEnabled= false;
+}
+
+CAAT.ENDRAF= false;     // if RAF, this value signals end of RAF.
+CAAT.INTERVAL_ID= null; // if setInterval, this value holds CAAT.setInterval return value.
+
 /**
  * Main animation loop entry point.
  * @param fps {number} desired fps. This parameter makes no sense unless requestAnimationFrame function
@@ -12794,16 +12814,21 @@ CAAT.loop= function(fps) {
     }
 
 
+    for (var i = 0, l = CAAT.director.length; i < l; i++) {
+        CAAT.director[i].timeline= new Date().getTime();
+    }
+
     CAAT.FPS= fps || 60;
     CAAT.renderEnabled= true;
     if (CAAT.NO_RAF) {
-        setInterval(
+        CAAT.INTERVAL_ID= setInterval(
                 function() {
                     var t= new Date().getTime();
-                    for (var i = 0, l = CAAT.director.length; i < l; i++) {
-                        CAAT.director[i].renderFrame();
+                    var dr= CAAT.director[i];
+                    if ( dr.renderMode===CAAT.Director.RENDER_MODE_CONTINUOUS || dr.needsRepaint ) {
+                        dr.renderFrame();
                     }
-                    //t= new Date().getTime()-t;
+
                     CAAT.FRAME_TIME= t - CAAT.SET_INTERVAL;
                     
                     CAAT.SET_INTERVAL= t;
@@ -12828,6 +12853,11 @@ CAAT.REQUEST_ANIMATION_FRAME_TIME=   0;
  * Make a frame for each director instance present in the system.
  */
 CAAT.renderFrame= function() {
+    if ( CAAT.ENDRAF ) {
+        CAAT.ENDRAF= false;
+        return;
+    }
+
     var t= new Date().getTime();
     for( var i=0, l=CAAT.director.length; i<l; i++ ) {
         var dr= CAAT.director[i];
@@ -15810,6 +15840,9 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
  *
  **/
 
+/**
+ * CAAT.PathSegment
+ */
 (function() {
     /**
      * This is the abstract class that every path segment must conform to.
@@ -15967,6 +16000,9 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 
 })();
 
+/**
+ * CAAT.LinearPath
+ */
 (function() {
 
     /**
@@ -16167,6 +16203,9 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
     extend( CAAT.LinearPath, CAAT.PathSegment );
 })();
 
+/**
+ * CAAT.CurvePath
+ */
 (function() {
     /**
      * This class defines a Bezier cubic or quadric path segment.
@@ -17359,8 +17398,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 
 			this.trackPathX= this.beginPathX;
 			this.trackPathY= this.beginPathY;
-			
-			this.endPath();
+
 			this.endPath();
             return this;
 		},

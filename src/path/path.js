@@ -12,6 +12,9 @@
  *
  **/
 
+/**
+ * CAAT.PathSegment
+ */
 (function() {
     /**
      * This is the abstract class that every path segment must conform to.
@@ -169,6 +172,9 @@
 
 })();
 
+/**
+ * CAAT.LinearPath
+ */
 (function() {
 
     /**
@@ -369,6 +375,9 @@
     extend( CAAT.LinearPath, CAAT.PathSegment );
 })();
 
+/**
+ * CAAT.CurvePath
+ */
 (function() {
     /**
      * This class defines a Bezier cubic or quadric path segment.
@@ -1561,8 +1570,7 @@
 
 			this.trackPathX= this.beginPathX;
 			this.trackPathY= this.beginPathY;
-			
-			this.endPath();
+
 			this.endPath();
             return this;
 		},

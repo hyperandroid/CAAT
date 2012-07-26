@@ -1,3 +1,11 @@
+* 07/26/2012 0.4 Build 229*
+---------------------------
+
+* Changed CAAT.Scene.setPaused semantics. Now, nothing but the main CAAT director animation loop is being executed, so
+  minimal resources are being consumed. No drawing, no scene graph traversal.
+* Added CAAT.endLoop method which definitely stops resource draining. Animation system is paused. It can be resumed by
+  calling CAAT.loop again.
+
 * 07/14/2012 0.4 Build 221*
 ---------------------------
 
