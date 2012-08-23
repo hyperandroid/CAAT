@@ -59,7 +59,9 @@
             for( var i=0; i<this.coordlist.length; i++ ) {
                 ctx.fillStyle='#7f7f00';
                 var w= CAAT.Curve.prototype.HANDLE_SIZE/2;
-                ctx.fillRect( cl[i].x-w, cl[i].y-w, w*2, w*2 );
+                ctx.beginPath();
+                ctx.arc( cl[i].x, cl[i].y, w, 0, 2*Math.PI, false );
+                ctx.fill();
             }
 
 			ctx.restore();

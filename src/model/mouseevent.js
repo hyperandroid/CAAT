@@ -520,6 +520,22 @@ window.requestAnimFrame = (function(){
 })();
 
 CAAT.SET_INTERVAL=0;
+
+CAAT.endLoop= function() {
+    if ( CAAT.NO_RAF ) {
+        if ( CAAT.INTERVAL_ID!==null ) {
+            clearInterval( CAAT.INTERVAL_ID );
+        }
+    } else {
+        CAAT.ENDRAF= true;
+    }
+
+    CAAT.renderEnabled= false;
+}
+
+CAAT.ENDRAF= false;     // if RAF, this value signals end of RAF.
+CAAT.INTERVAL_ID= null; // if setInterval, this value holds CAAT.setInterval return value.
+
 /**
  * Main animation loop entry point.
  * @param fps {number} desired fps. This parameter makes no sense unless requestAnimationFrame function
@@ -531,16 +547,21 @@ CAAT.loop= function(fps) {
     }
 
 
+    for (var i = 0, l = CAAT.director.length; i < l; i++) {
+        CAAT.director[i].timeline= new Date().getTime();
+    }
+
     CAAT.FPS= fps || 60;
     CAAT.renderEnabled= true;
     if (CAAT.NO_RAF) {
-        setInterval(
+        CAAT.INTERVAL_ID= setInterval(
                 function() {
                     var t= new Date().getTime();
-                    for (var i = 0, l = CAAT.director.length; i < l; i++) {
-                        CAAT.director[i].renderFrame();
+                    var dr= CAAT.director[i];
+                    if ( dr.renderMode===CAAT.Director.RENDER_MODE_CONTINUOUS || dr.needsRepaint ) {
+                        dr.renderFrame();
                     }
-                    //t= new Date().getTime()-t;
+
                     CAAT.FRAME_TIME= t - CAAT.SET_INTERVAL;
                     
                     CAAT.SET_INTERVAL= t;
@@ -565,6 +586,11 @@ CAAT.REQUEST_ANIMATION_FRAME_TIME=   0;
  * Make a frame for each director instance present in the system.
  */
 CAAT.renderFrame= function() {
+    if ( CAAT.ENDRAF ) {
+        CAAT.ENDRAF= false;
+        return;
+    }
+
     var t= new Date().getTime();
     for( var i=0, l=CAAT.director.length; i<l; i++ ) {
         var dr= CAAT.director[i];

@@ -292,7 +292,6 @@
 
             this.setBounds(0, 0, width, height);
             this.enableEvents(proxy);
-            this.enableEvents(proxy);
 
             this.timeline = new Date().getTime();
 
@@ -574,6 +573,10 @@
          * Director.
          */
         render : function(time) {
+
+            if ( this.currentScene && this.currentScene.isPaused() ) {
+                return;
+            }
 
             this.time += time;
 
