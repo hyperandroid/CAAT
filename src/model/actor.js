@@ -5,8 +5,7 @@
  * Actor is the superclass of every animable element in the scene graph. It handles the whole
  * affine transformation MatrixStack, rotation, translation, globalAlpha and Behaviours. It also
  * defines input methods.
- * TODO: add text presentation/animation effects.
- **/
+  **/
 
 (function() {
 
@@ -564,6 +563,12 @@
          * @return this
          */
         setVisible : function(visible) {
+            this.invalidate();
+            // si estoy visible y quiero hacerme no visible
+            if ( !visible && this.visible ) {
+                // if dirty rects, add this actor
+                CAAT.currentDirector.scheduleDirtyRect( this.AABB );
+            }
             this.visible= visible;
             return this;
         },
@@ -1397,6 +1402,10 @@
          */
 		animate : function(director, time) {
 
+            if ( !this.visible ) {
+                return false;
+            }
+
             var i;
 
             if ( !this.isInAnimationFrame(time) ) {
@@ -2226,6 +2235,10 @@
          */
 		animate : function(director,time) {
 
+            if ( !this.visible ) {
+                return false;
+            }
+
             this.activeChildren= null;
             var last= null;
 
@@ -2438,6 +2451,20 @@
 			}
 			return -1;
 		},
+        removeChildAt : function( pos ) {
+            var cl= this.childrenList;
+            var rm;
+			if ( -1!==pos ) {
+                cl[pos].setParent(null);
+				rm= cl.splice(pos,1);
+			}
+
+            if ( rm[0].isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
+                CAAT.currentDirector.scheduleDirtyRect( rm[0].AABB );
+            }
+
+            return rm[0];
+        },
         /**
          * Removed an Actor form this ActorContainer.
          * If the Actor is not contained into this Container, nothing happends.
@@ -2448,18 +2475,27 @@
          */
 		removeChild : function(child) {
 			var pos= this.findChild(child);
-            var cl= this.childrenList;
-			if ( -1!==pos ) {
-                cl[pos].setParent(null);
-				cl.splice(pos,1);
-			}
-
-            return this;
+            return this.removeChildAt(pos);
 		},
         removeFirstChild : function() {
             var first= this.childrenList.shift();
             first.parent= null;
+            if ( first.isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
+                CAAT.currentDirector.scheduleDirtyRect( first.AABB );
+            }
+
             return first;
+        },
+        removeLastChild : function() {
+            if ( this.childrenList.length ) {
+                var last= this.childrenList.pop();
+                last.parent= null;
+                if ( last.isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
+                    CAAT.currentDirector.scheduleDirtyRect( last.AABB );
+                }
+
+                return last;
+            }
         },
         /**
          * @private
@@ -2555,11 +2591,7 @@
             }
         }
 	};
-/*
-    if ( CAAT.NO_PERF ) {
-        CAAT.ActorContainer.prototype.paintActor= CAAT.ActorContainer.prototype.__paintActor;
-    }
-*/
+
     extend( CAAT.ActorContainer, CAAT.Actor, null);
 
 })();
@@ -2606,6 +2638,7 @@
 		outline:		    false,  // a boolean indicating whether the text should be outlined.
                                     // not all browsers support it.
 		outlineColor:	    null,   // a valid color description string.
+        lineWidth:          1,      // text's stroke line width.
 
 		path:			    null,   // a CAAT.Path which will be traversed by the text. [Optional]
         pathInterpolator:	null,   // a CAAT.Interpolator to apply to the path traversing.
@@ -2620,6 +2653,10 @@
          */
         setFill : function( fill ) {
             this.fill= fill;
+            return this;
+        },
+        setLineWidth : function( lw ) {
+            this.lineWidth= lw;
             return this;
         },
         setTextFillStyle : function( style ) {
@@ -2827,6 +2864,7 @@
 //							ctx.strokeStyle= this.outlineColor;
 //						}
 						ctx.beginPath();
+                        ctx.lineWidth= this.lineWidth;
 						ctx.strokeText( this.text, tx, 0 );
 					}
 				} else {

@@ -5,7 +5,7 @@
 		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
 		<meta name="generator" content="JsDoc Toolkit" />
 		
-		<title>JsDoc Reference - CAAT.Curve</title>
+		<title>JsDoc Reference - CAAT.ArcPath</title>
 
 		<style type="text/css">
 			/* default.css */
@@ -306,7 +306,7 @@ ul.inheritsList
 <!-- ============================== class title ============================ -->
 			<h1 class="classTitle">
 				
-				Class CAAT.Curve
+				Class CAAT.ArcPath
 			</h1>
 
 <!-- ============================== class summary ========================== -->			
@@ -317,13 +317,13 @@ ul.inheritsList
 				
 				
 				
-					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_math_bezier.js.html">bezier.js</a>.
+					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_path_path.js.html">path.js</a>.
 				
 			</p>
 
 <!-- ============================== constructor summary ==================== -->			
 			
-			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class CAAT.Curve.">
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class CAAT.ArcPath.">
 				<caption>Class Summary</caption>
 				<thead>
 					<tr>
@@ -336,9 +336,9 @@ ul.inheritsList
 						<td class="attributes">&nbsp;</td>
 						<td class="nameDescription" >
 							<div class="fixedFont">
-								<b><a href="../symbols/CAAT.Curve.html#constructor">CAAT.Curve</a></b>()
+								<b><a href="../symbols/CAAT.ArcPath.html#constructor">CAAT.ArcPath</a></b>()
 							</div>
-							<div class="description">Curve class is the base for all curve solvers available in CAAT.</div>
+							<div class="description">Circular path.</div>
 						</td>
 					</tr>
 				</tbody>
@@ -352,7 +352,7 @@ ul.inheritsList
 			
 				
 				
-				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class CAAT.Curve.">
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class CAAT.ArcPath.">
 					<caption>Method Summary</caption>
 					<thead>
 						<tr>
@@ -365,7 +365,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#applyAsPath">applyAsPath</a></b>(director)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#applyAsPath">applyAsPath</a></b>(director)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -374,61 +374,25 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#calcLength">calcLength</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#endCurvePosition">endCurvePosition</a></b>()
 								</div>
-								<div class="description">Calculate the curve length by incrementally solving the curve every substep=CAAT.Curve.k.</div>
+								<div class="description">An arc starts and ends in the same point.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#endCurvePosition">endCurvePosition</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#finalPositionX">finalPositionX</a></b>()
 								</div>
-								<div class="description">Return the first curve control point.</div>
+								<div class="description">Returns final path segment point's x coordinate.</div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#getBoundingBox">getBoundingBox</a></b>(rectangle)
-								</div>
-								<div class="description">Calculates a curve bounding box.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#getContour">getContour</a></b>(numSamples)
-								</div>
-								<div class="description">Get an array of points defining the curve contour.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#getLength">getLength</a></b>()
-								</div>
-								<div class="description">Return the cached curve length.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#paint">paint</a></b>(director)
-								</div>
-								<div class="description">Paint the curve control points.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#setPoint">setPoint</a></b>(point, index)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#getContour">getContour</a></b>(iSize)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -437,7 +401,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#setPoints">setPoints</a></b>(points)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#getControlPoint">getControlPoint</a></b>(index)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -446,27 +410,153 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#solve">solve</a></b>(point, t)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#getPosition">getPosition</a></b>(time)
 								</div>
-								<div class="description">This method must be overriden by subclasses.</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#startCurvePosition">startCurvePosition</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#getPositionFromLength">getPositionFromLength</a></b>(iLength)
 								</div>
-								<div class="description">Return the last curve control point.</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Curve.html#update">update</a></b>()
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#initialize">initialize</a></b>(x, y, r, angle)
 								</div>
-								<div class="description">Signal the curve has been modified and recalculate curve length.</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#initialPositionX">initialPositionX</a></b>()
+								</div>
+								<div class="description">Returns initial path segment point's x coordinate.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#isArcTo">isArcTo</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#isClockWise">isClockWise</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#numControlPoints">numControlPoints</a></b>()
+								</div>
+								<div class="description">Get the number of control points.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#paint">paint</a></b>(director, bDrawHandles)
+								</div>
+								<div class="description">Draws this path segment on screen.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#setArcTo">setArcTo</a></b>(b)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#setClockWise">setClockWise</a></b>(cw)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#setFinalPosition">setFinalPosition</a></b>(finalX, finalY)
+								</div>
+								<div class="description">Set a rectangle from points[0] to (finalX, finalY)</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#setInitialPosition">setInitialPosition</a></b>(x, y)
+								</div>
+								<div class="description">Set this path segment's starting position.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#setPoint">setPoint</a></b>(point, index)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#setPoints">setPoints</a></b>(points)
+								</div>
+								<div class="description">An array of {CAAT.Point} composed of two points.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#setRadius">setRadius</a></b>(r)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#startCurvePosition">startCurvePosition</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.ArcPath.html#updatePath">updatePath</a></b>(point)
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -487,11 +577,11 @@ ul.inheritsList
 				</div>
 				
 				<div class="fixedFont">
-						<b>CAAT.Curve</b>()
+						<b>CAAT.ArcPath</b>()
 				</div>
 				
 				<div class="description">
-					Curve class is the base for all curve solvers available in CAAT.
+					Circular path. Complete 360 degrees.
 					
 				</div>
 				
@@ -541,46 +631,13 @@ ul.inheritsList
 									<b>director</b>
 									
 								</dt>
-								<dd><=CAAT.Director></dd>
+								<dd></dd>
 							
 							</dl>
 						
 						
 						
 						
-						
-						
-						
-
-					<hr />
-				
-					<a name="calcLength"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{number}</span>
-					<b>calcLength</b>()
-					
-					</div>
-					<div class="description">
-						Calculate the curve length by incrementally solving the curve every substep=CAAT.Curve.k. This value defaults
-to .05 so at least 20 iterations will be performed.
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{number}</span> the approximate curve length.</dd>
-							
-							</dl>
 						
 						
 						
@@ -590,12 +647,12 @@ to .05 so at least 20 iterations will be performed.
 					<a name="endCurvePosition"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span>
+					
 					<b>endCurvePosition</b>()
 					
 					</div>
 					<div class="description">
-						Return the first curve control point.
+						An arc starts and ends in the same point.
 						
 						
 					</div>
@@ -606,45 +663,27 @@ to .05 so at least 20 iterations will be performed.
 						
 						
 						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span> </dd>
-							
-							</dl>
 						
 						
 						
 
 					<hr />
 				
-					<a name="getBoundingBox"> </a>
+					<a name="finalPositionX"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{<a href="../symbols/CAAT.Rectangle.html">CAAT.Rectangle</a>}</span>
-					<b>getBoundingBox</b>(rectangle)
+					<span class="light">{number}</span>
+					<b>finalPositionX</b>()
 					
 					</div>
 					<div class="description">
-						Calculates a curve bounding box.
+						Returns final path segment point's x coordinate.
 						
 						
 					</div>
 					
 					
 					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>rectangle</b>
-									
-								</dt>
-								<dd>{CAAT.Rectangle} a rectangle to hold the bounding box.</dd>
-							
-							</dl>
 						
 						
 						
@@ -653,7 +692,7 @@ to .05 so at least 20 iterations will be performed.
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Rectangle.html">CAAT.Rectangle</a>}</span> the rectangle parameter.</dd>
+								<dd><span class="light fixedFont">{number}</span> </dd>
 							
 							</dl>
 						
@@ -666,11 +705,11 @@ to .05 so at least 20 iterations will be performed.
 					<div class="fixedFont">
 					
 					
-					<b>getContour</b>(numSamples)
+					<b>getContour</b>(iSize)
 					
 					</div>
 					<div class="description">
-						Get an array of points defining the curve contour.
+						
 						
 						
 					</div>
@@ -682,10 +721,10 @@ to .05 so at least 20 iterations will be performed.
 							<dt class="heading">Parameters:</dt>
 							
 								<dt>
-									<b>numSamples</b>
+									<b>iSize</b>
 									
 								</dt>
-								<dd>{number} number of segments to get.</dd>
+								<dd></dd>
 							
 							</dl>
 						
@@ -698,15 +737,177 @@ to .05 so at least 20 iterations will be performed.
 
 					<hr />
 				
-					<a name="getLength"> </a>
+					<a name="getControlPoint"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{number}</span>
-					<b>getLength</b>()
+					
+					<b>getControlPoint</b>(index)
 					
 					</div>
 					<div class="description">
-						Return the cached curve length.
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>index</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getPosition"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getPosition</b>(time)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getPositionFromLength"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getPositionFromLength</b>(iLength)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>iLength</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="initialize"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>initialize</b>(x, y, r, angle)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>x</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>y</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>r</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>angle</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="initialPositionX"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{number}</span>
+					<b>initialPositionX</b>()
+					
+					</div>
+					<div class="description">
+						Returns initial path segment point's x coordinate.
 						
 						
 					</div>
@@ -721,7 +922,90 @@ to .05 so at least 20 iterations will be performed.
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{number}</span> the cached curve length.</dd>
+								<dd><span class="light fixedFont">{number}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="isArcTo"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>isArcTo</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="isClockWise"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>isClockWise</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="numControlPoints"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{number}</span>
+					<b>numControlPoints</b>()
+					
+					</div>
+					<div class="description">
+						Get the number of control points. For this type of path segment, start and
+ending path segment points. Defaults to 2.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{number}</span> </dd>
 							
 							</dl>
 						
@@ -734,11 +1018,12 @@ to .05 so at least 20 iterations will be performed.
 					<div class="fixedFont">
 					
 					
-					<b>paint</b>(director)
+					<b>paint</b>(director, bDrawHandles)
 					
 					</div>
 					<div class="description">
-						Paint the curve control points.
+						Draws this path segment on screen. Optionally it can draw handles for every control point, in
+this case, start and ending path segment points.
 						
 						
 					</div>
@@ -754,6 +1039,169 @@ to .05 so at least 20 iterations will be performed.
 									
 								</dt>
 								<dd>{CAAT.Director}</dd>
+							
+								<dt>
+									<b>bDrawHandles</b>
+									
+								</dt>
+								<dd>{boolean}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setArcTo"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setArcTo</b>(b)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>b</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setClockWise"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setClockWise</b>(cw)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>cw</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setFinalPosition"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setFinalPosition</b>(finalX, finalY)
+					
+					</div>
+					<div class="description">
+						Set a rectangle from points[0] to (finalX, finalY)
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>finalX</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+								<dt>
+									<b>finalY</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setInitialPosition"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setInitialPosition</b>(x, y)
+					
+					</div>
+					<div class="description">
+						Set this path segment's starting position.
+This method should not be called again after setFinalPosition has been called.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>x</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+								<dt>
+									<b>y</b>
+									
+								</dt>
+								<dd>{number}</dd>
 							
 							</dl>
 						
@@ -816,7 +1264,7 @@ to .05 so at least 20 iterations will be performed.
 					
 					</div>
 					<div class="description">
-						
+						An array of {CAAT.Point} composed of two points.
 						
 						
 					</div>
@@ -829,6 +1277,42 @@ to .05 so at least 20 iterations will be performed.
 							
 								<dt>
 									<b>points</b>
+									
+								</dt>
+								<dd>{Array<CAAT.Point>}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setRadius"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setRadius</b>(r)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>r</b>
 									
 								</dt>
 								<dd></dd>
@@ -844,16 +1328,40 @@ to .05 so at least 20 iterations will be performed.
 
 					<hr />
 				
-					<a name="solve"> </a>
+					<a name="startCurvePosition"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span>
-					<b>solve</b>(point, t)
+					
+					<b>startCurvePosition</b>()
 					
 					</div>
 					<div class="description">
-						This method must be overriden by subclasses. It is called whenever the curve must be solved for some time=t.
-The t parameter must be in the range 0..1
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="updatePath"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>updatePath</b>(point)
+					
+					</div>
+					<div class="description">
+						
 						
 						
 					</div>
@@ -868,79 +1376,9 @@ The t parameter must be in the range 0..1
 									<b>point</b>
 									
 								</dt>
-								<dd>{CAAT.Point} to store curve solution for t.</dd>
-							
-								<dt>
-									<b>t</b>
-									
-								</dt>
-								<dd>{number}</dd>
+								<dd></dd>
 							
 							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span> the point parameter.</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="startCurvePosition"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span>
-					<b>startCurvePosition</b>()
-					
-					</div>
-					<div class="description">
-						Return the last curve control point.
-						
-						
-					</div>
-					
-					
-					
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.Point.html">CAAT.Point</a>}</span> </dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
-					<a name="update"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>update</b>()
-					
-					</div>
-					<div class="description">
-						Signal the curve has been modified and recalculate curve length.
-						
-						
-					</div>
-					
-					
-					
 						
 						
 						
@@ -963,7 +1401,7 @@ The t parameter must be in the range 0..1
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Aug 26 2012 16:57:10 GMT+0200 (CEST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Aug 26 2012 16:57:09 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>

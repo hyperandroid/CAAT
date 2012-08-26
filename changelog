@@ -1,3 +1,15 @@
+* 08/26/2012 0.4 Build 249*
+---------------------------
+
+* ADD. Call invalidate when calling to setVisible(true) so that DIRTY_RECTS repaint actor's complete area.
+* FIX. CAAT.NO_RAF code was missing Director's collection iteration.
+* ADD. Clean method on director which sets it up to be reused. All information is sweeped out: images, scenes, ...
+* FIX. FPS in debug panel when NO_RAF was selected did not update.
+* ADD. CAAT.ActorContainer.removeLastChild and CAAT.ActorContainer.removeChildAt(index) methods.
+* FIX. Dirty Rects. Now call to removeChild, removeFirstChild, removeLastChild clear screen apropriately.
+* FIX. Dirty Rects. setVisible(true|false) now honors dirty rects.
+* FIX. CAAT.Director.easeInOutScene functions. Alpha value now is on.
+
 * 07/26/2012 0.4 Build 229*
 ---------------------------
 
@@ -14,7 +26,7 @@
 * Deprecated CAAT.ShapePath in favor of CAAT.RectPath
 * Added missing features to CAAT.RectPath.
 * Added buggy Path.arcTo method. Do not use.
-* Added demo24 which show how to build paths and combine them into more comples ones.
+* Added demo24 which show how to build paths and combine them into more complex ones.
 
 *07/03/2012 0.4 Build 128 *
 --------------------------

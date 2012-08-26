@@ -44,6 +44,7 @@
         this.dragging = false;
 
         this.cDirtyRects= [];
+        this.sDirtyRects= [];
         this.dirtyRects= [];
         for( var i=0; i<64; i++ ) {
             this.dirtyRects.push( new CAAT.Rectangle() );
@@ -137,8 +138,9 @@
         __gestureScale      :   0,
         __gestureRotation   :   0,
 
-        dirtyRects          :   null,
-        cDirtyRects         :   null,
+        dirtyRects          :   null,   // dirty rects cache.
+        cDirtyRects         :   null,   // current dirty rects.
+        sDirtyRects         :   null,   // scheduled dirty rects.
         dirtyRectsIndex     :   0,
         dirtyRectsEnabled   :   false,
         nDirtyRects         :   0,
@@ -148,6 +150,26 @@
         needsRepaint        : false,    // for rendering mode = dirty, this flags means, paint another frame
 
         touches             : null,     // Touches information. Associate touch.id with an actor and original touch info.
+
+        clean : function() {
+            this.scenes= null;
+            this.currentScene= null;
+            this.imagesCache= null;
+            this.audioManager= null;
+            this.isMouseDown= false;
+            this.lastSelectedActor=  null;
+            this.dragging= false;
+            this.__gestureScale= 0;
+            this.__gestureRotation= 0;
+            this.dirty= true;
+            this.dirtyRects=null;
+            this.cDirtyRects=null;
+            this.dirtyRectsIndex=  0;
+            this.dirtyRectsEnabled= false;
+            this.nDirtyRects= 0;
+            this.onResizeCallback= null;
+            return this;
+        },
 
         requestRepaint : function() {
             this.needsRepaint= true;
@@ -739,13 +761,37 @@
 
             var cl= this.childrenList;
             var cli;
-            for (var i = 0; i < cl.length; i++) {
+            var i,l;
+
+
+            if ( this.dirtyRectsEnabled ) {
+                var sdr= this.sDirtyRects;
+                if ( sdr.length ) {
+                    for( i= 0,l=sdr.length; i<l; i++ ) {
+                        this.addDirtyRect( sdr[i] );
+                    }
+                    this.sDirtyRects= [];
+                }
+            }
+
+            for (i = 0; i < cl.length; i++) {
                 cli= cl[i];
                 var tt = cli.time - cli.start_time;
                 cli.animate(this, tt);
             }
 
             return this;
+        },
+
+        /**
+         * This method is used when asynchronous operations must produce some dirty rectangle painting.
+         * This means that every operation out of the regular CAAT loop must add dirty rect operations
+         * by calling this method.
+         * For example setVisible() and remove.
+         * @param rectangle
+         */
+        scheduleDirtyRect : function( rectangle ) {
+            this.sDirtyRects.push( rectangle );
         },
         /**
          * Add a rectangle to the list of dirty screen areas which should be redrawn.

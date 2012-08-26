@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 230
+Version: 0.4 build: 249
 
 Created on:
-DATE: 2012-07-26
-TIME: 23:48:26
+DATE: 2012-08-26
+TIME: 16:56:23
 */
 
 
@@ -1683,6 +1683,16 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 		this.b = b || 255;
 		return this;
 	};
+
+    CAAT.Color.RGB.random= function() {
+        var a= '0123456789abcdef';
+        var c= '#';
+        for( var i=0; i<3; i++ ) {
+            c+= a[ (Math.random()* a.length)>>0 ];
+        }
+        return c;
+    };
+
 	CAAT.Color.RGB.prototype= {
 		r: 255,
 		g: 255,
@@ -1696,6 +1706,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 			// See: http://jsperf.com/rgb-decimal-to-hex/5
 			return ('000000' + ((this.r << 16) + (this.g << 8) + this.b).toString(16)).slice(-6);
 		}
+
+
 	};
 }());
 /**
@@ -8746,6 +8758,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         this.dragging = false;
 
         this.cDirtyRects= [];
+        this.sDirtyRects= [];
         this.dirtyRects= [];
         for( var i=0; i<64; i++ ) {
             this.dirtyRects.push( new CAAT.Rectangle() );
@@ -8839,8 +8852,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         __gestureScale      :   0,
         __gestureRotation   :   0,
 
-        dirtyRects          :   null,
-        cDirtyRects         :   null,
+        dirtyRects          :   null,   // dirty rects cache.
+        cDirtyRects         :   null,   // current dirty rects.
+        sDirtyRects         :   null,   // scheduled dirty rects.
         dirtyRectsIndex     :   0,
         dirtyRectsEnabled   :   false,
         nDirtyRects         :   0,
@@ -8850,6 +8864,26 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         needsRepaint        : false,    // for rendering mode = dirty, this flags means, paint another frame
 
         touches             : null,     // Touches information. Associate touch.id with an actor and original touch info.
+
+        clean : function() {
+            this.scenes= null;
+            this.currentScene= null;
+            this.imagesCache= null;
+            this.audioManager= null;
+            this.isMouseDown= false;
+            this.lastSelectedActor=  null;
+            this.dragging= false;
+            this.__gestureScale= 0;
+            this.__gestureRotation= 0;
+            this.dirty= true;
+            this.dirtyRects=null;
+            this.cDirtyRects=null;
+            this.dirtyRectsIndex=  0;
+            this.dirtyRectsEnabled= false;
+            this.nDirtyRects= 0;
+            this.onResizeCallback= null;
+            return this;
+        },
 
         requestRepaint : function() {
             this.needsRepaint= true;
@@ -9441,13 +9475,37 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
             var cl= this.childrenList;
             var cli;
-            for (var i = 0; i < cl.length; i++) {
+            var i,l;
+
+
+            if ( this.dirtyRectsEnabled ) {
+                var sdr= this.sDirtyRects;
+                if ( sdr.length ) {
+                    for( i= 0,l=sdr.length; i<l; i++ ) {
+                        this.addDirtyRect( sdr[i] );
+                    }
+                    this.sDirtyRects= [];
+                }
+            }
+
+            for (i = 0; i < cl.length; i++) {
                 cli= cl[i];
                 var tt = cli.time - cli.start_time;
                 cli.animate(this, tt);
             }
 
             return this;
+        },
+
+        /**
+         * This method is used when asynchronous operations must produce some dirty rectangle painting.
+         * This means that every operation out of the regular CAAT loop must add dirty rect operations
+         * by calling this method.
+         * For example setVisible() and remove.
+         * @param rectangle
+         */
+        scheduleDirtyRect : function( rectangle ) {
+            this.sDirtyRects.push( rectangle );
         },
         /**
          * Add a rectangle to the list of dirty screen areas which should be redrawn.
@@ -11775,7 +11833,6 @@ CAAT.loop= function(fps) {
         return;
     }
 
-
     for (var i = 0, l = CAAT.director.length; i < l; i++) {
         CAAT.director[i].timeline= new Date().getTime();
     }
@@ -11786,13 +11843,21 @@ CAAT.loop= function(fps) {
         CAAT.INTERVAL_ID= setInterval(
                 function() {
                     var t= new Date().getTime();
-                    var dr= CAAT.director[i];
-                    if ( dr.renderMode===CAAT.Director.RENDER_MODE_CONTINUOUS || dr.needsRepaint ) {
-                        dr.renderFrame();
+
+                    for( var i=0, l=CAAT.director.length; i<l; i++ ) {
+                        var dr= CAAT.director[i];
+                        if ( dr.renderMode===CAAT.Director.RENDER_MODE_CONTINUOUS || dr.needsRepaint ) {
+                            dr.renderFrame();
+                        }
                     }
 
                     CAAT.FRAME_TIME= t - CAAT.SET_INTERVAL;
-                    
+
+                    if (CAAT.RAF)   {
+                        CAAT.REQUEST_ANIMATION_FRAME_TIME= new Date().getTime()-CAAT.RAF;
+                    }
+                    CAAT.RAF= new Date().getTime();
+
                     CAAT.SET_INTERVAL= t;
 
                 },

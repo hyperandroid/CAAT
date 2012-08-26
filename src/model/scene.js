@@ -18,6 +18,7 @@
 		CAAT.Scene.superclass.constructor.call(this);
         this.timerList= [];
         this.fillStyle= null;
+        this.isGlobalAlpha= true;
 		return this;
 	};
 	

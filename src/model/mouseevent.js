@@ -546,7 +546,6 @@ CAAT.loop= function(fps) {
         return;
     }
 
-
     for (var i = 0, l = CAAT.director.length; i < l; i++) {
         CAAT.director[i].timeline= new Date().getTime();
     }
@@ -557,13 +556,21 @@ CAAT.loop= function(fps) {
         CAAT.INTERVAL_ID= setInterval(
                 function() {
                     var t= new Date().getTime();
-                    var dr= CAAT.director[i];
-                    if ( dr.renderMode===CAAT.Director.RENDER_MODE_CONTINUOUS || dr.needsRepaint ) {
-                        dr.renderFrame();
+
+                    for( var i=0, l=CAAT.director.length; i<l; i++ ) {
+                        var dr= CAAT.director[i];
+                        if ( dr.renderMode===CAAT.Director.RENDER_MODE_CONTINUOUS || dr.needsRepaint ) {
+                            dr.renderFrame();
+                        }
                     }
 
                     CAAT.FRAME_TIME= t - CAAT.SET_INTERVAL;
-                    
+
+                    if (CAAT.RAF)   {
+                        CAAT.REQUEST_ANIMATION_FRAME_TIME= new Date().getTime()-CAAT.RAF;
+                    }
+                    CAAT.RAF= new Date().getTime();
+
                     CAAT.SET_INTERVAL= t;
 
                 },
