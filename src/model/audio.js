@@ -280,7 +280,7 @@
          * @param id {object} an object identifying a sound in the sound cache.
          * @return this.
          */
-        play : function( id ) {
+        play : function( id, callback ) {
             if ( !this.fxEnabled ) {
                 return this;
             }
@@ -291,6 +291,9 @@
                 var channel= this.channels.shift();
                 channel.src= audio.src;
                 channel.load();
+				channel.addEventListener('ended', function() {
+					if(typeof(callback) === "function") callback();
+				});
                 channel.volume= audio.volume;
                 channel.play();
                 this.workingChannels.push(channel);

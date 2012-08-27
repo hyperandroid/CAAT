@@ -757,6 +757,9 @@
             this.dirty= true;
             return this;
 		},
+		flipX : function() {
+			this.setScale(-this.scaleX,this.scaleY);
+		},
         getAnchorPercent : function( anchor ) {
 
             var anchors=[
@@ -931,6 +934,16 @@
 
             return this;
 	    },
+		setFullBounds : function(director) {
+			this.x = 0;
+			this.y = 0;
+			this.width = director.width;
+			this.height = director.height;
+			
+			this.dirty = true;
+			
+			return this;
+		},
         /**
          * This method sets the position of an Actor inside its parent.
          *
@@ -2551,6 +2564,9 @@
         getNumActiveChildren : function() {
             return this.activeChildren.length;
         },
+		shuffleChildrens : function() {
+			this.childrenList.sort(function() { return Math.round(Math.random())-0.5; });
+		},
         /**
          * Returns the Actor at the iPosition(th) position.
          * @param iPosition an integer indicating the position array.
@@ -2589,6 +2605,12 @@
                     cl.splice( index, 0, nActor[0] );
                 }
             }
+        },
+		setRandomZOrder : function() {
+			var cl = this.childrenList;
+			for(var i=0;i<cl.length;i++) {
+				this.setZOrder(cl[i],Math.floor(Math.random() * (cl.length - 0 + 1) + 0));
+			}
         }
 	};
 
