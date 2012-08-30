@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 249
+Version: 0.4 build: 255
 
 Created on:
-DATE: 2012-08-26
-TIME: 16:56:23
+DATE: 2012-08-30
+TIME: 14:46:00
 */
 
 
@@ -3884,8 +3884,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             
             var f= duration/this.duration;
             var bh;
-            for( var i=0; i<this.behavior.length; i++ ) {
-                bh= this.behavior[i];
+            for( var i=0; i<this.behaviors.length; i++ ) {
+                bh= this.behaviors[i];
                 bh.setFrameTime( bh.getStartTime()*f, bh.getDuration()*f );
             }
 
@@ -3911,6 +3911,11 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @param actor a CAAT.Actor instance indicating the actor to apply the behaviors for.
          */
 		apply : function(time, actor) {
+
+            if ( !this.solved ) {
+                this.behaviorStartTime+= time;
+                this.solved= true;
+            }
 
             time+= this.timeOffset*this.behaviorDuration;
             
@@ -3974,7 +3979,16 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
             var bh= this.behaviors;
             for( var i=0; i<bh.length; i++ ) {
-                //bh[i].expired= false;
+                bh[i].setStatus( CAAT.Behavior.Status.NOT_STARTED );
+            }
+            return this;
+        },
+
+        setDelayTime : function( start, duration )  {
+            CAAT.ContainerBehavior.superclass.setDelayTime.call(this,start,duration);
+
+            var bh= this.behaviors;
+            for( var i=0; i<bh.length; i++ ) {
                 bh[i].setStatus( CAAT.Behavior.Status.NOT_STARTED );
             }
             return this;

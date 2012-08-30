@@ -1,3 +1,11 @@
+* 08/26/2012 0.4 Build 255*
+---------------------------
+
+* ADD. CAAT.ContainerBehavior.setDelayTime.
+* ADD. Demo25: flip cards sample.
+* FIX. CAAT.Actor.setVisible made the system crash.
+
+
 * 08/26/2012 0.4 Build 249*
 ---------------------------
 

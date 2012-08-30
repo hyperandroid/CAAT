@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 249
+Version: 0.4 build: 255
 
 Created on:
-DATE: 2012-08-26
-TIME: 16:56:23
+DATE: 2012-08-30
+TIME: 14:46:00
 */
 
 
@@ -3883,8 +3883,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             
             var f= duration/this.duration;
             var bh;
-            for( var i=0; i<this.behavior.length; i++ ) {
-                bh= this.behavior[i];
+            for( var i=0; i<this.behaviors.length; i++ ) {
+                bh= this.behaviors[i];
                 bh.setFrameTime( bh.getStartTime()*f, bh.getDuration()*f );
             }
 
@@ -3910,6 +3910,11 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @param actor a CAAT.Actor instance indicating the actor to apply the behaviors for.
          */
 		apply : function(time, actor) {
+
+            if ( !this.solved ) {
+                this.behaviorStartTime+= time;
+                this.solved= true;
+            }
 
             time+= this.timeOffset*this.behaviorDuration;
             
@@ -3973,7 +3978,16 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
             var bh= this.behaviors;
             for( var i=0; i<bh.length; i++ ) {
-                //bh[i].expired= false;
+                bh[i].setStatus( CAAT.Behavior.Status.NOT_STARTED );
+            }
+            return this;
+        },
+
+        setDelayTime : function( start, duration )  {
+            CAAT.ContainerBehavior.superclass.setDelayTime.call(this,start,duration);
+
+            var bh= this.behaviors;
+            for( var i=0; i<bh.length; i++ ) {
                 bh[i].setStatus( CAAT.Behavior.Status.NOT_STARTED );
             }
             return this;
@@ -6224,7 +6238,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         setVisible : function(visible) {
             this.invalidate();
             // si estoy visible y quiero hacerme no visible
-            if ( !visible && this.visible ) {
+            if ( CAAT.currentDirector && CAAT.currentDirector.dirtyRectsEnabled && !visible && this.visible ) {
                 // if dirty rects, add this actor
                 CAAT.currentDirector.scheduleDirtyRect( this.AABB );
             }
@@ -8110,20 +8124,6 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 			}
 			return -1;
 		},
-        removeChildAt : function( pos ) {
-            var cl= this.childrenList;
-            var rm;
-			if ( -1!==pos ) {
-                cl[pos].setParent(null);
-				rm= cl.splice(pos,1);
-			}
-
-            if ( rm[0].isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
-                CAAT.currentDirector.scheduleDirtyRect( rm[0].AABB );
-            }
-
-            return rm[0];
-        },
         /**
          * Removed an Actor form this ActorContainer.
          * If the Actor is not contained into this Container, nothing happends.
@@ -8134,25 +8134,27 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          */
 		removeChild : function(child) {
 			var pos= this.findChild(child);
-            return this.removeChildAt(pos);
+            var cl= this.childrenList;
+			if ( -1!==pos ) {
+                cl[pos].setParent(null);
+				cl.splice(pos,1);
+			}
+
+            if ( CAAT.currentDirector.dirtyRectsEnabled ) {
+
+            }
+
+            return this;
 		},
         removeFirstChild : function() {
             var first= this.childrenList.shift();
             first.parent= null;
-            if ( first.isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
-                CAAT.currentDirector.scheduleDirtyRect( first.AABB );
-            }
-
             return first;
         },
         removeLastChild : function() {
             if ( this.childrenList.length ) {
                 var last= this.childrenList.pop();
                 last.parent= null;
-                if ( last.isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
-                    CAAT.currentDirector.scheduleDirtyRect( last.AABB );
-                }
-
                 return last;
             }
         },

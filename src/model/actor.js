@@ -565,7 +565,7 @@
         setVisible : function(visible) {
             this.invalidate();
             // si estoy visible y quiero hacerme no visible
-            if ( !visible && this.visible ) {
+            if ( CAAT.currentDirector && CAAT.currentDirector.dirtyRectsEnabled && !visible && this.visible ) {
                 // if dirty rects, add this actor
                 CAAT.currentDirector.scheduleDirtyRect( this.AABB );
             }
@@ -2451,20 +2451,6 @@
 			}
 			return -1;
 		},
-        removeChildAt : function( pos ) {
-            var cl= this.childrenList;
-            var rm;
-			if ( -1!==pos ) {
-                cl[pos].setParent(null);
-				rm= cl.splice(pos,1);
-			}
-
-            if ( rm[0].isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
-                CAAT.currentDirector.scheduleDirtyRect( rm[0].AABB );
-            }
-
-            return rm[0];
-        },
         /**
          * Removed an Actor form this ActorContainer.
          * If the Actor is not contained into this Container, nothing happends.
@@ -2475,25 +2461,27 @@
          */
 		removeChild : function(child) {
 			var pos= this.findChild(child);
-            return this.removeChildAt(pos);
+            var cl= this.childrenList;
+			if ( -1!==pos ) {
+                cl[pos].setParent(null);
+				cl.splice(pos,1);
+			}
+
+            if ( CAAT.currentDirector.dirtyRectsEnabled ) {
+
+            }
+
+            return this;
 		},
         removeFirstChild : function() {
             var first= this.childrenList.shift();
             first.parent= null;
-            if ( first.isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
-                CAAT.currentDirector.scheduleDirtyRect( first.AABB );
-            }
-
             return first;
         },
         removeLastChild : function() {
             if ( this.childrenList.length ) {
                 var last= this.childrenList.pop();
                 last.parent= null;
-                if ( last.isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
-                    CAAT.currentDirector.scheduleDirtyRect( last.AABB );
-                }
-
                 return last;
             }
         },
