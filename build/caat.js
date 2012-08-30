@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 271
+Version: 0.4 build: 275
 
 Created on:
 DATE: 2012-08-30
-TIME: 23:16:38
+TIME: 23:32:08
 */
 
 
@@ -8139,13 +8139,14 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 			if ( -1!==pos ) {
                 cl[pos].setParent(null);
 				rm= cl.splice(pos,1);
-			}
+                if ( rm[0].isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
+                    CAAT.currentDirector.scheduleDirtyRect( rm[0].AABB );
+                }
 
-            if ( rm[0].isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
-                CAAT.currentDirector.scheduleDirtyRect( rm[0].AABB );
+                return rm[0];
             }
 
-            return rm[0];
+            return null;
         },
         /**
          * Removed an Actor form this ActorContainer.

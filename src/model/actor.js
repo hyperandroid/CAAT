@@ -2466,13 +2466,14 @@
 			if ( -1!==pos ) {
                 cl[pos].setParent(null);
 				rm= cl.splice(pos,1);
-			}
+                if ( rm[0].isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
+                    CAAT.currentDirector.scheduleDirtyRect( rm[0].AABB );
+                }
 
-            if ( rm[0].isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
-                CAAT.currentDirector.scheduleDirtyRect( rm[0].AABB );
+                return rm[0];
             }
 
-            return rm[0];
+            return null;
         },
         /**
          * Removed an Actor form this ActorContainer.
