@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 255
+Version: 0.4 build: 271
 
 Created on:
 DATE: 2012-08-30
-TIME: 14:46:00
+TIME: 23:16:39
 */
 
 
@@ -2994,7 +2994,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
      *
      * <p>
      * For am exponential interpolation, the getPosition function would look like this:
-     * <code>function getPosition(time) { return { x:time, y: Math.pow(time,2) }Ê}</code>.
+     * <code>function getPosition(time) { return { x:time, y: Math.pow(time,2) }ÃŠ}</code>.
      * meaning that for time=0.5, a value of 0,5*0,5 should use instead.
      *
      * <p>
@@ -14402,6 +14402,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         fontStyle   :   '',
         fillStyle   :   '#fff',
         strokeStyle :   null,
+        strokeSize  :   1,
         padding     :   0,
         image       :   null,
         charMap     :   null,
@@ -14415,6 +14416,11 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 
         setFontStyle : function( style ) {
             this.fontStyle= style;
+            return this;
+        },
+
+        setStrokeSize : function( size ) {
+            this.strokeSize= size;
             return this;
         },
 
@@ -14490,11 +14496,12 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 ctx.fillText( cchar, x+padding, 0 );
                 if ( this.strokeStyle ) {
                     ctx.beginPath();
+                    ctx.lineWidth= this.strokeSize;
                     ctx.strokeText( cchar, x+padding,  0 );
                 }
                 this.charMap[cchar]= {
-                    x:      x,
-                    width:  charWidth[i]
+                    x:      x + padding,
+                    width:  charWidth[i] - 2* padding
                 };
                 x+= charWidth[i];
             }

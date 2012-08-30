@@ -23,6 +23,7 @@
         fontStyle   :   '',
         fillStyle   :   '#fff',
         strokeStyle :   null,
+        strokeSize  :   1,
         padding     :   0,
         image       :   null,
         charMap     :   null,
@@ -36,6 +37,11 @@
 
         setFontStyle : function( style ) {
             this.fontStyle= style;
+            return this;
+        },
+
+        setStrokeSize : function( size ) {
+            this.strokeSize= size;
             return this;
         },
 
@@ -111,11 +117,12 @@
                 ctx.fillText( cchar, x+padding, 0 );
                 if ( this.strokeStyle ) {
                     ctx.beginPath();
+                    ctx.lineWidth= this.strokeSize;
                     ctx.strokeText( cchar, x+padding,  0 );
                 }
                 this.charMap[cchar]= {
-                    x:      x,
-                    width:  charWidth[i]
+                    x:      x + padding,
+                    width:  charWidth[i] - 2* padding
                 };
                 x+= charWidth[i];
             }

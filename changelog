@@ -1,4 +1,14 @@
-* 08/26/2012 0.4 Build 255*
+* 08/30/2012 0.4 Build 271**
+---------------------------
+
+* FIX. CAAT.Font padding value made fonts wider (added blank space).
+* ADD. CAAT.TextActor.setFont now accepts CAAT.Font objects as parameters.
+* ADD. CAAT.Font.setStrokeSize(number) which defines text stroke size.
+* CHANGE. CAAT.ActorContainer uses no more a Linked List to keep track of its active children. Certain situations
+  made it loop forever (ie on input events).
+* FIX. Some methods on CAAT.Actor had been corrupted. WTF!!!.
+
+* 08/27/2012 0.4 Build 255*
 ---------------------------
 
 * ADD. CAAT.ContainerBehavior.setDelayTime.

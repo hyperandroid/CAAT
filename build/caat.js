@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 255
+Version: 0.4 build: 271
 
 Created on:
 DATE: 2012-08-30
-TIME: 14:46:00
+TIME: 23:16:38
 */
 
 
@@ -2993,7 +2993,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
      *
      * <p>
      * For am exponential interpolation, the getPosition function would look like this:
-     * <code>function getPosition(time) { return { x:time, y: Math.pow(time,2) }Ê}</code>.
+     * <code>function getPosition(time) { return { x:time, y: Math.pow(time,2) }ÃŠ}</code>.
      * meaning that for time=0.5, a value of 0,5*0,5 should use instead.
      *
      * <p>
@@ -7769,6 +7769,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
 		CAAT.ActorContainer.superclass.constructor.call(this);
 		this.childrenList=          [];
+		this.activeChildren=        [];
         this.pendingChildrenList=   [];
         if ( typeof hint!=='undefined' ) {
             this.addHint=       hint;
@@ -7846,7 +7847,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
             }
 
-            for( var actor= this.activeChildren; actor; actor=actor.__next ) {
+            //for( var actor= this.activeChildren; actor; actor=actor.__next ) {
+            for( var i= 0, l= this.activeChildren.length; i<l; ++i ) {
+                var actor= this.activeChildren[i];
                 if ( actor.visible ) {
                     ctx.save();
                     actor.paintActor(director,time);
@@ -7874,7 +7877,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
             }
 
-            for( var actor= this.activeChildren; actor; actor=actor.__next ) {
+//            for( var actor= this.activeChildren; actor; actor=actor.__next ) {
+            for( var i= 0, l= this.activeChildren.length; i<l; ++i ) {
+                var actor= this.activeChildren[i];
                 actor.paintActor(director,time);
             }
             return true;
@@ -7892,7 +7897,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 this.frameAlpha= this.parent.frameAlpha;
             }
 
-            for( c= this.activeChildren; c; c=c.__next ) {
+//            for( c= this.activeChildren; c; c=c.__next ) {
+            for( var i= 0, l= this.activeChildren.length; i<l; ++i ) {
+                var c= this.activeChildren[i];
                 c.paintActorGL(director,time);
             }
 
@@ -7912,7 +7919,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 return false;
             }
 
-            this.activeChildren= null;
+            this.activeChildren= [];
             var last= null;
 
             if (false===CAAT.ActorContainer.superclass.animate.call(this,director,time)) {
@@ -7946,6 +7953,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 actor.time= time;
                 this.size_total+= actor.size_total;
                 if ( actor.animate(director, time) ) {
+                    /*
                     if ( !this.activeChildren ) {
                         this.activeChildren= actor;
                         actor.__next= null;
@@ -7954,7 +7962,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                         actor.__next= null;
                         last.__next= actor;
                         last= actor;
-                    }
+                    }*/
+                    this.activeChildren.push( actor );
 
                     this.size_active+= actor.size_active;
 
@@ -8124,6 +8133,20 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 			}
 			return -1;
 		},
+        removeChildAt : function( pos ) {
+            var cl= this.childrenList;
+            var rm;
+			if ( -1!==pos ) {
+                cl[pos].setParent(null);
+				rm= cl.splice(pos,1);
+			}
+
+            if ( rm[0].isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
+                CAAT.currentDirector.scheduleDirtyRect( rm[0].AABB );
+            }
+
+            return rm[0];
+        },
         /**
          * Removed an Actor form this ActorContainer.
          * If the Actor is not contained into this Container, nothing happends.
@@ -8134,27 +8157,25 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          */
 		removeChild : function(child) {
 			var pos= this.findChild(child);
-            var cl= this.childrenList;
-			if ( -1!==pos ) {
-                cl[pos].setParent(null);
-				cl.splice(pos,1);
-			}
-
-            if ( CAAT.currentDirector.dirtyRectsEnabled ) {
-
-            }
-
-            return this;
+            return this.removeChildAt(pos);
 		},
         removeFirstChild : function() {
             var first= this.childrenList.shift();
             first.parent= null;
+            if ( first.isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
+                CAAT.currentDirector.scheduleDirtyRect( first.AABB );
+            }
+
             return first;
         },
         removeLastChild : function() {
             if ( this.childrenList.length ) {
                 var last= this.childrenList.pop();
                 last.parent= null;
+                if ( last.isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
+                    CAAT.currentDirector.scheduleDirtyRect( last.AABB );
+                }
+
                 return last;
             }
         },
@@ -8396,6 +8417,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 font= "10px sans-serif";
             }
 
+            if ( font instanceof CAAT.Font ) {
+                font= font.setAsSpriteImage();
+            }
             this.font= font;
             this.calcTextSize( CAAT.director[0] );
 
@@ -15584,6 +15608,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         fontStyle   :   '',
         fillStyle   :   '#fff',
         strokeStyle :   null,
+        strokeSize  :   1,
         padding     :   0,
         image       :   null,
         charMap     :   null,
@@ -15597,6 +15622,11 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 
         setFontStyle : function( style ) {
             this.fontStyle= style;
+            return this;
+        },
+
+        setStrokeSize : function( size ) {
+            this.strokeSize= size;
             return this;
         },
 
@@ -15672,11 +15702,12 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 ctx.fillText( cchar, x+padding, 0 );
                 if ( this.strokeStyle ) {
                     ctx.beginPath();
+                    ctx.lineWidth= this.strokeSize;
                     ctx.strokeText( cchar, x+padding,  0 );
                 }
                 this.charMap[cchar]= {
-                    x:      x,
-                    width:  charWidth[i]
+                    x:      x + padding,
+                    width:  charWidth[i] - 2* padding
                 };
                 x+= charWidth[i];
             }
