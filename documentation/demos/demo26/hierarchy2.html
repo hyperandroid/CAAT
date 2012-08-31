@@ -105,6 +105,7 @@
             __scene8_text(director,scene);
 
             var rotTime= 6000;
+            var rotTime2= 7000;
 
             var a1= new CAAT.ActorContainer().
                     setSize( 10, 100).
@@ -153,6 +154,57 @@
             a1.addChild(a2);
             a2.addChild(a3);
             scene.addChild(a4);
+
+
+            var aa1= new CAAT.ActorContainer().
+                    setSize( 10, 100).
+                    setLocation( director.width/2, director.height/2 ).
+                    setFillStyle( '#77f').
+                    addBehavior(
+                        new CAAT.RotateBehavior().
+                                setValues(0,2*Math.PI,.5, 0).
+                                setCycle( true).
+                                setDelayTime( 0, rotTime2 )
+                    );
+            var aa2= new CAAT.ActorContainer().
+                    setSize( 8, 80).
+                    setLocation( 1, 100).
+                    setFillStyle( '#7f7' ).
+                    addBehavior(
+                        new CAAT.RotateBehavior().
+                                setValues(0,2*Math.PI,.5, 0).
+                                setCycle( true).
+                                setDelayTime( 0, rotTime2 )
+                    );
+            var aa3= new CAAT.ActorContainer().
+                    setSize( 6, 60).
+                    setLocation( 1, 80).
+                    setFillStyle( '#f77' ).
+                    addBehavior(
+                        new CAAT.RotateBehavior().
+                                setValues(0,2*Math.PI,.5, 0).
+                                setCycle( true).
+                                setDelayTime( 0, rotTime2).
+                                addListener( {
+                                    behaviorApplied : function(behavior, time, normalizedTime, actor, value) {
+                                        var pt= actor.modelToView( new CAAT.Point( actor.width/2, 0 ) );
+                                        a4.centerAt(pt.x, pt.y);
+                                    }
+                                } )
+                    );
+
+            var aa4= new CAAT.TextActor().
+                    setFont('30px Arial').
+                    setTextFillStyle('#333').
+                    setText("CAAT").
+                    calcTextSize(director).
+                    cacheAsBitmap();
+            aa4.setLocation( -aa4.width/2, 30 );
+
+            scene.addChild(aa1);
+            aa1.addChild(aa2);
+            aa2.addChild(aa3);
+            aa3.addChild(aa4);
 
             return scene;
         }
