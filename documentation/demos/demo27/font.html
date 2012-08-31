@@ -1,0 +1,184 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+
+    <title>CAAT example: Text on Path</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+    <link href='http://fonts.googleapis.com/css?family=Fresca|Baumans|Righteous|Voltaire' rel='stylesheet' type='text/css'>
+</head>
+<body>
+
+<div style="font-family: 'Baumans';">&nbsp;</div>
+<div style="font-family: 'Fresca';">&nbsp;</div>
+<div style="font-family: 'Righteous';">&nbsp;</div>
+<div style="font-family: 'Voltaire';">&nbsp;</div>
+
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Text on Path</h1>
+            </div>
+            <div id="experiment-holder">
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>Controls:</p>
+                    <ul>
+                        <li>Drag path handles.</li>
+                    </ul>
+                </div>
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>Constructing a Path and adding segments to it.</li>
+                        <li>Showing a path by associating it to a PathActor.</li>
+                        <li>Sprited fonts as text with TextActor.</li>
+                        <li>Path management by calling setInteractive method.</li>
+                        <li>Setting up a TextActor.</li>
+                        <li>Setting a path for a TextActor</li>
+                        <li>CAAT.Interpolator on path behavior.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script type="text/javascript" src="../../../build/caat.js"></script>
+<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
+
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    (function() {
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener(
+                'load',
+                function() {
+
+                    // BUGBUG
+                    // wait some time for browser to load fonts.
+                    setTimeout(
+                        function() {
+                            CAAT.modules.initialization.init(
+                                    800, 500,
+                                    'experiment-holder',
+                                    [],
+                                    textOnPath )
+                        },
+                        500 );
+                },
+                false);
+
+        function textOnPath(director) {
+
+
+            var scene = director.createScene();
+
+            var gradient = director.crc.createLinearGradient(0, -30, 0, 100);
+            gradient.addColorStop(0, '#ff0');
+            gradient.addColorStop(0.5, '#f00');
+            gradient.addColorStop(1, 'blue');
+
+            var font_baumans= new CAAT.Font().
+                setFont('"Baumans"').
+                setFontSize(100,"px").
+                setFillStyle( gradient ).
+                setStrokeStyle('#bbb').
+                setStrokeSize(.5).
+                createDefault(2);
+
+            var t0= new CAAT.TextActor().setFont(font_baumans).setLocation(10,10).setText("Baumans");
+console.log("baumans");
+
+            var font_fresca= new CAAT.Font().
+                setFont('"Fresca"').
+                setFontSize(100,"px").
+                setFillStyle( gradient ).
+                setStrokeStyle('#bbb').
+                setStrokeSize(.5).
+                createDefault(2);
+
+            var t1= new CAAT.TextActor().setFont(font_fresca).setLocation(10,100).setText("Fresca");
+console.log("fresca");
+
+            var font_righteous= new CAAT.Font().
+                setFont('"Righteous"').
+                setFontSize(100,"px").
+                setFillStyle( gradient ).
+                setStrokeStyle('#bbb').
+                setStrokeSize(.5).
+                createDefault(10);
+
+            var t2= new CAAT.TextActor().setFont(font_righteous).setLocation(10,200).setText("Righteous");
+console.log("righteous");
+
+            var font_voltaire= new CAAT.Font().
+                setFont('"Voltaire"').
+                setFontSize(100,"px").
+                setFillStyle( gradient ).
+                setStrokeStyle('#bbb').
+                setStrokeSize(.5).
+                createDefault(5);
+
+            var t3= new CAAT.TextActor().setFont(font_voltaire).setLocation(10,300).setText("Voltaire");
+console.log("voltaire");
+
+            scene.addChild(t0);
+            scene.addChild(t1);
+            scene.addChild(t2);
+            scene.addChild(t3);
+
+
+        }
+
+    })();
+
+</script>
+</html>

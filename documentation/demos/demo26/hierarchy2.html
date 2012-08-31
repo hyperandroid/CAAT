@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+
+    <title>CAAT example: Hierarchical affine transforms</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+    <div id="page">
+        <div id="header">
+            <div style="text-align: center;">
+
+            </div>
+        </div>
+
+        <div id="content">
+            <div id="menu">
+
+            </div>
+            <div id="experiment">
+                <div style="text-align:center">
+                    <h1>Hierarchical affine transforms</h1>
+                </div>
+                <div id="experiment-holder">
+                </div>
+                <div id="experiment-description">
+                    <div>
+                        <p>Controls:</p>
+                        <ul>
+                            <li>None.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p>
+                            This demo features the following elements:
+                        </p>
+                        <ul>
+                            <li>Define child/parent relationship.</li>
+                            <li>Convert coordinates between spaces, ie., from arm to screen.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script type="text/javascript" src="../../../build/caat.js"></script>
+<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    (function() {
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener(
+                'load',
+                function() {
+                    CAAT.modules.initialization.init(
+                            800, 500,
+                            'experiment-holder',
+                            [],
+                            hierarchy
+                            );
+                },
+                false);
+
+        function hierarchy(director) {
+
+            var scene = director.createScene();
+
+            __scene8_text(director,scene);
+
+            var rotTime= 6000;
+
+            var a1= new CAAT.ActorContainer().
+                    setSize( 10, 100).
+                    setLocation( director.width/2, director.height/2 - 100).
+                    setFillStyle( '#77f').
+                    addBehavior(
+                        new CAAT.RotateBehavior().
+                                setValues(0,2*Math.PI,.5, 1).
+                                setCycle( true).
+                                setDelayTime( 0, rotTime )
+                    );
+            var a2= new CAAT.ActorContainer().
+                    setSize( 8, 80).
+                    setLocation( 1, -80).
+                    setFillStyle( '#7f7' ).
+                    addBehavior(
+                        new CAAT.RotateBehavior().
+                                setValues(0,2*Math.PI,.5, 1).
+                                setCycle( true).
+                                setDelayTime( 0, rotTime )
+                    );
+            var a3= new CAAT.ActorContainer().
+                    setSize( 6, 60).
+                    setLocation( 1, -60).
+                    setFillStyle( '#f77' ).
+                    addBehavior(
+                        new CAAT.RotateBehavior().
+                                setValues(0,2*Math.PI,.5, 1).
+                                setCycle( true).
+                                setDelayTime( 0, rotTime).
+                                addListener( {
+                                    behaviorApplied : function(behavior, time, normalizedTime, actor, value) {
+                                        var pt= actor.modelToView( new CAAT.Point( actor.width/2, 0 ) );
+                                        a4.centerAt(pt.x, pt.y);
+                                    }
+                                } )
+                    );
+
+            var a4= new CAAT.TextActor().
+                    setFont('30px Arial').
+                    setTextFillStyle('#333').
+                    setText("Here we go...").
+                    cacheAsBitmap();
+
+            scene.addChild(a1);
+            a1.addChild(a2);
+            a2.addChild(a3);
+            scene.addChild(a4);
+
+            return scene;
+        }
+
+        function __scene8_text(director, scene) {
+            var gradient = director.crc.createLinearGradient(0, 0, 0, 50);
+            gradient.addColorStop(0, 'orange');
+            gradient.addColorStop(0.5, 'red');
+            gradient.addColorStop(1, '#3f00ff');
+
+            var cc = new CAAT.ActorContainer().
+                    setBounds(550, 30, 150, 100).
+                    enableEvents(false).
+                    addBehavior(
+                    new CAAT.RotateBehavior().
+                            setCycle(true).
+                            setFrameTime(0, 4000).
+                            setValues(-Math.PI / 8, Math.PI / 8, .50, 0).
+                            setInterpolator(
+                                new CAAT.Interpolator().
+                                        createExponentialInOutInterpolator(3, true)
+                            )
+                    );
+            scene.addChild(cc);
+
+            var text = new CAAT.TextActor().
+                    setFont("50px sans-serif").
+                    setText("Hierarchycal").
+                    setTextFillStyle(gradient).
+                    setOutline(true).
+                    calcTextSize(director).
+                    cacheAsBitmap();
+            cc.addChild(text.setLocation((cc.width - text.width) / 2, 0));
+
+            var text2 = new CAAT.TextActor().
+                    setFont("50px sans-serif").
+                    setText("Rotations").
+                    calcTextSize(director).
+                    setTextFillStyle(gradient).
+                    setOutline(true).
+                    cacheAsBitmap();
+            cc.addChild(text2.setLocation((cc.width - text2.width) / 2, 50));
+        }
+
+    })();
+</script>
+</html>
