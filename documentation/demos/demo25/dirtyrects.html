@@ -135,6 +135,22 @@
                 }
             };
 
+            var img= document.createElement("canvas");
+            img.width= 100;
+            img.height= 20;
+            var ctx= img.getContext("2d");
+            var color= [ '#f00','#0f0','#00f','#ff0','#0ff'];
+            for( var i=0; i<5; i+=1 ) {
+                ctx.fillStyle= color[i];
+                ctx.fillRect( i*20, 0, 20, 20 );
+            }
+            var si= new CAAT.SpriteImage().initialize( img, 1, 5 );
+            var ac= new CAAT.Actor().
+                    setBackgroundImage(si).
+                    setChangeFPS(200).
+                    setAnimationImageIndex([0,1,2,3,4]);
+            scene.addChild(ac);
+
             CAAT.loop(60);
         }
         /**

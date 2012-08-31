@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 275
+Version: 0.4 build: 278
 
 Created on:
-DATE: 2012-08-30
-TIME: 23:32:08
+DATE: 2012-08-31
+TIME: 15:38:39
 */
 
 
@@ -6117,6 +6117,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 }
 
                 this.glEnabled= true;
+
+                this.invalidate();
+
             } else {
                 this.backgroundImage= null;
             }
@@ -6168,6 +6171,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             if ( this.backgroundImage ) {
                 this.backgroundImage.resetAnimationTime();
                 this.backgroundImage.setAnimationImageIndex(ii);
+                this.invalidate();
             }
             return this;
         },
@@ -6175,6 +6179,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         resetAnimationTime : function() {
             if ( this.backgroundImage ) {
                 this.backgroundImage.resetAnimationTime();
+                this.invalidate();
             }
             return this;
         },
@@ -6335,6 +6340,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          */
         setFillStyle : function( style ) {
 			this.fillStyle= style;
+            this.invalidate();
             return this;
         },
         /**
@@ -6344,6 +6350,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          */
         setStrokeStyle : function( style ) {
             this.strokeStyle= style;
+            this.invalidate();
             return this;
         },
         /**
@@ -9869,6 +9876,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         this.dirtyRectsIndex=   0;
         this.touches= {};
 
+        this.timerManager= new CAAT.TimerManager();
+
         return this;
     };
 
@@ -9968,6 +9977,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
         touches             : null,     // Touches information. Associate touch.id with an actor and original touch info.
 
+        timerManager:       null,
+
         clean : function() {
             this.scenes= null;
             this.currentScene= null;
@@ -9985,6 +9996,12 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.dirtyRectsEnabled= false;
             this.nDirtyRects= 0;
             this.onResizeCallback= null;
+            return this;
+        },
+
+
+        createTimer : function( startTime, duration, callback_timeout, callback_tick, callback_cancel ) {
+            this.timerManager.createTimer( startTime, duration, callback_timeout, callback_tick, callback_cancel );
             return this;
         },
 
@@ -10419,7 +10436,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
             this.time += time;
 
-            this.animate(this,time);
+            this.animate(this,this.time);
 
             if ( CAAT.DEBUG ) {
                 this.resetStats();
@@ -10567,6 +10584,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @param time {number} director time.
          */
         animate : function(director, time) {
+
+            this.timerManager.checkTimers(time);
+
             this.setModelViewMatrix(this);
             this.modelViewMatrixI= this.modelViewMatrix.getInverse();
             this.setScreenBounds();
@@ -10596,6 +10616,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 var tt = cli.time - cli.start_time;
                 cli.animate(this, tt);
             }
+
+            this.timerManager.removeExpiredTimers();
 
             return this;
         },
@@ -13636,6 +13658,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 				default:
 					this.paint= this.paintN;
 			}
+            this.ownerActor.invalidate();
             return this;
         },
 
@@ -13679,13 +13702,18 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                 if ( this.prevAnimationTime===-1 )	{
                     this.prevAnimationTime= time;
                     this.spriteIndex=0;
+                    this.ownerActor.invalidate();
                 }
                 else	{
                     var ttime= time;
                     ttime-= this.prevAnimationTime;
                     ttime/= this.changeFPS;
                     ttime%= this.animationImageIndex.length;
-                    this.spriteIndex= this.animationImageIndex[Math.floor(ttime)];
+                    var idx= this.animationImageIndex[Math.floor(ttime)];
+                    if ( this.spriteIndex!==idx ) {
+                        this.spriteIndex= idx;
+                        this.ownerActor.invalidate();
+                    }
                 }
             }
         },
@@ -14102,53 +14130,17 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
         }
     };
 })();
-/**
-* See LICENSE file.
- *
- */
 
 (function() {
-    /**
-     * Scene is the top level ActorContainer of the Director at any given time.
-     * The only time when 2 scenes could be active will be during scene change.
-     * An scene controls the way it enters/exits the scene graph. It is also the entry point for all
-     * input related and timed related events to every actor on screen.
-     *
-     * @constructor
-     * @extends CAAT.ActorContainer
-     *
-     */
-	CAAT.Scene= function() {
-		CAAT.Scene.superclass.constructor.call(this);
+    CAAT.TimerManager= function() {
         this.timerList= [];
-        this.fillStyle= null;
-        this.isGlobalAlpha= true;
-		return this;
-	};
-	
-	CAAT.Scene.prototype= {
-		
-		easeContainerBehaviour:			null,   // Behavior container used uniquely for Scene switching.
-		easeContainerBehaviourListener: null,   // who to notify about container behaviour events. Array.
-		easeIn:							false,  // When Scene switching, this boolean identifies whether the
-                                                // Scene is being brought in, or taken away.
+        return this;
+    };
 
-        EASE_ROTATION:					1,      // Constant values to identify the type of Scene transition
-		EASE_SCALE:						2,      // to perform on Scene switching by the Director.
-		EASE_TRANSLATE:					3,
-
+    CAAT.TimerManager.prototype= {
         timerList:                      null,   // collection of CAAT.TimerTask objects.
         timerSequence:                  0,      // incremental CAAT.TimerTask id.
 
-        paused:                         false,
-
-        isPaused :  function()  {
-            return this.paused;
-        },
-
-        setPaused : function( paused ) {
-            this.paused= paused;
-        },
         /**
          * Check and apply timers in frame time.
          * @param time {number} the current Scene time.
@@ -14209,7 +14201,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             var tt= new CAAT.TimerTask().create(
                         startTime,
                         duration,
-                        callback_timeout, 
+                        callback_timeout,
                         callback_tick,
                         callback_cancel );
 
@@ -14232,7 +14224,59 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                     tl.splice(i,1);
                 }
             }
+        }
+    }
+})();/**
+* See LICENSE file.
+ *
+ */
+
+(function() {
+    /**
+     * Scene is the top level ActorContainer of the Director at any given time.
+     * The only time when 2 scenes could be active will be during scene change.
+     * An scene controls the way it enters/exits the scene graph. It is also the entry point for all
+     * input related and timed related events to every actor on screen.
+     *
+     * @constructor
+     * @extends CAAT.ActorContainer
+     *
+     */
+	CAAT.Scene= function() {
+		CAAT.Scene.superclass.constructor.call(this);
+        this.timerManager= new CAAT.TimerManager();
+        this.fillStyle= null;
+        this.isGlobalAlpha= true;
+		return this;
+	};
+	
+	CAAT.Scene.prototype= {
+		
+		easeContainerBehaviour:			null,   // Behavior container used uniquely for Scene switching.
+		easeContainerBehaviourListener: null,   // who to notify about container behaviour events. Array.
+		easeIn:							false,  // When Scene switching, this boolean identifies whether the
+                                                // Scene is being brought in, or taken away.
+
+        EASE_ROTATION:					1,      // Constant values to identify the type of Scene transition
+		EASE_SCALE:						2,      // to perform on Scene switching by the Director.
+		EASE_TRANSLATE:					3,
+
+        paused:                         false,
+
+        timerManager                :   null,
+
+        isPaused :  function()  {
+            return this.paused;
         },
+
+        setPaused : function( paused ) {
+            this.paused= paused;
+        },
+
+        createTimer : function( startTime, duration, callback_timeout, callback_tick, callback_cancel ) {
+            return this.timerManager.createTimer( startTime, duration, callback_timeout, callback_tick, callback_cancel );
+        },
+
         /**
          * Scene animation method.
          * It extends Container's base behavior by adding timer control.
@@ -14240,9 +14284,9 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
          * @param time {number} an integer indicating the Scene time the animation is being performed at.
          */
         animate : function(director, time) {
-            this.checkTimers(time);
+            this.timerManager.checkTimers(time);
             CAAT.Scene.superclass.animate.call(this,director,time);
-            this.removeExpiredTimers();
+            this.timerManager.removeExpiredTimers();
         },
         /**
          * Helper method to manage alpha transparency fading on Scene switch by the Director.

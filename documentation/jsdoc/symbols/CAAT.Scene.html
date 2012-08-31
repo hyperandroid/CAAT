@@ -411,15 +411,6 @@ the scene has just been brought in.</div>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Scene.html#checkTimers">checkTimers</a></b>(time)
-								</div>
-								<div class="description">Check and apply timers in frame time.</div>
-							</td>
-						</tr>
-					
-						<tr>
 							<td class="attributes">&lt;private&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Scene.html#createAlphaBehaviour">createAlphaBehaviour</a></b>(time, isIn)
@@ -433,7 +424,7 @@ the scene has just been brought in.</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Scene.html#createTimer">createTimer</a></b>(startTime, duration, callback_timeout, callback_tick, callback_cancel)
 								</div>
-								<div class="description">Creates a timer task.</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -539,28 +530,9 @@ the scene has just been brought in.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Scene.html#ensureTimerTask">ensureTimerTask</a></b>(timertask)
-								</div>
-								<div class="description">Make sure the timertask is contained in the timer task list by adding it to the list in case it
-is not contained.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Scene.html#findActorAtPosition">findActorAtPosition</a></b>(point)
 								</div>
 								<div class="description">Find a pointed actor at position point.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Scene.html#hasTimer">hasTimer</a></b>(timertask)
-								</div>
-								<div class="description">Check whether the timertask is in this scene's timer task list.</div>
 							</td>
 						</tr>
 					
@@ -588,15 +560,6 @@ is not contained.</div>
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Scene.html#removeActorFromInputList">removeActorFromInputList</a></b>(actor, index)
 								</div>
 								<div class="description">remove an actor from a given input list index.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Scene.html#removeExpiredTimers">removeExpiredTimers</a></b>()
-								</div>
-								<div class="description">Removes expired timers.</div>
 							</td>
 						</tr>
 					
@@ -875,42 +838,6 @@ listener for the Scene's easeContainerBehaviour.
 
 					<hr />
 				
-					<a name="checkTimers"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>checkTimers</b>(time)
-					
-					</div>
-					<div class="description">
-						Check and apply timers in frame time.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>time</b>
-									
-								</dt>
-								<dd>{number} the current Scene time.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name="createAlphaBehaviour"> </a>
 					<div class="fixedFont">&lt;private&gt; 
 					
@@ -957,13 +884,12 @@ being brought in.</dd>
 					<a name="createTimer"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{<a href="../symbols/CAAT.TimerTask.html">CAAT.TimerTask</a>}</span>
+					
 					<b>createTimer</b>(startTime, duration, callback_timeout, callback_tick, callback_cancel)
 					
 					</div>
 					<div class="description">
-						Creates a timer task. Timertask object live and are related to scene's time, so when an Scene
-is taken out of the Director the timer task is paused, and resumed on Scene restoration.
+						
 						
 						
 					</div>
@@ -978,44 +904,37 @@ is taken out of the Director the timer task is paused, and resumed on Scene rest
 									<b>startTime</b>
 									
 								</dt>
-								<dd>{number} an integer indicating the scene time this task must start executing at.</dd>
+								<dd></dd>
 							
 								<dt>
 									<b>duration</b>
 									
 								</dt>
-								<dd>{number} an integer indicating the timerTask duration.</dd>
+								<dd></dd>
 							
 								<dt>
 									<b>callback_timeout</b>
 									
 								</dt>
-								<dd>{function} timer on timeout callback function.</dd>
+								<dd></dd>
 							
 								<dt>
 									<b>callback_tick</b>
 									
 								</dt>
-								<dd>{function} timer on tick callback function.</dd>
+								<dd></dd>
 							
 								<dt>
 									<b>callback_cancel</b>
 									
 								</dt>
-								<dd>{function} timer on cancel callback function.</dd>
+								<dd></dd>
 							
 							</dl>
 						
 						
 						
 						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{<a href="../symbols/CAAT.TimerTask.html">CAAT.TimerTask</a>}</span> a CAAT.TimerTask class instance.</dd>
-							
-							</dl>
 						
 						
 						
@@ -1635,50 +1554,6 @@ Elements are added to each list either in head or tail.
 
 					<hr />
 				
-					<a name="ensureTimerTask"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>ensureTimerTask</b>(timertask)
-					
-					</div>
-					<div class="description">
-						Make sure the timertask is contained in the timer task list by adding it to the list in case it
-is not contained.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>timertask</b>
-									
-								</dt>
-								<dd>{CAAT.TimerTask} a CAAT.TimerTask object.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd>this</dd>
-							
-							</dl>
-						
-						
-						
-
-					<hr />
-				
 					<a name="findActorAtPosition"> </a>
 					<div class="fixedFont">
 					
@@ -1712,49 +1587,6 @@ This method tries lo find the correctly pointed actor in two different ways.
 						
 						
 						
-						
-						
-						
-
-					<hr />
-				
-					<a name="hasTimer"> </a>
-					<div class="fixedFont">
-					
-					<span class="light">{boolean}</span>
-					<b>hasTimer</b>(timertask)
-					
-					</div>
-					<div class="description">
-						Check whether the timertask is in this scene's timer task list.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>timertask</b>
-									
-								</dt>
-								<dd>{CAAT.TimerTask} a CAAT.TimerTask object.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-							<dl class="detailList">
-							<dt class="heading">Returns:</dt>
-							
-								<dd><span class="light fixedFont">{boolean}</span> a boolean indicating whether the timertask is in this scene or not.</dd>
-							
-							</dl>
 						
 						
 						
@@ -1862,31 +1694,6 @@ If no index is supplied, the actor will be removed from every input list.
 available lists.</dd>
 							
 							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name="removeExpiredTimers"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>removeExpiredTimers</b>()
-					
-					</div>
-					<div class="description">
-						Removes expired timers. This method must not be called directly.
-						
-						
-					</div>
-					
-					
-					
 						
 						
 						
@@ -2021,7 +1828,7 @@ It simply will be set expired=true, but the frameTime won't be modified.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu Aug 30 2012 23:33:13 GMT+0200 (CEST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Fri Aug 31 2012 15:39:32 GMT+0200 (CEST)
 		</div>
 	</body>
 </html>

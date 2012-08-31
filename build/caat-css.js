@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 275
+Version: 0.4 build: 278
 
 Created on:
-DATE: 2012-08-30
-TIME: 23:32:09
+DATE: 2012-08-31
+TIME: 15:38:39
 */
 
 
@@ -8780,6 +8780,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         this.dirtyRectsIndex=   0;
         this.touches= {};
 
+        this.timerManager= new CAAT.TimerManager();
+
         return this;
     };
 
@@ -8879,6 +8881,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
         touches             : null,     // Touches information. Associate touch.id with an actor and original touch info.
 
+        timerManager:       null,
+
         clean : function() {
             this.scenes= null;
             this.currentScene= null;
@@ -8896,6 +8900,12 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.dirtyRectsEnabled= false;
             this.nDirtyRects= 0;
             this.onResizeCallback= null;
+            return this;
+        },
+
+
+        createTimer : function( startTime, duration, callback_timeout, callback_tick, callback_cancel ) {
+            this.timerManager.createTimer( startTime, duration, callback_timeout, callback_tick, callback_cancel );
             return this;
         },
 
@@ -9330,7 +9340,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
             this.time += time;
 
-            this.animate(this,time);
+            this.animate(this,this.time);
 
             if ( CAAT.DEBUG ) {
                 this.resetStats();
@@ -9478,6 +9488,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @param time {number} director time.
          */
         animate : function(director, time) {
+
+            this.timerManager.checkTimers(time);
+
             this.setModelViewMatrix(this);
             this.modelViewMatrixI= this.modelViewMatrix.getInverse();
             this.setScreenBounds();
@@ -9507,6 +9520,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 var tt = cli.time - cli.start_time;
                 cli.animate(this, tt);
             }
+
+            this.timerManager.removeExpiredTimers();
 
             return this;
         },
@@ -12547,6 +12562,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 				default:
 					this.paint= this.paintN;
 			}
+            this.ownerActor.invalidate();
             return this;
         },
 
@@ -12590,13 +12606,18 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                 if ( this.prevAnimationTime===-1 )	{
                     this.prevAnimationTime= time;
                     this.spriteIndex=0;
+                    this.ownerActor.invalidate();
                 }
                 else	{
                     var ttime= time;
                     ttime-= this.prevAnimationTime;
                     ttime/= this.changeFPS;
                     ttime%= this.animationImageIndex.length;
-                    this.spriteIndex= this.animationImageIndex[Math.floor(ttime)];
+                    var idx= this.animationImageIndex[Math.floor(ttime)];
+                    if ( this.spriteIndex!==idx ) {
+                        this.spriteIndex= idx;
+                        this.ownerActor.invalidate();
+                    }
                 }
             }
         },
@@ -13013,7 +13034,103 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
         }
     };
 })();
-/**
+
+(function() {
+    CAAT.TimerManager= function() {
+        this.timerList= [];
+        return this;
+    };
+
+    CAAT.TimerManager.prototype= {
+        timerList:                      null,   // collection of CAAT.TimerTask objects.
+        timerSequence:                  0,      // incremental CAAT.TimerTask id.
+
+        /**
+         * Check and apply timers in frame time.
+         * @param time {number} the current Scene time.
+         */
+        checkTimers : function(time) {
+            var tl= this.timerList;
+            var i=tl.length-1;
+            while( i>=0 ) {
+                if ( !tl[i].remove ) {
+                    tl[i].checkTask(time);
+                }
+                i--;
+            }
+        },
+        /**
+         * Make sure the timertask is contained in the timer task list by adding it to the list in case it
+         * is not contained.
+         * @param timertask {CAAT.TimerTask} a CAAT.TimerTask object.
+         * @return this
+         */
+        ensureTimerTask : function( timertask ) {
+            if ( !this.hasTimer(timertask) ) {
+                this.timerList.push(timertask);
+            }
+            return this;
+        },
+        /**
+         * Check whether the timertask is in this scene's timer task list.
+         * @param timertask {CAAT.TimerTask} a CAAT.TimerTask object.
+         * @return {boolean} a boolean indicating whether the timertask is in this scene or not.
+         */
+        hasTimer : function( timertask ) {
+            var tl= this.timerList;
+            var i=tl.length-1;
+            while( i>=0 ) {
+                if ( tl[i]===timertask ) {
+                    return true;
+                }
+                i--;
+            }
+
+            return false;
+        },
+        /**
+         * Creates a timer task. Timertask object live and are related to scene's time, so when an Scene
+         * is taken out of the Director the timer task is paused, and resumed on Scene restoration.
+         *
+         * @param startTime {number} an integer indicating the scene time this task must start executing at.
+         * @param duration {number} an integer indicating the timerTask duration.
+         * @param callback_timeout {function} timer on timeout callback function.
+         * @param callback_tick {function} timer on tick callback function.
+         * @param callback_cancel {function} timer on cancel callback function.
+         *
+         * @return {CAAT.TimerTask} a CAAT.TimerTask class instance.
+         */
+        createTimer : function( startTime, duration, callback_timeout, callback_tick, callback_cancel ) {
+
+            var tt= new CAAT.TimerTask().create(
+                        startTime,
+                        duration,
+                        callback_timeout,
+                        callback_tick,
+                        callback_cancel );
+
+            tt.taskId= this.timerSequence++;
+            tt.sceneTime = this.time;
+            tt.scene= this;
+
+            this.timerList.push( tt );
+
+            return tt;
+        },
+        /**
+         * Removes expired timers. This method must not be called directly.
+         */
+        removeExpiredTimers : function() {
+            var i;
+            var tl= this.timerList;
+            for( i=0; i<tl.length; i++ ) {
+                if ( tl[i].remove ) {
+                    tl.splice(i,1);
+                }
+            }
+        }
+    }
+})();/**
 * See LICENSE file.
  *
  */

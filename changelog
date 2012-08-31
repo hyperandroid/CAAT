@@ -1,3 +1,11 @@
+* 08/31/2012 0.4 Build 277*
+---------------------------
+
+* FIX. Call invalidate when changing Actor's backgroundImage setBackgroundImageIndex method.
+* ADD. Added timer to CAAT.Director. These timers are application wide, not local to an scene. Functionality is
+       cloned from scenes.
+* FIX. CAAT.SpriteImage.setSpriteIndexAtTime invalidates owner actor on change animation sequence index.
+
 * 08/30/2012 0.4 Build 275*
 ---------------------------
 

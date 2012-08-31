@@ -579,6 +579,7 @@
 				default:
 					this.paint= this.paintN;
 			}
+            this.ownerActor.invalidate();
             return this;
         },
 
@@ -622,13 +623,18 @@
                 if ( this.prevAnimationTime===-1 )	{
                     this.prevAnimationTime= time;
                     this.spriteIndex=0;
+                    this.ownerActor.invalidate();
                 }
                 else	{
                     var ttime= time;
                     ttime-= this.prevAnimationTime;
                     ttime/= this.changeFPS;
                     ttime%= this.animationImageIndex.length;
-                    this.spriteIndex= this.animationImageIndex[Math.floor(ttime)];
+                    var idx= this.animationImageIndex[Math.floor(ttime)];
+                    if ( this.spriteIndex!==idx ) {
+                        this.spriteIndex= idx;
+                        this.ownerActor.invalidate();
+                    }
                 }
             }
         },

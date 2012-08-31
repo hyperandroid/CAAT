@@ -52,6 +52,8 @@
         this.dirtyRectsIndex=   0;
         this.touches= {};
 
+        this.timerManager= new CAAT.TimerManager();
+
         return this;
     };
 
@@ -151,6 +153,8 @@
 
         touches             : null,     // Touches information. Associate touch.id with an actor and original touch info.
 
+        timerManager:       null,
+
         clean : function() {
             this.scenes= null;
             this.currentScene= null;
@@ -168,6 +172,12 @@
             this.dirtyRectsEnabled= false;
             this.nDirtyRects= 0;
             this.onResizeCallback= null;
+            return this;
+        },
+
+
+        createTimer : function( startTime, duration, callback_timeout, callback_tick, callback_cancel ) {
+            this.timerManager.createTimer( startTime, duration, callback_timeout, callback_tick, callback_cancel );
             return this;
         },
 
@@ -602,7 +612,7 @@
 
             this.time += time;
 
-            this.animate(this,time);
+            this.animate(this,this.time);
 
             if ( CAAT.DEBUG ) {
                 this.resetStats();
@@ -750,6 +760,9 @@
          * @param time {number} director time.
          */
         animate : function(director, time) {
+
+            this.timerManager.checkTimers(time);
+
             this.setModelViewMatrix(this);
             this.modelViewMatrixI= this.modelViewMatrix.getInverse();
             this.setScreenBounds();
@@ -779,6 +792,8 @@
                 var tt = cli.time - cli.start_time;
                 cli.animate(this, tt);
             }
+
+            this.timerManager.removeExpiredTimers();
 
             return this;
         },

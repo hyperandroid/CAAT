@@ -444,6 +444,9 @@
                 }
 
                 this.glEnabled= true;
+
+                this.invalidate();
+
             } else {
                 this.backgroundImage= null;
             }
@@ -495,6 +498,7 @@
             if ( this.backgroundImage ) {
                 this.backgroundImage.resetAnimationTime();
                 this.backgroundImage.setAnimationImageIndex(ii);
+                this.invalidate();
             }
             return this;
         },
@@ -502,6 +506,7 @@
         resetAnimationTime : function() {
             if ( this.backgroundImage ) {
                 this.backgroundImage.resetAnimationTime();
+                this.invalidate();
             }
             return this;
         },
@@ -662,6 +667,7 @@
          */
         setFillStyle : function( style ) {
 			this.fillStyle= style;
+            this.invalidate();
             return this;
         },
         /**
@@ -671,6 +677,7 @@
          */
         setStrokeStyle : function( style ) {
             this.strokeStyle= style;
+            this.invalidate();
             return this;
         },
         /**
