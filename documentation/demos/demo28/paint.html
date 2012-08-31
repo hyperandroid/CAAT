@@ -4,7 +4,7 @@
 <head>
     <script src="../../track.js" type="text/javascript"></script>
 
-    <title>CAAT example: CAAT.Font + CAAT.TextActor</title>
+    <title>CAAT example: Paint</title>
 
     <link rel="stylesheet" href="../style/demo.css">
     <link href='http://fonts.googleapis.com/css?family=Fresca|Baumans|Righteous|Voltaire' rel='stylesheet' type='text/css'>
@@ -30,7 +30,7 @@
         </div>
         <div id="experiment">
             <div style="text-align:center">
-                <h1>CAAT.Font</h1>
+                <h1>Minimal Paint program</h1>
             </div>
             <div id="experiment-holder">
             </div>
@@ -46,9 +46,13 @@
                         This demo features the following elements:
                     </p>
                     <ul>
-                        <li>Creating a CAAT.Font object.
-                        <li>Make google fonts load and usable in a canvas
-                        <li>Use CAAT.Font with CAAT.TextActor</li>
+                        <li>Constructing a Path and adding segments to it.</li>
+                        <li>Showing a path by associating it to a PathActor.</li>
+                        <li>Sprited fonts as text with TextActor.</li>
+                        <li>Path management by calling setInteractive method.</li>
+                        <li>Setting up a TextActor.</li>
+                        <li>Setting a path for a TextActor</li>
+                        <li>CAAT.Interpolator on path behavior.</li>
                     </ul>
                 </div>
             </div>
@@ -106,72 +110,73 @@
                                     800, 500,
                                     'experiment-holder',
                                     [],
-                                    textOnPath )
+                                    paint )
                         },
                         500 );
                 },
                 false);
 
-        function textOnPath(director) {
+        function paint(director) {
 
 
             var scene = director.createScene();
 
-            var gradient = director.crc.createLinearGradient(0, -30, 0, 100);
-            gradient.addColorStop(0, '#ff0');
-            gradient.addColorStop(0.5, '#f00');
-            gradient.addColorStop(1, 'blue');
+            var canvas= document.createElement("canvas");
+            canvas.width= director.width;
+            canvas.height= director.height;
 
-            var font_baumans= new CAAT.Font().
-                setFont('"Baumans"').
-                setFontSize(100,"px").
-                setFillStyle( gradient ).
-                setStrokeStyle('#bbb').
-                setStrokeSize(.5).
-                createDefault(2);
+            var actor= new CAAT.Actor().
+                    setBackgroundImage( canvas );
 
-            var t0= new CAAT.TextActor().setFont(font_baumans).setLocation(10,10).setText("Baumans");
-console.log("baumans");
+            actor.__ctx= canvas.getContext("2d");
+            actor.__x= 0;
+            actor.__y= 0;
+            actor.__ctx.lineCap="round";
+            actor.__ctx.fillText( "Drag to paint", 20, 40 );
 
-            var font_fresca= new CAAT.Font().
-                setFont('"Fresca"').
-                setFontSize(100,"px").
-                setFillStyle( gradient ).
-                setStrokeStyle('#bbb').
-                setStrokeSize(.5).
-                createDefault(2);
+            var firstTime= true;
 
-            var t1= new CAAT.TextActor().setFont(font_fresca).setLocation(10,100).setText("Fresca");
-console.log("fresca");
+            actor.mouseDown= function(e) {
 
-            var font_righteous= new CAAT.Font().
-                setFont('"Righteous"').
-                setFontSize(100,"px").
-                setFillStyle( gradient ).
-                setStrokeStyle('#bbb').
-                setStrokeSize(.5).
-                createDefault(10);
+                var actor= e.source;
 
-            var t2= new CAAT.TextActor().setFont(font_righteous).setLocation(10,200).setText("Righteous");
-console.log("righteous");
+                if ( firstTime ) {
+                    actor.__ctx.clearRect(0,0,director.width,director.height);
+                    firstTime= false;
+                }
 
-            var font_voltaire= new CAAT.Font().
-                setFont('"Voltaire"').
-                setFontSize(100,"px").
-                setFillStyle( gradient ).
-                setStrokeStyle('#bbb').
-                setStrokeSize(.5).
-                createDefault(5);
+                // get this position as drawing starting pint
+                actor.__x= e.x;
+                actor.__y= e.y;
 
-            var t3= new CAAT.TextActor().setFont(font_voltaire).setLocation(10,300).setText("Voltaire");
-console.log("voltaire");
+                // calculate a random line width
+                var lineWidth= 2 + ((Math.random()*20)>>0);
 
-            scene.addChild(t0);
-            scene.addChild(t1);
-            scene.addChild(t2);
-            scene.addChild(t3);
+                // calculate a random color.
+                var r= 128+((128*Math.random())>>0);
+                var g= 128+((128*Math.random())>>0);
+                var b= 128+((128*Math.random())>>0);
 
+                actor.__ctx.lineWidth= lineWidth;
+                actor.__ctx.strokeStyle='rgb('+r+','+g+','+b+')';
+            };
 
+            actor.mouseDrag= function(e) {
+                var actor= e.source;
+
+                // draw a line from previous point to the new one
+                actor.__ctx.beginPath();
+                actor.__ctx.moveTo( actor.__x, actor.__y );
+                actor.__ctx.lineTo(e.x, e.y);
+                actor.__ctx.stroke();
+
+                // keep last point as previous for the next line segment.
+                actor.__x= e.x;
+                actor.__y= e.y;
+
+            };
+
+            scene.addChild(actor);
         }
 
     })();
