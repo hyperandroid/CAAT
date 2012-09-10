@@ -622,7 +622,9 @@
             if ( this.animationImageIndex.length>1 ) {
                 if ( this.prevAnimationTime===-1 )	{
                     this.prevAnimationTime= time;
-                    this.spriteIndex=0;
+
+                    //thanks Phloog well spotted.
+                    this.spriteIndex= this.animationImageIndex[0];
                     this.ownerActor.invalidate();
                 }
                 else	{
@@ -631,10 +633,10 @@
                     ttime/= this.changeFPS;
                     ttime%= this.animationImageIndex.length;
                     var idx= this.animationImageIndex[Math.floor(ttime)];
-                    if ( this.spriteIndex!==idx ) {
+//                    if ( this.spriteIndex!==idx ) {
                         this.spriteIndex= idx;
                         this.ownerActor.invalidate();
-                    }
+//                    }
                 }
             }
         },

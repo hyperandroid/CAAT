@@ -184,13 +184,7 @@
                         new CAAT.RotateBehavior().
                                 setValues(0,2*Math.PI,.5, 0).
                                 setCycle( true).
-                                setDelayTime( 0, rotTime2).
-                                addListener( {
-                                    behaviorApplied : function(behavior, time, normalizedTime, actor, value) {
-                                        var pt= actor.modelToView( new CAAT.Point( actor.width/2, 0 ) );
-                                        a4.centerAt(pt.x, pt.y);
-                                    }
-                                } )
+                                setDelayTime( 0, rotTime2)
                     );
 
             var aa4= new CAAT.TextActor().
@@ -198,8 +192,13 @@
                     setTextFillStyle('#333').
                     setText("CAAT").
                     calcTextSize(director).
+                    addBehavior(
+                        new CAAT.RotateBehavior().
+                                setValues(0,2*Math.PI).
+                                setCycle( true).
+                                setDelayTime( 0, rotTime2) ).
                     cacheAsBitmap();
-            aa4.setLocation( -aa4.width/2, 30 );
+            aa4.setLocation( -aa4.width/2, 60 );
 
             scene.addChild(aa1);
             aa1.addChild(aa2);

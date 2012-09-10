@@ -89,11 +89,8 @@
 
         function __start() {
 
-            var director= new CAAT.Director().initialize(800,500,document.getElementById('experiment-canvas')).setClear( true );
+            var director= new CAAT.Director().initialize(800,500,document.getElementById('experiment-canvas')).setClear( CAAT.Director.CLEAR_DIRTY_RECTS );
             var scene= director.createScene();
-            scene.activated= function() {
-                director.setClear( CAAT.Director.CLEAR_DIRTY_RECTS );
-            }
 
             var bg= new CAAT.Actor().setBounds(0,0,director.width,director.height).enableEvents(false);
             scene.addChild( bg );

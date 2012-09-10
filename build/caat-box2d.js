@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 278
+Version: 0.4 build: 283
 
 Created on:
-DATE: 2012-08-31
-TIME: 15:38:39
+DATE: 2012-09-09
+TIME: 19:41:46
 */
 
 
@@ -47,7 +47,6 @@ TIME: 15:38:39
 
         if ( set )  {
             var debugDraw = new Box2D.Dynamics.b2DebugDraw();
-            var test= false;
             try {
                 debugDraw.m_sprite.graphics.clear= function() {};
             } catch( e ) {}
@@ -61,7 +60,7 @@ TIME: 15:38:39
             debugDraw.SetFlags(0x0001 | 0x0002);
 
         } else {
-            world.setDebugDraw( null );
+            world.SetDebugDraw( null );
         }
     }
 })();

@@ -165,8 +165,6 @@
         size_active:            1,      // number of animated children
         size_total:             1,
 
-        __next:                 null,
-
         __d_ax:                 -1,     // for drag-enabled actors.
         __d_ay:                 -1,
         gestureEnabled:         false,
@@ -2181,9 +2179,9 @@
                 this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
             }
 
-            //for( var actor= this.activeChildren; actor; actor=actor.__next ) {
             for( var i= 0, l= this.activeChildren.length; i<l; ++i ) {
                 var actor= this.activeChildren[i];
+
                 if ( actor.visible ) {
                     ctx.save();
                     actor.paintActor(director,time);
@@ -2211,7 +2209,6 @@
                 this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
             }
 
-//            for( var actor= this.activeChildren; actor; actor=actor.__next ) {
             for( var i= 0, l= this.activeChildren.length; i<l; ++i ) {
                 var actor= this.activeChildren[i];
                 actor.paintActor(director,time);
@@ -2231,7 +2228,6 @@
                 this.frameAlpha= this.parent.frameAlpha;
             }
 
-//            for( c= this.activeChildren; c; c=c.__next ) {
             for( var i= 0, l= this.activeChildren.length; i<l; ++i ) {
                 var c= this.activeChildren[i];
                 c.paintActorGL(director,time);
@@ -2273,7 +2269,7 @@
             var pcl= this.pendingChildrenList;
             for( i=0; i<pcl.length; i++ ) {
                 var child= pcl[i];
-                this.addChild(child);
+                this.addChildImmediately(child);
             }
 
             this.pendingChildrenList= [];
@@ -2287,20 +2283,8 @@
                 actor.time= time;
                 this.size_total+= actor.size_total;
                 if ( actor.animate(director, time) ) {
-                    /*
-                    if ( !this.activeChildren ) {
-                        this.activeChildren= actor;
-                        actor.__next= null;
-                        last= actor;
-                    } else {
-                        actor.__next= null;
-                        last.__next= actor;
-                        last= actor;
-                    }*/
                     this.activeChildren.push( actor );
-
                     this.size_active+= actor.size_active;
-
                 } else {
                     if ( actor.expired && actor.discardable ) {
                         markDelete.push(actor);
@@ -2714,6 +2698,8 @@
                 this.width= this.height= 0;
             }
             this.calcTextSize( CAAT.director[0] );
+
+            this.invalidate();
 
             return this;
         },

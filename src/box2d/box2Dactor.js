@@ -16,7 +16,6 @@
 
         if ( set )  {
             var debugDraw = new Box2D.Dynamics.b2DebugDraw();
-            var test= false;
             try {
                 debugDraw.m_sprite.graphics.clear= function() {};
             } catch( e ) {}
@@ -30,7 +29,7 @@
             debugDraw.SetFlags(0x0001 | 0x0002);
 
         } else {
-            world.setDebugDraw( null );
+            world.SetDebugDraw( null );
         }
     }
 })();

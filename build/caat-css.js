@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 278
+Version: 0.4 build: 283
 
 Created on:
-DATE: 2012-08-31
-TIME: 15:38:39
+DATE: 2012-09-09
+TIME: 19:41:46
 */
 
 
@@ -12605,7 +12605,9 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             if ( this.animationImageIndex.length>1 ) {
                 if ( this.prevAnimationTime===-1 )	{
                     this.prevAnimationTime= time;
-                    this.spriteIndex=0;
+
+                    //thanks Phloog well spotted.
+                    this.spriteIndex= this.animationImageIndex[0];
                     this.ownerActor.invalidate();
                 }
                 else	{
@@ -12614,10 +12616,10 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                     ttime/= this.changeFPS;
                     ttime%= this.animationImageIndex.length;
                     var idx= this.animationImageIndex[Math.floor(ttime)];
-                    if ( this.spriteIndex!==idx ) {
+//                    if ( this.spriteIndex!==idx ) {
                         this.spriteIndex= idx;
                         this.ownerActor.invalidate();
-                    }
+//                    }
                 }
             }
         },

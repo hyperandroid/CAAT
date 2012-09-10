@@ -1,3 +1,12 @@
+* 08/31/2012 0.4 Build 283*
+---------------------------
+
+* CHANGE. CAAT.SpriteImage which have an animation sequence and a changeFPS, now always request to invalidate
+  their container actor. Previously only was requested upon new sprite sheet index selection.
+* CHANGE. Now pending to add children lists calls addChildImmediately instead of addChildren.
+* FIX. SpriteImage index when animation is changed now shows correct sprite image index.
+* FIX. CAAT.TextActor.setText method invalidates the actor.
+
 * 08/31/2012 0.4 Build 277*
 ---------------------------
 
@@ -56,12 +65,12 @@
 * Added demo24 which show how to build paths and combine them into more complex ones.
 
 *07/03/2012 0.4 Build 128 *
---------------------------
+---------------------------
 
 * Fixed a terrible bug which made input system work improperly. enableEvents was called two times in a row.
 
 *06/29/2012 0.4 Build 125 *
---------------------------
+---------------------------
 
 * To avoid seeing incomplete animation frames when new animation indexes are set a call to resetAnimationTime upon setAnimationImageIndex has been added.
 * CSS renderer: Fixed emptyChildren method.
