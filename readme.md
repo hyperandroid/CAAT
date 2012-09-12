@@ -27,7 +27,7 @@ Visit <a href="http://hyperandroid.github.com/CAAT">CAAT's github pages</a>, inc
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo6/accelerometer_org.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo6.png" alt="accelerometer input"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo7/anchors_org.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo7.png" alt="Actor anchors"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo8/hierarchy_org.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo8.png" alt="Hierarchical rotations"></a>
-<a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo26/hyerarchy2.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo26.png" alt="Path Creation"></a>
+<a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo26/hierarchy2.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo26.png" alt="Hierarchy 2"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo9/behaviors_org.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo9.png" alt="Some actor behaviors"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo10/garden_org.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo10.png" alt="Procedural grass"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo11/circles_org.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo11.png" alt="Circles collision"></a>
