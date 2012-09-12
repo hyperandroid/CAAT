@@ -6,10 +6,11 @@
     <title>CAAT example: Compund Path</title>
 
     <link rel="stylesheet" href="../style/demo.css">
+    <link href='http://fonts.googleapis.com/css?family=Fresca|Baumans|Righteous|Voltaire' rel='stylesheet' type='text/css'>
 
 </head>
 <body>
-
+<div style="font-family: 'Voltaire';">&nbsp;</div>
 <div id="page">
     <div id="header">
         <div style="text-align: center;">
@@ -89,11 +90,9 @@
 
         function __start() {
 
-            var director= new CAAT.Director().initialize(800,500,document.getElementById('experiment-canvas')).setClear( true );
+            var director= new CAAT.Director().initialize(800,500,document.getElementById('experiment-canvas')).setClear( CAAT.Director.CLEAR_DIRTY_RECTS );
             var scene= director.createScene();
-            scene.activated= function() {
-                director.setClear( CAAT.Director.CLEAR_DIRTY_RECTS );
-            }
+
 
             var bg= new CAAT.Actor().setBounds(0,0,director.width,director.height).enableEvents(false);
             scene.addChild( bg );
@@ -109,6 +108,71 @@
                                 enableEvents(false)
                 );
             }
+
+            var headerTitle0 = new CAAT.TextActor().
+                    setFont('40px Arial').
+                    setTextFillStyle('#001f3c').
+                    setOutline(true).
+                    setOutlineColor('#9a9a9a').
+                    setText("Dominion").
+                    setAlign("left").
+                    setLocation(director.width / 4, 14).
+                    cacheAsBitmap().
+                    addBehavior(
+                        new CAAT.PathBehavior().
+                                setDelayTime(0, 4000).
+                                setValues(new CAAT.Path().setLinear(director.width / 4, 14, director.width / 4, 400)).
+                                setCycle(true).
+                                setPingPong());
+            scene.addChild(headerTitle0);
+
+            var headerTitle1 = new CAAT.TextActor().
+                    setFont('40px Arial').
+                    setTextFillStyle('#001f3c').
+                    setOutline(true).
+                    setOutlineColor('#9a9a9a').
+                    setText("Dominion").
+                    setAlign("center").
+                    setLocation(director.width / 4, 54).
+                    addBehavior(
+                    new CAAT.PathBehavior().
+                            setDelayTime(0, 4000).
+                            setValues(new CAAT.Path().setLinear(director.width / 4, 54, director.width / 4, 440)).
+                            setCycle(true).
+                            setPingPong().
+                            addListener({
+                                behaviorApplied:function (behavior, time, ttime, actor, value) {
+                                    actor.setText("Dominion " + ((value.y*value.y)|0))
+                                }
+                            })
+            );
+            scene.addChild(headerTitle1);
+
+            var font_baumans= new CAAT.Font().
+                setFont('"Voltaire"').
+                setFontSize(50,"px").
+                setFillStyle( '#33a' ).
+                setStrokeStyle('#bbb').
+                setStrokeSize(.5).
+                createDefault(2);
+
+            var headerTitle2 = new CAAT.TextActor().
+                    setFont(font_baumans).
+                    setTextFillStyle('#001f3c').
+                    setOutline(true).
+                    setOutlineColor('#9a9a9a').
+                    setText("Dominion").
+                    setAlign("right").
+                    setLocation(director.width / 4, 94).
+                    addBehavior(
+                        new CAAT.PathBehavior().
+                            setDelayTime(0, 4000).
+                            setValues(new CAAT.Path().setLinear(director.width / 4, 94, director.width / 4, 480)).
+                            setCycle(true).
+                            setPingPong()
+            );
+            ;
+            scene.addChild(headerTitle2);
 
 
             var d= new CAAT.ActorContainer().setBounds(director.width/2,0,director.width/2,director.height).setFillStyle('#aaf');
@@ -151,6 +215,9 @@
                     setAnimationImageIndex([0,1,2,3,4]);
             scene.addChild(ac);
 
+
+
+
             CAAT.loop(60);
         }
         /**
@@ -159,7 +226,10 @@
          */
         window.addEventListener(
                 'load',
-                __start,
+                // Nasty HACK which allows fonts referenced in the first div to be loaded.
+                // if not, the font may or may not be available when defining the CAAT.Font object.
+                // WTF !!!
+                setTimeout(__start,200),
                 false);
 
     })();
