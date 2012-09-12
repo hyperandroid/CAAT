@@ -210,7 +210,7 @@
                     setOutline(true).
                     calcTextSize(director).
                     cacheAsBitmap();
-            cc.addChild(text.setLocation((cc.width - text.width) / 2, 0));
+            cc.addChild(text.setLocation(cc.width / 2, 0));
 
             var text2 = new CAAT.TextActor().
                     setFont("35px sans-serif").
@@ -220,7 +220,7 @@
                     setOutline(true).
                     calcTextSize(director).
                     cacheAsBitmap();
-            cc.addChild(text2.setLocation((cc.width - text2.width) / 2, 50));
+            cc.addChild(text2.setLocation(cc.width / 2, 50));
         }
 
         function createField(director, scene, ci) {

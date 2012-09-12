@@ -239,7 +239,6 @@
             var text = new CAAT.TextActor().
                     setFont("100px sans-serif").
                     setText("Rotate Device").
-                    create().
                     setTextFillStyle('red').
                     setOutlineColor('#ffff00').
                     setOutline(true).
@@ -270,7 +269,6 @@
 
             var cc = new CAAT.ActorContainer().
                     setBounds(550, 50, 150, 100).
-                    create().
                     enableEvents(false).
                     addBehavior(
                     new CAAT.RotateBehavior().
@@ -286,7 +284,6 @@
             var text = new CAAT.TextActor().
                     setFont("50px sans-serif").
                     setText("Accelerometer").
-                    create().
                     setTextFillStyle(gradient).
                     setOutline(true).
                     calcTextSize(director).
@@ -297,7 +294,6 @@
                     setFont("50px sans-serif").
                     setText("Enabled").
                     calcTextSize(director).
-                    create().
                     setTextFillStyle(gradient).
                     setOutline(true).
                     cacheAsBitmap();

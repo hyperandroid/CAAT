@@ -130,8 +130,7 @@
                 setStrokeSize(.5).
                 createDefault(2);
 
-            var t0= new CAAT.TextActor().setFont(font_baumans).setLocation(10,10).setText("Baumans");
-console.log("baumans");
+            var t0= new CAAT.TextActor().setFont(font_baumans).setLocation(director.width/2,10).setText("Baumans").setAlign("center");
 
             var font_fresca= new CAAT.Font().
                 setFont('"Fresca"').
@@ -141,8 +140,7 @@ console.log("baumans");
                 setStrokeSize(.5).
                 createDefault(2);
 
-            var t1= new CAAT.TextActor().setFont(font_fresca).setLocation(10,100).setText("Fresca");
-console.log("fresca");
+            var t1= new CAAT.TextActor().setFont(font_fresca).setLocation(director.width/2,100).setText("Fresca").setAlign("center");
 
             var font_righteous= new CAAT.Font().
                 setFont('"Righteous"').
@@ -152,8 +150,7 @@ console.log("fresca");
                 setStrokeSize(.5).
                 createDefault(10);
 
-            var t2= new CAAT.TextActor().setFont(font_righteous).setLocation(10,200).setText("Righteous");
-console.log("righteous");
+            var t2= new CAAT.TextActor().setFont(font_righteous).setLocation(director.width/2,200).setText("Righteous").setAlign("center");
 
             var font_voltaire= new CAAT.Font().
                 setFont('"Voltaire"').
@@ -163,8 +160,7 @@ console.log("righteous");
                 setStrokeSize(.5).
                 createDefault(5);
 
-            var t3= new CAAT.TextActor().setFont(font_voltaire).setLocation(10,300).setText("Voltaire");
-console.log("voltaire");
+            var t3= new CAAT.TextActor().setFont(font_voltaire).setLocation(director.width/2,300).setText("Voltaire").setAlign("center");
 
             scene.addChild(t0);
             scene.addChild(t1);

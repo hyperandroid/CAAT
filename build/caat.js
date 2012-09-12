@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 278
+Version: 0.4 build: 299
 
 Created on:
-DATE: 2012-08-31
-TIME: 15:38:39
+DATE: 2012-09-11
+TIME: 20:08:04
 */
 
 
@@ -71,11 +71,11 @@ function extend(subc, superc) {
     var subcp = subc.prototype;
 
     // Class pattern.
-    var F = function() {
+    var CAATObject = function() {
     };
-    F.prototype = superc.prototype;
+    CAATObject.prototype = superc.prototype;
 
-    subc.prototype = new F();       // chain prototypes.
+    subc.prototype = new CAATObject();       // chain prototypes.
     subc.superclass = superc.prototype;
     subc.prototype.constructor = subc;
 
@@ -5268,6 +5268,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         textDrawTime:       null,
         textRAFTime:        null,
         textDirtyRects:     null,
+        textDiscardDR:      null,
 
         frameTimeAcc :      0,
         frameRAFAcc :       0,
@@ -5434,6 +5435,11 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             "                        <span class=\"caat_debug_description\">DirtyRects: </span>"+
             "                        <span class=\"caat_debug_value\" id=\"textDirtyRects\">0</span>"+
             "                    </span>"+
+            "                    <span>"+
+            "                        <span class=\"caat_debug_bullet\" style=\"background-color:#00f;\"></span>"+
+            "                        <span class=\"caat_debug_description\">Discard DR: </span>"+
+            "                        <span class=\"caat_debug_value\" id=\"textDiscardDR\">0</span>"+
+            "                    </span>"+
             "                </div>"+
             "            </div>"+
             "            <div id=\"caat-debug-tab1-content\">"+
@@ -5578,6 +5584,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.textEntitiesActive= document.getElementById("textEntitiesActive");
             this.textDraws= document.getElementById("textDraws");
             this.textDirtyRects= document.getElementById("textDirtyRects");
+            this.textDiscardDR= document.getElementById("textDiscardDR");
 
 
             this.canDebug= true;
@@ -5618,6 +5625,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.textEntitiesActive.innerHTML= this.statistics.size_active;
             this.textDirtyRects.innerHTML= this.statistics.size_dirtyRects;
             this.textDraws.innerHTML= this.statistics.draws;
+            this.textDiscardDR.innerHTML= this.statistics.size_discarded_by_dirty_rects;
         },
 
         paint : function( rafValue ) {
@@ -5704,6 +5712,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
      * @constructor
      */
 	CAAT.Actor = function() {
+        this.CLASS= CAAT.Actor;
+
 		this.behaviorList= [];
 //        this.keyframesList= [];
         this.lifecycleListenerList= [];
@@ -5837,8 +5847,6 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
         size_active:            1,      // number of animated children
         size_total:             1,
-
-        __next:                 null,
 
         __d_ax:                 -1,     // for drag-enabled actors.
         __d_ay:                 -1,
@@ -6580,8 +6588,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @return this
          */
 	    setSize : function( w, h )   {
-	        this.width= w|0;
-	        this.height= h|0;
+	        this.width= w;
+	        this.height= h;
             this.dirty= true;
 
             return this;
@@ -6596,12 +6604,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @return this
          */
 	    setBounds : function(x, y, w, h)  {
-            /*
-            this.x= x|0;
-            this.y= y|0;
-            this.width= w|0;
-            this.height= h|0;
-            */
+
             this.x= x;
             this.y= y;
             this.width= w;
@@ -7396,7 +7399,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          */
         paintActor : function(director, time) {
 
-            if (!this.visible) {
+            if (!this.visible || !director.inDirtyRect(this) ) {
                 return true;
             }
 
@@ -7598,7 +7601,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             var director= {
                 ctx: ctx,
                 crc: ctx,
-                modelViewMatrix: new CAAT.Matrix()
+                modelViewMatrix: new CAAT.Matrix(),
+                dirtyRectsEnabled : false,
+                inDirtyRect : function() { return true; }
             };
 
             this.cached= false;
@@ -7775,6 +7780,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 	CAAT.ActorContainer= function(hint) {
 
 		CAAT.ActorContainer.superclass.constructor.call(this);
+
+        this.CLASS= CAAT.ActorContainer;
+
 		this.childrenList=          [];
 		this.activeChildren=        [];
         this.pendingChildrenList=   [];
@@ -7815,7 +7823,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             for( var i=0; i<cl.length; i++ ) {
                 cl[i].drawScreenBoundingBox(director,time);
             }
-            CAAT.ActorContainer.superclass.drawScreenBoundingBox.call(this,director,time);
+            sc_drawScreenBoundingBox.call(this,director,time);
         },
         /**
          * Removes all children from this ActorContainer.
@@ -7836,27 +7844,29 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          */
         paintActor : function(director, time ) {
 
-            if (!this.visible) {
-                return true;
+            if (!this.visible ) {
+                return false;
             }
 
             var ctx= director.ctx;
 
             ctx.save();
 
-            CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
+            if ( !sc_paintActor.call(this,director,time) ) {
+                return false;
+            }
 
             if ( this.cached===__CD ) {
-                return;
+                return false;
             }
 
             if ( !this.isGlobalAlpha ) {
                 this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
             }
 
-            //for( var actor= this.activeChildren; actor; actor=actor.__next ) {
             for( var i= 0, l= this.activeChildren.length; i<l; ++i ) {
                 var actor= this.activeChildren[i];
+
                 if ( actor.visible ) {
                     ctx.save();
                     actor.paintActor(director,time);
@@ -7884,7 +7894,6 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 this.frameAlpha= this.parent ? this.parent.frameAlpha : 1;
             }
 
-//            for( var actor= this.activeChildren; actor; actor=actor.__next ) {
             for( var i= 0, l= this.activeChildren.length; i<l; ++i ) {
                 var actor= this.activeChildren[i];
                 actor.paintActor(director,time);
@@ -7898,13 +7907,12 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 return true;
             }
 
-            CAAT.ActorContainer.superclass.paintActorGL.call(this,director,time);
+            sc_paintActorGL.call(this,director,time);
 
             if ( !this.isGlobalAlpha ) {
                 this.frameAlpha= this.parent.frameAlpha;
             }
 
-//            for( c= this.activeChildren; c; c=c.__next ) {
             for( var i= 0, l= this.activeChildren.length; i<l; ++i ) {
                 var c= this.activeChildren[i];
                 c.paintActorGL(director,time);
@@ -7929,7 +7937,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.activeChildren= [];
             var last= null;
 
-            if (false===CAAT.ActorContainer.superclass.animate.call(this,director,time)) {
+            if (false===sc_animate.call(this,director,time)) {
                 return false;
             }
 
@@ -7946,7 +7954,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             var pcl= this.pendingChildrenList;
             for( i=0; i<pcl.length; i++ ) {
                 var child= pcl[i];
-                this.addChild(child);
+                this.addChildImmediately(child);
             }
 
             this.pendingChildrenList= [];
@@ -7960,20 +7968,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 actor.time= time;
                 this.size_total+= actor.size_total;
                 if ( actor.animate(director, time) ) {
-                    /*
-                    if ( !this.activeChildren ) {
-                        this.activeChildren= actor;
-                        actor.__next= null;
-                        last= actor;
-                    } else {
-                        actor.__next= null;
-                        last.__next= actor;
-                        last= actor;
-                    }*/
                     this.activeChildren.push( actor );
-
                     this.size_active+= actor.size_active;
-
                 } else {
                     if ( actor.expired && actor.discardable ) {
                         markDelete.push(actor);
@@ -8198,7 +8194,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          */
 		findActorAtPosition : function(point) {
 
-			if( null===CAAT.ActorContainer.superclass.findActorAtPosition.call(this,point) ) {
+			if( null===sc_findActorAtPosition.call(this,point) ) {
 				return null;
 			}
 
@@ -8227,7 +8223,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             for( var i=cl.length-1; i>=0; i-- ) {
                 cl[i].destroy();
             }
-            CAAT.ActorContainer.superclass.destroy.call(this);
+            sc_destroy.call(this);
 
             return this;
         },
@@ -8283,6 +8279,13 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 	};
 
     extend( CAAT.ActorContainer, CAAT.Actor, null);
+
+    var sc_drawScreenBoundingBox= CAAT.ActorContainer.superclass.drawScreenBoundingBox;
+    var sc_paintActor= CAAT.ActorContainer.superclass.paintActor;
+    var sc_paintActorGL= CAAT.ActorContainer.superclass.paintActorGL;
+    var sc_animate= CAAT.ActorContainer.superclass.animate;
+    var sc_findActorAtPosition =CAAT.ActorContainer.superclass.findActorAtPosition;
+    var sc_destroy =CAAT.ActorContainer.superclass.destroy;
 
 })();
 
@@ -8388,10 +8391,13 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             }
             this.calcTextSize( CAAT.director[0] );
 
+            this.invalidate();
+
             return this;
         },
         setTextAlign : function( align ) {
             this.textAlign= align;
+            this.__setLocation();
             return this;
         },
         /**
@@ -8434,6 +8440,55 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             return this;
 		},
 
+        setLocation : function( x,y) {
+            this.lx= x;
+            this.ly= y;
+            this.__setLocation();
+            return this;
+        },
+
+        setPosition : function( x,y ) {
+            this.lx= x;
+            this.ly= y;
+            this.__setLocation();
+            return this;
+        },
+
+        setBounds : function( x,y,w,h ) {
+            this.lx= x;
+            this.ly= y;
+            this.setSize(w,h);
+            this.__setLocation();
+            return this;
+        },
+
+        setSize : function( w, h ) {
+            CAAT.TextActor.superclass.setSize.call(this,w,h);
+            this.__setLocation();
+            return this;
+        },
+
+        /**
+         * @private
+         */
+        __setLocation : function() {
+            var nx
+            if ( this.textAlign==="center" ) {
+                nx= this.lx - this.width/2;
+            } else if ( this.textAlign==="right" || this.textAlign==="end" ) {
+                nx= this.lx - this.width;
+            } else {
+                nx= this.lx;
+            }
+
+            CAAT.TextActor.superclass.setLocation.call( this, nx, this.ly );
+        },
+
+        centerAt : function(x,y) {
+            this.textAlign="left";
+            return CAAT.TextActor.superclass.centerAt.call( this, x, y );
+        },
+
         /**
          * Calculates the text dimension in pixels and stores the values in textWidth and textHeight
          * attributes.
@@ -8471,21 +8526,22 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 this.width= this.textWidth;
             }
 
-            try {
-                var pos= this.font.indexOf("px");
+            var pos= this.font.indexOf("px");
+            if (-1===pos) {
+                pos= this.font.indexOf("pt");
+            }
+            if ( -1===pos ) {
+                // no pt or px, so guess a size: 32. why not ?
+                this.textHeight= 32;
+            } else {
                 var s =  this.font.substring(0, pos );
                 this.textHeight= parseInt(s,10);
-
-                // needed to calculate the descent.
-                // no context.getDescent(font) WTF !!!
-                this.textHeight+= (this.textHeight/4)>>0;
-            } catch(e) {
-                this.textHeight=20; // default height;
             }
 
-            if ( this.height===0 ) {
-                this.height= this.textHeight;
-            }
+            // needed to calculate the descent.
+            // no context.getDescent(font) WTF !!!
+            this.textHeight+= (this.textHeight/4)>>0;
+            this.setSize( this.textWidth, this.textHeight );
 
             ctx.restore();
 
@@ -8525,20 +8581,16 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 			if( null!==this.font ) {
 				ctx.font= this.font;
 			}
-			if ( null!==this.textAlign ) {
-				ctx.textAlign= this.textAlign;
-			}
+
 			if ( null!==this.textBaseline ) {
 				ctx.textBaseline= this.textBaseline;
 			}
-			if ( this.fill && null!==this.textFillStyle ) {
-                ctx.fillStyle= this.textFillStyle;
-			}
-            if ( this.outline && null!==this.outlineColor ) {
-                ctx.strokeStyle= this.outlineColor;
-            }
 
 			if (null===this.path) {
+
+                if ( null!==this.textAlign ) {
+                    ctx.textAlign= this.textAlign;
+                }
 
                 var tx=0;
                 if ( this.textAlign==='center') {
@@ -8548,22 +8600,17 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 }
 
 				if ( this.fill ) {
+                    if ( null!==this.textFillStyle ) {
+                        ctx.fillStyle= this.textFillStyle;
+                    }
 					ctx.fillText( this.text, tx, 0 );
-					if ( this.outline ) {
+				}
 
-						// firefox necesita beginPath, si no, dibujara ademas el cuadrado del
-						// contenedor de los textos.
-//						if ( null!==this.outlineColor ) {
-//							ctx.strokeStyle= this.outlineColor;
-//						}
-						ctx.beginPath();
-                        ctx.lineWidth= this.lineWidth;
-						ctx.strokeText( this.text, tx, 0 );
-					}
-				} else {
-					if ( null!==this.outlineColor ) {
-						ctx.strokeStyle= this.outlineColor;
-					}
+                if ( null!==this.outlineColor ) {
+                    if (null!==this.outlineColor ) {
+                        ctx.strokeStyle= this.outlineColor;
+                    }
+
                     ctx.beginPath();
 					ctx.strokeText( this.text, tx, 0 );
 				}
@@ -8581,6 +8628,14 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 		drawOnPath : function(director, time) {
 
 			var ctx= director.ctx;
+
+            if ( this.fill && null!==this.textFillStyle ) {
+                ctx.fillStyle= this.textFillStyle;
+            }
+
+            if ( this.outline && null!==this.outlineColor ) {
+                ctx.strokeStyle= this.outlineColor;
+            }
 
 			var textWidth=this.sign * this.pathInterpolator.getPosition(
                     (time%this.pathDuration)/this.pathDuration ).y * this.path.getLength() ;
@@ -8607,7 +8662,6 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 					    ctx.fillText(caracter,0,0);
                     }
                     if ( this.outline ) {
-//                        ctx.strokeStyle= this.outlineColor;
                         ctx.strokeText(caracter,0,0);
                     }
 
@@ -9944,7 +9998,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             size_total:         0,
             size_active:        0,
             size_dirtyRects:    0,
-            draws:              0
+            draws:              0,
+            size_discarded_by_dirty_rects: 0
         },
         currentTexturePage: 0,
         currentOpacity:     1,
@@ -9970,6 +10025,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         dirtyRectsIndex     :   0,
         dirtyRectsEnabled   :   false,
         nDirtyRects         :   0,
+        drDiscarded         :   0,      // discarded by dirty rects.
 
         stopped             :   false,  // is stopped, this director will do nothing.
 
@@ -10414,6 +10470,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.statistics.size_total= 0;
             this.statistics.size_active=0;
             this.statistics.draws=      0;
+            this.statistics.size_discarded_by_dirty_rects= 0;
         },
 
         /**
@@ -10575,6 +10632,27 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
             this.frameCounter++;
         },
+
+        inDirtyRect : function( actor ) {
+
+            if ( !this.dirtyRectsEnabled || CAAT.DEBUG_DIRTYRECTS ) {
+                return true;
+            }
+
+            var dr= this.cDirtyRects;
+            var i;
+            var aabb= actor.AABB;
+
+            for( i=0; i<dr.length; i++ ) {
+                if ( dr[i].intersects( aabb ) ) {
+                    return true;
+                }
+            }
+
+            this.statistics.size_discarded_by_dirty_rects+= actor.size_total;
+            return false;
+        },
+
         /**
          * A director is a very special kind of actor.
          * Its animation routine simple sets its modelViewMatrix in case some transformation's been
@@ -12357,9 +12435,11 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                     }
 
                     if ( CAAT.DEBUG ) {
+                        this.statistics.size_discarded_by_dirtyRects+= this.drDiscarded;
                         this.statistics.size_total+= c.size_total;
                         this.statistics.size_active+= c.size_active;
                         this.statistics.size_dirtyRects= this.nDirtyRects;
+
                     }
 
                 }
@@ -12406,6 +12486,10 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
             this.addHandlers(this.canvas);
         };
+
+        CAAT.Director.prototype.inDirtyRect= function() {
+            return true;
+        }
     }
 
     extend(CAAT.Director, CAAT.ActorContainer, null);
@@ -13701,7 +13785,9 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             if ( this.animationImageIndex.length>1 ) {
                 if ( this.prevAnimationTime===-1 )	{
                     this.prevAnimationTime= time;
-                    this.spriteIndex=0;
+
+                    //thanks Phloog and ghthor, well spotted.
+                    this.spriteIndex= this.animationImageIndex[0];
                     this.ownerActor.invalidate();
                 }
                 else	{
@@ -13710,10 +13796,10 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                     ttime/= this.changeFPS;
                     ttime%= this.animationImageIndex.length;
                     var idx= this.animationImageIndex[Math.floor(ttime)];
-                    if ( this.spriteIndex!==idx ) {
+//                    if ( this.spriteIndex!==idx ) {
                         this.spriteIndex= idx;
                         this.ownerActor.invalidate();
-                    }
+//                    }
                 }
             }
         },

@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 278
+Version: 0.4 build: 299
 
 Created on:
-DATE: 2012-08-31
-TIME: 15:38:39
+DATE: 2012-09-11
+TIME: 20:08:04
 */
 
 
@@ -72,11 +72,11 @@ function extend(subc, superc) {
     var subcp = subc.prototype;
 
     // Class pattern.
-    var F = function() {
+    var CAATObject = function() {
     };
-    F.prototype = superc.prototype;
+    CAATObject.prototype = superc.prototype;
 
-    subc.prototype = new F();       // chain prototypes.
+    subc.prototype = new CAATObject();       // chain prototypes.
     subc.superclass = superc.prototype;
     subc.prototype.constructor = subc;
 
@@ -5269,6 +5269,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         textDrawTime:       null,
         textRAFTime:        null,
         textDirtyRects:     null,
+        textDiscardDR:      null,
 
         frameTimeAcc :      0,
         frameRAFAcc :       0,
@@ -5435,6 +5436,11 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             "                        <span class=\"caat_debug_description\">DirtyRects: </span>"+
             "                        <span class=\"caat_debug_value\" id=\"textDirtyRects\">0</span>"+
             "                    </span>"+
+            "                    <span>"+
+            "                        <span class=\"caat_debug_bullet\" style=\"background-color:#00f;\"></span>"+
+            "                        <span class=\"caat_debug_description\">Discard DR: </span>"+
+            "                        <span class=\"caat_debug_value\" id=\"textDiscardDR\">0</span>"+
+            "                    </span>"+
             "                </div>"+
             "            </div>"+
             "            <div id=\"caat-debug-tab1-content\">"+
@@ -5579,6 +5585,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.textEntitiesActive= document.getElementById("textEntitiesActive");
             this.textDraws= document.getElementById("textDraws");
             this.textDirtyRects= document.getElementById("textDirtyRects");
+            this.textDiscardDR= document.getElementById("textDiscardDR");
 
 
             this.canDebug= true;
@@ -5619,6 +5626,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.textEntitiesActive.innerHTML= this.statistics.size_active;
             this.textDirtyRects.innerHTML= this.statistics.size_dirtyRects;
             this.textDraws.innerHTML= this.statistics.draws;
+            this.textDiscardDR.innerHTML= this.statistics.size_discarded_by_dirty_rects;
         },
 
         paint : function( rafValue ) {
@@ -8848,7 +8856,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             size_total:         0,
             size_active:        0,
             size_dirtyRects:    0,
-            draws:              0
+            draws:              0,
+            size_discarded_by_dirty_rects: 0
         },
         currentTexturePage: 0,
         currentOpacity:     1,
@@ -8874,6 +8883,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         dirtyRectsIndex     :   0,
         dirtyRectsEnabled   :   false,
         nDirtyRects         :   0,
+        drDiscarded         :   0,      // discarded by dirty rects.
 
         stopped             :   false,  // is stopped, this director will do nothing.
 
@@ -9318,6 +9328,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.statistics.size_total= 0;
             this.statistics.size_active=0;
             this.statistics.draws=      0;
+            this.statistics.size_discarded_by_dirty_rects= 0;
         },
 
         /**
@@ -9479,6 +9490,27 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
             this.frameCounter++;
         },
+
+        inDirtyRect : function( actor ) {
+
+            if ( !this.dirtyRectsEnabled || CAAT.DEBUG_DIRTYRECTS ) {
+                return true;
+            }
+
+            var dr= this.cDirtyRects;
+            var i;
+            var aabb= actor.AABB;
+
+            for( i=0; i<dr.length; i++ ) {
+                if ( dr[i].intersects( aabb ) ) {
+                    return true;
+                }
+            }
+
+            this.statistics.size_discarded_by_dirty_rects+= actor.size_total;
+            return false;
+        },
+
         /**
          * A director is a very special kind of actor.
          * Its animation routine simple sets its modelViewMatrix in case some transformation's been
@@ -11261,9 +11293,11 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                     }
 
                     if ( CAAT.DEBUG ) {
+                        this.statistics.size_discarded_by_dirtyRects+= this.drDiscarded;
                         this.statistics.size_total+= c.size_total;
                         this.statistics.size_active+= c.size_active;
                         this.statistics.size_dirtyRects= this.nDirtyRects;
+
                     }
 
                 }
@@ -11310,6 +11344,10 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
             this.addHandlers(this.canvas);
         };
+
+        CAAT.Director.prototype.inDirtyRect= function() {
+            return true;
+        }
     }
 
     extend(CAAT.Director, CAAT.ActorContainer, null);
@@ -12605,7 +12643,9 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
             if ( this.animationImageIndex.length>1 ) {
                 if ( this.prevAnimationTime===-1 )	{
                     this.prevAnimationTime= time;
-                    this.spriteIndex=0;
+
+                    //thanks Phloog and ghthor, well spotted.
+                    this.spriteIndex= this.animationImageIndex[0];
                     this.ownerActor.invalidate();
                 }
                 else	{
@@ -12614,10 +12654,10 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
                     ttime/= this.changeFPS;
                     ttime%= this.animationImageIndex.length;
                     var idx= this.animationImageIndex[Math.floor(ttime)];
-                    if ( this.spriteIndex!==idx ) {
+//                    if ( this.spriteIndex!==idx ) {
                         this.spriteIndex= idx;
                         this.ownerActor.invalidate();
-                    }
+//                    }
                 }
             }
         },

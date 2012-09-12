@@ -161,7 +161,6 @@
                     }
 
                     var actor = new CAAT.InterpolatorActor().
-                            create().
                             setInterpolator(lerps[(j * cols + i) * 2]).
                             setBounds(0, 0, min, min).
                             setStrokeStyle('blue');
@@ -313,6 +312,7 @@
                     setText("Conpound Path").
                     calcTextSize(director).
                     setTextFillStyle(gradient).
+                    setLineWidth( 1).
                     setOutline(true).
                     cacheAsBitmap();
             cc1.addChild(text.setLocation((cc1.width - text.textWidth) / 2, 0) );

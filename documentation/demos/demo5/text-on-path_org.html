@@ -115,14 +115,15 @@
                     addCubicTo(275, 400, 525, 400, 525, 250).
                     addCubicTo(525, 0, 775, 0, 775, 250).
                     addCubicTo(775, 500, 25, 500, 25, 250).
-                    endPath();
+                    closePath();
 
 
             // actor de path para poder verlo y manipularlo
             var pa = new CAAT.PathActor().
                     setPath(p).
                     setBounds(0, 0, director.canvas.width, director.canvas.height).
-                    setFillStyle( "#77f" );
+                    setFillStyle( "#aaf").
+                    setInteractive(true);
             scene.addChild(pa);
 
             var gradient = director.crc.createLinearGradient(0, 0, 0, -40);
@@ -194,7 +195,6 @@
                     setFont("40px sans-serif").
                     setText("Text on Path").
                     calcTextSize(director).
-                    setTextAlign("center").
                     setTextFillStyle(gradient).
                     setOutline(true).
                     cacheAsBitmap();
@@ -202,7 +202,6 @@
 
             var text2 = new CAAT.TextActor().
                     setFont("40px sans-serif").
-                    setTextAlign("center").
                     setText("Interpolated").
                     calcTextSize(director).
                     setTextFillStyle(gradient).
@@ -212,7 +211,6 @@
 
             var text4 = new CAAT.TextActor().
                     setFont("40px sans-serif").
-                    setTextAlign("center").
                     setText("As well").
                     calcTextSize(director).
                     setTextFillStyle(gradient).
