@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 293
+Version: 0.4 build: 299
 
 Created on:
 DATE: 2012-09-11
-TIME: 19:11:00
+TIME: 20:08:04
 */
 
 
@@ -8883,7 +8883,6 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
         dirtyRectsIndex     :   0,
         dirtyRectsEnabled   :   false,
         nDirtyRects         :   0,
-        drDiscarded         :   0,      // discarded by dirty rects.
         drDiscarded         :   0,      // discarded by dirty rects.
 
         stopped             :   false,  // is stopped, this director will do nothing.

@@ -2716,6 +2716,7 @@
         },
         setTextAlign : function( align ) {
             this.textAlign= align;
+            this.__setLocation();
             return this;
         },
         /**
@@ -2800,6 +2801,11 @@
             }
 
             CAAT.TextActor.superclass.setLocation.call( this, nx, this.ly );
+        },
+
+        centerAt : function(x,y) {
+            this.textAlign="left";
+            return CAAT.TextActor.superclass.centerAt.call( this, x, y );
         },
 
         /**

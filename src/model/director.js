@@ -148,7 +148,6 @@
         dirtyRectsEnabled   :   false,
         nDirtyRects         :   0,
         drDiscarded         :   0,      // discarded by dirty rects.
-        drDiscarded         :   0,      // discarded by dirty rects.
 
         stopped             :   false,  // is stopped, this director will do nothing.
 
