@@ -2925,11 +2925,12 @@
 					ctx.fillText( this.text, tx, 0 );
 				}
 
-                if ( null!==this.outlineColor ) {
+                if ( this.outline ) {
                     if (null!==this.outlineColor ) {
                         ctx.strokeStyle= this.outlineColor;
                     }
 
+                    ctx.lineWidth= this.lineWidth;
                     ctx.beginPath();
 					ctx.strokeText( this.text, tx, 0 );
 				}
@@ -2981,6 +2982,8 @@
 					    ctx.fillText(caracter,0,0);
                     }
                     if ( this.outline ) {
+                        ctx.beginPath();
+                        ctx.lineWidth= this.lineWidth;
                         ctx.strokeText(caracter,0,0);
                     }
 

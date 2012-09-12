@@ -1,3 +1,9 @@
+* 09/11/2012 0.4 Build 303*
+---------------------------
+
+* FIX. CAAT.TextActor was not honoring text outline property.
+
+
 * 09/11/2012 0.4 Build 299*
 ---------------------------
 
