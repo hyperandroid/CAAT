@@ -29,11 +29,11 @@ function extend(subc, superc) {
     var subcp = subc.prototype;
 
     // Class pattern.
-    var F = function() {
+    var CAATObject = function() {
     };
-    F.prototype = superc.prototype;
+    CAATObject.prototype = superc.prototype;
 
-    subc.prototype = new F();       // chain prototypes.
+    subc.prototype = new CAATObject();       // chain prototypes.
     subc.superclass = superc.prototype;
     subc.prototype.constructor = subc;
 

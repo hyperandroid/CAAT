@@ -120,7 +120,8 @@
             size_total:         0,
             size_active:        0,
             size_dirtyRects:    0,
-            draws:              0
+            draws:              0,
+            size_discarded_by_dirty_rects: 0
         },
         currentTexturePage: 0,
         currentOpacity:     1,
@@ -146,6 +147,8 @@
         dirtyRectsIndex     :   0,
         dirtyRectsEnabled   :   false,
         nDirtyRects         :   0,
+        drDiscarded         :   0,      // discarded by dirty rects.
+        drDiscarded         :   0,      // discarded by dirty rects.
 
         stopped             :   false,  // is stopped, this director will do nothing.
 
@@ -590,6 +593,7 @@
             this.statistics.size_total= 0;
             this.statistics.size_active=0;
             this.statistics.draws=      0;
+            this.statistics.size_discarded_by_dirty_rects= 0;
         },
 
         /**
@@ -751,6 +755,27 @@
 
             this.frameCounter++;
         },
+
+        inDirtyRect : function( actor ) {
+
+            if ( !this.dirtyRectsEnabled || CAAT.DEBUG_DIRTYRECTS ) {
+                return true;
+            }
+
+            var dr= this.cDirtyRects;
+            var i;
+            var aabb= actor.AABB;
+
+            for( i=0; i<dr.length; i++ ) {
+                if ( dr[i].intersects( aabb ) ) {
+                    return true;
+                }
+            }
+
+            this.statistics.size_discarded_by_dirty_rects+= actor.size_total;
+            return false;
+        },
+
         /**
          * A director is a very special kind of actor.
          * Its animation routine simple sets its modelViewMatrix in case some transformation's been
@@ -2533,9 +2558,11 @@
                     }
 
                     if ( CAAT.DEBUG ) {
+                        this.statistics.size_discarded_by_dirtyRects+= this.drDiscarded;
                         this.statistics.size_total+= c.size_total;
                         this.statistics.size_active+= c.size_active;
                         this.statistics.size_dirtyRects= this.nDirtyRects;
+
                     }
 
                 }
@@ -2582,6 +2609,10 @@
 
             this.addHandlers(this.canvas);
         };
+
+        CAAT.Director.prototype.inDirtyRect= function() {
+            return true;
+        }
     }
 
     extend(CAAT.Director, CAAT.ActorContainer, null);

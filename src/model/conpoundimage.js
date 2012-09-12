@@ -623,7 +623,7 @@
                 if ( this.prevAnimationTime===-1 )	{
                     this.prevAnimationTime= time;
 
-                    //thanks Phloog well spotted.
+                    //thanks Phloog and ghthor, well spotted.
                     this.spriteIndex= this.animationImageIndex[0];
                     this.ownerActor.invalidate();
                 }

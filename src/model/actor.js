@@ -31,6 +31,8 @@
      * @constructor
      */
 	CAAT.Actor = function() {
+        this.CLASS= CAAT.Actor;
+
 		this.behaviorList= [];
 //        this.keyframesList= [];
         this.lifecycleListenerList= [];
@@ -905,8 +907,8 @@
          * @return this
          */
 	    setSize : function( w, h )   {
-	        this.width= w|0;
-	        this.height= h|0;
+	        this.width= w;
+	        this.height= h;
             this.dirty= true;
 
             return this;
@@ -921,12 +923,7 @@
          * @return this
          */
 	    setBounds : function(x, y, w, h)  {
-            /*
-            this.x= x|0;
-            this.y= y|0;
-            this.width= w|0;
-            this.height= h|0;
-            */
+
             this.x= x;
             this.y= y;
             this.width= w;
@@ -1721,7 +1718,7 @@
          */
         paintActor : function(director, time) {
 
-            if (!this.visible) {
+            if (!this.visible || !director.inDirtyRect(this) ) {
                 return true;
             }
 
@@ -1923,7 +1920,9 @@
             var director= {
                 ctx: ctx,
                 crc: ctx,
-                modelViewMatrix: new CAAT.Matrix()
+                modelViewMatrix: new CAAT.Matrix(),
+                dirtyRectsEnabled : false,
+                inDirtyRect : function() { return true; }
             };
 
             this.cached= false;
@@ -2100,6 +2099,9 @@
 	CAAT.ActorContainer= function(hint) {
 
 		CAAT.ActorContainer.superclass.constructor.call(this);
+
+        this.CLASS= CAAT.ActorContainer;
+
 		this.childrenList=          [];
 		this.activeChildren=        [];
         this.pendingChildrenList=   [];
@@ -2140,7 +2142,7 @@
             for( var i=0; i<cl.length; i++ ) {
                 cl[i].drawScreenBoundingBox(director,time);
             }
-            CAAT.ActorContainer.superclass.drawScreenBoundingBox.call(this,director,time);
+            sc_drawScreenBoundingBox.call(this,director,time);
         },
         /**
          * Removes all children from this ActorContainer.
@@ -2161,18 +2163,20 @@
          */
         paintActor : function(director, time ) {
 
-            if (!this.visible) {
-                return true;
+            if (!this.visible ) {
+                return false;
             }
 
             var ctx= director.ctx;
 
             ctx.save();
 
-            CAAT.ActorContainer.superclass.paintActor.call(this,director,time);
+            if ( !sc_paintActor.call(this,director,time) ) {
+                return false;
+            }
 
             if ( this.cached===__CD ) {
-                return;
+                return false;
             }
 
             if ( !this.isGlobalAlpha ) {
@@ -2222,7 +2226,7 @@
                 return true;
             }
 
-            CAAT.ActorContainer.superclass.paintActorGL.call(this,director,time);
+            sc_paintActorGL.call(this,director,time);
 
             if ( !this.isGlobalAlpha ) {
                 this.frameAlpha= this.parent.frameAlpha;
@@ -2252,7 +2256,7 @@
             this.activeChildren= [];
             var last= null;
 
-            if (false===CAAT.ActorContainer.superclass.animate.call(this,director,time)) {
+            if (false===sc_animate.call(this,director,time)) {
                 return false;
             }
 
@@ -2509,7 +2513,7 @@
          */
 		findActorAtPosition : function(point) {
 
-			if( null===CAAT.ActorContainer.superclass.findActorAtPosition.call(this,point) ) {
+			if( null===sc_findActorAtPosition.call(this,point) ) {
 				return null;
 			}
 
@@ -2538,7 +2542,7 @@
             for( var i=cl.length-1; i>=0; i-- ) {
                 cl[i].destroy();
             }
-            CAAT.ActorContainer.superclass.destroy.call(this);
+            sc_destroy.call(this);
 
             return this;
         },
@@ -2594,6 +2598,13 @@
 	};
 
     extend( CAAT.ActorContainer, CAAT.Actor, null);
+
+    var sc_drawScreenBoundingBox= CAAT.ActorContainer.superclass.drawScreenBoundingBox;
+    var sc_paintActor= CAAT.ActorContainer.superclass.paintActor;
+    var sc_paintActorGL= CAAT.ActorContainer.superclass.paintActorGL;
+    var sc_animate= CAAT.ActorContainer.superclass.animate;
+    var sc_findActorAtPosition =CAAT.ActorContainer.superclass.findActorAtPosition;
+    var sc_destroy =CAAT.ActorContainer.superclass.destroy;
 
 })();
 
@@ -2747,6 +2758,50 @@
             return this;
 		},
 
+        setLocation : function( x,y) {
+            this.lx= x;
+            this.ly= y;
+            this.__setLocation();
+            return this;
+        },
+
+        setPosition : function( x,y ) {
+            this.lx= x;
+            this.ly= y;
+            this.__setLocation();
+            return this;
+        },
+
+        setBounds : function( x,y,w,h ) {
+            this.lx= x;
+            this.ly= y;
+            this.setSize(w,h);
+            this.__setLocation();
+            return this;
+        },
+
+        setSize : function( w, h ) {
+            CAAT.TextActor.superclass.setSize.call(this,w,h);
+            this.__setLocation();
+            return this;
+        },
+
+        /**
+         * @private
+         */
+        __setLocation : function() {
+            var nx
+            if ( this.textAlign==="center" ) {
+                nx= this.lx - this.width/2;
+            } else if ( this.textAlign==="right" || this.textAlign==="end" ) {
+                nx= this.lx - this.width;
+            } else {
+                nx= this.lx;
+            }
+
+            CAAT.TextActor.superclass.setLocation.call( this, nx, this.ly );
+        },
+
         /**
          * Calculates the text dimension in pixels and stores the values in textWidth and textHeight
          * attributes.
@@ -2784,21 +2839,22 @@
                 this.width= this.textWidth;
             }
 
-            try {
-                var pos= this.font.indexOf("px");
+            var pos= this.font.indexOf("px");
+            if (-1===pos) {
+                pos= this.font.indexOf("pt");
+            }
+            if ( -1===pos ) {
+                // no pt or px, so guess a size: 32. why not ?
+                this.textHeight= 32;
+            } else {
                 var s =  this.font.substring(0, pos );
                 this.textHeight= parseInt(s,10);
-
-                // needed to calculate the descent.
-                // no context.getDescent(font) WTF !!!
-                this.textHeight+= (this.textHeight/4)>>0;
-            } catch(e) {
-                this.textHeight=20; // default height;
             }
 
-            if ( this.height===0 ) {
-                this.height= this.textHeight;
-            }
+            // needed to calculate the descent.
+            // no context.getDescent(font) WTF !!!
+            this.textHeight+= (this.textHeight/4)>>0;
+            this.setSize( this.textWidth, this.textHeight );
 
             ctx.restore();
 
@@ -2838,20 +2894,16 @@
 			if( null!==this.font ) {
 				ctx.font= this.font;
 			}
-			if ( null!==this.textAlign ) {
-				ctx.textAlign= this.textAlign;
-			}
+
 			if ( null!==this.textBaseline ) {
 				ctx.textBaseline= this.textBaseline;
 			}
-			if ( this.fill && null!==this.textFillStyle ) {
-                ctx.fillStyle= this.textFillStyle;
-			}
-            if ( this.outline && null!==this.outlineColor ) {
-                ctx.strokeStyle= this.outlineColor;
-            }
 
 			if (null===this.path) {
+
+                if ( null!==this.textAlign ) {
+                    ctx.textAlign= this.textAlign;
+                }
 
                 var tx=0;
                 if ( this.textAlign==='center') {
@@ -2861,22 +2913,17 @@
                 }
 
 				if ( this.fill ) {
+                    if ( null!==this.textFillStyle ) {
+                        ctx.fillStyle= this.textFillStyle;
+                    }
 					ctx.fillText( this.text, tx, 0 );
-					if ( this.outline ) {
+				}
 
-						// firefox necesita beginPath, si no, dibujara ademas el cuadrado del
-						// contenedor de los textos.
-//						if ( null!==this.outlineColor ) {
-//							ctx.strokeStyle= this.outlineColor;
-//						}
-						ctx.beginPath();
-                        ctx.lineWidth= this.lineWidth;
-						ctx.strokeText( this.text, tx, 0 );
-					}
-				} else {
-					if ( null!==this.outlineColor ) {
-						ctx.strokeStyle= this.outlineColor;
-					}
+                if ( null!==this.outlineColor ) {
+                    if (null!==this.outlineColor ) {
+                        ctx.strokeStyle= this.outlineColor;
+                    }
+
                     ctx.beginPath();
 					ctx.strokeText( this.text, tx, 0 );
 				}
@@ -2894,6 +2941,14 @@
 		drawOnPath : function(director, time) {
 
 			var ctx= director.ctx;
+
+            if ( this.fill && null!==this.textFillStyle ) {
+                ctx.fillStyle= this.textFillStyle;
+            }
+
+            if ( this.outline && null!==this.outlineColor ) {
+                ctx.strokeStyle= this.outlineColor;
+            }
 
 			var textWidth=this.sign * this.pathInterpolator.getPosition(
                     (time%this.pathDuration)/this.pathDuration ).y * this.path.getLength() ;
@@ -2920,7 +2975,6 @@
 					    ctx.fillText(caracter,0,0);
                     }
                     if ( this.outline ) {
-//                        ctx.strokeStyle= this.outlineColor;
                         ctx.strokeText(caracter,0,0);
                     }
 

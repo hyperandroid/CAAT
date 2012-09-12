@@ -1,3 +1,12 @@
+* 09/11/2012 0.4 Build 293*
+---------------------------
+
+* CHANGE. Dirty rects have changed how they work. Now, each on-screen actor's bounds are checked against dirty rects
+  list and if no interesetion, the actor/container is not drawn.
+* ADD. Debug panel, num of actors not drawn due to DirtyRects.
+* ADD. CAAT.TextActor now resizes when thext changes.
+* FIX. CAAT.TextActor.setAlign now works properly.
+
 * 08/31/2012 0.4 Build 283*
 ---------------------------
 
