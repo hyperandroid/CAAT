@@ -199,6 +199,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.AlphaBehavior.html">CAAT.AlphaBehavior</a></li>
 	
+	<li><a href="../symbols/CAAT.ArcPath.html">CAAT.ArcPath</a></li>
+	
 	<li><a href="../symbols/CAAT.AudioManager.html">CAAT.AudioManager</a></li>
 	
 	<li><a href="../symbols/CAAT.Behavior.html">CAAT.Behavior</a></li>
@@ -292,6 +294,8 @@ ul.inheritsList
 	<li><a href="../symbols/CAAT.TimerTask.html">CAAT.TimerTask</a></li>
 	
 	<li><a href="../symbols/CAAT.TouchEvent.html">CAAT.TouchEvent</a></li>
+	
+	<li><a href="../symbols/CAAT.UI.GridLayout.html">CAAT.UI.GridLayout</a></li>
 	
 	<li><a href="../symbols/Function.html">Function</a></li>
 	
@@ -398,6 +402,24 @@ ul.inheritsList
 						</tr>
 					
 						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#__scale1To">__scale1To</a></b>(axis, scale, duration, delay, anchorX, anchorY, interpolator)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#__validateLayout">__validateLayout</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#addBehavior">addBehavior</a></b>(behavior)
@@ -466,7 +488,7 @@ This method is called by the Director instance.</div>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#create">create</a></b>()
 								</div>
-								<div class="description">This method must be called explicitly by every CAAT Actor.</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -477,6 +499,15 @@ This method is called by the Director instance.</div>
 								</div>
 								<div class="description">This method will be called internally by CAAT when an Actor is expired, and at the
 same time, is flagged as discardable.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#disableDrag">disableDrag</a></b>()
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -612,6 +643,24 @@ whether the parameter point coordinate lies inside the Actor.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#getMinimumSize">getMinimumSize</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#getPreferredSize">getPreferredSize</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#getTextureGLPage">getTextureGLPage</a></b>()
 								</div>
 								<div class="description">If GL is enables, get this background image's texture page, otherwise it will fail.</div>
@@ -650,6 +699,15 @@ whether the parameter point coordinate lies inside the Actor.</div>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#invalidate">invalidate</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#invalidateLayout">invalidateLayout</a></b>()
 								</div>
 								<div class="description"></div>
 							</td>
@@ -794,6 +852,15 @@ another point in otherActor's coordinate system.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#moveTo">moveTo</a></b>(x, y, duration, delay, interpolator)
+								</div>
+								<div class="description">Move this actor to a position.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#paint">paint</a></b>(director, time)
 								</div>
 								<div class="description">This method should me overriden by every custom Actor.</div>
@@ -866,6 +933,42 @@ another point in otherActor's coordinate system.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#rotateTo">rotateTo</a></b>(angle, duration, delay, anchorX, anchorY, interpolator)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#scaleTo">scaleTo</a></b>(scaleX, scaleY, duration, delay, anchorX, anchorY, interpolator)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#scaleXTo">scaleXTo</a></b>(scaleX, duration, delay, anchorX, anchorY, interpolator)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#scaleYTo">scaleYTo</a></b>(scaleY, duration, delay, anchorX, anchorY, interpolator)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setAlpha">setAlpha</a></b>(alpha)
 								</div>
 								<div class="description">Stablishes the Alpha transparency for the Actor.</div>
@@ -884,7 +987,7 @@ another point in otherActor's coordinate system.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setAsButton">setAsButton</a></b>(buttonImage, _iNormal, _iOver, _iPress, _iDisabled, fn)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setAsButton">setAsButton</a></b>(buttonImage, iNormal, iOver, iPress, iDisabled, fn)
 								</div>
 								<div class="description">Set this actor behavior as if it were a Button.</div>
 							</td>
@@ -992,7 +1095,7 @@ another point in otherActor's coordinate system.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setGLCoords">setGLCoords</a></b>(glCoords, glCoordsIndex, z)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setGLCoords">setGLCoords</a></b>(glCoords, glCoordsIndex)
 								</div>
 								<div class="description">TODO: set GLcoords for different image transformations.</div>
 							</td>
@@ -1040,6 +1143,15 @@ another point in otherActor's coordinate system.</div>
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setLocation">setLocation</a></b>(x{number}, y{number})
 								</div>
 								<div class="description">This method sets the position of an Actor inside its parent.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setMinimumSize">setMinimumSize</a></b>(pw, ph)
+								</div>
+								<div class="description">Set this actors minimum layout size.</div>
 							</td>
 						</tr>
 					
@@ -1103,6 +1215,15 @@ another point in otherActor's coordinate system.</div>
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setPositionAnchored">setPositionAnchored</a></b>(x, y, pax, pay)
 								</div>
 								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setPreferredSize">setPreferredSize</a></b>(pw, ph)
+								</div>
+								<div class="description">Set this actors preferred layout size.</div>
 							</td>
 						</tr>
 					
@@ -1390,6 +1511,110 @@ the set method (must be a method) as previously defined.
 								<dd></dd>
 							
 							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="__scale1To"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					<span class="light">{*}</span>
+					<b>__scale1To</b>(axis, scale, duration, delay, anchorX, anchorY, interpolator)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>axis</b>
+									
+								</dt>
+								<dd>{CAAT.Scale1Behavior.AXIS_X|CAAT.Scale1Behavior.AXIS_Y} scale application axis</dd>
+							
+								<dt>
+									<b>scale</b>
+									
+								</dt>
+								<dd>{number} new Y scale</dd>
+							
+								<dt>
+									<b>duration</b>
+									
+								</dt>
+								<dd>{number} time to rotate</dd>
+							
+								<dt>
+									<b>delay</b>
+									
+								</dt>
+								<dd>{=number} millis to start rotation</dd>
+							
+								<dt>
+									<b>anchorX</b>
+									
+								</dt>
+								<dd>{=number} rotation anchor x</dd>
+							
+								<dt>
+									<b>anchorY</b>
+									
+								</dt>
+								<dd>{=number} rotation anchor y</dd>
+							
+								<dt>
+									<b>interpolator</b>
+									
+								</dt>
+								<dd>{=CAAT.Interpolator}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="__validateLayout"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>__validateLayout</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
 						
 						
 						
@@ -1726,13 +1951,12 @@ It applies the list of behaviors the Actor has registered.
 					<a name="create"> </a>
 					<div class="fixedFont">
 					
-					
+					<span class="light">{*}</span>
 					<b>create</b>()
 					
 					</div>
 					<div class="description">
-						This method must be called explicitly by every CAAT Actor.
-Making the life cycle explicitly initiated has always been a good idea.
+						
 						
 						
 					</div>
@@ -1740,13 +1964,6 @@ Making the life cycle explicitly initiated has always been a good idea.
 					
 					
 						
-						
-							<dl class="detailList">
-							<dt class="heading">Deprecated:</dt>
-							<dt>
-								no longer needed.
-							</dt>
-							</dl>
 						
 						
 						
@@ -1754,7 +1971,7 @@ Making the life cycle explicitly initiated has always been a good idea.
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd>this</dd>
+								<dd><span class="light fixedFont">{*}</span> </dd>
 							
 							</dl>
 						
@@ -1791,6 +2008,31 @@ It notifies the Actor life cycle listeners about the destruction event.
 								<dd>an integer indicating the time at wich the Actor has been destroyed.</dd>
 							
 							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="disableDrag"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>disableDrag</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
 						
 						
 						
@@ -2377,6 +2619,56 @@ Gets a given anchor position referred to the Actor.
 
 					<hr />
 				
+					<a name="getMinimumSize"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getMinimumSize</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getPreferredSize"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getPreferredSize</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="getTextureGLPage"> </a>
 					<div class="fixedFont">
 					
@@ -2524,6 +2816,31 @@ Gets a given anchor position referred to the Actor.
 					
 					
 					<b>invalidate</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="invalidateLayout"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>invalidateLayout</b>()
 					
 					</div>
 					<div class="description">
@@ -3079,6 +3396,67 @@ Mouse click events are received after a call to mouseUp method if no dragging wa
 
 					<hr />
 				
+					<a name="moveTo"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>moveTo</b>(x, y, duration, delay, interpolator)
+					
+					</div>
+					<div class="description">
+						Move this actor to a position.
+It creates and adds a new PathBehavior.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>x</b>
+									
+								</dt>
+								<dd>{number} new x position</dd>
+							
+								<dt>
+									<b>y</b>
+									
+								</dt>
+								<dd>{number} new y position</dd>
+							
+								<dt>
+									<b>duration</b>
+									
+								</dt>
+								<dd>{number} time to take to get to new position</dd>
+							
+								<dt>
+									<b>delay</b>
+									
+								</dt>
+								<dd>{=number} time to wait before start moving</dd>
+							
+								<dt>
+									<b>interpolator</b>
+									
+								</dt>
+								<dd>{=CAAT.Interpolator} a CAAT.Interpolator instance</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="paint"> </a>
 					<div class="fixedFont">
 					
@@ -3383,6 +3761,304 @@ It will only remove the first occurrence of the given actorListener.
 
 					<hr />
 				
+					<a name="rotateTo"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{*}</span>
+					<b>rotateTo</b>(angle, duration, delay, anchorX, anchorY, interpolator)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>angle</b>
+									
+								</dt>
+								<dd>{number} new rotation angle</dd>
+							
+								<dt>
+									<b>duration</b>
+									
+								</dt>
+								<dd>{number} time to rotate</dd>
+							
+								<dt>
+									<b>delay</b>
+									
+								</dt>
+								<dd>{number=} millis to start rotation</dd>
+							
+								<dt>
+									<b>anchorX</b>
+									
+								</dt>
+								<dd>{number=} rotation anchor x</dd>
+							
+								<dt>
+									<b>anchorY</b>
+									
+								</dt>
+								<dd>{number=} rotation anchor y</dd>
+							
+								<dt>
+									<b>interpolator</b>
+									
+								</dt>
+								<dd>{CAAT.Interpolator=}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="scaleTo"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{*}</span>
+					<b>scaleTo</b>(scaleX, scaleY, duration, delay, anchorX, anchorY, interpolator)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>scaleX</b>
+									
+								</dt>
+								<dd>{number} new X scale</dd>
+							
+								<dt>
+									<b>scaleY</b>
+									
+								</dt>
+								<dd>{number} new Y scale</dd>
+							
+								<dt>
+									<b>duration</b>
+									
+								</dt>
+								<dd>{number} time to rotate</dd>
+							
+								<dt>
+									<b>delay</b>
+									
+								</dt>
+								<dd>{=number} millis to start rotation</dd>
+							
+								<dt>
+									<b>anchorX</b>
+									
+								</dt>
+								<dd>{=number} rotation anchor x</dd>
+							
+								<dt>
+									<b>anchorY</b>
+									
+								</dt>
+								<dd>{=number} rotation anchor y</dd>
+							
+								<dt>
+									<b>interpolator</b>
+									
+								</dt>
+								<dd>{=CAAT.Interpolator}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="scaleXTo"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{*}</span>
+					<b>scaleXTo</b>(scaleX, duration, delay, anchorX, anchorY, interpolator)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>scaleX</b>
+									
+								</dt>
+								<dd>{number} new X scale</dd>
+							
+								<dt>
+									<b>duration</b>
+									
+								</dt>
+								<dd>{number} time to rotate</dd>
+							
+								<dt>
+									<b>delay</b>
+									
+								</dt>
+								<dd>{=number} millis to start rotation</dd>
+							
+								<dt>
+									<b>anchorX</b>
+									
+								</dt>
+								<dd>{=number} rotation anchor x</dd>
+							
+								<dt>
+									<b>anchorY</b>
+									
+								</dt>
+								<dd>{=number} rotation anchor y</dd>
+							
+								<dt>
+									<b>interpolator</b>
+									
+								</dt>
+								<dd>{=CAAT.Interpolator}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="scaleYTo"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{*}</span>
+					<b>scaleYTo</b>(scaleY, duration, delay, anchorX, anchorY, interpolator)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>scaleY</b>
+									
+								</dt>
+								<dd>{number} new Y scale</dd>
+							
+								<dt>
+									<b>duration</b>
+									
+								</dt>
+								<dd>{number} time to rotate</dd>
+							
+								<dt>
+									<b>delay</b>
+									
+								</dt>
+								<dd>{=number} millis to start rotation</dd>
+							
+								<dt>
+									<b>anchorX</b>
+									
+								</dt>
+								<dd>{=number} rotation anchor x</dd>
+							
+								<dt>
+									<b>anchorY</b>
+									
+								</dt>
+								<dd>{=number} rotation anchor y</dd>
+							
+								<dt>
+									<b>interpolator</b>
+									
+								</dt>
+								<dd>{=CAAT.Interpolator}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
 					<a name="setAlpha"> </a>
 					<div class="fixedFont">
 					
@@ -3472,7 +4148,7 @@ animation sequence
 					<div class="fixedFont">
 					
 					
-					<b>setAsButton</b>(buttonImage, _iNormal, _iOver, _iPress, _iDisabled, fn)
+					<b>setAsButton</b>(buttonImage, iNormal, iOver, iPress, iDisabled, fn)
 					
 					</div>
 					<div class="description">
@@ -3495,25 +4171,25 @@ single size.
 								<dd>{CAAT.SpriteImage} sprite image with button's state images.</dd>
 							
 								<dt>
-									<b>_iNormal</b>
+									<b>iNormal</b>
 									
 								</dt>
 								<dd>{number} button's normal state image index</dd>
 							
 								<dt>
-									<b>_iOver</b>
+									<b>iOver</b>
 									
 								</dt>
 								<dd>{number} button's mouse over state image index</dd>
 							
 								<dt>
-									<b>_iPress</b>
+									<b>iPress</b>
 									
 								</dt>
 								<dd>{number} button's pressed state image index</dd>
 							
 								<dt>
-									<b>_iDisabled</b>
+									<b>iDisabled</b>
 									
 								</dt>
 								<dd>{number} button's disabled state image index</dd>
@@ -4076,7 +4752,7 @@ These values are related to Scene time.
 					<div class="fixedFont">
 					
 					
-					<b>setGLCoords</b>(glCoords, glCoordsIndex, z)
+					<b>setGLCoords</b>(glCoords, glCoordsIndex)
 					
 					</div>
 					<div class="description">
@@ -4099,12 +4775,6 @@ These values are related to Scene time.
 							
 								<dt>
 									<b>glCoordsIndex</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>z</b>
 									
 								</dt>
 								<dd></dd>
@@ -4320,6 +4990,55 @@ If GL is enabled, this parameter has no effect.
 							<dt class="heading">Returns:</dt>
 							
 								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setMinimumSize"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{*}</span>
+					<b>setMinimumSize</b>(pw, ph)
+					
+					</div>
+					<div class="description">
+						Set this actors minimum layout size.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>pw</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+								<dt>
+									<b>ph</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
 							
 							</dl>
 						
@@ -4616,6 +5335,55 @@ If GL is enabled, this parameter has no effect.
 						
 						
 						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setPreferredSize"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{*}</span>
+					<b>setPreferredSize</b>(pw, ph)
+					
+					</div>
+					<div class="description">
+						Set this actors preferred layout size.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>pw</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+								<dt>
+									<b>ph</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
+							
+							</dl>
 						
 						
 						
@@ -5388,7 +6156,7 @@ actor's world model view matrix.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Thu May 10 2012 17:59:28 GMT+0200 (CEST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Sep 15 2012 16:52:18 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

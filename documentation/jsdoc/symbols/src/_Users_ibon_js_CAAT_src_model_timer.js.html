@@ -114,4 +114,100 @@
 <span class='line'>107</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'>108</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>109</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>110</span> </span></pre></body></html>
+<span class='line'>110</span> 
+<span class='line'>111</span> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>112</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.TimerManager</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>113</span> </span><span class="WHIT">        </span><span class="NAME">this.timerList</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>114</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>115</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>116</span> 
+<span class='line'>117</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.TimerManager.prototype</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>118</span> </span><span class="WHIT">        </span><span class="NAME">timerList</span><span class="PUNC">:</span><span class="WHIT">                      </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">   </span><span class="COMM">// collection of CAAT.TimerTask objects.</span><span class="WHIT">
+<span class='line'>119</span> </span><span class="WHIT">        </span><span class="NAME">timerSequence</span><span class="PUNC">:</span><span class="WHIT">                  </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">      </span><span class="COMM">// incremental CAAT.TimerTask id.</span><span class="WHIT">
+<span class='line'>120</span> 
+<span class='line'>121</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>122</span>          * Check and apply timers in frame time.
+<span class='line'>123</span>          * @param time {number} the current Scene time.
+<span class='line'>124</span>          */</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">        </span><span class="NAME">checkTimers</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">tl</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.timerList</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>127</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">=</span><span class="NAME">tl.length</span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>128</span> </span><span class="WHIT">            </span><span class="KEYW">while</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">>=</span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>129</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">tl</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>130</span> </span><span class="WHIT">                    </span><span class="NAME">tl</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">checkTask</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>131</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>132</span> </span><span class="WHIT">                </span><span class="NAME">i</span><span class="PUNC">--</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>133</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>134</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>135</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>136</span>          * Make sure the timertask is contained in the timer task list by adding it to the list in case it
+<span class='line'>137</span>          * is not contained.
+<span class='line'>138</span>          * @param timertask {CAAT.TimerTask} a CAAT.TimerTask object.
+<span class='line'>139</span>          * @return this
+<span class='line'>140</span>          */</span><span class="WHIT">
+<span class='line'>141</span> </span><span class="WHIT">        </span><span class="NAME">ensureTimerTask</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">timertask</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>142</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">this.hasTimer</span><span class="PUNC">(</span><span class="NAME">timertask</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>143</span> </span><span class="WHIT">                </span><span class="NAME">this.timerList.push</span><span class="PUNC">(</span><span class="NAME">timertask</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>144</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>145</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>146</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>147</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>148</span>          * Check whether the timertask is in this scene's timer task list.
+<span class='line'>149</span>          * @param timertask {CAAT.TimerTask} a CAAT.TimerTask object.
+<span class='line'>150</span>          * @return {boolean} a boolean indicating whether the timertask is in this scene or not.
+<span class='line'>151</span>          */</span><span class="WHIT">
+<span class='line'>152</span> </span><span class="WHIT">        </span><span class="NAME">hasTimer</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">timertask</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>153</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">tl</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.timerList</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>154</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">=</span><span class="NAME">tl.length</span><span class="PUNC">-</span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>155</span> </span><span class="WHIT">            </span><span class="KEYW">while</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">>=</span><span class="NUMB">0</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>156</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">tl</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">===</span><span class="NAME">timertask</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>157</span> </span><span class="WHIT">                    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>158</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>159</span> </span><span class="WHIT">                </span><span class="NAME">i</span><span class="PUNC">--</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>160</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>161</span> 
+<span class='line'>162</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>163</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>164</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>165</span>          * Creates a timer task. Timertask object live and are related to scene's time, so when an Scene
+<span class='line'>166</span>          * is taken out of the Director the timer task is paused, and resumed on Scene restoration.
+<span class='line'>167</span>          *
+<span class='line'>168</span>          * @param startTime {number} an integer indicating the scene time this task must start executing at.
+<span class='line'>169</span>          * @param duration {number} an integer indicating the timerTask duration.
+<span class='line'>170</span>          * @param callback_timeout {function} timer on timeout callback function.
+<span class='line'>171</span>          * @param callback_tick {function} timer on tick callback function.
+<span class='line'>172</span>          * @param callback_cancel {function} timer on cancel callback function.
+<span class='line'>173</span>          *
+<span class='line'>174</span>          * @return {CAAT.TimerTask} a CAAT.TimerTask class instance.
+<span class='line'>175</span>          */</span><span class="WHIT">
+<span class='line'>176</span> </span><span class="WHIT">        </span><span class="NAME">createTimer</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">startTime</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callback_timeout</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callback_tick</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">callback_cancel</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>177</span> 
+<span class='line'>178</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">tt</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">CAAT.TimerTask</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">create</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'>179</span> </span><span class="WHIT">                        </span><span class="NAME">startTime</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>180</span> </span><span class="WHIT">                        </span><span class="NAME">duration</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>181</span> </span><span class="WHIT">                        </span><span class="NAME">callback_timeout</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>182</span> </span><span class="WHIT">                        </span><span class="NAME">callback_tick</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>183</span> </span><span class="WHIT">                        </span><span class="NAME">callback_cancel</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>184</span> 
+<span class='line'>185</span> </span><span class="WHIT">            </span><span class="NAME">tt.taskId</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.timerSequence</span><span class="PUNC">++</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>186</span> </span><span class="WHIT">            </span><span class="NAME">tt.sceneTime</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.time</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>187</span> </span><span class="WHIT">            </span><span class="NAME">tt.scene</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>188</span> 
+<span class='line'>189</span> </span><span class="WHIT">            </span><span class="NAME">this.timerList.push</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">tt</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>190</span> 
+<span class='line'>191</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">tt</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>192</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>193</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>194</span>          * Removes expired timers. This method must not be called directly.
+<span class='line'>195</span>          */</span><span class="WHIT">
+<span class='line'>196</span> </span><span class="WHIT">        </span><span class="NAME">removeExpiredTimers</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>197</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>198</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">tl</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.timerList</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>199</span> </span><span class="WHIT">            </span><span class="KEYW">for</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">=</span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">&lt;</span><span class="NAME">tl.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>200</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">tl</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">remove</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>201</span> </span><span class="WHIT">                    </span><span class="NAME">tl.splice</span><span class="PUNC">(</span><span class="NAME">i</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>202</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>203</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>204</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>205</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>206</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span></pre></body></html>
