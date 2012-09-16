@@ -295,6 +295,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.TouchEvent.html">CAAT.TouchEvent</a></li>
 	
+	<li><a href="../symbols/CAAT.UI.GridLayout.html">CAAT.UI.GridLayout</a></li>
+	
 	<li><a href="../symbols/Function.html">Function</a></li>
 	
 </ul>
@@ -403,6 +405,15 @@ ul.inheritsList
 							<td class="attributes">&lt;private&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#__scale1To">__scale1To</a></b>(axis, scale, duration, delay, anchorX, anchorY, interpolator)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#__validateLayout">__validateLayout</a></b>()
 								</div>
 								<div class="description"></div>
 							</td>
@@ -632,6 +643,24 @@ whether the parameter point coordinate lies inside the Actor.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#getMinimumSize">getMinimumSize</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#getPreferredSize">getPreferredSize</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#getTextureGLPage">getTextureGLPage</a></b>()
 								</div>
 								<div class="description">If GL is enables, get this background image's texture page, otherwise it will fail.</div>
@@ -670,6 +699,15 @@ whether the parameter point coordinate lies inside the Actor.</div>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#invalidate">invalidate</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#invalidateLayout">invalidateLayout</a></b>()
 								</div>
 								<div class="description"></div>
 							</td>
@@ -949,7 +987,7 @@ another point in otherActor's coordinate system.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setAsButton">setAsButton</a></b>(buttonImage, _iNormal, _iOver, _iPress, _iDisabled, fn)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setAsButton">setAsButton</a></b>(buttonImage, iNormal, iOver, iPress, iDisabled, fn)
 								</div>
 								<div class="description">Set this actor behavior as if it were a Button.</div>
 							</td>
@@ -1057,7 +1095,7 @@ another point in otherActor's coordinate system.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setGLCoords">setGLCoords</a></b>(glCoords, glCoordsIndex, z)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setGLCoords">setGLCoords</a></b>(glCoords, glCoordsIndex)
 								</div>
 								<div class="description">TODO: set GLcoords for different image transformations.</div>
 							</td>
@@ -1105,6 +1143,15 @@ another point in otherActor's coordinate system.</div>
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setLocation">setLocation</a></b>(x{number}, y{number})
 								</div>
 								<div class="description">This method sets the position of an Actor inside its parent.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setMinimumSize">setMinimumSize</a></b>(pw, ph)
+								</div>
+								<div class="description">Set this actors minimum layout size.</div>
 							</td>
 						</tr>
 					
@@ -1168,6 +1215,15 @@ another point in otherActor's coordinate system.</div>
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setPositionAnchored">setPositionAnchored</a></b>(x, y, pax, pay)
 								</div>
 								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Actor.html#setPreferredSize">setPreferredSize</a></b>(pw, ph)
+								</div>
+								<div class="description">Set this actors preferred layout size.</div>
 							</td>
 						</tr>
 					
@@ -1538,6 +1594,31 @@ the set method (must be a method) as previously defined.
 								<dd><span class="light fixedFont">{*}</span> </dd>
 							
 							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="__validateLayout"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>__validateLayout</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
 						
 						
 						
@@ -2538,6 +2619,56 @@ Gets a given anchor position referred to the Actor.
 
 					<hr />
 				
+					<a name="getMinimumSize"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getMinimumSize</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getPreferredSize"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getPreferredSize</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="getTextureGLPage"> </a>
 					<div class="fixedFont">
 					
@@ -2685,6 +2816,31 @@ Gets a given anchor position referred to the Actor.
 					
 					
 					<b>invalidate</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="invalidateLayout"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>invalidateLayout</b>()
 					
 					</div>
 					<div class="description">
@@ -3640,25 +3796,25 @@ It will only remove the first occurrence of the given actorListener.
 									<b>delay</b>
 									
 								</dt>
-								<dd>{=number} millis to start rotation</dd>
+								<dd>{number=} millis to start rotation</dd>
 							
 								<dt>
 									<b>anchorX</b>
 									
 								</dt>
-								<dd>{=number} rotation anchor x</dd>
+								<dd>{number=} rotation anchor x</dd>
 							
 								<dt>
 									<b>anchorY</b>
 									
 								</dt>
-								<dd>{=number} rotation anchor y</dd>
+								<dd>{number=} rotation anchor y</dd>
 							
 								<dt>
 									<b>interpolator</b>
 									
 								</dt>
-								<dd>{=CAAT.Interpolator}</dd>
+								<dd>{CAAT.Interpolator=}</dd>
 							
 							</dl>
 						
@@ -3992,7 +4148,7 @@ animation sequence
 					<div class="fixedFont">
 					
 					
-					<b>setAsButton</b>(buttonImage, _iNormal, _iOver, _iPress, _iDisabled, fn)
+					<b>setAsButton</b>(buttonImage, iNormal, iOver, iPress, iDisabled, fn)
 					
 					</div>
 					<div class="description">
@@ -4015,25 +4171,25 @@ single size.
 								<dd>{CAAT.SpriteImage} sprite image with button's state images.</dd>
 							
 								<dt>
-									<b>_iNormal</b>
+									<b>iNormal</b>
 									
 								</dt>
 								<dd>{number} button's normal state image index</dd>
 							
 								<dt>
-									<b>_iOver</b>
+									<b>iOver</b>
 									
 								</dt>
 								<dd>{number} button's mouse over state image index</dd>
 							
 								<dt>
-									<b>_iPress</b>
+									<b>iPress</b>
 									
 								</dt>
 								<dd>{number} button's pressed state image index</dd>
 							
 								<dt>
-									<b>_iDisabled</b>
+									<b>iDisabled</b>
 									
 								</dt>
 								<dd>{number} button's disabled state image index</dd>
@@ -4596,7 +4752,7 @@ These values are related to Scene time.
 					<div class="fixedFont">
 					
 					
-					<b>setGLCoords</b>(glCoords, glCoordsIndex, z)
+					<b>setGLCoords</b>(glCoords, glCoordsIndex)
 					
 					</div>
 					<div class="description">
@@ -4619,12 +4775,6 @@ These values are related to Scene time.
 							
 								<dt>
 									<b>glCoordsIndex</b>
-									
-								</dt>
-								<dd></dd>
-							
-								<dt>
-									<b>z</b>
 									
 								</dt>
 								<dd></dd>
@@ -4840,6 +4990,55 @@ If GL is enabled, this parameter has no effect.
 							<dt class="heading">Returns:</dt>
 							
 								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setMinimumSize"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{*}</span>
+					<b>setMinimumSize</b>(pw, ph)
+					
+					</div>
+					<div class="description">
+						Set this actors minimum layout size.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>pw</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+								<dt>
+									<b>ph</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
 							
 							</dl>
 						
@@ -5136,6 +5335,55 @@ If GL is enabled, this parameter has no effect.
 						
 						
 						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setPreferredSize"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{*}</span>
+					<b>setPreferredSize</b>(pw, ph)
+					
+					</div>
+					<div class="description">
+						Set this actors preferred layout size.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>pw</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+								<dt>
+									<b>ph</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
+							
+							</dl>
 						
 						
 						
@@ -5908,7 +6156,7 @@ actor's world model view matrix.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Tue Sep 11 2012 22:09:42 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Sep 15 2012 16:52:18 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

@@ -99,6 +99,7 @@ echo -e "\nCreating CAAT canvas/webGL"
  --js "${SOURCE_DIR}"/math/bezier.js \
  --js "${SOURCE_DIR}"/math/point.js \
  --js "${SOURCE_DIR}"/math/quadtree.js \
+ --js "${SOURCE_DIR}"/math/dimension.js \
  --js "${SOURCE_DIR}"/path/interpolator.js \
  --js "${SOURCE_DIR}"/behaviour/behaviour.js \
  --js "${SOURCE_DIR}"/model/debug.js \
@@ -125,6 +126,9 @@ echo -e "\nCreating CAAT canvas/webGL"
  --js "${SOURCE_DIR}"/webgl/ShaderUtil.js \
  --js "${SOURCE_DIR}"/webgl/glu.js \
  --js "${SOURCE_DIR}"/webgl/glTexturePage.js \
+ --js "${SOURCE_DIR}"/ui/namespace.js >> "${FILE_CAAT}" \
+ --js "${SOURCE_DIR}"/ui/layoutManager.js >> "${FILE_CAAT}" \
+
  >> "${FILE_CAAT}"
 
 #
@@ -149,6 +153,7 @@ java -jar /Users/ibon/applications/closure/compiler.jar --compilation_level "${C
  --js "${SOURCE_DIR}"/math/bezier.js \
  --js "${SOURCE_DIR}"/math/point.js \
  --js "${SOURCE_DIR}"/math/quadtree.js \
+ --js "${SOURCE_DIR}"/math/dimension.js \
  --js "${SOURCE_DIR}"/path/interpolator.js \
  --js "${SOURCE_DIR}"/behaviour/behaviour.js \
  --js "${SOURCE_DIR}"/model/debug.js \
@@ -162,7 +167,7 @@ java -jar /Users/ibon/applications/closure/compiler.jar --compilation_level "${C
  --js "${SOURCE_DIR}"/model/timer.js \
  --js "${SOURCE_DIR}"/model/sceneCSS.js \
  --js "${SOURCE_DIR}"/modules/modules.js \
- --js "${SOURCE_DIR}"/modules/Layout/layout.js \
+ --js "${SOURCE_DIR}"/modules/Layout/layout.html \
  --js "${SOURCE_DIR}"/modules/CircleManager/PackedCircle.js \
  --js "${SOURCE_DIR}"/modules/CircleManager/PackedCircleManager.js \
  --js "${SOURCE_DIR}"/modules/LocalStorage/LocalStorage.js \
@@ -170,6 +175,8 @@ java -jar /Users/ibon/applications/closure/compiler.jar --compilation_level "${C
  --js "${SOURCE_DIR}"/modules/Font/font.js \
  --js "${SOURCE_DIR}"/path/interpolatoractor.js \
  --js "${SOURCE_DIR}"/path/path.js \
+ --js "${SOURCE_DIR}"/ui/namespace.js \
+ --js "${SOURCE_DIR}"/ui/layoutManager.js \
  --js "${SOURCE_DIR}"/path/pathactor.js >> "${FILE_CAAT_CSS}"
 
 #

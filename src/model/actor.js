@@ -105,6 +105,8 @@
 		y:						0,      // y position on parent. In parent's local coord. system.
 		width:					0,      // Actor's width. In parent's local coord. system.
 		height:					0,      // Actor's height. In parent's local coord. system.
+        preferredSize:          null,   // actor's preferred size for layout. {CAAT.Dimension}
+        minimumSize:            null,   // actor's minimum size for layout. {CAAT.Dimension},
 		start_time:				0,      // Start time in Scene time.
 		duration:				Number.MAX_VALUE,   // Actor duration in Scene time
 		clip:					false,  // should clip the Actor's content against its contour.
@@ -180,6 +182,61 @@
         isAA                :   true,   // is this actor/container Axis aligned ? if so, much faster inverse matrices
                                         // can be calculated.
 
+        invalidateLayout : function() {
+            if ( this.parent && !this.parent.layoutInvalidated ) {
+                this.parent.invalidateLayout();
+            }
+
+            return this;
+        },
+
+        __validateLayout : function() {
+
+        },
+
+        /**
+         * Set this actors preferred layout size.
+         *
+         * @param pw {number}
+         * @param ph {number}
+         * @return {*}
+         */
+        setPreferredSize : function( pw, ph ) {
+            if ( !this.preferredSize ) {
+                this.preferredSize= new CAAT.Dimension();
+            }
+            this.preferredSize.width= pw;
+            this.preferredSize.height= ph;
+            return this;
+        },
+
+        getPreferredSize : function() {
+            return this.preferredSize ? this.preferredSize :
+                        this.getMinimumSize();
+        },
+
+        /**
+         * Set this actors minimum layout size.
+         *
+         * @param pw {number}
+         * @param ph {number}
+         * @return {*}
+         */
+        setMinimumSize : function( pw, ph ) {
+            if ( !this.minimumSize ) {
+                this.minimumSize= new CAAT.Dimension();
+            }
+
+            this.minimumSize.width= pw;
+            this.minimumSize.height= ph;
+            return this;
+        },
+
+        getMinimumSize : function() {
+            return this.minimumSize ? this.minimumSize :
+                        new CAAT.Dimension(this.width, this.height);
+        },
+
         /**
          * @deprecated
          * @return {*}
@@ -197,6 +254,11 @@
          * @param interpolator {=CAAT.Interpolator} a CAAT.Interpolator instance
          */
         moveTo : function( x, y, duration, delay, interpolator ) {
+
+            if ( x===this.x && y===this.y ) {
+                return;
+            }
+
             var id= '__moveTo';
             var b= this.getBehavior( id );
             if ( !b ) {
@@ -219,13 +281,18 @@
          *
          * @param angle {number} new rotation angle
          * @param duration {number} time to rotate
-         * @param delay {=number} millis to start rotation
-         * @param anchorX {=number} rotation anchor x
-         * @param anchorY {=number} rotation anchor y
-         * @param interpolator {=CAAT.Interpolator}
+         * @param delay {number=} millis to start rotation
+         * @param anchorX {number=} rotation anchor x
+         * @param anchorY {number=} rotation anchor y
+         * @param interpolator {CAAT.Interpolator=}
          * @return {*}
          */
         rotateTo : function( angle, duration, delay, anchorX, anchorY, interpolator ) {
+
+            if ( angle===this.rotationAngle ) {
+                return;
+            }
+
             var id= '__rotateTo';
             var b= this.getBehavior( id );
             if ( !b ) {
@@ -257,6 +324,11 @@
          * @return {*}
          */
         scaleTo : function( scaleX, scaleY, duration, delay, anchorX, anchorY, interpolator ) {
+
+            if ( this.scaleX===scaleX && this.scaleY===scaleY ) {
+                return;
+            }
+
             var id= '__scaleTo';
             var b= this.getBehavior( id );
             if ( !b ) {
@@ -266,7 +338,7 @@
                 this.addBehavior(b);
             }
 
-            b.setValues( this.scaleX, this.scaleY, scaleX, scaleY, anchorX, anchorY ).
+            b.setValues( this.scaleX, scaleX, this.scaleY, scaleY, anchorX, anchorY ).
                 setDelayTime( delay ? delay : 0, duration);
 
             if ( interpolator ) {
@@ -331,6 +403,13 @@
          * @return {*}
          */
         __scale1To : function( axis, scale, duration, delay, anchorX, anchorY, interpolator ) {
+
+            if (( axis === CAAT.Scale1Behavior.AXIS_X && scale===this.scaleX) ||
+                ( axis === CAAT.Scale1Behavior.AXIS_Y && scale===this.scaleY)) {
+
+                    return;
+            }
+
             var id= '__scaleXTo';
             var b= this.getBehavior( id );
             if ( !b ) {
@@ -539,7 +618,7 @@
          * @deprecated
          */
         centerOn : function( x,y ) {
-            this.setLocation( x-this.width/2, y-this.height/2 );
+            this.setPosition( x-this.width/2, y-this.height/2 );
             return this;
         },
         /**
@@ -550,7 +629,8 @@
          * @return this
          */
         centerAt : function(x,y) {
-            return this.centerOn(x,y);
+            this.setPosition( x-this.width/2, y-this.height/2 );
+            return this;
         },
         /**
          * If GL is enables, get this background image's texture page, otherwise it will fail.
@@ -909,6 +989,7 @@
 	    setSize : function( w, h )   {
 	        this.width= w;
 	        this.height= h;
+
             this.dirty= true;
 
             return this;
@@ -1591,13 +1672,14 @@
 
             var AABB= this.AABB;
             var vv= this.viewVertices;
+            var vvv, m, x, y, w, h;
 
             if ( this.isAA ) {
-                var m= this.worldModelViewMatrix.matrix;
-                var x= m[2];
-                var y= m[5];
-                var w= this.width;
-                var h= this.height;
+                m= this.worldModelViewMatrix.matrix;
+                x= m[2];
+                y= m[5];
+                w= this.width;
+                h= this.height;
                 AABB.x= x;
                 AABB.y= y;
                 AABB.x1= x + w;
@@ -1606,7 +1688,6 @@
                 AABB.height= h;
 
                 if ( CAAT.GLRENDER ) {
-                    var vvv;
                     vvv= vv[0];
                     vvv.x=x;
                     vvv.y=y;
@@ -1623,9 +1704,6 @@
 
                 return this;
             }
-
-
-            var vvv;
 
             vvv= vv[0];
             vvv.x=0;
@@ -1658,7 +1736,7 @@
             if ( vvv.y > ymax ) {
                 ymax=vvv.y;
             }
-            var vvv= vv[1];
+            vvv= vv[1];
             if ( vvv.x < xmin ) {
                 xmin=vvv.x;
             }
@@ -1671,7 +1749,7 @@
             if ( vvv.y > ymax ) {
                 ymax=vvv.y;
             }
-            var vvv= vv[2];
+            vvv= vv[2];
             if ( vvv.x < xmin ) {
                 xmin=vvv.x;
             }
@@ -1684,7 +1762,7 @@
             if ( vvv.y > ymax ) {
                 ymax=vvv.y;
             }
-            var vvv= vv[3];
+            vvv= vv[3];
             if ( vvv.x < xmin ) {
                 xmin=vvv.x;
             }
@@ -1809,9 +1887,9 @@
         },
         /**
          * TODO: set GLcoords for different image transformations.
+         *
          * @param glCoords
          * @param glCoordsIndex
-         * @param z
          */
         setGLCoords : function( glCoords, glCoordsIndex ) {
 
@@ -1830,7 +1908,7 @@
 
             glCoords[glCoordsIndex++]= vv[3].x;
             glCoords[glCoordsIndex++]= vv[3].y;
-            glCoords[glCoordsIndex++]= 0;
+            glCoords[glCoordsIndex  ]= 0;
 
         },
         /**
@@ -1938,10 +2016,10 @@
          * single size.
          * 
          * @param buttonImage {CAAT.SpriteImage} sprite image with button's state images.
-         * @param _iNormal {number} button's normal state image index
-         * @param _iOver {number} button's mouse over state image index
-         * @param _iPress {number} button's pressed state image index
-         * @param _iDisabled {number} button's disabled state image index
+         * @param iNormal {number} button's normal state image index
+         * @param iOver {number} button's mouse over state image index
+         * @param iPress {number} button's pressed state image index
+         * @param iDisabled {number} button's disabled state image index
          * @param fn {function(button{CAAT.Actor})} callback function
          */
         setAsButton : function( buttonImage, iNormal, iOver, iPress, iDisabled, fn ) {
@@ -2118,13 +2196,63 @@
 
 	CAAT.ActorContainer.prototype= {
 
-        childrenList        :   null,       // the list of children contained.
+        childrenList        :   null,                   // the list of children contained.
         activeChildren      :   null,
         pendingChildrenList :   null,
-
         addHint             :   0,
         boundingBox         :   null,
         runion              :   new CAAT.Rectangle(),   // Watch out. one for every container.
+
+        layoutManager       :   null,                   // a layout manager instance.
+        layoutInvalidated   :   true,
+
+        setLayout : function( layout ) {
+            this.layoutManager= layout;
+            return this;
+        },
+
+        setBounds : function( x,y,w,h ) {
+            CAAT.ActorContainer.superclass.setBounds.call( this,x,y,w,h );
+            if ( CAAT.currentDirector && !CAAT.currentDirector.inValidation ) {
+                this.invalidateLayout();
+            }
+            return this;
+        },
+
+        __validateLayout : function() {
+
+            this.__validateTree();
+            this.layoutInvalidated= false;
+        },
+
+        __validateTree : function() {
+            if ( this.layoutManager && this.layoutManager.isInvalidated() ) {
+
+                CAAT.currentDirector.inValidation= true;
+
+                this.layoutManager.doLayout( this );
+
+                for( var i=0; i<this.getNumChildren(); i+=1 ) {
+                    this.getChildAt(i).__validateLayout();
+                }
+            }
+        },
+
+        invalidateLayout : function() {
+            this.layoutInvalidated= true;
+
+            if ( this.layoutManager ) {
+                this.layoutManager.invalidateLayout(this);
+
+                for( var i=0; i<this.getNumChildren(); i+=1 ) {
+                    this.getChildAt(i).invalidateLayout();
+                }
+            }
+        },
+
+        getLayout : function() {
+            return this.layoutManager;
+        },
 
         /**
          * Draws this ActorContainer and all of its children screen bounding box.
@@ -2221,7 +2349,8 @@
         },
         paintActorGL : function(director,time) {
 
-            var i, c;
+            var i, l, c;
+
             if (!this.visible) {
                 return true;
             }
@@ -2232,8 +2361,8 @@
                 this.frameAlpha= this.parent.frameAlpha;
             }
 
-            for( var i= 0, l= this.activeChildren.length; i<l; ++i ) {
-                var c= this.activeChildren[i];
+            for( i= 0, l= this.activeChildren.length; i<l; ++i ) {
+                c= this.activeChildren[i];
                 c.paintActorGL(director,time);
             }
 
@@ -2263,6 +2392,9 @@
             if ( this.cached===__CD ) {
                 return true;
             }
+
+            this.__validateLayout();
+            CAAT.currentDirector.inValidation= false;
 
             var i,l;
 
@@ -2326,7 +2458,7 @@
          * @param child a CAAT.Actor instance.
          * @return this.
          */
-        addChildImmediately : function(child) {
+        addChildImmediately : function(child, constraint) {
             return this.addChild(child);
         },
         /**
@@ -2343,7 +2475,7 @@
          * @param child a CAAT.Actor object instance.
          * @return this
          */
-		addChild : function(child) {
+		addChild : function(child, constraint) {
 
             if ( child.parent!=null ) {
                 throw('adding to a container an element with parent.');
@@ -2353,11 +2485,16 @@
             this.childrenList.push(child);
             child.dirty= true;
 
-            /**
-             * if Conforming size, recalc new bountainer size.
-             */
-            if ( this.addHint===CAAT.ActorContainer.AddHint.CONFORM ) {
-                this.recalcSize();
+            if ( this.layoutManager ) {
+                this.layoutManager.addChild( child, constraint );
+                this.invalidateLayout();
+            } else {
+                /**
+                 * if Conforming size, recalc new bountainer size.
+                 */
+                if ( this.addHint===CAAT.ActorContainer.AddHint.CONFORM ) {
+                    this.recalcSize();
+                }
             }
 
             return this;
@@ -2405,8 +2542,8 @@
 			if( index <= 0 ) {
                 child.parent= this;
                 child.dirty= true;
-                //this.childrenList.unshift(child);  // unshift unsupported on IE
                 this.childrenList.splice( 0, 0, child );
+                this.invalidateLayout();
 				return this;
             } else {
                 if ( index>=this.childrenList.length ) {
@@ -2417,6 +2554,7 @@
 			child.parent= this;
             child.dirty= true;
 			this.childrenList.splice(index, 0, child);
+            this.invalidateLayout();
 
             return this;
 		},
@@ -2441,11 +2579,11 @@
          *
          * @param child a CAAT.Actor object instance.
          *
-         * @return an integer indicating the Actor's z-order.
+         * @return {number}
          */
 		findChild : function(child) {
             var cl= this.childrenList;
-            var i=0;
+            var i;
             var len = cl.length;
 
 			for( i=0; i<len; i++ ) {
@@ -2468,6 +2606,8 @@
                 return rm[0];
             }
 
+            this.invalidateLayout();
+
             return null;
         },
         /**
@@ -2480,7 +2620,9 @@
          */
 		removeChild : function(child) {
 			var pos= this.findChild(child);
-            return this.removeChildAt(pos);
+            var ret= this.removeChildAt(pos);
+
+            return ret;
 		},
         removeFirstChild : function() {
             var first= this.childrenList.shift();
@@ -2488,6 +2630,8 @@
             if ( first.isVisible() && CAAT.currentDirector.dirtyRectsEnabled ) {
                 CAAT.currentDirector.scheduleDirtyRect( first.AABB );
             }
+
+            this.invalidateLayout();
 
             return first;
         },
@@ -2499,8 +2643,12 @@
                     CAAT.currentDirector.scheduleDirtyRect( last.AABB );
                 }
 
+                this.invalidateLayout();
+
                 return last;
             }
+
+            return null;
         },
         /**
          * @private
@@ -2593,6 +2741,8 @@
 
                     cl.splice( index, 0, nActor[0] );
                 }
+
+                this.invalidateLayout();
             }
         }
 	};

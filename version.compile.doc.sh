@@ -10,6 +10,7 @@ SOURCE_DIR=/Users/ibon/js/CAAT/src
 "${SOURCE_DIR}"/math/bezier.js \
 "${SOURCE_DIR}"/math/point.js \
 "${SOURCE_DIR}"/math/quadtree.js \
+"${SOURCE_DIR}"/math/dimension.js \
 "${SOURCE_DIR}"/path/interpolator.js \
 "${SOURCE_DIR}"/behaviour/behaviour.js \
 "${SOURCE_DIR}"/model/debug.js \
@@ -23,7 +24,7 @@ SOURCE_DIR=/Users/ibon/js/CAAT/src
 "${SOURCE_DIR}"/model/timer.js \
 "${SOURCE_DIR}"/model/scene.js \
 "${SOURCE_DIR}"/modules/modules.js \
-"${SOURCE_DIR}"/modules/Layout/layout.js \
+"${SOURCE_DIR}"/modules/Layout/layout.html \
 "${SOURCE_DIR}"/modules/CircleManager/PackedCircle.js \
 "${SOURCE_DIR}"/modules/CircleManager/PackedCircleManager.js \
 "${SOURCE_DIR}"/modules/LocalStorage/LocalStorage.js \
@@ -36,4 +37,6 @@ SOURCE_DIR=/Users/ibon/js/CAAT/src
 "${SOURCE_DIR}"/webgl/ShaderUtil.js \
 "${SOURCE_DIR}"/webgl/glu.js \
 "${SOURCE_DIR}"/webgl/glTexturePage.js \
+"${SOURCE_DIR}"/ui/namespace.js \
+"${SOURCE_DIR}"/ui/layoutManager.js \
   -d=/Users/ibon/js/CAAT/documentation/jsdoc

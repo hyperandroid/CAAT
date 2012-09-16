@@ -1,3 +1,10 @@
+* 09/15/2012 0.4 Build 319*
+---------------------------
+* FIX. CAAT.Actor.scaleTo wasn't scaling correctly.
+* ADD. Automatic Actor layout capabilities on CAAT.ActorContainer. Switch from CAAT.UI.BorderLayout, CAAT.UI.GridLayout,
+       CAAT.UI.BoxLayout.
+* ADD. Demo29. Layouts
+
 * 09/11/2012 0.4 Build 303*
 ---------------------------
 
