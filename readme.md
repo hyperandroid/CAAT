@@ -47,6 +47,7 @@ Visit <a href="http://hyperandroid.github.com/CAAT">CAAT's github pages</a>, inc
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo25/flipcards.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo25.png" alt="Flip Cards"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo27/font.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo27.png" alt="Path Sprite Fonts"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo28/paint.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo28.png" alt="Minimal Paint"></a>
+<a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo29/layout2.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo29.png" alt="Auto Layout"></a>
 
 
 ##License##
