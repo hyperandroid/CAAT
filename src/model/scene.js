@@ -16,8 +16,9 @@
      */
 	CAAT.Scene= function() {
 		CAAT.Scene.superclass.constructor.call(this);
-        this.timerList= [];
+        this.timerManager= new CAAT.TimerManager();
         this.fillStyle= null;
+        this.isGlobalAlpha= true;
 		return this;
 	};
 	
@@ -32,10 +33,9 @@
 		EASE_SCALE:						2,      // to perform on Scene switching by the Director.
 		EASE_TRANSLATE:					3,
 
-        timerList:                      null,   // collection of CAAT.TimerTask objects.
-        timerSequence:                  0,      // incremental CAAT.TimerTask id.
-
         paused:                         false,
+
+        timerManager                :   null,
 
         isPaused :  function()  {
             return this.paused;
@@ -44,90 +44,11 @@
         setPaused : function( paused ) {
             this.paused= paused;
         },
-        /**
-         * Check and apply timers in frame time.
-         * @param time {number} the current Scene time.
-         */
-        checkTimers : function(time) {
-            var tl= this.timerList;
-            var i=tl.length-1;
-            while( i>=0 ) {
-                if ( !tl[i].remove ) {
-                    tl[i].checkTask(time);
-                }
-                i--;
-            }
-        },
-        /**
-         * Make sure the timertask is contained in the timer task list by adding it to the list in case it
-         * is not contained.
-         * @param timertask {CAAT.TimerTask} a CAAT.TimerTask object.
-         * @return this
-         */
-        ensureTimerTask : function( timertask ) {
-            if ( !this.hasTimer(timertask) ) {
-                this.timerList.push(timertask);
-            }
-            return this;
-        },
-        /**
-         * Check whether the timertask is in this scene's timer task list.
-         * @param timertask {CAAT.TimerTask} a CAAT.TimerTask object.
-         * @return {boolean} a boolean indicating whether the timertask is in this scene or not.
-         */
-        hasTimer : function( timertask ) {
-            var tl= this.timerList;
-            var i=tl.length-1;
-            while( i>=0 ) {
-                if ( tl[i]===timertask ) {
-                    return true;
-                }
-                i--;
-            }
 
-            return false;
-        },
-        /**
-         * Creates a timer task. Timertask object live and are related to scene's time, so when an Scene
-         * is taken out of the Director the timer task is paused, and resumed on Scene restoration.
-         *
-         * @param startTime {number} an integer indicating the scene time this task must start executing at.
-         * @param duration {number} an integer indicating the timerTask duration.
-         * @param callback_timeout {function} timer on timeout callback function.
-         * @param callback_tick {function} timer on tick callback function.
-         * @param callback_cancel {function} timer on cancel callback function.
-         *
-         * @return {CAAT.TimerTask} a CAAT.TimerTask class instance.
-         */
         createTimer : function( startTime, duration, callback_timeout, callback_tick, callback_cancel ) {
-
-            var tt= new CAAT.TimerTask().create(
-                        startTime,
-                        duration,
-                        callback_timeout, 
-                        callback_tick,
-                        callback_cancel );
-
-            tt.taskId= this.timerSequence++;
-            tt.sceneTime = this.time;
-            tt.scene= this;
-
-            this.timerList.push( tt );
-
-            return tt;
+            return this.timerManager.createTimer( startTime, duration, callback_timeout, callback_tick, callback_cancel );
         },
-        /**
-         * Removes expired timers. This method must not be called directly.
-         */
-        removeExpiredTimers : function() {
-            var i;
-            var tl= this.timerList;
-            for( i=0; i<tl.length; i++ ) {
-                if ( tl[i].remove ) {
-                    tl.splice(i,1);
-                }
-            }
-        },
+
         /**
          * Scene animation method.
          * It extends Container's base behavior by adding timer control.
@@ -135,9 +56,9 @@
          * @param time {number} an integer indicating the Scene time the animation is being performed at.
          */
         animate : function(director, time) {
-            this.checkTimers(time);
+            this.timerManager.checkTimers(time);
             CAAT.Scene.superclass.animate.call(this,director,time);
-            this.removeExpiredTimers();
+            this.timerManager.removeExpiredTimers();
         },
         /**
          * Helper method to manage alpha transparency fading on Scene switch by the Director.

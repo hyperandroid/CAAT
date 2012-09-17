@@ -329,7 +329,7 @@
                     setTextFillStyle(gradient).
                     setOutline(true).
                     cacheAsBitmap();
-            cc1.addChild(text.setLocation((cc1.width-text.width)/2,0));
+            cc1.addChild(text.setLocation(cc1.width/2,0));
 
             var text2= new CAAT.TextActor().
                     setFont("30px sans-serif").
@@ -339,7 +339,7 @@
                     setTextFillStyle(gradient).
                     setOutline(true).
                     cacheAsBitmap();
-            cc1.addChild(text2.setLocation((cc1.width-text2.width)/2,30));
+            cc1.addChild(text2.setLocation(cc1.width/2,30));
 
             var text3= new CAAT.TextActor().
                     setFont("30px sans-serif").
@@ -349,7 +349,7 @@
                     setTextFillStyle(gradient).
                     setOutline(true).
                     cacheAsBitmap();
-            cc1.addChild(text3.setLocation((cc1.width-text3.width)/2,60));
+            cc1.addChild(text3.setLocation(cc1.width/2,60));
 
             var text4= new CAAT.TextActor().
                     setFont("20px sans-serif").
@@ -359,7 +359,7 @@
                     setTextFillStyle('black').
                     setOutline(true).
                     cacheAsBitmap();
-            cc1.addChild(text4.setLocation((cc1.width-text4.width)/2,100));
+            cc1.addChild(text4.setLocation(cc1.width/2,100));
 
             var text5= new CAAT.TextActor().
                     setFont("20px sans-serif").
@@ -369,7 +369,7 @@
                     setTextFillStyle('black').
                     setOutline(true).
                     cacheAsBitmap();
-            cc1.addChild(text5.setLocation((cc1.width-text5.width)/2,120));
+            cc1.addChild( text5.setLocation(cc1.width,120) );
 
             return scene;
         }

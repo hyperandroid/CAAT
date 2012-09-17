@@ -1,3 +1,78 @@
+* 09/15/2012 0.4 Build 319*
+---------------------------
+* FIX. CAAT.Actor.scaleTo wasn't scaling correctly.
+* ADD. Automatic Actor layout capabilities on CAAT.ActorContainer. Switch from CAAT.UI.BorderLayout, CAAT.UI.GridLayout,
+       CAAT.UI.BoxLayout.
+* ADD. Demo29. Layouts
+
+* 09/11/2012 0.4 Build 303*
+---------------------------
+
+* FIX. CAAT.TextActor was not honoring text outline property.
+
+
+* 09/11/2012 0.4 Build 299*
+---------------------------
+
+* CHANGE. Some demos have been changed to accomodate TextActors to the textAlignment.
+
+* 09/11/2012 0.4 Build 293*
+---------------------------
+
+* CHANGE. Dirty rects have changed how they work. Now, each on-screen actor's bounds are checked against dirty rects
+  list and if no interesetion, the actor/container is not drawn.
+* ADD. Debug panel, num of actors not drawn due to DirtyRects.
+* ADD. CAAT.TextActor now resizes when thext changes.
+* FIX. CAAT.TextActor.setAlign now works properly.
+
+* 08/31/2012 0.4 Build 283*
+---------------------------
+
+* CHANGE. CAAT.SpriteImage which have an animation sequence and a changeFPS, now always request to invalidate
+  their container actor. Previously only was requested upon new sprite sheet index selection.
+* CHANGE. Now pending to add children lists calls addChildImmediately instead of addChildren.
+* FIX. SpriteImage index when animation is changed now shows correct sprite image index.
+* FIX. CAAT.TextActor.setText method invalidates the actor.
+
+* 08/31/2012 0.4 Build 277*
+---------------------------
+
+* FIX. Call invalidate when changing Actor's backgroundImage setBackgroundImageIndex method.
+* ADD. Added timer to CAAT.Director. These timers are application wide, not local to an scene. Functionality is
+       cloned from scenes.
+* FIX. CAAT.SpriteImage.setSpriteIndexAtTime invalidates owner actor on change animation sequence index.
+
+* 08/30/2012 0.4 Build 275*
+---------------------------
+
+* FIX. CAAT.Font padding value made fonts wider (added blank space).
+* ADD. CAAT.TextActor.setFont now accepts CAAT.Font objects as parameters.
+* ADD. CAAT.Font.setStrokeSize(number) which defines text stroke size.
+* CHANGE. CAAT.ActorContainer uses no more a Linked List to keep track of its active children. Certain situations
+  made it loop forever (ie on input events).
+* FIX. Some methods on CAAT.Actor had been corrupted. WTF!!!.
+* ADD. CAAT.Actor.removeChildAt extra security check.
+
+* 08/27/2012 0.4 Build 255*
+---------------------------
+
+* ADD. CAAT.ContainerBehavior.setDelayTime.
+* ADD. Demo25: flip cards sample.
+* FIX. CAAT.Actor.setVisible made the system crash.
+
+
+* 08/26/2012 0.4 Build 249*
+---------------------------
+
+* ADD. Call invalidate when calling to setVisible(true) so that DIRTY_RECTS repaint actor's complete area.
+* FIX. CAAT.NO_RAF code was missing Director's collection iteration.
+* ADD. Clean method on director which sets it up to be reused. All information is sweeped out: images, scenes, ...
+* FIX. FPS in debug panel when NO_RAF was selected did not update.
+* ADD. CAAT.ActorContainer.removeLastChild and CAAT.ActorContainer.removeChildAt(index) methods.
+* FIX. Dirty Rects. Now call to removeChild, removeFirstChild, removeLastChild clear screen apropriately.
+* FIX. Dirty Rects. setVisible(true|false) now honors dirty rects.
+* FIX. CAAT.Director.easeInOutScene functions. Alpha value now is on.
+
 * 07/26/2012 0.4 Build 229*
 ---------------------------
 
@@ -14,15 +89,15 @@
 * Deprecated CAAT.ShapePath in favor of CAAT.RectPath
 * Added missing features to CAAT.RectPath.
 * Added buggy Path.arcTo method. Do not use.
-* Added demo24 which show how to build paths and combine them into more comples ones.
+* Added demo24 which show how to build paths and combine them into more complex ones.
 
 *07/03/2012 0.4 Build 128 *
---------------------------
+---------------------------
 
 * Fixed a terrible bug which made input system work improperly. enableEvents was called two times in a row.
 
 *06/29/2012 0.4 Build 125 *
---------------------------
+---------------------------
 
 * To avoid seeing incomplete animation frames when new animation indexes are set a call to resetAnimationTime upon setAnimationImageIndex has been added.
 * CSS renderer: Fixed emptyChildren method.

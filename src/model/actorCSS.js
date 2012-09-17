@@ -67,6 +67,8 @@
         y:						0,      // y position on parent. In parent's local coord. system.
         width:					0,      // Actor's width. In parent's local coord. system.
         height:					0,      // Actor's height. In parent's local coord. system.
+        preferredSize:          null,   // actor's preferred size for layout. {CAAT.Dimension}
+        minimumSize:            null,   // actor's minimum size for layout. {CAAT.Dimension},
         start_time:				0,      // Start time in Scene time.
         duration:				Number.MAX_VALUE,   // Actor duration in Scene time
         clip:					false,  // should clip the Actor's content against its contour.
@@ -122,6 +124,69 @@
         viewVertices:           null,   // model to view transformed vertices.
         isAA            :       true,
 
+
+        invalidateLayout : function() {
+            if ( this.parent && !this.parent.layoutInvalidated ) {
+                this.parent.invalidateLayout();
+            }
+
+            return this;
+        },
+
+        __validateLayout : function() {
+
+        },
+
+        /**
+         * Set this actors preferred layout size.
+         *
+         * @param pw {number}
+         * @param ph {number}
+         * @return {*}
+         */
+        setPreferredSize : function( pw, ph ) {
+            if ( !this.preferredSize ) {
+                this.preferredSize= new CAAT.Dimension();
+            }
+            this.preferredSize.width= pw;
+            this.preferredSize.height= ph;
+            return this;
+        },
+
+        getPreferredSize : function() {
+            return this.preferredSize ? this.preferredSize :
+                        this.getMinimumSize();
+        },
+
+        /**
+         * Set this actors minimum layout size.
+         *
+         * @param pw {number}
+         * @param ph {number}
+         * @return {*}
+         */
+        setMinimumSize : function( pw, ph ) {
+            if ( !this.minimumSize ) {
+                this.minimumSize= new CAAT.Dimension();
+            }
+
+            this.minimumSize.width= pw;
+            this.minimumSize.height= ph;
+            return this;
+        },
+
+        getMinimumSize : function() {
+            return this.minimumSize ? this.minimumSize :
+                        new CAAT.Dimension(this.width, this.height);
+        },
+
+        /**
+         * @deprecated
+         * @return {*}
+         */
+        create : function() {
+            return this;
+        },
         /**
          * Move this actor to a position.
          * It creates and adds a new PathBehavior.
@@ -132,6 +197,11 @@
          * @param interpolator {=CAAT.Interpolator} a CAAT.Interpolator instance
          */
         moveTo : function( x, y, duration, delay, interpolator ) {
+
+            if ( x===this.x && y===this.y ) {
+                return;
+            }
+
             var id= '__moveTo';
             var b= this.getBehavior( id );
             if ( !b ) {
@@ -154,13 +224,18 @@
          *
          * @param angle {number} new rotation angle
          * @param duration {number} time to rotate
-         * @param delay {=number} millis to start rotation
-         * @param anchorX {=number} rotation anchor x
-         * @param anchorY {=number} rotation anchor y
-         * @param interpolator {=CAAT.Interpolator}
+         * @param delay {number=} millis to start rotation
+         * @param anchorX {number=} rotation anchor x
+         * @param anchorY {number=} rotation anchor y
+         * @param interpolator {CAAT.Interpolator=}
          * @return {*}
          */
         rotateTo : function( angle, duration, delay, anchorX, anchorY, interpolator ) {
+
+            if ( angle===this.rotationAngle ) {
+                return;
+            }
+
             var id= '__rotateTo';
             var b= this.getBehavior( id );
             if ( !b ) {
@@ -192,6 +267,11 @@
          * @return {*}
          */
         scaleTo : function( scaleX, scaleY, duration, delay, anchorX, anchorY, interpolator ) {
+
+            if ( this.scaleX===scaleX && this.scaleY===scaleY ) {
+                return;
+            }
+
             var id= '__scaleTo';
             var b= this.getBehavior( id );
             if ( !b ) {
@@ -201,7 +281,7 @@
                 this.addBehavior(b);
             }
 
-            b.setValues( this.scaleX, this.scaleY, scaleX, scaleY, anchorX, anchorY ).
+            b.setValues( this.scaleX, scaleX, this.scaleY, scaleY, anchorX, anchorY ).
                 setDelayTime( delay ? delay : 0, duration);
 
             if ( interpolator ) {
@@ -266,6 +346,13 @@
          * @return {*}
          */
         __scale1To : function( axis, scale, duration, delay, anchorX, anchorY, interpolator ) {
+
+            if (( axis === CAAT.Scale1Behavior.AXIS_X && scale===this.scaleX) ||
+                ( axis === CAAT.Scale1Behavior.AXIS_Y && scale===this.scaleY)) {
+
+                    return;
+            }
+
             var id= '__scaleXTo';
             var b= this.getBehavior( id );
             if ( !b ) {
@@ -288,6 +375,7 @@
 
             return this;
         },
+
         /**
          * Touch Start only received when CAAT.TOUCH_BEHAVIOR= CAAT.TOUCH_AS_MULTITOUCH
          * @param e <CAAT.TouchEvent>
@@ -2005,6 +2093,59 @@
         boundingBox         :   null,
         runion              :   new CAAT.Rectangle(),   // Watch out. one for every container.
 
+        layoutManager       :   null,                   // a layout manager instance.
+        layoutInvalidated   :   true,
+
+
+        setLayout : function( layout ) {
+            this.layoutManager= layout;
+            return this;
+        },
+
+        setBounds : function( x,y,w,h ) {
+            CAAT.ActorContainer.superclass.setBounds.call( this,x,y,w,h );
+            if ( CAAT.currentDirector && !CAAT.currentDirector.inValidation ) {
+                this.invalidateLayout();
+            }
+            return this;
+        },
+
+        __validateLayout : function() {
+
+            this.__validateTree();
+            this.layoutInvalidated= false;
+        },
+
+        __validateTree : function() {
+            if ( this.layoutManager && this.layoutManager.isInvalidated() ) {
+
+                CAAT.currentDirector.inValidation= true;
+
+                this.layoutManager.doLayout( this );
+
+                for( var i=0; i<this.getNumChildren(); i+=1 ) {
+                    this.getChildAt(i).__validateLayout();
+                }
+            }
+        },
+
+        invalidateLayout : function() {
+            this.layoutInvalidated= true;
+
+            if ( this.layoutManager ) {
+                this.layoutManager.invalidateLayout(this);
+
+                for( var i=0; i<this.getNumChildren(); i+=1 ) {
+                    this.getChildAt(i).invalidateLayout();
+                }
+            }
+        },
+
+        getLayout : function() {
+            return this.layoutManager;
+        },
+
+
         /**
          * Removes all children from this ActorContainer.
          *
@@ -2051,6 +2192,9 @@
             if (false===CAAT.ActorContainer.superclass.animate.call(this,director,time)) {
                 return false;
             }
+
+            this.__validateLayout();
+            CAAT.currentDirector.inValidation= false;
 
             var i,l;
             var notActive= [];
@@ -2119,8 +2263,8 @@
          * @param child a CAAT.Actor instance.
          * @return this.
          */
-        addChildImmediately : function(child) {
-            return this.addChild(child);
+        addChildImmediately : function(child, constraint) {
+            return this.addChild(child, constraint);
         },
         /**
          * Adds an Actor to this ActorContainer.
@@ -2131,16 +2275,21 @@
          * @param child a CAAT.Actor object instance.
          * @return this
          */
-		addChild : function(child) {
+		addChild : function(child, constraint) {
             child.setParent( this );
             this.childrenList.push(child);
             child.dirty= true;
 
-            /**
-             * if Conforming size, recalc new bountainer size.
-             */
-            if ( this.addHint===CAAT.ActorContainer.AddHint.CONFORM ) {
-                this.recalcSize();
+            if ( this.layoutManager ) {
+                this.layoutManager.addChild( child, constraint );
+                this.invalidateLayout();
+            } else {
+                /**
+                 * if Conforming size, recalc new bountainer size.
+                 */
+                if ( this.addHint===CAAT.ActorContainer.AddHint.CONFORM ) {
+                    this.recalcSize();
+                }
             }
 
             return this;
@@ -2190,6 +2339,7 @@
                 child.parent= this;
                 child.dirty= true;
                 this.childrenList.splice( 0, 0, child );
+                this.invalidateLayout();
 				return this;
             } else {
                 if ( index>=this.childrenList.length ) {
@@ -2201,11 +2351,28 @@
 			this.childrenList.splice(index, 0, child);
 
             this.domElement.insertBefore(child.domElement, this.domElement.childNodes[index]);
+            this.invalidateLayout();
 
             child.dirty= true;
 
             return this;
 		},
+        /**
+         * Find the first actor with the supplied ID.
+         * This method is not recommended to be used since executes a linear search.
+         * @param id
+         */
+        findActorById : function(id) {
+            var cl= this.childrenList;
+            for( var i=0, l=cl.length; i<l; i++ ) {
+                if ( cl[i].id===id ) {
+                    return cl[i];
+                }
+            }
+
+            return null;
+        },
+
         /**
          * Private
          * Gets a contained Actor z-index on this ActorContainer.
@@ -2224,6 +2391,19 @@
 			}
 			return -1;
 		},
+
+        removeChildAt : function( pos ) {
+            var cl= this.childrenList;
+            var rm;
+			if ( -1!==pos ) {
+                cl[pos].setParent(null);
+				rm= cl.splice(pos,1);
+                this.invalidateLayout();
+                return rm[0];
+            }
+
+            return null;
+        },
         /**
          * Removed an Actor form this ActorContainer.
          * If the Actor is not contained into this Container, nothing happends.
@@ -2233,14 +2413,29 @@
          * @return this
          */
 		removeChild : function(child) {
-			var pos= this.findChild(child);
-			if ( -1!==pos ) {
-                this.childrenList[pos].setParent(null);
-				this.childrenList.splice(pos,1);
-			}
+            var pos= this.findChild(child);
+            var ret= this.removeChildAt(pos);
 
-            return this;
+            return ret;
 		},
+        removeFirstChild : function() {
+            var first= this.childrenList.shift();
+            first.setParent( null );
+            this.invalidateLayout();
+
+            return first;
+        },
+        removeLastChild : function() {
+            if ( this.childrenList.length ) {
+                var last= this.childrenList.pop();
+                last.setParent( null );
+                this.invalidateLayout();
+                return last;
+            }
+
+            return null;
+        },
+
         /**
          * @private
          *
@@ -2335,6 +2530,8 @@
                 for( var i=0,l=cl.length; i<l; i++ ) {
                     cl[i].domElement.style.zIndex = i;
                 }
+
+                this.invalidateLayout();
             }
         }
 	};

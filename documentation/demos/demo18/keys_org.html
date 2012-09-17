@@ -200,26 +200,32 @@
             });
 
             var s0 = new CAAT.Actor().
-                    setFillStyle( '#f00' ).
-                    setBounds( Math.random()*director.width, Math.random()*director.height, size, size );
+                    setFillStyle('#f00').
+                    setBounds(
+                        40 + Math.random() * (director.width - 80),
+                        40 + Math.random() * (director.height - 80), size, size);
             scene.addChild(s0);
-            s0.mouseClick= mouseClick;
+            s0.mouseClick = mouseClick;
 
             var s1 = new CAAT.ShapeActor().
-                    setShape( CAAT.ShapeActor.prototype.SHAPE_CIRCLE ).
-                    setFillStyle( '#0f0' ).
-                    setBounds( Math.random()*director.width, Math.random()*director.height, size, size );
+                    setShape(CAAT.ShapeActor.prototype.SHAPE_CIRCLE).
+                    setFillStyle('#0f0').
+                    setBounds(
+                        40 + Math.random() * (director.width - 80),
+                        40 + Math.random() * (director.height - 80), size, size);
             scene.addChild(s1);
-            s1.mouseClick= mouseClick;
+            s1.mouseClick = mouseClick;
 
-            var s2= new CAAT.StarActor().
-                    setBounds( Math.random()*director.width, Math.random()*director.height, size, size ).
-                    setStrokeStyle( "#00f" ).
-                    setFilled( false ).
-                    setOutlined( true ).
-                    initialize( 12, size, size/2 );
-            scene.addChild( s2 );
-            s2.mouseClick= mouseClick;
+            var s2 = new CAAT.StarActor().
+                    setBounds(
+                        40 + Math.random() * (director.width - 80),
+                        40 + Math.random() * (director.height - 80), size, size ).
+                    setStrokeStyle("#00f").
+                    setFilled(false).
+                    setOutlined(true).
+                    initialize(12, size, size / 2);
+            scene.addChild(s2);
+            s2.mouseClick = mouseClick;
 
             s0.mouseClick();
         }

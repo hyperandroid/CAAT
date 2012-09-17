@@ -44,12 +44,15 @@
         this.dragging = false;
 
         this.cDirtyRects= [];
+        this.sDirtyRects= [];
         this.dirtyRects= [];
         for( var i=0; i<64; i++ ) {
             this.dirtyRects.push( new CAAT.Rectangle() );
         }
         this.dirtyRectsIndex=   0;
         this.touches= {};
+
+        this.timerManager= new CAAT.TimerManager();
 
         return this;
     };
@@ -117,7 +120,8 @@
             size_total:         0,
             size_active:        0,
             size_dirtyRects:    0,
-            draws:              0
+            draws:              0,
+            size_discarded_by_dirty_rects: 0
         },
         currentTexturePage: 0,
         currentOpacity:     1,
@@ -137,17 +141,47 @@
         __gestureScale      :   0,
         __gestureRotation   :   0,
 
-        dirtyRects          :   null,
-        cDirtyRects         :   null,
+        dirtyRects          :   null,   // dirty rects cache.
+        cDirtyRects         :   null,   // current dirty rects.
+        sDirtyRects         :   null,   // scheduled dirty rects.
         dirtyRectsIndex     :   0,
         dirtyRectsEnabled   :   false,
         nDirtyRects         :   0,
+        drDiscarded         :   0,      // discarded by dirty rects.
 
         stopped             :   false,  // is stopped, this director will do nothing.
 
         needsRepaint        : false,    // for rendering mode = dirty, this flags means, paint another frame
 
         touches             : null,     // Touches information. Associate touch.id with an actor and original touch info.
+
+        timerManager:       null,
+
+        clean : function() {
+            this.scenes= null;
+            this.currentScene= null;
+            this.imagesCache= null;
+            this.audioManager= null;
+            this.isMouseDown= false;
+            this.lastSelectedActor=  null;
+            this.dragging= false;
+            this.__gestureScale= 0;
+            this.__gestureRotation= 0;
+            this.dirty= true;
+            this.dirtyRects=null;
+            this.cDirtyRects=null;
+            this.dirtyRectsIndex=  0;
+            this.dirtyRectsEnabled= false;
+            this.nDirtyRects= 0;
+            this.onResizeCallback= null;
+            return this;
+        },
+
+
+        createTimer : function( startTime, duration, callback_timeout, callback_tick, callback_cancel ) {
+            this.timerManager.createTimer( startTime, duration, callback_timeout, callback_tick, callback_cancel );
+            return this;
+        },
 
         requestRepaint : function() {
             this.needsRepaint= true;
@@ -558,6 +592,7 @@
             this.statistics.size_total= 0;
             this.statistics.size_active=0;
             this.statistics.draws=      0;
+            this.statistics.size_discarded_by_dirty_rects= 0;
         },
 
         /**
@@ -580,7 +615,7 @@
 
             this.time += time;
 
-            this.animate(this,time);
+            this.animate(this,this.time);
 
             if ( CAAT.DEBUG ) {
                 this.resetStats();
@@ -719,6 +754,27 @@
 
             this.frameCounter++;
         },
+
+        inDirtyRect : function( actor ) {
+
+            if ( !this.dirtyRectsEnabled || CAAT.DEBUG_DIRTYRECTS ) {
+                return true;
+            }
+
+            var dr= this.cDirtyRects;
+            var i;
+            var aabb= actor.AABB;
+
+            for( i=0; i<dr.length; i++ ) {
+                if ( dr[i].intersects( aabb ) ) {
+                    return true;
+                }
+            }
+
+            this.statistics.size_discarded_by_dirty_rects+= actor.size_total;
+            return false;
+        },
+
         /**
          * A director is a very special kind of actor.
          * Its animation routine simple sets its modelViewMatrix in case some transformation's been
@@ -728,6 +784,9 @@
          * @param time {number} director time.
          */
         animate : function(director, time) {
+
+            this.timerManager.checkTimers(time);
+
             this.setModelViewMatrix(this);
             this.modelViewMatrixI= this.modelViewMatrix.getInverse();
             this.setScreenBounds();
@@ -739,13 +798,39 @@
 
             var cl= this.childrenList;
             var cli;
-            for (var i = 0; i < cl.length; i++) {
+            var i,l;
+
+
+            if ( this.dirtyRectsEnabled ) {
+                var sdr= this.sDirtyRects;
+                if ( sdr.length ) {
+                    for( i= 0,l=sdr.length; i<l; i++ ) {
+                        this.addDirtyRect( sdr[i] );
+                    }
+                    this.sDirtyRects= [];
+                }
+            }
+
+            for (i = 0; i < cl.length; i++) {
                 cli= cl[i];
                 var tt = cli.time - cli.start_time;
                 cli.animate(this, tt);
             }
 
+            this.timerManager.removeExpiredTimers();
+
             return this;
+        },
+
+        /**
+         * This method is used when asynchronous operations must produce some dirty rectangle painting.
+         * This means that every operation out of the regular CAAT loop must add dirty rect operations
+         * by calling this method.
+         * For example setVisible() and remove.
+         * @param rectangle
+         */
+        scheduleDirtyRect : function( rectangle ) {
+            this.sDirtyRects.push( rectangle );
         },
         /**
          * Add a rectangle to the list of dirty screen areas which should be redrawn.
@@ -2472,9 +2557,11 @@
                     }
 
                     if ( CAAT.DEBUG ) {
+                        this.statistics.size_discarded_by_dirtyRects+= this.drDiscarded;
                         this.statistics.size_total+= c.size_total;
                         this.statistics.size_active+= c.size_active;
                         this.statistics.size_dirtyRects= this.nDirtyRects;
+
                     }
 
                 }
@@ -2521,6 +2608,10 @@
 
             this.addHandlers(this.canvas);
         };
+
+        CAAT.Director.prototype.inDirtyRect= function() {
+            return true;
+        }
     }
 
     extend(CAAT.Director, CAAT.ActorContainer, null);

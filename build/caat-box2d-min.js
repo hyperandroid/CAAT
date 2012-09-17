@@ -22,15 +22,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 229
+Version: 0.4 build: 318
 
 Created on:
-DATE: 2012-07-26
-TIME: 23:47:38
+DATE: 2012-09-15
+TIME: 16:50:46
 */
 
 
-(function(){CAAT.enableBox2DDebug=function(b,a,c){if(b){b=new Box2D.Dynamics.b2DebugDraw;try{b.m_sprite.graphics.clear=function(){}}catch(d){}c.SetDebugDraw(b);b.SetSprite(a.ctx);b.SetDrawScale(CAAT.PMR);b.SetFillAlpha(0.5);b.SetLineThickness(1);b.SetFlags(3)}else c.setDebugDraw(null)}})();
+(function(){CAAT.enableBox2DDebug=function(b,a,c){if(b){b=new Box2D.Dynamics.b2DebugDraw;try{b.m_sprite.graphics.clear=function(){}}catch(d){}c.SetDebugDraw(b);b.SetSprite(a.ctx);b.SetDrawScale(CAAT.PMR);b.SetFillAlpha(0.5);b.SetLineThickness(1);b.SetFlags(3)}else c.SetDebugDraw(null)}})();
 (function(){CAAT.B2DBodyActor=function(){CAAT.B2DBodyActor.superclass.constructor.call(this);return this};CAAT.B2DBodyActor.prototype={restitution:0.5,friction:0.5,density:1,bodyType:Box2D.Dynamics.b2Body.b2_dynamicBody,worldBody:null,world:null,worldBodyFixture:null,bodyDef:null,fixtureDef:null,bodyData:null,recycle:false,setRecycle:function(){this.recycle=true;return this},destroy:function(){CAAT.B2DBodyActor.superclass.destroy.call(this);if(this.recycle)this.setLocation(-Number.MAX_VALUE,-Number.MAX_VALUE),
 this.setAwake(false);else{var b=this.worldBody;b.DestroyFixture(this.worldBodyFixture);this.world.DestroyBody(b)}return this},setAwake:function(b){this.worldBody.SetAwake(b);return this},setSleepingAllowed:function(b){this.worldBody.SetSleepingAllowed(b);return this},setLocation:function(b,a){this.worldBody.SetPosition(new Box2D.Common.Math.b2Vec2((b+this.width/2)/CAAT.PMR,(a+this.height/2)/CAAT.PMR));return this},setDensity:function(b){this.density=b;return this},setFriction:function(b){this.friction=
 b;return this},setRestitution:function(b){this.restitution=b;return this},setBodyType:function(b){this.bodyType=b;return this},check:function(b,a,c){b[a]||(b[a]=c)},createBody:function(b,a){if(a)this.check(a,"density",1),this.check(a,"friction",0.5),this.check(a,"restitution",0.2),this.check(a,"bodyType",Box2D.Dynamics.b2Body.b2_staticBody),this.check(a,"userData",{}),this.check(a,"image",null),this.density=a.density,this.friction=a.friction,this.restitution=a.restitution,this.bodyType=a.bodyType,

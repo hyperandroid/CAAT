@@ -259,6 +259,16 @@
 		this.b = b || 255;
 		return this;
 	};
+
+    CAAT.Color.RGB.random= function() {
+        var a= '0123456789abcdef';
+        var c= '#';
+        for( var i=0; i<3; i++ ) {
+            c+= a[ (Math.random()* a.length)>>0 ];
+        }
+        return c;
+    };
+
 	CAAT.Color.RGB.prototype= {
 		r: 255,
 		g: 255,
@@ -272,5 +282,7 @@
 			// See: http://jsperf.com/rgb-decimal-to-hex/5
 			return ('000000' + ((this.r << 16) + (this.g << 8) + this.b).toString(16)).slice(-6);
 		}
+
+
 	};
 }());

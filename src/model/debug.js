@@ -30,6 +30,7 @@
         textDrawTime:       null,
         textRAFTime:        null,
         textDirtyRects:     null,
+        textDiscardDR:      null,
 
         frameTimeAcc :      0,
         frameRAFAcc :       0,
@@ -196,6 +197,11 @@
             "                        <span class=\"caat_debug_description\">DirtyRects: </span>"+
             "                        <span class=\"caat_debug_value\" id=\"textDirtyRects\">0</span>"+
             "                    </span>"+
+            "                    <span>"+
+            "                        <span class=\"caat_debug_bullet\" style=\"background-color:#00f;\"></span>"+
+            "                        <span class=\"caat_debug_description\">Discard DR: </span>"+
+            "                        <span class=\"caat_debug_value\" id=\"textDiscardDR\">0</span>"+
+            "                    </span>"+
             "                </div>"+
             "            </div>"+
             "            <div id=\"caat-debug-tab1-content\">"+
@@ -340,6 +346,7 @@
             this.textEntitiesActive= document.getElementById("textEntitiesActive");
             this.textDraws= document.getElementById("textDraws");
             this.textDirtyRects= document.getElementById("textDirtyRects");
+            this.textDiscardDR= document.getElementById("textDiscardDR");
 
 
             this.canDebug= true;
@@ -380,6 +387,7 @@
             this.textEntitiesActive.innerHTML= this.statistics.size_active;
             this.textDirtyRects.innerHTML= this.statistics.size_dirtyRects;
             this.textDraws.innerHTML= this.statistics.draws;
+            this.textDiscardDR.innerHTML= this.statistics.size_discarded_by_dirty_rects;
         },
 
         paint : function( rafValue ) {

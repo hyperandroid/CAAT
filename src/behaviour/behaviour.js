@@ -437,8 +437,8 @@
             
             var f= duration/this.duration;
             var bh;
-            for( var i=0; i<this.behavior.length; i++ ) {
-                bh= this.behavior[i];
+            for( var i=0; i<this.behaviors.length; i++ ) {
+                bh= this.behaviors[i];
                 bh.setFrameTime( bh.getStartTime()*f, bh.getDuration()*f );
             }
 
@@ -464,6 +464,11 @@
          * @param actor a CAAT.Actor instance indicating the actor to apply the behaviors for.
          */
 		apply : function(time, actor) {
+
+            if ( !this.solved ) {
+                this.behaviorStartTime+= time;
+                this.solved= true;
+            }
 
             time+= this.timeOffset*this.behaviorDuration;
             
@@ -527,7 +532,16 @@
 
             var bh= this.behaviors;
             for( var i=0; i<bh.length; i++ ) {
-                //bh[i].expired= false;
+                bh[i].setStatus( CAAT.Behavior.Status.NOT_STARTED );
+            }
+            return this;
+        },
+
+        setDelayTime : function( start, duration )  {
+            CAAT.ContainerBehavior.superclass.setDelayTime.call(this,start,duration);
+
+            var bh= this.behaviors;
+            for( var i=0; i<bh.length; i++ ) {
                 bh[i].setStatus( CAAT.Behavior.Status.NOT_STARTED );
             }
             return this;
