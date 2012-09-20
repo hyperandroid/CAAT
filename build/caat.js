@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 319
+Version: 0.4 build: 396
 
 Created on:
-DATE: 2012-09-15
-TIME: 16:51:25
+DATE: 2012-09-19
+TIME: 23:24:46
 */
 
 
@@ -6681,6 +6681,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @return this
          */
 	    setSize : function( w, h )   {
+
 	        this.width= w;
 	        this.height= h;
 
@@ -7677,6 +7678,14 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
             this.clipPath= clipPath;
             return this;
         },
+
+        stopCacheAsBitmap : function() {
+            if ( this.cached ) {
+                this.backgroundImage= null;
+                this.cached= false;
+            }
+        },
+
         /**
          *
          * @param time {Number=}
@@ -7697,11 +7706,20 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 inDirtyRect : function() { return true; }
             };
 
+            var pmv=    this.modelViewMatrix;
+            var pwmv=   this.worldModelViewMatrix;
+
+            this.modelViewMatrix =  new CAAT.Matrix();
+            this.worldModelViewMatrix =  new CAAT.Matrix();
+
             this.cached= false;
             this.paintActor(director,time);
             this.setBackgroundImage(canvas);
 
             this.cached= strategy ? strategy : CAAT.Actor.CACHE_SIMPLE;
+
+            this.modelViewMatrix =  pmv;
+            this.worldModelViewMatrix =  pwmv;
 
             return this;
         },
@@ -8467,9 +8485,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 		CAAT.TextActor.superclass.constructor.call(this);
 		this.font= "10px sans-serif";
 		this.textAlign= "left";
-		this.textBaseline= "top";
 		this.outlineColor= "black";
         this.clip= false;
+        this.__calcFontData();
 
 		return this;
 	};
@@ -8480,10 +8498,11 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 	CAAT.TextActor.prototype= {
 		font:			    null,   // a valid canvas rendering context font description. Default font
                                     // will be "10px sans-serif".
+        fontData:           null,
 		textAlign:		    null,	// a valid canvas rendering context textAlign string. Any of:
                                     // start, end, left, right, center.
                                     // defaults to "left".
-		textBaseline:	    null,	// a valid canvas rendering context textBaseLine string. Any of:
+		textBaseline:	    "top",	// a valid canvas rendering context textBaseLine string. Any of:
                                     // top, hanging, middle, alphabetic, ideographic, bottom.
                                     // defaults to "top".
 		fill:			    true,   // a boolean indicating whether the text should be filled.
@@ -8508,14 +8527,17 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @return this;
          */
         setFill : function( fill ) {
+            this.stopCacheAsBitmap();
             this.fill= fill;
             return this;
         },
         setLineWidth : function( lw ) {
+            this.stopCacheAsBitmap();
             this.lineWidth= lw;
             return this;
         },
         setTextFillStyle : function( style ) {
+            this.stopCacheAsBitmap();
             this.textFillStyle= style;
             return this;
         },
@@ -8525,6 +8547,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @return this;
          */
         setOutline : function( outline ) {
+            this.stopCacheAsBitmap();
             this.outline= outline;
             return this;
         },
@@ -8539,6 +8562,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @return this.
          */
         setOutlineColor : function( color ) {
+            this.stopCacheAsBitmap();
             this.outlineColor= color;
             return this;
         },
@@ -8548,11 +8572,12 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @return this
          */
 		setText : function( sText ) {
+            this.stopCacheAsBitmap();
 			this.text= sText;
             if ( null===this.text || this.text==="" ) {
                 this.width= this.height= 0;
             }
-            this.calcTextSize( CAAT.director[0] );
+            this.calcTextSize( CAAT.currentDirector );
 
             this.invalidate();
 
@@ -8576,11 +8601,13 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @param baseline
          */
         setTextBaseline : function( baseline ) {
+            this.stopCacheAsBitmap();
             this.textBaseline= baseline;
             return this;
 
         },
         setBaseline : function( baseline ) {
+            this.stopCacheAsBitmap();
             return this.setTextBaseline(baseline);
         },
         /**
@@ -8590,14 +8617,19 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          */
         setFont : function(font) {
 
+            this.stopCacheAsBitmap();
+
             if ( !font ) {
                 font= "10px sans-serif";
             }
 
             if ( font instanceof CAAT.Font ) {
-                font= font.setAsSpriteImage();
+                font.setAsSpriteImage();
+            } else if (font instanceof CAAT.SpriteImage ) {
+                CAAT.log("WARN: setFont will no more accept a CAAT.SpriteImage as argument.");
             }
             this.font= font;
+
             this.calcTextSize( CAAT.director[0] );
 
             return this;
@@ -8635,7 +8667,9 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @private
          */
         __setLocation : function() {
-            var nx
+
+            var nx, ny;
+
             if ( this.textAlign==="center" ) {
                 nx= this.lx - this.width/2;
             } else if ( this.textAlign==="right" || this.textAlign==="end" ) {
@@ -8644,7 +8678,17 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 nx= this.lx;
             }
 
-            CAAT.TextActor.superclass.setLocation.call( this, nx, this.ly );
+            if ( this.textBaseline==="bottom" ) {
+                ny= this.ly - this.height;
+            } else if ( this.textBaseline==="middle" ) {
+                ny= this.ly - this.height/2;
+            } else if ( this.textBaseline==="alphabetic" ) {
+                ny= this.ly - this.fontData.ascent;
+            } else {
+                ny= this.ly;
+            }
+
+            CAAT.TextActor.superclass.setLocation.call( this, nx, ny );
         },
 
         centerAt : function(x,y) {
@@ -8676,6 +8720,22 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 this.textHeight=this.font.stringHeight();
                 this.width= this.textWidth;
                 this.height= this.textHeight;
+
+                var as= (this.font.singleHeight *.8)>>0;
+                this.fontData= {
+                    height : this.font.singleHeight,
+                    ascent : as,
+                    descent: this.font.singleHeight - as
+                };
+                return this;
+            }
+
+            if ( this.font instanceof CAAT.Font ) {
+                this.textWidth= this.font.stringWidth( this.text );
+                this.textHeight=this.font.stringHeight();
+                this.width= this.textWidth;
+                this.height= this.textHeight;
+                this.fontData= this.font.getFontData();
                 return this;
             }
 
@@ -8701,15 +8761,31 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 this.textHeight= parseInt(s,10);
             }
 
+            this.__calcFontData();
+
             // needed to calculate the descent.
             // no context.getDescent(font) WTF !!!
-            this.textHeight+= (this.textHeight/4)>>0;
-            this.setSize( this.textWidth, this.textHeight );
+//            this.textHeight+= (this.textHeight/4)>>0;
+            this.setSize( this.textWidth, this.fontData.height );
 
             ctx.restore();
 
             return this;
         },
+
+        __calcFontData : function() {
+            try {
+                this.fontData= CAAT.Font.getFontHeight( this.font );
+            } catch(e) {
+                var ascent= (this.textHeight*.8)|0;
+                this.fontData= {
+                    height  : this.textHeight,
+                    ascent  : ascent,
+                    descent : this.textHeight - ascent
+                }
+            }
+        },
+
         /**
          * Custom paint method for TextActor instances.
          * If the path attribute is set, the text will be drawn traversing the path.
@@ -8737,7 +8813,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
 			var ctx= director.ctx;
 			
-			if ( this.font instanceof CAAT.SpriteImage ) {
+			if ( this.font instanceof CAAT.Font || this.font instanceof CAAT.SpriteImage ) {
 				return this.drawSpriteText(director,time);
 			}
 
@@ -8745,9 +8821,11 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 				ctx.font= this.font;
 			}
 
-			if ( null!==this.textBaseline ) {
-				ctx.textBaseline= this.textBaseline;
-			}
+            /**
+             * always draw text with middle or bottom, top is buggy in FF.
+             * @type {String}
+             */
+            ctx.textBaseline="alphabetic";
 
 			if (null===this.path) {
 
@@ -8766,7 +8844,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                     if ( null!==this.textFillStyle ) {
                         ctx.fillStyle= this.textFillStyle;
                     }
-					ctx.fillText( this.text, tx, 0 );
+					ctx.fillText( this.text, tx, this.fontData.ascent  );
 				}
 
                 if ( this.outline ) {
@@ -8776,7 +8854,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
                     ctx.lineWidth= this.lineWidth;
                     ctx.beginPath();
-					ctx.strokeText( this.text, tx, 0 );
+					ctx.strokeText( this.text, tx, this.fontData.ascent );
 				}
 			}
 			else {
@@ -8845,7 +8923,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          */
 		drawSpriteText: function(director, time) {
 			if (null===this.path) {
-				this.font.drawString( director.ctx, this.text, 0, 0);
+				this.font.drawText( this.text, director.ctx, 0, 0);
 			} else {
 				this.drawSpriteTextOnPath(director, time);
 			}
@@ -8867,7 +8945,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 
 			for( var i=0; i<this.text.length; i++ ) {
 				var character= this.text[i].toString();
-				var charWidth= this.font.stringWidth(character); //context.measureText( caracter ).width;
+				var charWidth= this.font.stringWidth(character);
 
 				var pathLength= this.path.getLength();
 
@@ -8883,7 +8961,7 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
 				context.translate( p0.x|0, p0.y|0 );
 				context.rotate( angle );
 				
-				var y = this.textBaseline === "bottom" ? 0 - this.font.height : 0;
+				var y = this.textBaseline === "bottom" ? 0 - this.font.getHeight() : 0;
 				
 				this.font.drawString(context,character, 0, y);
 
@@ -15895,6 +15973,79 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         return this;
     };
 
+    /**
+     * Totally ripped from:
+     *
+     * jQuery (offset function)
+     * Daniel Earwicker: http://stackoverflow.com/questions/1134586/how-can-you-find-the-height-of-text-on-an-html-canvas
+     *
+     * @param font
+     * @return {*}
+     */
+    CAAT.Font.getFontHeight = function( font ) {
+
+        function offset( elem ) {
+
+            var box, docElem, body, win, clientTop, clientLeft, scrollTop, scrollLeft, top, left;
+            var doc= elem && elem.ownerDocument;
+            var docElem = doc.documentElement;
+
+            box = elem.getBoundingClientRect();
+           	//win = getWindow( doc );
+
+            body= document.body;
+            win= doc.nodeType === 9 ? doc.defaultView || doc.parentWindow : false;
+
+           	clientTop  = docElem.clientTop  || body.clientTop  || 0;
+           	clientLeft = docElem.clientLeft || body.clientLeft || 0;
+           	scrollTop  = win.pageYOffset || docElem.scrollTop;
+           	scrollLeft = win.pageXOffset || docElem.scrollLeft;
+           	top  = box.top  + scrollTop  - clientTop;
+           	left = box.left + scrollLeft - clientLeft;
+
+            return { top: top, left: left };
+        }
+
+        try {
+            var text = document.createElement("span");
+            text.style.font = font;
+            text.innerHTML = "Hg";
+
+            var block = document.createElement("div");
+            block.style.display = "inline-block";
+            block.style.width = "1px";
+            block.style.heigh = "0px";
+
+            var div = document.createElement("div");
+            div.appendChild(text);
+            div.appendChild(block);
+
+
+            var body = document.body;
+            body.appendChild(div);
+
+            try {
+
+                var result = {};
+
+                block.style.verticalAlign = 'baseline';
+                result.ascent = offset(block).top - offset(text).top;
+
+                block.style.verticalAlign = 'bottom';
+                result.height = offset(block).top - offset(text).top;
+
+                result.descent = result.height - result.ascent;
+
+                return result;
+
+            } finally {
+                body.removeChild( div );
+            }
+        } catch (e) {
+            return null;
+        }
+    };
+
     var UNKNOWN_CHAR_WIDTH= 10;
 
     CAAT.Font.prototype= {
@@ -15911,6 +16062,8 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         charMap     :   null,
 
         height      :   0,
+        ascent      :   0,
+        descent     :   0,
 
         setPadding : function( padding ) {
             this.padding= padding;
@@ -15948,26 +16101,24 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             return this;
         },
 
-        createDefault : function( padding ) {
+        createDefault : function( padding, notPerfectHeight ) {
             var str="";
             for( var i=32; i<128; i++ ) {
                 str= str+String.fromCharCode(i);
             }
 
-            return this.create( str, padding );
+            return this.create( str, padding, notPerfectHeight );
         },
 
-        create : function( chars, padding ) {
+        create : function( chars, padding, notPerfectHeight ) {
 
             padding= padding | 0;
             this.padding= padding;
 
             var canvas= document.createElement('canvas');
-            canvas.width=   1;
-            canvas.height=  1;
             var ctx= canvas.getContext('2d');
 
-            ctx.textBaseline= 'top';
+            ctx.textBaseline= 'bottom';
             ctx.font= this.fontStyle+' '+this.fontSize+""+this.fontSizeUnit+" "+ this.font;
 
             var textWidth= 0;
@@ -15982,11 +16133,36 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 textWidth+= cw;
             }
 
+            var fontHeight= notPerfectHeight ? null : CAAT.Font.getFontHeight( ctx.font );
+            var baseline, yoffset, canvasheight;
+            if ( null===fontHeight ) {
+                baseline= "bottom";
+                canvasheight= this.fontSize+1;
+                yoffset= canvasheight-1;
+
+                this.height= canvasheight;
+                this.ascent= (canvasheight*.8)|0;
+                this.descent= this.height - this.ascent;
+            } else {
+
+                /**
+                 * uber lol. Chrome offers integer values for ascent/descent and FF decimal ones.
+                 */
+                baseline="alphabetic";
+                canvasheight= fontHeight.height;
+                yoffset= fontHeight.ascent;
+                this.ascent= Math.ceil(fontHeight.ascent | 0 );
+                this.descent= Math.ceil(fontHeight.descent | 0);
+                this.height= this.ascent + this.descent;
+
+            }
+
             canvas.width= textWidth;
-            canvas.height= (this.fontSize*1.5)>>0;
+            canvas.height= canvasheight;
             ctx= canvas.getContext('2d');
 
-            ctx.textBaseline= 'top';
+            //ctx.textBaseline= 'bottom';
+            ctx.textBaseline= baseline;
             ctx.font= this.fontStyle+' '+this.fontSize+""+this.fontSizeUnit+" "+ this.font;
             ctx.fillStyle= this.fillStyle;
             ctx.strokeStyle= this.strokeStyle;
@@ -15996,11 +16172,11 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             x=0;
             for( i=0; i<chars.length; i++ ) {
                 cchar= chars.charAt(i);
-                ctx.fillText( cchar, x+padding, 0 );
+                ctx.fillText( cchar, x+padding, yoffset );
                 if ( this.strokeStyle ) {
                     ctx.beginPath();
                     ctx.lineWidth= this.strokeSize;
-                    ctx.strokeText( cchar, x+padding,  0 );
+                    ctx.strokeText( cchar, x+padding,  yoffset );
                 }
                 this.charMap[cchar]= {
                     x:      x + padding,
@@ -16009,8 +16185,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 x+= charWidth[i];
             }
 
-            this.image= CAAT.modules.ImageUtil.optimize( canvas, 32, { top: true, bottom: true, left: false, right: false } );
-            this.height= this.image.height;
+            this.image= canvas;
 
             return this;
         },
@@ -16034,7 +16209,29 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                     y: 0
                 };
             }
-            return new CAAT.SpriteImage().initializeAsGlyphDesigner( this.image, cm );
+
+            this.spriteImage= new CAAT.SpriteImage().initializeAsGlyphDesigner( this.image, cm );
+            return this;
+        },
+
+        getAscent : function( ) {
+            return this.ascent;
+        },
+
+        getDescent : function() {
+            return this.descent;
+        },
+
+        stringHeight : function() {
+            return this.height;
+        },
+
+        getFontData : function() {
+            return {
+                height : this.height,
+                ascent : this.ascent,
+                descent : this.descent
+            };
         },
 
         stringWidth : function( str ) {
@@ -16080,6 +16277,10 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             var str= "image/png";
             var strData= this.image.toDataURL(str);
             document.location.href= strData.replace( str, "image/octet-stream" );
+        },
+
+        drawSpriteText : function( director, time ) {
+            this.spriteImage.drawSpriteText( director, time );
         }
 
     };
@@ -20364,7 +20565,17 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
         }
     };
 
-})();CAAT.UI= {};(function() {
+})();
+(function() {
+
+    CAAT.UI= {
+
+        defaultFont : "24px Arial"
+
+    };
+
+}());
+(function() {
 
     CAAT.UI.Padding= function() {
         return this;
@@ -20375,6 +20586,21 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
         right:  2,
         top:    2,
         bottom: 2
+    };
+
+
+    CAAT.UI.AXIS= {
+        X : 0,
+        Y : 1
+    };
+
+    CAAT.UI.ALIGNMENT= {
+        LEFT :  0,
+        RIGHT:  1,
+        CENTER: 2,
+        TOP:    3,
+        BOTTOM: 4,
+        JUSTIFY:5
     };
 
     CAAT.UI.LayoutManager= function( ) {
@@ -20472,7 +20698,6 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
      *
      * Layouts a container children in equal sized cells organized in rows by columns.
      *
-     * @param container {CAAT.Actor}
      * @param rows {number=} number of initial rows, defaults to 2.
      * @param columns {number=} number of initial columns, defaults to 2.
      * @return {*}
@@ -20524,13 +20749,15 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
                         if ( !this.animated ) {
                             child.setBounds(x, y, widthOnComponent, heightOnComponent);
                         } else {
-                            child.setSize(widthOnComponent, heightOnComponent);
-                            if ( this.newChildren.indexOf( child ) !==-1 ) {
-                                child.setPosition( x,y );
-                                child.setScale(0.01,0.01);
-                                child.scaleTo( 1,1, 500, 0,.5,.5, CAAT.UI.LayoutManager.newElementInterpolator );
-                            } else {
-                                child.moveTo( x, y, 500, 0, CAAT.UI.LayoutManager.moveElementInterpolator );
+                            if ( child.width!==widthOnComponent || child.height!==heightOnComponent ) {
+                                child.setSize(widthOnComponent, heightOnComponent);
+                                if ( this.newChildren.indexOf( child ) !==-1 ) {
+                                    child.setPosition( x,y );
+                                    child.setScale(0.01,0.01);
+                                    child.scaleTo( 1,1, 500, 0,.5,.5, CAAT.UI.LayoutManager.newElementInterpolator );
+                                } else {
+                                    child.moveTo( x, y, 500, 0, CAAT.UI.LayoutManager.moveElementInterpolator );
+                                }
                             }
                         }
                     }
@@ -20741,7 +20968,7 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
             var bottom = container.height - this.padding.bottom;
             var left = this.padding.left;
             var right = container.width - this.padding.right;
-            var c = null, d;
+            var c, d;
 
             if ((c=this.__getChild("top")) != null) {
                 c.setSize(right - left, c.height);
@@ -20839,12 +21066,12 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
 
             var computedW= 0, computedH=0;
             var yoffset= 0, xoffset;
-            var i, l;
+            var i, l, actor;
 
             // calculamos ancho y alto de los elementos.
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
 
-                var actor= container.getChildAt(i);
+                actor= container.getChildAt(i);
                 if ( computedH < actor.height ) {
                     computedH= actor.height;
                 }
@@ -20867,7 +21094,7 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
             }
 
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
-                var actor= container.getChildAt(i);
+                actor= container.getChildAt(i);
 
                 switch( this.valign ) {
                     case CAAT.UI.BoxLayout.ALIGNMENT.TOP:
@@ -20905,12 +21132,12 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
 
             var computedW= 0, computedH=0;
             var yoffset, xoffset;
-            var i, l;
+            var i, l, actor;
 
             // calculamos ancho y alto de los elementos.
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
 
-                var actor= container.getChildAt(i);
+                actor= container.getChildAt(i);
                 if ( computedW < actor.width ) {
                     computedW= actor.width;
                 }
@@ -20933,7 +21160,7 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
             }
 
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
-                var actor= container.getChildAt(i);
+                actor= container.getChildAt(i);
 
                 switch( this.halign ) {
                     case CAAT.UI.BoxLayout.ALIGNMENT.LEFT:

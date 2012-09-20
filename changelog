@@ -1,3 +1,18 @@
+* 09/19/2012 0.4 Build 398*
+---------------------------
+
+* FIX. Complete CAAT.Font revamp.
+* FIX. Complete CAAT.TextActor revamp. Now it is consistent among: CAAT.TextActor, CAAT.TextActor with
+  CAAT.Font object and Canvas drawing.
+  It is funny seeing how different browsers implement differently same APIs. Shame on you.
+* ADD. CAAT.UI.Label. This a powerful multiline textActor. You can set styles, let the text reflow
+  at fixed/variable width, add images and set anchors.
+* ADD. Demo30 fonts. This demo shows correcteness of CAAT.TextActor by mixing TextActors, TextActor with
+  CAAT.Font as font, cachedAsBitmap actors and Canvas drawing. The result is homogeneous and every
+  element seems to be the same since it is indistinguible to realize which one is canvas or which uses
+  sprite font.
+* CHANGE. Demo29 layout contains Label actors showing pork-ipsum at random font sizes.
+
 * 09/15/2012 0.4 Build 319*
 ---------------------------
 * FIX. CAAT.Actor.scaleTo wasn't scaling correctly.

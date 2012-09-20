@@ -367,7 +367,7 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Font.html#create">create</a></b>(chars, padding)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Font.html#create">create</a></b>(chars, padding, notPerfectHeight)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -376,7 +376,16 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Font.html#createDefault">createDefault</a></b>(padding)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Font.html#createDefault">createDefault</a></b>(padding, notPerfectHeight)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Font.html#drawSpriteText">drawSpriteText</a></b>(director, time)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -388,6 +397,45 @@ ul.inheritsList
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Font.html#drawText">drawText</a></b>(str, ctx, x, y)
 								</div>
 								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Font.html#getAscent">getAscent</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Font.html#getDescent">getDescent</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Font.html#getFontData">getFontData</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">CAAT.Font.<b><a href="../symbols/CAAT.Font.html#.getFontHeight">getFontHeight</a></b>(font)
+								</div>
+								<div class="description">Totally ripped from:
+
+jQuery (offset function)
+Daniel Earwicker: http://stackoverflow.com/questions/1134586/how-can-you-find-the-height-of-text-on-an-html-canvas</div>
 							</td>
 						</tr>
 					
@@ -475,6 +523,15 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Font.html#stringHeight">stringHeight</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Font.html#stringWidth">stringWidth</a></b>(str)
 								</div>
 								<div class="description"></div>
@@ -533,7 +590,7 @@ ul.inheritsList
 					<div class="fixedFont">
 					
 					
-					<b>create</b>(chars, padding)
+					<b>create</b>(chars, padding, notPerfectHeight)
 					
 					</div>
 					<div class="description">
@@ -560,6 +617,12 @@ ul.inheritsList
 								</dt>
 								<dd></dd>
 							
+								<dt>
+									<b>notPerfectHeight</b>
+									
+								</dt>
+								<dd></dd>
+							
 							</dl>
 						
 						
@@ -575,7 +638,7 @@ ul.inheritsList
 					<div class="fixedFont">
 					
 					
-					<b>createDefault</b>(padding)
+					<b>createDefault</b>(padding, notPerfectHeight)
 					
 					</div>
 					<div class="description">
@@ -592,6 +655,54 @@ ul.inheritsList
 							
 								<dt>
 									<b>padding</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>notPerfectHeight</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="drawSpriteText"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>drawSpriteText</b>(director, time)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>director</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>time</b>
 									
 								</dt>
 								<dd></dd>
@@ -655,6 +766,127 @@ ul.inheritsList
 						
 						
 						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getAscent"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getAscent</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getDescent"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getDescent</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getFontData"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getFontData</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".getFontHeight"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					<span class="light">{*}</span>
+					<span class="light">CAAT.Font.</span><b>getFontHeight</b>(font)
+					
+					</div>
+					<div class="description">
+						Totally ripped from:
+
+jQuery (offset function)
+Daniel Earwicker: http://stackoverflow.com/questions/1134586/how-can-you-find-the-height-of-text-on-an-html-canvas
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>font</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
+							
+							</dl>
 						
 						
 						
@@ -963,6 +1195,31 @@ ul.inheritsList
 
 					<hr />
 				
+					<a name="stringHeight"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>stringHeight</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="stringWidth"> </a>
 					<div class="fixedFont">
 					
@@ -1011,7 +1268,7 @@ ul.inheritsList
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sat Sep 15 2012 16:52:21 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Sep 19 2012 23:25:29 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

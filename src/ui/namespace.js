@@ -1,1 +1,10 @@
-CAAT.UI= {};
+
+(function() {
+
+    CAAT.UI= {
+
+        defaultFont : "24px Arial"
+
+    };
+
+}());

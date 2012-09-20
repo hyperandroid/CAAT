@@ -987,6 +987,7 @@
          * @return this
          */
 	    setSize : function( w, h )   {
+
 	        this.width= w;
 	        this.height= h;
 
@@ -1983,6 +1984,14 @@
             this.clipPath= clipPath;
             return this;
         },
+
+        stopCacheAsBitmap : function() {
+            if ( this.cached ) {
+                this.backgroundImage= null;
+                this.cached= false;
+            }
+        },
+
         /**
          *
          * @param time {Number=}
@@ -2003,11 +2012,20 @@
                 inDirtyRect : function() { return true; }
             };
 
+            var pmv=    this.modelViewMatrix;
+            var pwmv=   this.worldModelViewMatrix;
+
+            this.modelViewMatrix =  new CAAT.Matrix();
+            this.worldModelViewMatrix =  new CAAT.Matrix();
+
             this.cached= false;
             this.paintActor(director,time);
             this.setBackgroundImage(canvas);
 
             this.cached= strategy ? strategy : CAAT.Actor.CACHE_SIMPLE;
+
+            this.modelViewMatrix =  pmv;
+            this.worldModelViewMatrix =  pwmv;
 
             return this;
         },
@@ -2773,9 +2791,9 @@
 		CAAT.TextActor.superclass.constructor.call(this);
 		this.font= "10px sans-serif";
 		this.textAlign= "left";
-		this.textBaseline= "top";
 		this.outlineColor= "black";
         this.clip= false;
+        this.__calcFontData();
 
 		return this;
 	};
@@ -2786,10 +2804,11 @@
 	CAAT.TextActor.prototype= {
 		font:			    null,   // a valid canvas rendering context font description. Default font
                                     // will be "10px sans-serif".
+        fontData:           null,
 		textAlign:		    null,	// a valid canvas rendering context textAlign string. Any of:
                                     // start, end, left, right, center.
                                     // defaults to "left".
-		textBaseline:	    null,	// a valid canvas rendering context textBaseLine string. Any of:
+		textBaseline:	    "top",	// a valid canvas rendering context textBaseLine string. Any of:
                                     // top, hanging, middle, alphabetic, ideographic, bottom.
                                     // defaults to "top".
 		fill:			    true,   // a boolean indicating whether the text should be filled.
@@ -2814,14 +2833,17 @@
          * @return this;
          */
         setFill : function( fill ) {
+            this.stopCacheAsBitmap();
             this.fill= fill;
             return this;
         },
         setLineWidth : function( lw ) {
+            this.stopCacheAsBitmap();
             this.lineWidth= lw;
             return this;
         },
         setTextFillStyle : function( style ) {
+            this.stopCacheAsBitmap();
             this.textFillStyle= style;
             return this;
         },
@@ -2831,6 +2853,7 @@
          * @return this;
          */
         setOutline : function( outline ) {
+            this.stopCacheAsBitmap();
             this.outline= outline;
             return this;
         },
@@ -2845,6 +2868,7 @@
          * @return this.
          */
         setOutlineColor : function( color ) {
+            this.stopCacheAsBitmap();
             this.outlineColor= color;
             return this;
         },
@@ -2854,11 +2878,12 @@
          * @return this
          */
 		setText : function( sText ) {
+            this.stopCacheAsBitmap();
 			this.text= sText;
             if ( null===this.text || this.text==="" ) {
                 this.width= this.height= 0;
             }
-            this.calcTextSize( CAAT.director[0] );
+            this.calcTextSize( CAAT.currentDirector );
 
             this.invalidate();
 
@@ -2882,11 +2907,13 @@
          * @param baseline
          */
         setTextBaseline : function( baseline ) {
+            this.stopCacheAsBitmap();
             this.textBaseline= baseline;
             return this;
 
         },
         setBaseline : function( baseline ) {
+            this.stopCacheAsBitmap();
             return this.setTextBaseline(baseline);
         },
         /**
@@ -2896,14 +2923,19 @@
          */
         setFont : function(font) {
 
+            this.stopCacheAsBitmap();
+
             if ( !font ) {
                 font= "10px sans-serif";
             }
 
             if ( font instanceof CAAT.Font ) {
-                font= font.setAsSpriteImage();
+                font.setAsSpriteImage();
+            } else if (font instanceof CAAT.SpriteImage ) {
+                CAAT.log("WARN: setFont will no more accept a CAAT.SpriteImage as argument.");
             }
             this.font= font;
+
             this.calcTextSize( CAAT.director[0] );
 
             return this;
@@ -2941,7 +2973,9 @@
          * @private
          */
         __setLocation : function() {
-            var nx
+
+            var nx, ny;
+
             if ( this.textAlign==="center" ) {
                 nx= this.lx - this.width/2;
             } else if ( this.textAlign==="right" || this.textAlign==="end" ) {
@@ -2950,7 +2984,17 @@
                 nx= this.lx;
             }
 
-            CAAT.TextActor.superclass.setLocation.call( this, nx, this.ly );
+            if ( this.textBaseline==="bottom" ) {
+                ny= this.ly - this.height;
+            } else if ( this.textBaseline==="middle" ) {
+                ny= this.ly - this.height/2;
+            } else if ( this.textBaseline==="alphabetic" ) {
+                ny= this.ly - this.fontData.ascent;
+            } else {
+                ny= this.ly;
+            }
+
+            CAAT.TextActor.superclass.setLocation.call( this, nx, ny );
         },
 
         centerAt : function(x,y) {
@@ -2982,6 +3026,22 @@
                 this.textHeight=this.font.stringHeight();
                 this.width= this.textWidth;
                 this.height= this.textHeight;
+
+                var as= (this.font.singleHeight *.8)>>0;
+                this.fontData= {
+                    height : this.font.singleHeight,
+                    ascent : as,
+                    descent: this.font.singleHeight - as
+                };
+                return this;
+            }
+
+            if ( this.font instanceof CAAT.Font ) {
+                this.textWidth= this.font.stringWidth( this.text );
+                this.textHeight=this.font.stringHeight();
+                this.width= this.textWidth;
+                this.height= this.textHeight;
+                this.fontData= this.font.getFontData();
                 return this;
             }
 
@@ -3007,15 +3067,31 @@
                 this.textHeight= parseInt(s,10);
             }
 
+            this.__calcFontData();
+
             // needed to calculate the descent.
             // no context.getDescent(font) WTF !!!
-            this.textHeight+= (this.textHeight/4)>>0;
-            this.setSize( this.textWidth, this.textHeight );
+//            this.textHeight+= (this.textHeight/4)>>0;
+            this.setSize( this.textWidth, this.fontData.height );
 
             ctx.restore();
 
             return this;
         },
+
+        __calcFontData : function() {
+            try {
+                this.fontData= CAAT.Font.getFontHeight( this.font );
+            } catch(e) {
+                var ascent= (this.textHeight*.8)|0;
+                this.fontData= {
+                    height  : this.textHeight,
+                    ascent  : ascent,
+                    descent : this.textHeight - ascent
+                }
+            }
+        },
+
         /**
          * Custom paint method for TextActor instances.
          * If the path attribute is set, the text will be drawn traversing the path.
@@ -3043,7 +3119,7 @@
 
 			var ctx= director.ctx;
 			
-			if ( this.font instanceof CAAT.SpriteImage ) {
+			if ( this.font instanceof CAAT.Font || this.font instanceof CAAT.SpriteImage ) {
 				return this.drawSpriteText(director,time);
 			}
 
@@ -3051,9 +3127,11 @@
 				ctx.font= this.font;
 			}
 
-			if ( null!==this.textBaseline ) {
-				ctx.textBaseline= this.textBaseline;
-			}
+            /**
+             * always draw text with middle or bottom, top is buggy in FF.
+             * @type {String}
+             */
+            ctx.textBaseline="alphabetic";
 
 			if (null===this.path) {
 
@@ -3072,7 +3150,7 @@
                     if ( null!==this.textFillStyle ) {
                         ctx.fillStyle= this.textFillStyle;
                     }
-					ctx.fillText( this.text, tx, 0 );
+					ctx.fillText( this.text, tx, this.fontData.ascent  );
 				}
 
                 if ( this.outline ) {
@@ -3082,7 +3160,7 @@
 
                     ctx.lineWidth= this.lineWidth;
                     ctx.beginPath();
-					ctx.strokeText( this.text, tx, 0 );
+					ctx.strokeText( this.text, tx, this.fontData.ascent );
 				}
 			}
 			else {
@@ -3151,7 +3229,7 @@
          */
 		drawSpriteText: function(director, time) {
 			if (null===this.path) {
-				this.font.drawString( director.ctx, this.text, 0, 0);
+				this.font.drawText( this.text, director.ctx, 0, 0);
 			} else {
 				this.drawSpriteTextOnPath(director, time);
 			}
@@ -3173,7 +3251,7 @@
 
 			for( var i=0; i<this.text.length; i++ ) {
 				var character= this.text[i].toString();
-				var charWidth= this.font.stringWidth(character); //context.measureText( caracter ).width;
+				var charWidth= this.font.stringWidth(character);
 
 				var pathLength= this.path.getLength();
 
@@ -3189,7 +3267,7 @@
 				context.translate( p0.x|0, p0.y|0 );
 				context.rotate( angle );
 				
-				var y = this.textBaseline === "bottom" ? 0 - this.font.height : 0;
+				var y = this.textBaseline === "bottom" ? 0 - this.font.getHeight() : 0;
 				
 				this.font.drawString(context,character, 0, y);
 

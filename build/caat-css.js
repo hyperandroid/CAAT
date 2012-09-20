@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 319
+Version: 0.4 build: 396
 
 Created on:
-DATE: 2012-09-15
-TIME: 16:51:25
+DATE: 2012-09-19
+TIME: 23:24:46
 */
 
 
@@ -14696,6 +14696,79 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         return this;
     };
 
+    /**
+     * Totally ripped from:
+     *
+     * jQuery (offset function)
+     * Daniel Earwicker: http://stackoverflow.com/questions/1134586/how-can-you-find-the-height-of-text-on-an-html-canvas
+     *
+     * @param font
+     * @return {*}
+     */
+    CAAT.Font.getFontHeight = function( font ) {
+
+        function offset( elem ) {
+
+            var box, docElem, body, win, clientTop, clientLeft, scrollTop, scrollLeft, top, left;
+            var doc= elem && elem.ownerDocument;
+            var docElem = doc.documentElement;
+
+            box = elem.getBoundingClientRect();
+           	//win = getWindow( doc );
+
+            body= document.body;
+            win= doc.nodeType === 9 ? doc.defaultView || doc.parentWindow : false;
+
+           	clientTop  = docElem.clientTop  || body.clientTop  || 0;
+           	clientLeft = docElem.clientLeft || body.clientLeft || 0;
+           	scrollTop  = win.pageYOffset || docElem.scrollTop;
+           	scrollLeft = win.pageXOffset || docElem.scrollLeft;
+           	top  = box.top  + scrollTop  - clientTop;
+           	left = box.left + scrollLeft - clientLeft;
+
+            return { top: top, left: left };
+        }
+
+        try {
+            var text = document.createElement("span");
+            text.style.font = font;
+            text.innerHTML = "Hg";
+
+            var block = document.createElement("div");
+            block.style.display = "inline-block";
+            block.style.width = "1px";
+            block.style.heigh = "0px";
+
+            var div = document.createElement("div");
+            div.appendChild(text);
+            div.appendChild(block);
+
+
+            var body = document.body;
+            body.appendChild(div);
+
+            try {
+
+                var result = {};
+
+                block.style.verticalAlign = 'baseline';
+                result.ascent = offset(block).top - offset(text).top;
+
+                block.style.verticalAlign = 'bottom';
+                result.height = offset(block).top - offset(text).top;
+
+                result.descent = result.height - result.ascent;
+
+                return result;
+
+            } finally {
+                body.removeChild( div );
+            }
+        } catch (e) {
+            return null;
+        }
+    };
+
     var UNKNOWN_CHAR_WIDTH= 10;
 
     CAAT.Font.prototype= {
@@ -14712,6 +14785,8 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         charMap     :   null,
 
         height      :   0,
+        ascent      :   0,
+        descent     :   0,
 
         setPadding : function( padding ) {
             this.padding= padding;
@@ -14749,26 +14824,24 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             return this;
         },
 
-        createDefault : function( padding ) {
+        createDefault : function( padding, notPerfectHeight ) {
             var str="";
             for( var i=32; i<128; i++ ) {
                 str= str+String.fromCharCode(i);
             }
 
-            return this.create( str, padding );
+            return this.create( str, padding, notPerfectHeight );
         },
 
-        create : function( chars, padding ) {
+        create : function( chars, padding, notPerfectHeight ) {
 
             padding= padding | 0;
             this.padding= padding;
 
             var canvas= document.createElement('canvas');
-            canvas.width=   1;
-            canvas.height=  1;
             var ctx= canvas.getContext('2d');
 
-            ctx.textBaseline= 'top';
+            ctx.textBaseline= 'bottom';
             ctx.font= this.fontStyle+' '+this.fontSize+""+this.fontSizeUnit+" "+ this.font;
 
             var textWidth= 0;
@@ -14783,11 +14856,36 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 textWidth+= cw;
             }
 
+            var fontHeight= notPerfectHeight ? null : CAAT.Font.getFontHeight( ctx.font );
+            var baseline, yoffset, canvasheight;
+            if ( null===fontHeight ) {
+                baseline= "bottom";
+                canvasheight= this.fontSize+1;
+                yoffset= canvasheight-1;
+
+                this.height= canvasheight;
+                this.ascent= (canvasheight*.8)|0;
+                this.descent= this.height - this.ascent;
+            } else {
+
+                /**
+                 * uber lol. Chrome offers integer values for ascent/descent and FF decimal ones.
+                 */
+                baseline="alphabetic";
+                canvasheight= fontHeight.height;
+                yoffset= fontHeight.ascent;
+                this.ascent= Math.ceil(fontHeight.ascent | 0 );
+                this.descent= Math.ceil(fontHeight.descent | 0);
+                this.height= this.ascent + this.descent;
+
+            }
+
             canvas.width= textWidth;
-            canvas.height= (this.fontSize*1.5)>>0;
+            canvas.height= canvasheight;
             ctx= canvas.getContext('2d');
 
-            ctx.textBaseline= 'top';
+            //ctx.textBaseline= 'bottom';
+            ctx.textBaseline= baseline;
             ctx.font= this.fontStyle+' '+this.fontSize+""+this.fontSizeUnit+" "+ this.font;
             ctx.fillStyle= this.fillStyle;
             ctx.strokeStyle= this.strokeStyle;
@@ -14797,11 +14895,11 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             x=0;
             for( i=0; i<chars.length; i++ ) {
                 cchar= chars.charAt(i);
-                ctx.fillText( cchar, x+padding, 0 );
+                ctx.fillText( cchar, x+padding, yoffset );
                 if ( this.strokeStyle ) {
                     ctx.beginPath();
                     ctx.lineWidth= this.strokeSize;
-                    ctx.strokeText( cchar, x+padding,  0 );
+                    ctx.strokeText( cchar, x+padding,  yoffset );
                 }
                 this.charMap[cchar]= {
                     x:      x + padding,
@@ -14810,8 +14908,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 x+= charWidth[i];
             }
 
-            this.image= CAAT.modules.ImageUtil.optimize( canvas, 32, { top: true, bottom: true, left: false, right: false } );
-            this.height= this.image.height;
+            this.image= canvas;
 
             return this;
         },
@@ -14835,7 +14932,29 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                     y: 0
                 };
             }
-            return new CAAT.SpriteImage().initializeAsGlyphDesigner( this.image, cm );
+
+            this.spriteImage= new CAAT.SpriteImage().initializeAsGlyphDesigner( this.image, cm );
+            return this;
+        },
+
+        getAscent : function( ) {
+            return this.ascent;
+        },
+
+        getDescent : function() {
+            return this.descent;
+        },
+
+        stringHeight : function() {
+            return this.height;
+        },
+
+        getFontData : function() {
+            return {
+                height : this.height,
+                ascent : this.ascent,
+                descent : this.descent
+            };
         },
 
         stringWidth : function( str ) {
@@ -14881,6 +15000,10 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             var str= "image/png";
             var strData= this.image.toDataURL(str);
             document.location.href= strData.replace( str, "image/octet-stream" );
+        },
+
+        drawSpriteText : function( director, time ) {
+            this.spriteImage.drawSpriteText( director, time );
         }
 
     };
@@ -17347,7 +17470,17 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 	};
 
     extend( CAAT.PathActor, CAAT.ActorContainer, null);
-})();CAAT.UI= {};(function() {
+})();
+(function() {
+
+    CAAT.UI= {
+
+        defaultFont : "24px Arial"
+
+    };
+
+}());
+(function() {
 
     CAAT.UI.Padding= function() {
         return this;
@@ -17358,6 +17491,21 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         right:  2,
         top:    2,
         bottom: 2
+    };
+
+
+    CAAT.UI.AXIS= {
+        X : 0,
+        Y : 1
+    };
+
+    CAAT.UI.ALIGNMENT= {
+        LEFT :  0,
+        RIGHT:  1,
+        CENTER: 2,
+        TOP:    3,
+        BOTTOM: 4,
+        JUSTIFY:5
     };
 
     CAAT.UI.LayoutManager= function( ) {
@@ -17455,7 +17603,6 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
      *
      * Layouts a container children in equal sized cells organized in rows by columns.
      *
-     * @param container {CAAT.Actor}
      * @param rows {number=} number of initial rows, defaults to 2.
      * @param columns {number=} number of initial columns, defaults to 2.
      * @return {*}
@@ -17507,13 +17654,15 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                         if ( !this.animated ) {
                             child.setBounds(x, y, widthOnComponent, heightOnComponent);
                         } else {
-                            child.setSize(widthOnComponent, heightOnComponent);
-                            if ( this.newChildren.indexOf( child ) !==-1 ) {
-                                child.setPosition( x,y );
-                                child.setScale(0.01,0.01);
-                                child.scaleTo( 1,1, 500, 0,.5,.5, CAAT.UI.LayoutManager.newElementInterpolator );
-                            } else {
-                                child.moveTo( x, y, 500, 0, CAAT.UI.LayoutManager.moveElementInterpolator );
+                            if ( child.width!==widthOnComponent || child.height!==heightOnComponent ) {
+                                child.setSize(widthOnComponent, heightOnComponent);
+                                if ( this.newChildren.indexOf( child ) !==-1 ) {
+                                    child.setPosition( x,y );
+                                    child.setScale(0.01,0.01);
+                                    child.scaleTo( 1,1, 500, 0,.5,.5, CAAT.UI.LayoutManager.newElementInterpolator );
+                                } else {
+                                    child.moveTo( x, y, 500, 0, CAAT.UI.LayoutManager.moveElementInterpolator );
+                                }
                             }
                         }
                     }
@@ -17724,7 +17873,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             var bottom = container.height - this.padding.bottom;
             var left = this.padding.left;
             var right = container.width - this.padding.right;
-            var c = null, d;
+            var c, d;
 
             if ((c=this.__getChild("top")) != null) {
                 c.setSize(right - left, c.height);
@@ -17822,12 +17971,12 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 
             var computedW= 0, computedH=0;
             var yoffset= 0, xoffset;
-            var i, l;
+            var i, l, actor;
 
             // calculamos ancho y alto de los elementos.
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
 
-                var actor= container.getChildAt(i);
+                actor= container.getChildAt(i);
                 if ( computedH < actor.height ) {
                     computedH= actor.height;
                 }
@@ -17850,7 +17999,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             }
 
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
-                var actor= container.getChildAt(i);
+                actor= container.getChildAt(i);
 
                 switch( this.valign ) {
                     case CAAT.UI.BoxLayout.ALIGNMENT.TOP:
@@ -17888,12 +18037,12 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 
             var computedW= 0, computedH=0;
             var yoffset, xoffset;
-            var i, l;
+            var i, l, actor;
 
             // calculamos ancho y alto de los elementos.
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
 
-                var actor= container.getChildAt(i);
+                actor= container.getChildAt(i);
                 if ( computedW < actor.width ) {
                     computedW= actor.width;
                 }
@@ -17916,7 +18065,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             }
 
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
-                var actor= container.getChildAt(i);
+                actor= container.getChildAt(i);
 
                 switch( this.halign ) {
                     case CAAT.UI.BoxLayout.ALIGNMENT.LEFT:

@@ -129,7 +129,49 @@
 
 </body>
 
-<script src="../../../build/caat.js"></script>
+
+<script src="../../../src/CAAT.js"></script>
+<script src="../../../src/core/class.js"></script>
+<script src="../../../src/math/affinetransform2D.js"></script>
+<script src="../../../src/math/color.js"></script>
+<script src="../../../src/math/rectangle.js"></script>
+<script src="../../../src/math/bezier.js"></script>
+<script src="../../../src/math/point.js"></script>
+<script src="../../../src/math/quadtree.js"></script>
+<script src="../../../src/math/dimension.js"></script>
+<script src="../../../src/path/interpolator.js"></script>
+<script src="../../../src/behaviour/behaviour.js"></script>
+<script src="../../../src/behaviour/csskeyframehelper.js"></script>
+<script src="../../../src/core/browserdetect.js"></script>
+<script src="../../../src/model/debug.js"></script>
+<script src="../../../src/model/actor.js"></script>
+<script src="../../../src/model/audio.js"></script>
+<script src="../../../src/model/extraActor.js"></script>
+<script src="../../../src/model/director.js"></script>
+<script src="../../../src/model/mouseevent.js"></script>
+<script src="../../../src/model/conpoundimage.js"></script>
+<script src="../../../src/model/imagepreloader.js"></script>
+<script src="../../../src/model/timer.js"></script>
+<script src="../../../src/model/scene.js"></script>
+<script src="../../../src/modules/modules.js"></script>
+<script src="../../../src/modules/CircleManager/PackedCircle.js"></script>
+<script src="../../../src/modules/CircleManager/PackedCircleManager.js"></script>
+<script src="../../../src/modules/LocalStorage/LocalStorage.js"></script>
+<script src="../../../src/modules/ImageUtil/ImageUtil.js"></script>
+<script src="../../../src/modules/Layout/layout.js"></script>
+<script src="../../../src/modules/Font/font.js"></script>
+<script src="../../../src/modules/Inspector/inspector.js"></script>
+<script src="../../../src/path/interpolatoractor.js"></script>
+<script src="../../../src/path/path.js"></script>
+<script src="../../../src/path/pathactor.js"></script>
+<script src="../../../src/texture/plasma.js"></script>
+<script src="../../../src/webgl/ShaderUtil.js"></script>
+<script src="../../../src/webgl/glu.js"></script>
+<script src="../../../src/webgl/glTexturePage.js"></script>
+<script src="../../../src/ui/namespace.js"></script>
+<script src="../../../src/ui/layoutManager.js"></script>
+<script src="../../../src/ui/checkbox.js"></script>
+<script src="../../../src/ui/label.js"></script>
 <script type="text/javascript" src="../menu/menu.js"></script>
 
 <script type="text/javascript">
@@ -158,7 +200,7 @@
      * THE SOFTWARE.
      *
      */
-
+CAAT.DEBUG=1;
     (function() {
 
         /**
@@ -169,6 +211,8 @@
                 'load',
                 paint,
                 false);
+
+        var textId= 0;
 
         /**
          * Creates a button
@@ -197,11 +241,19 @@
             return new CAAT.SpriteImage().initialize( canvas, 1, 2 );
         }
 
-        /**
-         * Creates a panel with add/remove buttons, and adding area.
-         */
-        function createPanel( buttonsInBottom, pw, ph, __layout ) {
+        function createTextPanel( buttonsInBottom, pw, ph, __layout ) {
+            var label= new CAAT.UI.Label().
+                    setStyle("default", {
+                        fontSize : 5+ (Math.random()*15)|0
+                    }).
+                    setText("Bacon ipsum dolor sit amet salami pork belly tail tongue pancetta, pork loin tri-tip drumstick bresaola shankle. Bacon ham hock pork belly, sausage tri-tip tongue strip steak fatback. Tail t-bone salami bacon. Bresaola turkey ribeye hamburger meatball t-bone. Turkey pancetta ground round, pig sirloin tenderloin corned beef meatloaf venison sausage jerky pork loin shank bacon tail. Pancetta beef ham hock, jowl pork chop pork belly bacon venison rump shoulder shankle cow pastrami sausage. Beef ribs drumstick meatball, pancetta biltong swine bresaola ribeye jerky spare ribs ham chuck corned beef pork chop.").
+                    cacheAsBitmap().
+                    setClip(true);
 
+            return label;
+        }
+
+        function createPanel( buttonsInBottom, pw, ph, __layout ) {
             var fn =  function( button ) {
                 content.addChild(
                         new CAAT.Actor().
@@ -213,7 +265,11 @@
             };
 
             var fn3 =  function( button ) {
-                content.addChild( createPanel( Math.random()<.5, 100, 100 ) );
+                if ( Math.random()<.5 ) {
+                    content.addChild( createTextPanel( Math.random()<.5, 100, 100 ) );
+                } else {
+                    content.addChild( createPanel( Math.random()<.5, 100, 100 ) );
+                }
             };
 
             function fn2( button ) {

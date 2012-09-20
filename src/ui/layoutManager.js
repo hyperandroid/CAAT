@@ -11,6 +11,21 @@
         bottom: 2
     };
 
+
+    CAAT.UI.AXIS= {
+        X : 0,
+        Y : 1
+    };
+
+    CAAT.UI.ALIGNMENT= {
+        LEFT :  0,
+        RIGHT:  1,
+        CENTER: 2,
+        TOP:    3,
+        BOTTOM: 4,
+        JUSTIFY:5
+    };
+
     CAAT.UI.LayoutManager= function( ) {
 
         this.newChildren= [];
@@ -157,13 +172,15 @@
                         if ( !this.animated ) {
                             child.setBounds(x, y, widthOnComponent, heightOnComponent);
                         } else {
-                            child.setSize(widthOnComponent, heightOnComponent);
-                            if ( this.newChildren.indexOf( child ) !==-1 ) {
-                                child.setPosition( x,y );
-                                child.setScale(0.01,0.01);
-                                child.scaleTo( 1,1, 500, 0,.5,.5, CAAT.UI.LayoutManager.newElementInterpolator );
-                            } else {
-                                child.moveTo( x, y, 500, 0, CAAT.UI.LayoutManager.moveElementInterpolator );
+                            if ( child.width!==widthOnComponent || child.height!==heightOnComponent ) {
+                                child.setSize(widthOnComponent, heightOnComponent);
+                                if ( this.newChildren.indexOf( child ) !==-1 ) {
+                                    child.setPosition( x,y );
+                                    child.setScale(0.01,0.01);
+                                    child.scaleTo( 1,1, 500, 0,.5,.5, CAAT.UI.LayoutManager.newElementInterpolator );
+                                } else {
+                                    child.moveTo( x, y, 500, 0, CAAT.UI.LayoutManager.moveElementInterpolator );
+                                }
                             }
                         }
                     }
