@@ -39,4 +39,5 @@ SOURCE_DIR=/Users/ibon/js/CAAT/src
 "${SOURCE_DIR}"/webgl/glTexturePage.js \
 "${SOURCE_DIR}"/ui/namespace.js \
 "${SOURCE_DIR}"/ui/layoutManager.js \
+"${SOURCE_DIR}"/ui/label.js \
   -d=/Users/ibon/js/CAAT/documentation/jsdoc

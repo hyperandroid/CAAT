@@ -7,111 +7,9 @@
 
     <link rel="stylesheet" href="../style/demo.css">
 
-    <style>
-        #menu {
-            float: left !important;
-            display:none;
-            background:rgba(255,255,255,.7);
-            position:absolute;
-            left:10px;
-            top:40px;
-            width:130px;
-            z-index:999;
-            padding: 5px;
-            border: #ddd solid 1px;
-        }
-
-        #infomenu {
-            position:absolute;
-            left:10px;
-            top:10px;
-            background:rgba(255,255,255,.5);
-            width:20px;
-            height:20px;
-            -webkit-border-radius: 20px;
-            -moz-border-radius: 20px;
-            border-radius: 20px;
-            border: #ddd solid 1px;
-            font-size: 1.3em;
-            font-weight: bold;
-            text-align: center;
-            color: black;
-        }
-
-        #info {
-            position:absolute;
-            right:10px;
-            top:10px;
-            background:rgba(255,255,255,.5);
-            width:20px;
-            height:20px;
-            -webkit-border-radius: 20px;
-            -moz-border-radius: 20px;
-            border-radius: 20px;
-            border: #ddd solid 1px;
-            font-size: 1.3em;
-            font-weight: bold;
-            text-align: center;
-            color: black;
-        }
-
-        #infotext {
-            position:absolute;
-            right:10px;
-            top:40px;
-            background:rgba(200,200,200,.5);
-            width:400px;
-            height:auto;
-            border: #ddd solid 1px;
-            font-size: 1em;
-            font-weight: bold;
-            color: black;
-            padding: 5px;
-            text-shadow: 0 1px 0 #ccc;
-        }
-
-    </style>
 
 </head>
 <body style="margin:0; padding:0;">
-
-<script>
-    var visible= false;
-    function togleMenu(id) {
-        if (document.getElementById(id).style.display == "block") {
-            document.getElementById(id).style.display = "none";
-        } else {
-            document.getElementById(id).style.display = "block";
-        }
-    }
-</script>
-
-    <div id="infomenu"><a href="#" onclick="togleMenu('menu');">m</a></div>
-    <div id="info"><a href="#" onclick="togleMenu('infotext');">i</a></div>
-    <div id="menu">
-    </div>
-    <div id="infotext">
-        <div style="text-align:center">
-            <h1>Automatic layout capabilities</h1>
-        </div>
-        <div>
-            <p>This demo shows CAAT container's auto layout capabilities.
-            <p>Nested Containers can have different layouts.
-            <p>Current implementations include:</p>
-            <ul>
-                <li>BorderLayout</li>
-                <li>GridLayout</li>
-                <li>BoxLayout</li>
-            </ul>
-        </div>
-        <div>
-            <p>Controls:</p>
-            <ul>
-                <li>Resize browser window.</li>
-            </ul>
-        </div>
-    </div>
-
 
     <div>
         <div>
@@ -120,9 +18,6 @@
     </div>
 
 </body>
-
-<script type="text/javascript" src="../menu/menu.js"></script>
-
 
 <script src="../../../src/CAAT.js"></script>
 <script src="../../../src/core/class.js"></script>
@@ -164,6 +59,8 @@
 <script src="../../../src/webgl/glTexturePage.js"></script>
 <script src="../../../src/ui/namespace.js"></script>
 <script src="../../../src/ui/layoutManager.js"></script>
+<script src="../../../src/ui/checkbox.js"></script>
+<script src="../../../src/ui/label.js"></script>
 
 
 <script type="text/javascript">
@@ -192,9 +89,8 @@
      * THE SOFTWARE.
      *
      */
-
+CAAT.DEBUG=1;
     (function() {
-
         /**
          * Startup it all up when the document is ready.
          * Change for your favorite frameworks initialization code.
@@ -205,7 +101,14 @@
                 false);
 
         function paint() {
+            var img= new Image();
+            img.onload= function() {
+                start(img);
+            }
+            img.src= "../demo-resources/img/numbers.png";
+        }
 
+        function start(img) {
             var director= new CAAT.Director().initialize( window.innerWidth, window.innerHeight, document.getElementById("canvas") );
 
             var scene = director.createScene().setLayout( new CAAT.UI.BorderLayout() );
@@ -237,72 +140,10 @@
 
             var xx;
             var delay=0;
-            for( var i=0; i<13; i++ ) {
-                if ( i==7 ) {
-                    var c0= new CAAT.ActorContainer().
-                            setBounds( 0,0,director.width,director.height ).
-                            setLayout( new CAAT.UI.GridLayout(3,0).
-                                setHGap( 5 ).
-                                setVGap( 5 ).
-                                setAllPadding( 10 )
-                            );
-                    for( var j=0; j<7; j++ ) {
-                        if ( j===5 ) {
-                            var c00= new CAAT.ActorContainer().
-                                        setBounds( 0,0,director.width,director.height ).
-                                        setLayout( new CAAT.UI.GridLayout(3,0).
-                                            setHGap( 1 ).
-                                            setVGap( 1 ).
-                                            setAllPadding( 2 )
-                                        );
-                            for( var k=0; k<3; k++ ) {
-                                c00.addChild( new CAAT.Actor().
-                                    setFillStyle( CAAT.Color.RGB.random() ).
-                                    setSize(10,10) );
-
-                            }
-                            c0.addChild( c00 );
-
-                        } else {
-                            c0.addChild( new CAAT.Actor().
-                                setFillStyle( CAAT.Color.RGB.random() ).
-                                setSize(10,10) );
-                        }
-
-                    }
-                    c.addChild( c0 );
-
-
-                } else {
-
-                    if ( i===5 ) {
-
-                        var ac= new CAAT.ActorContainer().setLayout( new CAAT.UI.BoxLayout() );
-                        ac.addChild( new CAAT.Actor().setSize( 100,10).setFillStyle( CAAT.Color.RGB.random() ) );
-                        ac.addChild( new CAAT.Actor().setSize( 80,15).setFillStyle( CAAT.Color.RGB.random() ) );
-                        ac.addChild( new CAAT.Actor().setSize( 30,30).setFillStyle( CAAT.Color.RGB.random() ) );
-
-                        c.addChild( ac );
-
-                    } if ( i===10 ) {
-
-                        var ac= new CAAT.ActorContainer().setLayout(
-                                new CAAT.UI.BoxLayout().
-                                        setAxis( CAAT.UI.BoxLayout.AXIS.X ).
-                                        setVerticalAlignment( CAAT.UI.BoxLayout.ALIGNMENT.BOTTOM).
-                                        setHorizontalAlignment( CAAT.UI.BoxLayout.ALIGNMENT.RIGHT ) );
-                        ac.addChild( new CAAT.Actor().setSize( 10,100).setFillStyle( CAAT.Color.RGB.random() ) );
-                        ac.addChild( new CAAT.Actor().setSize( 15,80).setFillStyle( CAAT.Color.RGB.random() ) );
-                        ac.addChild( new CAAT.Actor().setSize( 30,30).setFillStyle( CAAT.Color.RGB.random() ) );
-
-                        c.addChild( ac );
-                    } else {
-                        c.addChild( xx=new CAAT.Actor().
-                                setFillStyle( CAAT.Color.RGB.random() ).
-                                setSize(10,10) );
-                    }
-
-                }
+            for( var i=0; i<30; i++ ) {
+                c.addChild( new CAAT.UI.CheckBox( Math.random() <.5 ).
+                        setText( "Checkbox "+i)
+                );
             }
 
             cont.addChild( c, "center" );
@@ -311,9 +152,54 @@
             cont.addChild( l, "left" );
             cont.addChild( r, "right" );
 
-            scene.addChild(cont, "center" );
+            //scene.addChild(cont, "center" );
 
             director.enableResizeEvents( CAAT.Director.prototype.RESIZE_BOTH );
+
+            var label= new CAAT.UI.Label().
+                    setBounds( 100,10,270,300).
+                    addImage( "numbers", new CAAT.SpriteImage().initialize( img, 9, 9) ).
+                    setStyle( "default",    {
+                        fontSize    : 32,
+                        fill        : '#00b',
+                        tabSize     : 100
+                    }).
+                    setStyle( "hyper", {
+                        filled  : false,
+                        stroked : true,
+                        fontSize: 64,
+                        bold    : true,
+                        italic  : true,
+                        strokeSize : 2,
+                        fill    : '#0f0'
+                    }).
+                    setStyle( "hyper_", {
+                        filled  : false,
+                        stroked : true,
+                        fontSize: 64,
+                        strokeSize :.5,
+                        stroke    : '#0ff',
+                        alignment : "center"
+                    }).
+                    setStyle( "hyper2", {
+                        fontSize: 32,
+                        italic  : false,
+                        strokeSize :1.5,
+                        stroke : '#00b'
+                    }).
+                    setStyle( "right", {
+                        alignment: "justify"
+                    }).
+                    setText("<style=right>abcd<tab>def<tab>ghi</style><br>" +
+                            "<style=hyper_>ibon</style><br><br><br>" +
+                            "<b>bold<i>italic+bold</i></b><br>"+
+                            "image=<image=naumbers,2,2> element 2,2<br>"+
+                            "12345<fontsize=12>6789 <style=hyper>H<style=hyper2>y</style>p<style=hyper2>e</style>r",
+270
+                        ).
+                    setVerticalAlignment( CAAT.UI.ALIGNMENT.CENTER).
+                    setHorizontalAlignment( CAAT.UI.ALIGNMENT.CENTER );
+            scene.addChild( label );
 
             director.loop(60);
         }
