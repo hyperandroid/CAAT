@@ -590,6 +590,7 @@
 
         setRadius : function( r ) {
             this.radius= r;
+			return this;
         },
 
         isArcTo : function() {
