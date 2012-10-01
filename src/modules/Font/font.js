@@ -13,6 +13,44 @@
         return this;
     };
 
+
+    CAAT.Font.getFontMetrics= function( font ) {
+        var ret;
+        if ( CAAT.CSS_TEXT_METRICS ) {
+            try {
+                ret= getFontMetricsCSS( font );
+                return ret;
+            } catch(e) {
+
+            }
+        }
+
+        return getFontMetricsNoCSS(font);
+    };
+
+    var getFontMetricsNoCSS= function( font ) {
+
+        var re= /(\d+)p[x|t]/i;
+        var res= re.exec( font );
+
+        var height;
+
+        if ( !res ) {
+            height= 32;     // no px or pt value in font. assume 32.)
+        } else {
+            height= res[1]|0;
+        }
+
+        var ascent= height-1;
+        var h= (height + height *.2)|0;
+        return {
+            height  : h,
+            ascent  : ascent,
+            descent : h - ascent
+        }
+
+    };
+
     /**
      * Totally ripped from:
      *
@@ -22,7 +60,7 @@
      * @param font
      * @return {*}
      */
-    CAAT.Font.getFontHeight = function( font ) {
+    var getFontMetricsCSS = function( font ) {
 
         function offset( elem ) {
 
@@ -73,6 +111,9 @@
 
                 block.style.verticalAlign = 'bottom';
                 result.height = offset(block).top - offset(text).top;
+
+                result.ascent= Math.ceil(result.ascent);
+                result.height= Math.ceil(result.height);
 
                 result.descent = result.height - result.ascent;
 
@@ -141,16 +182,16 @@
             return this;
         },
 
-        createDefault : function( padding, notPerfectHeight ) {
+        createDefault : function( padding ) {
             var str="";
             for( var i=32; i<128; i++ ) {
                 str= str+String.fromCharCode(i);
             }
 
-            return this.create( str, padding, notPerfectHeight );
+            return this.create( str, padding );
         },
 
-        create : function( chars, padding, notPerfectHeight ) {
+        create : function( chars, padding ) {
 
             padding= padding | 0;
             this.padding= padding;
@@ -173,21 +214,30 @@
                 textWidth+= cw;
             }
 
-            var fontHeight= notPerfectHeight ? null : CAAT.Font.getFontHeight( ctx.font );
-            var baseline, yoffset, canvasheight;
-            if ( null===fontHeight ) {
-                baseline= "bottom";
-                canvasheight= this.fontSize+1;
-                yoffset= canvasheight-1;
+
+            var fontMetrics= CAAT.Font.getFontMetrics( ctx.font );
+            var baseline="alphabetic", yoffset, canvasheight;
+
+            canvasheight= fontMetrics.height;
+            this.ascent=  fontMetrics.ascent;
+            this.descent= fontMetrics.descent;
+            this.height=  fontMetrics.height;
+            yoffset=      fontMetrics.ascent;
+/*
+            if ( !CAAT.CSS_TEXT_METRICS ) {
+                baseline= "alphabetic";
+
+                fontHeight= CAAT.Font.getFontHeightNoCSS( ctx.font );
+
+                canvasheight= fontHeight.;
+                yoffset= this.fontSize;
 
                 this.height= canvasheight;
-                this.ascent= (canvasheight*.8)|0;
+                this.ascent= this.fontSize;
                 this.descent= this.height - this.ascent;
             } else {
 
-                /**
-                 * uber lol. Chrome offers integer values for ascent/descent and FF decimal ones.
-                 */
+                fontHeight= CAAT.Font.getFontHeight( ctx.font );
                 baseline="alphabetic";
                 canvasheight= fontHeight.height;
                 yoffset= fontHeight.ascent;
@@ -196,7 +246,7 @@
                 this.height= this.ascent + this.descent;
 
             }
-
+*/
             canvas.width= textWidth;
             canvas.height= canvasheight;
             ctx= canvas.getContext('2d');

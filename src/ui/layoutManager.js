@@ -48,6 +48,7 @@
 
         setAnimated : function( animate ) {
             this.animated= animate;
+            return this;
         },
 
         setHGap : function( gap ) {

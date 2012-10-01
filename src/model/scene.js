@@ -135,30 +135,30 @@
 			switch(anchor) {
 			case CAAT.Actor.prototype.ANCHOR_TOP:
                 if ( isIn ) {
-                    pb.setPath( new CAAT.Path().setLinear( 0, -this.height, 0, 0) );
+                    pb.setPath( new CAAT.Path().setLinear( 0, -this.height+1, 0, 0) );
                 } else {
-                    pb.setPath( new CAAT.Path().setLinear( 0, 0, 0, -this.height) );
+                    pb.setPath( new CAAT.Path().setLinear( 0, 0, 0, -this.height+1) );
                 }
                 break;
             case CAAT.Actor.prototype.ANCHOR_BOTTOM:
                 if ( isIn ) {
-                    pb.setPath( new CAAT.Path().setLinear( 0, this.height, 0, 0) );
+                    pb.setPath( new CAAT.Path().setLinear( 0, this.height-1, 0, 0) );
                 } else {
-                    pb.setPath( new CAAT.Path().setLinear( 0, 0, 0, this.height) );
+                    pb.setPath( new CAAT.Path().setLinear( 0, 0, 0, this.height-1) );
                 }
                 break;
             case CAAT.Actor.prototype.ANCHOR_LEFT:
                 if ( isIn ) {
-                    pb.setPath( new CAAT.Path().setLinear( -this.width, 0, 0, 0) );
+                    pb.setPath( new CAAT.Path().setLinear( -this.width+1, 0, 0, 0) );
                 } else {
-                    pb.setPath( new CAAT.Path().setLinear( 0, 0, -this.width, 0) );
+                    pb.setPath( new CAAT.Path().setLinear( 0, 0, -this.width+1, 0) );
                 }
                 break;
             case CAAT.Actor.prototype.ANCHOR_RIGHT:
                 if ( isIn ) {
-                    pb.setPath( new CAAT.Path().setLinear( this.width, 0, 0, 0) );
+                    pb.setPath( new CAAT.Path().setLinear( this.width-1, 0, 0, 0) );
                 } else {
-                    pb.setPath( new CAAT.Path().setLinear( 0, 0, this.width, 0) );
+                    pb.setPath( new CAAT.Path().setLinear( 0, 0, this.width-1, 0) );
                 }
                 break;
             }

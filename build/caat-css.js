@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 396
+Version: 0.4 build: 421
 
 Created on:
-DATE: 2012-09-19
-TIME: 23:24:46
+DATE: 2012-09-30
+TIME: 17:40:38
 */
 
 
@@ -1784,7 +1784,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
          * @return {boolean}
          */
 		contains : function(px,py) {
-			return px>=0 && px<this.width && py>=0 && py<this.height; 
+			//return px>=0 && px<this.width && py>=0 && py<this.height;
+            return px>=this.x && px<this.x1 && py>=this.y && py<this.y1;
 		},
         /**
          * Return whether this rectangle is empty, that is, has zero dimension.
@@ -9216,6 +9217,8 @@ function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter)
                 CAAT.unregisterResizeListener(this);
                 this.onResizeCallback= null;
             }
+
+            return this;
         },
         /**
          * Set this director's bounds as well as its contained scenes.
@@ -11737,6 +11740,16 @@ CAAT.setCoordinateClamping= function( clamp ) {
     }
 };
 
+/**
+ * Control how CAAT.Font and CAAT.TextActor control font ascent/descent values.
+ * 0 means it will guess values from a font height
+ * 1 means it will try to use css to get accurate ascent/descent values and fall back to the previous method
+ *   in case it couldn't.
+ *
+ * @type {Number}
+ */
+CAAT.CSS_TEXT_METRICS=      0;
+
 CAAT.TOUCH_AS_MOUSE=        1;
 CAAT.TOUCH_AS_MULTITOUCH=   2;
 
@@ -12197,6 +12210,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 
     if ( !CAAT.director ) {
         CAAT.director=[];
+        CAAT.currentDirector= director;
     }
     CAAT.director.push(director);
     CAAT.GlobalEnableEvents();
@@ -12365,6 +12379,14 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
         getHeight : function() {
             var el= this.mapInfo[this.spriteIndex];
             return el.height;
+        },
+
+        getWrappedImageWidth : function() {
+            return this.image.width;
+        },
+
+        getWrappedImageHeight : function() {
+            return this.image.height;
         },
 
         /**
@@ -14696,6 +14718,44 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
         return this;
     };
 
+
+    CAAT.Font.getFontMetrics= function( font ) {
+        var ret;
+        if ( CAAT.CSS_TEXT_METRICS ) {
+            try {
+                ret= getFontMetricsCSS( font );
+                return ret;
+            } catch(e) {
+
+            }
+        }
+
+        return getFontMetricsNoCSS(font);
+    };
+
+    var getFontMetricsNoCSS= function( font ) {
+
+        var re= /(\d+)p[x|t]/i;
+        var res= re.exec( font );
+
+        var height;
+
+        if ( !res ) {
+            height= 32;     // no px or pt value in font. assume 32.)
+        } else {
+            height= res[1]|0;
+        }
+
+        var ascent= height-1;
+        var h= (height + height *.2)|0;
+        return {
+            height  : h,
+            ascent  : ascent,
+            descent : h - ascent
+        }
+
+    };
+
     /**
      * Totally ripped from:
      *
@@ -14705,7 +14765,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
      * @param font
      * @return {*}
      */
-    CAAT.Font.getFontHeight = function( font ) {
+    var getFontMetricsCSS = function( font ) {
 
         function offset( elem ) {
 
@@ -14756,6 +14816,9 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 
                 block.style.verticalAlign = 'bottom';
                 result.height = offset(block).top - offset(text).top;
+
+                result.ascent= Math.ceil(result.ascent);
+                result.height= Math.ceil(result.height);
 
                 result.descent = result.height - result.ascent;
 
@@ -14824,16 +14887,16 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
             return this;
         },
 
-        createDefault : function( padding, notPerfectHeight ) {
+        createDefault : function( padding ) {
             var str="";
             for( var i=32; i<128; i++ ) {
                 str= str+String.fromCharCode(i);
             }
 
-            return this.create( str, padding, notPerfectHeight );
+            return this.create( str, padding );
         },
 
-        create : function( chars, padding, notPerfectHeight ) {
+        create : function( chars, padding ) {
 
             padding= padding | 0;
             this.padding= padding;
@@ -14856,21 +14919,30 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 textWidth+= cw;
             }
 
-            var fontHeight= notPerfectHeight ? null : CAAT.Font.getFontHeight( ctx.font );
-            var baseline, yoffset, canvasheight;
-            if ( null===fontHeight ) {
-                baseline= "bottom";
-                canvasheight= this.fontSize+1;
-                yoffset= canvasheight-1;
+
+            var fontMetrics= CAAT.Font.getFontMetrics( ctx.font );
+            var baseline="alphabetic", yoffset, canvasheight;
+
+            canvasheight= fontMetrics.height;
+            this.ascent=  fontMetrics.ascent;
+            this.descent= fontMetrics.descent;
+            this.height=  fontMetrics.height;
+            yoffset=      fontMetrics.ascent;
+/*
+            if ( !CAAT.CSS_TEXT_METRICS ) {
+                baseline= "alphabetic";
+
+                fontHeight= CAAT.Font.getFontHeightNoCSS( ctx.font );
+
+                canvasheight= fontHeight.;
+                yoffset= this.fontSize;
 
                 this.height= canvasheight;
-                this.ascent= (canvasheight*.8)|0;
+                this.ascent= this.fontSize;
                 this.descent= this.height - this.ascent;
             } else {
 
-                /**
-                 * uber lol. Chrome offers integer values for ascent/descent and FF decimal ones.
-                 */
+                fontHeight= CAAT.Font.getFontHeight( ctx.font );
                 baseline="alphabetic";
                 canvasheight= fontHeight.height;
                 yoffset= fontHeight.ascent;
@@ -14879,7 +14951,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
                 this.height= this.ascent + this.descent;
 
             }
-
+*/
             canvas.width= textWidth;
             canvas.height= canvasheight;
             ctx= canvas.getContext('2d');
@@ -15385,7 +15457,8 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 		newPosition:		null,   // spare holder for getPosition coordinate return.
 
         applyAsPath : function(director) {
-            director.ctx.lineTo( this.points[0].x, this.points[1].y );
+            // Fixed: Thanks https://github.com/roed
+            director.ctx.lineTo( this.points[1].x, this.points[1].y );
         },
         setPoint : function( point, index ) {
             if ( index===0 ) {
@@ -17530,6 +17603,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 
         setAnimated : function( animate ) {
             this.animated= animate;
+            return this;
         },
 
         setHGap : function( gap ) {

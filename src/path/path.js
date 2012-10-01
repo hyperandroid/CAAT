@@ -199,7 +199,8 @@
 		newPosition:		null,   // spare holder for getPosition coordinate return.
 
         applyAsPath : function(director) {
-            director.ctx.lineTo( this.points[0].x, this.points[1].y );
+            // Fixed: Thanks https://github.com/roed
+            director.ctx.lineTo( this.points[1].x, this.points[1].y );
         },
         setPoint : function( point, index ) {
             if ( index===0 ) {

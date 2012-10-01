@@ -72,7 +72,8 @@
          * @return {boolean}
          */
 		contains : function(px,py) {
-			return px>=0 && px<this.width && py>=0 && py<this.height; 
+			//return px>=0 && px<this.width && py>=0 && py<this.height;
+            return px>=this.x && px<this.x1 && py>=this.y && py<this.y1;
 		},
         /**
          * Return whether this rectangle is empty, that is, has zero dimension.

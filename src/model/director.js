@@ -270,6 +270,8 @@
                 CAAT.unregisterResizeListener(this);
                 this.onResizeCallback= null;
             }
+
+            return this;
         },
         /**
          * Set this director's bounds as well as its contained scenes.

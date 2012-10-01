@@ -1,3 +1,29 @@
+* 09/30/2012 0.4 Build 420*
+---------------------------
+
+* ADD. CAAT.UI.Label now can show images.
+* ADD. CAAT.UI.Label now can use <a> anchors.
+* FIX. Linear path apply as path was buggy.
+* ADD. CAAT.Director.enableResizeEvents now returns this to make it chainable.
+* ADD. CAAT.SpriteImage.getWrappedImageWidth and CAAT.SpriteImage.getWrappedImageHeight which returns internal
+  image's dimension.
+* FIX. CAAT.Actor.cacheAsBitmap could give wrong results.
+* CHANGE. CAAT.TextActor now honors font's attributes.
+* FIX. CAAT.ShapeActor honors a previous cacheAsBitmap call.
+* ADD. CAAT.Actor.moveTo now has a callback parameter which will be invoked on animation end.
+* ADD. CAAT.CSS_TEXT_METRICS global variable controls how fontMetrics ascent and descent will be calculated.
+  if 0, an estimated 80% of font's height will be used as descent position.
+  else, a CSS based calculation will be applied.
+* ADD. CAAT.Font.getFontMetrics function which (based of CAAT.CSS_TEXT_METRICS) calculates font information:
+  height, ascent and descent.
+* CHANGE: CAAT.TextActor now uses alphabetic baseline to position itself in the scene. This fixes FF bug
+  where baseline="top" does not give appropriate results. See demo30 fonts.html for a visual test on this.
+* FIX. CAAT.currentDirector global variable now always has a value.
+* FIX. Scene transitions when using linear paths now fit perfectly.
+* FIX. CAAT.LinearPath.applyAsPath now can be used as clip mask.
+* FIX. CAAT.LayoutManager.setAnimated now can be chained.
+* ADD. CAAT.Label now has shadow, shadowColor and shadowBlur attributes.
+
 * 09/19/2012 0.4 Build 398*
 ---------------------------
 
@@ -9,8 +35,7 @@
   at fixed/variable width, add images and set anchors.
 * ADD. Demo30 fonts. This demo shows correcteness of CAAT.TextActor by mixing TextActors, TextActor with
   CAAT.Font as font, cachedAsBitmap actors and Canvas drawing. The result is homogeneous and every
-  element seems to be the same since it is indistinguible to realize which one is canvas or which uses
-  sprite font.
+  element seems to be the same since you can't spot the difference whether it uses canvas or sprite font.
 * CHANGE. Demo29 layout contains Label actors showing pork-ipsum at random font sizes.
 
 * 09/15/2012 0.4 Build 319*

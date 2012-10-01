@@ -63,6 +63,7 @@ more ./src/webgl/glu.js >> "${FILE_CAAT}"
 more ./src/webgl/glTexturePage.js >> "${FILE_CAAT}"
 more ./src/ui/namespace.js >> "${FILE_CAAT}"
 more ./src/ui/layoutManager.js >> "${FILE_CAAT}"
+more ./src/ui/label.js >> "${FILE_CAAT}"
 
 
 # Distribute resulting compiled files

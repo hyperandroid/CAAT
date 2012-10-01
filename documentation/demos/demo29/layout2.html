@@ -241,13 +241,22 @@ CAAT.DEBUG=1;
             return new CAAT.SpriteImage().initialize( canvas, 1, 2 );
         }
 
+        var textPanelIndex=0;
         function createTextPanel( buttonsInBottom, pw, ph, __layout ) {
+            var s= 5+ (Math.random()*15)|0;
             var label= new CAAT.UI.Label().
                     setStyle("default", {
-                        fontSize : 5+ (Math.random()*15)|0
+                        fontSize : s
                     }).
-                    setText("Bacon ipsum dolor sit amet salami pork belly tail tongue pancetta, pork loin tri-tip drumstick bresaola shankle. Bacon ham hock pork belly, sausage tri-tip tongue strip steak fatback. Tail t-bone salami bacon. Bresaola turkey ribeye hamburger meatball t-bone. Turkey pancetta ground round, pig sirloin tenderloin corned beef meatloaf venison sausage jerky pork loin shank bacon tail. Pancetta beef ham hock, jowl pork chop pork belly bacon venison rump shoulder shankle cow pastrami sausage. Beef ribs drumstick meatball, pancetta biltong swine bresaola ribeye jerky spare ribs ham chuck corned beef pork chop.").
+                    setStyle("link", {
+                        fontSize : s+5,
+                        fill:      "#00f"
+                    }).
+                    setText("Bacon ipsum dolor sit amet salami pork belly tail <style=link><a=#"+(textPanelIndex++)+">tongue</a></style> pancetta, pork loin tri-tip drumstick bresaola shankle. Bacon ham hock pork belly, sausage tri-tip tongue strip steak fatback. Tail t-bone salami bacon. Bresaola turkey ribeye hamburger meatball t-bone. Turkey pancetta ground round, pig sirloin tenderloin corned beef meatloaf venison sausage jerky pork loin shank bacon tail. Pancetta beef ham hock, jowl pork chop pork belly bacon venison rump shoulder shankle cow pastrami sausage. Beef ribs drumstick meatball, pancetta biltong swine bresaola ribeye jerky spare ribs ham chuck corned beef pork chop.").
                     cacheAsBitmap().
+                    setClickCallback( function(id) {
+                        alert("Clicked: "+id);
+                    }).
                     setClip(true);
 
             return label;

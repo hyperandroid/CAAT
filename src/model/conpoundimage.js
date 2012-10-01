@@ -136,6 +136,14 @@
             return el.height;
         },
 
+        getWrappedImageWidth : function() {
+            return this.image.width;
+        },
+
+        getWrappedImageHeight : function() {
+            return this.image.height;
+        },
+
         /**
          * Get a reference to the same image information (rows, columns, image and uv cache) of this
          * SpriteImage. This means that re-initializing this objects image info (that is, calling initialize

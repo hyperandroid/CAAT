@@ -6,11 +6,11 @@
     <title>CAAT example: Layout</title>
 
     <link rel="stylesheet" href="../style/demo.css">
-
+    <link href='http://fonts.googleapis.com/css?family=Righteous' rel='stylesheet' type='text/css'>
 
 </head>
 <body style="margin:0; padding:0;">
-
+<div style="font-family: 'Righteous'; position:absolute; width:1px; height:0"></div>
     <div>
         <div>
             <canvas id="canvas"></canvas>
@@ -112,7 +112,7 @@ CAAT.DEBUG=1;
             var director= new CAAT.Director().initialize( window.innerWidth, window.innerHeight, document.getElementById("canvas") );
 
             var scene = director.createScene().setLayout( new CAAT.UI.BorderLayout() );
-
+/*
             var cont= new CAAT.ActorContainer().
                     setLayout( new CAAT.UI.BorderLayout()).
                     setBounds( 0,0,director.width,director.height);
@@ -152,53 +152,51 @@ CAAT.DEBUG=1;
             cont.addChild( l, "left" );
             cont.addChild( r, "right" );
 
-            //scene.addChild(cont, "center" );
-
+//            scene.addChild(cont, "center" );
+*/
             director.enableResizeEvents( CAAT.Director.prototype.RESIZE_BOTH );
 
             var label= new CAAT.UI.Label().
-                    setBounds( 100,10,270,300).
+                    setBounds( 100,10,340,300).
                     addImage( "numbers", new CAAT.SpriteImage().initialize( img, 9, 9) ).
                     setStyle( "default",    {
-                        fontSize    : 32,
+                        fontSize    : 24,
                         fill        : '#00b',
-                        tabSize     : 100
+                        tabSize     : 100,
+                        font        : "arial",
+                        alignment   : "justify"
                     }).
-                    setStyle( "hyper", {
-                        filled  : false,
-                        stroked : true,
-                        fontSize: 64,
-                        bold    : true,
-                        italic  : true,
-                        strokeSize : 2,
-                        fill    : '#0f0'
+                    setStyle( "h1", {
+                        filled      : true,
+                        stroked     : false,
+                        fontSize    : 48,
+                        bold        : true,
+                        strokeSize  : 1,
+                        fill        : '#333',
+                        stroke      : '#f00',
+                        alignment   : "center",
+                        shadow      : false
                     }).
-                    setStyle( "hyper_", {
-                        filled  : false,
-                        stroked : true,
-                        fontSize: 64,
-                        strokeSize :.5,
-                        stroke    : '#0ff',
-                        alignment : "center"
+                    setStyle( "princess", {
+                        filled      : true,
+                        fontSize    : 36,
+                        bold        : false,
+                        fill        : '#f77',
+                        shadow      : false,
+                        alignment   : "center"
                     }).
-                    setStyle( "hyper2", {
-                        fontSize: 32,
-                        italic  : false,
-                        strokeSize :1.5,
-                        stroke : '#00b'
-                    }).
-                    setStyle( "right", {
-                        alignment: "justify"
-                    }).
-                    setText("<style=right>abcd<tab>def<tab>ghi</style><br>" +
-                            "<style=hyper_>ibon</style><br><br><br>" +
-                            "<b>bold<i>italic+bold</i></b><br>"+
-                            "image=<image=naumbers,2,2> element 2,2<br>"+
-                            "12345<fontsize=12>6789 <style=hyper>H<style=hyper2>y</style>p<style=hyper2>e</style>r",
-270
+                    setText("<style=h1>Yarrrr!!</style><br><br>" +
+                            "I dare you are not brave <actor=#a>enough</actor> to save the<br>"+
+                            "a a a a a a a a a a a a a a a a a a a a a a<br>"+
+                            "<style=princess>princess!!!</style><br>" +
+                            "<a=#1><image=numbers,4,4></a><a=#2><image=numbers,5,7></a>abcd<image=numbers,6,5>",
+                            340
                         ).
                     setVerticalAlignment( CAAT.UI.ALIGNMENT.CENTER).
-                    setHorizontalAlignment( CAAT.UI.ALIGNMENT.CENTER );
+                    setHorizontalAlignment( CAAT.UI.ALIGNMENT.CENTER).
+                    setClickCallback( function(id) {
+                        alert("Pressed on "+id);
+                    });
             scene.addChild( label );
 
             director.loop(60);

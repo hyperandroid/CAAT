@@ -1,7 +1,16 @@
 (function() {
 
+    var DEBUG=0;
     var JUSTIFY_RATIO= .8;
 
+    /**
+     *
+     * Current applied rendering context information.
+     *
+     * @constuctor
+     * @param ctx
+     * @return {*}
+     */
     var renderContextStyle= function(ctx) {
         this.ctx= ctx;
         return this;
@@ -23,6 +32,9 @@
         bold        : null,
         alignment   : null,
         tabSize     : null,
+        shadow      : null,
+        shadowBlur  : null,
+        shadowColor : null,
 
         sfont       : null,
 
@@ -41,9 +53,14 @@
             this.bold       =   false;
             this.alignment  =   "left";
             this.tabSize    =   75;
+            this.shadow     =   false;
+            this.shadowBlur =   0;
+            this.shadowColor=   "#000";
 
             for( var style in defaultStyles ) {
-                this[style]= defaultStyles[style];
+                if ( defaultStyles.hasOwnProperty(style) ) {
+                    this[style]= defaultStyles[style];
+                }
             }
 
             this.__setFont();
@@ -68,6 +85,12 @@
 
         clone : function( ) {
             var c= new renderContextStyle( this.ctx );
+            for( var pr in this ) {
+                if ( this.hasOwnProperty(pr) ) {
+                    c[pr]= this[pr];
+                }
+            }
+            /*
             c.defaultFS  =   this.defaultFS;
             c.font       =   this.font;
             c.fontSize   =   this.fontSize;
@@ -80,6 +103,7 @@
             c.bold       =   this.bold;
             c.alignment  =   this.alignment;
             c.tabSize    =   this.tabSize;
+            */
 
             var me= this;
             while( me.chain ) {
@@ -110,23 +134,37 @@
             return null;
         },
 
+        image : function( ctx ) {
+            this.__setShadow( ctx );
+        },
+
         text : function( ctx, text, x, y ) {
+
+            this.__setShadow( ctx );
+
             ctx.font= this.__getProperty("sfont");
 
             if ( this.filled ) {
-                this.fillText( ctx,text,x,y );
+                this.__fillText( ctx,text,x,y );
             }
             if ( this.stroked ) {
-                this.strokeText( ctx,text,x,y );
+                this.__strokeText( ctx,text,x,y );
             }
         },
 
-        fillText : function( ctx, text, x, y ) {
+        __setShadow : function( ctx ) {
+            if ( this.__getProperty("shadow" ) ) {
+                ctx.shadowBlur= this.__getProperty("shadowBlur");
+                ctx.shadowColor= this.__getProperty("shadowColor");
+            }
+        },
+
+        __fillText : function( ctx, text, x, y ) {
             ctx.fillStyle= this.__getProperty("fill");
             ctx.fillText( text, x, y );
         },
 
-        strokeText : function( ctx, text, x, y ) {
+        __strokeText : function( ctx, text, x, y ) {
             ctx.strokeStyle= this.__getProperty("stroke");
             ctx.lineWidth= this.__getProperty("strokeSize");
             ctx.beginPath();
@@ -198,6 +236,11 @@
         }
     };
 
+    /**
+     * This class keeps track of styles, images, and the current applied style.
+     * @constructor
+     * @return {*}
+     */
     var renderContext= function() {
         this.text= "";
         return this;
@@ -220,6 +263,8 @@
 
         documentHeight  : 0,
 
+        anchorStack     : null,
+
         __nextLine : function() {
             this.x= 0;
             this.currentLine= new DocumentLine();
@@ -239,9 +284,9 @@
             var image_width;
 
             if ( r && c ) {
-                image_width= image.singleWidth;
+                image_width= image.getWidth();
             } else {
-                image_width= image.image.width;
+                image_width= image.getWrappedImageWidth();
             }
 
             // la imagen cabe en este sitio.
@@ -251,7 +296,13 @@
                 }
             }
 
-            this.currentLine.addElementImage( new DocumentElementImage( this.x, this.images[image], r, c ) );
+            this.currentLine.addElementImage( new DocumentElementImage(
+                this.x,
+                image,
+                r,
+                c,
+                this.crcs.clone(),
+                this.__getCurrentAnchor() ) );
 
             this.x+= image_width;
         },
@@ -272,33 +323,33 @@
             }
 
             //this.crcs.text( this.text, this.x, this.y );
-            this.currentLine.addElement( new DocumentElement(
+            this.currentLine.addElement( new DocumentElementText(
                 this.text,
                 this.x,
-                0,
                 text_width,
-                this.crcs.__getProperty("fontSize"),
-                this.crcs.clone() ) ) ;
+                0, //this.crcs.__getProperty("fontSize"), calculated later
+                this.crcs.clone(),
+                this.__getCurrentAnchor() ) ) ;
 
             this.x+= text_width;
 
             this.text="";
         },
 
-        char : function( char ) {
+        fchar : function( _char ) {
 
-            if ( char===' ' ) {
+            if ( _char===' ' ) {
 
                 this.__text();
 
-                this.x+= this.ctx.measureText(char).width;
+                this.x+= this.ctx.measureText(_char).width;
                 if ( this.width ) {
                     if ( this.x > this.width ) {
                         this.__nextLine();
                     }
                 }
             } else {
-                this.text+= char;
+                this.text+= _char;
             }
         },
 
@@ -336,6 +387,14 @@
             return this.documentHeight;
         },
 
+        __getCurrentAnchor : function() {
+            if ( this.anchorStack.length ) {
+                return this.anchorStack[ this.anchorStack.length-1 ];
+            }
+
+            return null;
+        },
+
         __resetAppliedStyles : function() {
             this.rcs= [];
             this.__pushDefaultStyles();
@@ -365,14 +424,25 @@
             }
         },
 
+        __popAnchor : function() {
+            if ( this.anchorStack.length> 0 ) {
+                this.anchorStack.pop();
+            }
+        },
+
+        __pushAnchor : function( anchor ) {
+            this.anchorStack.push( anchor );
+        },
+
         start : function( ctx, styles, images, width ) {
             this.x=0;
             this.y=0;
             this.width= typeof width!=="undefined" ? width : 0;
             this.ctx= ctx;
-            this.lines= [ ];
+            this.lines= [];
             this.styles= styles;
             this.images= images;
+            this.anchorStack= [];
 
             this.__resetAppliedStyles();
             this.__nextLine();
@@ -406,6 +476,8 @@
                 this.x= this.crcs.getTabPos( this.x );
             } else if ( tag==='br' ) {
                 this.__nextLine();
+            } else if ( tag==='/a' ) {
+                this.__popAnchor();
             } else if ( tag==='/style' ) {
                 if ( this.rcs.length>1 ) {
                     this.__popStyle();
@@ -442,76 +514,200 @@
                             r= pairs[1]|0;
                             c= pairs[2]|0;
                         }
-                        this.__image( image, r, c );
+                        this.__image( this.images[image], r, c );
                     }
+                } else if ( tag.indexOf("a=")===0 ) {
+                    pairs= tag.split("=");
+                    this.__pushAnchor( pairs[1] );
                 }
             }
         }
     };
 
-    var DocumentElementImage= function( x, image, r, c ) {
+    /**
+     * Abstract document element.
+     * The document contains a collection of DocumentElementText and DocumentElementImage.
+     * @param anchor
+     * @param style
+     * @return {*}
+     * @constructor
+     */
+    var DocumentElement= function( anchor, style ) {
+        this.link= anchor;
+        this.style= style;
+        return this;
+    };
+
+    DocumentElement.prototype= {
+        x       : null,
+        y       : null,
+        width   : null,
+        height  : null,
+
+        style   : null,
+
+        link    : null,
+
+        isLink : function() {
+            return this.link;
+        },
+
+        setLink : function( link ) {
+            this.link= link;
+            return this;
+        },
+
+        getLink : function() {
+            return this.link;
+        },
+
+        contains : function(x,y) {
+            return false;
+        }
+
+    };
+
+    /**
+     * This class represents an image in the document.
+     * @param x
+     * @param image
+     * @param r
+     * @param c
+     * @param style
+     * @param anchor
+     * @return {*}
+     * @constructor
+     */
+    var DocumentElementImage= function( x, image, r, c, style, anchor ) {
+
+        DocumentElementImage.superclass.constructor.call(this, anchor, style);
+
         this.x= x;
         this.image= image;
         this.row= r;
         this.column= c;
+        this.width= image.getWidth();
+        this.height= image.getHeight();
 
         if ( this.image instanceof CAAT.SpriteImage ) {
+            this.spriteIndex= r*image.columns+c;
             this.paint= this.paintSI;
-            this.image.setAnimationImageIndex([r*image.columns+c]);
         }
 
         return this;
     };
 
     DocumentElementImage.prototype= {
-        x       : null,
         image   : null,
         row     : null,
         column  : null,
+        spriteIndex : null,
 
         paint : function( ctx ) {
-            ctx.drawImage( this.image, this.x, this.y );
+            this.style.image( ctx );
+            ctx.drawImage( this.image, this.x, -this.height+1);
+            if ( DEBUG ) {
+                ctx.strokeRect( this.x, -this.height+1, this.width, this.height );
+            }
         },
 
         paintSI : function( ctx ) {
-            this.image.paint( { ctx: ctx }, 0, this.x, this. y );
+            this.style.image( ctx );
+            this.image.setSpriteIndex( this.spriteIndex );
+            this.image.paint( { ctx: ctx }, 0, this.x,  -this.height+1 );
+            if ( DEBUG ) {
+                ctx.strokeRect( this.x, -this.height+1, this.width, this.height );
+            }
         },
 
         getHeight : function() {
             return this.image instanceof CAAT.SpriteImage ? this.image.singleHeight : this.image.height;
+        },
+
+        getFontMetrics : function() {
+            return null;
+        },
+
+        contains : function(x,y) {
+            return x>=this.x && x<=this.x+this.width && y>=this.y && y<this.y + this.height;
+        },
+
+        setYPosition : function( baseline ) {
+            this.y= baseline - this.height + 1;
         }
+
     };
 
-    var DocumentElement= function( text,x,y,width,height,style) {
+    /**
+     * This class represents a text in the document. The text will have applied the styles selected
+     * when it was defined.
+     * @param text
+     * @param x
+     * @param width
+     * @param height
+     * @param style
+     * @param anchor
+     * @return {*}
+     * @constructor
+     */
+    var DocumentElementText= function( text,x,width,height,style, anchor) {
+
+        DocumentElementText.superclass.constructor.call(this, anchor, style);
 
         this.x=         x;
-        this.y=         y;
+        this.y=         0;
         this.width=     width;
-        this.height=    height;
         this.text=      text;
         this.style=     style;
+        this.fm=        CAAT.Font.getFontMetrics( style.sfont );
+        this.height=    this.fm.height;
 
         return this;
     };
 
-    DocumentElement.prototype= {
+    DocumentElementText.prototype= {
 
-        x       : null,
-        y       : null,
         text    : null,
         style   : null,
-        width   : 0,
-        height  : 0,
+        fm      : null,
+
+        bl      : null,     // where baseline was set. current 0 in ctx.
 
         paint : function( ctx ) {
-            this.style.text( ctx, this.text, this.x, this.y );
+            this.style.text( ctx, this.text, this.x, 0 );
+            if ( DEBUG ) {
+                ctx.strokeRect( this.x, -this.fm.ascent, this.width, this.height);
+            }
         },
 
         getHeight : function() {
-            return this.style.fontSize;
+            return this.fm.height;
+        },
+
+        getFontMetrics : function() {
+            return this.fm; //CAAT.Font.getFontMetrics( this.style.sfont);
+        },
+
+        contains : function( x, y ) {
+            return x>= this.x && x<=this.x+this.width &&
+                y>= this.y && y<= this.y+this.height;
+        },
+
+        setYPosition : function( baseline ) {
+            this.bl= baseline;
+            this.y= baseline - this.fm.ascent;
         }
     };
 
+    extend( DocumentElementImage, DocumentElement );
+    extend( DocumentElementText, DocumentElement );
+
+    /**
+     * This class represents a document line.
+     * It contains a collection of DocumentElement objects.
+     * @return {*}
+     * @constructor
+     */
     var DocumentLine= function() {
         this.elements= [];
         return this;
@@ -524,6 +720,8 @@
         y           : 0,
         x           : 0,
         alignment   : null,
+
+        baselinePos : 0,
 
         addElement : function( element ) {
             this.width= Math.max( this.width, element.x + element.width );
@@ -539,12 +737,7 @@
         },
 
         getHeight : function() {
-            var inc= 0;
-
-            for( var i=0; i<this.elements.length; i++ ) {
-                inc= Math.max( this.elements[i].getHeight(), inc );
-            }
-            return inc;
+            return this.height;
         },
 
         setY : function( y ) {
@@ -557,7 +750,7 @@
 
         paint : function( ctx ) {
             ctx.save();
-            ctx.translate(this.x,this.y);
+            ctx.translate(this.x,this.y + this.baselinePos );
 
             for( var i=0; i<this.elements.length; i++ ) {
                 this.elements[i].paint(ctx);
@@ -575,18 +768,90 @@
             } else if ( this.alignment==="justify" ) {
 
                 // justify: only when text overflows further than document's 80% width
-                if ( this.width / width > JUSTIFY_RATIO ) {
+                if ( this.width / width >= JUSTIFY_RATIO && this.elements.length>1 ) {
                     var remaining= width - this.width;
-                    for( var i=0; i<remaining; i++ ) {
-                        for( var j=1; j<this.elements.length; j++ ) {
-                            this.elements[j].x+= 1;
+
+                    var forEachElement= (remaining/(this.elements.length-1))|0;
+                    for( var j=1; j<this.elements.length ; j++ ) {
+                        this.elements[j].x+= j*forEachElement;
+                    }
+
+                    remaining= remaining - forEachElement*this.elements.length + 1;
+                    for( var j=this.elements.length-1; j>=remaining; j-- ) {
+                        this.elements[j].x+= (j-remaining);
+                    }
+                }
+            }
+        },
+
+        adjustHeight : function() {
+            var biggestFont=null;
+            var biggestImage=null;
+
+            for( var i=0; i<this.elements.length; i+=1 ) {
+                var elem= this.elements[i];
+
+                var fm= elem.getFontMetrics();
+                if ( null!=fm ) {           // gest a fontMetrics, is a DocumentElementText (text)
+                    if ( !biggestFont ) {
+                        biggestFont= fm;
+                    } else {
+                        if ( fm.ascent > biggestFont.ascent ) {
+                            biggestFont= fm;
+                        }
+                    }
+                } else {                    // no FontMetrics, it is an image.
+                    if (!biggestImage) {
+                        biggestImage= elem;
+                    } else {
+                        if ( elem.getHeight() > elem.getHeight() ) {
+                            biggestImage= elem;
                         }
                     }
                 }
             }
+
+            this.baselinePos= Math.max( biggestFont ? biggestFont.ascent : 0, biggestImage ? biggestImage.getHeight() : 0 );
+            this.height= this.baselinePos + (biggestFont!=null ? biggestFont.descent : 0 );
+
+            for( var i=0; i<this.elements.length; i++ ) {
+                this.elements[i].setYPosition( this.baselinePos );
+            }
+
+            return this.height;
+        },
+
+        /**
+         * Every element is positioned at line's baseline.
+         * @param x
+         * @param y
+         * @private
+         */
+        __getElementAt : function( x, y ) {
+            for( var i=0; i<this.elements.length; i++ ) {
+                var elem= this.elements[i];
+                if ( elem.contains(x,y) ) {
+                    return elem;
+                }
+            }
+
+            return null;
         }
     }
 
+    /**
+     * This object represents a label object.
+     * A label is a complex presentation object which is able to:
+     * <li>define comples styles
+     * <li>contains multiline text
+     * <li>keep track of per-line baseline regardless of fonts used.
+     * <li>Mix images and text.
+     * <li>Layout text and images in a fixed width or by parsing a free-flowing document
+     * <li>Add anchoring capabilities.
+     *
+     * @return {*}
+     * @constructor
+     */
     CAAT.UI.Label= function() {
         CAAT.UI.Label.superclass.constructor.call(this);
 
@@ -609,12 +874,16 @@
 
         documentWidth   : 0,
         documentHeight  : 0,
+        documentX       : 0,
+        documentY       : 0,
 
         reflow      :   true,
 
         lines       :   null,   // calculated elements lines...
 
         images      :   null,
+
+        clickCallback   : null,
 
         setStyle : function( name, styleData ) {
             this.styles[ name ]= styleData;
@@ -656,7 +925,7 @@
 
             var i, l, text;
             var tag_closes_at_pos, tag;
-            var char;
+            var _char;
             var ctx= CAAT.currentDirector.ctx;
             ctx.save();
 
@@ -668,21 +937,21 @@
             this.rc.start( ctx, this.styles, this.images, width );
 
             while( i<l ) {
-                char= text.charAt(i);
+                _char= text.charAt(i);
 
-                if ( char==='\\' ) {
+                if ( _char==='\\' ) {
                     i+=1;
-                    this.rc.char( text.charAt(i) );
+                    this.rc.fchar( text.charAt(i) );
                     i+=1;
 
-                } else if ( char==='<' ) {   // try an enhancement.
+                } else if ( _char==='<' ) {   // try an enhancement.
 
                     // try finding another '>' and see whether it matches a tag
                     tag_closes_at_pos= text.indexOf('>', i+1);
                     if ( -1!==tag_closes_at_pos ) {
                         tag= text.substr( i+1, tag_closes_at_pos-i-1 );
                         if ( tag.indexOf("<")!==-1 ) {
-                            this.rc.char( char );
+                            this.rc.fchar( _char );
                             i+=1;
                         } else {
                             this.rc.setTag( tag );
@@ -690,7 +959,7 @@
                         }
                     }
                 } else {
-                    this.rc.char( char );
+                    this.rc.fchar( _char );
                     i+= 1;
                 }
             }
@@ -698,15 +967,15 @@
             this.rc.end();
             this.lines= this.rc.lines;
 
-            //this.setVerticalAlignment( this.valignment );
             this.__calculateDocumentDimension( typeof width==="undefined" ? 0 : width );
-
             this.setLinesAlignment();
 
             ctx.restore();
 
             this.setPreferredSize( this.documentWidth, this.documentHeight );
             this.invalidateLayout();
+
+            this.setDocumentPosition();
 
             if ( cached ) {
                 this.cacheAsBitmap(0,cached);
@@ -717,31 +986,55 @@
 
         setVerticalAlignment : function( align ) {
             this.valignment= align;
+            this.setDocumentPosition();
             return this;
         },
 
         setHorizontalAlignment : function( align ) {
             this.halignment= align;
+            this.setDocumentPosition();
             return this;
+        },
+
+        setDocumentPosition : function() {
+            var xo=0, yo=0;
+
+            if ( this.valignment===CAAT.UI.ALIGNMENT.CENTER ) {
+                yo= (this.height - this.documentHeight )/2;
+            } else if ( this.valignment===CAAT.UI.ALIGNMENT.BOTTOM ) {
+                yo= this.height - this.documentHeight;
+            }
+
+            if ( this.halignment===CAAT.UI.ALIGNMENT.CENTER ) {
+                xo= (this.width - this.documentWidth )/2;
+            } else if ( this.halignment===CAAT.UI.ALIGNMENT.RIGHT ) {
+                xo= this.width - this.documentWidth;
+            }
+
+            this.documentX= xo;
+            this.documentY= yo;
         },
 
         __calculateDocumentDimension : function( suggestedWidth ) {
             var i;
-            var height= this.rc.getDocumentHeight();
-            var offset= 0;
+            var y= 0;
 
             this.documentWidth= 0;
+            this.documentHeight= 0;
             for( i=0; i<this.lines.length; i++ ) {
+                this.lines[i].y =y;
                 this.documentWidth= Math.max( this.documentWidth, this.lines[i].width );
+                this.documentHeight+= this.lines[i].adjustHeight();
+                y+= this.lines[i].getHeight();
             }
 
-            this.documentHeight= this.rc.documentHeight;
             this.documentWidth= Math.max( this.documentWidth, suggestedWidth );
 
             return this;
         },
 
         setLinesAlignment : function() {
+
             for( var i=0; i<this.lines.length; i++ ) {
                 this.lines[i].setAlignment( this.documentWidth )
             }
@@ -755,24 +1048,16 @@
 
                 ctx.save();
 
-                var xo= 0, yo=0;
-
-                if ( this.valignment===CAAT.UI.ALIGNMENT.CENTER ) {
-                    yo= (this.height - this.documentHeight )/2;
-                } else if ( this.valignment===CAAT.UI.ALIGNMENT.BOTTOM ) {
-                    yo= this.height - this.documentHeight;
-                }
-
-                if ( this.halignment===CAAT.UI.ALIGNMENT.CENTER ) {
-                    xo= (this.width - this.documentWidth )/2;
-                } else if ( this.halignment===CAAT.UI.ALIGNMENT.RIGHT ) {
-                    xo= this.width - this.documentWidth;
-                }
-
-                ctx.translate( xo, yo );
+                ctx.textBaseline="alphabetic";
+                ctx.translate( this.documentX, this.documentY );
 
                 for( var i=0; i<this.lines.length; i++ ) {
-                    this.lines[i].paint( director.ctx );
+                    var line= this.lines[i];
+                    line.paint( director.ctx );
+
+                    if ( DEBUG ) {
+                        ctx.strokeRect( line.x, line.y, line.width, line.height );
+                    }
                 }
 
                 ctx.restore();
@@ -781,6 +1066,49 @@
                     this.backgroundImage.paint(director,time,0,0);
                 }
             }
+        },
+
+        __getDocumentElementAt : function( x, y ) {
+
+            x-= this.documentX;
+            y-= this.documentY;
+
+            for( var i=0; i<this.lines.length; i++ ) {
+                var line= this.lines[i];
+
+                if ( line.x<=x && line.y<=y && line.x+line.width>=x && line.y+line.height>=y ) {
+                    return line.__getElementAt( x - line.x, y - line.y );
+                }
+            }
+
+            return null;
+        },
+
+        mouseExit : function(e) {
+            CAAT.setCursor( "default");
+        },
+
+        mouseMove : function(e) {
+            var elem= this.__getDocumentElementAt(e.x, e.y);
+            if ( elem && elem.getLink() ) {
+                CAAT.setCursor( "pointer");
+            } else {
+                CAAT.setCursor( "default");
+            }
+        },
+
+        mouseClick : function(e) {
+            if ( this.clickCallback ) {
+                var elem= this.__getDocumentElementAt(e.x, e.y);
+                if ( elem.getLink() ) {
+                    this.clickCallback( elem.getLink() );
+                }
+            }
+        },
+
+        setClickCallback : function( callback ) {
+            this.clickCallback= callback;
+            return this;
         }
     };
 

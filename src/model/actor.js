@@ -253,7 +253,7 @@
          * @param delay {=number} time to wait before start moving
          * @param interpolator {=CAAT.Interpolator} a CAAT.Interpolator instance
          */
-        moveTo : function( x, y, duration, delay, interpolator ) {
+        moveTo : function( x, y, duration, delay, interpolator, callback ) {
 
             if ( x===this.x && y===this.y ) {
                 return;
@@ -272,6 +272,15 @@
             b.setDelayTime( delay ? delay : 0, duration);
             if ( interpolator ) {
                 b.setInterpolator( interpolator );
+            }
+
+            if ( callback ) {
+                b.lifecycleListenerList= [];
+                b.addListener( {
+                    behaviorExpired : function(behavior, time, actor) {
+                        callback( behavior, time, actor );
+                    }
+                });
             }
 
             return this;
@@ -2008,6 +2017,7 @@
                 ctx: ctx,
                 crc: ctx,
                 modelViewMatrix: new CAAT.Matrix(),
+                worldModelViewMatrix: new CAAT.Matrix(),
                 dirtyRectsEnabled : false,
                 inDirtyRect : function() { return true; }
             };
@@ -2936,6 +2946,7 @@
             }
             this.font= font;
 
+            this.__calcFontData();
             this.calcTextSize( CAAT.director[0] );
 
             return this;
@@ -3033,6 +3044,7 @@
                     ascent : as,
                     descent: this.font.singleHeight - as
                 };
+
                 return this;
             }
 
@@ -3054,7 +3066,7 @@
             if (this.width===0) {
                 this.width= this.textWidth;
             }
-
+/*
             var pos= this.font.indexOf("px");
             if (-1===pos) {
                 pos= this.font.indexOf("pt");
@@ -3066,13 +3078,10 @@
                 var s =  this.font.substring(0, pos );
                 this.textHeight= parseInt(s,10);
             }
+*/
 
-            this.__calcFontData();
-
-            // needed to calculate the descent.
-            // no context.getDescent(font) WTF !!!
-//            this.textHeight+= (this.textHeight/4)>>0;
-            this.setSize( this.textWidth, this.fontData.height );
+            this.textHeight= this.fontData.height;
+            this.setSize( this.textWidth, this.textHeight );
 
             ctx.restore();
 
@@ -3080,16 +3089,7 @@
         },
 
         __calcFontData : function() {
-            try {
-                this.fontData= CAAT.Font.getFontHeight( this.font );
-            } catch(e) {
-                var ascent= (this.textHeight*.8)|0;
-                this.fontData= {
-                    height  : this.textHeight,
-                    ascent  : ascent,
-                    descent : this.textHeight - ascent
-                }
-            }
+            this.fontData= CAAT.Font.getFontMetrics( this.font );
         },
 
         /**
@@ -3418,6 +3418,13 @@
          * @param time an integer with the Scene time the Actor is being drawn.
          */
         paintCircle : function(director,time) {
+
+            if ( this.cached ) {
+                CAAT.Actor.prototype.paint.call( this, director, time );
+                return;
+            }
+
+
             var ctx= director.crc;
 
             ctx.lineWidth= this.lineWidth;
@@ -3426,14 +3433,14 @@
             if ( null!==this.fillStyle ) {
                 ctx.fillStyle= this.fillStyle;
                 ctx.beginPath();
-                ctx.arc( this.width/2, this.height/2, Math.min(this.width,this.height)/2, 0, 2*Math.PI, false );
+                ctx.arc( this.width/2, this.height/2, Math.min(this.width,this.height)/2- this.lineWidth/2, 0, 2*Math.PI, false );
                 ctx.fill();
             }
 
             if ( null!==this.strokeStyle ) {
                 ctx.strokeStyle= this.strokeStyle;
                 ctx.beginPath();
-                ctx.arc( this.width/2, this.height/2, Math.min(this.width,this.height)/2, 0, 2*Math.PI, false );
+                ctx.arc( this.width/2, this.height/2, Math.min(this.width,this.height)/2- this.lineWidth/2, 0, 2*Math.PI, false );
                 ctx.stroke();
             }
         },
@@ -3446,6 +3453,12 @@
          * @param time an integer with the Scene time the Actor is being drawn.
          */
         paintRectangle : function(director,time) {
+
+            if ( this.cached ) {
+                CAAT.Actor.prototype.paint.call( this, director, time );
+                return;
+            }
+
             var ctx= director.crc;
 
             ctx.lineWidth= this.lineWidth;

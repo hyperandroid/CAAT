@@ -173,6 +173,16 @@ CAAT.setCoordinateClamping= function( clamp ) {
     }
 };
 
+/**
+ * Control how CAAT.Font and CAAT.TextActor control font ascent/descent values.
+ * 0 means it will guess values from a font height
+ * 1 means it will try to use css to get accurate ascent/descent values and fall back to the previous method
+ *   in case it couldn't.
+ *
+ * @type {Number}
+ */
+CAAT.CSS_TEXT_METRICS=      0;
+
 CAAT.TOUCH_AS_MOUSE=        1;
 CAAT.TOUCH_AS_MULTITOUCH=   2;
 
@@ -633,6 +643,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 
     if ( !CAAT.director ) {
         CAAT.director=[];
+        CAAT.currentDirector= director;
     }
     CAAT.director.push(director);
     CAAT.GlobalEnableEvents();
