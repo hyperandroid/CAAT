@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.4 build: 421
+Version: 0.4 build: 425
 
 Created on:
-DATE: 2012-09-30
-TIME: 17:40:37
+DATE: 2012-10-01
+TIME: 16:58:49
 */
 
 
@@ -13022,6 +13022,10 @@ CAAT.unregisterResizeListener= function(director) {
     }
 };
 
+CAAT.getCurrentSceneTime= function() {
+    return CAAT.currentDirector.getCurrentScene().time;
+}
+
 /**
  * Pressed key codes.
  */
@@ -13528,6 +13532,7 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
         TR_FLIP_VERTICAL:		2,
         TR_FLIP_ALL:			3,
         TR_FIXED_TO_SIZE:       4,
+        TR_FIXED_WIDTH_TO_SIZE: 6,
         TR_TILE:                5,
 
         image:                  null,
@@ -13861,6 +13866,28 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 
             return this;
         },
+        /**
+         * Draws the subimage pointed by imageIndex.
+         * @param canvas a canvas context.
+         * @param imageIndex {number} a subimage index.
+         * @param x {number} x position in canvas to draw the image.
+         * @param y {number} y position in canvas to draw the image.
+         *
+         * @return this
+         */
+        paintScaledWidth : function(director, time, x, y) {
+            this.setSpriteIndexAtTime(time);
+            var el= this.mapInfo[this.spriteIndex];
+
+            director.ctx.drawImage(
+                this.image,
+                el.x, el.y,
+                el.width, el.height,
+                (this.offsetX+x)>>0, (this.offsetY+y)>>0,
+                this.ownerActor.width, el.height);
+
+            return this;
+        },
         paintChunk : function( ctx, dx,dy, x, y, w, h ) {
             ctx.drawImage( this.image, x,y,w,h, dx,dy,w,h );
         },
@@ -14014,6 +14041,9 @@ CAAT.RegisterDirector= function __CAATGlobal_RegisterDirector(director) {
 					break;
                 case this.TR_FIXED_TO_SIZE:
                     this.paint= this.paintScaled;
+                    break;
+                case this.TR_FIXED_WIDTH_TO_SIZE:
+                    this.paint= this.paintScaledWidth;
                     break;
                 case this.TR_TILE:
                     this.paint= this.paintTiled;
@@ -17139,6 +17169,7 @@ CAAT.modules.CircleManager = CAAT.modules.CircleManager || {};/**
 
         setRadius : function( r ) {
             this.radius= r;
+			return this;
         },
 
         isArcTo : function() {
@@ -20706,7 +20737,7 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
 
         hgap        : 2,
         vgap        : 2,
-        animated    : true,
+        animated    : false,
         newChildren : null,
 
         setAnimated : function( animate ) {
@@ -20833,17 +20864,19 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
                     var i = r * ncols + c;
                     if (i < nactors) {
                         var child= container.getChildAt(i);
-                        if ( !this.animated ) {
-                            child.setBounds(x, y, widthOnComponent, heightOnComponent);
-                        } else {
-                            if ( child.width!==widthOnComponent || child.height!==heightOnComponent ) {
-                                child.setSize(widthOnComponent, heightOnComponent);
-                                if ( this.newChildren.indexOf( child ) !==-1 ) {
-                                    child.setPosition( x,y );
-                                    child.setScale(0.01,0.01);
-                                    child.scaleTo( 1,1, 500, 0,.5,.5, CAAT.UI.LayoutManager.newElementInterpolator );
-                                } else {
-                                    child.moveTo( x, y, 500, 0, CAAT.UI.LayoutManager.moveElementInterpolator );
+                        if ( child.isVisible() && child.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                            if ( !this.animated ) {
+                                child.setBounds(x, y, widthOnComponent, heightOnComponent);
+                            } else {
+                                if ( child.width!==widthOnComponent || child.height!==heightOnComponent ) {
+                                    child.setSize(widthOnComponent, heightOnComponent);
+                                    if ( this.newChildren.indexOf( child ) !==-1 ) {
+                                        child.setPosition( x,y );
+                                        child.setScale(0.01,0.01);
+                                        child.scaleTo( 1,1, 500, 0,.5,.5, CAAT.UI.LayoutManager.newElementInterpolator );
+                                    } else {
+                                        child.moveTo( x, y, 500, 0, CAAT.UI.LayoutManager.moveElementInterpolator );
+                                    }
                                 }
                             }
                         }
@@ -20868,12 +20901,14 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
 
             for ( i= 0; i < nchildren; i+=1 ) {
                 var actor= container.getChildAt(i);
-                var d = actor.getMinimumSize();
-                if (w < d.width) {
-                    w = d.width;
-                }
-                if (h < d.height) {
-                    h = d.height;
+                if ( actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    var d = actor.getMinimumSize();
+                    if (w < d.width) {
+                        w = d.width;
+                    }
+                    if (h < d.height) {
+                        h = d.height;
+                    }
                 }
             }
 
@@ -20898,12 +20933,14 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
 
             for ( i= 0; i < nchildren; i+=1 ) {
                 var actor= container.getChildAt(i);
-                var d = actor.getPreferredSize();
-                if (w < d.width) {
-                    w = d.width;
-                }
-                if (h < d.height) {
-                    h = d.height;
+                if ( actorisVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    var d = actor.getPreferredSize();
+                    if (w < d.width) {
+                        w = d.width;
+                    }
+                    if (h < d.height) {
+                        h = d.height;
+                    }
                 }
             }
 
@@ -21159,13 +21196,15 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
 
                 actor= container.getChildAt(i);
-                if ( computedH < actor.height ) {
-                    computedH= actor.height;
-                }
+                if ( actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    if ( computedH < actor.height ) {
+                        computedH= actor.height;
+                    }
 
-                computedW += actor.width;
-                if ( i>0 ) {
-                    computedW+= this.hgap;
+                    computedW += actor.width;
+                    if ( i>0 ) {
+                        computedW+= this.hgap;
+                    }
                 }
             }
 
@@ -21182,21 +21221,22 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
 
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
                 actor= container.getChildAt(i);
+                if ( actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    switch( this.valign ) {
+                        case CAAT.UI.BoxLayout.ALIGNMENT.TOP:
+                            yoffset= this.padding.top;
+                            break;
+                        case CAAT.UI.BoxLayout.ALIGNMENT.BOTTOM:
+                            yoffset= container.height - this.padding.bottom - actor.height;
+                            break;
+                        default:
+                            yoffset= (container.height - actor.height) / 2;
+                    }
 
-                switch( this.valign ) {
-                    case CAAT.UI.BoxLayout.ALIGNMENT.TOP:
-                        yoffset= this.padding.top;
-                        break;
-                    case CAAT.UI.BoxLayout.ALIGNMENT.BOTTOM:
-                        yoffset= container.height - this.padding.bottom - actor.height;
-                        break;
-                    default:
-                        yoffset= (container.height - actor.height) / 2;
+                    this.__setActorPosition( actor, xoffset, yoffset );
+
+                    xoffset += actor.width + this.hgap;
                 }
-
-                this.__setActorPosition( actor, xoffset, yoffset );
-
-                xoffset += actor.width + this.hgap;
             }
 
         },
@@ -21225,13 +21265,15 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
 
                 actor= container.getChildAt(i);
-                if ( computedW < actor.width ) {
-                    computedW= actor.width;
-                }
+                if ( actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    if ( computedW < actor.width ) {
+                        computedW= actor.width;
+                    }
 
-                computedH += actor.height;
-                if ( i>0 ) {
-                    computedH+= this.vgap;
+                    computedH += actor.height;
+                    if ( i>0 ) {
+                        computedH+= this.vgap;
+                    }
                 }
             }
 
@@ -21248,22 +21290,22 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
 
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
                 actor= container.getChildAt(i);
+                if ( actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    switch( this.halign ) {
+                        case CAAT.UI.BoxLayout.ALIGNMENT.LEFT:
+                            xoffset= this.padding.left;
+                            break;
+                        case CAAT.UI.BoxLayout.ALIGNMENT.RIGHT:
+                            xoffset= container.width - this.padding.right - actor.width;
+                            break;
+                        default:
+                            xoffset= (container.width - actor.width) / 2;
+                    }
 
-                switch( this.halign ) {
-                    case CAAT.UI.BoxLayout.ALIGNMENT.LEFT:
-                        xoffset= this.padding.left;
-                        break;
-                    case CAAT.UI.BoxLayout.ALIGNMENT.RIGHT:
-                        xoffset= container.width - this.padding.right - actor.width;
-                        break;
-                    default:
-                        xoffset= (container.width - actor.width) / 2;
+                    this.__setActorPosition( actor, xoffset, yoffset );
+
+                    yoffset += actor.height + this.vgap;
                 }
-
-                this.__setActorPosition( actor, xoffset, yoffset );
-
-                yoffset += actor.height + this.vgap;
-
             }
         },
 
@@ -21277,12 +21319,14 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
 
                 var actor= container.getChildAt(i);
-                var ps= actor.getPreferredSize();
+                if ( actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    var ps= actor.getPreferredSize();
 
-                if ( computedH < ps.height ) {
-                    computedH= ps.height;
+                    if ( computedH < ps.height ) {
+                        computedH= ps.height;
+                    }
+                    computedW += ps.width;
                 }
-                computedW += ps.width;
             }
 
             dim.width= computedW;
@@ -21300,12 +21344,14 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
 
                 var actor= container.getChildAt(i);
-                var ps= actor.getMinimumSize();
+                if ( actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    var ps= actor.getMinimumSize();
 
-                if ( computedH < ps.height ) {
-                    computedH= ps.height;
+                    if ( computedH < ps.height ) {
+                        computedH= ps.height;
+                    }
+                    computedW += ps.width;
                 }
-                computedW += ps.width;
             }
 
             dim.width= computedW;
@@ -21316,7 +21362,8 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
     };
 
     extend( CAAT.UI.BoxLayout, CAAT.UI.LayoutManager );
-}());(function() {
+}());
+(function() {
 
     var DEBUG=0;
     var JUSTIFY_RATIO= .8;
@@ -22166,7 +22213,7 @@ function makeOrtho(left, right, bottom, top, znear, zfar) {
      * <li>Mix images and text.
      * <li>Layout text and images in a fixed width or by parsing a free-flowing document
      * <li>Add anchoring capabilities.
-     * 
+     *
      * @return {*}
      * @constructor
      */

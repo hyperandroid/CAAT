@@ -61,9 +61,9 @@ more ./src/texture/plasma.js >> "${FILE_CAAT}"
 more ./src/webgl/ShaderUtil.js >> "${FILE_CAAT}"
 more ./src/webgl/glu.js >> "${FILE_CAAT}"
 more ./src/webgl/glTexturePage.js >> "${FILE_CAAT}"
-more ./src/ui/namespace.js >> "${FILE_CAAT}"
-more ./src/ui/layoutManager.js >> "${FILE_CAAT}"
-more ./src/ui/label.js >> "${FILE_CAAT}"
+more ./src/modules/ui/namespace.js >> "${FILE_CAAT}"
+more ./src/modules/ui/layoutManager.js >> "${FILE_CAAT}"
+more ./src/modules/ui/label.js >> "${FILE_CAAT}"
 
 
 # Distribute resulting compiled files
@@ -121,8 +121,8 @@ more ./src/modules/Inspector/inspector.js >> "${FILE_CAAT_CSS}"
 more ./src/path/interpolatoractor.js >> "${FILE_CAAT_CSS}"
 more ./src/path/path.js >> "${FILE_CAAT_CSS}"
 more ./src/path/pathactor.js >> "${FILE_CAAT_CSS}"
-more ./src/ui/namespace.js >> "${FILE_CAAT_CSS}"
-more ./src/ui/layoutManager.js >> "${FILE_CAAT_CSS}"
+more ./src/modules/ui/namespace.js >> "${FILE_CAAT_CSS}"
+more ./src/modules/ui/layoutManager.js >> "${FILE_CAAT_CSS}"
 
 
 #

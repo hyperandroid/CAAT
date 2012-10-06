@@ -21,7 +21,11 @@
         this.isGlobalAlpha= true;
 		return this;
 	};
-	
+
+    CAAT.Scene.EASE_ROTATION=   1;      // Constant values to identify the type of Scene transition
+    CAAT.Scene.EASE_SCALE=	    2;       // to perform on Scene switching by the Director.
+    CAAT.Scene.EASE_TRANSLATE=  3;
+
 	CAAT.Scene.prototype= {
 		
 		easeContainerBehaviour:			null,   // Behavior container used uniquely for Scene switching.
@@ -29,8 +33,17 @@
 		easeIn:							false,  // When Scene switching, this boolean identifies whether the
                                                 // Scene is being brought in, or taken away.
 
+        /**
+         * @deprecated
+         */
         EASE_ROTATION:					1,      // Constant values to identify the type of Scene transition
+        /**
+         * @deprecated
+         */
 		EASE_SCALE:						2,      // to perform on Scene switching by the Director.
+        /**
+         * @deprecated
+         */
 		EASE_TRANSLATE:					3,
 
         paused:                         false,

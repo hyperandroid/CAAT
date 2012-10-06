@@ -43,7 +43,7 @@
 
         hgap        : 2,
         vgap        : 2,
-        animated    : true,
+        animated    : false,
         newChildren : null,
 
         setAnimated : function( animate ) {
@@ -170,17 +170,19 @@
                     var i = r * ncols + c;
                     if (i < nactors) {
                         var child= container.getChildAt(i);
-                        if ( !this.animated ) {
-                            child.setBounds(x, y, widthOnComponent, heightOnComponent);
-                        } else {
-                            if ( child.width!==widthOnComponent || child.height!==heightOnComponent ) {
-                                child.setSize(widthOnComponent, heightOnComponent);
-                                if ( this.newChildren.indexOf( child ) !==-1 ) {
-                                    child.setPosition( x,y );
-                                    child.setScale(0.01,0.01);
-                                    child.scaleTo( 1,1, 500, 0,.5,.5, CAAT.UI.LayoutManager.newElementInterpolator );
-                                } else {
-                                    child.moveTo( x, y, 500, 0, CAAT.UI.LayoutManager.moveElementInterpolator );
+                        if ( child.isVisible() && child.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                            if ( !this.animated ) {
+                                child.setBounds(x, y, widthOnComponent, heightOnComponent);
+                            } else {
+                                if ( child.width!==widthOnComponent || child.height!==heightOnComponent ) {
+                                    child.setSize(widthOnComponent, heightOnComponent);
+                                    if ( this.newChildren.indexOf( child ) !==-1 ) {
+                                        child.setPosition( x,y );
+                                        child.setScale(0.01,0.01);
+                                        child.scaleTo( 1,1, 500, 0,.5,.5, CAAT.UI.LayoutManager.newElementInterpolator );
+                                    } else {
+                                        child.moveTo( x, y, 500, 0, CAAT.UI.LayoutManager.moveElementInterpolator );
+                                    }
                                 }
                             }
                         }
@@ -205,12 +207,14 @@
 
             for ( i= 0; i < nchildren; i+=1 ) {
                 var actor= container.getChildAt(i);
-                var d = actor.getMinimumSize();
-                if (w < d.width) {
-                    w = d.width;
-                }
-                if (h < d.height) {
-                    h = d.height;
+                if ( actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    var d = actor.getMinimumSize();
+                    if (w < d.width) {
+                        w = d.width;
+                    }
+                    if (h < d.height) {
+                        h = d.height;
+                    }
                 }
             }
 
@@ -235,12 +239,14 @@
 
             for ( i= 0; i < nchildren; i+=1 ) {
                 var actor= container.getChildAt(i);
-                var d = actor.getPreferredSize();
-                if (w < d.width) {
-                    w = d.width;
-                }
-                if (h < d.height) {
-                    h = d.height;
+                if ( actorisVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    var d = actor.getPreferredSize();
+                    if (w < d.width) {
+                        w = d.width;
+                    }
+                    if (h < d.height) {
+                        h = d.height;
+                    }
                 }
             }
 
@@ -496,13 +502,15 @@
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
 
                 actor= container.getChildAt(i);
-                if ( computedH < actor.height ) {
-                    computedH= actor.height;
-                }
+                if ( actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    if ( computedH < actor.height ) {
+                        computedH= actor.height;
+                    }
 
-                computedW += actor.width;
-                if ( i>0 ) {
-                    computedW+= this.hgap;
+                    computedW += actor.width;
+                    if ( i>0 ) {
+                        computedW+= this.hgap;
+                    }
                 }
             }
 
@@ -519,21 +527,22 @@
 
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
                 actor= container.getChildAt(i);
+                if ( actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    switch( this.valign ) {
+                        case CAAT.UI.BoxLayout.ALIGNMENT.TOP:
+                            yoffset= this.padding.top;
+                            break;
+                        case CAAT.UI.BoxLayout.ALIGNMENT.BOTTOM:
+                            yoffset= container.height - this.padding.bottom - actor.height;
+                            break;
+                        default:
+                            yoffset= (container.height - actor.height) / 2;
+                    }
 
-                switch( this.valign ) {
-                    case CAAT.UI.BoxLayout.ALIGNMENT.TOP:
-                        yoffset= this.padding.top;
-                        break;
-                    case CAAT.UI.BoxLayout.ALIGNMENT.BOTTOM:
-                        yoffset= container.height - this.padding.bottom - actor.height;
-                        break;
-                    default:
-                        yoffset= (container.height - actor.height) / 2;
+                    this.__setActorPosition( actor, xoffset, yoffset );
+
+                    xoffset += actor.width + this.hgap;
                 }
-
-                this.__setActorPosition( actor, xoffset, yoffset );
-
-                xoffset += actor.width + this.hgap;
             }
 
         },
@@ -562,13 +571,15 @@
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
 
                 actor= container.getChildAt(i);
-                if ( computedW < actor.width ) {
-                    computedW= actor.width;
-                }
+                if ( actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    if ( computedW < actor.width ) {
+                        computedW= actor.width;
+                    }
 
-                computedH += actor.height;
-                if ( i>0 ) {
-                    computedH+= this.vgap;
+                    computedH += actor.height;
+                    if ( i>0 ) {
+                        computedH+= this.vgap;
+                    }
                 }
             }
 
@@ -585,22 +596,22 @@
 
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
                 actor= container.getChildAt(i);
+                if ( actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    switch( this.halign ) {
+                        case CAAT.UI.BoxLayout.ALIGNMENT.LEFT:
+                            xoffset= this.padding.left;
+                            break;
+                        case CAAT.UI.BoxLayout.ALIGNMENT.RIGHT:
+                            xoffset= container.width - this.padding.right - actor.width;
+                            break;
+                        default:
+                            xoffset= (container.width - actor.width) / 2;
+                    }
 
-                switch( this.halign ) {
-                    case CAAT.UI.BoxLayout.ALIGNMENT.LEFT:
-                        xoffset= this.padding.left;
-                        break;
-                    case CAAT.UI.BoxLayout.ALIGNMENT.RIGHT:
-                        xoffset= container.width - this.padding.right - actor.width;
-                        break;
-                    default:
-                        xoffset= (container.width - actor.width) / 2;
+                    this.__setActorPosition( actor, xoffset, yoffset );
+
+                    yoffset += actor.height + this.vgap;
                 }
-
-                this.__setActorPosition( actor, xoffset, yoffset );
-
-                yoffset += actor.height + this.vgap;
-
             }
         },
 
@@ -614,12 +625,14 @@
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
 
                 var actor= container.getChildAt(i);
-                var ps= actor.getPreferredSize();
+                if ( actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    var ps= actor.getPreferredSize();
 
-                if ( computedH < ps.height ) {
-                    computedH= ps.height;
+                    if ( computedH < ps.height ) {
+                        computedH= ps.height;
+                    }
+                    computedW += ps.width;
                 }
-                computedW += ps.width;
             }
 
             dim.width= computedW;
@@ -637,12 +650,14 @@
             for( i= 0, l=container.getNumChildren(); i<l; i+=1 ) {
 
                 var actor= container.getChildAt(i);
-                var ps= actor.getMinimumSize();
+                if ( actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                    var ps= actor.getMinimumSize();
 
-                if ( computedH < ps.height ) {
-                    computedH= ps.height;
+                    if ( computedH < ps.height ) {
+                        computedH= ps.height;
+                    }
+                    computedW += ps.width;
                 }
-                computedW += ps.width;
             }
 
             dim.width= computedW;

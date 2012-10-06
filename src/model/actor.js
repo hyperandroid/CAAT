@@ -133,15 +133,45 @@
 
         visible:                true,
 
+        /**
+         * @deprecated
+         */
 		ANCHOR_CENTER:			0,      // constant values to determine different affine transform
+        /**
+         * @deprecated
+         */
 		ANCHOR_TOP:				1,      // anchors.
+        /**
+         * @deprecated
+         */
 		ANCHOR_BOTTOM:			2,
+        /**
+         * @deprecated
+         */
 		ANCHOR_LEFT:			3,
+        /**
+         * @deprecated
+         */
 		ANCHOR_RIGHT:			4,
+        /**
+         * @deprecated
+         */
 		ANCHOR_TOP_LEFT:		5,
+        /**
+         * @deprecated
+         */
 		ANCHOR_TOP_RIGHT:		6,
+        /**
+         * @deprecated
+         */
 		ANCHOR_BOTTOM_LEFT:		7,
+        /**
+         * @deprecated
+         */
 		ANCHOR_BOTTOM_RIGHT:	8,
+        /**
+         * @deprecated
+         */
         ANCHOR_CUSTOM:          9,
 
 		fillStyle:				null,   // any canvas rendering valid fill style.

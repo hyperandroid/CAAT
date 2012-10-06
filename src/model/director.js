@@ -65,6 +65,12 @@
     CAAT.Director.CLEAR_ALL=         true;
     CAAT.Director.CLEAR_NONE=        false;
 
+    CAAT.Director.RESIZE_NONE=        1;
+    CAAT.Director.RESIZE_WIDTH=       2;
+    CAAT.Director.RESIZE_HEIGHT=      4;
+    CAAT.Director.RESIZE_BOTH=        8;
+    CAAT.Director.RESIZE_PROPORTIONAL=16;
+
     CAAT.Director.prototype = {
 
         debug:              false,  // flag indicating debug mode. It will draw affedted screen areas.
@@ -130,10 +136,25 @@
 
         frameCounter:       0,
 
+        /**
+         * @deprecated
+         */
         RESIZE_NONE:        1,
+        /**
+         * @deprecated
+         */
         RESIZE_WIDTH:       2,
+        /**
+         * @deprecated
+         */
         RESIZE_HEIGHT:      4,
+        /**
+         * @deprecated
+         */
         RESIZE_BOTH:        8,
+        /**
+         * @deprecated
+         */
         RESIZE_PROPORTIONAL:16,
         resize:             1,
         onResizeCallback    :   null,

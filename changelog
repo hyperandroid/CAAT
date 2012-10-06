@@ -1,3 +1,8 @@
+* CHANGE. Moved ui to modules directory.
+* FIX. Deprecated prototype constants in Actor, Scene, Director, SpriteImage.
+* CHANGE. Default layout behavior is non-animated.
+
+
 * 09/30/2012 0.4 Build 420*
 ---------------------------
 

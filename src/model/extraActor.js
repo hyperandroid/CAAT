@@ -17,6 +17,11 @@
         return this;
     };
 
+    CAAT.Dock.OP_LAYOUT_BOTTOM=   0;
+    CAAT.Dock.OP_LAYOUT_TOP=      1;
+    CAAT.Dock.OP_LAYOUT_LEFT=     2;
+    CAAT.Dock.OP_LAYOUT_RIGHT=    3;
+
     CAAT.Dock.prototype= {
 
         scene:              null,   // scene the actor is in.
@@ -25,9 +30,22 @@
         maxSize:            0,      // max contained actor size
         range:              2,      // aproximated number of elements affected.
         layoutOp:           0,
+
+        /**
+         * @deprecated
+         */
         OP_LAYOUT_BOTTOM:   0,
+        /**
+         * @deprecated
+         */
         OP_LAYOUT_TOP:      1,
+        /**
+         * @deprecated
+         */
         OP_LAYOUT_LEFT:     2,
+        /**
+         * @deprecated
+         */
         OP_LAYOUT_RIGHT:    3,
 
         initialize : function(scene) {

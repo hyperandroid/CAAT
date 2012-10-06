@@ -126,9 +126,9 @@ echo -e "\nCreating CAAT canvas/webGL"
  --js "${SOURCE_DIR}"/webgl/ShaderUtil.js \
  --js "${SOURCE_DIR}"/webgl/glu.js \
  --js "${SOURCE_DIR}"/webgl/glTexturePage.js \
- --js "${SOURCE_DIR}"/ui/namespace.js >> "${FILE_CAAT}" \
- --js "${SOURCE_DIR}"/ui/layoutManager.js >> "${FILE_CAAT}" \
- --js "${SOURCE_DIR}"/ui/label.js >> "${FILE_CAAT}" \
+ --js "${SOURCE_DIR}"/modules/ui/namespace.js >> "${FILE_CAAT}" \
+ --js "${SOURCE_DIR}"/modules/ui/layoutManager.js >> "${FILE_CAAT}" \
+ --js "${SOURCE_DIR}"/modules/ui/label.js >> "${FILE_CAAT}" \
 
  >> "${FILE_CAAT}"
 
@@ -177,9 +177,9 @@ java -jar /Users/ibon/applications/closure/compiler.jar --compilation_level "${C
  --js "${SOURCE_DIR}"/path/interpolatoractor.js \
  --js "${SOURCE_DIR}"/path/path.js \
  --js "${SOURCE_DIR}"/path/pathactor.js >> "${FILE_CAAT_CSS}"
- --js "${SOURCE_DIR}"/ui/namespace.js \
- --js "${SOURCE_DIR}"/ui/layoutManager.js \
- --js "${SOURCE_DIR}"/ui/label.js \
+ --js "${SOURCE_DIR}"/modules/ui/namespace.js \
+ --js "${SOURCE_DIR}"/modules/ui/layoutManager.js \
+ --js "${SOURCE_DIR}"/modules/ui/label.js \
 
 
 #

@@ -81,6 +81,15 @@
         return this;
     };
 
+    CAAT.SpriteImage.TR_NONE=	0,      // constants used to determine how to draw the sprite image,
+    CAAT.SpriteImage.TR_FLIP_HORIZONTAL=    1;
+    CAAT.SpriteImage.TR_FLIP_VERTICAL=		2;
+    CAAT.SpriteImage.TR_FLIP_ALL=			3;
+    CAAT.SpriteImage.TR_FIXED_TO_SIZE=       4;
+    CAAT.SpriteImage.TR_FIXED_WIDTH_TO_SIZE= 6;
+    CAAT.SpriteImage.TR_TILE=                5;
+
+
     CAAT.SpriteImage.prototype = {
 
         animationImageIndex:    null,   // an Array defining the sprite frame sequence
@@ -89,11 +98,33 @@
         transformation:			0,      // any of the TR_* constants.
         spriteIndex:			0,      // the current sprite frame
 
+        /**
+         * @deprecated
+         */
         TR_NONE:				0,      // constants used to determine how to draw the sprite image,
+        /**
+         * @deprecated
+         */
         TR_FLIP_HORIZONTAL:		1,
+        /**
+         * @deprecated
+         */
         TR_FLIP_VERTICAL:		2,
+        /**
+         * @deprecated
+         */
         TR_FLIP_ALL:			3,
+        /**
+         * @deprecated
+         */
         TR_FIXED_TO_SIZE:       4,
+        /**
+         * @deprecated
+         */
+        TR_FIXED_WIDTH_TO_SIZE: 6,
+        /**
+         * @deprecated
+         */
         TR_TILE:                5,
 
         image:                  null,
@@ -427,6 +458,28 @@
 
             return this;
         },
+        /**
+         * Draws the subimage pointed by imageIndex.
+         * @param canvas a canvas context.
+         * @param imageIndex {number} a subimage index.
+         * @param x {number} x position in canvas to draw the image.
+         * @param y {number} y position in canvas to draw the image.
+         *
+         * @return this
+         */
+        paintScaledWidth : function(director, time, x, y) {
+            this.setSpriteIndexAtTime(time);
+            var el= this.mapInfo[this.spriteIndex];
+
+            director.ctx.drawImage(
+                this.image,
+                el.x, el.y,
+                el.width, el.height,
+                (this.offsetX+x)>>0, (this.offsetY+y)>>0,
+                this.ownerActor.width, el.height);
+
+            return this;
+        },
         paintChunk : function( ctx, dx,dy, x, y, w, h ) {
             ctx.drawImage( this.image, x,y,w,h, dx,dy,w,h );
         },
@@ -580,6 +633,9 @@
 					break;
                 case this.TR_FIXED_TO_SIZE:
                     this.paint= this.paintScaled;
+                    break;
+                case this.TR_FIXED_WIDTH_TO_SIZE:
+                    this.paint= this.paintScaledWidth;
                     break;
                 case this.TR_TILE:
                     this.paint= this.paintTiled;

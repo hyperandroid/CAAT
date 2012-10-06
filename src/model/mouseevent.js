@@ -266,6 +266,10 @@ CAAT.unregisterResizeListener= function(director) {
     }
 };
 
+CAAT.getCurrentSceneTime= function() {
+    return CAAT.currentDirector.getCurrentScene().time;
+}
+
 /**
  * Pressed key codes.
  */

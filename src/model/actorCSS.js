@@ -59,6 +59,17 @@
 		return this;
 	};
 
+    CAAT.Actor.ANCHOR_CENTER=	    0;      // constant values to determine different affine transform
+    CAAT.Actor.ANCHOR_TOP=			1;      // anchors.
+    CAAT.Actor.ANCHOR_BOTTOM=		2;
+    CAAT.Actor.ANCHOR_LEFT=			3;
+    CAAT.Actor.ANCHOR_RIGHT=		4;
+    CAAT.Actor.ANCHOR_TOP_LEFT=		5;
+    CAAT.Actor.ANCHOR_TOP_RIGHT=	6;
+    CAAT.Actor.ANCHOR_BOTTOM_LEFT=	7;
+    CAAT.Actor.ANCHOR_BOTTOM_RIGHT=	8;
+    CAAT.Actor.ANCHOR_CUSTOM=       9;
+
 	CAAT.Actor.prototype= {
 
         lifecycleListenerList:	null,   // Array of life cycle listener
@@ -94,15 +105,45 @@
 
         visible:                true,
 
+        /**
+         * @deprecated
+         */
         ANCHOR_CENTER:			0,      // constant values to determine different affine transform
+        /**
+         * @deprecated
+         */
         ANCHOR_TOP:				1,      // anchors.
+        /**
+         * @deprecated
+         */
         ANCHOR_BOTTOM:			2,
+        /**
+         * @deprecated
+         */
         ANCHOR_LEFT:			3,
+        /**
+         * @deprecated
+         */
         ANCHOR_RIGHT:			4,
+        /**
+         * @deprecated
+         */
         ANCHOR_TOP_LEFT:		5,
+        /**
+         * @deprecated
+         */
         ANCHOR_TOP_RIGHT:		6,
+        /**
+         * @deprecated
+         */
         ANCHOR_BOTTOM_LEFT:		7,
+        /**
+         * @deprecated
+         */
         ANCHOR_BOTTOM_RIGHT:	8,
+        /**
+         * @deprecated
+         */
         ANCHOR_CUSTOM:          9,
 
         mouseEnabled:           true,
