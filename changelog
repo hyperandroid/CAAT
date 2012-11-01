@@ -1,7 +1,55 @@
+* This version is a major update. CAAT structure has been changed, but keeps backwards compatibility except
+  for some prototype constants which have been moved from prototypes to Constructor functions. This means that
+  deprecated constant values have been removed, more concretely: prototype constants from: CAAT.SpriteImage,
+  CAAT.Actor, CAAT.ActorContainer, CAAT.Scene and CAAT.Director have been removed.
+
+  A new structure based on a ModuleManager has been imposed which exposes more apropriately CAAT's structure and
+  allows for better maintainbility. This module manager takes care of Class definition and extensibility, solves
+  deep circular dependencies, loads libraries and modules, etc.
+
+  From a flat structure, the system has evolved to:
+
+    |-src
+       |---Behavior     // Behaviors and interpolator classes.
+       |---Core         // Module manager, constants and old Class functions.
+       |---Event        // Mouse, touch, multitouch and animation loop related functions.
+       |---Foundation   // Foundation actors: Actor, ActorContainer, Scene and Director
+       |-----Box2d      // Box2d related actors.
+       |-----Timer      // Timers and virtual timeline control for Scene and Director.
+       |-----UI         // UI related actors: ShapeActor, StarActor, Dock, etc.
+       |-------Layout   // Layout utilities. See demo29
+       |---Lib          // Libs needed by CAAT: currently box2dWeb
+       |---Math         // Point, Rectangle, Matrix, Curves, etc.
+       |---Modules      // Extensible plugins
+       |-----Audio
+       |-----CSS
+       |-----CircleManager
+       |-----Collision      // SpatialHash and Quadtree
+       |-----ColorUtil
+       |-----Debug          // DEBUG functionality
+       |-----Font
+       |-----Image
+       |-------ImageProcess
+       |-------Preloader        // Asset preloaders
+       |-------Util             // Image utils: crop, thumbs, etc.
+       |-----LayoutUtils    // old layout capabilities. Use CAAT.Foundation.UI.Layout instead.
+       |-----Runtime        // runtime information: browser types, etc. Soon Retina capabilities, etc.
+       |-----Storage        // local storage Class. Soon to add others.
+       |-----TexturePacker  // Pack textures on-the-fly into bigger atlases. transparently used by webGL renderer.
+       |---PathUtil     // Pathing classes.
+       |---WebGL        // WebGL utilities.
+
+  Now the right class for CAAT.Actor is CAAT.Foundation.Actor. But old names have been kept for CAAT backwards
+  compatibility. Same with all the other CAAT constructor classes.
+
 * CHANGE. Moved ui to modules directory.
 * FIX. Deprecated prototype constants in Actor, Scene, Director, SpriteImage.
 * CHANGE. Default layout behavior is non-animated.
-
+* CAAT.enableDeviceMotion to start device's accelerometer capabilities.
+* FIX. Unified CAAT.Foundation.SpriteImage.drawString with CAAT.Foundation.TextActor.drawText function. Now
+  the method signature is CAAT.Foundation.SpriteImage.drawText( str, ctx, x, y );
+* CHANGE. It is no more needed to call SpriteImage.getRef() to share a SpriteImage instance among different actors.
+* FIX. Actor.cacheAsBitmap(time, hint) has been fixed.
 
 * 09/30/2012 0.4 Build 420*
 ---------------------------
@@ -636,7 +684,7 @@ Fixed some code on rectangle, point, bezier, path.
 ---------
 
 Added shift/control/alt modifiers to key events.
-added missing getAnchorPercent method to actorCSS.js file. [important bug]
+added missing getAnchorPercent method to ActorCSS.js file. [important bug]
 Fixed CSS renderer zOrder error.
 
 
@@ -711,7 +759,7 @@ Fixed director's RESIZE_PROPORTIONAL option. There was a bug that prevented scen
 Separated CAAT compilation results into two separate versions one for Canvas/GL and the
  other for CSS. This is needed since the Actor,ActorContainer,Scene and Director classes
  have been rewritten to support a CSS renderer. Since there's a extend function invoked
- inside closures to extend prototypes I'm unable to decide on the fly whether to extends
+ inside closures to extend prototypes I'm unable to decide on the fly whether to extendsClass
  an object (Actor) or another version with the same interface (ActorCSS).
 
 

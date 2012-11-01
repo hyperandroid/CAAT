@@ -90,53 +90,14 @@ echo -e "*/\n\n" >> "${FILE_CAAT_BOX2D}"
 #
 echo -e "\nCreating CAAT canvas/webGL"
 /usr/bin/java -jar /Users/ibon/applications/closure/compiler.jar --compilation_level "${COMPILATION_LEVEL}" \
- --js "${SOURCE_DIR}"/CAAT.js \
- --js "${SOURCE_DIR}"/core/browserdetect.js \
- --js "${SOURCE_DIR}"/core/class.js \
- --js "${SOURCE_DIR}"/math/affinetransform2D.js \
- --js "${SOURCE_DIR}"/math/color.js \
- --js "${SOURCE_DIR}"/math/rectangle.js \
- --js "${SOURCE_DIR}"/math/bezier.js \
- --js "${SOURCE_DIR}"/math/point.js \
- --js "${SOURCE_DIR}"/math/quadtree.js \
- --js "${SOURCE_DIR}"/math/dimension.js \
- --js "${SOURCE_DIR}"/path/interpolator.js \
- --js "${SOURCE_DIR}"/behaviour/behaviour.js \
- --js "${SOURCE_DIR}"/model/debug.js \
- --js "${SOURCE_DIR}"/model/actor.js \
- --js "${SOURCE_DIR}"/model/audio.js \
- --js "${SOURCE_DIR}"/model/extraActor.js \
- --js "${SOURCE_DIR}"/model/director.js \
- --js "${SOURCE_DIR}"/model/mouseevent.js \
- --js "${SOURCE_DIR}"/model/conpoundimage.js \
- --js "${SOURCE_DIR}"/model/imagepreloader.js \
- --js "${SOURCE_DIR}"/model/timer.js \
- --js "${SOURCE_DIR}"/model/scene.js \
- --js "${SOURCE_DIR}"/modules/modules.js \
- --js "${SOURCE_DIR}"/modules/Layout/layout.js \
- --js "${SOURCE_DIR}"/modules/CircleManager/PackedCircle.js \
- --js "${SOURCE_DIR}"/modules/CircleManager/PackedCircleManager.js \
- --js "${SOURCE_DIR}"/modules/LocalStorage/LocalStorage.js \
- --js "${SOURCE_DIR}"/modules/ImageUtil/ImageUtil.js \
- --js "${SOURCE_DIR}"/modules/Font/font.js \
- --js "${SOURCE_DIR}"/path/interpolatoractor.js \
- --js "${SOURCE_DIR}"/path/path.js \
- --js "${SOURCE_DIR}"/path/pathactor.js \
- --js "${SOURCE_DIR}"/texture/plasma.js \
- --js "${SOURCE_DIR}"/webgl/ShaderUtil.js \
- --js "${SOURCE_DIR}"/webgl/glu.js \
- --js "${SOURCE_DIR}"/webgl/glTexturePage.js \
- --js "${SOURCE_DIR}"/modules/ui/namespace.js >> "${FILE_CAAT}" \
- --js "${SOURCE_DIR}"/modules/ui/layoutManager.js >> "${FILE_CAAT}" \
- --js "${SOURCE_DIR}"/modules/ui/label.js >> "${FILE_CAAT}" \
-
+--js build/caat.js \
  >> "${FILE_CAAT}"
 
 #
 # Compile box2d
 #
 echo "Creating CAAT Box2d"
-/usr/bin/java -jar /Users/ibon/applications/closure/compiler.jar --compilation_level "${COMPILATION_LEVEL}" --js "${SOURCE_DIR}"/box2d/box2Dactor.js >> "${FILE_CAAT_BOX2D}"
+ /usr/bin/java -jar /Users/ibon/applications/closure/compiler.jar --compilation_level "${COMPILATION_LEVEL}" --js build/caat-box2d.js >> "${FILE_CAAT_BOX2D}"
 
 #
 # Compile css
@@ -144,43 +105,7 @@ echo "Creating CAAT Box2d"
 echo "Creating CAAT CSS"
 echo -e "CAAT.__CSS__=1;" >> /tmp/__css.js
 java -jar /Users/ibon/applications/closure/compiler.jar --compilation_level "${COMPILATION_LEVEL}" \
- --js "${SOURCE_DIR}"/CAAT.js \
- --js /tmp/__css.js \
- --js "${SOURCE_DIR}"/core/browserdetect.js \
- --js "${SOURCE_DIR}"/core/class.js \
- --js "${SOURCE_DIR}"/math/affinetransform2D.js \
- --js "${SOURCE_DIR}"/math/color.js \
- --js "${SOURCE_DIR}"/math/rectangle.js \
- --js "${SOURCE_DIR}"/math/bezier.js \
- --js "${SOURCE_DIR}"/math/point.js \
- --js "${SOURCE_DIR}"/math/quadtree.js \
- --js "${SOURCE_DIR}"/math/dimension.js \
- --js "${SOURCE_DIR}"/path/interpolator.js \
- --js "${SOURCE_DIR}"/behaviour/behaviour.js \
- --js "${SOURCE_DIR}"/model/debug.js \
- --js "${SOURCE_DIR}"/model/actorCSS.js \
- --js "${SOURCE_DIR}"/model/audio.js \
- --js "${SOURCE_DIR}"/model/extraActor.js \
- --js "${SOURCE_DIR}"/model/director.js \
- --js "${SOURCE_DIR}"/model/mouseevent.js \
- --js "${SOURCE_DIR}"/model/conpoundimage.js \
- --js "${SOURCE_DIR}"/model/imagepreloader.js \
- --js "${SOURCE_DIR}"/model/timer.js \
- --js "${SOURCE_DIR}"/model/sceneCSS.js \
- --js "${SOURCE_DIR}"/modules/modules.js \
- --js "${SOURCE_DIR}"/modules/Layout/layout.html \
- --js "${SOURCE_DIR}"/modules/CircleManager/PackedCircle.js \
- --js "${SOURCE_DIR}"/modules/CircleManager/PackedCircleManager.js \
- --js "${SOURCE_DIR}"/modules/LocalStorage/LocalStorage.js \
- --js "${SOURCE_DIR}"/modules/ImageUtil/ImageUtil.js \
- --js "${SOURCE_DIR}"/modules/Font/font.js \
- --js "${SOURCE_DIR}"/path/interpolatoractor.js \
- --js "${SOURCE_DIR}"/path/path.js \
- --js "${SOURCE_DIR}"/path/pathactor.js >> "${FILE_CAAT_CSS}"
- --js "${SOURCE_DIR}"/modules/ui/namespace.js \
- --js "${SOURCE_DIR}"/modules/ui/layoutManager.js \
- --js "${SOURCE_DIR}"/modules/ui/label.js \
-
+ --js build/caat-css.js >> "${FILE_CAAT_CSS}"
 
 #
 # Distribute resulting compiled files

@@ -118,13 +118,63 @@
                     to the next path point.
                 </p>
                 <p>
-                    The function <span class="apicode">setTranslation(x,y)</span> define an
+                    <strike>The function <span class="apicode">setTranslation(x,y)</span> define an
                     offset displacement to set what actor position you want to be on the path
-                    instead its origin.
+                    instead its origin.</strike>. <b>deprecated</b> see Actor.setPositionAnchor(anchorx,anchory).
                 </p>
                 <p>
                     The following example show a rectangle centered and traversing a path:
                 </p>
+
+<div><canvas id="_c6"></canvas></div>
+<script>
+    (function() {
+
+
+            var director = new CAAT.Foundation.Director().initialize(250,250,'_c6');
+            var scene=  director.createScene();
+
+            var shape= new CAAT.Foundation.UI.StarActor().
+                    initialize( 8, 30, 10 ).
+                    setLocation( 50,50 ).
+                    setSize(50,50).
+                    setFillStyle('#00f').
+                    setStrokeStyle('#0f0').
+                    setOutlined(true).
+                    setAlpha(.75).
+                    setPositionAnchor(.5,.5);
+
+            // add two rectangle shapes to the scene.
+            scene.addChild(shape);
+
+            // create a circular path.
+            var path= new CAAT.PathUtil.Path().
+                    beginPath(25,125).
+                    addCubicTo( 25,25,   225,25,   225,125 ).
+                    addCubicTo( 225,225,  25,225,  25,125 ).
+                    endPath();
+
+            // add an actor to show the path.
+            var path_actor= new CAAT.Foundation.UI.PathActor().
+                    setPath(path).
+                    setBounds(0,0,director.width,director.height);
+            scene.addChild( path_actor );
+
+            // setup up a path traverser for the path.
+            var path_behavior= new CAAT.Behavior.PathBehavior().
+                    setPath( path ).
+                // take 5 seconds to traverse the path
+                    setFrameTime(0,5000).
+                // do it continuously, not just one time
+                    setCycle(true).
+                // head the actor across the path to the next point.
+                    setAutoRotate( true );
+
+            shape.addBehavior( path_behavior );
+
+            CAAT.loop(30);
+    })();
+</script>
 
 
 <div class="code">
@@ -177,60 +227,6 @@
             CAAT.loop(30);
     </pre>
 </div>
-
-<div><canvas id="_c6"></canvas></div>
-<script>
-    (function() {
-
-
-            var director = new CAAT.Director().initialize(
-                    250,250,document.getElementById('_c6'));
-            var scene=  director.createScene();
-
-            var shape= new CAAT.StarActor().
-                    initialize( 8, 30, 10 ).
-                    setLocation( 50,50 ).
-                    setSize(50,50).
-                    setFillStyle('#00f').
-                    setStrokeStyle('#0f0').
-                    setOutlined(true).
-                    setAlpha(.75);
-
-            // add two rectangle shapes to the scene.
-            scene.addChild(shape);
-
-            // create a circular path.
-            var path= new CAAT.Path().
-                    beginPath(25,125).
-                    addCubicTo( 25,25,   225,25,   225,125 ).
-                    addCubicTo( 225,225,  25,225,  25,125 ).
-                    endPath();
-
-            // add an actor to show the path.
-            var path_actor= new CAAT.PathActor().
-                    setPath(path).
-                    setBounds(0,0,director.width,director.height);
-            scene.addChild( path_actor );
-
-            // setup up a path traverser for the path.
-            var path_behavior= new CAAT.PathBehavior().
-                    setPath( path ).
-                // take 5 seconds to traverse the path
-                    setFrameTime(0,5000).
-                // do it continuously, not just one time
-                    setCycle(true).
-                // head the actor across the path to the next point.
-                    setAutoRotate( true ).
-                // set path traverse by the center of the rectangle shape.
-                    setTranslation(
-                        shape.width/2,
-                        shape.height/2);
-
-            shape.addBehavior( path_behavior );
-
-            CAAT.loop(30);
-    })();
-</script>
 
 
             </div>

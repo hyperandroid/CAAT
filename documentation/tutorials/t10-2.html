@@ -55,27 +55,26 @@
                     <div style='float:left; width: 75%;'><canvas id="_c1"></canvas></div>
                     <script>
                         (function() {
-                            new CAAT.ImagePreloader().loadImages(
+                            new CAAT.Module.Preloader.ImagePreloader().loadImages(
                                     [{ id:'logo', url:'resource/logo.png'} ],
                                     function( count, images ) {
-                                        var director= new CAAT.Director().initialize(
-                                                300,82*4,document.getElementById('_c1'));
+                                        var director= new CAAT.Foundation.Director().initialize(300,82*4,'_c1');
                                         var scene= director.createScene();
                                         director.setImagesCache(images);
 
-                                        var img= new CAAT.modules.ImageUtil().createAlphaSpriteSheet(
+                                        var img= CAAT.Module.Image.ImageUtil.createAlphaSpriteSheet(
                                                 1,.1,4,director.getImage('logo') );
 
                                         scene.addChild(
-                                                new CAAT.Actor().
+                                                new CAAT.Foundation.Actor().
                                                         setBackgroundImage( img, true )
                                         );
 
-                                        var img2= new CAAT.modules.ImageUtil().createAlphaSpriteSheet(
+                                        var img2= CAAT.Module.Image.ImageUtil.createAlphaSpriteSheet(
                                                 1,.1,4,director.getImage('logo'), 'red' );
 
                                         scene.addChild(
-                                                new CAAT.Actor().
+                                                new CAAT.Foundation.Actor().
                                                         setBackgroundImage( img2, true ).
                                                         setLocation(150,0)
                                         );
@@ -105,8 +104,7 @@
                             new CAAT.ImagePreloader().loadImages(
                                     [{ id:'b', url:'resource/normal_mode.png'} ],
                                     function( count, images ) {
-                                        var director= new CAAT.Director().initialize(
-                                                440,300,document.getElementById('_c2'));
+                                        var director= new CAAT.Foundation.Director().initialize(440,300,'_c2');
 
                                         var scene= director.createScene().setFillStyle('red');
                                         director.setImagesCache(images);
@@ -116,30 +114,30 @@
                                         x= (director.width-img.width)/2;
                                         y= 10;
                                         scene.addChild(
-                                                new CAAT.Actor().
+                                                new CAAT.Foundation.Actor().
                                                         setFillStyle('blue').
                                                         setBounds(x,y,img.width,img.height)
 
                                         );
                                         scene.addChild(
-                                                new CAAT.Actor().
+                                                new CAAT.Foundation.Actor().
                                                         setBackgroundImage( img, true ).
                                                         setLocation(x,y)
                                         );
 
-                                        var img2= new CAAT.modules.ImageUtil().optimize( img, 32 );
+                                        var img2= CAAT.Module.Image.ImageUtil.optimize( img, 32 );
 
                                         x= (director.width-img2.width)/2;
                                         y= 10+img.height+10;
 
                                         scene.addChild(
-                                                new CAAT.Actor().
+                                                new CAAT.Foundation.Actor().
                                                         setFillStyle('blue').
                                                         setBounds(x,y,img2.width,img2.height)
 
                                         );
                                         scene.addChild(
-                                                new CAAT.Actor().
+                                                new CAAT.Foundation.Actor().
                                                         setBackgroundImage( img2, true ).
                                                         setLocation(x,y )
                                         );
@@ -173,20 +171,19 @@
                             new CAAT.ImagePreloader().loadImages(
                                     [{ id:'b', url:'resource/normal_mode.png'} ],
                                     function( count, images ) {
-                                        var director= new CAAT.Director().initialize(
-                                                440,230,document.getElementById('_c3'));
+                                        var director= new CAAT.Foundation.Director().initialize(440,230,'_c3');
 
                                         var scene= director.createScene().setFillStyle('red');
                                         director.setImagesCache(images);
                                         var img= director.getImage('b');
 
                                         scene.addChild(
-                                                new CAAT.Actor().
+                                                new CAAT.Foundation.Actor().
                                                         setBounds((director.width-img.width)/2, 10, img.width, img.height).
                                                         setFillStyle('blue')
                                         );
                                         scene.addChild(
-                                                new CAAT.Actor().
+                                                new CAAT.Foundation.Actor().
                                                         setBackgroundImage( img, true ).
                                                         setLocation((director.width-img.width)/2, 10).
                                                         setFillStyle('blue')
@@ -194,15 +191,15 @@
 
 
 
-                                        var img2= new CAAT.modules.ImageUtil().createThumb(
+                                        var img2= CAAT.Module.Image.ImageUtil.createThumb(
                                                 img, img.width/4, img.height/4 );
                                         scene.addChild(
-                                                new CAAT.Actor().
+                                                new CAAT.Foundation.Actor().
                                                         setBounds(50, 10+10+img.height, img2.width, img2.height).
                                                         setFillStyle('blue')
                                         );
                                         scene.addChild(
-                                                new CAAT.Actor().
+                                                new CAAT.Foundation.Actor().
                                                         setBackgroundImage( img2, true ).
                                                         setLocation(50, 10+img.height+10 ).
                                                         setFillStyle('blue')
@@ -210,15 +207,15 @@
 
 
 
-                                        var img3= new CAAT.modules.ImageUtil().createThumb(
+                                        var img3= CAAT.Module.Image.ImageUtil.createThumb(
                                                 img, 64, 64 );
                                         scene.addChild(
-                                                new CAAT.Actor().
+                                                new CAAT.Foundation.Actor().
                                                         setBounds(220, 10+10+img.height, img3.width, img3.height).
                                                         setFillStyle('blue')
                                         );
                                         scene.addChild(
-                                                new CAAT.Actor().
+                                                new CAAT.Foundation.Actor().
                                                         setBackgroundImage( img3, true ).
                                                         setLocation(220, 10+img.height+10 ).
                                                         setFillStyle('blue')
@@ -226,15 +223,15 @@
 
 
 
-                                        var img4= new CAAT.modules.ImageUtil().createThumb(
+                                        var img4= CAAT.Module.Image.ImageUtil.createThumb(
                                                 img, 64, 64, true );
                                         scene.addChild(
-                                                new CAAT.Actor().
+                                                new CAAT.Foundation.Actor().
                                                         setBounds(300, 10+10+img.height, img4.width, img4.height).
                                                         setFillStyle('blue')
                                         );
                                         scene.addChild(
-                                                new CAAT.Actor().
+                                                new CAAT.Foundation.Actor().
                                                         setBackgroundImage( img4, true ).
                                                         setLocation(300, 10+img.height+10 ).
                                                         setFillStyle('blue')

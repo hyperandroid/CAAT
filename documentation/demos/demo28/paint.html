@@ -7,14 +7,8 @@
     <title>CAAT example: Paint</title>
 
     <link rel="stylesheet" href="../style/demo.css">
-    <link href='http://fonts.googleapis.com/css?family=Fresca|Baumans|Righteous|Voltaire' rel='stylesheet' type='text/css'>
 </head>
 <body>
-
-<div style="font-family: 'Baumans';">&nbsp;</div>
-<div style="font-family: 'Fresca';">&nbsp;</div>
-<div style="font-family: 'Righteous';">&nbsp;</div>
-<div style="font-family: 'Voltaire';">&nbsp;</div>
 
 
 <div id="page">
@@ -33,6 +27,7 @@
                 <h1>Minimal Paint program</h1>
             </div>
             <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
             </div>
             <div id="experiment-description">
                 <div>
@@ -49,8 +44,7 @@
 </body>
 
 <script type="text/javascript" src="../menu/menu.js"></script>
-<script type="text/javascript" src="../../../build/caat.js"></script>
-<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
 
 <script type="text/javascript">
     /**
@@ -84,34 +78,41 @@
          * Startup it all up when the document is ready.
          * Change for your favorite frameworks initialization code.
          */
-        window.addEventListener(
-                'load',
-                function() {
+        window.addEventListener('load', load, false);
 
-                    // BUGBUG
-                    // wait some time for browser to load fonts.
-                    setTimeout(
-                        function() {
-                            CAAT.modules.initialization.init(
-                                    800, 500,
-                                    'experiment-holder',
-                                    [],
-                                    paint )
-                        },
-                        500 );
-                },
-                false);
+        function load() {
+            CAAT.ModuleManager.
+                baseURL("../../../src/").
+                setModulePath("CAAT.Core", "Core").
+                setModulePath("CAAT.Math", "Math").
+                setModulePath("CAAT.Behavior", "Behavior").
+                setModulePath("CAAT.Foundation", "Foundation").
+                setModulePath("CAAT.Event", "Event").
+                setModulePath("CAAT.PathUtil", "PathUtil").
+                setModulePath("CAAT.Module", "Modules").
+                setModulePath("CAAT.Module.Preloader", "Modules/Image/Preloader").
+                setModulePath("CAAT.WebGL", "WebGL").
 
-        function paint(director) {
+                // get modules, and solve their dependencies.
+                bring([
+                    "CAAT.Foundation.Director"
+                ]).
 
+                // this function will be fired every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( paint );
+        }
 
+        function paint() {
+
+            var director= new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas');
             var scene = director.createScene();
 
             var canvas= document.createElement("canvas");
             canvas.width= director.width;
             canvas.height= director.height;
 
-            var actor= new CAAT.Actor().
+            var actor= new CAAT.Foundation.Actor().
                     setBackgroundImage( canvas );
 
             actor.__ctx= canvas.getContext("2d");
@@ -163,6 +164,8 @@
             };
 
             scene.addChild(actor);
+
+            CAAT.loop(60);
         }
 
     })();

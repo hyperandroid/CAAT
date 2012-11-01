@@ -81,74 +81,25 @@
                     and the circle's one will last for ten seconds and finish applying.
                 </p>
 
-                <div class="code">
-                <pre class="brush: js; auto-links: false; toolbar: false;">
-                var director = new CAAT.Director().initialize(
-                        150,80,document.getElementById('_c2'));
-
-                var scene=     director.createScene();
-
-                // create a rectangle
-                var rectangle=   new CAAT.ShapeActor().create().
-                        setShape( CAAT.ShapeActor.prototype.SHAPE_RECTANGLE ).
-                        setLocation(10,10).
-                        setSize(60,60).
-                        setFillStyle('#f00').
-                        setStrokeStyle('#000');
-
-                // create a circle
-                var circle=   new CAAT.ShapeActor().create().
-                        setShape( CAAT.ShapeActor.prototype.SHAPE_CIRCLE ).
-                        setBounds( 80, 10, 60, 60 ).
-                        setFillStyle( '#0f0' ).
-                        setStrokeStyle( '#000' );
-
-                scene.addChild(rectangle);
-                scene.addChild(circle);
-
-                // create an alpha transparency behavior, which takes two seconds to start,
-                // and will be applied for five seconds. During this time, the trsnsparency
-                // will fade from 1 (total opacity) to 0 (total transparency)
-                var alpha_2= new CAAT.AlphaBehavior().
-                        setValues(1,0).
-
-                    // by cycling a behavior, upon expiration (on time = 7000 milliseconds),
-                    // it will start applying again from the beginning.
-                        setCycle(true).
-                        setFrameTime( 2000, 5000 );
-
-                // set the behavior to the rectangle.
-                rectangle.addBehavior(alpha_2);
-
-                var alpha_3= new CAAT.AlphaBehavior().
-                        setValues(1,0).
-                        setFrameTime( 2000, 10000 );
-                circle.addBehavior(alpha_3);
-
-                CAAT.loop(10);
-                </pre>
-                </div>
 
                 <div>
                     <canvas id='_c2'></canvas>
                 </div>
                 <script>
-                    var director = new CAAT.Director().initialize(
-                            150, 80, document.getElementById('_c2'));
-
+                    var director = new CAAT.Foundation.Director().initialize(150, 80, '_c2');
                     var scene = director.createScene();
 
                     // create a rectangle
-                    var rectangle = new CAAT.ShapeActor().create().
-                            setShape(CAAT.ShapeActor.prototype.SHAPE_RECTANGLE).
+                    var rectangle = new CAAT.Foundation.UI.ShapeActor().
+                            setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_RECTANGLE).
                             setLocation(10, 10).
                             setSize(60, 60).
                             setFillStyle('#ff0000').
                             setStrokeStyle('#000000');
 
                     // create a circle
-                    var circle = new CAAT.ShapeActor().create().
-                            setShape(CAAT.ShapeActor.prototype.SHAPE_CIRCLE).
+                    var circle = new CAAT.Foundation.UI.ShapeActor().
+                            setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_CIRCLE).
                             setBounds(80, 10, 60, 60).
                             setFillStyle('#00ff00').
                             setStrokeStyle('#000000');
@@ -159,7 +110,7 @@
                     // create an alpha transparency behavior, which takes two seconds to start,
                     // and will be applied for five seconds. During this time, the trsnsparency
                     // will fade from 1 (total opacity) to 0 (total transparency)
-                    var alpha_2 = new CAAT.AlphaBehavior().
+                    var alpha_2 = new CAAT.Behavior.AlphaBehavior().
                             setValues(1, 0).
 
                         // by cycling a behavior, upon expiration (on time = 7000 milliseconds),
@@ -170,13 +121,62 @@
                     // set the behavior to the rectangle.
                     rectangle.addBehavior(alpha_2);
 
-                    var alpha_3 = new CAAT.AlphaBehavior().
+                    var alpha_3 = new CAAT.Behavior.AlphaBehavior().
                             setValues(1, 0).
                             setFrameTime(2000, 5000);
                     circle.addBehavior(alpha_3);
 
                     CAAT.loop(10);
                 </script>
+
+
+                <div class="code">
+                <pre class="brush: js; auto-links: false; toolbar: false;">
+                    var director = new CAAT.Foundation.Director().initialize(150, 80, '_c2');
+                    var scene = director.createScene();
+
+                    // create a rectangle
+                    var rectangle = new CAAT.Foundation.UI.ShapeActor().
+                            setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_RECTANGLE).
+                            setLocation(10, 10).
+                            setSize(60, 60).
+                            setFillStyle('#ff0000').
+                            setStrokeStyle('#000000');
+
+                    // create a circle
+                    var circle = new CAAT.Foundation.UI.ShapeActor().
+                            setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_CIRCLE).
+                            setBounds(80, 10, 60, 60).
+                            setFillStyle('#00ff00').
+                            setStrokeStyle('#000000');
+
+                    scene.addChild(rectangle);
+                    scene.addChild(circle);
+
+                    // create an alpha transparency behavior, which takes two seconds to start,
+                    // and will be applied for five seconds. During this time, the trsnsparency
+                    // will fade from 1 (total opacity) to 0 (total transparency)
+                    var alpha_2 = new CAAT.Behavior.AlphaBehavior().
+                            setValues(1, 0).
+
+                        // by cycling a behavior, upon expiration (on time = 7000 milliseconds),
+                        // it will start applying again from the beginning.
+                            setCycle(true).
+                            setFrameTime(2000, 5000);
+
+                    // set the behavior to the rectangle.
+                    rectangle.addBehavior(alpha_2);
+
+                    var alpha_3 = new CAAT.Behavior.AlphaBehavior().
+                            setValues(1, 0).
+                            setFrameTime(2000, 5000);
+                    circle.addBehavior(alpha_3);
+
+                    CAAT.loop(10);
+
+                </pre>
+                </div>
+
             </div>
         </div>
 

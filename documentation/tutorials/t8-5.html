@@ -73,19 +73,13 @@
                 <canvas id='_tut5_5'></canvas>
                 <script>
                     (function() {
-                        var director= new CAAT.Director().initialize(
-                                200,
-                                100,
-                                document.getElementById('_tut5_5')
-                        );
-
+                        var director= new CAAT.Foundation.Director().initialize(200,100,'_tut5_5');
                         var scene= director.createScene();
 
                         scene.addChild(
-                                new CAAT.InterpolatorActor().
-                                    create().
+                                new CAAT.Foundation.UI.InterpolatorActor().
                                     setInterpolator(
-                                        new CAAT.Interpolator().createQuadricBezierInterpolator(
+                                        new CAAT.Behavior.Interpolator().createQuadricBezierInterpolator(
                                                 {x:0, y:0},
                                                 {x:1, y:0},
                                                 {x:1, y:1},
@@ -98,10 +92,9 @@
                         );
 
                         scene.addChild(
-                                new CAAT.InterpolatorActor().
-                                    create().
+                                new CAAT.Foundation.UI.InterpolatorActor().
                                     setInterpolator(
-                                        new CAAT.Interpolator().createCubicBezierInterpolator(
+                                        new CAAT.Behavior.Interpolator().createCubicBezierInterpolator(
                                                 {x:0, y:0},
                                                 {x:0, y:1},
                                                 {x:1, y:0},
@@ -114,63 +107,48 @@
                                     setGap(0)
                         );
 
-                        CAAT.loop(30);
+                        CAAT.loop(1);
                     })();
                 </script>
             </div>
             <div class="code">
             <pre class="brush: js; auto-links: false; toolbar: false;">
 
-                    // locate canvas element.
-                    var director= new CAAT.Director().initialize(
-                            200,
-                            100,
-                            document.getElementById('_tut5_5')
-                    );
+                var director= new CAAT.Foundation.Director().initialize(200,100,'_tut5_5');
+                var scene= director.createScene();
 
-                    // create and add Scene to director
-                    var scene= director.createScene();
+                scene.addChild(
+                        new CAAT.Foundation.UI.InterpolatorActor().
+                            setInterpolator(
+                                new CAAT.Behavior.Interpolator().createQuadricBezierInterpolator(
+                                        {x:0, y:0},
+                                        {x:1, y:0},
+                                        {x:1, y:1},
+                                        false
+                                        )
+                            ).
+                            setBounds( 10, 10, 80, 80 ).
+                            setFillStyle('#d0d0d0').
+                            setGap(0)
+                );
 
-                    // add a CAAT.InterpolatorActor instance
-                    scene.addChild(
-                            new CAAT.InterpolatorActor().
-                                create().
-                                setInterpolator(
-                                    new CAAT.Interpolator().createQuadricBezierInterpolator(
-                            // for the curve
-                                            {x:0, y:0},
-                                            {x:1, y:0},
-                                            {x:1, y:1},
-                                            false
-                                            )
-                                ).
-                                setBounds( 10, 10, 80, 80 ).
-                                setFillStyle('#d0d0d0').
-                            // avoid actor padding.
-                                setGap(0)
-                    );
+                scene.addChild(
+                        new CAAT.Foundation.UI.InterpolatorActor().
+                            setInterpolator(
+                                new CAAT.Behavior.Interpolator().createCubicBezierInterpolator(
+                                        {x:0, y:0},
+                                        {x:0, y:1},
+                                        {x:1, y:0},
+                                        {x:1, y:1},
+                                        true
+                                        )
+                            ).
+                            setBounds( 100, 10, 80, 80 ).
+                            setFillStyle('#d0d0d0').
+                            setGap(0)
+                );
 
-                    scene.addChild(
-                            new CAAT.InterpolatorActor().
-                                create().
-                                setInterpolator(
-                                    new CAAT.Interpolator().createCubicBezierInterpolator(
-                            // for the curve
-                                            {x:0, y:0},
-                                            {x:0, y:1},
-                                            {x:1, y:0},
-                                            {x:1, y:1},
-                            // pingpong = true
-                                            true
-                                            )
-                                ).
-                                setBounds( 100, 10, 80, 80 ).
-                                setFillStyle('#d0d0d0').
-                            // avoid actor padding
-                                setGap(0)
-                    );
-
-                    _director_1.loop(1);
+                CAAT.loop(1);
             </pre>
         </div>
         </div>

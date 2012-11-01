@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 4 - Director, time line hooks.</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>Director</h1>
+            <h2>Dirty Rects</h2>
+            <p>
+                When using a Canvas renderer, it may be a good idea to redraw only scene affected areas instead
+                of the whole frame. CAAT will take of this automatically by calling
+                <span class="apicode">director.setClear( CAAT.Foundation.Director.CLEAR_DIRTY_RECTS );</span>.
+            </p>
+            <p>
+                CAAT can automatically identify what objects are dirty, based on Behavior application, position
+                change, etc. But in case you want an Actor to be repaint when dirty rects are enabled, a call
+                to <span class="apicode">actor.invalidate();</span>.
+            </p>
+            <p>
+                Dirty rects are specially suited for low-end mobile devices and canvas rendering. Unfortunately,
+                dirty rects can result in no advantage if there're too many on-screen areas affected. It is your
+                responsibility to switch from CLEAR_DIRTY_RECTS to CLEAR_ALL and viceversa. This can be done
+                at any given moment, no need to restart CAAT at all.
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

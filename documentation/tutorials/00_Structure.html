@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 0 - Structure</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+            <div class="section">
+                <h1>Structure</h1>
+
+                <div>
+                    <p>CAAT uses a director as its base element. It contains different scenes which handle a set
+                    of containers and single elements.</p>
+                    <p>
+                        Visually, contained elements would look like this:
+                    </p>
+                </div>
+                <div>
+                    <div style="background:#fee; border:1px; padding-left:20px; padding-top:5px; padding-bottom:20px; padding-right:20px;">
+                        <p>CAAT.Foundation.Director +</p>
+                        <div style="background:#fdd; border:1px; padding-left:20px; padding-top:5px; padding-bottom:20px; padding-right:20px;">
+                            <p>CAAT.Foundation.Scene +</p>
+                            <div style="background:#fcc; border:1px; padding-left:20px; padding-top:5px; padding-bottom:20px; padding-right:20px;">
+                                <p>CAAT.Foundation.Actor *</p>
+                                <div style="background:#fbb; border:1px; padding-left:20px; padding-top:5px; padding-bottom:20px; padding-right:20px;">
+                                    <p>CAAT.Foundation.ActorContainer *</p>
+                                        <div style="background:#faa; border:1px; padding-left:20px; padding-top:5px; padding-bottom:20px; padding-right:20px;">
+                                            <p>CAAT.Foundation.ActorContainer *</p>
+                                            <p>CAAT.Foundation.Actor *</p>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div>
+                    <p>
+                        This is CAAT's scene graph, where an undefined number of Scenes contain an unlimited number
+                        of Actors and Containers. Containers, contains at the same time other Containers or Actors.
+                    </p>
+                    <p>
+                        Scene and Director are an specialized type of ActorContainer instance.
+                    </p>
+                    <p>
+                        Transformations applied to ActorContainer objects are hierarchically applied regardless its nesting
+                        position in the scene graph, and are accumulated from container to children.
+                    </p>
+                    <p>
+                        See <a href="../demos/demo8/hierarchy_org.html">demo8</a> and <a href="../demos/demo26/hierarchy2.html">demo26</a>
+                        for a visual explanation of transformations from parent to child.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

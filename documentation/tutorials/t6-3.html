@@ -79,54 +79,6 @@
 
             </p>
 
-            <div class="code">
-<pre class="brush: js; auto-links: false; toolbar: false;">
-                var director = new CAAT.Director().initialize(
-                        150, 150, document.getElementById('_c5'));
-                var scene = director.createScene();
-
-                var shape = new CAAT.ShapeActor().
-                        setShape(CAAT.ShapeActor.prototype.SHAPE_RECTANGLE).
-                        setLocation(50, 50).
-                        setSize(50, 50).
-                        setFillStyle('#ff0').
-                        setStrokeStyle('#000')
-                scene.addChild(shape);
-
-                // set a Container for behaviors up.
-                var cb = new CAAT.ContainerBehavior().
-                        setCycle(true).
-                    // take 3 seconds to perform contained behaviors. If any
-                    // takes more than such time, it will be truncated.
-                        setFrameTime(0, 3000);
-
-                // setup an Scaling behavior. Min scale 1, Max scale 2
-                // (twice in size)
-                var sb = new CAAT.ScaleBehavior().
-                        setPingPong().
-                        setValues(1, 2, 1, 2, .50, .50).
-                    // takes 2 seconds to scale. time measured from parent's
-                    // zero time.
-                        setFrameTime(0, 2000);
-
-                // setup a Rotating behavior. 0-2PI, ie 360 degrees.
-                var rb = new CAAT.RotateBehavior().
-                        setValues(0, Math.PI, .50, .50).
-                    // takes 1 second, starting half a second after parent's
-                    // time.
-                        setFrameTime(500, 1000);
-
-                // add scale and rotation to the rectangle.
-                cb.addBehavior(sb);
-                cb.addBehavior(rb);
-
-                // add path and conpound behavior of rotation and scale to
-                // the rectanble shape.
-                shape.addBehavior(cb);
-
-                CAAT.loop(30);
-</pre>
-            </div>
 
 
             <div>
@@ -135,12 +87,11 @@
             <script>
                 (function() {
 
-                var director = new CAAT.Director().initialize(
-                        150, 150, document.getElementById('_c5'));
+                var director = new CAAT.Foundation.Director().initialize(150, 150, '_c5');
                 var scene = director.createScene();
 
-                var shape = new CAAT.ShapeActor().
-                        setShape(CAAT.ShapeActor.prototype.SHAPE_RECTANGLE).
+                var shape = new CAAT.Foundation.UI.ShapeActor().
+                        setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_RECTANGLE).
                         setLocation(50, 50).
                         setSize(50, 50).
                         setFillStyle('#ff0').
@@ -148,7 +99,7 @@
                 scene.addChild(shape);
 
                 // set a Container for behaviors up.
-                var cb = new CAAT.ContainerBehavior().
+                var cb = new CAAT.Behavior.ContainerBehavior().
                         setCycle(true).
                     // take 3 seconds to perform contained behaviors. If any
                     // takes more than such time, it will be truncated.
@@ -156,7 +107,7 @@
 
                 // setup an Scaling behavior. Min scale 1, Max scale 2
                 // (twice in size)
-                var sb = new CAAT.ScaleBehavior().
+                var sb = new CAAT.Behavior.ScaleBehavior().
                         setPingPong().
                         setValues(1, 2, 1, 2, .50, .50).
                     // takes 2 seconds to scale. time measured from parent's
@@ -164,7 +115,7 @@
                         setFrameTime(0, 2000);
 
                 // setup a Rotating behavior. 0-2PI, ie 360 degrees.
-                var rb = new CAAT.RotateBehavior().
+                var rb = new CAAT.Behavior.RotateBehavior().
                         setValues(0, Math.PI, .50, .50).
                     // takes 1 second, starting half a second after parent's
                     // time.
@@ -181,6 +132,57 @@
                 CAAT.loop(30);
                 })();
             </script>
+
+            <div class="code">
+                <pre class="brush: js; auto-links: false; toolbar: false;">
+                    var director = new CAAT.Foundation.Director().initialize(150, 150, '_c5');
+                    var scene = director.createScene();
+
+                    var shape = new CAAT.Foundation.UI.ShapeActor().
+                            setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_RECTANGLE).
+                            setLocation(50, 50).
+                            setSize(50, 50).
+                            setFillStyle('#ff0').
+                            setStrokeStyle('#000')
+                    scene.addChild(shape);
+
+                    // set a Container for behaviors up.
+                    var cb = new CAAT.Behavior.ContainerBehavior().
+                            setCycle(true).
+                        // take 3 seconds to perform contained behaviors. If any
+                        // takes more than such time, it will be truncated.
+                            setFrameTime(0, 3000);
+
+                    // setup an Scaling behavior. Min scale 1, Max scale 2
+                    // (twice in size)
+                    var sb = new CAAT.Behavior.ScaleBehavior().
+                            setPingPong().
+                            setValues(1, 2, 1, 2, .50, .50).
+                        // takes 2 seconds to scale. time measured from parent's
+                        // zero time.
+                            setFrameTime(0, 2000);
+
+                    // setup a Rotating behavior. 0-2PI, ie 360 degrees.
+                    var rb = new CAAT.Behavior.RotateBehavior().
+                            setValues(0, Math.PI, .50, .50).
+                        // takes 1 second, starting half a second after parent's
+                        // time.
+                            setFrameTime(500, 1000);
+
+                    // add scale and rotation to the rectangle.
+                    cb.addBehavior(sb);
+                    cb.addBehavior(rb);
+
+                    // add path and conpound behavior of rotation and scale to
+                    // the rectanble shape.
+                    shape.addBehavior(cb);
+
+                    CAAT.loop(30);
+
+                </pre>
+            </div>
+
+
         </div>
     </div>
 </div>

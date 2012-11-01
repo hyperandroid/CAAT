@@ -130,49 +130,9 @@
 </body>
 
 
-<script src="../../../src/CAAT.js"></script>
-<script src="../../../src/core/class.js"></script>
-<script src="../../../src/math/affinetransform2D.js"></script>
-<script src="../../../src/math/color.js"></script>
-<script src="../../../src/math/rectangle.js"></script>
-<script src="../../../src/math/bezier.js"></script>
-<script src="../../../src/math/point.js"></script>
-<script src="../../../src/math/quadtree.js"></script>
-<script src="../../../src/math/dimension.js"></script>
-<script src="../../../src/path/interpolator.js"></script>
-<script src="../../../src/behaviour/behaviour.js"></script>
-<script src="../../../src/behaviour/csskeyframehelper.js"></script>
-<script src="../../../src/core/browserdetect.js"></script>
-<script src="../../../src/model/debug.js"></script>
-<script src="../../../src/model/actor.js"></script>
-<script src="../../../src/model/audio.js"></script>
-<script src="../../../src/model/extraActor.js"></script>
-<script src="../../../src/model/director.js"></script>
-<script src="../../../src/model/mouseevent.js"></script>
-<script src="../../../src/model/conpoundimage.js"></script>
-<script src="../../../src/model/imagepreloader.js"></script>
-<script src="../../../src/model/timer.js"></script>
-<script src="../../../src/model/scene.js"></script>
-<script src="../../../src/modules/modules.js"></script>
-<script src="../../../src/modules/CircleManager/PackedCircle.js"></script>
-<script src="../../../src/modules/CircleManager/PackedCircleManager.js"></script>
-<script src="../../../src/modules/LocalStorage/LocalStorage.js"></script>
-<script src="../../../src/modules/ImageUtil/ImageUtil.js"></script>
-<script src="../../../src/modules/Layout/layout.js"></script>
-<script src="../../../src/modules/Font/font.js"></script>
-<script src="../../../src/modules/Inspector/inspector.js"></script>
-<script src="../../../src/path/interpolatoractor.js"></script>
-<script src="../../../src/path/path.js"></script>
-<script src="../../../src/path/pathactor.js"></script>
-<script src="../../../src/texture/plasma.js"></script>
-<script src="../../../src/webgl/ShaderUtil.js"></script>
-<script src="../../../src/webgl/glu.js"></script>
-<script src="../../../src/webgl/glTexturePage.js"></script>
-<script src="../../../src/ui/namespace.js"></script>
-<script src="../../../src/ui/layoutManager.js"></script>
-<script src="../../../src/ui/checkbox.js"></script>
-<script src="../../../src/ui/label.js"></script>
+
 <script type="text/javascript" src="../menu/menu.js"></script>
+<script src="../../../src/core/ModuleManager.js"></script>
 
 <script type="text/javascript">
     /**
@@ -201,16 +161,46 @@
      *
      */
 CAAT.DEBUG=1;
+
     (function() {
 
         /**
          * Startup it all up when the document is ready.
          * Change for your favorite frameworks initialization code.
          */
-        window.addEventListener(
-                'load',
-                paint,
-                false);
+        window.addEventListener('load',load,false);
+
+        function load() {
+            CAAT.ModuleManager.
+                    baseURL("../../../src/").
+                    setModulePath("CAAT.Core",              "Core").
+                    setModulePath("CAAT.Math",              "Math").
+                    setModulePath("CAAT.Behavior",          "Behavior").
+                    setModulePath("CAAT.Foundation",        "Foundation").
+                    setModulePath("CAAT.Event",             "Event").
+                    setModulePath("CAAT.PathUtil",          "PathUtil").
+                    setModulePath("CAAT.Module",            "Modules").
+                    setModulePath("CAAT.Module.Preloader",  "Modules/Image/Preloader").
+                    setModulePath("CAAT.WebGL",             "WebGL").
+
+                // get modules, and solve their dependencies.
+                    bring(
+                    [
+                        "CAAT.Foundation.Director",
+                        "CAAT.Foundation.Actor",
+                        "CAAT.Foundation.ActorContainer",
+                        "CAAT.Foundation.SpriteImage",
+                        "CAAT.Foundation.UI.Layout.BorderLayout",
+                        "CAAT.Foundation.UI.Layout.BoxLayout",
+                        "CAAT.Foundation.UI.Layout.GridLayout",
+                        "CAAT.Foundation.UI.Label",
+                        "CAAT.Module.ColorUtil.Color"
+                    ]).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                    onReady( paint );
+        }
 
         var textId= 0;
 
@@ -238,15 +228,27 @@ CAAT.DEBUG=1;
             ctx.strokeRect(0,0,w,h);
             ctx.strokeRect(w,0,w,h);
 
-            return new CAAT.SpriteImage().initialize( canvas, 1, 2 );
+            return new CAAT.Foundation.SpriteImage().initialize( canvas, 1, 2 );
         }
 
         var textPanelIndex=0;
         function createTextPanel( buttonsInBottom, pw, ph, __layout ) {
             var s= 5+ (Math.random()*15)|0;
-            var label= new CAAT.UI.Label().
+            var r= Math.random();
+            var al;
+            if ( r<.25 ) {
+                al="left";
+            } else if ( r<.5 ) {
+                al="center";
+            } else if (r<.75 ) {
+                al="right";
+            } else {
+                al= "justify"
+            }
+            var label= new CAAT.Foundation.UI.Label().
                     setStyle("default", {
-                        fontSize : s
+                        fontSize : s,
+                        alignment: al
                     }).
                     setStyle("link", {
                         fontSize : s+5,
@@ -265,8 +267,8 @@ CAAT.DEBUG=1;
         function createPanel( buttonsInBottom, pw, ph, __layout ) {
             var fn =  function( button ) {
                 content.addChild(
-                        new CAAT.Actor().
-                                setFillStyle( CAAT.Color.RGB.random() ).
+                        new CAAT.Foundation.Actor().
+                                setFillStyle( CAAT.Module.ColorUtil.Color.random() ).
                                 setSize(
                                     !buttonsInBottom ? 5+(15*Math.random()) : 15+(content.width-20)*Math.random(),
                                     !buttonsInBottom ? 5+(content.height-20)*Math.random() : 5+(15*Math.random()) )
@@ -285,20 +287,20 @@ CAAT.DEBUG=1;
                 content.removeLastChild();
             }
 
-            var buttons= new CAAT.ActorContainer();
+            var buttons= new CAAT.Foundation.ActorContainer();
 
-            var layout= new CAAT.UI.BoxLayout().
-                    setAxis( buttonsInBottom ? CAAT.UI.BoxLayout.AXIS.X : CAAT.UI.BoxLayout.AXIS.Y).
+            var layout= new CAAT.Foundation.UI.Layout.BoxLayout().
+                    setAxis( buttonsInBottom ? CAAT.Foundation.UI.Layout.LayoutManager.AXIS.X : CAAT.Foundation.UI.Layout.LayoutManager.AXIS.Y).
                     setHGap( 4 ).
                     setVGap( 4 ).
                     setAllPadding( 5 ).
-                    setVerticalAlignment( buttonsInBottom ? CAAT.UI.BoxLayout.ALIGNMENT.BOTTOM : CAAT.UI.BoxLayout.ALIGNMENT.CENTER ).
-                    setHorizontalAlignment( CAAT.UI.BoxLayout.ALIGNMENT.CENTER );
+                    setVerticalAlignment( buttonsInBottom ? CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.BOTTOM : CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER ).
+                    setHorizontalAlignment( CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER );
 
             buttons.setLayout( layout );
 
-            var buttonPlus=  new CAAT.Actor().setAsButton( createButton(30,30,"+","50px Arial", "#000"), 0,0,0,0, __layout ? fn3 : fn );
-            var buttonMinus= new CAAT.Actor().setAsButton( createButton(30,30,"-","50px Arial", "#000"), 0,0,0,0, fn2 );
+            var buttonPlus=  new CAAT.Foundation.Actor().setAsButton( createButton(30,30,"+","50px Arial", "#000"), 0,0,0,0, __layout ? fn3 : fn );
+            var buttonMinus= new CAAT.Foundation.Actor().setAsButton( createButton(30,30,"-","50px Arial", "#000"), 0,0,0,0, fn2 );
 
             buttons.addChild( buttonPlus );
             buttons.addChild( buttonMinus );
@@ -309,9 +311,9 @@ CAAT.DEBUG=1;
                 buttons.setPreferredSize( 40, ph );
             }
 
-            var panel= new CAAT.ActorContainer().
+            var panel= new CAAT.Foundation.ActorContainer().
                     setPreferredSize( pw, ph).
-                    setLayout( new CAAT.UI.BorderLayout() );
+                    setLayout( new CAAT.Foundation.UI.Layout.BorderLayout() );
 
             panel.addChild( buttons, buttonsInBottom ? "bottom" : "right" );
 
@@ -319,21 +321,25 @@ CAAT.DEBUG=1;
             var ha, va;
 
             var d= Math.random();
-            ha= ( d<.33 ) ? CAAT.UI.BoxLayout.ALIGNMENT.LEFT : ( d<.66 ) ? CAAT.UI.BoxLayout.ALIGNMENT.CENTER : CAAT.UI.BoxLayout.ALIGNMENT.RIGHT;
+            ha= ( d<.33 ) ? CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.LEFT :
+                ( d<.66 ) ? CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER :
+                            CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.RIGHT;
             d= Math.random();
-            va= ( d<.33 ) ? CAAT.UI.BoxLayout.ALIGNMENT.TOP : ( d<.66 ) ? CAAT.UI.BoxLayout.ALIGNMENT.CENTER : CAAT.UI.BoxLayout.ALIGNMENT.BOTTOM;
+            va= ( d<.33 ) ? CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.TOP :
+                ( d<.66 ) ? CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER :
+                            CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.BOTTOM;
 
             if ( !buttonsInBottom ) {
-                layout2= new CAAT.UI.BoxLayout().
-                            setAxis( CAAT.UI.BoxLayout.AXIS.X ).
+                layout2= new CAAT.Foundation.UI.Layout.BoxLayout().
+                            setAxis( CAAT.Foundation.UI.Layout.LayoutManager.AXIS.X ).
                             setHGap( 4 ).
                             setVGap( 4 ).
                             setAllPadding( 5 ).
                             setVerticalAlignment( va ).
                             setHorizontalAlignment( ha )
             } else {
-                layout2= new CAAT.UI.BoxLayout().
-                            setAxis( CAAT.UI.BoxLayout.AXIS.Y ).
+                layout2= new CAAT.Foundation.UI.Layout.BoxLayout().
+                            setAxis( CAAT.Foundation.UI.Layout.LayoutManager.AXIS.Y ).
                             setHGap( 4 ).
                             setVGap( 4 ).
                             setAllPadding( 5 ).
@@ -341,11 +347,11 @@ CAAT.DEBUG=1;
                             setHorizontalAlignment( ha )
 
             }
-            var content= new CAAT.ActorContainer().
+            var content= new CAAT.Foundation.ActorContainer().
                     setPreferredSize( pw, ph - 40).
                     setLayout( typeof __layout!=="undefined" ? __layout : layout2).
                     setClip( true).
-                    setFillStyle( CAAT.Color.RGB.random() );
+                    setFillStyle( CAAT.Module.ColorUtil.Color.random() );
             panel.addChild( content, "center" );
 
             return panel;
@@ -353,23 +359,23 @@ CAAT.DEBUG=1;
 
         function paint() {
 
-            var director= new CAAT.Director().initialize( window.innerWidth, window.innerHeight );
+            var director= new CAAT.Foundation.Director().initialize( window.innerWidth, window.innerHeight );
 
-            var scene = director.createScene().setLayout( new CAAT.UI.BorderLayout() );
-            var cont= new CAAT.ActorContainer().
-                    setLayout( new CAAT.UI.BorderLayout()).
+            var scene = director.createScene().setLayout( new CAAT.Foundation.UI.Layout.BorderLayout() );
+            var cont= new CAAT.Foundation.ActorContainer().
+                    setLayout( new CAAT.Foundation.UI.Layout.BorderLayout()).
                     setBounds( 0,0,director.width,director.height);
             scene.addChild(cont, "center" );
 
             cont.addChild( createPanel( true, 200, 200 ), "left");
 
-            var cont2= new CAAT.ActorContainer().setLayout( new CAAT.UI.BorderLayout() );
+            var cont2= new CAAT.Foundation.ActorContainer().setLayout( new CAAT.Foundation.UI.Layout.BorderLayout() );
             cont.addChild( cont2, "center");
             cont2.addChild( createPanel( false, 200, 100 ), "top");
 
-            cont2.addChild( createPanel( true, 500, 200, new CAAT.UI.GridLayout(0,5) ), "center" );
+            cont2.addChild( createPanel( true, 500, 200, new CAAT.Foundation.UI.Layout.GridLayout(0,5) ), "center" );
 
-            director.enableResizeEvents( CAAT.Director.prototype.RESIZE_BOTH );
+            director.enableResizeEvents( CAAT.Foundation.Director.prototype.RESIZE_BOTH );
 
             director.loop(60);
         }

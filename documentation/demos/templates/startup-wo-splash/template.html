@@ -5,8 +5,7 @@
     <title></title>
 </head>
 <body>
-    <script type="text/javascript" src="../../../../build/caat-css.js"></script>
-    <script type="text/javascript" src="template.js"></script>
+    <script type="text/javascript" src="../../../../build/caat.js"></script>
     <script type="text/javascript">
         (function() {
 
@@ -24,7 +23,7 @@
                     var g = (255 * Math.random()) >> 0;
                     var b = (255 * Math.random()) >> 0;
                     scene.addChild(
-                            new CAAT.Actor().
+                            new CAAT.Foundation.Actor().
                                     setBounds(
                                         (director.width * Math.random()) >> 0,
                                         (director.height * Math.random()) >> 0,
@@ -42,7 +41,7 @@
             window.addEventListener(
                     'load',
                     function() {
-                        CAAT.modules.initialization.init(
+                        CAAT.Module.Initialization.Template.init(
                             /* canvas will be 800x600 pixels */
                                 700, 500,
 
@@ -56,16 +55,13 @@
 
                              No images can be set too.
                              */
-                                [
-                                ],
+                                [],
 
                              /*
                                 onEndSplash callback function.
                                 Create your scenes on this method.
                               */
-                             createScenes
-
-                                );
+                             createScenes);
                     },
                     false);
         })();

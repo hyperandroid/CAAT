@@ -55,8 +55,8 @@
 </body>
 
 <script type="text/javascript" src="../menu/menu.js"></script>
-<script type="text/javascript" src="../../../build/caat.js"></script>
-<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+
 <script type="text/javascript">
     /**
      * @license
@@ -85,7 +85,36 @@
      */
 
     (function() {
-        CAAT.DEBUG=1;
+        window.addEventListener('load', load, false);
+
+        function load() {
+            CAAT.ModuleManager.
+                baseURL("../../../src/").
+                setModulePath("CAAT.Core", "Core").
+                setModulePath("CAAT.Math", "Math").
+                setModulePath("CAAT.Behavior", "Behavior").
+                setModulePath("CAAT.Foundation", "Foundation").
+                setModulePath("CAAT.Event", "Event").
+                setModulePath("CAAT.PathUtil", "PathUtil").
+                setModulePath("CAAT.Module", "Modules").
+                setModulePath("CAAT.Module.Preloader", "Modules/Image/Preloader").
+                setModulePath("CAAT.WebGL", "WebGL").
+
+                // get modules, and solve their dependencies.
+                bring([
+                    "CAAT.Foundation.Director",
+                    "CAAT.Foundation.Actor",
+                    "CAAT.Foundation.ActorContainer",
+                    "CAAT.Math.Point",
+                    "CAAT.Behavior.ContainerBehavior",
+                    "CAAT.Behavior.ScaleBehavior",
+                    "CAAT.Behavior.Interpolator"
+                ]).
+
+                // this function will be fired every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( __start );
+        }
 
         function ccard( w,h, number, bgcolor, color ) {
             var c= document.createElement("canvas");
@@ -122,24 +151,24 @@
         function cardActor(i0,i1) {
             var t= 500;
 
-            var card= new CAAT.Actor().setBackgroundImage( i0 );
+            var card= new CAAT.Foundation.Actor().setBackgroundImage( i0 );
             card.centerAt( 400,250 );
 
             var show= true;
-            var pb= new CAAT.ContainerBehavior().setId(101).addListener({
+            var pb= new CAAT.Behavior.ContainerBehavior().setId(101).addListener({
                 behaviorExpired : function( behavior, time, actor ) {
                     animation= false;
                 }
             });
 
-            var bshow= new CAAT.ScaleBehavior().
+            var bshow= new CAAT.Behavior.ScaleBehavior().
                 setValues( 0,1, 1.2,1 ).
                 setFrameTime( t/2, t/2).
-                setInterpolator( new CAAT.Interpolator().createExponentialOutInterpolator(3,false) );
-            var bhide= new CAAT.ScaleBehavior().
+                setInterpolator( new CAAT.Behavior.Interpolator().createExponentialOutInterpolator(3,false) );
+            var bhide= new CAAT.Behavior.ScaleBehavior().
                 setValues( 1,0, 1,1.2 ).
                 setFrameTime( 0, t/2 ).
-                setInterpolator( new CAAT.Interpolator().createExponentialInInterpolator(3,false) );
+                setInterpolator( new CAAT.Behavior.Interpolator().createExponentialInInterpolator(3,false) );
 
             pb.addBehavior( bhide );
             pb.addBehavior( bshow );
@@ -181,7 +210,9 @@
 
         function __start() {
 
-            var director= new CAAT.Director().initialize(800,500,document.getElementById('experiment-canvas')).setClear( true );
+            CAAT.DEBUG=1;
+
+            var director= new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas');
             var scene= director.createScene();
 
             var i0= ccard( 160,220,"1", '#aaf', '#f00' );
@@ -207,14 +238,7 @@
 
             CAAT.loop(60);
         }
-        /**
-         * Startup it all up when the document is ready.
-         * Change for your favorite frameworks initialization code.
-         */
-        window.addEventListener(
-                'load',
-                __start,
-                false);
+
 
     })();
 

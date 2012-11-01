@@ -5,7 +5,8 @@
  * CAAT stands for: Canvas Advanced Animation Tookit.
  */
 
-/**
- * @namespace
- */
+
+    /**
+     * @namespace
+     */
 var CAAT= CAAT || {};

@@ -306,7 +306,7 @@
                    //1234567890123456789012345678901234567890123456789012
                     "1111111111111111111111111111111111111111111111111111"+
                     "1  11                111                           1"+
-                    "1  11                                              1"+
+                    "1  11     11                                       1"+
                     "1                11   11      1111       1111      1"+
                     "1                1    11 1111       1111      1111 1"+
                     "1  11          11    111                           1"+
@@ -910,7 +910,7 @@
                     me.lookAt= -1;
                     keys[0]= ( keyEvent.getAction()==='up' ) ? 0 : 1;
                     if ( keys[0] ^ keys[1] ) {
-                        //me.setImageTransformation( keys[0] ? CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL : CAAT.SpriteImage.prototype.TR_NONE );
+                        //me.setImageTransformation( keys[0] ? CAAT.Foundation.SpriteImage.TR_FLIP_HORIZONTAL : CAAT.Foundation.SpriteImage.TR_NONE );
                     }
 
                     me.requestWalk= keys[0] ? -1 : 0;
@@ -921,7 +921,7 @@
                     me.lookAt= 1;
                     keys[1]= ( keyEvent.getAction()==='up' ) ? 0 : 1;
                     if ( keys[0] ^ keys[1] ) {
-                        //me.setImageTransformation( keys[1] ? CAAT.SpriteImage.prototype.TR_NONE : CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL );
+                        //me.setImageTransformation( keys[1] ? CAAT.Foundation.SpriteImage.TR_NONE : CAAT.Foundation.SpriteImage.TR_FLIP_HORIZONTAL );
                     }
 
                     me.requestWalk= keys[1] ? 1 : 0;
@@ -1215,7 +1215,7 @@
 
         function __start( images ) {
 
-            var W= 640;
+            var W= 960;
             var H= 480;
 
             director= new CAAT.Director().

@@ -1,0 +1,243 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 0 - CAAT.ModuleManager</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+            <div class="section">
+                <h1>CAAT.ModuleManager</h1>
+
+                <div>
+                    <p>
+                        The ModuleManager controls module loading operations. Tipically, a module consists of a
+                        single JavaScript file, which after being processed by the ModuleManager, will define a
+                        Class object.
+                    </p>
+                    <p>
+                        It has the following features:
+                    </p>
+                    <ul>
+                        <li>Solves very deep transitive dependencies.
+                        <li>Bundled files (all files concatenaded for production environments)
+                        <li>Single file retrieval (get file by file for testing environments)
+                        <li>Only javascript files loading
+                        <li>Load Mixing of JavaScript file libraries and Modules loading
+                        <li>Reentrant notification points.
+                        <li>It does not pollute global namespace.
+                        <li>Based on John Resig's Class pattern.
+                    </ul>
+                    <p>
+                        The ModuleManager, not only loads modules, and handles its dependencies by loading other
+                        modules, and keeping you safe appart from cyclic dependencies, but also loads JavaScript
+                        library files, notifies you about modules been solved, etc.
+                    </p>
+                    <p>
+                        Minimally, a ModuleManager must be configured with a <span class="important">bring( [] )</span>,
+                        and an <span class="important">onReady callback function.</span>.
+                    </p>
+                    <p>
+                        A typical ModuleManager definition could be:
+                    </p>
+                    <div class="code">
+                        <pre class="brush: js; auto-links: false; toolbar: false;">
+                            CAAT.ModuleManager.
+
+                            // define the baseURL, a base URL component for all
+                                baseURL("data/src/animation").
+
+                            // define some module
+                                setModulePath("CAAT.Module",            "Modules").
+                                setModulePath("CAAT.Math",              "Math/v1").
+                                setModulePath....
+
+                            // get modules, and solve their dependencies.
+                                bring(
+                                [
+                                  "CAAT.PathUtil.Path",
+                                  "CAAT.Foundation.Director",
+                                  "CAAT.Foundation.Scene",
+                                  "CAAT.Foundation.UI.Layout.BoxLayout",
+                                  "CAAT.Module.Preloader.ImagePreloader",
+                                  "CAAT.Module.Storage.LocalStorage"
+                                ]).
+
+                            // this function will be firer every time all dependencies have been solved.
+                            // if you call again bring, this function could be fired again.
+                                onReady(function () {
+
+                                    // safe to use these modules and their dependencies here.
+
+                              });
+                        </pre>
+                    </div>
+                </div>
+
+
+                <div>
+
+                    <div>
+                        <h2>MoMa.ModuleManager.baseURL(path)</h2>
+                        <p>
+                            The base URL defines a document root to read and solve modules from.
+                            The function will append <b>/</b> in case the path does not contain it.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h2>MoMa.ModuleManager.setModulePath(module, path)</h2>
+                        <p>
+                            Define as much module paths as needed. for example:
+                        </p>
+
+                        <div class="code">
+                            <pre class="brush: js; auto-links: false; toolbar: false;">
+                                MoMa.ModuleManager.setModulePath("CAAT.Foundation", "src/Foundation")
+
+                                //will make a module like
+
+                                MoMa.Module({
+                                 defines : "CAAT.Foundation.UI.Label",
+                                 ...
+
+                                //resolve to
+
+                                src/Foundation/UI/Label.js
+                            </pre>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2>MoMa.ModuleManager.bring( ["module1 | .js file", "module2 | .js file",...] )</h2>
+
+                        <p>
+                            This functions loads all the modules or libraries specified.
+                            Modules are loaded and solved on the fly, while .js files, are simply loaded.
+                            When **MoMa** ends loading and solving all files/modules, it notifies via callback to MoMa's **onReady** function.
+                            **The onReady function, when invoked, will remove all onReady observers.**
+                        </p>
+                        <p>
+                            This function loads a file if the array value ends with **js**, or tries to load a module otherwise.
+                        </p>
+                    </div>
+
+                    <div>
+                        <h2>MoMa.ModuleManager.addModuleSolvedListener(modulename,callback)</h2>
+                        <p>
+                            Add a callback function when a given module has been solved.
+                    </div>
+
+                    <div>
+                        <h2>MoMa.ModuleManager.load(file, onload, onerror)</h2>
+                        <p>
+                            Load a js file, and notify callbacks on file load, or on error. This function does not try to solve any module
+                            contained in the file. <span class="important">Intended to load independant non-module files</span>.
+                    </div>
+
+                    <div>
+                        <h2>MoMa.ModuleManager.onReady(callback)</h2>
+                        <p>
+                            Call the callback funtion when all the files specified by a call to bring have been loaded and solved. It is safe
+                            to start any program from this callback function.
+                    </div>
+
+                    <div>
+                        <h2>MoMa.ModuleManager.status()</h2>
+                        <p>
+                    </div>
+
+                    <div>
+                        <h2>Module resolution</h2>
+
+                        <p>
+                            The rules to load a module from a call to **bring** are the following:
+
+                        <ul>
+                            <li>if the module_name ends with <b>.js</b>
+                            <ul>
+                                <li>if starts with <b>/</b>, the module resolves to <b>module_name.substring(1)</b>
+                                <li>else the module resolves to **baseURL/module_name
+                            </ul>
+                            <li>else
+                            <li>if a suitable modulePath defined by a call to <b>setModulePath</b> exists
+                            <ul>
+                                <li>strip module_path prefix from module_name and change it by the associated path
+                                <li>change . by /
+                                <li>prepend <b>baseURL</b>
+                            </ul>
+                            <li>else return ModuleManager.baseURL + module.replace(/\./g,"/") + ".js"; (which <b>may fail)</b>
+                        </ul>
+                        <p>
+                            For example:
+                        </p>
+                        <div class="code">
+                            <pre class="brush: js; auto-links: false; toolbar: false;">
+
+                               MoMa.ModuleManager.
+                                 setBaseURL("/code/js").
+                                 setModulePath( "CAAT.Foundation", "src/Foundation" );
+
+                               MoMa.bring( [
+                                   "CAAT.Foundation.Actor",
+                                   "CAAT.Foundation.UI.Label",
+                                   "a.js",
+                                   "/a.js"
+                               ] );
+                            </pre>
+                        </div>
+
+                        <p>
+                            <b>CAAT.Foundation.Actor</b> will resolve to: /code/js/src/Foundation/Actor.js (
+                            '/code/js/' + 'src/Foundation/' + 'Actor' + '.js')
+                        <p>
+                            <b>CAAT.Foundation.UI.Label</b> will resolve to: /code/js/src/Foundation/UI/Label.js
+                            ('/code/js/' + 'src/Foundation/' + 'UI/Label' + 'js')
+                        <p>
+                            <b>a.js</b> will resolve to: /code/js/a.js ('/code/js' + 'a.js')
+                        <p>
+                            <b>/a.js</b> will resolve to: a.js
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
