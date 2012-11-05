@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 3 - CAAT.ActorContainer</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+
+            <div class="section">
+                <h1>CAAT.ActorContainer</h1>
+
+                <p>
+                    A <span class="apicode">CAAT.Foundation.ActorContainer</span> instance, is a container for other Actors
+                    including other CAAT.ActorContainers instances. Its main responsibility is to contain and
+                    manage other Actors.
+                </p>
+
+                <p>
+                    It will compound every operation hierarchically for itslef and its children
+                    so that it will compose its transformations to all of its contained Actors,
+                    and that it will animate, paint and destroy its children when necessary.
+                </p>
+
+                <p>
+                    The most special kind of ActorContainer are CAAT.Foundation.Director and CAAT.Foundation.Scene
+                    objects.
+                    Setting a transformation on the Scene means it will be applied for every
+                    contained actor, as it happens for example when switching from scene to scene with Director's
+                    built-in
+                    methods.
+                </p>
+
+                <p>
+                    CAAT.Foundation.ActorContainer polimorphically extendsClass CAAT.Foundation.Actor.
+                </p>
+
+                <p>
+                    While treating with ActorContainers, we'll take special attention on Alpha composition.
+                    If <span class="apicode">isGlobalAlpha</span> flag is set, the ActorContainers Alpha
+                    value will be set as the reference for all of its children. Otherwise, the alpha value
+                    will be set only for this ActorContainer and won't affect any contained children.
+                </p>
+
+                <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+
+            function elem( globalAlpha ) {
+                var container = new CAAT.Foundation.ActorContainer().
+                        setSize(180, 180).
+                        setFillStyle('red').
+                        setGlobalAlpha( globalAlpha).
+                        setAlpha(.33);
+
+                var circle = new CAAT.Foundation.UI.ShapeActor().
+                        setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_CIRCLE).
+                        setFillStyle('green').
+                        setBounds(20, 20, 140, 140);
+
+                var text= new CAAT.Foundation.UI.TextActor().
+                        setFont("20px arial").
+                        setTextAlign("center").
+                        setTextBaseline("middle").
+                        setText("GlobalAlpha "+(globalAlpha ? "true" : "false")).
+                        setLocation( container.width/2, container.height/2 );
+
+                container.addChild(circle);
+                container.addChild(text);
+
+                return container;
+            }
+
+            var director = new CAAT.Foundation.Director().initialize(
+                    400,
+                    200,
+                    document.getElementById('_c9'));
+
+            // create a vertical gradient to apply to text.
+            var gradient = director.ctx.createLinearGradient(0, 0, 0, director.canvas.height);
+            gradient.addColorStop(0, '#ffff00');
+            gradient.addColorStop(0.5, '#00ffff');
+            gradient.addColorStop(1, 'blue');
+
+            var scene = director.createScene().
+                    setFillStyle(gradient);
+
+            director.addScene(scene);
+
+            var block0= elem(false).setLocation(10,10);
+            var block1= elem(true).setLocation(210,10);
+
+            scene.addChild(block0);
+            scene.addChild(block1);
+
+            CAAT.loop(1);
+
+        </pre>
+                </div>
+                <div>
+                    <div>
+                        <canvas id="_c9"></canvas>
+                    </div>
+                    <script>
+                        (function () {
+
+                            function elem( globalAlpha ) {
+                                var container = new CAAT.Foundation.ActorContainer().
+                                        setSize(180, 180).
+                                        setFillStyle('red').
+                                        setGlobalAlpha( globalAlpha).
+                                        setAlpha(.33);
+
+                                var circle = new CAAT.Foundation.UI.ShapeActor().
+                                        setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_CIRCLE).
+                                        setFillStyle('green').
+                                        setBounds(20, 20, 140, 140);
+
+                                var text= new CAAT.Foundation.UI.TextActor().
+                                        setFont("20px arial").
+                                        setTextAlign("center").
+                                        setTextBaseline("middle").
+                                        setText("GlobalAlpha "+(globalAlpha ? "true" : "false")).
+                                        setLocation( container.width/2, container.height/2 );
+
+                                container.addChild(circle);
+                                container.addChild(text);
+
+                                return container;
+                            }
+
+                            var director = new CAAT.Foundation.Director().initialize(
+                                    400,
+                                    200,
+                                    document.getElementById('_c9'));
+
+                            // create a vertical gradient to apply to text.
+                            var gradient = director.ctx.createLinearGradient(0, 0, 0, director.canvas.height);
+                            gradient.addColorStop(0, '#ffff00');
+                            gradient.addColorStop(0.5, '#00ffff');
+                            gradient.addColorStop(1, 'blue');
+
+                            var scene = director.createScene().
+                                    setFillStyle(gradient);
+
+                            director.addScene(scene);
+
+                            var block0= elem(false).setLocation(10,10);
+                            var block1= elem(true).setLocation(210,10);
+
+                            scene.addChild(block0);
+                            scene.addChild(block1);
+
+                            CAAT.loop(1);
+
+                        })();
+                    </script>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

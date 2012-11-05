@@ -1,0 +1,107 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 4 - CAAT.Foundation.Director</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+
+<div class="section">
+    <h1>CAAT.Director</h1>
+
+    <p>
+        The director is the root in the hierarchy of CAAT's components.
+        In its core is a CAAT.ActorContainer instance which manages the scene graph timeline, gives unique
+        timelines for each scene, and handles scene transitions.
+    <p>
+        Note that there can be more than one director object per browser document.
+        The bad news is that all of them must be using the same rendering technology. So you can't mix a css
+        renderer with a canvas one.
+    </p>
+
+    <p>
+        This element will be responsible for many key features including:
+    </p>
+    <ul>
+        <li>Manage the Scenes and their transitions.</li>
+        <li>Route input events to the correct Actor.</li>
+        <li>Manage the main timeline, and supply with unique time lines for each scene.</li>
+        <li>Keep track of resources such as images and sounds.</li>
+        <li>Play sounds and music.</li>
+        <li>etc.</li>
+    </ul>
+
+    <p>
+        The Director object instances try to render frames using <span class="important">
+        requestAnimationFrame</span>. In case there's not such browser functionality, the
+        developer has the opportunity of setting the desired animation
+        quality in the form of frames per second.
+    </p>
+
+    <p>
+        The lifecycle of the director will be as follows
+    </p>
+    <ol>
+        <li>Create the director by specifying at least its dimension.
+        <li>Add at least one scene to the director.
+        <li>Instrument the engine to start de animation by calling CAAT.loop. It is also possible
+            to start the animation by calling <span class="apicode">
+            director.loop({number}expexted fps)</span>, but this is
+            not the recommended way.</li>
+    </ol>
+
+    <p>
+        <ul>
+            <li><a href="t4-9.html">Operations</a>
+            <li><a href="t4-1.html">Time line hooks</a>
+            <li><a href="t4-2.html">Background clean</a>
+            <li><a href="t4-2.html">Dirty rects</a>
+            <li><a href="t4-3.html">Adding resources</a>
+            <li><a href="t4-4.html">Switching Scenes</a>
+            <li><a href="t4-5.html">Utils</a>
+            <li><a href="t4-6.html">Resize events</a>
+            <li><a href="t4-7.html">Keyboard events</a>
+            <li><a href="t4-8.html">Accelerometer events</a>
+        </ul>
+    </p>
+
+</div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

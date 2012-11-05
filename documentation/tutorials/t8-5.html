@@ -1,0 +1,159 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 8 - CAAT.Path as an Interpolator instance</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>CAAT.Path</h1>
+            <h2>CAAT.Path as a CAAT.Interpolator instance.</h2>
+            <div>
+                <p>
+                    One feature of CAAT.Path instances is that they can be used as
+                    CAAT.Interpolators objects.
+                    The following functions from a CAAT.Interpolator instance produce
+                    interpolators by wrapping a CAAT.Path instance:
+                </p>
+                <p>
+                    <span class="apicode">createQuadricBezierInterpolator(p0,p1,p2,pingpong)</span>.
+                    This function creates a CAAT.Interpolator based on a QuadricBezier curve.
+                    The point parameters must be normalized, that is values ranging from 0 to 1.
+                </p>
+                <p>
+                    <span class="apicode">createCubicBezierInterpolator(p0,p1,p2,p3,pingpong)</span>.
+                    This function creates a CAAT.Interpolator based on a CubicBezier curve.
+                    The point parameters must be normalized, that is coordinate values ranging
+                    from 0 to 1.
+                </p>
+                <p>
+                    <span class="apicode">createPathInterpolator(path,pingpong)</span>.
+                    This function creates a CAAT.Interpolator based on a CAAT.Path instance.
+                    <span class="important">The path can be of any kind</span>.
+                </p>
+        </div>
+        <div>
+            <h2>Example</h2>
+            <p>
+                The following code creates two CAAT.Interpolator intances from a Quadric and a
+                Cubic Bezier curves.
+            </p>
+            <div class="sample">
+                <canvas id='_tut5_5'></canvas>
+                <script>
+                    (function() {
+                        var director= new CAAT.Foundation.Director().initialize(200,100,'_tut5_5');
+                        var scene= director.createScene();
+
+                        scene.addChild(
+                                new CAAT.Foundation.UI.InterpolatorActor().
+                                    setInterpolator(
+                                        new CAAT.Behavior.Interpolator().createQuadricBezierInterpolator(
+                                                {x:0, y:0},
+                                                {x:1, y:0},
+                                                {x:1, y:1},
+                                                false
+                                                )
+                                    ).
+                                    setBounds( 10, 10, 80, 80 ).
+                                    setFillStyle('#d0d0d0').
+                                    setGap(0)
+                        );
+
+                        scene.addChild(
+                                new CAAT.Foundation.UI.InterpolatorActor().
+                                    setInterpolator(
+                                        new CAAT.Behavior.Interpolator().createCubicBezierInterpolator(
+                                                {x:0, y:0},
+                                                {x:0, y:1},
+                                                {x:1, y:0},
+                                                {x:1, y:1},
+                                                true
+                                                )
+                                    ).
+                                    setBounds( 100, 10, 80, 80 ).
+                                    setFillStyle('#d0d0d0').
+                                    setGap(0)
+                        );
+
+                        CAAT.loop(1);
+                    })();
+                </script>
+            </div>
+            <div class="code">
+            <pre class="brush: js; auto-links: false; toolbar: false;">
+
+                var director= new CAAT.Foundation.Director().initialize(200,100,'_tut5_5');
+                var scene= director.createScene();
+
+                scene.addChild(
+                        new CAAT.Foundation.UI.InterpolatorActor().
+                            setInterpolator(
+                                new CAAT.Behavior.Interpolator().createQuadricBezierInterpolator(
+                                        {x:0, y:0},
+                                        {x:1, y:0},
+                                        {x:1, y:1},
+                                        false
+                                        )
+                            ).
+                            setBounds( 10, 10, 80, 80 ).
+                            setFillStyle('#d0d0d0').
+                            setGap(0)
+                );
+
+                scene.addChild(
+                        new CAAT.Foundation.UI.InterpolatorActor().
+                            setInterpolator(
+                                new CAAT.Behavior.Interpolator().createCubicBezierInterpolator(
+                                        {x:0, y:0},
+                                        {x:0, y:1},
+                                        {x:1, y:0},
+                                        {x:1, y:1},
+                                        true
+                                        )
+                            ).
+                            setBounds( 100, 10, 80, 80 ).
+                            setFillStyle('#d0d0d0').
+                            setGap(0)
+                );
+
+                CAAT.loop(1);
+            </pre>
+        </div>
+        </div>
+            </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 8 - CAAT.Path, CAAT.CurvePath</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>CAAT.Path</h1>
+            <h2>CAAT.CurvePath</h2>
+            <p>
+                A curve path can be either a quadric or cubir bezier or a Catmull-Rom curve.
+            </p>
+            <h3>Quadric Bezier</h3>
+            <div class="code">
+                <pre class="brush: js; auto-links: false; toolbar: false;">
+                    var path= new CAAT.PathUtil.CurvePath().
+                            setQuadric( p0x,p0y, p1x,p1y, p2x,p2y );
+                </pre>
+            </div>
+            <h3>Cubic Bezier</h3>
+            <div class="code">
+                <pre class="brush: js; auto-links: false; toolbar: false;">
+                    var path= new CAAT.PathUtil.CurvePath().
+                            setCubic( p0x,p0y, p1x,p1y, p2x,p2y, p3x,p3y );
+                </pre>
+            </div>
+            <p>
+                This object, besides the method <span class="apicode">getPosition(time)</span>
+                has a method <span class="apicode">getPositionFromLength(time)</span> which
+                calculates a position on the path relative to the path's length.
+            </p>
+            <p>
+                This object exists for backwards compatibility, instead look at
+                <a href="t8-3.html">CAAT.PathUtil.Path</a> object.
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

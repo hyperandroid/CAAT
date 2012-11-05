@@ -1,0 +1,349 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 8 - Traversing a path</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>CAAT.Path</h1>
+            <h2>Traversing a path</h2>
+            <p>
+                When dealing with CAAT.Path object instances, the methods getPosition and
+                getPositionFromLength  could be used to get a position on the path based on
+                a timely basis.
+            </p>
+            <p>
+                When the path is created, its length is calculated and normalized, so that by
+                passing a value between 0 and 1, a position on path can be obtained relative
+                to its length, being 0 the path start position and 1 the path end position.
+            </p>
+            <p>
+                A CAAT.Interpolator object instance is such an object that accepts a value
+                between zero and one, and return another value between zero and one (or near to).
+                Knowing that, it is easy to understand what a CAAT.PathBehavior object instance
+                does.
+            </p>
+            <h2>Example</h2>
+            <p>
+                In this example an actor takes 10 seconds to traverse a path. Any of the
+                out-of-the-box CAAT.Interpolator object instances can be selected to see the
+                effect of applying them to the path behavior. There are two actors a red and
+                a green one. The red always traverse via a linear interpolator, that is, the
+                default one, and the green will traverse by the selected one.
+            </p>
+
+            <div><canvas id="_tut5_4"></canvas></div>
+            <div>
+                <pre class="brush: js; auto-links: false; toolbar: false;">
+                    // create some CAAT.Dock actors with some Interpolator Actors.
+                        function __scene1_generateInterpolators(director, scene, pathBehavior) {
+                            var lerps= CAAT.Behavior.Interpolator.enumerateInterpolators();
+
+                            var cols= 20;
+                            var j=0, i=0;
+                            var rows= lerps.length/2/cols;
+                            var min= 20;
+                            var max= 45;
+                            var selectedInterpolatorActor= null;
+
+                            // generate interpolator actors.
+                            for( j=0; j<rows; j++ ) {
+
+                                var root= new CAAT.Foundation.UI.Dock().
+                                        setBounds(
+                                            director.canvas.width-(j+1)*max,
+                                            0,
+                                            max,
+                                            director.canvas.height).
+                                        setSizes(min, max).
+                                        setApplicationRange( 3 ).
+                                        setLayoutOp( CAAT.Foundation.UI.Dock.OP_LAYOUT_RIGHT );
+                                root.scene= scene;
+
+                                scene.addChildImmediately(root);
+
+                                for( i=0; i<cols; i++ ) {
+
+                                    if ( j*cols+i>=lerps.length ) {
+                                        break;
+                                    }
+
+                                    var actor= new CAAT.Foundation.UI.InterpolatorActor().
+                                         setInterpolator( lerps[(j*cols+i)*2] ).
+                                         setBounds( 0, 0, min, min ).
+                                         setStrokeStyle( 'blue' );
+
+                                    actor.mouseExit= function(mouseEvent) {
+                                        if ( mouseEvent.source!=selectedInterpolatorActor ) {
+                                            mouseEvent.source.setFillStyle(null);
+                                        }
+                                    };
+                                    actor.mouseEnter= function(mouseEvent) {
+                                        if ( mouseEvent.source!=selectedInterpolatorActor ) {
+                                            mouseEvent.source.setFillStyle('#f0f0f0');
+                                        }
+                                    };
+                                    actor.mouseClick= function(mouseEvent) {
+                                        if ( null!=selectedInterpolatorActor ) {
+                                            selectedInterpolatorActor.setFillStyle(null);
+                                        }
+                                        selectedInterpolatorActor= mouseEvent.source;
+                                        mouseEvent.source.setFillStyle('#00ff00');
+                                        selectedInterpolatorActor= mouseEvent.source;
+
+                                        pathBehavior.setInterpolator( mouseEvent.source.getInterpolator() );
+                                    }
+
+                                    root.addChildImmediately( actor );
+                                }
+
+                                root.layout();
+                            }
+                        };
+
+                        var director = new CAAT.Foundation.Director().initialize(700,500,'_tut5_4');
+                        var scene= director.createScene().setFillStyle('white');
+                        scene.activated= function() {
+                            director.setClear(false);
+                        };
+
+                    // path actor. to show the path and manipulate its control points.
+                    // by default CAAT.PathActor instances are interactive, so the control points
+                    // can be moved and the path interactively changed.
+                        var pa= new CAAT.Foundation.UI.PathActor().
+                            setBounds(0,0,600,director.canvas.height).
+                            setPath(
+                            // create a complex path composed of some heterogeneous segments.
+                                new CAAT.PathUtil.Path().
+                                    beginPath(200,200).
+                                    addCubicTo( 300,15, 400,10, 500,200 ).
+                                    addQuadricTo( 550,300, 450,350 ).
+                                    addQuadricTo( 400,400, 350,200 ).
+                                    addCubicTo( 100,300, 300,450, 10,400).
+                                    addQuadricTo( 40,200, 200,200 ).
+                                    closePath()).
+                            setInteractive(true);
+
+                    // a green actor
+                        var fish = new CAAT.Foundation.Actor().
+                                setLocation( 50,50 ).
+                                setSize(50,20).
+                                setFillStyle('#00ff00').
+                                setStrokeStyle('#ff00ff').
+                                setPositionAnchor(.5,.5).
+                                enableEvents(false);
+                    // a red actor
+                        var fish2 = new CAAT.Foundation.Actor().
+                                setLocation( 50,50 ).
+                                setSize(50,20).
+                                setFillStyle('#f00').
+                                setStrokeStyle('#ff00ff').
+                                setPositionAnchor(.5,.5).
+                                setAlpha(.75).
+                                enableEvents(false);
+
+                    // path measurer behaviour
+                        var pb= new CAAT.Behavior.PathBehavior().
+                            setPath(pa.getPath()).
+                            setFrameTime(0,10000).
+                            setCycle(true).
+                    // make the actor heading across the path
+                            setAutoRotate(true);
+
+                        fish.addBehavior( pb );
+                    // create anothe behavior for the same path.
+                        fish2.addBehavior(
+                                new CAAT.PathBehavior().
+                                    setPath(pa.getPath()).
+                                    setFrameTime(0,10000).
+                                    setCycle(true).
+                                    setAutoRotate(true) );
+
+                        scene.addChildImmediately(pa);
+                        scene.addChildImmediately(fish);
+                        scene.addChildImmediately(fish2);
+
+                        __scene1_generateInterpolators(director, scene, pb);
+
+                        director.addScene(scene);
+                        CAAT.loop(30);
+
+                </pre>
+            </div>
+            <script>
+                (function() {
+
+                // create some CAAT.Dock actors with some Interpolator Actors.
+                    function __scene1_generateInterpolators(director, scene, pathBehavior) {
+                        var lerps= CAAT.Behavior.Interpolator.enumerateInterpolators();
+
+                        var cols= 20;
+                        var j=0, i=0;
+                        var rows= lerps.length/2/cols;
+                        var min= 20;
+                        var max= 45;
+                        var selectedInterpolatorActor= null;
+
+                        // generate interpolator actors.
+                        for( j=0; j<rows; j++ ) {
+
+                            var root= new CAAT.Foundation.UI.Dock().
+                                    setBounds(
+                                        director.canvas.width-(j+1)*max,
+                                        0,
+                                        max,
+                                        director.canvas.height).
+                                    setSizes(min, max).
+                                    setApplicationRange( 3 ).
+                                    setLayoutOp( CAAT.Foundation.UI.Dock.OP_LAYOUT_RIGHT );
+                            root.scene= scene;
+
+                            scene.addChildImmediately(root);
+
+                            for( i=0; i<cols; i++ ) {
+
+                                if ( j*cols+i>=lerps.length ) {
+                                    break;
+                                }
+
+                                var actor= new CAAT.Foundation.UI.InterpolatorActor().
+                                     setInterpolator( lerps[(j*cols+i)*2] ).
+                                     setBounds( 0, 0, min, min ).
+                                     setStrokeStyle( 'blue' );
+
+                                actor.mouseExit= function(mouseEvent) {
+                                    if ( mouseEvent.source!=selectedInterpolatorActor ) {
+                                        mouseEvent.source.setFillStyle(null);
+                                    }
+                                };
+                                actor.mouseEnter= function(mouseEvent) {
+                                    if ( mouseEvent.source!=selectedInterpolatorActor ) {
+                                        mouseEvent.source.setFillStyle('#f0f0f0');
+                                    }
+                                };
+                                actor.mouseClick= function(mouseEvent) {
+                                    if ( null!=selectedInterpolatorActor ) {
+                                        selectedInterpolatorActor.setFillStyle(null);
+                                    }
+                                    selectedInterpolatorActor= mouseEvent.source;
+                                    mouseEvent.source.setFillStyle('#00ff00');
+                                    selectedInterpolatorActor= mouseEvent.source;
+
+                                    pathBehavior.setInterpolator( mouseEvent.source.getInterpolator() );
+                                }
+
+                                root.addChildImmediately( actor );
+                            }
+
+                            root.layout();
+                        }
+                    };
+
+                    var director = new CAAT.Foundation.Director().initialize(700,500,'_tut5_4');
+                    var scene= director.createScene().setFillStyle('white');
+                    scene.activated= function() {
+                        director.setClear(false);
+                    };
+
+                // path actor. to show the path and manipulate its control points.
+                // by default CAAT.PathActor instances are interactive, so the control points
+                // can be moved and the path interactively changed.
+                    var pa= new CAAT.Foundation.UI.PathActor().
+                        setBounds(0,0,600,director.canvas.height).
+                        setPath(
+                        // create a complex path composed of some heterogeneous segments.
+                            new CAAT.PathUtil.Path().
+                                beginPath(200,200).
+                                addCubicTo( 300,15, 400,10, 500,200 ).
+                                addQuadricTo( 550,300, 450,350 ).
+                                addQuadricTo( 400,400, 350,200 ).
+                                addCubicTo( 100,300, 300,450, 10,400).
+                                addQuadricTo( 40,200, 200,200 ).
+                                closePath()).
+                        setInteractive(true);
+
+                // a green actor
+                    var fish = new CAAT.Foundation.Actor().
+                            setLocation( 50,50 ).
+                            setSize(50,20).
+                            setFillStyle('#00ff00').
+                            setStrokeStyle('#ff00ff').
+                            setPositionAnchor(.5,.5).
+                            enableEvents(false);
+                // a red actor
+                    var fish2 = new CAAT.Foundation.Actor().
+                            setLocation( 50,50 ).
+                            setSize(50,20).
+                            setFillStyle('#f00').
+                            setStrokeStyle('#ff00ff').
+                            setPositionAnchor(.5,.5).
+                            setAlpha(.75).
+                            enableEvents(false);
+
+                // path measurer behaviour
+                    var pb= new CAAT.Behavior.PathBehavior().
+                        setPath(pa.getPath()).
+                        setFrameTime(0,10000).
+                        setCycle(true).
+                // make the actor heading across the path
+                        setAutoRotate(true);
+
+                    fish.addBehavior( pb );
+                // create anothe behavior for the same path.
+                    fish2.addBehavior(
+                            new CAAT.PathBehavior().
+                                setPath(pa.getPath()).
+                                setFrameTime(0,10000).
+                                setCycle(true).
+                                setAutoRotate(true) );
+
+                    scene.addChildImmediately(pa);
+                    scene.addChildImmediately(fish);
+                    scene.addChildImmediately(fish2);
+
+                    __scene1_generateInterpolators(director, scene, pb);
+
+                    director.addScene(scene);
+                    CAAT.loop(30);
+
+                })();
+            </script>
+
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

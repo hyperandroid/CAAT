@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 5 - Scene time line hooks</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+            <h1>CAAT.Scene</h1>
+            <h2>Time line hooks</h2>
+
+            <p>
+                As we've said, an Scene has its own timeline. This is a virtual timeline,
+                which is fed by the Director and is independant of other scene's time line.</p>
+                An Scene will start feeding is timeline as soon as it starts to be brought
+                in to the Director.
+                An Scene will stop feeding is timeline as soon as the Director finishes starts
+                taking the scene out.
+            </p>
+            <p>
+                The Scene's timeline will be the reference time passed to all of its children
+                as their current animation time.
+            </p>
+
+            <p>
+                When an Scene is not anymore visible its timeline will be paused until the
+                Scene will again be elligible to feed its timeline.
+            </p>
+
+            <p>
+                Exactly as the Director, the Scene can set hooks by setting a function
+                <span class="apicode">onRenderStart</span> and a function
+                <span class="apicode">onRenderEnd</span>.
+                These both methods will receive a parameter with scene's virtual time.
+            </p>
+            <p>
+                There's another hook point on scenes and is the method <span class="apicode">
+                activated</span>. If set, this method will be called when the scene is totally
+                brought in and is ready to receive input events.
+            </p>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

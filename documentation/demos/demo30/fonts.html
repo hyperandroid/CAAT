@@ -1,0 +1,313 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+
+    <title>CAAT example: Actors across a Path and Interpolators</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+    <link href='http://fonts.googleapis.com/css?family=Fresca|Baumans|Righteous|Voltaire' rel='stylesheet' type='text/css'>
+</head>
+<body>
+
+<div style="font-family: 'Baumans'; float:left; width:1px; height: 0;">&nbsp;</div>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Path management</h1>
+            </div>
+            <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>Controls:</p>
+                    <ul>
+                        <li>Drag path handles.</li>
+                        <li>Click on interpolators to traverse the path with different velocities.</li>
+                    </ul>
+                </div>
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>Constructing a Path and adding segments to it.</li>
+                        <li>Setting positional anchors.</li>
+                        <li>What does a call to <code>closePath</code> means in opposition to <code>endPath</code>.</li>
+                        <li>Showing a path by associating it to a PathActor.</li>
+                        <li>Path management by calling setInteractive method.</li>
+                        <li>CAAT.Interpolator on path behavior.</li>
+                        <li>CompoundImage management.</li>
+                        <li>SpriteActor definition.</li>
+                        <li>Show interpolators by Wrapping them into InterpolatorActor.</li>
+                        <li>Management of CAAT.Dock actor to elegantly show interpolators.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script src="../../../src/core/ModuleManager.js"></script>
+
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+    (function() {
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+
+        CAAT.DEBUG=1;
+        window.addEventListener('load',load,false);
+
+        function load() {
+            CAAT.ModuleManager.
+                    baseURL("../../../src/").
+                    setModulePath("CAAT.Core",              "Core").
+                    setModulePath("CAAT.Math",              "Math").
+                    setModulePath("CAAT.Behavior",          "Behavior").
+                    setModulePath("CAAT.Foundation",        "Foundation").
+                    setModulePath("CAAT.Event",             "Event").
+                    setModulePath("CAAT.PathUtil",          "PathUtil").
+                    setModulePath("CAAT.Module",            "Modules").
+                    setModulePath("CAAT.Module.Preloader",  "Modules/Image/Preloader").
+                    setModulePath("CAAT.WebGL",             "WebGL").
+
+                // get modules, and solve their dependencies.
+                    bring(
+                    [
+                        "CAAT.Foundation.Director",
+                        "CAAT.Foundation.Actor",
+                        "CAAT.Foundation.UI.TextActor",
+                        "CAAT.Foundation.ActorContainer",
+                        "CAAT.Module.Font.Font"
+                    ]).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                    onReady( __scene1 );
+        }
+
+        function __scene1() {
+
+            var director= new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas');
+            var scene = director.createScene();
+
+            var dw= director.width;
+            var dh= director.height;
+
+            var fill="#00f";
+            var fill_sp="#f00";
+            var fill_c="#0f0";
+            var fs= 50;
+            var fontname="'Baumans'"
+            //var fontname="sans-serif"
+
+            var font= new CAAT.Module.Font.Font().
+                setFont(fontname).
+                setFontSize(fs,"px").
+                setFillStyle( fill_sp ).
+//                setStrokeStyle(fill).
+//                setStrokeSize(.5).
+                createDefault(8);
+
+            var str= "gMjWqQy)(";
+            var sfont= ""+fs+"px "+fontname;
+
+            var text0t = new CAAT.Foundation.UI.TextActor().
+                    setFont(sfont).
+                    setText(str).
+                    calcTextSize(director).
+                    setTextFillStyle(fill).
+                    setLineWidth( 1).
+                    setLocation( 10, 100).
+                    cacheAsBitmap();
+
+            var text0ft = new CAAT.Foundation.UI.TextActor().
+                    setFont( font ).
+                    setText(str).
+                    calcTextSize(director).
+                    setTextFillStyle(fill_sp).
+                    setLineWidth( 1).
+                    setLocation( 270, 100 );
+
+
+            var text1m = new CAAT.Foundation.UI.TextActor().
+                    setFont(sfont).
+                    setText(str).
+                    calcTextSize(director).
+                    setTextFillStyle(fill).
+                    setLineWidth( 1).
+                    setTextBaseline("middle").
+                    setLocation( 10, 200 ).
+                                        cacheAsBitmap();
+
+            var text1fm = new CAAT.Foundation.UI.TextActor().
+                    setFont( font ).
+                    setText(str).
+                    calcTextSize(director).
+                    setTextFillStyle(fill_sp).
+                    setLineWidth( 1).
+                    setTextBaseline("middle").
+                    setLocation( 270, 200 );
+
+            var text2b = new CAAT.Foundation.UI.TextActor().
+                    setFont(sfont).
+                    setText(str).
+                    calcTextSize(director).
+                    setTextFillStyle(fill).
+                    setLineWidth( 1).
+                    setTextBaseline("bottom").
+                    setLocation( 10, 300 ).
+                                        cacheAsBitmap();
+
+            var text2fb = new CAAT.Foundation.UI.TextActor().
+                    setFont( font ).
+                    setText(str).
+                    calcTextSize(director).
+                    setTextFillStyle(fill_sp).
+                    setLineWidth( 1).
+                    setTextBaseline("bottom").
+                    setLocation( 270, 300 );
+
+            var text3a = new CAAT.Foundation.UI.TextActor().
+                    setFont(sfont).
+                    setText(str).
+                    calcTextSize(director).
+                    setTextFillStyle(fill).
+                    setLineWidth( 1).
+                    setTextBaseline("alphabetic").
+                    setLocation( 10, 400 );
+
+            var text3fa = new CAAT.Foundation.UI.TextActor().
+                    setFont( font ).
+                    setText(str).
+                    calcTextSize(director).
+                    setTextFillStyle(fill_sp).
+                    setLineWidth( 1).
+                    setTextBaseline("alphabetic").
+                    setLocation( 270, 400 ).
+                                        cacheAsBitmap();
+
+            var cc= new CAAT.Foundation.ActorContainer().
+                    setBounds(0,0,director.width,director.height);
+
+            cc.addChild( text0t );
+            cc.addChild( text0ft );
+            cc.addChild( text1m );
+            cc.addChild( text1fm );
+            cc.addChild( text2b );
+            cc.addChild( text2fb );
+            cc.addChild( text3a );
+            cc.addChild( text3fa );
+
+            CAAT.loop(60);
+
+            cc.paint= function( director, time ) {
+                var ctx= director.ctx;
+                ctx.font= sfont;
+                ctx.fillStyle=fill;
+                ctx.textBaseline= "top";
+                ctx.fillText( str, 540, 100 );
+
+                ctx.strokeStyle=fill_c;
+                ctx.beginPath();
+                ctx.moveTo( 0,100 );
+                ctx.lineTo( director.width, 100 );
+
+                ctx.stroke();
+
+
+                var ctx= director.ctx;
+                ctx.font= sfont;
+                ctx.fillStyle=fill;
+                ctx.textBaseline= "middle";
+                ctx.fillText( str, 540, 200 );
+
+                ctx.strokeStyle=fill_c;
+                ctx.beginPath();
+                ctx.moveTo( 0,200 );
+                ctx.lineTo( director.width, 200 );
+
+                ctx.stroke();
+
+
+                var ctx= director.ctx;
+                ctx.font= sfont;
+                ctx.fillStyle=fill;
+                ctx.textBaseline= "bottom";
+                ctx.fillText( str, 540, 300 );
+
+                ctx.strokeStyle=fill_c;
+                ctx.beginPath();
+                ctx.moveTo( 0,300 );
+                ctx.lineTo( director.width, 300 );
+
+                ctx.stroke();
+
+
+                var ctx= director.ctx;
+                ctx.font= sfont;
+                ctx.fillStyle=fill;
+                ctx.textBaseline= "alphabetic";
+                ctx.fillText( str, 540, 400 );
+
+                ctx.strokeStyle=fill_c;
+                ctx.beginPath();
+                ctx.moveTo( 0,400 );
+                ctx.lineTo( director.width, 400 );
+
+                ctx.stroke();
+            }
+
+            scene.addChild(cc);
+        };
+
+    })();
+
+
+</script>
+
+
+</html>

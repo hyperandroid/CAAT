@@ -1,0 +1,426 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 4 - Director, Switching Scenes</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>Director</h1>
+            <h2>Switching Scenes</h2>
+            <div>
+                <p>
+                    During execution, the Director class instance exposes a lot of functionality
+                    to switch between two given Scenes or to change the current Scene.
+                    The following methods will do it:
+                </p>
+
+                <p>
+                    <span class="apicode">function setScene( sceneIndex )</span>.<br>
+                    Changes (or sets) the current Director scene to the index specified
+                    as parameter. There will be no transition on scene change.
+                </p>
+                <p>
+                    <span class="apicode">function switchToPrevScene(time, alpha, transition)</span>.<br>
+                    <span class="apicode">function switchToNextScene(time, alpha, transition)</span>.<br>
+                    These methods will switch from the current scene to the previous or next one
+                    respectively. The supplied parameters are:</p>
+                    <ul>
+                        <li>time: how much time to take for the switching process. Expressed in milliseconds.</li>
+                        <li>alpha: wheter alpha transparency fading should be applied to entering/exiting scenes.</li>
+                        <li>transition: whether to apply transition for the entering and exiting scenes.</li>
+                    </ul>
+                    The type of transition will be set randomly.
+
+                <p>
+                    <span class="apicode">function easeInOut( inSceneIndex, typein, anchorin, outSceneIndex, typeout, anchorout, time,
+                        alpha,
+                        interpolatorIn, interpolatorOut )</span>.<br>
+                    This method offers full control over the process of switching between
+                    any given two Scenes.
+                    To apply this method, you must specify the type of transition to apply
+                    for each Scene and the anchor to keep the Scene pinned at.
+                    The type of transition will be one of the following values defined in
+                    CAAT.Foundation.Scene:
+                    <ul>
+                        <li>EASE_ROTATION
+                        <li>EASE_SCALE
+                        <li>EASE_TRANSLATION
+                    </ul>
+                    The anchor will be any of these values defined in CAAT.Foundation.Actor:
+                    <ul>
+                        <li>ANCHOR_CENTER
+                        <li>ANCHOR_TOP
+                        <li>ANCHOR_BOTTOM
+                        <li>ANCHOR_LEFT
+                        <li>ANCHOR_RIGHT
+                        <li>ANCHOR_TOP_LEFT
+                        <li>ANCHOR_TOP_RIGHT
+                        <li>ANCHOR_BOTTOM_LEFT
+                        <li>ANCHOR_BOTTOM_RIGHT
+                    </ul>
+                    In example, for an entering scene performing a EASE_SCALE transition,
+                    the anchor is the point by which the scene will scaled.
+
+                <p>
+                    <span class="apicode">function easeInOutRandom(inIndex,outIndex,time,alpha)</span>.<br>
+                    This method will switch between two given Scene indexes (ie, take away scene
+                    number 2, and bring in scene number 5).
+                    It will randomly choose for each Scene the type of transition to apply and
+                    the anchor point of each transition type.
+                    It will also set for different kind of transitions the following interpolators:
+                    <ul>
+                        <li>EASE_ROTATION -> ExponentialInOutInterpolator, exponent 4.
+                        <li>EASE_SCALE -> ElasticOutInterpolator, 1.1 and .4
+                        <li>EASE_TRANSLATION -> BounceOutInterpolator
+                    </ul>
+                    These are the default values, and could not be changed by now.
+                    This method in final instance delegates the process to easeInOutMethod.
+
+            </div>
+            <div>
+                <h2>Example</h2>
+                <p>
+                    This example show two scenes with a button to switch to next and previous
+                    scene. Every time, a different transition will be played. Note that scenes
+                    get paused when being removed from screen, and that input won't be enabled
+                    until entering scene's transition ends.
+                </p>
+                <div class="code">
+                    <pre class="brush: js; auto-links: false; toolbar: false;">
+                        // screat an actor with the text Scene1 or Scene2
+                            function createNumber(director, n, color) {
+                                var actor= new CAAT.Foundation.UI.TextActor().
+                                        setFont("200px Lucida-sans").
+                                        setText("Scene "+n).
+                                        setAlign("center").
+                                        setTextBaseline("center").
+                                        setTextFillStyle(color).
+                                        setOutline(true).
+                                        cacheAsBitmap().
+                                        enableEvents(false).
+                                        addBehavior(
+                                            new CAAT.Behavior.RotateBehavior().
+                                                    setFrameTime( 0, 20000 ).
+                                                    setValues( 0, 2 * Math.PI ).
+                                                    setCycle( true ) );
+
+                                actor.centerAt( director.width/2, director.height/2 );
+                                return actor;
+                            }
+
+                        // create an actor with a custom paint method. its behavior resembles that of
+                        // a button.
+                            function createButton(director, rotated) {
+                                var actor= new CAAT.Foundation.Actor().
+                                        setSize( 60, 60 ).
+                                        centerAt( director.width - 40, director.height - 40 );
+
+                                actor.paint= function( director, time ) {
+
+                                    var ctx= director.ctx;
+                                    ctx.save();
+                                    if ( rotated ) {
+                                        ctx.translate( this.width, 0 );
+                                        ctx.scale(-1,1);
+                                    }
+
+                                    ctx.fillStyle= this.pointed ? 'orange' : '#f3f';
+                                    ctx.fillRect(0,0,this.width,this.height );
+
+                                    ctx.strokeStyle= this.pointed ? 'red' : 'black';
+                                    ctx.strokeRect(0,0,this.width,this.height );
+
+                                    ctx.strokeStyle='white';
+                                    ctx.beginPath();
+                                    ctx.moveTo(5,10);
+                                    ctx.lineTo(20,10);
+                                    ctx.lineTo(15,5);
+
+                                    ctx.moveTo(20,10);
+                                    ctx.lineTo(15,15);
+
+                                    ctx.lineWidth=2;
+                                    ctx.lineJoin='round';
+                                    ctx.lineCap='round';
+                                    ctx.stroke();
+                                    ctx.restore();
+
+                                    ctx.font= '10px sans-serif';
+                                    ctx.fillStyle='black';
+                                    ctx.fillText(
+                                        rotated ? 'Prev Scene' : 'Next Scene',
+                                        3,
+                                        45);
+
+
+                                };
+
+                                return actor;
+                            }
+
+                        // create a background pattern of horizontal and vertical lines
+                            function createPattern(director, color) {
+                                var actor= new CAAT.Foundation.Actor().
+                                        setSize(director.width,director.height).
+                                        enableEvents(false);
+
+                                actor.paint= function( director, time ) {
+
+                                    var i,j,ctx;
+
+                                    if ( this.backgroundImage ) {
+                                        this.backgroundImage.paint(director,0,0,0);
+                                        return;
+                                    }
+
+                                    ctx= director.ctx;
+
+                                    for( j=0.5; j<director.width; j+=20 ) {
+                                        ctx.moveTo( j, 0 );
+                                        ctx.lineTo( j, director.height );
+                                    }
+
+                                    for( i=0.5; i<director.height; i+=20 ) {
+                                        ctx.moveTo( 0, i );
+                                        ctx.lineTo( director.width, i );
+                                    }
+
+                                    ctx.strokeStyle= color;
+                                    ctx.stroke();
+                                };
+
+                                return actor;
+                            }
+
+                            function __scene1() {
+
+                                var director= new CAAT.Foundation.Director().
+                                        initialize(800,400,document.getElementById('_c1'));
+
+                                var scene1 = director.createScene();
+
+                                scene1.addChild( createPattern(director, '#33f') );
+                                scene1.addChild( createNumber(director, 1, '#33f') );
+                                var button= createButton(director, false);
+                                button.mouseClick= function(e) {
+                                    director.switchToNextScene(
+                                            2000,
+                                            false,
+                                            true
+                                    )
+                                };
+                                scene1.addChild(button);
+
+                                var scene2 = director.createScene();
+                                scene2.addChild( createPattern(director, '#f33') );
+                                scene2.addChild( createNumber(director, 2, '#f33') );
+                                var button2= createButton(director, true);
+                                button2.mouseClick= function(e) {
+                                    director.switchToPrevScene(
+                                            2000,
+                                            false,
+                                            true
+                                    )
+                                };
+                                scene2.addChild(button2);
+
+                                CAAT.loop(50);
+                            }
+
+                            __scene1();
+
+                        })();
+
+                    </pre>
+                </div>
+                <div><canvas id="_c1"></canvas></div>
+                <script>
+                    (function() {
+
+                    // screat an actor with the text Scene1 or Scene2
+                        function createNumber(director, n, color) {
+                            var actor= new CAAT.Foundation.UI.TextActor().
+                                    setFont("200px Lucida-sans").
+                                    setText("Scene "+n).
+                                    setAlign("center").
+                                    setTextBaseline("center").
+                                    setTextFillStyle(color).
+                                    setOutline(true).
+                                    cacheAsBitmap().
+                                    enableEvents(false).
+                                    addBehavior(
+                                        new CAAT.Behavior.RotateBehavior().
+                                                setFrameTime( 0, 20000 ).
+                                                setValues( 0, 2 * Math.PI ).
+                                                setCycle( true ) );
+
+                            actor.centerAt( director.width/2, director.height/2 );
+                            return actor;
+                        }
+
+                    // create an actor with a custom paint method. its behavior resembles that of
+                    // a button.
+                        function createButton(director, rotated) {
+                            var actor= new CAAT.Foundation.Actor().
+                                    setSize( 60, 60 ).
+                                    centerAt( director.width - 40, director.height - 40 );
+
+                            actor.paint= function( director, time ) {
+
+                                var ctx= director.ctx;
+                                ctx.save();
+                                if ( rotated ) {
+                                    ctx.translate( this.width, 0 );
+                                    ctx.scale(-1,1);
+                                }
+
+                                ctx.fillStyle= this.pointed ? 'orange' : '#f3f';
+                                ctx.fillRect(0,0,this.width,this.height );
+
+                                ctx.strokeStyle= this.pointed ? 'red' : 'black';
+                                ctx.strokeRect(0,0,this.width,this.height );
+
+                                ctx.strokeStyle='white';
+                                ctx.beginPath();
+                                ctx.moveTo(5,10);
+                                ctx.lineTo(20,10);
+                                ctx.lineTo(15,5);
+
+                                ctx.moveTo(20,10);
+                                ctx.lineTo(15,15);
+
+                                ctx.lineWidth=2;
+                                ctx.lineJoin='round';
+                                ctx.lineCap='round';
+                                ctx.stroke();
+                                ctx.restore();
+
+                                ctx.font= '10px sans-serif';
+                                ctx.fillStyle='black';
+                                ctx.fillText(
+                                    rotated ? 'Prev Scene' : 'Next Scene',
+                                    3,
+                                    45);
+
+
+                            };
+
+                            return actor;
+                        }
+
+                    // create a background pattern of horizontal and vertical lines
+                        function createPattern(director, color) {
+                            var actor= new CAAT.Foundation.Actor().
+                                    setSize(director.width,director.height).
+                                    enableEvents(false);
+
+                            actor.paint= function( director, time ) {
+
+                                var i,j,ctx;
+
+                                if ( this.backgroundImage ) {
+                                    this.backgroundImage.paint(director,0,0,0);
+                                    return;
+                                }
+
+                                ctx= director.ctx;
+
+                                for( j=0.5; j<director.width; j+=20 ) {
+                                    ctx.moveTo( j, 0 );
+                                    ctx.lineTo( j, director.height );
+                                }
+
+                                for( i=0.5; i<director.height; i+=20 ) {
+                                    ctx.moveTo( 0, i );
+                                    ctx.lineTo( director.width, i );
+                                }
+
+                                ctx.strokeStyle= color;
+                                ctx.stroke();
+                            };
+
+                            return actor;
+                        }
+
+                        function __scene1() {
+
+                            var director= new CAAT.Foundation.Director().
+                                    initialize(800,400,document.getElementById('_c1'));
+
+                            var scene1 = director.createScene();
+
+                            scene1.addChild( createPattern(director, '#33f') );
+                            scene1.addChild( createNumber(director, 1, '#33f') );
+                            var button= createButton(director, false);
+                            button.mouseClick= function(e) {
+                                director.switchToNextScene(
+                                        2000,
+                                        false,
+                                        true
+                                )
+                            };
+                            scene1.addChild(button);
+
+                            var scene2 = director.createScene();
+                            scene2.addChild( createPattern(director, '#f33') );
+                            scene2.addChild( createNumber(director, 2, '#f33') );
+                            var button2= createButton(director, true);
+                            button2.mouseClick= function(e) {
+                                director.switchToPrevScene(
+                                        2000,
+                                        false,
+                                        true
+                                )
+                            };
+                            scene2.addChild(button2);
+
+                            CAAT.loop(50);
+                        }
+
+                        __scene1();
+
+                    })();
+
+                </script>
+                <p>
+                    
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

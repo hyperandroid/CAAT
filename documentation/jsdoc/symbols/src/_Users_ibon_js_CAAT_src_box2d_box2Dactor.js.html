@@ -1,0 +1,550 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/**
+<span class='line'>  2</span>  * See LICENSE file.
+<span class='line'>  3</span>  *
+<span class='line'>  4</span>  * Box2D actors.
+<span class='line'>  5</span>  */</span><span class="WHIT">
+<span class='line'>  6</span> 
+<span class='line'>  7</span> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>  8</span> 
+<span class='line'>  9</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'> 10</span>      * Ad Eemeli Kelokorpi suggested,
+<span class='line'> 11</span>      * @param set
+<span class='line'> 12</span>      * @param director
+<span class='line'> 13</span>      * @param world
+<span class='line'> 14</span>      */</span><span class="WHIT">
+<span class='line'> 15</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.enableBox2DDebug</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">set</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">director</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">world</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 16</span> 
+<span class='line'> 17</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">set</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">  </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 18</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">debugDraw</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Box2D.Dynamics.b2DebugDraw</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 19</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">test</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 20</span> </span><span class="WHIT">            </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 21</span> </span><span class="WHIT">                </span><span class="NAME">debugDraw.m_sprite.graphics.clear</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 22</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">e</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 23</span> 
+<span class='line'> 24</span> </span><span class="WHIT">            </span><span class="NAME">world.SetDebugDraw</span><span class="PUNC">(</span><span class="NAME">debugDraw</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 25</span> 
+<span class='line'> 26</span> </span><span class="WHIT">            </span><span class="NAME">debugDraw.SetSprite</span><span class="PUNC">(</span><span class="NAME">director.ctx</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 27</span> </span><span class="WHIT">            </span><span class="NAME">debugDraw.SetDrawScale</span><span class="PUNC">(</span><span class="NAME">CAAT.PMR</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 28</span> </span><span class="WHIT">            </span><span class="NAME">debugDraw.SetFillAlpha</span><span class="PUNC">(</span><span class="PUNC">.</span><span class="NUMB">5</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 29</span> </span><span class="WHIT">            </span><span class="NAME">debugDraw.SetLineThickness</span><span class="PUNC">(</span><span class="NUMB">1.0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 30</span> </span><span class="WHIT">            </span><span class="NAME">debugDraw.SetFlags</span><span class="PUNC">(</span><span class="NUMB">0x0001</span><span class="WHIT"> </span><span class="PUNC">|</span><span class="WHIT"> </span><span class="NUMB">0x0002</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 31</span> 
+<span class='line'> 32</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 33</span> </span><span class="WHIT">            </span><span class="NAME">world.setDebugDraw</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 34</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 35</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 36</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 37</span> 
+<span class='line'> 38</span> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 39</span> 
+<span class='line'> 40</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'> 41</span>      *
+<span class='line'> 42</span>      * Define a binding beween a box2D Body instance and a CAAT.Actor.
+<span class='line'> 43</span>      * This function object should not be directly instantiated.
+<span class='line'> 44</span>      * By now, one Box2D body can contain one single fixture and shape.
+<span class='line'> 45</span>      *
+<span class='line'> 46</span>      * @constructor
+<span class='line'> 47</span>      */</span><span class="WHIT">
+<span class='line'> 48</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.B2DBodyActor</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 49</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.B2DBodyActor.superclass.constructor.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 50</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 51</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 52</span> 
+<span class='line'> 53</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.B2DBodyActor.prototype</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 54</span> 
+<span class='line'> 55</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 56</span>          * Body restitution.
+<span class='line'> 57</span>          */</span><span class="WHIT">
+<span class='line'> 58</span> </span><span class="WHIT">        </span><span class="NAME">restitution</span><span class="PUNC">:</span><span class="WHIT">        </span><span class="PUNC">.</span><span class="NUMB">5</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 59</span> 
+<span class='line'> 60</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 61</span>          * Body friction.
+<span class='line'> 62</span>          */</span><span class="WHIT">
+<span class='line'> 63</span> </span><span class="WHIT">        </span><span class="NAME">friction</span><span class="PUNC">:</span><span class="WHIT">           </span><span class="PUNC">.</span><span class="NUMB">5</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 64</span> 
+<span class='line'> 65</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 66</span>          * Body dentisy
+<span class='line'> 67</span>          */</span><span class="WHIT">
+<span class='line'> 68</span> </span><span class="WHIT">        </span><span class="NAME">density</span><span class="PUNC">:</span><span class="WHIT">            </span><span class="NUMB">1</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 69</span> 
+<span class='line'> 70</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 71</span>          * Dynamic bodies by default
+<span class='line'> 72</span>          */</span><span class="WHIT">
+<span class='line'> 73</span> </span><span class="WHIT">        </span><span class="NAME">bodyType</span><span class="PUNC">:</span><span class="WHIT">           </span><span class="NAME">Box2D.Dynamics.b2Body.b2_dynamicBody</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 74</span> 
+<span class='line'> 75</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 76</span>          * Box2D body
+<span class='line'> 77</span>          */</span><span class="WHIT">
+<span class='line'> 78</span> </span><span class="WHIT">        </span><span class="NAME">worldBody</span><span class="PUNC">:</span><span class="WHIT">          </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 79</span> 
+<span class='line'> 80</span> </span><span class="WHIT">        </span><span class="NAME">world</span><span class="PUNC">:</span><span class="WHIT">              </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 81</span> 
+<span class='line'> 82</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 83</span>          * Box2d fixture
+<span class='line'> 84</span>          */</span><span class="WHIT">
+<span class='line'> 85</span> </span><span class="WHIT">        </span><span class="NAME">worldBodyFixture</span><span class="PUNC">:</span><span class="WHIT">   </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 86</span> </span><span class="WHIT">        </span><span class="NAME">bodyDef</span><span class="PUNC">:</span><span class="WHIT">            </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 87</span> </span><span class="WHIT">        </span><span class="NAME">fixtureDef</span><span class="PUNC">:</span><span class="WHIT">         </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 88</span> 
+<span class='line'> 89</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 90</span>          * BodyData object linked to the box2D body.
+<span class='line'> 91</span>          */</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="WHIT">        </span><span class="NAME">bodyData</span><span class="PUNC">:</span><span class="WHIT">           </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 93</span> 
+<span class='line'> 94</span> </span><span class="WHIT">        </span><span class="NAME">recycle</span><span class="PUNC">:</span><span class="WHIT">            </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 95</span> 
+<span class='line'> 96</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 97</span>          * set this actor to recycle its body, that is, do not destroy it.
+<span class='line'> 98</span>          */</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="WHIT">        </span><span class="NAME">setRecycle</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>100</span> </span><span class="WHIT">            </span><span class="NAME">this.recycle</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>101</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>102</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>103</span> </span><span class="WHIT">        </span><span class="NAME">destroy</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>104</span> 
+<span class='line'>105</span> </span><span class="WHIT">            </span><span class="NAME">CAAT.B2DBodyActor.superclass.destroy.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>106</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.recycle</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>107</span> </span><span class="WHIT">                </span><span class="NAME">this.setLocation</span><span class="PUNC">(</span><span class="PUNC">-</span><span class="NAME">Number.MAX_VALUE</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NAME">Number.MAX_VALUE</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>108</span> </span><span class="WHIT">                </span><span class="NAME">this.setAwake</span><span class="PUNC">(</span><span class="KEYW">false</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>109</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>110</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">body</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.worldBody</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">                </span><span class="NAME">body.DestroyFixture</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.worldBodyFixture</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>112</span> </span><span class="WHIT">                </span><span class="NAME">this.world.DestroyBody</span><span class="PUNC">(</span><span class="NAME">body</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>113</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>114</span> 
+<span class='line'>115</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>116</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>117</span> </span><span class="WHIT">        </span><span class="NAME">setAwake</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">bool</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>118</span> </span><span class="WHIT">            </span><span class="NAME">this.worldBody.SetAwake</span><span class="PUNC">(</span><span class="NAME">bool</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>119</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>120</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>121</span> </span><span class="WHIT">        </span><span class="NAME">setSleepingAllowed</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bool</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>122</span> </span><span class="WHIT">            </span><span class="NAME">this.worldBody.SetSleepingAllowed</span><span class="PUNC">(</span><span class="NAME">bool</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>123</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>124</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>125</span> </span><span class="WHIT">        </span><span class="NAME">setLocation</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">x</span><span class="PUNC">,</span><span class="NAME">y</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">            </span><span class="NAME">this.worldBody.SetPosition</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'>127</span> </span><span class="WHIT">                </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Box2D.Common.Math.b2Vec2</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'>128</span> </span><span class="WHIT">                    </span><span class="PUNC">(</span><span class="NAME">x</span><span class="PUNC">+</span><span class="NAME">this.width</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="PUNC">)</span><span class="PUNC">/</span><span class="NAME">CAAT.PMR</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>129</span> </span><span class="WHIT">                    </span><span class="PUNC">(</span><span class="NAME">y</span><span class="PUNC">+</span><span class="NAME">this.height</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="PUNC">)</span><span class="PUNC">/</span><span class="NAME">CAAT.PMR</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>130</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>131</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>132</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>133</span>          * Set this body's
+<span class='line'>134</span>          * density.
+<span class='line'>135</span>          * @param d {number}
+<span class='line'>136</span>          */</span><span class="WHIT">
+<span class='line'>137</span> </span><span class="WHIT">        </span><span class="NAME">setDensity</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">d</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>138</span> </span><span class="WHIT">            </span><span class="NAME">this.density</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">d</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>139</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>140</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>141</span> 
+<span class='line'>142</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>143</span>          * Set this body's friction.
+<span class='line'>144</span>          * @param f {number}
+<span class='line'>145</span>          */</span><span class="WHIT">
+<span class='line'>146</span> </span><span class="WHIT">        </span><span class="NAME">setFriction</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">f</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>147</span> </span><span class="WHIT">            </span><span class="NAME">this.friction</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">f</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>148</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>149</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>150</span> 
+<span class='line'>151</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>152</span>          * Set this body's restitution coeficient.
+<span class='line'>153</span>          * @param r {number}
+<span class='line'>154</span>          */</span><span class="WHIT">
+<span class='line'>155</span> </span><span class="WHIT">        </span><span class="NAME">setRestitution</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">r</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>156</span> </span><span class="WHIT">            </span><span class="NAME">this.restitution</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">r</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>157</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>158</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>159</span> 
+<span class='line'>160</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>161</span>          * Set this body's type:
+<span class='line'>162</span>          * @param bodyType {Box2D.Dynamics.b2Body.b2_*}
+<span class='line'>163</span>          */</span><span class="WHIT">
+<span class='line'>164</span> </span><span class="WHIT">        </span><span class="NAME">setBodyType</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bodyType</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>165</span> </span><span class="WHIT">            </span><span class="NAME">this.bodyType</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bodyType</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>166</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>167</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>168</span> 
+<span class='line'>169</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>170</span>          * Helper method to check whether this js object contains a given property and if it doesn't exist
+<span class='line'>171</span>          * create and set it to def value.
+<span class='line'>172</span>          * @param obj {object}
+<span class='line'>173</span>          * @param prop {string}
+<span class='line'>174</span>          * @param def {object}
+<span class='line'>175</span>          */</span><span class="WHIT">
+<span class='line'>176</span> </span><span class="WHIT">        </span><span class="NAME">check</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">obj</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">prop</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">def</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>177</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">obj</span><span class="PUNC">[</span><span class="NAME">prop</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>178</span> </span><span class="WHIT">                </span><span class="NAME">obj</span><span class="PUNC">[</span><span class="NAME">prop</span><span class="PUNC">]</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">def</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>179</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>180</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>181</span> 
+<span class='line'>182</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>183</span>          * Create an actor as a box2D body binding, create it on the given world and with
+<span class='line'>184</span>          * the initialization data set in bodyData object.
+<span class='line'>185</span>          * @param world {Box2D.Dynamics.b2World} a Box2D world instance
+<span class='line'>186</span>          * @param bodyData {object} An object with body info.
+<span class='line'>187</span>          */</span><span class="WHIT">
+<span class='line'>188</span> </span><span class="WHIT">        </span><span class="NAME">createBody</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">world</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">bodyData</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>189</span> 
+<span class='line'>190</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">bodyData</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>191</span> </span><span class="WHIT">                </span><span class="NAME">this.check</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">bodyData</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'density'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>192</span> </span><span class="WHIT">                </span><span class="NAME">this.check</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">bodyData</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'friction'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">.</span><span class="NUMB">5</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>193</span> </span><span class="WHIT">                </span><span class="NAME">this.check</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">bodyData</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'restitution'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">.</span><span class="NUMB">2</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>194</span> </span><span class="WHIT">                </span><span class="NAME">this.check</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">bodyData</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'bodyType'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">Box2D.Dynamics.b2Body.b2_staticBody</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>195</span> </span><span class="WHIT">                </span><span class="NAME">this.check</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">bodyData</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'userData'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>196</span> </span><span class="WHIT">                </span><span class="NAME">this.check</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">bodyData</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'image'</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>197</span> 
+<span class='line'>198</span> </span><span class="WHIT">                </span><span class="NAME">this.density</span><span class="PUNC">=</span><span class="WHIT">       </span><span class="NAME">bodyData.density</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>199</span> </span><span class="WHIT">                </span><span class="NAME">this.friction</span><span class="PUNC">=</span><span class="WHIT">      </span><span class="NAME">bodyData.friction</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>200</span> </span><span class="WHIT">                </span><span class="NAME">this.restitution</span><span class="PUNC">=</span><span class="WHIT">   </span><span class="NAME">bodyData.restitution</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>201</span> </span><span class="WHIT">                </span><span class="NAME">this.bodyType</span><span class="PUNC">=</span><span class="WHIT">      </span><span class="NAME">bodyData.bodyType</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>202</span> </span><span class="WHIT">                </span><span class="NAME">this.image</span><span class="PUNC">=</span><span class="WHIT">         </span><span class="NAME">bodyData.image</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>203</span> 
+<span class='line'>204</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>205</span> 
+<span class='line'>206</span> </span><span class="WHIT">            </span><span class="NAME">this.world</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">world</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>207</span> 
+<span class='line'>208</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>209</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>210</span> 
+<span class='line'>211</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>212</span>          * Get this body's center on screen regardless of its shape.
+<span class='line'>213</span>          * This method will return box2d body's centroid.
+<span class='line'>214</span>          */</span><span class="WHIT">
+<span class='line'>215</span> </span><span class="WHIT">        </span><span class="NAME">getCenter</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>216</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="NAME">x</span><span class="PUNC">:</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">:</span><span class="NUMB">0</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>217</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>218</span> 
+<span class='line'>219</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>220</span>          * Get a distance joint's position on pixels.
+<span class='line'>221</span>          */</span><span class="WHIT">
+<span class='line'>222</span> </span><span class="WHIT">        </span><span class="NAME">getDistanceJointLocalAnchor</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>223</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="NAME">x</span><span class="PUNC">:</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">:</span><span class="NUMB">0</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>224</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>225</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>226</span> 
+<span class='line'>227</span> </span><span class="WHIT">    </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.B2DBodyActor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">CAAT.Actor</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>228</span> 
+<span class='line'>229</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>230</span> 
+<span class='line'>231</span> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>232</span> 
+<span class='line'>233</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>234</span>      *
+<span class='line'>235</span>      * Create a polygon shaped body in box2D and its CAAT.Actor counterpart.
+<span class='line'>236</span>      *
+<span class='line'>237</span>      * @constructor
+<span class='line'>238</span>      */</span><span class="WHIT">
+<span class='line'>239</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.B2DPolygonBody</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>240</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.B2DPolygonBody.superclass.constructor.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>241</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>242</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>243</span> 
+<span class='line'>244</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>245</span>      *
+<span class='line'>246</span>      * Define different types of polygon body types.
+<span class='line'>247</span>      *
+<span class='line'>248</span>      * @enum
+<span class='line'>249</span>      */</span><span class="WHIT">
+<span class='line'>250</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.B2DPolygonBody.Type</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>251</span> </span><span class="WHIT">        </span><span class="NAME">EDGE</span><span class="PUNC">:</span><span class="WHIT">   </span><span class="STRN">'edge'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>252</span> </span><span class="WHIT">        </span><span class="NAME">BOX</span><span class="PUNC">:</span><span class="WHIT">    </span><span class="STRN">'box'</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>253</span> </span><span class="WHIT">        </span><span class="NAME">POLYGON</span><span class="PUNC">:</span><span class="STRN">'polygon'</span><span class="WHIT">
+<span class='line'>254</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>255</span> 
+<span class='line'>256</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.B2DPolygonBody.prototype</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>257</span> 
+<span class='line'>258</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>259</span>          * Measured body's bounding box.
+<span class='line'>260</span>          */</span><span class="WHIT">
+<span class='line'>261</span> </span><span class="WHIT">        </span><span class="NAME">boundingBox</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>262</span> 
+<span class='line'>263</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>264</span>          * Get on-screen distance joint coordinate.
+<span class='line'>265</span>          */</span><span class="WHIT">
+<span class='line'>266</span> </span><span class="WHIT">        </span><span class="NAME">getDistanceJointLocalAnchor</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>267</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">b</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.worldBody</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>268</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">xf</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">b.m_xf</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>269</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">poly</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">b.GetFixtureList</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">GetShape</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>270</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">poly.m_centroid</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>271</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>272</span> 
+<span class='line'>273</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>274</span>          * Get this polygon's centroid on screen coordinates.
+<span class='line'>275</span>          */</span><span class="WHIT">
+<span class='line'>276</span> </span><span class="WHIT">        </span><span class="NAME">getCenter</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>277</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">b</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.worldBody</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>278</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">xf</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">b.m_xf</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>279</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">poly</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">b.GetFixtureList</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">GetShape</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>280</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">Box2D.Common.Math.b2Math.MulX</span><span class="PUNC">(</span><span class="NAME">xf</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">poly.m_centroid</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>281</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>282</span> 
+<span class='line'>283</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>284</span>          * Method override to get position and rotation angle from box2d body.
+<span class='line'>285</span>          * @param director {CAAT.Director}
+<span class='line'>286</span>          * @param time {number}
+<span class='line'>287</span>          */</span><span class="WHIT">
+<span class='line'>288</span> </span><span class="WHIT">        </span><span class="NAME">animate</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">director</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>289</span> 
+<span class='line'>290</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">b</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.worldBody</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>291</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">xf</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">b.m_xf</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>292</span> 
+<span class='line'>293</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">poly</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.worldBodyFixture.GetShape</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>294</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">poly</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>295</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">v</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Box2D.Common.Math.b2Math.MulX</span><span class="PUNC">(</span><span class="NAME">xf</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">poly.m_centroid</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>296</span> </span><span class="WHIT">                </span><span class="COMM">//this.setLocation(</span><span class="WHIT">
+<span class='line'>297</span> </span><span class="WHIT">                </span><span class="NAME">CAAT.Actor.prototype.setLocation.call</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>298</span> </span><span class="WHIT">                        </span><span class="NAME">v.x</span><span class="PUNC">*</span><span class="NAME">CAAT.PMR</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">this.width</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>299</span> </span><span class="WHIT">                        </span><span class="NAME">v.y</span><span class="PUNC">*</span><span class="NAME">CAAT.PMR</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">this.height</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>300</span> </span><span class="WHIT">                </span><span class="NAME">this.setRotation</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">b.GetAngle</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>301</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>302</span> </span><span class="WHIT">            
+<span class='line'>303</span>             </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">CAAT.B2DPolygonBody.superclass.animate.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="NAME">director</span><span class="PUNC">,</span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>304</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>305</span> 
+<span class='line'>306</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>307</span>          * Create a box2d body and link it to this CAAT.Actor.
+<span class='line'>308</span>          * @param world {Box2D.Dynamics.b2World}
+<span class='line'>309</span>          * @param bodyData {object}
+<span class='line'>310</span>          */</span><span class="WHIT">
+<span class='line'>311</span> </span><span class="WHIT">        </span><span class="NAME">createBody</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">world</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">bodyData</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>312</span> </span><span class="WHIT">            </span><span class="NAME">CAAT.B2DPolygonBody.superclass.createBody.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="NAME">world</span><span class="PUNC">,</span><span class="NAME">bodyData</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>313</span> 
+<span class='line'>314</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">box2D_data</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CAAT.B2DPolygonBody.createPolygonBody</span><span class="PUNC">(</span><span class="NAME">world</span><span class="PUNC">,</span><span class="NAME">bodyData</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>315</span> 
+<span class='line'>316</span> </span><span class="WHIT">            </span><span class="NAME">bodyData.userData.actor</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>317</span> 
+<span class='line'>318</span> </span><span class="WHIT">            </span><span class="NAME">this.worldBody</span><span class="PUNC">=</span><span class="WHIT">         </span><span class="NAME">box2D_data.worldBody</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>319</span> </span><span class="WHIT">            </span><span class="NAME">this.worldBodyFixture</span><span class="PUNC">=</span><span class="WHIT">  </span><span class="NAME">box2D_data.worldBodyFixture</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>320</span> </span><span class="WHIT">            </span><span class="NAME">this.fixtureDef</span><span class="PUNC">=</span><span class="WHIT">        </span><span class="NAME">box2D_data.fixDef</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>321</span> </span><span class="WHIT">            </span><span class="NAME">this.bodyDef</span><span class="PUNC">=</span><span class="WHIT">           </span><span class="NAME">box2D_data.bodyDef</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>322</span> </span><span class="WHIT">            </span><span class="NAME">this.bodyData</span><span class="PUNC">=</span><span class="WHIT">          </span><span class="NAME">bodyData</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>323</span> </span><span class="WHIT">            </span><span class="NAME">this.boundingBox</span><span class="PUNC">=</span><span class="WHIT">       </span><span class="NAME">box2D_data.boundingBox</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>324</span> 
+<span class='line'>325</span> </span><span class="WHIT">            </span><span class="NAME">this.setBackgroundImage</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">bodyData.image</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">.</span><span class="WHIT">
+<span class='line'>326</span> </span><span class="WHIT">                </span><span class="NAME">setSize</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'>327</span> </span><span class="WHIT">                    </span><span class="NAME">box2D_data.boundingBox</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">x</span><span class="PUNC">-</span><span class="NAME">box2D_data.boundingBox</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">x</span><span class="PUNC">+</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>328</span> </span><span class="WHIT">                    </span><span class="NAME">box2D_data.boundingBox</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">y</span><span class="PUNC">-</span><span class="NAME">box2D_data.boundingBox</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">y</span><span class="PUNC">+</span><span class="NUMB">1</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">.</span><span class="WHIT">
+<span class='line'>329</span> </span><span class="WHIT">                </span><span class="NAME">setFillStyle</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">box2D_data.worldBodyFixture.IsSensor</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="STRN">'red'</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'green'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="WHIT">
+<span class='line'>330</span> </span><span class="WHIT">                </span><span class="NAME">setImageTransformation</span><span class="PUNC">(</span><span class="NAME">CAAT.SpriteImage.prototype.TR_FIXED_TO_SIZE</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>331</span> 
+<span class='line'>332</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>333</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>334</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>335</span> 
+<span class='line'>336</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>337</span>      * Helper function to aid in box2d polygon shaped bodies.
+<span class='line'>338</span>      * @param world
+<span class='line'>339</span>      * @param bodyData
+<span class='line'>340</span>      */</span><span class="WHIT">
+<span class='line'>341</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.B2DPolygonBody.createPolygonBody</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">world</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">bodyData</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>342</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">fixDef</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Box2D.Dynamics.b2FixtureDef</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>343</span> </span><span class="WHIT">        </span><span class="NAME">fixDef.density</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bodyData.density</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>344</span> </span><span class="WHIT">        </span><span class="NAME">fixDef.friction</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bodyData.friction</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>345</span> </span><span class="WHIT">        </span><span class="NAME">fixDef.restitution</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bodyData.restitution</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>346</span> </span><span class="WHIT">        </span><span class="NAME">fixDef.shape</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Box2D.Collision.Shapes.b2PolygonShape</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>347</span> 
+<span class='line'>348</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">minx</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Number.MAX_VALUE</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>349</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">maxx</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NAME">Number.MAX_VALUE</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>350</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">miny</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Number.MAX_VALUE</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>351</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">maxy</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="NAME">Number.MAX_VALUE</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>352</span> 
+<span class='line'>353</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">vec</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>354</span> 
+<span class='line'>355</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">scale</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">bodyData.bodyDefScale</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>356</span> </span><span class="WHIT">        </span><span class="NAME">scale</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">scale</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">bodyData.bodyDefScaleTolerance</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">Math.random</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>357</span> 
+<span class='line'>358</span> </span><span class="WHIT">        </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">bodyData.bodyDef.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>359</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bodyData.bodyDef</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">scale</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>360</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bodyData.bodyDef</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">.</span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">scale</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>361</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">minx</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>362</span> </span><span class="WHIT">                </span><span class="NAME">minx</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">x</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>363</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>364</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NAME">maxx</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>365</span> </span><span class="WHIT">                </span><span class="NAME">maxx</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">x</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>366</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>367</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">miny</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>368</span> </span><span class="WHIT">                </span><span class="NAME">miny</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>369</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>370</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NAME">maxy</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>371</span> </span><span class="WHIT">                </span><span class="NAME">maxy</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>372</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>373</span> 
+<span class='line'>374</span> </span><span class="WHIT">            </span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bodyData.x</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>375</span> </span><span class="WHIT">            </span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bodyData.y</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>376</span> </span><span class="WHIT">            </span><span class="NAME">vec.push</span><span class="PUNC">(</span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Box2D.Common.Math.b2Vec2</span><span class="PUNC">(</span><span class="NAME">x</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NAME">CAAT.PMR</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">y</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NAME">CAAT.PMR</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>377</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>378</span> 
+<span class='line'>379</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">boundingBox</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT">
+<span class='line'>380</span> </span><span class="WHIT">            </span><span class="PUNC">{</span><span class="NAME">x</span><span class="PUNC">:</span><span class="NAME">minx</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">:</span><span class="NAME">miny</span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>381</span> </span><span class="WHIT">            </span><span class="PUNC">{</span><span class="NAME">x</span><span class="PUNC">:</span><span class="NAME">maxx</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">y</span><span class="PUNC">:</span><span class="NAME">maxy</span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>382</span> </span><span class="WHIT">        </span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>383</span> 
+<span class='line'>384</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">bodyDef</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Box2D.Dynamics.b2BodyDef</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>385</span> </span><span class="WHIT">        </span><span class="NAME">bodyDef.type</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bodyData.bodyType</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>386</span> 
+<span class='line'>387</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">bodyData.polygonType</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">CAAT.B2DPolygonBody.Type.EDGE</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>388</span> 
+<span class='line'>389</span> </span><span class="WHIT">            </span><span class="NAME">fixDef.shape.SetAsEdge</span><span class="PUNC">(</span><span class="NAME">vec</span><span class="PUNC">[</span><span class="NUMB">0</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">vec</span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>390</span> 
+<span class='line'>391</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">bodyData.polygonType</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">CAAT.B2DPolygonBody.Type.BOX</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>392</span> 
+<span class='line'>393</span> </span><span class="WHIT">            </span><span class="NAME">fixDef.shape.SetAsBox</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'>394</span> </span><span class="WHIT">                </span><span class="PUNC">(</span><span class="NAME">maxx</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">minx</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">2</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NAME">CAAT.PMR</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>395</span> </span><span class="WHIT">                </span><span class="PUNC">(</span><span class="NAME">maxy</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">miny</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">2</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NAME">CAAT.PMR</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>396</span> </span><span class="WHIT">            </span><span class="NAME">bodyDef.position.x</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">(</span><span class="NAME">maxx</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">minx</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">2</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">bodyData.x</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NAME">CAAT.PMR</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>397</span> </span><span class="WHIT">            </span><span class="NAME">bodyDef.position.y</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">(</span><span class="NAME">maxy</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">miny</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NUMB">2</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">bodyData.y</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NAME">CAAT.PMR</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>398</span> 
+<span class='line'>399</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">bodyData.polygonType</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">CAAT.B2DPolygonBody.Type.POLYGON</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>400</span> 
+<span class='line'>401</span> </span><span class="WHIT">            </span><span class="NAME">fixDef.shape.SetAsArray</span><span class="PUNC">(</span><span class="NAME">vec</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">vec.length</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>402</span> 
+<span class='line'>403</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>404</span> </span><span class="WHIT">            </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">'Unkown bodyData polygonType: '</span><span class="PUNC">+</span><span class="NAME">bodyData.polygonType</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>405</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>406</span> 
+<span class='line'>407</span> </span><span class="WHIT">        </span><span class="COMM">// link entre cuerpo fisico box2d y caat.</span><span class="WHIT">
+<span class='line'>408</span> </span><span class="WHIT">        </span><span class="NAME">fixDef.userData</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bodyData.userData</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>409</span> </span><span class="WHIT">        </span><span class="NAME">bodyDef.userData</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bodyData.userData</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>410</span> 
+<span class='line'>411</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">worldBody</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">world.CreateBody</span><span class="PUNC">(</span><span class="NAME">bodyDef</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>412</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">worldBodyFixture</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">worldBody.CreateFixture</span><span class="PUNC">(</span><span class="NAME">fixDef</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>413</span> 
+<span class='line'>414</span> 
+<span class='line'>415</span> </span><span class="WHIT">        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">bodyData.isSensor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>416</span> </span><span class="WHIT">            </span><span class="NAME">worldBodyFixture.SetSensor</span><span class="PUNC">(</span><span class="KEYW">true</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>417</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>418</span> 
+<span class='line'>419</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>420</span> </span><span class="WHIT">            </span><span class="NAME">worldBody</span><span class="PUNC">:</span><span class="WHIT">          </span><span class="NAME">worldBody</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>421</span> </span><span class="WHIT">            </span><span class="NAME">worldBodyFixture</span><span class="PUNC">:</span><span class="WHIT">   </span><span class="NAME">worldBodyFixture</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>422</span> </span><span class="WHIT">            </span><span class="NAME">fixDef</span><span class="PUNC">:</span><span class="WHIT">             </span><span class="NAME">fixDef</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>423</span> </span><span class="WHIT">            </span><span class="NAME">bodyDef</span><span class="PUNC">:</span><span class="WHIT">            </span><span class="NAME">bodyDef</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>424</span> </span><span class="WHIT">            </span><span class="NAME">boundingBox</span><span class="PUNC">:</span><span class="WHIT">        </span><span class="NAME">boundingBox</span><span class="WHIT">
+<span class='line'>425</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>426</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>427</span> 
+<span class='line'>428</span> </span><span class="WHIT">    </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.B2DPolygonBody</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">CAAT.B2DBodyActor</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>429</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>430</span> 
+<span class='line'>431</span> </span><span class="PUNC">(</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>432</span> 
+<span class='line'>433</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>434</span>      *
+<span class='line'>435</span>      * Create a box2d circular body.
+<span class='line'>436</span>      *
+<span class='line'>437</span>      * @constructor
+<span class='line'>438</span>      */</span><span class="WHIT">
+<span class='line'>439</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.B2DCircularBody</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>440</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.B2DCircularBody.superclass.constructor.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>441</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>442</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>443</span> 
+<span class='line'>444</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.B2DCircularBody.prototype</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>445</span> 
+<span class='line'>446</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>447</span>          * Default radius.
+<span class='line'>448</span>          */</span><span class="WHIT">
+<span class='line'>449</span> </span><span class="WHIT">        </span><span class="NAME">radius</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>450</span> 
+<span class='line'>451</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>452</span>          * Get a given dinstance joint's local anchor position.
+<span class='line'>453</span>          * For a circular body, it is its center.
+<span class='line'>454</span>          */</span><span class="WHIT">
+<span class='line'>455</span> </span><span class="WHIT">        </span><span class="NAME">getDistanceJointLocalAnchor</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>456</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Box2D.Common.Math.b2Vec2</span><span class="PUNC">(</span><span class="NUMB">0</span><span class="PUNC">,</span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>457</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>458</span> 
+<span class='line'>459</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>460</span>          * Get this box2d body's center position on screen.
+<span class='line'>461</span>          */</span><span class="WHIT">
+<span class='line'>462</span> </span><span class="WHIT">        </span><span class="NAME">getCenter</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>463</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.worldBody.m_xf.position</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>464</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>465</span> 
+<span class='line'>466</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>467</span>          * Method override to get position and rotation angle from box2d body.
+<span class='line'>468</span>          * @param director {CAAT.Director}
+<span class='line'>469</span>          * @param time {number}
+<span class='line'>470</span>          */</span><span class="WHIT">
+<span class='line'>471</span> </span><span class="WHIT">        </span><span class="NAME">animate</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">director</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>472</span> 
+<span class='line'>473</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">b</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.worldBody</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>474</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">xf</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">b.m_xf</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>475</span> </span><span class="WHIT">            </span><span class="COMM">//this.setLocation(</span><span class="WHIT">
+<span class='line'>476</span> </span><span class="WHIT">            </span><span class="NAME">CAAT.Actor.prototype.setLocation.call</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>477</span> </span><span class="WHIT">                    </span><span class="NAME">CAAT.PMR</span><span class="PUNC">*</span><span class="NAME">xf.position.x</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">this.width</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>478</span> </span><span class="WHIT">                    </span><span class="NAME">CAAT.PMR</span><span class="PUNC">*</span><span class="NAME">xf.position.y</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">this.height</span><span class="PUNC">/</span><span class="NUMB">2</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>479</span> </span><span class="WHIT">            </span><span class="NAME">this.setRotation</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">b.GetAngle</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>480</span> 
+<span class='line'>481</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">CAAT.B2DCircularBody.superclass.animate.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="NAME">director</span><span class="PUNC">,</span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>482</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>483</span> 
+<span class='line'>484</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'>485</span>          * Create a box2d body and link it to this CAAT.Actor instance.
+<span class='line'>486</span>          * @param world {Box2D.Dynamics.b2World} a Box2D world instance
+<span class='line'>487</span>          * @param bodyData {object}
+<span class='line'>488</span>          */</span><span class="WHIT">
+<span class='line'>489</span> </span><span class="WHIT">        </span><span class="NAME">createBody</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">world</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">bodyData</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>490</span> 
+<span class='line'>491</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">scale</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">bodyData.radius</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>492</span> </span><span class="WHIT">            </span><span class="NAME">scale</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">scale</span><span class="PUNC">+</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">bodyData.bodyDefScaleTolerance</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">*</span><span class="NAME">Math.random</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>493</span> </span><span class="WHIT">            </span><span class="NAME">bodyData.radius</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">scale</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>494</span> 
+<span class='line'>495</span> </span><span class="WHIT">            </span><span class="NAME">CAAT.B2DCircularBody.superclass.createBody.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="NAME">world</span><span class="PUNC">,</span><span class="NAME">bodyData</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>496</span> 
+<span class='line'>497</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">bodyData.radius</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT">  </span><span class="NAME">this.radius</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bodyData.radius</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>498</span> 
+<span class='line'>499</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">fixDef</span><span class="PUNC">=</span><span class="WHIT">             </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Box2D.Dynamics.b2FixtureDef</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>500</span> </span><span class="WHIT">            </span><span class="NAME">fixDef.density</span><span class="PUNC">=</span><span class="WHIT">         </span><span class="NAME">this.density</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>501</span> </span><span class="WHIT">            </span><span class="NAME">fixDef.friction</span><span class="PUNC">=</span><span class="WHIT">        </span><span class="NAME">this.friction</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>502</span> </span><span class="WHIT">            </span><span class="NAME">fixDef.restitution</span><span class="PUNC">=</span><span class="WHIT">     </span><span class="NAME">this.restitution</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>503</span> </span><span class="WHIT">            </span><span class="NAME">fixDef.shape</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">          </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Box2D.Collision.Shapes.b2CircleShape</span><span class="PUNC">(</span><span class="NAME">this.radius</span><span class="PUNC">/</span><span class="NAME">CAAT.PMR</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>504</span> 
+<span class='line'>505</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">bodyDef</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">           </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Box2D.Dynamics.b2BodyDef</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>506</span> </span><span class="WHIT">            </span><span class="NAME">bodyDef.type</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">          </span><span class="NAME">this.bodyType</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>507</span> </span><span class="WHIT">            </span><span class="NAME">bodyDef.position.x</span><span class="PUNC">=</span><span class="WHIT">     </span><span class="NAME">bodyData.x</span><span class="PUNC">/</span><span class="NAME">CAAT.PMR</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>508</span> </span><span class="WHIT">            </span><span class="NAME">bodyDef.position.y</span><span class="PUNC">=</span><span class="WHIT">     </span><span class="NAME">bodyData.y</span><span class="PUNC">/</span><span class="NAME">CAAT.PMR</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>509</span> 
+<span class='line'>510</span> </span><span class="WHIT">            </span><span class="COMM">// link entre cuerpo fisico box2d y caat.</span><span class="WHIT">
+<span class='line'>511</span> </span><span class="WHIT">            </span><span class="NAME">bodyData.userData.actor</span><span class="PUNC">=</span><span class="WHIT">         </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>512</span> </span><span class="WHIT">            </span><span class="NAME">fixDef.userData</span><span class="PUNC">=</span><span class="WHIT">        </span><span class="NAME">bodyData.userData</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>513</span> </span><span class="WHIT">            </span><span class="NAME">bodyDef.userData</span><span class="PUNC">=</span><span class="WHIT">       </span><span class="NAME">bodyData.userData</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>514</span> 
+<span class='line'>515</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">worldBody</span><span class="PUNC">=</span><span class="WHIT">          </span><span class="NAME">world.CreateBody</span><span class="PUNC">(</span><span class="NAME">bodyDef</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>516</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">worldBodyFixture</span><span class="PUNC">=</span><span class="WHIT">   </span><span class="NAME">worldBody.CreateFixture</span><span class="PUNC">(</span><span class="NAME">fixDef</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>517</span> 
+<span class='line'>518</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">bodyData.isSensor</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>519</span> </span><span class="WHIT">                </span><span class="NAME">worldBodyFixture.SetSensor</span><span class="PUNC">(</span><span class="KEYW">true</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>520</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>521</span> 
+<span class='line'>522</span> </span><span class="WHIT">            </span><span class="NAME">this.worldBody</span><span class="PUNC">=</span><span class="WHIT">         </span><span class="NAME">worldBody</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>523</span> </span><span class="WHIT">            </span><span class="NAME">this.worldBodyFixture</span><span class="PUNC">=</span><span class="WHIT">  </span><span class="NAME">worldBodyFixture</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>524</span> </span><span class="WHIT">            </span><span class="NAME">this.fixtureDef</span><span class="PUNC">=</span><span class="WHIT">        </span><span class="NAME">fixDef</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>525</span> </span><span class="WHIT">            </span><span class="NAME">this.bodyDef</span><span class="PUNC">=</span><span class="WHIT">           </span><span class="NAME">bodyDef</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>526</span> </span><span class="WHIT">            </span><span class="NAME">this.bodyData</span><span class="PUNC">=</span><span class="WHIT">          </span><span class="NAME">bodyData</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>527</span> 
+<span class='line'>528</span> 
+<span class='line'>529</span> </span><span class="WHIT">            </span><span class="NAME">this.setFillStyle</span><span class="PUNC">(</span><span class="NAME">this.worldBodyFixture.IsSensor</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">?</span><span class="WHIT"> </span><span class="STRN">'red'</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">'blue'</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="WHIT">
+<span class='line'>530</span> </span><span class="WHIT">                    </span><span class="NAME">setBackgroundImage</span><span class="PUNC">(</span><span class="NAME">this.image</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="WHIT">
+<span class='line'>531</span> </span><span class="WHIT">                    </span><span class="NAME">setSize</span><span class="PUNC">(</span><span class="NUMB">2</span><span class="PUNC">*</span><span class="NAME">this.radius</span><span class="PUNC">,</span><span class="NUMB">2</span><span class="PUNC">*</span><span class="NAME">this.radius</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="WHIT">
+<span class='line'>532</span> </span><span class="WHIT">                    </span><span class="NAME">setImageTransformation</span><span class="PUNC">(</span><span class="NAME">CAAT.SpriteImage.prototype.TR_FIXED_TO_SIZE</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>533</span> 
+<span class='line'>534</span> 
+<span class='line'>535</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>536</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>537</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>538</span> 
+<span class='line'>539</span> </span><span class="WHIT">    </span><span class="NAME">extend</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.B2DCircularBody</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">CAAT.B2DBodyActor</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>540</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>541</span> 
+<span class='line'>542</span> 
+<span class='line'>543</span> </span></pre></body></html>

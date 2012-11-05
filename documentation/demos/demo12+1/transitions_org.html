@@ -1,0 +1,247 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+
+    <title>CAAT example: Scene Transitions</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Scene Transitions</h1>
+            </div>
+            <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>Scene transitions.</li>
+                        <li>Show how events are disabled until the entering scene is in (finished transition)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    CAAT.DEBUG=1;
+    (function() {
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener('load', load, false);
+
+        function load() {
+            CAAT.ModuleManager.
+                baseURL("../../../src/").
+                setModulePath("CAAT.Core", "Core").
+                setModulePath("CAAT.Math", "Math").
+                setModulePath("CAAT.Behavior", "Behavior").
+                setModulePath("CAAT.Foundation", "Foundation").
+                setModulePath("CAAT.Event", "Event").
+                setModulePath("CAAT.PathUtil", "PathUtil").
+                setModulePath("CAAT.Module", "Modules").
+                setModulePath("CAAT.Module.Preloader", "Modules/Image/Preloader").
+                setModulePath("CAAT.WebGL", "WebGL").
+
+                // get modules, and solve their dependencies.
+                bring([
+                   "CAAT.Foundation.Director",
+                   "CAAT.Foundation.Actor",
+                   "CAAT.Foundation.ActorContainer",
+                   "CAAT.Foundation.UI.TextActor"
+                ]).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( __scene1 );
+        }
+
+        function createNumber(director, n, color) {
+            var actor= new CAAT.Foundation.UI.TextActor().
+                    setFont("140px Lucida-sans").
+                    setText("Scene "+n).
+                    calcTextSize(director).
+                    setAlign("center").
+                    setTextFillStyle(color).
+                    setOutline(true).
+                    cacheAsBitmap().
+                    enableEvents(false).
+                    addBehavior(
+                        new CAAT.Behavior.RotateBehavior().
+                                setFrameTime( 0, 20000 ).
+                                setValues( 0, 2 * Math.PI ).
+                                setCycle( true ) );
+
+            actor.centerAt( director.width/2, director.height/2 );
+            return actor;
+        }
+
+        function createButton(director, rotated) {
+            var actor= new CAAT.Foundation.Actor().
+                    setSize( 60, 60 ).
+                    centerAt( director.width - 40, director.height - 40 );
+
+            actor.paint= function( director, time ) {
+
+                var ctx= director.ctx;
+                ctx.save();
+                    if ( rotated ) {
+                        ctx.translate( this.width, 0 );
+                        ctx.scale(-1,1);
+                    }
+
+                    ctx.fillStyle= this.pointed ? 'orange' : '#f3f';
+                    ctx.fillRect(0,0,this.width,this.height );
+
+                    ctx.strokeStyle= this.pointed ? 'red' : 'black';
+                    ctx.strokeRect(0,0,this.width,this.height );
+
+                    ctx.strokeStyle='white';
+                    ctx.beginPath();
+                    ctx.moveTo(5,10);
+                    ctx.lineTo(20,10);
+                    ctx.lineTo(15,5);
+
+                    ctx.moveTo(20,10);
+                    ctx.lineTo(15,15);
+
+                    ctx.lineWidth=2;
+                    ctx.lineJoin='round';
+                    ctx.lineCap='round';
+                    ctx.stroke();
+                ctx.restore();
+
+                ctx.font= '10px sans-serif';
+                ctx.fillStyle='black';
+                ctx.fillText(
+                    rotated ? 'Prev Scene' : 'Next Scene',
+                    3,
+                    45);
+            };
+
+            return actor;
+        }
+
+        function createPattern(director, color) {
+            var actor= new CAAT.Foundation.Actor().
+                    setSize(director.width,director.height).
+                    enableEvents(false);
+            actor.paint= function( director, time ) {
+
+                var i,j,ctx;
+
+                ctx= director.ctx;
+                ctx.beginPath();
+
+                    for( j=0.5; j<director.width; j+=20 ) {
+                        ctx.moveTo( j, 0 );
+                        ctx.lineTo( j, director.height );
+                    }
+
+                    for( i=0.5; i<director.height; i+=20 ) {
+                        ctx.moveTo( 0, i );
+                        ctx.lineTo( director.width, i );
+                    }
+
+                    ctx.strokeStyle= color;
+                    ctx.stroke();
+            };
+
+            return actor;
+        }
+
+        function __scene1() {
+
+            
+            var director= new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas');
+            var scene1 = director.createScene();
+
+            scene1.addChild( createPattern(director, '#33f') );
+            scene1.addChild( createNumber(director, 1, '#33f') );
+            var button= createButton(director, false);
+            button.mouseClick= function(e) {
+                director.switchToNextScene(
+                        2000,
+                        false,
+                        true
+                )
+            }
+            scene1.addChild(button);
+
+            var scene2 = director.createScene();
+            scene2.addChild( createPattern(director, '#f33') );
+            scene2.addChild( createNumber(director, 2, '#f33') );
+            var button2= createButton(director, true);
+            button2.mouseClick= function(e) {
+                director.switchToPrevScene(
+                        2000,
+                        false,
+                        true
+                )
+            }
+            scene2.addChild(button2);
+
+            CAAT.loop(60);
+        }
+
+    })();
+
+
+</script>
+
+
+</html>

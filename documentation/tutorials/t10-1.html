@@ -1,0 +1,330 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 10 - Helpers. Audio manager.</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>Helpers</h1>
+            <h2>Audio Manager</h2>
+            <div>
+                <p>
+                    The <span class="apicode">CAAT.AudioManager</span> object is located in the
+                    file AudioManager.js.
+                </p>
+                <p>
+                    Even though the AudioManager can be instantiated and used directly, it is
+                    normally instrumented via a <span class="apicode">CAAT.Director</span>
+                    object.
+                </p>
+                <p>
+                    This tutorial uses a director instance to perform audio play.
+                </p>
+                <p>
+                    Prior to using the audio manager, audio elements must be preloaded into
+                    the director. This can be done however
+                    the developer likes more, either by defining audio elements in the
+                    html, or by creating Audio objects. To do so the function
+                    <span class="apicode">addAudio( id, url_or_DOMaudio )</span> must be called.
+                    This function call is chainable, here's an example:
+                    <div class="code">
+                        <pre class="brush: js; auto-links: false; toolbar: false;">
+                            director.
+                                addAudio('01', document.getElementById('audio_01')).
+                                addAudio('10', document.getElementById('audio_10')).
+                                addAudio('11', document.getElementById('audio_11'));
+                        </pre>
+                    </div>
+                </p>
+                <p>
+                    After this, the audio elements can be referenced by their ids, in this case
+                    '01', '10', '11'.
+                </p>
+                <p>
+                    The underlying AudioManager instance can play concurrently the same sound,
+                    loop an audio, cancel playing sounds, etc. It is limited to a maximum number
+                    of concurrent sounds though, 8 by default. So if concurrently more than 8
+                    audio elements are already playing, calling another audio play won't have
+                    any effect until one ends playing.
+                </p>
+                <p>
+                    The function <span class="apicode">audioLoop(id)</span> will make a sound
+                    loop.
+                </p>
+                <p>
+                    The function <span class="apicode">audioPlay(id)</span> will make a sound
+                    play. It can be concurrently called up to 8 times (maximum number of audio
+                    channels).
+                </p>
+                <p>
+                    The functions <span class="apicode">setSoundEffectsEnabled</span>
+                    <span class="apicode">setMusicEnabled</span>
+                    <span class="apicode">isMusicEnabled</span>
+                    <span class="apicode">isSoundEffectsEnabled</span> allow the developer
+                    to know about music and FX flags status.
+                </p>
+                <p>
+                    Looping audios are considered music, and playing audios sound effects, so
+                    enabling/disabling Music or SoundEffects will enable/disable such audio
+                    elements.
+                </p>
+                <p>
+                    Finally, calling the method <span class="apicode">endSound()</span> will
+                    terminate Music and SoundEffects at once. It must be called again
+                    <span class="apicode">audioLoop(id)</span> for each music that wants to be
+                    played.
+                </p>
+            </div>
+
+            <div>
+                <h2>Example</h2>
+                <p>
+                    Mouse over the colored actors to play a sound. Use audio controls to the right
+                    to enable/disable music and/or FX.
+                </p>
+                <audio src='resource/01.mp3' preload='auto' id='audio_01'></audio>
+                <audio src='resource/11.mp3' preload='auto' id='audio_11'></audio>
+                <audio src='resource/12.mp3' preload='auto' id='audio_12'></audio>
+                <audio src='resource/music.mp3' preload='auto' id='music'></audio>
+
+                <div><canvas id="_c1"></canvas></div>
+                <script>
+                    (function() {
+
+                        new CAAT.Module.Preloader.ImagePreloader().loadImages(
+                                [
+                                    { id:'sound', url:'resource/sound.png' }
+                                ],
+                                function(count, images) {
+
+                                    var director = new CAAT.Foundation.Director().initialize(400, 100, '_c1');
+                                    director.setImagesCache(images);
+                                    var scene = director.createScene();
+
+                                // add audio elements to director cache.
+                                    director.
+                                            addAudio('0', document.getElementById('audio_01')).
+                                            addAudio('1', document.getElementById('audio_11')).
+                                            addAudio('2', document.getElementById('audio_12')).
+                                            addAudio('mm', document.getElementById('music'));
+
+                                    var actor = [];
+                                    var i;
+                                    var color = [ '#f00', '#0f0', '#00f' ];
+
+                                // create 3 actors to play each of the audio_xx sounds.
+                                    for (i = 0; i < 3; i++) {
+                                        var ac = new CAAT.Actor().
+                                                setSize(100, 100).
+                                                setFillStyle(color[i]);
+
+                                        (function(ac, i) {
+                                // on mouseEnter, play the sound
+                                            ac.mouseEnter = function(e) {
+                                                ac.setStrokeStyle('green');
+                                                director.audioPlay('' + i);
+                                                CAAT.setCursor('pointer');
+                                            };
+                                        })(ac, i);
+
+                                        ac.mouseExit = function(e) {
+                                            ac.setStrokeStyle(null);
+                                            CAAT.setCursor('default');
+                                        };
+
+                                        actor.push(ac);
+                                        scene.addChild(ac);
+                                    }
+
+                                // lay out the colored actors on a row
+                                    CAAT.Module.LayoutUtils.RowLayout.Row(
+                                            scene,
+                                            actor,
+                                            {
+                                                padding_left: 10,
+                                                padding_right:40
+                                            }
+                                    );
+
+                                // define audio control UI.
+                                    var ci = new CAAT.Foundation.SpriteImage().initialize(director.getImage('sound'), 2, 3);
+                                    var dw = director.width;
+                                    var dh = director.height;
+
+                                // one button to enable/disabled music
+                                    var music = new CAAT.Foundation.Actor().
+                                            setAsButton(ci.getRef(), 0, 1, 0, 0,
+                                            function(button) {
+                                                director.setMusicEnabled(!director.audioManager.isMusicEnabled());
+                                                if (director.isMusicEnabled()) {
+                                                    button.setButtonImageIndex(0, 1, 0, 0);
+                                                } else {
+                                                    button.setButtonImageIndex(2, 2, 2, 2);
+                                                }
+
+                                            }).
+                                            setBounds(dw - ci.singleWidth - 2, 2, ci.singleWidth, ci.singleHeight);
+
+                                // one button to enable/disabled sound fx
+                                    var sound = new CAAT.Foundation.Actor().
+                                            setAsButton(ci.getRef(), 3, 4, 3, 3,
+                                            function(button) {
+                                                director.setSoundEffectsEnabled(!director.audioManager.isSoundEffectsEnabled());
+                                                if (director.isSoundEffectsEnabled()) {
+                                                    button.setButtonImageIndex(3, 4, 3, 3);
+                                                } else {
+                                                    button.setButtonImageIndex(5, 5, 5, 5);
+                                                }
+                                            }).
+                                            setBounds(dw - ci.singleWidth - 2, 2 + 2 + ci.singleHeight, ci.singleWidth, ci.singleHeight);
+
+                                    scene.addChild(sound);
+                                    scene.addChild(music);
+
+                                // set background music on.
+                                    director.audioLoop('mm');
+
+                                    CAAT.loop(20);
+                                });
+                    })();
+                </script>
+
+                <div class="code">
+                    <pre class="brush: js; auto-links: false; toolbar: false;">
+                        new CAAT.Module.Preloader.ImagePreloader().loadImages(
+                                [
+                                    { id:'sound', url:'resource/sound.png' }
+                                ],
+                                function(count, images) {
+
+                                    var director = new CAAT.Foundation.Director().initialize(400, 100, '_c1');
+                                    director.setImagesCache(images);
+                                    var scene = director.createScene();
+
+                                // add audio elements to director cache.
+                                    director.
+                                            addAudio('0', document.getElementById('audio_01')).
+                                            addAudio('1', document.getElementById('audio_11')).
+                                            addAudio('2', document.getElementById('audio_12')).
+                                            addAudio('mm', document.getElementById('music'));
+
+                                    var actor = [];
+                                    var i;
+                                    var color = [ '#f00', '#0f0', '#00f' ];
+
+                                // create 3 actors to play each of the audio_xx sounds.
+                                    for (i = 0; i < 3; i++) {
+                                        var ac = new CAAT.Actor().
+                                                setSize(100, 100).
+                                                setFillStyle(color[i]);
+
+                                        (function(ac, i) {
+                                // on mouseEnter, play the sound
+                                            ac.mouseEnter = function(e) {
+                                                ac.setStrokeStyle('green');
+                                                director.audioPlay('' + i);
+                                                CAAT.setCursor('pointer');
+                                            };
+                                        })(ac, i);
+
+                                        ac.mouseExit = function(e) {
+                                            ac.setStrokeStyle(null);
+                                            CAAT.setCursor('default');
+                                        };
+
+                                        actor.push(ac);
+                                        scene.addChild(ac);
+                                    }
+
+                                // lay out the colored actors on a row
+                                    CAAT.Module.LayoutUtils.RowLayout.Row(
+                                            scene,
+                                            actor,
+                                            {
+                                                padding_left: 10,
+                                                padding_right:40
+                                            }
+                                    );
+
+                                // define audio control UI.
+                                    var ci = new CAAT.Foundation.SpriteImage().initialize(director.getImage('sound'), 2, 3);
+                                    var dw = director.width;
+                                    var dh = director.height;
+
+                                // one button to enable/disabled music
+                                    var music = new CAAT.Foundation.Actor().
+                                            setAsButton(ci.getRef(), 0, 1, 0, 0,
+                                            function(button) {
+                                                director.setMusicEnabled(!director.audioManager.isMusicEnabled());
+                                                if (director.isMusicEnabled()) {
+                                                    button.setButtonImageIndex(0, 1, 0, 0);
+                                                } else {
+                                                    button.setButtonImageIndex(2, 2, 2, 2);
+                                                }
+
+                                            }).
+                                            setBounds(dw - ci.singleWidth - 2, 2, ci.singleWidth, ci.singleHeight);
+
+                                // one button to enable/disabled sound fx
+                                    var sound = new CAAT.Foundation.Actor().
+                                            setAsButton(ci.getRef(), 3, 4, 3, 3,
+                                            function(button) {
+                                                director.setSoundEffectsEnabled(!director.audioManager.isSoundEffectsEnabled());
+                                                if (director.isSoundEffectsEnabled()) {
+                                                    button.setButtonImageIndex(3, 4, 3, 3);
+                                                } else {
+                                                    button.setButtonImageIndex(5, 5, 5, 5);
+                                                }
+                                            }).
+                                            setBounds(dw - ci.singleWidth - 2, 2 + 2 + ci.singleHeight, ci.singleWidth, ci.singleHeight);
+
+                                    scene.addChild(sound);
+                                    scene.addChild(music);
+
+                                // set background music on.
+                                    director.audioLoop('mm');
+
+                                    CAAT.loop(20);
+                                });
+
+
+                    </pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

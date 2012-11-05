@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 4 - Director resize events</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>Director</h1>
+            <h2>Resize Events</h2>
+
+            <p>
+                The director object can listen to window resize events and thus adapt itself to
+                the new conditions, either by conforming its size, or by scaling accordingly.
+            </p>
+            <p>
+                The resize values are defined in CAAT.Director.prototype and are the following:
+                <ul>
+                    <li>RESIZE_WIDTH, only conforms director's width.
+                    <li>RESIZE_HEIGHT, only conforms director's height.
+                    <li>RESIZE_BOTH, resizes both width and height.
+                    <li>RESIZE_PROPORTIONAL, the director scales accordingly.
+                        <a onclick="window.open('t4-6-p.html','Resize example','resizable=1,width=300,height=300')">Sample (opens a new window)</a>
+                </ul>
+            </p>
+            <p>
+                To enable the resizing event listening, a call to director's
+                <span class="apicode">enableResizeEvents(resize_constant, onResizeCallback)</span>.
+            </p>
+            <p>
+                This method, will cause a director, and its contained scenes resize. But has no idea on how to make
+                your scene actors conform to the new size. The <span class="important">onResizeCallback</span> function
+                is comes handy for this purpose, since you have the opportunity to modify your actor's dimension,
+                position or desired attributes upon being called.
+            </p>
+            <p>
+                The callback function signature is as follow: <span class="apicode">function( director, newWidth, newHeight )</span>.
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="COMM">/**
+<span class='line'>  2</span>  * See LICENSE file.
+<span class='line'>  3</span>  *
+<span class='line'>  4</span>  **/</span><span class="WHIT">
+<span class='line'>  5</span> 
+<span class='line'>  6</span> </span><span class="NAME">CAAT.Module</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>  7</span> </span><span class="WHIT">    </span><span class="NAME">defines</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"CAAT.Core.Constants"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>  8</span> 
+<span class='line'>  9</span> </span><span class="WHIT">    </span><span class="NAME">extendsWith</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 10</span> 
+<span class='line'> 11</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 12</span>          * This function makes the system obey decimal point calculations for actor's position, size, etc.
+<span class='line'> 13</span>          * This may speed things up in some browsers, but at the cost of affecting visuals (like in rotating
+<span class='line'> 14</span>          * objects).
+<span class='line'> 15</span>          *
+<span class='line'> 16</span>          * Latest Chrome (20+) is not affected by this.
+<span class='line'> 17</span>          *
+<span class='line'> 18</span>          * Default CAAT.Matrix try to speed things up.
+<span class='line'> 19</span>          *
+<span class='line'> 20</span>          * @param clamp {boolean}
+<span class='line'> 21</span>          */</span><span class="WHIT">
+<span class='line'> 22</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.setCoordinateClamping</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">clamp</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 23</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">clamp</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 24</span> </span><span class="WHIT">                </span><span class="NAME">CAAT.Matrix.prototype.transformRenderingContext</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CAAT.Matrix.prototype.transformRenderingContext_Clamp</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 25</span> </span><span class="WHIT">                </span><span class="NAME">CAAT.Matrix.prototype.transformRenderingContextSet</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CAAT.Matrix.prototype.transformRenderingContextSet_Clamp</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 26</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 27</span> </span><span class="WHIT">                </span><span class="NAME">CAAT.Matrix.prototype.transformRenderingContext</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CAAT.Matrix.prototype.transformRenderingContext_NoClamp</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 28</span> </span><span class="WHIT">                </span><span class="NAME">CAAT.Matrix.prototype.transformRenderingContextSet</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 29</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 30</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 31</span> 
+<span class='line'> 32</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 33</span>          * Log function which deals with window's Console object.
+<span class='line'> 34</span>          */</span><span class="WHIT">
+<span class='line'> 35</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.log</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 36</span> </span><span class="WHIT">            </span><span class="KEYW">if</span><span class="PUNC">(</span><span class="NAME">window.console</span><span class="PUNC">)</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 37</span> </span><span class="WHIT">                </span><span class="NAME">window.console.log</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">Array.prototype.slice.call</span><span class="PUNC">(</span><span class="NAME">arguments</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 38</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 39</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 40</span> 
+<span class='line'> 41</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 42</span>          * Control how CAAT.Font and CAAT.TextActor control font ascent/descent values.
+<span class='line'> 43</span>          * 0 means it will guess values from a font height
+<span class='line'> 44</span>          * 1 means it will try to use css to get accurate ascent/descent values and fall back to the previous method
+<span class='line'> 45</span>          *   in case it couldn't.
+<span class='line'> 46</span>          *
+<span class='line'> 47</span>          * @type {Number}
+<span class='line'> 48</span>          */</span><span class="WHIT">
+<span class='line'> 49</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.CSS_TEXT_METRICS</span><span class="PUNC">=</span><span class="WHIT">      </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 50</span> 
+<span class='line'> 51</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.GLRENDER</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 52</span> 
+<span class='line'> 53</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 54</span>          * DEBUGGING CONSTANTS
+<span class='line'> 55</span>          */</span><span class="WHIT">
+<span class='line'> 56</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.DEBUG</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">              </span><span class="COMM">// set this variable before building CAAT.Director intances to</span><span class="WHIT">
+<span class='line'> 57</span> </span><span class="WHIT">                                    </span><span class="COMM">// enable debug panel.</span><span class="WHIT">
+<span class='line'> 58</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.DEBUGBB</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">            </span><span class="COMM">// show Bounding Boxes</span><span class="WHIT">
+<span class='line'> 59</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.DEBUGBBBCOLOR</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'#00f'</span><span class="PUNC">;</span><span class="WHIT">      </span><span class="COMM">// Bounding Boxes color.</span><span class="WHIT">
+<span class='line'> 60</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.DEBUGAABB</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">         </span><span class="COMM">// debug axis aligned bounding boxes.</span><span class="WHIT">
+<span class='line'> 61</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.DEBUGAABBCOLOR</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="STRN">'#f00'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 62</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.DEBUG_DIRTYRECTS</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">    </span><span class="COMM">// if CAAT.Director.setClear uses CLEAR_DIRTY_RECTS, this will show them</span><span class="WHIT">
+<span class='line'> 63</span> </span><span class="WHIT">                                    </span><span class="COMM">// on screen.</span><span class="WHIT">
+<span class='line'> 64</span> 
+<span class='line'> 65</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 66</span>          * Do not consider mouse drag gesture at least until you have dragged
+<span class='line'> 67</span>          * DRAG_THRESHOLD_X and DRAG_THRESHOLD_Y pixels.
+<span class='line'> 68</span>          * This is suitable for tablets, where just by touching, drag events are delivered.
+<span class='line'> 69</span>          */</span><span class="WHIT">
+<span class='line'> 70</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.DRAG_THRESHOLD_X</span><span class="PUNC">=</span><span class="WHIT">      </span><span class="NUMB">5</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 71</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.DRAG_THRESHOLD_Y</span><span class="PUNC">=</span><span class="WHIT">      </span><span class="NUMB">5</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 72</span> 
+<span class='line'> 73</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 74</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 75</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 76</span> </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 77</span> </span></pre></body></html>

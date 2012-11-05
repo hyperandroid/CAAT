@@ -1,0 +1,200 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+    <title>CAAT example: Video tag integration</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Video tag integration</h1>
+            </div>
+            <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>
+                        How to use:
+                    </p>
+                    <ul>
+                        <li>Move the mouse over the screen.</li>
+                    </ul>
+
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>Video tag integration.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="display:none;">
+        <video id="v1" autoplay="true" loop="true">
+            <source src="http://craftymind.com/factory/html5video/BigBuckBunny_640x360.mp4" type="video/mp4" />
+        </video>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    (function() {
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+
+        window.addEventListener('load',load,false);
+
+        function load() {
+            CAAT.ModuleManager.
+                baseURL( "../../../src/").
+                setModulePath("CAAT.Core",              "Core").
+                setModulePath("CAAT.Math",              "Math").
+                setModulePath("CAAT.Behavior",          "Behavior").
+                setModulePath("CAAT.Foundation",        "Foundation").
+                setModulePath("CAAT.Event",             "Event").
+                setModulePath("CAAT.PathUtil",          "PathUtil").
+                setModulePath("CAAT.Module",            "Modules").
+                setModulePath("CAAT.WebGL",             "WebGL").
+
+                // get modules, and solve their dependencies.
+                bring(
+                    [
+                        "CAAT.PathUtil.Path",
+                        "CAAT.Foundation.Director",
+                        "CAAT.Foundation.ActorContainer",
+                        "CAAT.Foundation.Actor",
+                        "CAAT.Foundation.SpriteImage",
+
+                        "CAAT.Behavior.RotateBehavior",
+                        "CAAT.Behavior.ScaleBehavior"
+                    ]
+                ).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( __video );
+        }
+
+        function __video()  {
+
+            var director=   new CAAT.Foundation.Director().initialize(800,600,'experiment-canvas');
+            var video=      document.getElementById('v1');
+            var scene=      director.createScene();
+            var paddingLeft=    35;
+            var paddingTop=     35;
+            var numberPadding=  10;
+            var rows=           6;
+            var columns=        8;
+
+            var fakeWidth=      700;
+            var fakeHeight=     500;
+            var fake=           document.createElement('canvas');
+            fake.width=         fakeWidth;
+            fake.height=        fakeHeight;
+            var fakectx=        fake.getContext('2d');
+            var ci=             new CAAT.Foundation.SpriteImage().initialize( fake, rows, columns );
+            var numberW=        ci.singleWidth;
+            var numberH=        ci.singleHeight;
+            var videoTimer= scene.createTimer(
+                    0,
+                    33,
+                    function(scene_time, timer_time, timertask_instance)  {   // timeout
+                        // reset the timer
+                        timertask_instance.reset(scene_time);
+                        // capture the frame
+                        fakectx.drawImage( video, 0, 0, fake.width, fake.height );
+                    }
+            );
+
+
+            var container= new CAAT.Foundation.ActorContainer().
+                    setBounds(0,0,director.width,director.height);
+
+            for (var i = 0; i < rows; i++) {
+                for (var j = 0; j < columns; j++) {
+
+                    var actor = new CAAT.Foundation.Actor().
+                            setBackgroundImage(ci.getRef(), true).
+                            setLocation(
+                            paddingLeft + j * (numberPadding / 2 + numberW),
+                            paddingTop + i * (numberPadding / 2 + numberH)).
+                            setSpriteIndex( i*columns+j );
+
+                    actor.mouseEnter = function(mouseEvent) {
+                        this.parent.setZOrder(this, Number.MAX_VALUE);
+                        this.emptyBehaviorList();
+                        this.addBehavior(
+                                new CAAT.Behavior.ScaleBehavior().
+                                        setFrameTime(this.time, 500).
+                                        setValues(1, 2, 1, 2).
+                                        setPingPong()
+                        ).
+                                addBehavior(
+                                new CAAT.Behavior.RotateBehavior().
+                                        setFrameTime(this.time, 500).
+                                        setValues(0, 2 * Math.PI)
+                        );
+                    };
+
+                    container.addChild(actor);
+                }
+            }
+
+            scene.addChild(container);
+
+            CAAT.loop(60);
+        }
+
+    })();
+</script>
+</html>

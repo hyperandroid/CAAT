@@ -1,0 +1,135 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 4 - Director, caching resources</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <div class="section">
+                <h1>Director</h1>
+                <h2>Caching Resources</h2>
+                <p>
+                    A director object is able to manage resources, concretely images and sounds.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>Images</h2>
+                <p>
+                    Caching images is a pretty straightforward operation. The methods to manage
+                    images are:
+                </p>
+                <p>
+                    <span class="apicode">setImagesCache( obj )</span>. This method substitutes
+                    director's previous images cache. The obj parameter is an object of the form:
+                    <div class="code">
+                        <pre class="brush: js; auto-links: false; toolbar: false;">
+                            [
+                                { id: string, image: image },
+                                ...
+                            ]
+                        </pre>
+                    </div>
+                    This method should be used in conjunction with an instance of
+                    <span class="apicode">CAAT.ImagePreloader</span> in the following way:
+                    <div class="code">
+                        <pre class="brush: js; auto-links: false; toolbar: false;">
+                            new CAAT.ImagePreloader().loadImages(
+                                [
+                                    {id:'fish',     url:'res/img/anim1.png'},
+                                    {id:'fish2',    url:'res/img/anim2.png'},
+                                    {id:'fish3',    url:'res/img/anim3.png'},
+                                    ...
+                                ],
+
+                                function( counter, images ) {
+
+                                    if ( counter==images.length ) {
+                                        director.setImagesCache(images);
+                                    }
+                                }
+                        </pre>
+                    </div>
+                </p>
+                <p>
+                    Other image management methods are:
+                </p>
+                <p>
+                    <span class="apicode">addImage : function( id, image, noUpdateGL )</span>.<br>
+                    This method adds a new image to the cache. If the id parameter corresponds
+                    to an already existent image, the image will be modified with the new one.
+                    The parameter noUpdateGL if set to false, will cause the webGL texture pages
+                    to be recreated. <span class="important">If rendering with webGL, this
+                    operation is error prone, since the already created
+                    CAAT.SpriteImage instances could reference wrongly its textures.</span>
+                </p>
+                <p>
+                    <span class="apicode">deleteImage : function( id, noUpdateGL )</span>.</br>
+                    This method removes an image from the cache. As in the previous method, be
+                    aware of calling this method with webGL enabled renderers.
+                </p>
+            </div>
+
+            <div class="section">
+                <h2>Sound</h2>
+                <p>
+                    CAAT has a built in AudioManager which is able to play eight simultaneous sounds.
+                    Each concurrent sound is called a channel, and allows to play concurrently the
+                    same sound, loop (and fix FF<5 loop problems), etc. When there are arlready 8
+                    playing channels, no more sounds will be played until any channel gets
+                    available.
+                </p>
+                <p>
+                    The method to manage the sounds are:
+                </p>
+                <p>
+                    <span class="apicode">addAudio : function(id, url)</span>.<br>
+                    This method adds a reference to an Audio or HTMLAudioElement object.
+                </p>
+                <p>
+                    <span class="apicode">audioPlay : function(id)</span>.<br>
+                    Plays a sound, occupying a channel which will be freed upon audio play end.
+                </p>
+                <p>
+                    <span class="apicode">audioLoop : function(id)</span>.<br>
+                    Loops a sound, occupying a channel which will be freed upon audio play end.
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

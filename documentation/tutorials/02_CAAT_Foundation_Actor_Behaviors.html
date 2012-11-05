@@ -1,0 +1,218 @@
+
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 2- Actor Behaviors</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+
+<div class="chapter">
+    <h1>CAAT.Foundation.Actor</h1>
+    <h2>Behaviors</h2>
+    <p>
+        An Actor has the abbility to have transformations applied to it which will modify its visual aspect,
+        but only one value for translation, scale and rotation can be applied at the same time.</p>
+    <p>
+        A behavior has the ability to apply affine transformations to an actor instance during a given perior
+        of time. Thus a behavior is defined by a frame time, that is, when to start applying the behavior and
+        during how much time, and what values will be applied.
+    </p>
+    <p>
+        In example, apply a rotation from 0 to 2*PI radians (360 degrees) from scene time=2000 and take 5000ms
+        to rotate.
+    </p>
+    <p>
+        One important thing to note about RotateBehavior and ScaleBehavior is that as in
+        <span class="apicode">setScaleAnchored</span> and <span class="apicode">setRotationAnchored</span>
+        there's the possibility to set an anchor via a call to the method <span class="apicode">setAnchor</span>.
+        </p>
+    <p>
+        <span class="important">But behaviors define anchors in percentage relative to actor's origo whereas
+            the methods do so in absolute pixel positions.</span>
+    </p>
+    <p>
+        Here we'll just show an example of actors rotating and scaling on different anchors all that commanded
+        by behaviors:
+    </p>
+    <p>
+        Take a look at chapter 3 for a complete disgression on Behaviors ans the built-in behavior types.
+    </p>
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+
+                var _director_4= new CAAT.Director().initialize(
+                        600,
+                        200,
+                        document.getElementById('_c4') );
+
+                var _scene_4= _director_4.createScene();
+
+                // these numbers correspond to anchor values:
+                // TOP_LEFT     TOP     TOP_RIGHT
+                // LEFT         CENTER  RIGHT
+                // BOTTOM_LEFT  BOTTOM  BOTTOM_RIGHT
+                var anchor= [
+                    0,0,    .50,0,   1.00,0,
+                    0,.50,  .50,.50,  1.00,.50,
+                    0,1.00, .50,1.00, 1.00,1.00
+                ];
+
+                var i;
+
+                for( i=0; i<9; i++ ) {
+
+                    // background actors under rotating ones. Just to have a reference
+                    // of where the anchor is.
+                    var _scene_4_rotating_actor_background = new CAAT.Actor().
+                            setLocation( 50+50*(i%3), 35+50*((i/3)>>0) ).
+                            setSize( 30, 30 ).
+                            setFillStyle('#ffffff').
+                            setStrokeStyle('#000000').
+                            // do not accept mouse events.
+                            enableEvents(false);
+                    _scene_4.addChild( _scene_4_rotating_actor_background );
+
+                    // rotating actors.
+                    var _scene_4_rotating_actor = new CAAT.Actor().
+                            setLocation( 50+50*(i%3), 35+50*((i/3)>>0) ).
+                            setSize( 30, 30 ).
+                            setFillStyle('#ff0000');
+                    // never ending rotating behavior
+                    var _scene_4_rotating_behavior= new CAAT.RotateBehavior().
+                            setCycle(true).
+                            setFrameTime( 0, 2000 ).
+                            setValues(0, 2*Math.PI, anchor[i*2], anchor[i*2+1] );
+                    _scene_4_rotating_actor.addBehavior( _scene_4_rotating_behavior );
+                    _scene_4.addChild( _scene_4_rotating_actor );
+
+                    // scaling actors
+                    var _scene_4_scaling_actor= new CAAT.Actor().
+                            setLocation( 300+60*(i%3), 30+60*((i/3)>>0) ).
+                            setSize( 30, 30 ).
+                            setFillStyle('#ff00ff');
+                    // never ending scaling behavior
+                    var _scene_4_scaling_behavior= new CAAT.ScaleBehavior().
+                            setCycle(true).
+                            setFrameTime( 0, 2000 ).
+                            setValues( .5, 1.5, .5, 1.5, anchor[i*2], anchor[i*2+1] ).
+                            setPingPong();
+                    _scene_4_scaling_actor.addBehavior(_scene_4_scaling_behavior);
+                    _scene_4.addChild( _scene_4_scaling_actor );
+                }
+
+                CAAT.loop(20);
+
+        </pre>
+    </div>
+    <div><canvas id="_c4"></canvas></div>
+        <script>
+            (function() {
+
+                var _director_4= new CAAT.Director().initialize(
+                        600,
+                        200,
+                        document.getElementById('_c4') );
+
+                var _scene_4= _director_4.createScene();
+
+                // these numbers correspond to anchor values:
+                // TOP_LEFT     TOP     TOP_RIGHT
+                // LEFT         CENTER  RIGHT
+                // BOTTOM_LEFT  BOTTOM  BOTTOM_RIGHT
+                var anchor= [
+                    0,0,    .50,0,    1.00,0,
+                    0,.50,  .50,.50,  1.00,.50,
+                    0,1.00, .50,1.00, 1.00,1.00
+                ];
+
+                var i;
+
+                for( i=0; i<9; i++ ) {
+
+                    // background actors under rotating ones. Just to have a reference
+                    // of where the anchor is.
+                    var _scene_4_rotating_actor_background = new CAAT.Actor().
+                            setLocation( 50+50*(i%3), 35+50*((i/3)>>0) ).
+                            setSize( 30, 30 ).
+                            setFillStyle('#ffffff').
+                            setStrokeStyle('#000000').
+                            // do not accept mouse events.
+                            enableEvents(false);
+                    _scene_4.addChild( _scene_4_rotating_actor_background );
+
+                    // rotating actors.
+                    var _scene_4_rotating_actor = new CAAT.Actor().
+                            setLocation( 50+50*(i%3), 35+50*((i/3)>>0) ).
+                            setSize( 30, 30 ).
+                            setFillStyle('#ff0000');
+                    // never ending rotating behavior
+                    var _scene_4_rotating_behavior= new CAAT.RotateBehavior().
+                            setCycle(true).
+                            setFrameTime( 0, 2000 ).
+                            setValues(0, 2*Math.PI, anchor[i*2], anchor[i*2+1] );
+                    _scene_4_rotating_actor.addBehavior( _scene_4_rotating_behavior );
+                    _scene_4.addChild( _scene_4_rotating_actor );
+
+                    // scaling actors
+                    var _scene_4_scaling_actor= new CAAT.Actor().
+                            setLocation( 300+60*(i%3), 30+60*((i/3)>>0) ).
+                            setSize( 30, 30 ).
+                            setFillStyle('#ff00ff');
+                    // never ending scaling behavior
+                    var _scene_4_scaling_behavior= new CAAT.ScaleBehavior().
+                            setCycle(true).
+                            setFrameTime( 0, 2000 ).
+                            setValues( .5, 1.5, .5, 1.5, anchor[i*2], anchor[i*2+1] ).
+                            setPingPong();
+                    _scene_4_scaling_actor.addBehavior(_scene_4_scaling_behavior);
+                    _scene_4.addChild( _scene_4_scaling_actor );
+                }
+
+                CAAT.loop(20);
+
+                })();
+        </script>
+    </div>
+
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

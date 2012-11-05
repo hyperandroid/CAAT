@@ -1,0 +1,142 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 9 - CAAT.PathActor</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>Other CAAT actors</h1>
+            <h2>CAAT.PathActor</h2>
+            <div>
+                <p>
+                    A CAAT.PathActor object instance draws a path on screen. The path can be
+                    as complex as needed, and each path segment can have its own color.
+                </p>
+                <p>
+                    This actors, simply delegates its drawing to the contained <span class="apicode">
+                    CAAT.Path</span> object.
+                </p>
+                <p>
+                    Besides drawing, this actors allows for real-time path segment manipulation.
+                    The addition of new segments and type change is not allowed, only path control
+                    points manipulation. As in the drawing, this actor delegates control point
+                    maniulation to the contained <span class="apicode">CAAT.Path</span> object.
+                </p>
+                <p>
+                    Refer to <a href="t8.html">Chapter 8 - CAAT.Path</a> to learn how to build
+                    complex paths.
+                </p>
+                <p>
+                    To set a contained <span class="apicode">CAAT.PathActor</span> object interactive,
+                    the method <span class="apicode">setInteractive( bool )</span> must be called.
+                    Setting this to true, will make this PathActor object instance to draw handles for
+                    each control points which can be moved dynamically. This setInteractive method can
+                    be called directly on the contained path object instance as well.
+                </p>
+                <p>
+                    The method <span class="apicode">showBoundingBox : function(show, color)</span> can
+                    be invoked to draw this path's bounding box on screen. If the color parameter
+                    is set, it will define the path bounding stroke style.
+                </p>
+            </div>
+            <div>
+                <h2>Example</h2>
+                <p>
+                    In this example you can manipulate a complex path composed of a mix of
+                    quadric and cubic bezier segments.
+                </p>
+
+                <div><canvas id="_c1"></canvas></div>
+                <script>
+                    (function() {
+
+                        var director= new CAAT.Foundation.Director().initialize(800,500,'_c1');
+                        var scene= director.createScene().setFillStyle('#fff');
+
+                        // path actor. to show the path and manipulate its control points.
+                        var pa= new CAAT.Foundation.UI.PathActor().
+                            setBounds(100,0,600,director.height).
+                            setPath(
+                                new CAAT.PathUtil.Path().
+                                    beginPath(200,200).
+                                    addCubicTo( 300,15, 400,10, 500,200 ).
+                                    addQuadricTo( 550,300, 450,350 ).
+                                    addQuadricTo( 400,400, 350,200 ).
+                                    addCubicTo( 100,300, 300,450, 10,400).
+                                    addQuadricTo( 40,200, 200,200 ).
+                                    endPath() ).
+                            setInteractive(true);
+
+
+                        scene.addChild(pa);
+
+                        CAAT.loop(20);
+                    })();
+                </script>
+            </div>
+
+            <div>
+                <div class="code">
+                    <pre class="brush: js; auto-links: false; toolbar: false;">
+                        var director= new CAAT.Foundation.Director().initialize(800,500,'_c1');
+                        var scene= director.createScene().setFillStyle('#fff');
+
+                        // path actor. to show the path and manipulate its control points.
+                        var pa= new CAAT.Foundation.UI.PathActor().
+                            setBounds(100,0,600,director.height).
+                            setPath(
+                                new CAAT.PathUtil.Path().
+                                    beginPath(200,200).
+                                    addCubicTo( 300,15, 400,10, 500,200 ).
+                                    addQuadricTo( 550,300, 450,350 ).
+                                    addQuadricTo( 400,400, 350,200 ).
+                                    addCubicTo( 100,300, 300,450, 10,400).
+                                    addQuadricTo( 40,200, 200,200 ).
+                                    endPath() ).
+                            setInteractive(true);
+
+
+                        scene.addChild(pa);
+
+                        CAAT.loop(20);
+                    </pre>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

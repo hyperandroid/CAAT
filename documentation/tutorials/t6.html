@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 6 - Behaviors</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>Behaviors</h1>
+
+            <p>
+                Behaviors are timeboxed modifiers for some special CAAT.Actors properties.
+            </p>
+
+            <p>
+                Concretely there are already out-of-the-box Behaviors to manage:
+            <ol>
+                <li>Rotations
+                <li>Translations across (complex or not) Paths
+                <li>Scale
+                <li>Alpha transparency
+                <li>Compositions of all the other types</li>
+            </ol>
+
+            <p>
+                Behaviors apply to every kind of CAAT.Actor, including Scenes.
+                This means you can easily instrument an actor instance to rotate some degrees,
+                scale horizontally or vertically, etc. with fine grained time control. One
+                important thing to note about behaviors is that <span class="important">
+                applying a behavior to a container makes it affect all its children</span>.
+                In example, if rotating a container, all its content will be rotated accordingly.
+
+            <p>
+                Behaviors apply linearly by default but there are <span class="apicode">
+                Interpolators</span> which can modify this by for example applying easing
+                functions.
+            </p>
+            <p>
+                Every behavior instance must have the methods
+                <span class="apicode">setFrameTime( time )</span> which defines the temporal
+                frame where the behavior will be applied and <span class="apicode">
+                setValues( variable number of parameters )</span> which defines the behavior
+                values, called.
+            </p>
+
+            <div>
+                <p>
+                    In this simple example, we're applying alpha behaviors to a rectangle and a
+                    circle. The rectangle's behavior keeps applying forever (setCycle is true)
+                    and the circle's one will last for ten seconds and finish applying.
+                </p>
+
+
+                <div>
+                    <canvas id='_c2'></canvas>
+                </div>
+                <script>
+                    var director = new CAAT.Foundation.Director().initialize(150, 80, '_c2');
+                    var scene = director.createScene();
+
+                    // create a rectangle
+                    var rectangle = new CAAT.Foundation.UI.ShapeActor().
+                            setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_RECTANGLE).
+                            setLocation(10, 10).
+                            setSize(60, 60).
+                            setFillStyle('#ff0000').
+                            setStrokeStyle('#000000');
+
+                    // create a circle
+                    var circle = new CAAT.Foundation.UI.ShapeActor().
+                            setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_CIRCLE).
+                            setBounds(80, 10, 60, 60).
+                            setFillStyle('#00ff00').
+                            setStrokeStyle('#000000');
+
+                    scene.addChild(rectangle);
+                    scene.addChild(circle);
+
+                    // create an alpha transparency behavior, which takes two seconds to start,
+                    // and will be applied for five seconds. During this time, the trsnsparency
+                    // will fade from 1 (total opacity) to 0 (total transparency)
+                    var alpha_2 = new CAAT.Behavior.AlphaBehavior().
+                            setValues(1, 0).
+
+                        // by cycling a behavior, upon expiration (on time = 7000 milliseconds),
+                        // it will start applying again from the beginning.
+                            setCycle(true).
+                            setFrameTime(2000, 5000);
+
+                    // set the behavior to the rectangle.
+                    rectangle.addBehavior(alpha_2);
+
+                    var alpha_3 = new CAAT.Behavior.AlphaBehavior().
+                            setValues(1, 0).
+                            setFrameTime(2000, 5000);
+                    circle.addBehavior(alpha_3);
+
+                    CAAT.loop(10);
+                </script>
+
+
+                <div class="code">
+                <pre class="brush: js; auto-links: false; toolbar: false;">
+                    var director = new CAAT.Foundation.Director().initialize(150, 80, '_c2');
+                    var scene = director.createScene();
+
+                    // create a rectangle
+                    var rectangle = new CAAT.Foundation.UI.ShapeActor().
+                            setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_RECTANGLE).
+                            setLocation(10, 10).
+                            setSize(60, 60).
+                            setFillStyle('#ff0000').
+                            setStrokeStyle('#000000');
+
+                    // create a circle
+                    var circle = new CAAT.Foundation.UI.ShapeActor().
+                            setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_CIRCLE).
+                            setBounds(80, 10, 60, 60).
+                            setFillStyle('#00ff00').
+                            setStrokeStyle('#000000');
+
+                    scene.addChild(rectangle);
+                    scene.addChild(circle);
+
+                    // create an alpha transparency behavior, which takes two seconds to start,
+                    // and will be applied for five seconds. During this time, the trsnsparency
+                    // will fade from 1 (total opacity) to 0 (total transparency)
+                    var alpha_2 = new CAAT.Behavior.AlphaBehavior().
+                            setValues(1, 0).
+
+                        // by cycling a behavior, upon expiration (on time = 7000 milliseconds),
+                        // it will start applying again from the beginning.
+                            setCycle(true).
+                            setFrameTime(2000, 5000);
+
+                    // set the behavior to the rectangle.
+                    rectangle.addBehavior(alpha_2);
+
+                    var alpha_3 = new CAAT.Behavior.AlphaBehavior().
+                            setValues(1, 0).
+                            setFrameTime(2000, 5000);
+                    circle.addBehavior(alpha_3);
+
+                    CAAT.loop(10);
+
+                </pre>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,315 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 3 - CAAT.ActorContainer</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+<div id="header">
+    <div style="text-align: center;">
+
+    </div>
+</div>
+
+<div id="content">
+<div id="menu">
+
+</div>
+<div id="tutorial">
+
+
+<div>
+<h1>CAAT.Foundation.ActorContainer</h1>
+
+<h2>Adding actors to a container</h2>
+
+<div>
+    <p>
+        In CAAT, every out-of-the-box actor instance is a CAAT.ActorContainer
+        except the CAAT.Actor object instances themselves.
+        Despite it could seem odd adding an Actor object to (for instance) a CAAT.Shape
+        it makes sense to do so when you need to link hierarchycally other actors to the shape.
+        A good example could be when trying to do an elbow like relationshiop between two
+        given actor instances. <a href="../demos/demo8/hierarchy_org.html">See dem8 for an example</a>.
+    </p>
+
+    <p>
+        It must be noticed that a CAAT.Foundation.ActorContainer has no size by default, and that unless specified,
+        a container's size will be 1x1 regardless adding/removing actors to/from it.
+    </p>
+
+    <p>
+        You can eventually, call <span class="apicode">new CAAT.Foundation.ActorContainer( CAAT.Foundation.ActorContainer.AddHint.CONFORM );</span>
+        which will make the container to grow in size when adding children to it.
+    </p>
+
+</div>
+
+
+<div class="section">
+    <h2>Addition Methods</h2>
+
+    <p>
+        There're two methods to add Actors to a Container.
+    </p>
+
+    <p>
+        The method <span class="apicode">function addChildDelayed(actor, constraint)</span>
+        batches the actor addition until CAAT.Director's current frame is processed.
+        When adding actors to a container (in example in response to behavior events), the
+        current frame is being processed, and adding new Actors could lead to visual artifacts.
+        The reason is that the newly added actors have not yet executed their animation stage
+        when being drawn on screen.</p>
+    </p>
+    <p>
+        The methods <span class="apicode">function addChild(actor, constraint )</span> and
+        <span class="apicode">function addActorImmediately(actor, constraint)</span> in opposition to the
+        previous method <span class="apicode">addActor</span>, adds immediately an actor to
+        the rendering pipeline, and could cause such visual artifacts.
+    </p>
+    <p>
+        The constraint parameter is used in case the container has a LayoutManager object associated.
+        See Layout in the documentation for more info.
+    </p>
+    <p>
+        The methods <span class="apicode">function addChildAt(pos)</span> adds an actor at a given ZIndex
+        position.
+    </p>
+
+    <p>
+        <span class="important">addActorImmediately is the default actor addition behavior.</span>
+    </p>
+
+    <p>
+        As a rule of thumb, you must take care of adding/removing actors while
+        <span class="apicode">animate</span>, <span class="apicode">paintActor</span> or
+        <span class="apicode">paint</span> methods are being executed. These methods are traversing the list
+        of actors present in a scene (or containers of current scene) and modifying this list while is traversed
+        is not a good idea. In such cases, use <span class="apicode">addActorDelayed</span> function.
+    </p>
+</div>
+
+
+<div>
+    <p>
+        In this example, every tentacle is linked to the center, and every tentacle's shape
+        is linked (contained) to the previous one. So rotating slightly every tentacle's
+        element turns into an accumulative rotation transformation.
+    </p>
+
+    <div>
+        <canvas id="_tut3_100"></canvas>
+    </div>
+    <div class="code">
+            <pre class="brush: js; auto-links: false; toolbar: false;">
+
+                // create a tentacle
+                    function __createTentacle( root, angle, segments, armSegmentSizeW, armSegmentSizeH, armIndex, maxAngle ) {
+
+                        var i;
+                        var segment= root;
+
+                        for( i=0; i &lt; segments; i++ ) {
+
+                // calculate a color which lies somewhere between the rgb colors
+                // (255,255,0) yellow and (255,128,0) orange.
+                            var color= CAAT.Module.ColorUtil.Color.interpolate(
+                                    255,255,0,
+                                    255,128,0,
+                                    segments,
+                                    i
+                            );
+
+                // create a tentacle's segment
+                            var newSegment= new CAAT.ActorContainer().
+                                setSize( armSegmentSizeH-4, armSegmentSizeH-4 ).
+                                setFillStyle( "rgb("+color.r+","+color.g+","+color.b+")" ).
+                                setLocation( 0,-armSegmentSizeH );
+
+                // and link it to the previos tentacle segment or root element
+                            if ( segment==root ) {
+                                newSegment.setRotationAnchored(angle, .5, 1);
+                                newSegment.oldAngle= angle;
+                            } else {
+                                newSegment.oldAngle= 0;
+                // set for every tentacle's segment up an animation function which applies
+                // some rotation. Every segment's rotation will be composed with the previous
+                // segment's one.
+                                newSegment.animate= function(director,time) {
+                                    this.setRotationAnchored(
+                                            this.oldAngle+
+                                            maxAngle*Math.sin(new Date().getTime()*.0005 + armIndex*Math.PI/segments/2
+                                            ),
+                                            .5,
+                                            1
+                                    );
+                                    return CAAT.ActorContainer.prototype.animate.call(this,director,time);
+
+                                };
+                            }
+
+                            segment.addChild(newSegment);
+                            segment= newSegment;
+                        }
+                    }
+
+                var _director_9= new CAAT.Director().initialize(
+                        200,
+                        200,
+                        document.getElementById('_tut3_100'));
+
+                var _scene_9= _director_9.createScene();
+
+                _director_9.addScene( _scene_9 );
+
+            // make this actor each tentacle's parent.
+            // rotating this actor will make every tentacle to rotate around it.
+                var root= new CAAT.ShapeActor().
+                        setShape( CAAT.ShapeActor.prototype.SHAPE_CIRCLE ).
+                        setBounds( _director_9.width/2, _director_9.height/2, 1, 1 ).
+                        setFillStyle( 'yellow' ).
+                        addBehavior(
+                            new CAAT.RotateBehavior().
+                                setFrameTime(0,20000).
+                                setValues(0,2*Math.PI).
+                                setCycle(true)
+                        );
+
+            // create 10 tentacles
+                var arms= 10;
+            // with 10 segments each
+                var segments=10;
+
+                var i;
+
+                for( i=0; i&lt;arms; i++ ) {
+                    __createTentacle( root, 2*Math.PI/arms * i, segments, 2, 10, i, Math.PI/segments/2 );
+                }
+
+                _scene_9.addChild(root);
+                CAAT.loop(15);
+            </pre>
+    </div>
+
+    <div>
+        <script>
+            (function () {
+                // create a tentacle
+                function __createTentacle(root, angle, segments, armSegmentSizeW, armSegmentSizeH, armIndex, maxAngle) {
+
+                    var i;
+                    var segment = root;
+
+                    for (i = 0; i < segments; i++) {
+
+                        // calculate a color which lies somewhere between the rgb colors
+                        // (255,255,0) yellow and (255,128,0) orange.
+                        var color = CAAT.Module.ColorUtil.Color.interpolate(
+                                255, 255, 0,
+                                255, 128, 0,
+                                segments,
+                                i
+                        );
+
+                        // create a tentacle's segment
+                        var newSegment = new CAAT.ActorContainer().
+                                setSize(armSegmentSizeH - 4, armSegmentSizeH - 4).
+                                setFillStyle("rgb(" + color.r + "," + color.g + "," + color.b + ")").
+                                setLocation(0, -armSegmentSizeH);
+
+                        // and link it to the previos tentacle segment or root element
+                        if (segment == root) {
+                            newSegment.setRotationAnchored(angle, .5, 1);
+                            newSegment.oldAngle = angle;
+                        } else {
+                            newSegment.oldAngle = 0;
+                            // set for every tentacle's segment up an animation function which applies
+                            // some rotation. Every segment's rotation will be composed with the previous
+                            // segment's one.
+                            newSegment.animate = function (director, time) {
+                                this.setRotationAnchored(
+                                        this.oldAngle +
+                                                maxAngle * Math.sin(new Date().getTime() * .0005 + armIndex * Math.PI / segments / 2
+                                                ),
+                                        .5,
+                                        1
+                                );
+                                return CAAT.ActorContainer.prototype.animate.call(this, director, time);
+
+                            };
+                        }
+
+                        segment.addChild(newSegment);
+                        segment = newSegment;
+                    }
+                }
+
+                var _director_9 = new CAAT.Director().initialize(
+                        200,
+                        200,
+                        document.getElementById('_tut3_100'));
+
+                var _scene_9 = _director_9.createScene();
+
+                _director_9.addScene(_scene_9);
+
+                // make this actor each tentacle's parent.
+                // rotating this actor will make every tentacle to rotate around it.
+                var root = new CAAT.ShapeActor().
+                        setShape(CAAT.ShapeActor.prototype.SHAPE_CIRCLE).
+                        setBounds(_director_9.width / 2, _director_9.height / 2, 1, 1).
+                        setFillStyle('yellow').
+                        addBehavior(
+                        new CAAT.RotateBehavior().
+                                setFrameTime(0, 20000).
+                                setValues(0, 2 * Math.PI).
+                                setCycle(true)
+                );
+
+                // create 10 tentacles
+                var arms = 10;
+                // with 10 segments each
+                var segments = 10;
+
+                var i;
+
+                for (i = 0; i < arms; i++) {
+                    __createTentacle(root, 2 * Math.PI / arms * i, segments, 2, 10, i, Math.PI / segments / 2);
+                }
+
+                _scene_9.addChild(root);
+                CAAT.loop(15);
+            })();
+        </script>
+    </div>
+</div>
+</div>
+
+
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 4 - Director keyboard events</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>Director</h1>
+            <h2>Keyboard Events</h2>
+
+            <p>
+                The director object can receive keyboard events. In fact, it is not a
+                director object's property, but a CAAT environment property.
+            </p>
+            <p>
+                Simply by calling:
+                <div class="code">
+                    <pre class="brush: js; auto-links: false; toolbar: false;">
+                        /**
+                         * @param key {number} key code
+                         * @param action {up|down}
+                         * @param modifiers {object} is as object with the structure
+                         *   {
+                         *     alt:     {boolean},
+                         *     control: { boolean },
+                         *     shift:   { boolean }
+                         *   }
+                         * @param originalKeyEvent {object} the original key event. Suitable for calling
+                         *  preventdefault.
+                         */
+                        CAAT.registerKeyListener( function(key,action,modifiers,originalKeyEvent) {
+                                if ( key==68 && action=='up') {
+                                    director.debug= !director.debug;
+                                }
+                            });
+                    </pre>
+                </div>
+                the parameter function will be notified upon action='up' or action='down' for
+                each key press event.
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

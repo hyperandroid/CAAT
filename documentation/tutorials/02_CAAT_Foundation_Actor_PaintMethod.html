@@ -1,0 +1,285 @@
+
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 2- Actor paint method</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+
+
+<div class="chapter">
+    <h1>CAAT.Actor</h1>
+    <h2>Actor Paint method</h2>
+    <div>
+        <p>
+            The method <span class="apicode">paint(director, time)</span> allows developers to create
+            custom drawing routines.
+            Default paint method implementation manages background image and/or color.
+        </p>
+        <p>
+            With the director parameter, the developer can get directly a canvas 2D rendering context by
+            accessing the attribute director.ctx. This context instance is in save state, that means CAAT
+            has already stacked transformations, transparency, etc. so the developer simply can issue
+            context drawing commands w/o worrying about context state. Don't waste your time calling ctx.save()
+            and restore().
+        </p>
+        <p>
+            See <a href="https://github.com/hyperandroid/Sumon/">
+            Sumon's source code</a> for multiple paint method overriding examples.
+        </p>
+    </div>
+    <div class="section">
+        <h2>Override correctly</h2>
+        <p>
+            When overriding the paint method, you must take into account that CAAT actors can be cached.
+            This is done by calling <span class="apicode">cacheAsBitmap( time, hint );</span> as explained
+            in <a href="02_CAAT_Foundation_Actor_CacheAsBitmap.html">Actor CacheAsBitmap</a>.
+        </p>
+        <p>
+            A correct paint custom implementation must honor a cached as bitmap actor, with the following code:
+        </p>
+        <div class="code">
+            <pre class="brush: js; auto-links: false; toolbar: false;">
+                actor.paint= function( director, time ) {
+                    if ( this.isCached() ) {
+                        &lt;Class_that_extends_Actor_or_ActorContainer&gt;.prototype.paint.call(this,director,time);
+                        return;
+                    }
+
+                    // Add your custom paint code here.
+                }
+
+            </pre>
+        </div>
+    </div>
+    <h2>Actor Paint method (WebGL)</h2>
+    <div>
+        <p>
+            When dealing with WebGL enabled contexts, the <span class="apicode">paintActorGL(director,time)
+            </span> will be called.
+        </p>
+        <p>
+            The developer must take into account that the context instance is not a 2D rendereing
+            context but a webGL one, so the rendering context drawing primitives are not available.
+        </p>
+        <p>
+            CAAT only offers availability to draw polylines and must be improved the way it does so
+            take this possibility with care. This method will be changed shortly as well as more
+            drawing primitives will be added.
+        </p>
+    </div>
+    <h2>Actor Paint method (CSS/DOM)</h2>
+    <div>
+        Since DOM/CSS can't handle any drawing primitive, in this renderer the paint method is simply
+        ignored.
+    </div>
+</div>
+
+<div>
+    <h2>Example</h2>
+    <p>
+        The following example shows an actor which faces an arrow to the mouse position.
+    </p>
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+
+            function __scene(director) {
+
+                var scene= director.createScene();
+
+                var bg= new CAAT.ActorContainer().
+                        setBounds(0,0,director.width,director.height);
+
+                // custom paint: stroke a bounding rectangle
+                bg.paint= function(director,time) {
+                    var ctx= director.ctx;
+                    ctx.stokeStyle='black';
+                    ctx.strokeRect(0,0,bg.width,bg.height);
+                };
+
+                scene.addChild(bg);
+
+                var arrow= new CAAT.Actor().
+                        setBounds(0,0,director.width,director.height).
+                        enableEvents(false);
+                bg.addChild(arrow);
+
+                // custom paint: draw a proportional arrow
+                // DOES NOT HONOR CACHED_AS_BITMAP ACTORS !!!
+                arrow.paint= function(director, time) {
+
+                    var ctx= director.ctx;
+                    var gap= 80;
+
+                    // build a random color
+                    var color= 'rgb(';
+                    color+= time%255;
+                    color+=',';
+                    color+= (time>>8)&255;
+                    color+=',';
+                    color+= 0xa0;
+                    color+=')';
+
+                    ctx.strokeStyle= color;
+                    ctx.beginPath();
+                    ctx.moveTo(gap, bg.height / 2);
+                    ctx.lineTo(bg.width - gap, bg.height/2);
+                    ctx.lineTo( bg.width - gap - (bg.height / 4), bg.height / 4);
+
+                    ctx.moveTo(bg.width - gap, bg.height/2);
+                    ctx.lineTo(bg.width - gap - (bg.height / 4), bg.height / 2 + bg.height / 4);
+
+                    ctx.lineWidth=15;
+                    ctx.lineJoin='round';
+                    ctx.lineCap='round';
+
+                    ctx.stroke();
+                };
+
+                // make the arrow face the mouse position
+                bg.mouseMove= function(e) {
+                    var angle= Math.atan2(
+                            e.y - arrow.height / 2,
+                            e.x - arrow.width / 2 );
+                    arrow.setRotation(angle);
+                }
+            }
+
+            function __init()   {
+
+                var director = new CAAT.Director().
+                        initialize(500,500, document.getElementById('_c1'));
+
+                __scene(director);
+
+                CAAT.loop(30);
+            }
+
+            __init();
+
+        </pre>
+    </div>
+    <canvas id="_c1"></canvas>
+    <script>
+        (function() {
+
+            function __scene(director) {
+
+                var scene= director.createScene();
+
+                var bg= new CAAT.Foundation.ActorContainer().
+                        setBounds(0,0,director.width,director.height);
+
+                // custom paint: stroke a bounding rectangle
+                bg.paint= function(director,time) {
+                    var ctx= director.ctx;
+                    ctx.stokeStyle='black';
+                    ctx.strokeRect(0,0,bg.width,bg.height);
+                };
+
+                scene.addChild(bg);
+
+                var arrow= new CAAT.Foundation.Actor().
+                        setBounds(0,0,director.width,director.height).
+                        enableEvents(false);
+                bg.addChild(arrow);
+
+                // custom paint: draw a proportional arrow
+                arrow.paint= function(director, time) {
+
+                    var ctx= director.ctx;
+                    var gap= 80;
+
+                    // build a random color
+                    var color= 'rgb(';
+                    color+= time%255;
+                    color+=',';
+                    color+= (time>>8)&255;
+                    color+=',';
+                    color+= 0xa0;
+                    color+=')';
+
+                    ctx.strokeStyle= color;
+                    ctx.beginPath();
+                    ctx.moveTo(gap, bg.height / 2);
+                    ctx.lineTo(bg.width - gap, bg.height/2);
+                    ctx.lineTo( bg.width - gap - (bg.height / 4), bg.height / 4);
+
+                    ctx.moveTo(bg.width - gap, bg.height/2);
+                    ctx.lineTo(bg.width - gap - (bg.height / 4), bg.height / 2 + bg.height / 4);
+
+                    ctx.lineWidth=15;
+                    ctx.lineJoin='round';
+                    ctx.lineCap='round';
+
+                    ctx.stroke();
+                };
+
+                // make the arrow face the mouse position
+                bg.mouseMove= function(e) {
+                    var angle= Math.atan2(
+                            e.y - arrow.height / 2,
+                            e.x - arrow.width / 2 );
+                    arrow.setRotation(angle);
+                }
+            }
+
+            function __init()   {
+
+                var director = new CAAT.Foundation.Director().
+                        initialize(500,500, document.getElementById('_c1'));
+
+                __scene(director);
+
+                CAAT.loop(30);
+            }
+
+            __init();
+
+
+        })();
+    </script>
+</div>
+
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 2 - CAAT.Actor Touch events</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+    <script type="text/javascript" src="../demos/templates/startup-wo-splash/template.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <div class="chapter">
+                <h1>CAAT.Foundation.Actor</h1>
+                <h2>Actors touch events</h2>
+
+                <p>
+                    CAAT offers out-of-the-box multitouch support.
+                </p>
+                <p>
+                    The framework, is smart enough to route to any given actor, only touch information relating to it.
+                    So multitouch events on a canvas/DOM element, can lead to touch events being routed to different
+                    actors.
+                </p>
+                <p>
+                    Multitouch, is disabled by default in favor of a touch-as-mouse multitouch behavior. CAAT can't
+                    switch from touch-as-mouse to multitouch at will, so this feature must be selected previously to
+                    creating a CAAT.Director object instance.
+                </p>
+                <p>
+                    Gestures, where available, and if the actor has <span class="apicode">setGestureEnabled(bool)</span>
+                    will also be delivered to the actor identified by the first registered touch event.
+                </p>
+                <p>
+                    The <span class="apicode">CAAT.TOUCH_BEHAVIOR</span> internal variable can be assigned to:
+                    <li><span class="apicode">CAAT.TOUCH_AS_MOUSE</span>, which is the default value</li>
+                    <li><span class="apicode">CAAT.TOUCH_AS_MULTITOUCH</span>, which enables multitouch support.</li>
+                </p>
+                <p>
+                    Touch events, will be notified to the following Actor functions:
+                    <li><span class="apicode">touchStart( CAAT.TouchEvent )</span></li>
+                    <li><span class="apicode">touchMove( CAAT.TouchEvent )</span></li>
+                    <li><span class="apicode">touchEnd( CAAT.TouchEvent )</span></li>
+                </p>
+                <p>
+                    Gestures, when explicitly enabled on an Actor, will be notified to the following Actor functions:
+                    <li><span class="apicode">gestureStart( rotation, scaleX, scaleY )</span></li>
+                    <li><span class="apicode">gestureEnd( rotation, scaleX, scaleY )</span></li>
+                    <li><span class="apicode">gestureChange( rotation, scaleX, scaleY )</span>. This
+                    method, by default, handles rotation and scale of the Actor, and must be overriden
+                    if this behavior is not desired.</li>
+                </p>
+                <p>
+                    Each device, will support a different number of touch events at the same time. Regardless of this
+                    number, CAAT will find each touch affected Actor, and call those Touch handling methods with an
+                    instance of CAAT.TouchEvent. This class, resembles a regular browser touch event object, and contains
+                    touch information in its members:
+                    <li><span class="apicode">touches</span> list of current active touches.</li>
+                    <li><span class="apicode">changedTouches</span> list of affected touches.</li>
+                </p>
+
+            </div>
+            <div>
+                <p>
+                    <a href="../demos/demo22/multitouch.html">Refer to this demo</a>
+                    with a touch enabled device to test its multitouch capabilities.
+                </p>
+            </div>
+        </div>
+    </div>
+        </div>
+</div>
+</body>
+</html>

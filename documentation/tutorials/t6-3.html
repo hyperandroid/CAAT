@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 6 - ContainerBehavior</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>CAAT.Behavior</h1>
+            <h2>CAAT.ContainerBehavior</h2>
+
+            <p>
+                A CAAT.Actor can have any number of CAAT.Behaviors enabled at once.
+                There are no constraints about their type, duration
+                and property application so the developer must take care of overlapping
+                in time behavior instances.
+            </p>
+            <p>
+                There's also the possibility of grouping CAAT.Behaviors together as if they
+                were just a single CAAT.Behavior. This can be accomplished by using a
+                CAAT.BehaviorContainer. The features a container are:
+                <ol>
+                    <li>
+                        A CAAT.ContainerBehavior can contain many other CAAT.Behavior instances, including other
+                        CAAT.ContainerBehaviors
+                    </li>
+                    <li>
+                        It relates its contained children time from zero to its duration.
+                        This means that contained baheviors have zero time when the container
+                        starts.
+                    </li>
+                    <li>
+                        Any contained behavior can not last beyond the container time duration.
+                        This means, the behavior will stop applying when the container
+                        duration is reached.
+                    </li>
+                </ol>
+            <p>
+                In the following example, we're going to set up a simple container behaviour.
+                For the ease of the demo, the container has a lifecycle longer than its
+                children behaviors. During the time that no behavior is being applied,
+                nothing happens.
+                Despite having a start time of 0 and 500, the children behaviors won't
+                start applying until 5000 and 5500 milliseconds have elapsed respectively.
+                This is because the children behaviors won't starts applying until the container
+                does.
+            </ol>
+
+            </p>
+
+
+
+            <div>
+                <canvas id='_c5'></canvas>
+            </div>
+            <script>
+                (function() {
+
+                var director = new CAAT.Foundation.Director().initialize(150, 150, '_c5');
+                var scene = director.createScene();
+
+                var shape = new CAAT.Foundation.UI.ShapeActor().
+                        setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_RECTANGLE).
+                        setLocation(50, 50).
+                        setSize(50, 50).
+                        setFillStyle('#ff0').
+                        setStrokeStyle('#000')
+                scene.addChild(shape);
+
+                // set a Container for behaviors up.
+                var cb = new CAAT.Behavior.ContainerBehavior().
+                        setCycle(true).
+                    // take 3 seconds to perform contained behaviors. If any
+                    // takes more than such time, it will be truncated.
+                        setFrameTime(0, 3000);
+
+                // setup an Scaling behavior. Min scale 1, Max scale 2
+                // (twice in size)
+                var sb = new CAAT.Behavior.ScaleBehavior().
+                        setPingPong().
+                        setValues(1, 2, 1, 2, .50, .50).
+                    // takes 2 seconds to scale. time measured from parent's
+                    // zero time.
+                        setFrameTime(0, 2000);
+
+                // setup a Rotating behavior. 0-2PI, ie 360 degrees.
+                var rb = new CAAT.Behavior.RotateBehavior().
+                        setValues(0, Math.PI, .50, .50).
+                    // takes 1 second, starting half a second after parent's
+                    // time.
+                        setFrameTime(500, 1000);
+
+                // add scale and rotation to the rectangle.
+                cb.addBehavior(sb);
+                cb.addBehavior(rb);
+
+                // add path and conpound behavior of rotation and scale to
+                // the rectanble shape.
+                shape.addBehavior(cb);
+
+                CAAT.loop(30);
+                })();
+            </script>
+
+            <div class="code">
+                <pre class="brush: js; auto-links: false; toolbar: false;">
+                    var director = new CAAT.Foundation.Director().initialize(150, 150, '_c5');
+                    var scene = director.createScene();
+
+                    var shape = new CAAT.Foundation.UI.ShapeActor().
+                            setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_RECTANGLE).
+                            setLocation(50, 50).
+                            setSize(50, 50).
+                            setFillStyle('#ff0').
+                            setStrokeStyle('#000')
+                    scene.addChild(shape);
+
+                    // set a Container for behaviors up.
+                    var cb = new CAAT.Behavior.ContainerBehavior().
+                            setCycle(true).
+                        // take 3 seconds to perform contained behaviors. If any
+                        // takes more than such time, it will be truncated.
+                            setFrameTime(0, 3000);
+
+                    // setup an Scaling behavior. Min scale 1, Max scale 2
+                    // (twice in size)
+                    var sb = new CAAT.Behavior.ScaleBehavior().
+                            setPingPong().
+                            setValues(1, 2, 1, 2, .50, .50).
+                        // takes 2 seconds to scale. time measured from parent's
+                        // zero time.
+                            setFrameTime(0, 2000);
+
+                    // setup a Rotating behavior. 0-2PI, ie 360 degrees.
+                    var rb = new CAAT.Behavior.RotateBehavior().
+                            setValues(0, Math.PI, .50, .50).
+                        // takes 1 second, starting half a second after parent's
+                        // time.
+                            setFrameTime(500, 1000);
+
+                    // add scale and rotation to the rectangle.
+                    cb.addBehavior(sb);
+                    cb.addBehavior(rb);
+
+                    // add path and conpound behavior of rotation and scale to
+                    // the rectanble shape.
+                    shape.addBehavior(cb);
+
+                    CAAT.loop(30);
+
+                </pre>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,387 @@
+<!DOCTYPE HTML5>
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+    <title>CAAT example: Auto Layout</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+    <style>
+           #menu {
+               float: left !important;
+               display:none;
+               background:rgba(255,255,255,.7);
+               position:absolute;
+               left:10px;
+               top:40px;
+               width:130px;
+               z-index:999;
+               padding: 5px;
+               border: #ddd solid 1px;
+           }
+
+           #infomenu {
+               position:absolute;
+               left:10px;
+               top:10px;
+               background:rgba(255,255,255,.5);
+               width:20px;
+               height:20px;
+               -webkit-border-radius: 20px;
+               -moz-border-radius: 20px;
+               border-radius: 20px;
+               border: #ddd solid 1px;
+               font-size: 1.3em;
+               font-weight: bold;
+               text-align: center;
+               color: black;
+           }
+
+           #info {
+               position:absolute;
+               left:40px;
+               top:10px;
+               background:rgba(255,255,255,.5);
+               width:20px;
+               height:20px;
+               -webkit-border-radius: 20px;
+               -moz-border-radius: 20px;
+               border-radius: 20px;
+               border: #ddd solid 1px;
+               font-size: 1.3em;
+               font-weight: bold;
+               text-align: center;
+               color: black;
+           }
+
+           #infotext {
+               position:absolute;
+               left:40px;
+               top:40px;
+               background:rgba(200,200,200,.9);
+               width:400px;
+               height:auto;
+               border: #ddd solid 1px;
+               font-size: 1em;
+               font-weight: bold;
+               color: black;
+               padding: 5px;
+               text-shadow: 0 1px 0 #ddd;
+               display : block;
+           }
+
+        .red {
+            color: red;
+        }
+
+       </style>
+</head>
+<body style="margin:0; padding:0;">
+
+<script>
+    var visible= false;
+    function toggleMenu(id) {
+        var elem= document.getElementById(id);
+        var seen= false;
+
+        if (elem.currentStyle) {
+            seen= x.currentStyle[styleProp];
+        }
+        else if (window.getComputedStyle) {
+            seen= document.defaultView.getComputedStyle(elem,null).getPropertyValue("display");
+        }
+
+        if (seen=== "block") {
+            elem.style.display = "none";
+        } else {
+            elem.style.display = "block";
+        }
+    }
+</script>
+
+<div id="infomenu"><a href="#" onclick="toggleMenu('menu');">m</a></div>
+<div id="info"><a href="#" onclick="toggleMenu('infotext');">i</a></div>
+<div id="menu">
+</div>
+<div id="infotext">
+    <div style="text-align:center">
+        <h1>Automatic layout capabilities</h1>
+    </div>
+    <div>
+        <p>This demo shows CAAT container's auto layout capabilities. Which are the foundation for CAAT's UI capabilities.
+        <p>This demo features nested Containers with different layouts applied. Also a layd-out container's children
+        vertical and horizontal alignment are set randomly.
+        <p>Current implementations include:</p>
+        <ul>
+            <li>BorderLayout</li>
+            <li>GridLayout</li>
+            <li>BoxLayout</li>
+        </ul>
+    </div>
+    <div>
+        <p>Controls:</p>
+        <ul>
+            <li><span class="red">Resize browser window</span> to see animated auto layout.</li>
+            <li>Press +/- to add/remove new actors to the scene.</li>
+        </ul>
+    </div>
+</div>
+
+</body>
+
+
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script src="../../../src/core/ModuleManager.js"></script>
+
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+CAAT.DEBUG=1;
+
+    (function() {
+
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener('load',load,false);
+
+        function load() {
+            CAAT.ModuleManager.
+                    baseURL("../../../src/").
+                    setModulePath("CAAT.Core",              "Core").
+                    setModulePath("CAAT.Math",              "Math").
+                    setModulePath("CAAT.Behavior",          "Behavior").
+                    setModulePath("CAAT.Foundation",        "Foundation").
+                    setModulePath("CAAT.Event",             "Event").
+                    setModulePath("CAAT.PathUtil",          "PathUtil").
+                    setModulePath("CAAT.Module",            "Modules").
+                    setModulePath("CAAT.Module.Preloader",  "Modules/Image/Preloader").
+                    setModulePath("CAAT.WebGL",             "WebGL").
+
+                // get modules, and solve their dependencies.
+                    bring(
+                    [
+                        "CAAT.Foundation.Director",
+                        "CAAT.Foundation.Actor",
+                        "CAAT.Foundation.ActorContainer",
+                        "CAAT.Foundation.SpriteImage",
+                        "CAAT.Foundation.UI.Layout.BorderLayout",
+                        "CAAT.Foundation.UI.Layout.BoxLayout",
+                        "CAAT.Foundation.UI.Layout.GridLayout",
+                        "CAAT.Foundation.UI.Label",
+                        "CAAT.Module.ColorUtil.Color"
+                    ]).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                    onReady( paint );
+        }
+
+        var textId= 0;
+
+        /**
+         * Creates a button
+         */
+        function createButton( w,h,text,font,color ) {
+
+            var canvas= document.createElement("canvas");
+            canvas.width= w*2;
+            canvas.height= h;
+
+            var ctx= canvas.getContext("2d");
+            ctx.textAlign= "center";
+            ctx.textBaseline= "middle";
+            ctx.font= font;
+
+            ctx.fillStyle=color;
+            ctx.fillText( text, w/2, h/2 );
+
+            ctx.globalCompositeOperation="lighter";
+            ctx.fillText( text, w + w/2, h/2 );
+
+            ctx.strokeStyle="#000";
+            ctx.strokeRect(0,0,w,h);
+            ctx.strokeRect(w,0,w,h);
+
+            return new CAAT.Foundation.SpriteImage().initialize( canvas, 1, 2 );
+        }
+
+        var textPanelIndex=0;
+        function createTextPanel( buttonsInBottom, pw, ph, __layout ) {
+            var s= 5+ (Math.random()*15)|0;
+            var r= Math.random();
+            var al;
+            if ( r<.25 ) {
+                al="left";
+            } else if ( r<.5 ) {
+                al="center";
+            } else if (r<.75 ) {
+                al="right";
+            } else {
+                al= "justify"
+            }
+            var label= new CAAT.Foundation.UI.Label().
+                    setStyle("default", {
+                        fontSize : s,
+                        alignment: al
+                    }).
+                    setStyle("link", {
+                        fontSize : s+5,
+                        fill:      "#00f"
+                    }).
+                    setText("Bacon ipsum dolor sit amet salami pork belly tail <style=link><a=#"+(textPanelIndex++)+">tongue</a></style> pancetta, pork loin tri-tip drumstick bresaola shankle. Bacon ham hock pork belly, sausage tri-tip tongue strip steak fatback. Tail t-bone salami bacon. Bresaola turkey ribeye hamburger meatball t-bone. Turkey pancetta ground round, pig sirloin tenderloin corned beef meatloaf venison sausage jerky pork loin shank bacon tail. Pancetta beef ham hock, jowl pork chop pork belly bacon venison rump shoulder shankle cow pastrami sausage. Beef ribs drumstick meatball, pancetta biltong swine bresaola ribeye jerky spare ribs ham chuck corned beef pork chop.").
+                    cacheAsBitmap().
+                    setClickCallback( function(id) {
+                        alert("Clicked: "+id);
+                    }).
+                    setClip(true);
+
+            return label;
+        }
+
+        function createPanel( buttonsInBottom, pw, ph, __layout ) {
+            var fn =  function( button ) {
+                content.addChild(
+                        new CAAT.Foundation.Actor().
+                                setFillStyle( CAAT.Module.ColorUtil.Color.random() ).
+                                setSize(
+                                    !buttonsInBottom ? 5+(15*Math.random()) : 15+(content.width-20)*Math.random(),
+                                    !buttonsInBottom ? 5+(content.height-20)*Math.random() : 5+(15*Math.random()) )
+                );
+            };
+
+            var fn3 =  function( button ) {
+                if ( Math.random()<.5 ) {
+                    content.addChild( createTextPanel( Math.random()<.5, 100, 100 ) );
+                } else {
+                    content.addChild( createPanel( Math.random()<.5, 100, 100 ) );
+                }
+            };
+
+            function fn2( button ) {
+                content.removeLastChild();
+            }
+
+            var buttons= new CAAT.Foundation.ActorContainer();
+
+            var layout= new CAAT.Foundation.UI.Layout.BoxLayout().
+                    setAxis( buttonsInBottom ? CAAT.Foundation.UI.Layout.LayoutManager.AXIS.X : CAAT.Foundation.UI.Layout.LayoutManager.AXIS.Y).
+                    setHGap( 4 ).
+                    setVGap( 4 ).
+                    setAllPadding( 5 ).
+                    setVerticalAlignment( buttonsInBottom ? CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.BOTTOM : CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER ).
+                    setHorizontalAlignment( CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER );
+
+            buttons.setLayout( layout );
+
+            var buttonPlus=  new CAAT.Foundation.Actor().setAsButton( createButton(30,30,"+","50px Arial", "#000"), 0,0,0,0, __layout ? fn3 : fn );
+            var buttonMinus= new CAAT.Foundation.Actor().setAsButton( createButton(30,30,"-","50px Arial", "#000"), 0,0,0,0, fn2 );
+
+            buttons.addChild( buttonPlus );
+            buttons.addChild( buttonMinus );
+
+            if ( buttonsInBottom ) {
+                buttons.setPreferredSize( pw, 40 );
+            } else {
+                buttons.setPreferredSize( 40, ph );
+            }
+
+            var panel= new CAAT.Foundation.ActorContainer().
+                    setPreferredSize( pw, ph).
+                    setLayout( new CAAT.Foundation.UI.Layout.BorderLayout() );
+
+            panel.addChild( buttons, buttonsInBottom ? "bottom" : "right" );
+
+            var layout2;
+            var ha, va;
+
+            var d= Math.random();
+            ha= ( d<.33 ) ? CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.LEFT :
+                ( d<.66 ) ? CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER :
+                            CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.RIGHT;
+            d= Math.random();
+            va= ( d<.33 ) ? CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.TOP :
+                ( d<.66 ) ? CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER :
+                            CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.BOTTOM;
+
+            if ( !buttonsInBottom ) {
+                layout2= new CAAT.Foundation.UI.Layout.BoxLayout().
+                            setAxis( CAAT.Foundation.UI.Layout.LayoutManager.AXIS.X ).
+                            setHGap( 4 ).
+                            setVGap( 4 ).
+                            setAllPadding( 5 ).
+                            setVerticalAlignment( va ).
+                            setHorizontalAlignment( ha )
+            } else {
+                layout2= new CAAT.Foundation.UI.Layout.BoxLayout().
+                            setAxis( CAAT.Foundation.UI.Layout.LayoutManager.AXIS.Y ).
+                            setHGap( 4 ).
+                            setVGap( 4 ).
+                            setAllPadding( 5 ).
+                            setVerticalAlignment( va ).
+                            setHorizontalAlignment( ha )
+
+            }
+            var content= new CAAT.Foundation.ActorContainer().
+                    setPreferredSize( pw, ph - 40).
+                    setLayout( typeof __layout!=="undefined" ? __layout : layout2).
+                    setClip( true).
+                    setFillStyle( CAAT.Module.ColorUtil.Color.random() );
+            panel.addChild( content, "center" );
+
+            return panel;
+        }
+
+        function paint() {
+
+            var director= new CAAT.Foundation.Director().initialize( window.innerWidth, window.innerHeight );
+
+            var scene = director.createScene().setLayout( new CAAT.Foundation.UI.Layout.BorderLayout() );
+            var cont= new CAAT.Foundation.ActorContainer().
+                    setLayout( new CAAT.Foundation.UI.Layout.BorderLayout()).
+                    setBounds( 0,0,director.width,director.height);
+            scene.addChild(cont, "center" );
+
+            cont.addChild( createPanel( true, 200, 200 ), "left");
+
+            var cont2= new CAAT.Foundation.ActorContainer().setLayout( new CAAT.Foundation.UI.Layout.BorderLayout() );
+            cont.addChild( cont2, "center");
+            cont2.addChild( createPanel( false, 200, 100 ), "top");
+
+            cont2.addChild( createPanel( true, 500, 200, new CAAT.Foundation.UI.Layout.GridLayout(0,5) ), "center" );
+
+            director.enableResizeEvents( CAAT.Foundation.Director.prototype.RESIZE_BOTH );
+
+            director.loop(60);
+        }
+
+
+    })();
+
+</script>
+</html>

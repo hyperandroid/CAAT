@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 5 - Scene</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+            <h1>CAAT.Scene</h1>
+
+            <p>The CAAT.Scene object is the main container of animation Actors in a Scene.
+                It is an advanced ActorContainer which has two main responsibilities:
+                <ol>
+                    <li>Knows how to elegantly get out of screen
+                    <li>Maintain a virtual timeline for all its contained Actors fed by a Director.
+                </ol>
+
+            <p>
+                An Scene can not contain neither other Scenes, nor any Director. The size of
+                the scene will by default be the same of the Director, and hence, equals to
+                the Canvas size, that is, the values passed to director's initialize method.
+                The canvas size may vary with the window resize listener thought.</p>
+
+            <p>
+                There are two ways of creating an scene:
+                <ol>
+                    <li>
+                        Manually, by calling <span class="apicode">var scene= new CAAT.Scene()</span>
+                        and then adding it to the director by calling
+                        <span class="apicode">director.addScene(scene);</span>.
+                    </li>
+                    <li>
+                        The recommended way which is call <span class="apicode">
+                        director.createScene()</span> which also adds the scene to the director
+                        instance.
+                    </li>
+                </ol>
+
+            <p>
+                The only method the devloper should call directly on Scene instances is
+                <span class="apicode">addChild(actor)</span> which adds a new animation
+                Actor to the Scene. It can be any kind of ActorContainer or Actor.
+            </p>
+
+            <p>There's no limitation regarding the number of elements in an Scene, but for
+                better performance, the developer should create groups of actors in containers,
+                as if they where in layers. The performance hit is
+                strictly on event dispatching to Scene Actors, since the event bubbling will
+                try to check for every Actor in a Container (or Scene) if it is the target
+                of a concrete event.
+            </p>
+
+            <p>
+                The Actors on a Scene will keep z-order equally to the same order as they were added to the
+                Scene/ActorContainer, so the last added Actor, will be behind all the other Actors.
+            </p>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

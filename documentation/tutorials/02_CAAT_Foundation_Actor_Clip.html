@@ -1,0 +1,368 @@
+
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 2- Actor clip</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+
+
+        <div class="chapter">
+        <h1>CAAT.Foundation.Actor</h1>
+
+        <h2>Clip</h2>
+
+        <div>
+            <p>
+                Clipping is by default disabled on CAAT. Enabling it results in slower performance, so it
+                must be treated carefully. It can be enabled globally by setting
+                <span class="apicode">CAAT.Foundation.Actor.prototype.clip= true</span>.
+
+            <p>
+                Optionally, you can enable/disable clipping for individual actors by
+                calling the method <span class="apicode">setClip(bool, path)</span>.
+            </p>
+            <p>
+                Parameters for this method are:
+                <ul>
+                    <li>a boolean indicating whether clip is enabled.</li>
+                    <li>path. This parameter is optional. If not supplied, a rectangle equal
+                    to the actor size will be used as clipping area. If set, this parameter
+                    must be a CAAT.Path instance. This
+                    <span class="apicode">CAAT.PathUtil.Path</span> can also have
+                    <span class="apicode">CAAT.Foundation.Behavior</span>
+                    objects applied. It will only honor <span class="apicode">CAAT.Behavior.ScaleBehavior</span>,
+                    <span class="apicode">CAAT.Behavior.RotateBehavior</span> and
+                    <span class="apicode">CAAT.Behavior.PathBehavior</span> object instances, so that the mask
+                    can be rotating, scaling and translating all together.</li>
+                </ul>
+            </p>
+            <p>
+                The following sample code could be used to define a CAAT.PathUtil.Path instance as
+                clip area as well as adding some behaviors to the clipping mask.
+            </p>
+            <div class="code">
+                <pre class="brush: js; auto-links: false; toolbar: false;">
+
+            // define a path
+            var path =
+                        new CAAT.Path().
+                                beginPath(100, director.height / 2).
+                                addCubicTo(
+                                100, 10,
+                                director.width - 100, 10,
+                                director.width - 100, director.height / 2).
+                                addCubicTo(
+                                director.width - 100, director.height - 10,
+                                100, director.height - 10,
+                                100, director.height / 2).
+                                closePath();
+
+            // define another path instance to make the traverse traverse across.
+            var traversePath= new CAAT.Path()...;
+
+            // add to the mask a behavior to traverse the path,
+            path.addBehavior(
+                new CAAT.PathBehavior().
+                    setValues( traversePath ).
+                    setFrameTime( 0,15000 ).
+                    setCycle( true ).
+                    setTranslation( path2.width/2, path2.height/2 )
+            // and a rotation, so that it rotates while traversing.
+            ).addBehavior(
+                new CAAT.RotateBehavior().
+                    setValues( 0,Math.PI*2 ).
+                    setFrameTime( 0,5000 ).
+                    setCycle( true )
+            // add as much as needed.
+            ).addBehavior(
+                ...
+            );
+
+            // enable clip on a CAAT.Actor instance (container, button, whichever) with
+            // the given path shape as clip area.
+            actor.setClip( true, path );
+                </pre>
+            </div>
+
+            <p>
+                This method is a powerful feature which allow to set arbitrary paths as clippling
+                areas. See <a href="../demos/demo16/mask.html">this example</a> for a visual demo.
+            </p>
+            <p>
+                <span class="important">Clip will work only on canvas and DOM/CSS renderers</span>.
+                GL won't have any clip applied. <span class="important">Arbitrary clip areas can
+                only be used on Canvas renderer</span>.
+            </p>
+        </div>
+    </div>
+
+    <div>
+        <h2>Example</h2>
+
+        <p>
+            This example allows dragging of shown actors.
+            Use shift+alt+control to modify default drag behavior.
+            One of the Scene Actors will have clipping enabled. You'll see that in one instance you're
+            able to drag the inner green Actor outside the Magenta one area.
+            But after dropping it outside
+            its parent area, you won't be able to gain mouse control over the inner Actor again.
+            This is because of the way CAAT routes events to its Actors. <span class="important">In order to send an
+            event to an Actor, the Actor must be contained into its parent area. Period.</span>
+        </p>
+        <p>
+            It also defines an elliptical clip area on the scene.
+        </p>
+
+        <div>
+            <canvas id="_c5"></canvas>
+        </div>
+
+        <div class="code">
+            <pre class="brush: js; auto-links: false; toolbar: false;">
+
+                var _director_5= new CAAT.Director().initialize(
+                        600,
+                        200,
+                        document.getElementById('_c5') );
+
+                var _scene_5= _director_5.createScene().setFillStyle('#c0c0c0');
+
+                for(var i=0; i<2; i++ ) {
+
+                    // rectangle shaped actors of 80x80 pixels.
+                    var s = 80;
+
+                    // containers can contain other actors or containers.
+                    var _c5_container = new CAAT.ActorContainer().
+                            setBounds(i*400+10, 20, s, s).
+                            setRotation( Math.PI*2*Math.random() ).
+                            setFillStyle('#ff3fff').
+                            enableDrag().
+                            setClip( i==0 );
+
+                    // set container paint routine to draw an arrow
+                    _c5_container.paint= function(director, time) {
+
+                        var crx= director.ctx;
+
+                        // fill actor
+                        crx.fillStyle= this.fillStyle;
+                        crx.fillRect(0,0,this.width,this.height );
+
+                        // outline it.
+                        crx.strokeStyle= 'black';
+                        crx.strokeRect(0,0,this.width,this.height );
+
+                        // draw a white arrow. just to point where position 0,0 is.
+                        crx.strokeStyle='white';
+                        crx.beginPath();
+                        crx.moveTo(5,10);
+                        crx.lineTo(20,10);
+                        crx.lineTo(15,5);
+
+                        crx.moveTo(20,10);
+                        crx.lineTo(15,15);
+
+                        crx.lineWidth=2;
+                        crx.lineJoin='round';
+                        crx.lineCap='round';
+
+                        crx.stroke();
+                    };
+
+                    // add actor to scene.
+                    _scene_5.addChild(_c5_container);
+
+                    // create a container.
+                    var _c5_container_child= new CAAT.ActorContainer().
+                            setBounds(s/2,s/2,s/4,s/4).
+                            setRotation( Math.PI*2*Math.random() ).
+                            setFillStyle('#00ff00').
+                            enableDrag();
+
+                    // set a custom paint function for children inside containers.
+                    _c5_container_child.paint= function(director,time) {
+                        // call default container paint method.
+                        CAAT.ActorContainer.superclass.paint.call(this,director,time);
+                        var ctx= director.ctx;
+
+                        // fill a white circle of 10x10 pixels at position 2,2
+                        // just to show where 0,0 is positioned on screen.
+                        ctx.fillStyle='white';
+                        ctx.beginPath();
+                        ctx.arc(7,7,5,0,2*Math.PI,false);
+                        ctx.fill();
+                    }
+
+                    // add this container as a child of the previous created container.
+                    _c5_container.addChild(_c5_container_child);
+
+                    );
+
+                    // set an elliptical clip area
+                    _scene_5.setClip(
+                        true,
+                        new CAAT.Path().
+                            beginPath(10,_director_5.height/2).
+                            addCubicTo(
+                                10,10,
+                                _director_5.width-10,10,
+                                _director_5.width-10,_director_5.height/2 ).
+                            addCubicTo(
+                                _director_5.width-10,_director_5.height-10,
+                                10, _director_5.height-10,
+                                10, _director_5.height/2 ).
+                            closePath()
+                    );
+
+                }
+
+                CAAT.loop(20);
+
+            </pre>
+        </div>
+        <script>
+            (function() {
+
+                var _director_5 = new CAAT.Director().initialize(
+                        600,
+                        200,
+                        document.getElementById('_c5'));
+
+                var _scene_5 = _director_5.createScene().setFillStyle('#c0c0c0');
+
+                for (var i = 0; i < 2; i++) {
+
+                    // rectangle shaped actors of 80x80 pixels.
+                    var s = 80;
+
+                    // containers can contain other actors or containers.
+                    var _c5_container = new CAAT.ActorContainer().
+                            setBounds(i * 400 + 10, 20, s, s).
+                            setRotation(Math.PI * 2 * Math.random()).
+                            setFillStyle('#ff3fff').
+                            enableDrag().
+                            setClip(i == 0);
+
+                    // set container paint routine to draw an arrow
+                    _c5_container.paint = function(director, time) {
+
+                        var crx = director.ctx;
+
+                        // fill actor
+                        crx.fillStyle = this.fillStyle;
+                        crx.fillRect(0, 0, this.width, this.height);
+
+                        // outline it.
+                        crx.strokeStyle = 'black';
+                        crx.strokeRect(0, 0, this.width, this.height);
+
+                        // draw a white arrow. just to point where position 0,0 is.
+                        crx.strokeStyle = 'white';
+                        crx.beginPath();
+                        crx.moveTo(5, 10);
+                        crx.lineTo(20, 10);
+                        crx.lineTo(15, 5);
+
+                        crx.moveTo(20, 10);
+                        crx.lineTo(15, 15);
+
+                        crx.lineWidth = 2;
+                        crx.lineJoin = 'round';
+                        crx.lineCap = 'round';
+
+                        crx.stroke();
+                    };
+
+                    // add actor to scene.
+                    _scene_5.addChild(_c5_container);
+
+                    // create a container.
+                    var _c5_container_child = new CAAT.ActorContainer().
+                            setBounds(s / 2, s / 2, s / 4, s / 4).
+                            setRotation(Math.PI * 2 * Math.random()).
+                            setFillStyle('#00ff00').
+                            enableDrag();
+
+                    // set a custom paint function for children inside containers.
+                    _c5_container_child.paint = function(director, time) {
+                        // call default container paint method.
+                        CAAT.ActorContainer.superclass.paint.call(this, director, time);
+                        var ctx = director.ctx;
+
+                        // fill a white circle of 10x10 pixels at position 2,2
+                        // just to show where 0,0 is positioned on screen.
+                        ctx.fillStyle = 'white';
+                        ctx.beginPath();
+                        ctx.arc(7, 7, 5, 0, 2 * Math.PI, false);
+                        ctx.fill();
+                    }
+
+                    // add this container as a child of the previous created container.
+                    _c5_container.addChild(_c5_container_child);
+                }
+
+                _scene_5.setClip(
+                    true,
+                    new CAAT.Path().
+                        beginPath(10,_director_5.height/2).
+                        addCubicTo(
+                            10,10,
+                            _director_5.width-10,10,
+                            _director_5.width-10,_director_5.height/2 ).
+                        addCubicTo(
+                            _director_5.width-10,_director_5.height-10,
+                            10, _director_5.height-10,
+                            10, _director_5.height/2 ).
+                        closePath()
+                );
+
+
+                CAAT.loop(20);
+            })();
+
+        </script>
+    </div>
+
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,237 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 6 - Behaviors, out-of-the-box behaviors</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>CAAT.Behavior</h1>
+            <h2>Out-of-the-box behaviors</h2>
+
+            <div>
+                Every actor is defined with a method chain call like the following:
+                <div class="code">
+                    <pre class="brush: js; auto-links: false; toolbar: false;">
+                        var behavior= new CAAT.&lt;Type&gt;Behavior().
+                            setValues( values parameters ).
+                            setFrameTime( start_time, duration ).
+                            setCycle( boolean, by default no ).
+                            addListener( {
+                                behaviorApplied : function(...),
+                                behaviorExpired : function(...)
+                            } );
+                    </pre>
+                </div>
+            </div>
+
+            <div>
+                <h3>CAAT.AlphaBehavior</h3>
+                <p>
+                    This behavior must have two values, one for the start alpha and another
+                    for the last alpha value.
+                    This alpha value affects to a container and its children honoring the
+                    isGlobalAlpha property.
+                    The method <span class="apicode">setValues</span> accepts two values
+                    from zero to 1.
+                </p>
+            </div>
+
+            <div>
+                <h3>CAAT.RotateBehavior</h3>
+                <p>
+                    The method <span class="apicode">setValues</span> accepts four values:
+                    the two first values define the starting and ending rotation angle values
+                    in <span class="important">radians</span>.
+                    The other two values are the rotation anchor point defined in relative
+                    percent to actor's width and height. The two values at 50 means rotation
+                    around actor's center. These two values must be between zero and a hundred.
+                </p>
+                <p>
+                    <span class="important">If no anchor values are specified, actor's center
+                    will be set by default</span>.
+                </p>
+            </div>
+
+            <div>
+                <h3>CAAT.ScaleBehavior</h3>
+                <p>
+                    The method <span class="apicode">setValues</span> accepts six values:
+                    the two first values define the starting and ending x axis scale values.
+                    The two next values define the starting and ending y axis scale values.
+                    The last two define an anchor point for scale just like CAAT.RotateBehavior
+                    does.
+                    <span class="important">Both anchors can be different so that you can
+                    set rotation around the center and scale from bottom right corner</span>
+                </p>
+                <p>
+                    <span class="important">If no anchor values are specified, actor's center
+                    will be set by default</span>.
+                </p>
+            </div>
+
+            <div>
+                <h3>CAAT.PathBehavior</h3>
+                <p>
+                    The method <span class="apicode">setValues</span> accepts one single value
+                    which must be a <span class="apicode">CAAT.Path</span> object instance.
+                    The actor origin (0,0) position and not its center will be positioned on
+                    the path.
+                </p>
+                <p>
+                    This behavior has two exclusive methods:
+                </p>
+                <p>
+                    The function <span class="apicode">setAutorotate(boolean)</span> if set,
+                    actors traversing a path will be rotated accordingly so that it heads
+                    to the next path point.
+                </p>
+                <p>
+                    <strike>The function <span class="apicode">setTranslation(x,y)</span> define an
+                    offset displacement to set what actor position you want to be on the path
+                    instead its origin.</strike>. <b>deprecated</b> see Actor.setPositionAnchor(anchorx,anchory).
+                </p>
+                <p>
+                    The following example show a rectangle centered and traversing a path:
+                </p>
+
+<div><canvas id="_c6"></canvas></div>
+<script>
+    (function() {
+
+
+            var director = new CAAT.Foundation.Director().initialize(250,250,'_c6');
+            var scene=  director.createScene();
+
+            var shape= new CAAT.Foundation.UI.StarActor().
+                    initialize( 8, 30, 10 ).
+                    setLocation( 50,50 ).
+                    setSize(50,50).
+                    setFillStyle('#00f').
+                    setStrokeStyle('#0f0').
+                    setOutlined(true).
+                    setAlpha(.75).
+                    setPositionAnchor(.5,.5);
+
+            // add two rectangle shapes to the scene.
+            scene.addChild(shape);
+
+            // create a circular path.
+            var path= new CAAT.PathUtil.Path().
+                    beginPath(25,125).
+                    addCubicTo( 25,25,   225,25,   225,125 ).
+                    addCubicTo( 225,225,  25,225,  25,125 ).
+                    endPath();
+
+            // add an actor to show the path.
+            var path_actor= new CAAT.Foundation.UI.PathActor().
+                    setPath(path).
+                    setBounds(0,0,director.width,director.height);
+            scene.addChild( path_actor );
+
+            // setup up a path traverser for the path.
+            var path_behavior= new CAAT.Behavior.PathBehavior().
+                    setPath( path ).
+                // take 5 seconds to traverse the path
+                    setFrameTime(0,5000).
+                // do it continuously, not just one time
+                    setCycle(true).
+                // head the actor across the path to the next point.
+                    setAutoRotate( true );
+
+            shape.addBehavior( path_behavior );
+
+            CAAT.loop(30);
+    })();
+</script>
+
+
+<div class="code">
+    <pre class="brush: js; auto-links: false; toolbar: false;">
+            var director = new CAAT.Director().initialize(
+                    250,250,document.getElementById('_c6'));
+            var scene=  director.createScene();
+
+            var shape= new CAAT.StarActor().
+                    initialize( 8, 30, 10 ).
+                    setLocation( 50,50 ).
+                    setSize(50,50).
+                    setFillStyle('#00f').
+                    setStrokeStyle('#0f0').
+                    setOutlined(true).
+                    setAlpha(.75);
+
+            // add two rectangle shapes to the scene.
+            scene.addChild(shape);
+
+            // create a circular path.
+            var path= new CAAT.Path().
+                    beginPath(25,125).
+                    addCubicTo( 25,25,   225,25,   225,125 ).
+                    addCubicTo( 225,225,  25,225,  25,125 ).
+                    endPath();
+
+            // add an actor to show the path.
+            var path_actor= new CAAT.PathActor().
+                    setPath(path).
+                    setBounds(0,0,director.width,director.height);
+            scene.addChild( path_actor );
+
+            // setup up a path traverser for the path.
+            var path_behavior= new CAAT.PathBehavior().
+                    setPath( path ).
+                // take 5 seconds to traverse the path
+                    setFrameTime(0,5000).
+                // do it continuously, not just one time
+                    setCycle(true).
+                // head the actor across the path to the next point.
+                    setAutoRotate( true ).
+                // set path traverse by the center of the rectangle shape.
+                    setTranslation(
+                        shape.width/2,
+                        shape.height/2);
+
+            shape.addBehavior( path_behavior );
+
+            CAAT.loop(30);
+    </pre>
+</div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

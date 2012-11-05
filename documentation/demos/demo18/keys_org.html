@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+
+    <title>CAAT example: Keyboard management</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+    <div id="page">
+        <div id="header">
+            <div style="text-align: center;">
+
+            </div>
+        </div>
+
+        <div id="content">
+            <div id="menu">
+
+            </div>
+            <div id="experiment">
+                <div style="text-align:center">
+                    <h1>Keyboard management</h1>
+                </div>
+                <div id="experiment-holder">
+                    <canvas id="experiment-canvas"></canvas>
+                </div>
+                <div id="experiment-description">
+                    <div>
+                        <p>Controls:</p>
+                        <ul>
+                            <li>Use arrow keys to move elements across the screen.</li>
+                            <li>Click on actors to select them.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p>
+                            This demo features the following elements:
+                        </p>
+                        <ul>
+                            <li>Create events per frame. It is achieved by creating a 'forever' timer and setting a callback on timer tick.</li>
+                            <li>Register a CAAT keyListener function.</li>
+                            <li>Correctly interpret key events.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+
+        </div> <!-- content -->
+    </div> <!-- page -->
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    (function() {
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener('load',load,false);
+
+        function load() {
+            CAAT.ModuleManager.
+                baseURL( "../../../src/").
+                setModulePath("CAAT.Core",              "Core").
+                setModulePath("CAAT.Math",              "Math").
+                setModulePath("CAAT.Behavior",          "Behavior").
+                setModulePath("CAAT.Foundation",        "Foundation").
+                setModulePath("CAAT.Event",             "Event").
+                setModulePath("CAAT.PathUtil",          "PathUtil").
+                setModulePath("CAAT.Module",            "Modules").
+                setModulePath("CAAT.WebGL",             "WebGL").
+
+                // get modules, and solve their dependencies.
+                bring(
+                    [
+                        "CAAT.PathUtil.Path",
+                        "CAAT.Foundation.Director",
+                        "CAAT.Foundation.ActorContainer",
+                        "CAAT.Foundation.Actor",
+                        "CAAT.Foundation.UI.ShapeActor",
+                        "CAAT.Foundation.UI.StarActor",
+
+                        "CAAT.Behavior.RotateBehavior",
+                        "CAAT.Behavior.ScaleBehavior"
+                    ]
+                ).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( keys );
+        }
+
+        function keys() {
+
+            var director=           new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas');
+            var size=               80;
+            var prevTime=           -1;
+            var pixelsPerSecond=    200;
+            var scene=              director.createScene();
+            var selected=           null;
+            var keys=               [0,0,0,0];
+
+            /**
+             * function to select on-screen actors.
+             * @param e
+             */
+            var mouseClick= function( e ) {
+                if ( selected ) {
+                    selected.setAlpha(1);
+                    selected.emptyBehaviorList();
+                }
+                this.setAlpha(.5);
+                this.emptyBehaviorList();
+                this.addBehavior(
+                    new CAAT.Behavior.RotateBehavior().
+                            setValues( 0, 2*Math.PI ).
+                            setFrameTime( 0, 5000 ).
+                            setCycle( true )
+                ).addBehavior(
+                    new CAAT.Behavior.ScaleBehavior().
+                            setValues( .8, 1.5, .8, 1.5 ).
+                            setFrameTime( 0, 3500 ).
+                            setPingPong().
+                            setCycle( true )
+                );
+                this.parent.setZOrder(this,Number.MAX_VALUE);
+                selected= this;
+            };
+
+            /**
+             * This timer makes the process to increment actor position based on elapsed time.
+             * it will move pixelsPerSecond pixels on any direction.
+             */
+            scene.createTimer( scene.time, Number.MAX_VALUE, null,
+                function(time, ttime, timerTask) {
+                    if ( !selected ) {
+                        return;
+                    }
+
+                    var ottime= ttime;
+                    if ( -1!=prevTime ) {
+                        ttime-= prevTime;
+
+                        selected.x += (ttime/1000)*pixelsPerSecond * (keys[1]-keys[0]);
+                        selected.y += (ttime/1000)*pixelsPerSecond * (keys[3]-keys[2]);
+
+                        if ( selected.x > director.width-20 ) {
+                            selected.x= director.width-20;
+                        } else if ( selected.x<-20 ) {
+                            selected.x= -20;
+                        }
+                        if ( selected.y > director.height-20 ) {
+                            selected.y= director.height-20;
+                        } else if ( selected.y<-20 ) {
+                            selected.y= -20;
+                        }
+                    }
+
+                    prevTime= ottime;
+                },
+                null
+            );
+
+
+            CAAT.registerKeyListener( function kl( keyEvent ) {
+
+                if ( !selected ) {
+                    return;
+                }
+
+                if ( keyEvent.getKeyCode()===CAAT.Keys.UP ) {
+                    keyEvent.preventDefault();
+                    keys[2]= ( keyEvent.getAction()==='up' ) ? 0 : 1;
+                }
+                if ( keyEvent.getKeyCode()===CAAT.Keys.DOWN ) {
+                    keyEvent.preventDefault();
+                    keys[3]= ( keyEvent.getAction()==='up' ) ? 0 : 1;
+                }
+                if ( keyEvent.getKeyCode()===CAAT.Keys.LEFT ) {
+                    keyEvent.preventDefault();
+                    keys[0]= ( keyEvent.getAction()==='up' ) ? 0 : 1;
+                }
+                if ( keyEvent.getKeyCode()===CAAT.Keys.RIGHT ) {
+                    keyEvent.preventDefault();
+                    keys[1]= ( keyEvent.getAction()==='up' ) ? 0 : 1;
+                }
+
+            });
+
+            var s0 = new CAAT.Foundation.Actor().
+                    setFillStyle('#f00').
+                    setBounds(
+                        40 + Math.random() * (director.width - 80),
+                        40 + Math.random() * (director.height - 80), size, size);
+            scene.addChild(s0);
+            s0.mouseClick = mouseClick;
+
+            var s1 = new CAAT.Foundation.UI.ShapeActor().
+                    setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_CIRCLE).
+                    setFillStyle('#0f0').
+                    setBounds(
+                        40 + Math.random() * (director.width - 80),
+                        40 + Math.random() * (director.height - 80), size, size);
+            scene.addChild(s1);
+            s1.mouseClick = mouseClick;
+
+            var s2 = new CAAT.Foundation.UI.StarActor().
+                    setBounds(
+                        40 + Math.random() * (director.width - 80),
+                        40 + Math.random() * (director.height - 80), size, size ).
+                    setStrokeStyle("#00f").
+                    setFilled(false).
+                    setOutlined(true).
+                    initialize(12, size, size / 2);
+            scene.addChild(s2);
+            s2.mouseClick = mouseClick;
+
+            s0.mouseClick();
+
+            CAAT.loop(60);
+        }
+
+    })();
+</script>
+</html>

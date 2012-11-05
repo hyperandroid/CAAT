@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 6 - Behavior life cycle</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>Behavior</h1>
+
+            <h2>Life cycle</h2>
+
+            <div>
+                <p>
+                    A Behavior has a very simple lifecycle. If the Behavior is not cycling,
+                    the developer has the option of being notified on Behavior
+                    expiration by adding a listener to it.
+                    This is a simple triggering mechanism by which you will get informed of
+                    which Behavior has expired, and at exactly what time.
+                    The behavior listener can also be notified every time the behavior has
+                    been applied.
+                    <span class="important">A behavior is guaranteed to apply the final
+                    value it is defined for.</span>
+
+                <p>
+                    A behavior listener is an object of the form:
+
+                <div class="code">
+                        <pre class="brush: js; auto-links: false; toolbar: false;">
+                            {
+                                behaviorExpired : function( behavior, time, actor);
+                                behaviorApplied : function( behavior, time, normalizedTime, actor, value);
+                            }
+                        </pre>
+                </div>
+                Note that any behavior <span class="important"> can have an arbitrary
+                    number of observers</span>.
+                </p>
+                <p>
+                    A behavior observer will be added by calling <span class="apicode">
+                    addListener( behavior_listener_object )</span>.
+                </p>
+
+                <p>
+                    The behavior listener object function <span class="apicode">behaviorExpired</span>
+                    parameters are:
+                <ol>
+                    <li>The CAAT.Behavior object that just expired.</li>
+                    <li>The CAAT.Scene object time the CAAT.Behavior just expired at.</li>
+                    <li>The CAAT.Actor the CAAT.Behavior was acting upon.</li>
+                </ol>
+                <p>
+                    and for the function <span class="apicode">behaviorApplied</span>
+                    parameters are:
+                <ol>
+                    <li>The CAAT.Behavior object that just expired.</li>
+                    <li>The CAAT.Scene object time the CAAT.Behavior just expired at.</li>
+                    <li>The behavior related time it was applied at.</li>
+                    <li>The CAAT.Actor the CAAT.Behavior was acting upon.</li>
+                    <li>The behaviors value that has been applied.</li>
+                </ol>
+                </p>
+
+                <p>
+                    In this example, two behaviors are set for an actor. When on ebehavior expires, the
+                    other one is started and vice versa:</p>
+
+                <div>
+                    <canvas id="_c4"></canvas>
+                </div>
+                <script>
+                    var director_4 = new CAAT.Foundation.Director().initialize(160, 160, "_c4");
+                    var scene_4 = director_4.createScene();
+
+                    var shape = new CAAT.Foundation.UI.ShapeActor().
+                            setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_RECTANGLE).
+                            setLocation(50, 50).
+                            setSize(60, 60).
+                            setFillStyle('#f00').
+                            setStrokeStyle('#000');
+                    scene_4.addChild(shape);
+
+                    var scaleBehavior = new CAAT.Behavior.ScaleBehavior().
+                            setPingPong().
+                        // 50, 50 means to scale at 50% actor width and 50% actor height
+                        // its center.
+                            setValues(1, 2, 1, 2, .50, .50).
+                        // scale Behavior enabled by default. Start at time=2000ms, and
+                        // last for 3000ms.
+                            setFrameTime(2000, 3000);
+
+                    // unless otherwise stated, Behaviors are expired by default,
+                    // so this actor won't rotate until instrumented to do so.
+                    var rotateBehavior = new CAAT.Behavior.RotateBehavior().
+                        // 50, 50 means to scale at 50% actor width and 50% actor height
+                        // its center.
+                            setValues(0, 2 * Math.PI, .50, .50);
+
+                    shape.addBehavior(scaleBehavior);
+                    shape.addBehavior(rotateBehavior);
+
+                    // when scale Behavior finishes, start rotation Behavior.
+                    scaleBehavior.addListener({
+                        behaviorExpired:function (behavior, time, actor) {
+                            rotateBehavior.setFrameTime(time, 3000);
+                        }});
+
+                    // when rotation Behavior finishes, start scale Behavior.
+                    rotateBehavior.addListener({
+                        behaviorExpired:function (behavior, time, actor) {
+                            scaleBehavior.setFrameTime(time, 3000);
+                        }});
+
+                    director_4.loop(30);
+                </script>
+            </div>
+
+            <div class="code">
+<pre class="brush: js; auto-links: false; toolbar: false;">
+var director_4 = new CAAT.Foundation.Director().initialize(160, 160, "_c4");
+var scene_4 = director_4.createScene();
+
+var shape = new CAAT.Foundation.UI.ShapeActor().
+        setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_RECTANGLE).
+        setLocation(50, 50).
+        setSize(60, 60).
+        setFillStyle('#f00').
+        setStrokeStyle('#000');
+scene_4.addChild(shape);
+
+var scaleBehavior = new CAAT.Behavior.ScaleBehavior().
+        setPingPong().
+    // 50, 50 means to scale at 50% actor width and 50% actor height
+    // its center.
+        setValues(1, 2, 1, 2, .50, .50).
+    // scale Behavior enabled by default. Start at time=2000ms, and
+    // last for 3000ms.
+        setFrameTime(2000, 3000);
+
+// unless otherwise stated, Behaviors are expired by default,
+// so this actor won't rotate until instrumented to do so.
+var rotateBehavior = new CAAT.Behavior.RotateBehavior().
+    // 50, 50 means to scale at 50% actor width and 50% actor height
+    // its center.
+        setValues(0, 2 * Math.PI, .50, .50);
+
+shape.addBehavior(scaleBehavior);
+shape.addBehavior(rotateBehavior);
+
+// when scale Behavior finishes, start rotation Behavior.
+scaleBehavior.addListener({
+    behaviorExpired : function(behavior, time, actor) {
+        rotateBehavior.setFrameTime(time, 3000);
+    }});
+
+// when rotation Behavior finishes, start scale Behavior.
+rotateBehavior.addListener({
+    behaviorExpired : function(behavior, time, actor) {
+        scaleBehavior.setFrameTime(time, 3000);
+    }});
+
+director_4.loop(30);
+</pre>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

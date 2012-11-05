@@ -1,0 +1,308 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+
+    <title>CAAT example: Hierarchical affine transforms</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+    <div id="page">
+        <div id="header">
+            <div style="text-align: center;">
+
+            </div>
+        </div>
+
+        <div id="content">
+            <div id="menu">
+
+            </div>
+            <div id="experiment">
+                <div style="text-align:center">
+                    <h1>Hierarchical affine transforms</h1>
+                </div>
+                <div id="experiment-holder">
+                    <canvas id="experiment-canvas"></canvas>
+                </div>
+                <div id="experiment-description">
+                    <div>
+                        <p>Controls:</p>
+                        <ul>
+                            <li>None.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p>
+                            This demo features the following elements:
+                        </p>
+                        <ul>
+                            <li>Properly define Behaviors with ANCHOR_CUSTOM as anchor point.</li>
+                            <li>Properly define child/parent relationship.</li>
+                            <li>Use of GenericBehavior to change Sun size.</li>
+                            <li>Use of out-of-the-box StarActor.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script src="../../../src/core/ModuleManager.js"></script>
+
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    (function() {
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener('load',load,false);
+
+         function load() {
+             CAAT.ModuleManager.
+                     baseURL("../../../src/").
+                     setModulePath("CAAT.Core",              "Core").
+                     setModulePath("CAAT.Math",              "Math").
+                     setModulePath("CAAT.Behavior",          "Behavior").
+                     setModulePath("CAAT.Foundation",        "Foundation").
+                     setModulePath("CAAT.Event",             "Event").
+                     setModulePath("CAAT.PathUtil",          "PathUtil").
+                     setModulePath("CAAT.Module",            "Modules").
+                     setModulePath("CAAT.Module.Preloader",  "Modules/Image/Preloader").
+                     setModulePath("CAAT.WebGL",             "WebGL").
+
+                 // get modules, and solve their dependencies.
+                     bring(
+                     [
+                         "CAAT.Foundation.Director",
+                         "CAAT.Foundation.Actor",
+                         "CAAT.Foundation.ActorContainer",
+                         "CAAT.Foundation.SpriteImage",
+                         "CAAT.Foundation.UI.TextActor",
+                         "CAAT.Foundation.UI.ShapeActor",
+                         "CAAT.Foundation.UI.StarActor",
+                         "CAAT.Behavior.RotateBehavior",
+                         "CAAT.Behavior.GenericBehavior",
+                         "CAAT.Behavior.Interpolator",
+                         "CAAT.Module.ColorUtil.Color"
+                     ]).
+
+                 // this function will be firer every time all dependencies have been solved.
+                 // if you call again bring, this function could be fired again.
+                     onReady( hierarchy );
+         }
+
+        function __createShape(w, h) {
+            return new CAAT.ShapeActor().setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_CIRCLE).setSize(w, h);
+        }
+
+        function __addPlanet(parent, rotationTime, pos, radius, color, startAngle) {
+            var planet = __createShape(radius, radius);
+
+            var x = pos * Math.cos(startAngle);
+            var y = pos * Math.sin(startAngle);
+
+            planet.setFillStyle(color).
+                    setLocation(x + parent.width / 2, y + parent.height / 2).
+                    addBehavior(
+                    new CAAT.Behavior.RotateBehavior().
+                            setFrameTime(0, rotationTime).
+                            setValues(0, 2 * Math.PI).
+                            setCycle(true).
+                            //setAnchor( planet, -x, -y )
+                    setAnchor( planet, -x, -y )
+                    );
+
+            parent.addChild(planet);
+
+            return planet;
+        }
+
+        function __createTentacle(root, angle, segments, armSegmentSizeW, armSegmentSizeH, armIndex, maxAngle) {
+
+            var i;
+            var segment = root;
+            var colors = CAAT.Module.ColorUtil.Color.makeRGBColorRamp(
+                    [
+                        0xff7f00,
+                        0xffff00
+                    ],
+                    segments,
+                    CAAT.Module.ColorUtil.Color.RampEnumeration.RAMP_RGB
+            );
+
+
+            for (i = 0; i< segments; i++) {
+
+                // calculate a color which lies somewhere between the rgb colors
+                // (255,255,0) yellow and (255,128,0) orange.
+
+                var color= colors[i];
+                // create a tentacle's segment
+                var newSegment = new CAAT.Foundation.ActorContainer().
+                        setSize(armSegmentSizeW, armSegmentSizeH).
+                        setFillStyle( color ).
+                        setLocation(  0, -armSegmentSizeH+1);
+
+                // and link it to the previos tentacle segment or root element
+                if (segment == root) {
+                    newSegment.setRotationAnchored(angle, .5, 1);
+                    newSegment.oldAngle = angle;
+                } else {
+                    newSegment.oldAngle = 0;
+                    // set for every tentacle's segment up an animation function which applies
+                    // some rotation. Every segment's rotation will be composed with the previous
+                    // segment's one.
+                    newSegment.animate = function(director, time) {
+                        this.setRotationAnchored(
+                                this.oldAngle +
+                                        maxAngle * Math.sin(new Date().getTime() * .0005 + armIndex * Math.PI / segments / 2
+                                        ),
+                                .5,
+                                1
+                        );
+                        return CAAT.Foundation.ActorContainer.prototype.animate.call(this, director, time);
+
+                    };
+                }
+
+                segment.addChild(newSegment);
+                segment = newSegment;
+            }
+        }
+
+        function hierarchy() {
+
+            var director= new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas');
+            var colorHelper= new CAAT.Module.ColorUtil.Color();
+            var i;
+            var scene = director.createScene();
+            var maxR= 500;
+            var minR= 75;
+            var sun =new CAAT.ShapeActor().
+                    setShape(CAAT.ShapeActor.prototype.SHAPE_CIRCLE).
+                    setBounds(director.width / 2, director.height / 2, 1, 1).
+                    setFillStyle('yellow').
+                    addBehavior(
+                        new CAAT.Behavior.RotateBehavior().
+                                setFrameTime(0, 30000).
+                                setValues(0, 2 * Math.PI).
+                                setCycle(true)
+                    ).
+                    addBehavior(
+                        new CAAT.Behavior.ScaleBehavior().
+                                setFrameTime(0, 30000).
+                                setValues(1,2.5, 1,2.5).
+                                setCycle(true).
+                                setPingPong()
+                    );
+            var arms = 16;
+            // with 10 segments each
+            var segments = 10;
+
+            var i;
+
+            for (i = 0; i < arms; i++) {
+                __createTentacle(sun, 2 * Math.PI / arms * i, segments, 4, 30, i, Math.PI / segments / 2);
+            }
+
+
+            var earth = __addPlanet(sun, 4000, 90, 15, 'blue', 0);
+            __addPlanet(earth, 4000, 15, 5, 'green', Math.PI / 3);
+            __addPlanet(earth, 5000, 22, 5, 'rgb(32,255,192)', 0);
+
+            var mercury = __addPlanet(sun, 6000, 40, 10, 'rgb(255,64,128)', Math.PI / 3);
+            var saturn = __addPlanet(sun, 15000, 200, 30, 'rgb(255,64,128)', 0);
+
+            var io = __addPlanet(saturn, 5000 + 5000 * Math.random(), 20, 8, 'rgb(32,255,192)', 0);
+            var europe = __addPlanet(saturn, 5000 + 5000 * Math.random(), 35, 5, 'rgb(255,32,192)', Math.PI * 2 / 3);
+            var moon = __addPlanet(saturn, 5000 + 5000 * Math.random(), 70, 10, 'rgb(32,192,255)', 2 * Math.PI * 2 / 3);
+
+            __addPlanet(moon, 9000 + 4000 * Math.random(), 20, 4, 'rgb(0,  0,255)', Math.random() * 2 * Math.PI);
+            __addPlanet(moon, 6000 + 4000 * Math.random(), 12, 4, 'rgb(0,255,255)', Math.random() * 2 * Math.PI);
+
+            scene.addChild(sun);
+
+            __scene8_text(director, scene);
+
+            CAAT.loop(60);
+        }
+
+        function __scene8_text(director, scene) {
+            var gradient = director.ctx.createLinearGradient(0, 0, 0, 50);
+            gradient.addColorStop(0, 'orange');
+            gradient.addColorStop(0.5, 'red');
+            gradient.addColorStop(1, '#3f00ff');
+
+            var cc = new CAAT.Foundation.ActorContainer().
+                    setBounds(550, 30, 150, 100).
+                    enableEvents(false).
+                    addBehavior(
+                    new CAAT.RotateBehavior().
+                            setCycle(true).
+                            setFrameTime(0, 4000).
+                            setValues(-Math.PI / 8, Math.PI / 8, .50, 0).
+                            setInterpolator(
+                                new CAAT.Interpolator().
+                                        createExponentialInOutInterpolator(3, true)
+                            )
+                    );
+            scene.addChild(cc);
+
+            var text = new CAAT.Foundation.UI.TextActor().
+                    setFont("50px sans-serif").
+                    setText("Hierarchycal").
+                    setTextFillStyle(gradient).
+                    setOutline(true).
+                    calcTextSize(director).
+                    setTextAlign("center").
+                    cacheAsBitmap();
+            cc.addChild(text.setLocation(cc.width / 2, 0));
+
+            var text2 = new CAAT.Foundation.UI.TextActor().
+                    setFont("50px sans-serif").
+                    setText("Rotations").
+                    calcTextSize(director).
+                    setTextFillStyle(gradient).
+                    setTextAlign("center").
+                    setOutline(true).
+                    cacheAsBitmap();
+            cc.addChild(text2.setLocation(cc.width / 2, 50));
+        }
+
+    })();
+</script>
+</html>

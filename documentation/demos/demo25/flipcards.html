@@ -1,0 +1,246 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+
+    <title>CAAT example: Flip cards effect.</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Flip Card example.</h1>
+            </div>
+            <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>
+                        Use the following controls:
+                    </p>
+                    <ul>
+                        <li>Click cards to start the flip effect.</li>
+                    </ul>
+                </div>
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>Manage compound behaviors.</li>
+                        <li>Set correct behavior lifecycle listener.</li>
+                        <li>Respond to mouse.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    (function() {
+        window.addEventListener('load', load, false);
+
+        function load() {
+            CAAT.ModuleManager.
+                baseURL("../../../src/").
+                setModulePath("CAAT.Core", "Core").
+                setModulePath("CAAT.Math", "Math").
+                setModulePath("CAAT.Behavior", "Behavior").
+                setModulePath("CAAT.Foundation", "Foundation").
+                setModulePath("CAAT.Event", "Event").
+                setModulePath("CAAT.PathUtil", "PathUtil").
+                setModulePath("CAAT.Module", "Modules").
+                setModulePath("CAAT.Module.Preloader", "Modules/Image/Preloader").
+                setModulePath("CAAT.WebGL", "WebGL").
+
+                // get modules, and solve their dependencies.
+                bring([
+                    "CAAT.Foundation.Director",
+                    "CAAT.Foundation.Actor",
+                    "CAAT.Foundation.ActorContainer",
+                    "CAAT.Math.Point",
+                    "CAAT.Behavior.ContainerBehavior",
+                    "CAAT.Behavior.ScaleBehavior",
+                    "CAAT.Behavior.Interpolator"
+                ]).
+
+                // this function will be fired every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( __start );
+        }
+
+        function ccard( w,h, number, bgcolor, color ) {
+            var c= document.createElement("canvas");
+            var r= 20;
+            c.width= w;
+            c.height= h;
+            var ctx= c.getContext("2d");
+
+            ctx.fillStyle= bgcolor;
+            ctx.clearRect(0,0,w,h);
+
+            ctx.beginPath();
+            ctx.moveTo( r,0 );
+            ctx.lineTo( w-r, 0 );
+            ctx.quadraticCurveTo( w,0, w,r );
+            ctx.lineTo( w, h-r );
+            ctx.quadraticCurveTo( w,h, w-r, h );
+            ctx.lineTo( r, h );
+            ctx.quadraticCurveTo( 0,h, 0,h-r );
+            ctx.lineTo( 0, r );
+            ctx.quadraticCurveTo( 0,0, r,0 );
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.font= '180px Arial';
+            ctx.textAlign= "center";
+            ctx.textBaseline= "middle";
+            ctx.fillStyle= color;
+            ctx.fillText( number, w/2, h/2 );
+
+            return c;
+        }
+
+        function cardActor(i0,i1) {
+            var t= 500;
+
+            var card= new CAAT.Foundation.Actor().setBackgroundImage( i0 );
+            card.centerAt( 400,250 );
+
+            var show= true;
+            var pb= new CAAT.Behavior.ContainerBehavior().setId(101).addListener({
+                behaviorExpired : function( behavior, time, actor ) {
+                    animation= false;
+                }
+            });
+
+            var bshow= new CAAT.Behavior.ScaleBehavior().
+                setValues( 0,1, 1.2,1 ).
+                setFrameTime( t/2, t/2).
+                setInterpolator( new CAAT.Behavior.Interpolator().createExponentialOutInterpolator(3,false) );
+            var bhide= new CAAT.Behavior.ScaleBehavior().
+                setValues( 1,0, 1,1.2 ).
+                setFrameTime( 0, t/2 ).
+                setInterpolator( new CAAT.Behavior.Interpolator().createExponentialInInterpolator(3,false) );
+
+            pb.addBehavior( bhide );
+            pb.addBehavior( bshow );
+
+            card.addBehavior( pb );
+
+            var animation= false;
+
+            card.mouseUp= function() {
+                if ( animation ) {
+                    return;
+                }
+
+                show= !show;
+                animation= true;
+
+                if ( show ) {
+                    bhide.emptyListenerList();
+                    bhide.addListener({
+                        behaviorExpired : function(behavior,time,actor)    {
+                            actor.setBackgroundImage( i0 );
+                        }
+                    });
+
+                } else {
+                    bhide.emptyListenerList();
+                    bhide.addListener({
+                        behaviorExpired : function(behavior,time,actor)    {
+                            actor.setBackgroundImage( i1 );
+                        }
+                    });
+                }
+
+                pb.setDelayTime( 0, t );
+            }
+
+            return card;
+        }
+
+        function __start() {
+
+            CAAT.DEBUG=1;
+
+            var director= new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas');
+            var scene= director.createScene();
+
+            var i0= ccard( 160,220,"1", '#aaf', '#f00' );
+            var i1= ccard( 160,220,"2", '#ffa', '#00f' );
+
+            var i2= ccard( 160,220,"3", '#a0f', '#0f0' );
+            var i3= ccard( 160,220,"4", '#f0a', '#f0f' );
+
+            var c0= cardActor(i0,i1);
+            c0.centerAt( 200, 250 );
+            scene.addChild(c0);
+            var c1= cardActor(i2,i3);
+            c1.centerAt( 600, 250 );
+            scene.addChild(c1);
+
+            var c2= cardActor(i3,i0);
+            c2.centerAt( 400, 125 );
+            scene.addChild(c2);
+
+            var c3= cardActor(i1,i2);
+            c3.centerAt( 400, 250+125 );
+            scene.addChild(c3);
+
+            CAAT.loop(60);
+        }
+
+
+    })();
+
+</script>
+</html>

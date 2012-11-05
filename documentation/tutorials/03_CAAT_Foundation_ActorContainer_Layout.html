@@ -1,0 +1,352 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 2 - CAAT.ActorContainer, Layout</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all();
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>CAAT.Foundation.ActorContainer</h1>
+
+            <div class="chapter">
+                <h2>Layout</h2>
+
+                <p>
+                    CAAT containers have the abbility of laying out its children automatically. When the container
+                    is resized or has children added/removed, it can lay out again based on simple rules its
+                    content. Think of it as responsive content.
+                </p>
+                <p>
+                    The container instance relies on objects of type
+                    <span class="apicode">CAAT.Foundation.UI.Layout.LayoutManager</span> for auto layout.
+                </p>
+                <ul>
+                    <li><span class="apicode">CAAT.Foundation.UI.Layout.GridLayout</span></li>
+                    <li><span class="apicode">CAAT.Foundation.UI.Layout.BoxLayout</span></li>
+                    <li><span class="apicode">CAAT.Foundation.UI.Layout.BorderLayout</span></li>
+                </ul>
+                <p>
+                    Each of these layout objects organize elements differently, but the most important feature
+                    is that you can combine them. For example you can have a boxLayout for each element in a
+                    GridLayout and the system will conform all its content based on the rules set.
+                </p>
+                <p>
+                    For <a href="../demos/demo29/layout2.html">a complete Layout example see demo29</a>.
+                </p>
+            </div>
+
+            <div class="chapter">
+                <h2>LayoutManager</h2>
+                <p>
+                    <span class="apicode">CAAT.Foundation.UI.Layout.LayoutManager</span> is the base class
+                    for all the other Layout objects.
+                </p>
+                <p>
+                    It offers the following functionality for all layouts:
+                </p>
+                <div>
+                    <h3>Gap</h3>
+                    <p>
+                        The methods <span class="apicode">setHGap(number)</span> and
+                        <span class="apicode">setVGap(number)</span> define the distance between any two adjacent
+                        Actors in a container.
+                    </p>
+                </div>
+                <div>
+                    <h3>Padding</h3>
+                    <p>
+                        The methods <span class="apicode">setPadding(l,r, t,b)</span> and
+                        <span class="apicode">setAllPadding(number)</span> define container's insets.
+                    </p>
+                </div>
+            </div>
+
+            <div class="chapter">
+                <h2>GridLayout</h2>
+                <p>
+                    This is the simplest layout object, and lays its children in a grid. When the layout object
+                    is created, you call <span class="apicode">new CAAT.Foundation.UI.Layout.GridLayout(rows, columns)</span>.
+                    If rows set to 0, the layout will create a new objects row every 'column' counted elements.
+                    Same when columns is set to 0.
+                </p>
+                <p>
+                    The layout rules will set a container's children bounds based on the container size, and
+                    the number of rows/columns needed to fit all its children. Actor's preferred size will be
+                    ignored.
+                </p>
+                <p>
+                    In the following example, the left container is laying out 13 elements in 3 rows and 0 columns.
+                    That means lay out in a new columns every 3 rows.
+                    The right container, on the other hand, is laying 13 elements with 0 rows, and 2 columns,
+                    so a new row is created every two elements.
+                </p>
+                <div>
+                    <canvas id="c1"></canvas>
+                    <script>
+                        (function() {
+
+                            function container(rows, cols) {
+                                var layout= new CAAT.Foundation.UI.Layout.GridLayout(rows, cols).
+                                        setHGap(5).
+                                        setVGap(2).
+                                        setAllPadding(10);
+                                var c= new CAAT.Foundation.ActorContainer().
+                                        setBounds(0,0,200,200).
+                                        setLayout(layout);
+                                c.paint= function(director,time) {
+                                    var ctx= director.ctx;
+                                    ctx.strokeStyle="blue";
+                                    ctx.strokeRect(0,0,this.width,this.height);
+                                };
+
+
+                                for( var i=0; i<13; i++ ) {
+                                    c.addChild( new CAAT.Foundation.Actor().
+                                        setSize(30,30).
+                                        setFillStyle( CAAT.Module.ColorUtil.Color.random() ) );
+                                }
+
+                                return c;
+                            }
+
+                            var director= new CAAT.Foundation.Director().initialize( 600,200, "c1" );
+                            var scene= director.createScene();
+
+                            scene.addChild( container(3,0) );
+                            scene.addChild( container(0,2).setLocation(300,0) );
+
+                            director.loop(1);
+                        })();
+                    </script>
+                </div>
+            </div>
+
+            <div class="chapter">
+                <h2>BorderLayout</h2>
+                <p>
+                    This layout divides a container's area into 5 sections: left, right, top, bottom and center.
+                    The actor added in the center will conform to the remaining space not allocated by the rest
+                    of the elements. <span class="important">The container's space will be allocated in the
+                    following order: top, bottom, right, left and center</span>.
+                </p>
+                <p>
+                    To add Actors for each of these layout positions, addChild's method constraint parameters
+                    must be: "left", "right", "top", "bottom", "center". If no constraint value is set "center"
+                    will be assumed.
+                </p>
+                <p>
+                    In this example, two elements are added on "left" and "top" constraints. The interesting part
+                    is the "center" contraint, which adds a container with a
+                    <span class="apicode">CAAT.Foundation.UI.Layout.GridLayout</span> layout that conforms a
+                    container and its children to the remaining space inside the root container.
+                </p>
+
+                <div>
+                    <canvas id="c2"></canvas>
+                    <script>
+                        (function() {
+
+                            function container2(rows, cols, w, h) {
+                                var layout= new CAAT.Foundation.UI.Layout.GridLayout(rows, cols).
+                                        setHGap(5).
+                                        setVGap(2).
+                                        setAllPadding(0);
+                                var c= new CAAT.Foundation.ActorContainer().
+                                        setPreferredSize(w,h).
+                                        setLayout(layout);
+
+                                for( var i=0; i<13; i++ ) {
+                                    c.addChild( new CAAT.Foundation.Actor().
+                                        setPreferredSize(20,10).
+                                        setFillStyle( CAAT.Module.ColorUtil.Color.random() ) );
+                                }
+
+                                return c;
+                            }
+
+                            function container() {
+                                var layout= new CAAT.Foundation.UI.Layout.BorderLayout().
+                                        setHGap(5).
+                                        setVGap(5).
+                                        setAllPadding(10);
+                                var c= new CAAT.Foundation.ActorContainer().
+                                        setBounds(0,0,600,300).
+                                        setLayout(layout);
+                                c.paint= function(director,time) {
+                                    var ctx= director.ctx;
+                                    ctx.strokeStyle="blue";
+                                    ctx.strokeRect(0,0,this.width,this.height);
+                                };
+
+                                c.addChild(
+                                    new CAAT.Foundation.Actor().
+                                        setSize(200,30).
+                                        setFillStyle( CAAT.Module.ColorUtil.Color.random() ),
+                                    "left");
+
+                                c.addChild(
+                                        new CAAT.Foundation.Actor().
+                                            setSize(150,100).
+                                            setFillStyle( CAAT.Module.ColorUtil.Color.random() ),
+                                    "top");
+
+                                c.addChild(
+                                        container2( 0,6, 100,100 ),
+                                        "center"
+                                );
+
+                                return c;
+                            }
+
+                            var director= new CAAT.Foundation.Director().initialize( 600,300, "c2" );
+                            var scene= director.createScene();
+
+                            scene.addChild( container() );
+
+                            director.loop(1);
+                        })();
+                    </script>
+                </div>
+            </div>
+
+
+            <div class="chapter">
+                <h2>BoxLayout</h2>
+                <p>
+                    This layout groups elements adjacently, one after the other. It is as an stack but in any
+                    direction.
+                </p>
+                <p>
+                    You can select the axis of piling with a call to <span class="apicode">setAxis( axis )</span>
+                    which accepts values:
+                </p>
+                <ul>
+                    <li><span class="apicode">CAAT.Foundation.UI.Layout.LayoutManager.AXIS.X</span></li>
+                    <li><span class="apicode">CAAT.Foundation.UI.Layout.LayoutManager.AXIS.Y</span></li>
+                </ul>
+                <p>
+                    Additionally, this layout can align its contents horizontally and vertically by calling:
+                <p>
+                    <span class="apicode">setHorizontalAlignment( align )</span>
+                </p>
+                <ul>
+                    <li><span class="apicode">CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.LEFT</span></li>
+                    <li><span class="apicode">CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER</span></li>
+                    <li><span class="apicode">CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.RIGHT</span></li>
+                </ul>
+                <p>
+                    <span class="apicode">setVerticalAlignment( align )</span>
+                </p>
+                <ul>
+                    <li><span class="apicode">CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.TOP</span></li>
+                    <li><span class="apicode">CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER</span></li>
+                    <li><span class="apicode">CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.BOTTOM</span></li>
+                </ul>
+
+                <div>
+                    <canvas id="c3"></canvas>
+                    <script>
+                        (function() {
+
+                            function buildcontainer(w,h,axis,ha,va) {
+                                var layout= new CAAT.Foundation.UI.Layout.BoxLayout().
+                                        setHGap(3).
+                                        setVGap(3).
+                                        setAxis(axis).
+                                        setAllPadding(0).
+                                        setHorizontalAlignment(ha).
+                                        setVerticalAlignment(va);
+
+                                var c= new CAAT.Foundation.ActorContainer().
+                                        setSize(w,h).
+                                        setLayout(layout);
+                                c.paint= function(director,time) {
+                                    var ctx= director.ctx;
+                                    ctx.strokeStyle="blue";
+                                    ctx.strokeRect(0,0,this.width,this.height);
+                                }
+
+                                for( var i=0; i<5; i++ ) {
+                                    var cw= axis===CAAT.Foundation.UI.Layout.LayoutManager.AXIS.X ? 5+10*Math.random() : 40+40*Math.random();
+                                    var ch= axis===CAAT.Foundation.UI.Layout.LayoutManager.AXIS.X ? 40+40*Math.random() : 5+10*Math.random();
+
+                                    c.addChild( new CAAT.Foundation.Actor().
+                                        setSize(cw,ch).
+                                        setFillStyle( CAAT.Module.ColorUtil.Color.random() ) );
+                                }
+
+                                return c;
+                            }
+
+                            function containerAxis( axis ) {
+                                var container= new CAAT.Foundation.ActorContainer().
+                                        setBounds( 0,0,300,director.height).
+                                        setLayout( new CAAT.Foundation.UI.Layout.GridLayout(3,3).setHGap(3).setVGap(3) );
+
+                                var al= CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT;
+
+                                container.addChild(buildcontainer(100,director.height/3, axis, al.LEFT, al.TOP ));
+                                container.addChild(buildcontainer(100,director.height/3, axis, al.CENTER, al.TOP ));
+                                container.addChild(buildcontainer(100,director.height/3, axis, al.RIGHT, al.TOP ));
+
+                                container.addChild(buildcontainer(100,director.height/3, axis, al.LEFT, al.CENTER ));
+                                container.addChild(buildcontainer(100,director.height/3, axis, al.CENTER, al.CENTER ));
+                                container.addChild(buildcontainer(100,director.height/3, axis, al.RIGHT, al.CENTER ));
+
+                                container.addChild(buildcontainer(100,director.height/3, axis, al.LEFT, al.BOTTOM ));
+                                container.addChild(buildcontainer(100,director.height/3, axis, al.CENTER, al.BOTTOM ));
+                                container.addChild(buildcontainer(100,director.height/3, axis, al.RIGHT, al.BOTTOM ));
+
+                                return container;
+                            }
+
+                            var director= new CAAT.Foundation.Director().initialize( 600,300, "c3" );
+                            var scene= director.createScene();
+
+                            scene.addChild( containerAxis( CAAT.Foundation.UI.Layout.LayoutManager.AXIS.X ) );
+                            scene.addChild( containerAxis( CAAT.Foundation.UI.Layout.LayoutManager.AXIS.Y).setPosition(300,0) );
+
+                            director.loop(1);
+                        })();
+                    </script>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

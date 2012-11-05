@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 9 - CAAT.InterpolatorActor</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>Other CAAT actors</h1>
+            <h2>CAAT.InterpolatorActor</h2>
+            <p>
+                This actor object draws a given CAAT.Interpolator instance. It is useful when the
+                developer wants to know how an Interpolator will behave.
+            </p>
+            <p>
+                The setup is simple, simply call the method <span class="apicode">setInterpolator(
+                caat.interpolator_instance, size)</span> and then set actor's bounds by calling
+                <span class="apicode">setBounds(x,y,width,height)</span> or
+                <span class="apicode">setSize( width, height )</span>.
+            </p>
+            <p>
+                The parameter size defines by how many line segments the interpolator will be
+                drawn. This contour polyline is cached, so drawing constantly the actor won't
+                impact performance. If no such parameter is supplied, 50 segments will be used.
+            </p>
+            <p>
+                The line color will be the one defined by the method <span class="apicode">
+                setStrokeStyle( style )</span> or black by default.
+            </p>
+            <p>
+                The method <span class="apicode">setGap( size )</span> allow to set some insets
+                to the actor. By default it is 5 units.
+            </p>
+            <p>
+                This actor has been extensively used in the <a href="t7.html">Interpolators tutorial</a>.
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

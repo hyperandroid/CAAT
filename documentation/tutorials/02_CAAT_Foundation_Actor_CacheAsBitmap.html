@@ -1,0 +1,318 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 1 - Getting started</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+
+
+        <div class="chapter">
+        <h1>CAAT.Foundation.Actor</h1>
+        <h2>Caching actors as bitmaps</h2>
+        <div>
+            <p>
+                The method <span class="apicode">cacheAsBitmap(time, strategy)</span> creates an image representation of the actor the
+                method is invoked for. The main objective is to cache complex drawing routines into an image to avoid
+                recreating it constantly. It is suited for example for TextActors whom drawing operations are quite
+                expensive or for any custom drawing actor.
+            </p>
+            <p>
+                The time parameter is used to specify at what virtual time you'd like to have the actor cached.
+                CAAT uses a timeline for each scene, so different time values could give different cached images.
+            </p>
+            <p>
+                The strategy parameter can be either
+                <li>CAAT.Foundation.Actor.CACHE_SIMPLE</li>
+                <li>CAAT.Foundation.Actor.CACHE_DEEP</li>
+            </p>
+            <p>
+                CACHE_SIMPLE means the cache will only be applied to the Actor or Container. CACHE_DEEP
+                for a container means that the Container and all of its children will be cached in the same
+                image. This can dramatically speed drawing operations at the cost of creating new in-memory
+                images.
+            </p>
+            <p>
+                Any <span class="apicode">CAAT.Foundation.Actor</span> instance already takes care of drawing the cached image instead
+                of the stroked/filled text. It is developers responsibility to do it if the <span class="important">
+                paint or paintActorGL</span> methods have been overridden.
+            </p>
+            <p>
+                The method <span class="apicode">stopCacheAsBitmap()</span> will make the actor not being cached
+                anymore, and its paint method will be called again.
+            </p>
+            <p>
+                As it was expected, the cached image will be wrapped into a
+                <span class="apicode">CAAT.Foundation.SpriteImage</span>
+                of one row by one column. That means if the cached image is to be accessed in a webGL environment
+                (or just needs be accessed) it could be obtained the associated HTMLCanvasElement by calling
+                <span class="apicode">actor.backgroundImage.image</span>.
+            </p>
+        </div>
+        <div class="section">
+            <p>
+                In the following example, a container is being cachedAsBitmap. On the left, it uses CACHE_SIMPLE,
+                which means that the container caches itself, but still makes calls to animate and paint its
+                children. The proof about it, is that the container is smaller than its children but still
+                shows completely the children.
+            </p>
+            <p>
+                In the right, it uses CACHE_DEEP. The container and its children have been cached in an image,
+                preventing CAAT from traversing the container and its children for animation and painting.
+                That's the reason why the content is clipped, since it was drawn in an smaller image than needed.
+            </p>
+        </div>
+    </div>
+
+    <div>
+        <h2>Example</h2>
+        <p>
+            The following example shows some leaning cached text actors.
+        </p>
+        <div class="code">
+            <pre class="brush: js; auto-links: false; toolbar: false;">
+
+
+                function __scene(director) {
+
+                    var scene= director.createScene();
+
+                    var t1= text( director, scene, CAAT.Foundation.Actor.CACHE_SIMPLE, "CACHE_SIMPLE" );
+                    var t2= text( director, scene, CAAT.Foundation.Actor.CACHE_DEEP, "CACHE_DEEP" );
+
+                    t1.centerAt( director.width/2/2, director.height/2 );
+                    t2.centerAt( director.width/2/2 + director.width/2, director.height/2 );
+
+                    scene.addChild(t1);
+                    scene.addChild(t2);
+
+                }
+
+                function text(director, scene, hint, name) {
+
+                    var cc1 = new CAAT.Foundation.ActorContainer( ).
+                            setBounds(0, 100, 300, 300).
+                            enableEvents(false);
+
+                    cc1.addBehavior(
+                            new CAAT.Behavior.RotateBehavior().
+                                    setCycle(true).
+                                    setFrameTime(0, 4000).
+                                    setValues(-Math.PI / 8, Math.PI / 8, .50, 0).    // anchor at 50%, 0%
+                                    setInterpolator(
+                                    new CAAT.Behavior.Interpolator().createExponentialInOutInterpolator(3, true))
+                            );
+
+                    var gradient = director.ctx.createLinearGradient(0, 0, 0, 50);
+                    gradient.addColorStop(0, '#00ff00');
+                    gradient.addColorStop(0.5, 'red');
+                    gradient.addColorStop(1, 'blue');
+
+                    var font= "36px sans-serif";
+
+                    var text = new CAAT.Foundation.UI.TextActor().
+                            setFont(font).
+                            setText("This Container").
+                            setAlign("center").
+                            setTextFillStyle(gradient).
+                            setOutline(true).
+                            setOutlineColor('white');
+                    cc1.addChild(text.setLocation(cc1.width / 2, 0));
+
+                    var text2 = new CAAT.Foundation.UI.TextActor().
+                            setFont(font).
+                            setText("is Cached as Bitmap").
+                            setAlign("center").
+                            setTextFillStyle(gradient).
+                            setOutline(true).
+                            setOutlineColor('white');
+                    cc1.addChild(text2.setLocation(cc1.width/2, 50));
+
+                    var text4 = new CAAT.Foundation.UI.TextActor().
+                            setFont(font).
+                            setText("Using " + name).
+                            setAlign("center").
+                            setTextFillStyle(gradient).
+                            setOutline(true).
+                            setOutlineColor('white');
+                    cc1.addChild( text4.setLocation(cc1.width/2, 100) );
+
+                    var text3 = new CAAT.Foundation.UI.TextActor().
+                            setFont(font).
+                            setText("as caching strategy").
+                            setAlign("center").
+                            setTextFillStyle(gradient).
+                            setOutline(true).
+                            setOutlineColor('white');
+                    cc1.addChild(text3.setLocation(cc1.width/2, 150));
+
+                    cc1.cacheAsBitmap(1000,hint);
+
+                    return cc1;
+                }
+
+                function __init()   {
+
+                    var director = new CAAT.Foundation.Director().
+                            initialize(700,500, document.getElementById('_c1'));
+
+                    __scene(director);
+
+                    CAAT.loop(30);
+                }
+
+                __init();
+
+            </pre>
+        </div>
+        <canvas id="_c1"></canvas>
+        <script>
+            (function() {
+
+                function __scene(director) {
+
+                    var scene= director.createScene();
+
+                    var t1= text( director, scene, CAAT.Foundation.Actor.CACHE_SIMPLE, "CACHE_SIMPLE" );
+                    var t2= text( director, scene, CAAT.Foundation.Actor.CACHE_DEEP, "CACHE_DEEP" );
+
+                    t1.centerAt( director.width/2/2, director.height/2 );
+                    t2.centerAt( director.width/2/2 + director.width/2, director.height/2 );
+
+                    scene.addChild(t1);
+                    scene.addChild(t2);
+
+                }
+
+                function text(director, scene, hint, name) {
+
+                    var cc1 = new CAAT.Foundation.ActorContainer( ).
+                            setBounds(0, 100, 300, 300).
+                            enableEvents(false);
+
+                    cc1.addBehavior(
+                            new CAAT.Behavior.RotateBehavior().
+                                    setCycle(true).
+                                    setFrameTime(0, 4000).
+                                    setValues(-Math.PI / 8, Math.PI / 8, .50, 0).    // anchor at 50%, 0%
+                                    setInterpolator(
+                                    new CAAT.Behavior.Interpolator().createExponentialInOutInterpolator(3, true))
+                            );
+
+                    cc1.paint= function( director, time ) {
+                        if ( this.isCached() ) {
+                            CAAT.Foundation.ActorContainer.prototype.paint.call(this,director,time);
+                            return;
+                        }
+
+                        var ctx= director.ctx;
+                        ctx.strokeStyle='blue';
+                        ctx.strokeRect(.5,.5,this.width -.5,this.height -.5);
+                    }
+
+                    var gradient = director.ctx.createLinearGradient(0, 0, 0, 50);
+                    gradient.addColorStop(0, '#00ff00');
+                    gradient.addColorStop(0.5, 'red');
+                    gradient.addColorStop(1, 'blue');
+
+                    var font= "36px sans-serif";
+
+                    var text = new CAAT.Foundation.UI.TextActor().
+                            setFont(font).
+                            setText("This Container").
+                            setAlign("center").
+                            setTextFillStyle(gradient).
+                            setOutline(true).
+                            setOutlineColor('white');
+                    cc1.addChild(text.setLocation(cc1.width / 2, 0));
+
+                    var text2 = new CAAT.Foundation.UI.TextActor().
+                            setFont(font).
+                            setText("is Cached as Bitmap").
+                            setAlign("center").
+                            setTextFillStyle(gradient).
+                            setOutline(true).
+                            setOutlineColor('white');
+                    cc1.addChild(text2.setLocation(cc1.width/2, 50));
+
+                    var text4 = new CAAT.Foundation.UI.TextActor().
+                            setFont(font).
+                            setText("Using " + name).
+                            setAlign("center").
+                            setTextFillStyle(gradient).
+                            setOutline(true).
+                            setOutlineColor('white');
+                    cc1.addChild( text4.setLocation(cc1.width/2, 100) );
+
+                    var text3 = new CAAT.Foundation.UI.TextActor().
+                            setFont(font).
+                            setText("as caching strategy").
+                            setAlign("center").
+                            setTextFillStyle(gradient).
+                            setOutline(true).
+                            setOutlineColor('white');
+                    cc1.addChild(text3.setLocation(cc1.width/2, 150));
+
+                    cc1.cacheAsBitmap(1000,hint);
+
+                    return cc1;
+                }
+
+                function __init()   {
+
+                    var director = new CAAT.Foundation.Director().
+                            initialize(700,500, document.getElementById('_c1'));
+
+                    __scene(director);
+
+                    CAAT.loop(30);
+                }
+
+                __init();
+
+
+            })();
+        </script>
+    </div>
+
+
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

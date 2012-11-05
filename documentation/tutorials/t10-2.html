@@ -1,0 +1,253 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 10 - Helpers. CAAT.modules.ImageUtil</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>Helpers</h1>
+            <h2>Image Utils</h2>
+            <div>
+                <p>
+                    The image utils elements has some handy functions to manipulate and create
+                    images on the fly. It is located at <span class="apicode">CAAT.modules.ImageUtils
+                    </span> and must be instantiated.
+                </p>
+                <div>
+                    <h2>Alpha Sprite Sheet</h2>
+                    The function <span class="apicode">createAlphaSpriteSheet(maxAlpha, minAlpha, sheetSize, image, bg_fill_style)</span>
+                    creates a new image with an sprite sheet of transparent copies of the same image.
+                    The parameter bg_fill_style is optional, and if not set, it will create an image with transparency.
+                    <h3>Example</h3>
+                    <div style='float:left; width: 25%;'><img src="resource/logo.png"></div>
+                    <div style='float:left; width: 75%;'><canvas id="_c1"></canvas></div>
+                    <script>
+                        (function() {
+                            new CAAT.Module.Preloader.ImagePreloader().loadImages(
+                                    [{ id:'logo', url:'resource/logo.png'} ],
+                                    function( count, images ) {
+                                        var director= new CAAT.Foundation.Director().initialize(300,82*4,'_c1');
+                                        var scene= director.createScene();
+                                        director.setImagesCache(images);
+
+                                        var img= CAAT.Module.Image.ImageUtil.createAlphaSpriteSheet(
+                                                1,.1,4,director.getImage('logo') );
+
+                                        scene.addChild(
+                                                new CAAT.Foundation.Actor().
+                                                        setBackgroundImage( img, true )
+                                        );
+
+                                        var img2= CAAT.Module.Image.ImageUtil.createAlphaSpriteSheet(
+                                                1,.1,4,director.getImage('logo'), 'red' );
+
+                                        scene.addChild(
+                                                new CAAT.Foundation.Actor().
+                                                        setBackgroundImage( img2, true ).
+                                                        setLocation(150,0)
+                                        );
+
+                                        CAAT.loop(1);
+                                    }
+                            );
+                        })();
+                    </script>
+                </div>
+                <div style="float: none; width:100%;">
+                    <h2>Optimize</h2>
+                    <p>
+                        This function optimizes an image, that means, removes alpha transparency
+                        surrounding the image. the function is <span class="apicode">optimize(image, threshold)</span>.
+                        The threshold parameter indicates the minimum alpha value to consider transparent.
+                        It is useful to remove all that insets your graphician loves to leave around every
+                        bitmap he draws.
+                    </p>
+                    <p>
+                        This is the original image, and the image optimized with a threshold of 32. Note
+                        the resulting image is smaller in size.
+                    </p>
+                    <div><canvas id="_c2"></canvas></div>
+                    <script>
+                        (function() {
+                            new CAAT.ImagePreloader().loadImages(
+                                    [{ id:'b', url:'resource/normal_mode.png'} ],
+                                    function( count, images ) {
+                                        var director= new CAAT.Foundation.Director().initialize(440,300,'_c2');
+
+                                        var scene= director.createScene().setFillStyle('red');
+                                        director.setImagesCache(images);
+                                        var img= director.getImage('b');
+                                        var x,y;
+
+                                        x= (director.width-img.width)/2;
+                                        y= 10;
+                                        scene.addChild(
+                                                new CAAT.Foundation.Actor().
+                                                        setFillStyle('blue').
+                                                        setBounds(x,y,img.width,img.height)
+
+                                        );
+                                        scene.addChild(
+                                                new CAAT.Foundation.Actor().
+                                                        setBackgroundImage( img, true ).
+                                                        setLocation(x,y)
+                                        );
+
+                                        var img2= CAAT.Module.Image.ImageUtil.optimize( img, 32 );
+
+                                        x= (director.width-img2.width)/2;
+                                        y= 10+img.height+10;
+
+                                        scene.addChild(
+                                                new CAAT.Foundation.Actor().
+                                                        setFillStyle('blue').
+                                                        setBounds(x,y,img2.width,img2.height)
+
+                                        );
+                                        scene.addChild(
+                                                new CAAT.Foundation.Actor().
+                                                        setBackgroundImage( img2, true ).
+                                                        setLocation(x,y )
+                                        );
+
+                                        CAAT.loop(1);
+                                    }
+                            );
+                        })();
+
+                    </script>
+                </div>
+                <div>
+                    <h2>Thumb</h2>
+                    <p>
+                        The function <span class="apicode">createThumb(image, width, height, best_fit)</span>
+                        creates a thumg from the original image of the given size. The source image
+                        will be scaled accordingly to fit the new size.
+                    </p>
+                    <p>
+                        The parameter best_fit will try to fit the image as best as possible to keep its
+                        aspect ratio, otherwise, it will create a thumbnail of the given size.
+                    </p>
+                    <p>
+                        In the example, the first thumb image, has a size which keeps aspect ratio.
+                        The second one, is drawn with best_fit to false and the third one with best_fit
+                        set to true.
+                    </p>
+                    <div><canvas id="_c3"></canvas></div>
+                    <script>
+                        (function() {
+                            new CAAT.ImagePreloader().loadImages(
+                                    [{ id:'b', url:'resource/normal_mode.png'} ],
+                                    function( count, images ) {
+                                        var director= new CAAT.Foundation.Director().initialize(440,230,'_c3');
+
+                                        var scene= director.createScene().setFillStyle('red');
+                                        director.setImagesCache(images);
+                                        var img= director.getImage('b');
+
+                                        scene.addChild(
+                                                new CAAT.Foundation.Actor().
+                                                        setBounds((director.width-img.width)/2, 10, img.width, img.height).
+                                                        setFillStyle('blue')
+                                        );
+                                        scene.addChild(
+                                                new CAAT.Foundation.Actor().
+                                                        setBackgroundImage( img, true ).
+                                                        setLocation((director.width-img.width)/2, 10).
+                                                        setFillStyle('blue')
+                                        );
+
+
+
+                                        var img2= CAAT.Module.Image.ImageUtil.createThumb(
+                                                img, img.width/4, img.height/4 );
+                                        scene.addChild(
+                                                new CAAT.Foundation.Actor().
+                                                        setBounds(50, 10+10+img.height, img2.width, img2.height).
+                                                        setFillStyle('blue')
+                                        );
+                                        scene.addChild(
+                                                new CAAT.Foundation.Actor().
+                                                        setBackgroundImage( img2, true ).
+                                                        setLocation(50, 10+img.height+10 ).
+                                                        setFillStyle('blue')
+                                        );
+
+
+
+                                        var img3= CAAT.Module.Image.ImageUtil.createThumb(
+                                                img, 64, 64 );
+                                        scene.addChild(
+                                                new CAAT.Foundation.Actor().
+                                                        setBounds(220, 10+10+img.height, img3.width, img3.height).
+                                                        setFillStyle('blue')
+                                        );
+                                        scene.addChild(
+                                                new CAAT.Foundation.Actor().
+                                                        setBackgroundImage( img3, true ).
+                                                        setLocation(220, 10+img.height+10 ).
+                                                        setFillStyle('blue')
+                                        );
+
+
+
+                                        var img4= CAAT.Module.Image.ImageUtil.createThumb(
+                                                img, 64, 64, true );
+                                        scene.addChild(
+                                                new CAAT.Foundation.Actor().
+                                                        setBounds(300, 10+10+img.height, img4.width, img4.height).
+                                                        setFillStyle('blue')
+                                        );
+                                        scene.addChild(
+                                                new CAAT.Foundation.Actor().
+                                                        setBackgroundImage( img4, true ).
+                                                        setLocation(300, 10+img.height+10 ).
+                                                        setFillStyle('blue')
+                                        );
+
+                                        CAAT.loop(1);
+                                    }
+                            );
+                        })();
+
+                    </script>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

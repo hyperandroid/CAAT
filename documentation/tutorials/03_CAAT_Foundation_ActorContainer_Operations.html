@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 2 - CAAT.ActorContainer, Operations with contents</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>CAAT.Foundation.ActorContainer</h1>
+
+            <div class="chapter">
+                <h2>Z Indexing child Actors</h2>
+
+                <p>
+                    Every container, sets Z Index values so that the first added actor is below
+                    the others, and the last one on top of every one.
+                </p>
+                <p>
+                    This natural z index can be modified by calling container's method
+                    <span class="apicode">setZOrder(actor, zindex)</span>.
+                </p>
+                <p>
+                    The parameter 'actor' is an actor held by the container, and the zindex is the
+                    new zindex position to set the actor at. if zindex is Number.MAX_VALUE,
+                    (or simply greated that container's actor count) the actor will be above
+                    every other actor of this container.
+                </p>
+            </div>
+
+            <div class="chapter">
+                <h2>Retrieving Actors</h2>
+
+                <p>
+                    Functions to retrieve elements inside a container are:
+                </p>
+                <ul>
+                    <li><span class="apicode">getChildAt(number) => Actor</span>: retrieve the nth element.</li>
+                    <li><span class="apicode">findChild(actor) => number</span>: retrieve the position of an actor. -1 if not found.</li>
+                    <li><span class="apicode">findActorById(id) => Actor</span>: retrieve the actor with given id. null if not found.</li>
+                    <li><span class="apicode">findActorByPosition( CAAT.Math.Point ) => Actor</span>: retrieve the actor at a given coordinate in the container. returns the container itself if there's nothing at that coordinate.</li>
+                </ul>
+            </div>
+
+            <div class="chapter">
+                <h2>Removing Actors</h2>
+
+                <p>
+                    Functions to remove actors are:
+                </p>
+                <ul>
+                    <li><span class="apicode">removeChildAt(number) => Actor</span>: remove and return the nth Actor.</li>
+                    <li><span class="apicode">removeChild(actor) => Actor</span>: remove actor from this container.</li>
+                    <li><span class="apicode">removeFirstChild() => Actor</span>: remove first actor (smallest zIndex).</li>
+                    <li><span class="apicode">removeLastChild() => Actor</span>: remove last actor (biggest zIndex).</li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

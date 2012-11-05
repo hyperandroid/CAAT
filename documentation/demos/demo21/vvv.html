@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+
+    <title>CAAT example: Tile maps</title>
+
+</head>
+<body style="border:0; margin:0; background-color:#000;">
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+
+            </div>
+            <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../../../build/caat.js"></script>
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+    Number.prototype.sign= function() {
+        if ( this>0 ) {
+            return 1;
+        } else if (this<0 ) {
+            return -1;
+        }
+        return 0;
+    };
+
+    (function() {
+
+        CAAT.TileMapViewport= function() {
+            return this;
+        };
+
+        CAAT.TileMapViewport.prototype= {
+
+            vx          : 0,    // viewport x,y,w,h
+            vy          : 0,
+            vw          : 0,
+            vh          : 0,
+
+            triggerW    : 0,
+            triggerH    : 0,
+
+            mapWidth    : 0,
+            mapHeight   : 0,
+
+            /**
+             *
+             * @param w
+             * @param h
+             * @param triggerW value from 0..100
+             * @param triggerH value from 0..100
+             */
+            initialize  : function( w,h, triggerW, triggerH ) {
+                this.vx= 0;
+                this.vy= 0;
+                this.vw= w;
+                this.vh= h;
+                this.triggerW= (w*triggerW/100)>>0;
+                this.triggerH= (h*triggerH/100)>>0;
+
+                return this;
+            },
+
+            setMapSize : function( w, h ) {
+                this.mapWidth= w;
+                this.mapHeight= h;
+            },
+
+            /**
+             * mover el origen del viewport de mapa en funcion de donde se encuentre el player.
+             * @param x
+             * @param y
+             * @param map
+             */
+            movePlayerInPos : function( _x, _y, map ) {
+                // _x,_y estan en coordenadas de mapa.
+                var x= _x - this.vx;
+                var y= _y - this.vy;
+
+                var vx= this.vx;
+                var vy= this.vy;
+                var vw= this.vw;
+                var vh= this.vh;
+
+                // ajustar posiciones del viewport para que el player est� en camara.
+                var incX= 0;
+                if (x<this.triggerW || x> vw-this.triggerW) {
+                    incX= x<vw/2 ? x-this.triggerW : x-(vw-this.triggerW);
+                }
+
+                var incY= 0;
+                if ( y<this.triggerH || y> vh-this.triggerH ) {
+                    incY= y<vh/2 ? y-this.triggerH : y-(vh-this.triggerH);
+                }
+
+                vx+= incX;
+                vy+= incY;
+
+                if( incX===0 && incY===0 ) {
+                    return;
+                }
+
+                if ( vx<0 ) {
+                    vx=0;
+                } else if ( vx> this.mapWidth - vw ) {
+                    vx= this.mapWidth-vw;
+                }
+
+                if ( vy<0 ) {
+                    vy=0;
+                } else if ( vy> this.mapHeight - vh ) {
+                    vy= this.mapHeight - vh;
+                }
+
+                this.vx= vx;
+                this.vy= vy;
+            },
+
+            setContext : function( ctx ) {
+                ctx.translate( -this.vx>>0, -this.vy>>0 );
+            },
+
+            x : function() {
+                return this.vx;
+            },
+
+            y : function() {
+                return this.vy;
+            },
+
+            width : function() {
+                return this.vw;
+            },
+
+            height : function() {
+                return this.vh;
+            }
+        }
+
+    })();
+
+    (function() {
+
+        CAAT.TileMapCollisionSolver= function() {
+
+            this.r0= new CAAT.Rectangle();
+            this.r1= new CAAT.Rectangle();
+            this.r2= new CAAT.Rectangle();
+
+            return this;
+        };
+
+        CAAT.TileMapCollisionSolver.prototype= {
+
+            r0      : null,
+            r1      : null,
+            r2      : null,
+
+            solveCollision : function( e0, e1 ) {
+
+                this.r0.setBounds( e0.x, e0.y, e0.width, e0.height );
+                this.r1.setBounds( e1.x, e1.y, e1.width, e1.height );
+
+                this.r0.intersect( this.r1, this.r2 );
+
+                if ( this.r2.width>this.r2.height ) {   // colliding vertically
+                    if ( e0.y<=e1.y ) {                     // falling
+                        e0.setStand();
+                        e0.y-= this.r2.height;
+                    } else {                                // collision bottom-up (jumping)
+                        e0.y+= this.r2.height;
+                        e0.vY=0;
+                    }
+
+                } else {                                // colision horizontal
+                    if ( e0.x < e1.x  ) {                        // from left
+                        e0.x-= this.r2.width;
+                    } else {
+                        e0.x+= this.r2.width;
+                    }
+                }
+            }
+        };
+
+    })();
+
+    /**
+     * TileMap
+     */
+    (function() {
+
+        CAAT.TileMap= function() {
+            CAAT.TileMap.superclass.constructor.call(this);
+
+            this.entities= [];
+            this.collisionData= {
+                x           : 0,
+                y           : 0,
+                xCollides   : false,
+                yCollides   : false
+            };
+
+            this.collisionSolver= new CAAT.TileMapCollisionSolver();
+
+            return this;
+        };
+
+        CAAT.TileMap.prototype= {
+            canvas          : null,     // offscreen image.
+            ctx             : null,     // offscreen context.
+
+            tileSize        : 0,        // tileSize
+
+            data            : null,     // map data
+            cdata           : null,     // map collision data
+
+            mapWidth        : 0,        // map width/height
+            mapHeight       : 0,
+
+            tileSet         : null,     // CAAT.SpriteImage
+            viewport        : null,     // CAAT.Rectangle.
+
+            entities        : null,
+            player          : null,
+
+            gravityX        : 0,
+            gravityY        : 1000,
+
+            shash           : null,
+
+            lastCacheX      : -1,
+            lastCacheY      : -1,
+
+            collisionData   : null,
+            collisionSolver : null,
+
+            create : function( tileSize, tileSet, viewWidth, viewHeight ) {
+
+                this.tileSize=  tileSize;
+                this.tileSet=   tileSet;
+                this.viewport=  new CAAT.TileMapViewport().initialize( viewWidth, viewHeight, 30, 30 );
+
+                this.createFakeMap();
+
+                this.canvas= document.createElement( "canvas" );
+                this.canvas.width= viewWidth;
+                this.canvas.height= viewHeight;
+                this.ctx=  this.canvas.getContext("2d");
+
+                this.setBackgroundImage( this.canvas );
+
+                return this;
+            },
+
+            createFakeMap : function() {
+                var i,j;
+
+                var r= 32;
+                var c= 52;
+
+                var level=
+                   //1234567890123456789012345678901234567890123456789012
+                    "1111111111111111111111111111111111111111111111111111"+
+                    "1  11                111                           1"+
+                    "1  11     11                                       1"+
+                    "1                11   11      1111       1111      1"+
+                    "1                1    11 1111       1111      1111 1"+
+                    "1  11          11    111                           1"+
+                    "1  11        111    1111          1                1"+
+                    "1 11111111111      11            11                1"+
+                    "1 11111    11    111  11  11      11               1"+
+                    "1 1             1111   1      1   11  1111         1"+
+                    "1 1              1    11    1      11       111 1  1"+
+                    "1     111   1111 1  1111  1        11             11"+
+                    "1    111     11     11111                        1 1"+
+                    "1 1       11      111111 1                      1  1"+
+                    "1 111  111111    111111111111                  1   1"+
+                    "1 111 11111111  11111111111111                1    1"+
+                    "1                             1              1     1"+
+                    "1  111   11   11         1                  1      1"+
+                    "1   1111111111111111    11                 11      1"+
+                    "11  11   11   11   11   11                111      1"+
+                    "1   11   11   11   11 1111               1111      1"+
+                    "1  111                1111              11111      1"+
+                    "1   11   11111111111111111             111111      1"+
+                    "11  11   11   11   11   11            1111111      1"+
+                    "1   1111      11   11   11           11111111      1"+
+                    "1  11111                11          111111111      1"+
+                    "1   1111111111111111    11         1111111111      1"+
+                    "11  11   11   11   11   11        11111111111      1"+
+                    "1   11   11   11   11    1       111111111111      1"+
+                    "1  111   11   11      11        1111111111111      1"+
+                    "1                     1111     11111111111111      1"+
+                    "1111111111111111111111111111111111111111111111111111";
+
+                this.data= [];
+                this.cdata= [];
+
+                for( i=0; i<r; i++ ) {
+                    var row= [];
+                    var rowc= [];
+                    this.data.push( row );
+                    this.cdata.push( rowc );
+                    for( j=0; j<c; j++ ) {
+                        var cc= level.charAt( j+i*c );
+                        row.push( {
+                            tile    : cc!==' ' ? 1 : -1,    // -1 means no tile
+                            vx      : 0,
+                            vy      : 0
+                        });
+                        rowc.push( cc!==' ' ? 1 : 0 );
+                    }
+                }
+
+                this.mapWidth= c;
+                this.mapHeight= r;
+
+                this.viewport.setMapSize( this.mapWidth*this.tileSize, this.mapHeight*this.tileSize );
+                this.shash= new CAAT.SpatialHash().initialize(
+                        this.mapWidth * this.tileSize,
+                        this.mapHeight * this.tileSize,
+                        10,
+                        10
+                );
+
+            },
+
+            cacheMap : function( ) {
+
+                var vp= this.viewport;
+
+                /**
+                 * it seems that bliting a canvas region on itself is way slower than repainting every tile
+                 * again. So no map caching to redraw only the new map regions.
+                 */
+/*
+                if ( -1===this.lastCacheX || -1===this.lastCacheY ) {
+
+                    if ( this.lastCacheX>>0 === vp.x()>>0 && this.lastCacheY>>0 === vp.y()>>0 ) {
+                        return this;
+                    }
+*/
+
+                    if ( this.lastCacheX>>0 === vp.x()>>0 && this.lastCacheY>>0 === vp.y()>>0 ) {
+                        return this;
+                    }
+
+                    // clear drawing area
+                    //this.ctx.fillStyle='#fff';
+                    this.ctx.clearRect(
+                            0,
+                            0,
+                            vp.width(),
+                            vp.height()
+                    );
+
+
+                    var c0= ( vp.x()/this.tileSize )>>0;
+                    var c1= Math.ceil( ( vp.x()+vp.width() ) / this.tileSize );
+                    c1= Math.min( c1, this.mapWidth );
+
+                    var r0= ( vp.y()/this.tileSize )>>0;
+                    var r1= Math.ceil( ( vp.y()+vp.height() ) / this.tileSize );
+                    r1= Math.min( r1, this.mapHeight );
+
+                    var i,j;
+
+                    for( var i=r0; i<r1; i++ ) {
+                        for( var j=c0; j<c1; j++ ) {
+
+                            var x= j*this.tileSize - (vp.x()>>0);
+                            var y= i*this.tileSize - (vp.y()>>0);
+
+                            var t= this.data[i][j].tile;
+                            if ( -1!=t ) {
+                                this.tileSet.paintTile(
+                                        this.ctx,
+                                        t,
+                                        x,
+                                        y
+                                );
+                            }
+                        }
+                    }
+/*
+                } else {
+
+                    if ( this.lastCacheX>>0 === vp.x()>>0 && this.lastCacheY>>0 === vp.y()>>0 ) {
+                        return this;
+                    }
+
+                    var ix= ( this.lastCacheX>>0 ) - ( vp.x()>>0 );
+                    var iy= ( this.lastCacheY>>0 ) - ( vp.y()>>0 );
+
+                    this.ctx.drawImage( this.canvas, ix, iy );
+                }
+*/
+                this.lastCacheX= vp.x();
+                this.lastCacheY= vp.y();
+
+                return this;
+            },
+
+            /**
+             *
+             * @param tileEntity <CAAT.TileEntity>
+             */
+            addEntity : function( tileEntity ) {
+                this.entities.push( tileEntity );
+                return this;
+            },
+
+            setPlayer : function( player ) {
+                this.player= player;
+                return this.addEntity( player );
+            },
+
+            tick : function( t, ctx ) {
+                for( var i=0; i<this.entities.length; i++ ) {
+                    var e= this.entities[i];
+                    if ( e.removed ) {
+                        this.entities.splice(i,1);
+                    } else {
+                        e.tick( t, this );
+                    }
+                }
+
+                this.collideEntities();
+
+                this.viewport.movePlayerInPos( this.player.x, this.player.y, this );
+                this.cacheMap();
+            },
+
+            collideEntities : function() {
+                this.shash.clearObject();
+
+                var hero= this.player;
+                var me= this;
+
+                for( var i=0; i<this.entities.length; i++ ) {
+
+                    var e= this.entities[i];
+                    if ( e!=hero && e.canCollide ) {
+
+                        this.shash.addObject( {
+                            x           : e.x,
+                            y           : e.y,
+                            width       : e.width,
+                            height      : e.height,
+
+                            entity      : e,
+                            type        : e.type
+                        });
+                    }
+                }
+
+                this.shash.collide( hero.x, hero.y, hero.width, hero.height, function(collide_with) {
+                    if ( collide_with.type==="walkLR" ) {
+                        hero.x=112;
+                        hero.y=112;
+                        hero.setFall();
+                        return true;
+                    } else if (collide_with.type==="platform" ) {
+                        me.collisionSolver.solveCollision( hero, collide_with );
+                    }
+
+                    return false;
+                });
+
+                this.shash.solveCollision( function( e1, e2 ) {
+                    if ( ( e1.type==="bullet" && e2.type==="walkLR" ) ||
+                         ( e2.type==="bullet" && e1.type==="walkLR" ) ) {
+
+                        e1.entity.setRemoved();
+                        e2.entity.setRemoved();
+
+                        // spawn 20 particles.
+                        for( var i=0; i<20; i++ ) {
+                            var j= i-(Math.random()*10);
+                            me.addEntity(
+                                new CAAT.TileParticle().
+                                        setBounds( e1.x, e1.y, 8, 8 ).
+                                        initialize(
+                                            (120+Math.random()*100)*Math.cos( j*Math.PI/40 + Math.PI/2 ),
+                                            -(300+Math.random()*200)*Math.sin( j*Math.PI/40 + Math.PI/2 )
+                                        )
+                            );
+                        }
+                    }
+                });
+            },
+
+            /**
+             *
+             * x,y:     object position
+             * w,h:     object dimension
+             * nx,ny:   object new desired position
+             *
+             * @return
+             * <{
+             *      x: <number>,
+             *      y: <number>
+             * }>
+             */
+            collisionResult : function( x,y, w,h, sx,sy ) {
+
+                var res= this.collisionData;
+                res.x= x;
+                res.y= y;
+                res.xCollides= false,
+                res.yCollides= false
+
+                var vx= sx-x;   // incremental positions in pixels due to velocity.
+                var vy= sy-y;
+
+                /**
+                 * ahem!!!!
+                 * math.ceil(1.0) = 1 --> Math.ceil(1.0) !== ((1.0)>>0) + 1
+                 */
+
+                var tilesThrought = Math.ceil( Math.max(Math.abs(vx), Math.abs(vy)) / this.tileSize );
+                var svx= vx/tilesThrought;   // does this needs substepping ? if we move faster than a tile size, it does.
+                var svy= vy/tilesThrought;
+
+                for( var i=0; i<tilesThrought; i++ ) {
+                    this._collisionResult( x,y, w,h, svx,svy );
+                    x= res.x;
+                    y= res.y;
+
+                    if ( res.xCollides && res.yCollides ) {
+                        break;
+                    }
+                }
+
+                return res;
+            },
+
+            _collisionResult : function( x,y,w,h, vx,vy ) {
+
+                var res= this.collisionData;
+
+                var ts= this.tileSize;
+
+                res.x+= vx;
+                res.y+= vy;
+
+                if( vx ) {
+                    var fr = (y / ts)>>0;                // first/last row for this entity size and pos.
+                    var lr = Math.ceil((y + h) / ts);    //
+                    var c;                               // column in map
+
+                    if ( vx<0 ) { //  collides left ?
+                        c= ((x+vx)/ts)>>0;              // colisiona la parte izquierda
+                    } else {
+                        c= ((x+vx+w)/ts)>>0;            // colision derecha: x + ancho + vx
+                    }
+
+                    if( fr >= 0 && lr < this.mapHeight && c >= 0 && c < this.mapWidth ) {
+                        for( var r = fr; r < lr; r++ ) {
+                            if( this.cdata[r][c] ) {
+                                res.xCollides = true;
+                                res.x = c * ts + ((vx < 0) ? ts : -w ); // choca contra el tile @r,c -> corregir la posicion con ts(izq) or -w(der)
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if( vy ) {
+                    var fc= (res.x/ts)>>0;              // first/last column in map for this entity pos/size
+                    var lc= Math.ceil((res.x+w)/ts);
+                    var r;                              // row in map
+
+                    if ( vy<0 ) {
+                        r= (( y + vy )/ts)>>0;          // colisiona por arriba
+                    } else {
+                        r= (( y+ vy + h ) / ts )>>0;    // colisiona por abajo
+                    }
+
+                    if ( fc>=0 && lc<this.mapWidth && r>=0 && r<this.mapHeight ) {
+                        for( var c= fc; c<lc; c++ ) {
+                            if ( this.cdata[r][c] ) {
+                                res.yCollides= true;
+                                res.y= r * ts + (vy>0 ? -h : ts );
+                                break;
+                            }
+                        }
+                    }
+                }
+            },
+
+            nothingAt : function( x, w, y ) {
+
+                var ft = (x / this.tileSize)>>0;            // first tile horiontally
+                var lt = Math.ceil((x + w) / this.tileSize);// last tile horizontally
+                var r = (y / this.tileSize)>>0;             // tile row
+
+                if( lt >= 0 && ft < this.mapWidth && r >= 0 && r < this.mapHeight ) {
+                    for( var c = ft; c < lt; c++ ) {
+                        if( this.cdata[r][c] ) {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
+            },
+
+            paint : function( director, time ) {
+                CAAT.TileMap.superclass.paint.call( this, director, time );
+
+                this.viewport.setContext( director.ctx );
+                for( var i=0; i<this.entities.length; i++ ) {
+                    this.entities[i].paint( director.ctx );
+                }
+            }
+
+        };
+
+        extend( CAAT.TileMap, CAAT.Actor );
+
+    })();
+
+    /**
+     * BaseEntity
+     */
+    (function() {
+        CAAT.BaseEntity= function() {
+            return this;
+        };
+
+        CAAT.BaseEntity.prototype= {
+            x           : 0,
+            y           : 0,
+            width       : 0,
+            height      : 0,
+
+            maxVX       : 100,
+            maxVY       : 100,
+
+            vX          : 0,    // velocity vector
+            vY          : 0,
+
+            frictionX   : 0,    // friction value
+            frictionY   : 0,
+
+            accelX      : 0,    // acceleration vector
+            accelY      : 0,
+
+            bounciness  : 0,    // bounce factor
+
+            removed     : false,
+
+            type        : null,
+
+            canCollide  : true,
+
+            setBounds : function( x,y,w,h ) {
+                this.x= x;
+                this.y= y;
+                this.width= w;
+                this.height= h;
+                return this;
+            },
+
+            tick : function( t, map ) {
+
+            },
+
+            setRemoved : function() {
+                this.removed= true;
+            },
+
+            paint : function( ctx ) {
+//                ctx.fillStyle='#f0f';
+//                ctx.fillRect( this.x>>0, this.y>>0, this.width, this.height );
+
+                si.paintChunk( ctx,
+                        this.x>>0, this.y>>0,
+                        0,0,this.width, this.height );
+
+            }
+
+        };
+
+    })();
+
+    (function() {
+
+        CAAT.TilePlatform = function() {
+            CAAT.TilePlatform.superclass.constructor.call(this);
+            this.type="platform";
+            return this;
+        };
+
+        CAAT.TilePlatform.prototype= {
+
+            path            : null,
+            pb              : null,
+            time            : 0,
+            dt              : 0,
+
+            setPath : function( path, time, offset ) {
+                this.path= path;
+                this.time= time;
+                this.pb= new CAAT.PathBehavior().
+                        setValues( path ).
+                        setFrameTime( 0, time ).
+                        setPingPong( true ).
+                        setCycle( true ).
+                        setValueApplication( false ).
+                        setTimeOffset(offset);
+                return this;
+            },
+
+            tick : function( t, map ) {
+                var dt= (t-this.dt);
+
+                var res= this.pb.setForTime( (t%this.time)/this.time, null );
+                this.x= res.x;
+                this.y= res.y;
+
+                this.dt= t;
+            }
+
+        };
+
+        extend( CAAT.TilePlatform, CAAT.BaseEntity );
+
+    })();
+
+    (function() {
+
+        CAAT.TileWalkLR = function() {
+            CAAT.TileBullet.superclass.constructor.call(this);
+            this.type= "walkLR";
+            return this;
+        };
+
+        CAAT.TileWalkLR.prototype= {
+
+            dir     : 1,
+
+            create : function( vx, maxVX ) {
+                this.vX= vx;
+                this.maxVX= maxVX;
+                return this;
+            },
+
+            tick : function( t, map ) {
+
+                var _dt= (t-this.dt)/1000;
+
+                var sx= this.x + this.vX * _dt * this.dir;
+
+                var cr= map.collisionResult( this.x, this.y, this.width, this.height, sx, this.y+2 );
+
+                if ( !cr.yCollides ) {  // se va a caer.
+                    this.dir= -this.dir;
+
+                } else if ( cr.xCollides ) {
+                    this.dir= -this.dir;
+
+                } else {
+                    this.x= cr.x;
+                    this.y= cr.y;
+                }
+
+                this.dt= t;
+            }
+        };
+
+        extend( CAAT.TileWalkLR, CAAT.BaseEntity );
+
+    })();
+
+    (function() {
+        CAAT.TileBullet = function() {
+            CAAT.TileBullet.superclass.constructor.call(this);
+            this.type= "bullet";
+            this.width= 12;
+            this.height= 6;
+            return this;
+        };
+
+        var FIRED= 0;
+        var DYING= 1;
+        var MAX_DIE_TIME= 100;
+
+        CAAT.TileBullet.prototype= {
+
+            status  :   FIRED,
+            dyingAt :   0,
+
+            create : function( vx, vy ) {
+                this.vX= vx;
+                this.vY= vy;
+                return this;
+            },
+
+            setDying : function(t) {
+                this.status= DYING;
+                this.dyingAt= t;
+                return this;
+            },
+
+            tick : function( t, map ) {
+
+                if ( this.status===FIRED ) {
+                    var _dt= (t-this.dt)/1000;
+
+                    var sx= this.x;
+                    var sy= this.y;
+
+                    sx+= this.vX*_dt;
+                    sy+= this.vY*_dt;
+
+                    var cr= map.collisionResult(
+                            this.x, this.y,
+                            this.width, this.height,
+                            sx,
+                            sy
+                    );
+
+                    if ( cr.xCollides || cr.yCollides ) {
+                        this.vX=0;
+                        this.vY=0;
+                        this.setDying(t);
+                    }
+
+                    this.x= cr.x;
+                    this.y= cr.y;
+                } else {
+
+                    if ( t-this.dyingAt > MAX_DIE_TIME ) {
+                        this.setRemoved();
+                    }
+                }
+
+                this.dt= t;
+            }
+        };
+
+        extend( CAAT.TileBullet, CAAT.BaseEntity );
+
+    })();
+
+    (function() {
+
+        CAAT.TileEntity= function() {
+
+            CAAT.TileEntity.superclass.constructor.call(this);
+
+            this.type= "hero";
+
+            var keys=[0,0,0,0];
+            var me= this;
+
+            CAAT.registerKeyListener( function kl( keyEvent ) {
+
+                var kc= keyEvent.getKeyCode();
+
+                if ( kc===CAAT.Keys.LEFT ) {
+                    keyEvent.preventDefault();
+
+                    me.lookAt= -1;
+                    keys[0]= ( keyEvent.getAction()==='up' ) ? 0 : 1;
+                    if ( keys[0] ^ keys[1] ) {
+                        //me.setImageTransformation( keys[0] ? CAAT.Foundation.SpriteImage.TR_FLIP_HORIZONTAL : CAAT.Foundation.SpriteImage.TR_NONE );
+                    }
+
+                    me.requestWalk= keys[0] ? -1 : 0;
+
+                } else if ( kc===CAAT.Keys.RIGHT ) {
+                    keyEvent.preventDefault();
+
+                    me.lookAt= 1;
+                    keys[1]= ( keyEvent.getAction()==='up' ) ? 0 : 1;
+                    if ( keys[0] ^ keys[1] ) {
+                        //me.setImageTransformation( keys[1] ? CAAT.Foundation.SpriteImage.TR_NONE : CAAT.Foundation.SpriteImage.TR_FLIP_HORIZONTAL );
+                    }
+
+                    me.requestWalk= keys[1] ? 1 : 0;
+
+                } else if ( kc===CAAT.Keys.x ) {
+                    keyEvent.preventDefault();
+                    if ( keyEvent.getAction()==='down' ) {
+                        me.requestJump= true;
+                        /*
+                        if ( me.status===CAAT.TileEntity.ST_STAND ) {
+                            me.setJump( me.scene.time );
+                        }
+                        */
+                    } else {
+                        me.requestJump= false;
+                    }
+
+                } else if (kc===CAAT.Keys.c ) {
+                    if ( keyEvent.getAction()==='up' ) {
+                        var bullet= new CAAT.TileBullet().
+                                setBounds(
+                                    me.x + ( me.lookAt===1 ? me.width + 2 : -14 ),
+                                    me.y+5, 12,6 ).
+                                create(
+                                    500 * me.lookAt, 0 );
+
+                        map.addEntity( bullet );
+                    }
+                }
+
+
+
+            });
+
+            return this;
+        };
+
+        var TIMER_RES= 1000;
+
+        CAAT.TileEntity.ST_FALL=    0;
+        CAAT.TileEntity.ST_STAND=   1;
+        CAAT.TileEntity.ST_JUMP=    2;
+
+        CAAT.TileEntity.prototype= {
+
+            status      : 0,    // fall
+
+            jumpVel     : 400,
+            requestJump : false,
+            requestWalk : 0,
+
+            lookAt      : 1,    // 1= right, -1= left
+
+            dt          : 0,
+
+            incVX : function() {
+                this.vX+= 10;
+                if ( this.vX> this.maxVX ) {
+                    this.vX= this.maxVX;
+                } else if ( this.vX< -this.maxVX ) {
+                    this.vX= -this.maxVX;
+                }
+            },
+
+            decVX : function() {
+                this.vX-= 10;
+                if ( this.vX> this.maxVX ) {
+                    this.vX= this.maxVX;
+                } else if ( this.vX< -this.maxVX ) {
+                    this.vX= -this.maxVX;
+                }
+
+            },
+
+            setStand : function() {
+                this.status= CAAT.TileEntity.ST_STAND;
+            },
+
+            setJump : function() {
+                this.status= CAAT.TileEntity.ST_JUMP;
+                this.vY= -this.jumpVel;
+            },
+
+            setFall : function() {
+                this.status= CAAT.TileEntity.ST_JUMP;
+                this.vY= 0;
+            },
+
+            tick : function( t, map ) {
+
+                var _dt= (t-this.dt)/TIMER_RES;
+
+                var sx= this.x;
+                var sy= this.y;
+
+                this.vX+= map.gravityX * _dt;
+                sx+= this.vX*_dt;
+                if ( this.requestWalk ) {
+                    if ( this.requestWalk>0 ) {
+                        this.incVX();
+                    } else {
+                        this.decVX();
+                    }
+                } else {
+                    if ( this.vX>0 ) {
+                        this.vX-= 1;
+                        if ( this.vX<0 ) {
+                            this.vX=0;
+                        }
+                    } else {
+                        this.vX+= 1;
+                        if ( this.vX>0 ) {
+                            this.vX=0;
+                        }
+
+                    }
+                }
+
+                this.vY+= map.gravityY * _dt * (this.status===CAAT.TileEntity.ST_STAND ? 0 : 1) ;
+                sy+= this.vY*_dt;
+
+                var cr= map.collisionResult(
+                        this.x, this.y,
+                        this.width, this.height,
+                        sx,
+                        sy
+                );
+
+                var vx= sx-this.x;
+                var vy= sy-this.y;
+
+                if ( cr.xCollides ) {
+                    this.vX= 0;
+                }
+
+                if ( this.status===CAAT.TileEntity.ST_STAND && this.requestJump ) {
+                    this.setJump();
+                } else {
+                    if ( cr.yCollides ) {
+                        if( vy.sign()===map.gravityY.sign() ) {
+
+                            if ( this.requestJump ) {
+                                this.setJump();
+                            } else {
+
+                                this.status= CAAT.TileEntity.ST_JUMP;
+                                this.vY= -this.vY*0.5;
+                                if ( this.vY>-10 & this.vY<10 ) {
+                                    this.vY= 0;
+                                    this.setStand();
+                                }
+                            }
+                        }
+                        else {
+                            this.vY= 0;
+                        }
+                    }
+
+                    // no colisiona y esta sobre tierra, a caer neng.
+                    if ( !cr.xCollides && !cr.yCollides && this.status===CAAT.TileEntity.ST_STAND ) {
+
+                        if ( map.nothingAt(
+                                cr.x,this.width,
+                                map.gravityY.sign()===1 ? cr.y+this.height+1 : cr.y - 1) ) {
+                            this.setFall();
+                        } else {
+                            var c= (cr.x/map.tileSize)>>0;
+                            var r= ((cr.y+this.height+1)/map.tileSize)>>0;
+
+                            this.vX+= map.data[r][c].vx;
+                            this.vY+= map.data[r][c].vy;
+                        }
+                    }
+                }
+
+                this.x= cr.x;
+                this.y= cr.y;
+
+                this.dt= t;
+            }
+
+        };
+
+        extend( CAAT.TileEntity, CAAT.BaseEntity );
+
+    })();
+
+    (function() {
+
+        CAAT.TileParticle= function() {
+            CAAT.TileEntity.superclass.constructor.call(this);
+            this.type= "particle";
+            this.canCollide= false;
+
+            return this;
+        };
+
+        CAAT.TileParticle.prototype= {
+
+            dt          : 0,
+
+            initialize : function( vx, vy ) {
+                this.vX= vx;
+                this.vY= vy;
+                return this;
+            },
+
+            tick : function( t, map ) {
+
+                if ( this.dt===0 ) {
+                    this.dt= t;
+                }
+
+                var _dt= (t-this.dt)/1000;
+
+                var sx= this.x;
+                var sy= this.y;
+
+                sx+= this.vX*_dt;
+                this.vY+= map.gravityY * _dt;
+                sy+= this.vY*_dt;
+
+                var cr= map.collisionResult(
+                        this.x, this.y,
+                        this.width, this.height,
+                        sx,
+                        sy
+                );
+
+                var vy= sy-this.y;
+
+                if ( cr.xCollides ) {
+                    this.vX= -this.vX*.8;
+                }
+
+                if ( cr.yCollides ) {
+                    if( vy.sign()===map.gravityY.sign() ) {
+                        this.vY= -this.vY*0.8;
+                        if ( this.vY>-10 & this.vY<10 ) {
+                            this.setRemoved();
+                        }
+                    }
+                    else {
+                        this.vY= 0;
+                    }
+                }
+
+                this.x= cr.x;
+                this.y= cr.y;
+
+                this.dt= t;
+            }
+        };
+
+        extend( CAAT.TileParticle, CAAT.BaseEntity );
+
+    })();
+
+    var map;
+    var si;
+
+    (function() {
+        CAAT.DEBUG=1;
+
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener('load', __load, false);
+
+        function __load() {
+            new CAAT.ImagePreloader().loadImages(
+                [
+                    { id : "tileset", url: "tiles.png" }
+                ],
+                function( count, images ) {
+                    if ( count===images.length ) {
+                        __start( images );
+                    }
+                },
+                function( img ) {
+                    alert("Image "+img+" does not exist.");
+                }
+            );
+        }
+
+
+        var director;
+
+        var hero;
+
+        function __start( images ) {
+
+            var W= 960;
+            var H= 480;
+
+            director= new CAAT.Director().
+                    initialize( W,H, document.getElementById('experiment-canvas') ).
+                    setClear( CAAT.Director.CLEAR_NONE ).
+                    setImagesCache( images );
+
+            var scene= director.createScene();
+            scene.setFillStyle( '#fff' );
+
+            map= new CAAT.TileMap().create(
+                        32,
+                        si= new CAAT.SpriteImage().initialize(
+                                director.getImage("tileset"),
+                                4,
+                                6),
+                        W,
+                        H ).
+                    cacheMap();
+            scene.addChild( map );
+
+            scene.onRenderStart= function( time ) {
+                    map.tick( time );
+                };
+
+            __createHero( scene );
+
+            CAAT.loop(60);
+
+        }
+
+        function __createHero( scene ) {
+
+            hero= new CAAT.TileEntity().
+                setBounds(112,112,16,24);
+            map.setPlayer( hero );
+
+            map.addEntity( new CAAT.TileWalkLR().create(80, 80).setBounds( 192, 224-21, 10, 20 ) );
+            map.addEntity( new CAAT.TileWalkLR().create(80, 80).setBounds( 6*32, 11*32-21, 10, 20 ) );
+            map.addEntity( new CAAT.TileWalkLR().create(80, 80).setBounds( 39*32, 4*32-21, 10, 20 ) );
+
+            map.addEntity( new CAAT.TileWalkLR().create(80, 80).setBounds( 41*32, 3*32-21, 10, 20 ) );
+            map.addEntity( new CAAT.TileWalkLR().create(80, 80).setBounds( 30*32, 3*32-21, 10, 20 ) );
+            map.addEntity( new CAAT.TileWalkLR().create(80, 80).setBounds( 25*32, 4*32-21, 10, 20 ) );
+            map.addEntity( new CAAT.TileWalkLR().create(80, 80).setBounds( 46*32, 4*32-21, 10, 20 ) );
+
+            map.addEntity( new CAAT.TileWalkLR().create(80, 80).setBounds( 27*32, 31*32-21, 10, 20 ) );
+
+            map.addEntity( new CAAT.TileWalkLR().create(180, 80).setBounds( 4*32, 31*32-21, 10, 20 ) );
+            map.addEntity( new CAAT.TileWalkLR().create(40, 80).setBounds( 10*32, 31*32-21, 10, 20 ) );
+            map.addEntity( new CAAT.TileWalkLR().create(80, 80).setBounds( 16*32, 31*32-21, 10, 20 ) );
+
+            map.addEntity( new CAAT.TileWalkLR().create(140, 80).setBounds( 14*32, 26*32-21, 10, 20 ) );
+            map.addEntity( new CAAT.TileWalkLR().create(140, 80).setBounds( 14*32, 22*32-21, 10, 20 ) );
+
+            map.addEntity( new CAAT.TilePlatform().
+                    setPath( new CAAT.Path().beginPath( 140,130 ).addLineTo( 480,130 ).addLineTo( 140,130 ).endPath(), 4000 ).
+                    setBounds( 0,0,64,16 )
+            );
+
+            map.addEntity( new CAAT.TilePlatform().
+                    setPath( new CAAT.Path().beginPath( 34*32,13*32 ).addLineTo( 34*32,24*32 ).addLineTo( 31*32,24*32 ).addLineTo(31*32,13*32).addLineTo(34*32, 13*32).endPath(), 20000, 0 ).
+                    setBounds( 0,0,64,16 )
+            );
+
+            map.addEntity( new CAAT.TilePlatform().
+                    setPath( new CAAT.Path().beginPath( 31*32,24*32 ).addLineTo( 31*32,13*32 ).addLineTo( 34*32,13*32 ).addLineTo(34*32,24*32).addLineTo(31*32, 24*32).endPath(), 20000, .5 ).
+                    setBounds( 0,0,64,16 )
+            );
+        }
+    })();
+</script>
+</html>

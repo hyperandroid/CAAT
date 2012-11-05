@@ -1,0 +1,174 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+
+    <title>CAAT example: Paint</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+</head>
+<body>
+
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Minimal Paint program</h1>
+            </div>
+            <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>Controls:</p>
+                    <ul>
+                        <li>Drag or touch events.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    (function() {
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener('load', load, false);
+
+        function load() {
+            CAAT.ModuleManager.
+                baseURL("../../../src/").
+                setModulePath("CAAT.Core", "Core").
+                setModulePath("CAAT.Math", "Math").
+                setModulePath("CAAT.Behavior", "Behavior").
+                setModulePath("CAAT.Foundation", "Foundation").
+                setModulePath("CAAT.Event", "Event").
+                setModulePath("CAAT.PathUtil", "PathUtil").
+                setModulePath("CAAT.Module", "Modules").
+                setModulePath("CAAT.Module.Preloader", "Modules/Image/Preloader").
+                setModulePath("CAAT.WebGL", "WebGL").
+
+                // get modules, and solve their dependencies.
+                bring([
+                    "CAAT.Foundation.Director"
+                ]).
+
+                // this function will be fired every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( paint );
+        }
+
+        function paint() {
+
+            var director= new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas');
+            var scene = director.createScene();
+
+            var canvas= document.createElement("canvas");
+            canvas.width= director.width;
+            canvas.height= director.height;
+
+            var actor= new CAAT.Foundation.Actor().
+                    setBackgroundImage( canvas );
+
+            actor.__ctx= canvas.getContext("2d");
+            actor.__x= 0;
+            actor.__y= 0;
+            actor.__ctx.lineCap="round";
+            actor.__ctx.fillText( "Drag to paint", 20, 40 );
+
+            var firstTime= true;
+
+            actor.mouseDown= function(e) {
+
+                var actor= e.source;
+
+                if ( firstTime ) {
+                    actor.__ctx.clearRect(0,0,director.width,director.height);
+                    firstTime= false;
+                }
+
+                // get this position as drawing starting pint
+                actor.__x= e.x;
+                actor.__y= e.y;
+
+                // calculate a random line width
+                var lineWidth= 2 + ((Math.random()*20)>>0);
+
+                // calculate a random color.
+                var r= 128+((128*Math.random())>>0);
+                var g= 128+((128*Math.random())>>0);
+                var b= 128+((128*Math.random())>>0);
+
+                actor.__ctx.lineWidth= lineWidth;
+                actor.__ctx.strokeStyle='rgb('+r+','+g+','+b+')';
+            };
+
+            actor.mouseDrag= function(e) {
+                var actor= e.source;
+
+                // draw a line from previous point to the new one
+                actor.__ctx.beginPath();
+                actor.__ctx.moveTo( actor.__x, actor.__y );
+                actor.__ctx.lineTo(e.x, e.y);
+                actor.__ctx.stroke();
+
+                // keep last point as previous for the next line segment.
+                actor.__x= e.x;
+                actor.__y= e.y;
+
+            };
+
+            scene.addChild(actor);
+
+            CAAT.loop(60);
+        }
+
+    })();
+
+</script>
+</html>

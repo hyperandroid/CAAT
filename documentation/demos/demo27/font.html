@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+
+    <title>CAAT example: CAAT.Font + CAAT.TextActor</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+    <link href='http://fonts.googleapis.com/css?family=Fresca|Baumans|Righteous|Voltaire' rel='stylesheet' type='text/css'>
+</head>
+<body>
+
+<div style="font-family: 'Baumans'; float:left;">&nbsp;</div>
+<div style="font-family: 'Fresca'; float:left;">&nbsp;</div>
+<div style="font-family: 'Righteous'; float:left;">&nbsp;</div>
+<div style="font-family: 'Voltaire'; float:left;">&nbsp;</div>
+
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>CAAT.Font</h1>
+            </div>
+            <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>Controls:</p>
+                    <ul>
+                        <li>Drag path handles.</li>
+                    </ul>
+                </div>
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>Creating a CAAT.Font object.
+                        <li>Make google fonts load and usable in a canvas
+                        <li>Use CAAT.Font with CAAT.TextActor</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+    (function() {
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener('load', load, false);
+
+        function load() {
+            CAAT.ModuleManager.
+                baseURL("../../../src/").
+                setModulePath("CAAT.Core", "Core").
+                setModulePath("CAAT.Math", "Math").
+                setModulePath("CAAT.Behavior", "Behavior").
+                setModulePath("CAAT.Foundation", "Foundation").
+                setModulePath("CAAT.Event", "Event").
+                setModulePath("CAAT.PathUtil", "PathUtil").
+                setModulePath("CAAT.Module", "Modules").
+                setModulePath("CAAT.Module.Preloader", "Modules/Image/Preloader").
+                setModulePath("CAAT.WebGL", "WebGL").
+
+                // get modules, and solve their dependencies.
+                bring([
+                    "CAAT.PathUtil.Path",
+                    "CAAT.Foundation.Director",
+                    "CAAT.Foundation.Actor",
+                    "CAAT.Foundation.ActorContainer",
+                    "CAAT.Foundation.SpriteImage",
+                    "CAAT.Foundation.UI.TextActor",
+                    "CAAT.Math.Point",
+                    "CAAT.Behavior.PathBehavior",
+                    "CAAT.Behavior.RotateBehavior",
+                    "CAAT.Behavior.Interpolator",
+                    "CAAT.Module.Font.Font",
+                    "CAAT.Module.ColorUtil.Color"
+                ]).
+
+                // this function will be fired every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( textOnPath );
+        }
+
+        function textOnPath(director) {
+
+            var director= new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas');
+            var scene = director.createScene();
+
+            var gradient = director.ctx.createLinearGradient(0, -30, 0, 100);
+            gradient.addColorStop(0, '#ff0');
+            gradient.addColorStop(0.5, '#f00');
+            gradient.addColorStop(1, 'blue');
+
+            var font_baumans= new CAAT.Module.Font.Font().
+                setFont('"Baumans"').
+                setFontSize(100,"px").
+                setFillStyle( gradient ).
+                setStrokeStyle('#bbb').
+                setStrokeSize(.5).
+                createDefault(2);
+
+            var t0= new CAAT.Foundation.UI.TextActor().setFont(font_baumans).setLocation(director.width/2,10).setText("Baumans").setAlign("center");
+
+            var font_fresca= new CAAT.Module.Font.Font().
+                setFont('"Fresca"').
+                setFontSize(100,"px").
+                setFillStyle( gradient ).
+                setStrokeStyle('#bbb').
+                setStrokeSize(.5).
+                createDefault(2);
+
+            var t1= new CAAT.Foundation.UI.TextActor().setFont(font_fresca).setLocation(director.width/2,100).setText("Fresca").setAlign("center");
+
+            var font_righteous= new CAAT.Module.Font.Font().
+                setFont('"Righteous"').
+                setFontSize(100,"px").
+                setFillStyle( gradient ).
+                setStrokeStyle('#bbb').
+                setStrokeSize(.5).
+                createDefault(10);
+
+            var t2= new CAAT.Foundation.UI.TextActor().setFont(font_righteous).setLocation(director.width/2,200).setText("Righteous").setAlign("center");
+
+            var font_voltaire= new CAAT.Module.Font.Font().
+                setFont('"Voltaire"').
+                setFontSize(100,"px").
+                setFillStyle( gradient ).
+                setStrokeStyle('#bbb').
+                setStrokeSize(.5).
+                createDefault(5);
+
+            var t3= new CAAT.Foundation.UI.TextActor().setFont(font_voltaire).setLocation(director.width/2,300).setText("Voltaire").setAlign("center");
+
+            scene.addChild(t0);
+            scene.addChild(t1);
+            scene.addChild(t2);
+            scene.addChild(t3);
+
+            CAAT.loop(60);
+        }
+
+    })();
+
+</script>
+</html>

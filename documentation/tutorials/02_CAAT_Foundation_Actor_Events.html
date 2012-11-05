@@ -1,0 +1,416 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+
+    <title>CAAT Tutorial 2 - Actor Events</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+</head>
+<body>
+
+<div id="page">
+<div id="header">
+    <div style="text-align: center;">
+
+    </div>
+</div>
+
+<div id="content">
+<div id="menu">
+
+</div>
+<div id="tutorial">
+<div class="section">
+    <h1>CAAT.Actor</h1>
+
+    <div>
+        <h2>Input system</h2>
+        <div>
+            CAAT input system works in two ways.
+        </div>
+        <div>
+            By default every Actor has input enabled (mouse/touch). The system traverses the scene graph
+            in-orderly trying to find what Actor will have input events routed to. The main issue with this
+            way of input routing is that children which lie out of its parent bounds won't be able to have
+            input events sent. To prevent this, a <span class="code">CAAT.Foundation.ActorContainer</span>
+            can be created with <span class="code">CAAT.Foundation.ActorContainer.AddHint.CONFORM</span> so
+            that it will conform its size by computing their children bounding box.
+        </div>
+        <div>
+            The other way of going with input are input lists. These lists, are managed by the methods
+            <ul>
+                <li><span class="apicode">enableInputList(number)</span>: number of priority lists to set for this scene.
+                    A priority list is a list of actors you want to receive input first.
+                    If no actor on the priority lists are under the cursor/touch, the whole scene graph is
+                    traversed instead, as if no priority list existed.
+                <li><span class="apicode">addActorToInputList( actor, index, position )</span>:
+                    add an actor to a given priority list at certain position.
+                <li><span class="apicode">emptyInputList( index )</span>:
+                    remove all elements from a list.
+                <li><span class="apicode">removeActorFromInputList( actor, index )</span>:
+                    remove an actor from the list identified by index.
+            </ul>
+        </div>
+        <div>
+            The input lists change the input semantics so that the developer can decide what scene graph actors
+            will be immediately tested to have input sent. <span class="important">This procedure bypasses the
+            container size restriction</span> making non prioritized actors behave as if they were not on screen
+            regarding input events.
+        </div>
+        <div>
+            To globally disable input for every scene actor, you can set
+            <span class="apicode">CAAT.Foundation.Actor.prototype.mouseEnabled= false;</span>
+            and then a call to <span class="apicode">actor.enableEvents(true);</span> must be explicitly
+            called to enable input for any given actor.
+        </div>
+    </div>
+
+    <h2>Actor Input Events</h2>
+
+    <p>An Actor instance has mouse events enabled by default. The mouse control methods are the following:</p>
+    <ul>
+        <li><span class="apicode">function mouseEnter(mouseEvent)</span><br>Triggered whenever the mouse
+            enters the rectangular area of an Actor. CAAT will perform perfect pixel collision regardless the
+            transformation an actor has applied. See <a href="../demos/demo4/coordinates_org.html">demo4
+            for a demo on this fact</a>.
+        </li>
+        <li><span class="apicode">mouseExit(mouseEvent)</span><br>Exactly like in mouseEnter, but when leaving
+            the Actors bounding box.
+        </li>
+        <li><span class="apicode">mouseMove(mouseEvent)</span><br>Triggered whenever the mouse arrow
+            traverses inside the Actor's bounding box.
+        </li>
+        <li><span class="apicode">mouseDown(mouseEvent)</span><br>Triggered whenever we press the mouse
+            button inside the Actor's contour.
+        </li>
+        <li><span class="apicode">mouseUp(mouseEvent)</span><br>Same as mouseDown but when releasing the mouse
+            button.
+        </li>
+        <li><span class="apicode">mouseClick(mouseEvent)</span><br>Triggered whenever a click has been generated
+            on the Actor. That means that previously a mouseDown and then a mouseDown have been triggered on the Actor.
+            <span class="important">A mouseClick event won't be received if any mouseDrag has been detected</span>.
+        </li>
+        <li><span class="apicode">mouseDblClick(mouseEvent)</span><br>Same as mouseClick but double click.</li>
+        <li><span class="apicode">mouseDrag(mouseEvent)</span><br>Triggered after we perform an equivalent to
+            mouseMove after having done mouseDown. After dragging, when releasing the mouse button, only
+            mouseUp will be triggered avoiding to trigger mouseClick event.
+        </li>
+    </ul>
+    <p>All these methods receive a unique parameter of type <span class="apicode">CAAT.Event.MouseEvent</span>. It contains
+        the following information:</p>
+    <ul>
+        <li><b>screenPoint</b><br>The 2D point of the screen coordinate that originated the mouse event.</li>
+        <li><b>x,y</b> the same as screenPoint but w/o being wrapped in an object.</li>
+        <li><b>point</b><br>The 2D point of local Actor coordinates. Remember that local coordinates are from (0,0) to
+            actor's
+            (width,height). These 2D point is derived from the screenPoint.
+        </li>
+        <li><b>modifiers</b><br>Modifiers will tell you whether some special keys where pressed during the mouse input.
+            The CAAT.Event.MouseEvent class has some methods to check for these special keys.
+        </li>
+        <li><b>time</b><br>The Scene time (more on this later) at which the event was produced.</li>
+        <li><b>source</b><br>The actor the event was produced at.</li>
+    </ul>
+
+    <div class="section">
+        <h2>Multitouch</h2>
+        <p>
+            CAAT also supports multitouch features but they must be explicitly enabled. See
+            <a href="../demos/demo22/multitouch.html">demo22 for a multitouch example.</a>. Single touch and
+            multitouch can't run at the same time, but can switch from multitouch to mouse/single touch by setting
+            a global variable.
+        </p>
+        <p>
+            First of all, multitouch must be enabled by setting CAAT's global variable
+            <span class="apicode">CAAT.TOUCH_BEHAVIOR</span> to <span class="apicode">CAAT.TOUCH_AS_MULTITOUCH</span>;
+            like: CAAT.TOUCH_BEHAVIOR= CAAT.TOUCH_AS_MULTITOUCH;
+        </p>
+        <p>
+            To get back to single touch/mouse, set the variable to <span class="apicode">CAAT.TOUCH_AS_MOUSE</span>
+            value.
+        </p>
+        <p>
+            From this point, CAAT actors will be notified to multitouch control functions:
+        </p>
+        <ul>
+            <li><span class="apicode">touchStart(mouseEvent);</span>
+            <li><span class="apicode">touchMove(mouseEvent)</span>
+            <li><span class="apicode">touchEnd(mouseEvent)</span>
+            <li><span class="apicode">gestureStart(rotation, scaleX, scaleY)</span>
+            <li><span class="apicode">gestureChange(rotation, scaleX, scaleY)</span>
+            <li><span class="apicode">gestureEnd(rotation, scaleX, scaleY)</span>
+        </ul>
+        <p>
+            touchStart, touchMove and touchEnd receive a CAAT.Event.MouseEvent object instance.
+        </p>
+        <p>
+            gestureStart, gestureChange and gestureEnd receive a value from 0 to 2*PI for rotation, and values
+            from 0 to N for scaleX and scaleY.
+        </p>
+        <p>
+            CAAT actors receive gesture events by default, there's no need to enable multitouch. The method
+            <span class="apicode">setGestureEnagled(bool)</span> and <span class="apicode">isGestureEnabled() => bool</span>
+            control default behavior for gestures which are pinch and zoom capabilities. You can define your
+            own behavior by redefining gesture methods. See  <a href="../demos/demo4/coordinates_org.html">
+            demo4 for gesture support</a>.
+        </p>
+    </div>
+</div>
+
+<div>
+    <h2>Input control</h2>
+    <p>
+        If an Actor instance is not supposed to process input from mouse, a call to <span class="code">enableEvents(false)</span>
+        must be explicitly called. This method can be called at any given time with a boolean parameter to set
+        or reset mouse handling.
+    </p>
+
+    <p>
+        Two methods of CAAT.Foundation.Actor instances will change default mouse event handling methods for others:
+    <ul>
+        <li>
+            <span class="apicode">function enableEvents(bool)</span>. Will enable/disable mouse/touch/multitouch
+            in an Actor.
+        </li>
+        <li><span class="apicode">function enableDrag()</span>. Will set mouse methods to allow an actor
+            instance's drag. Some drag modifiers such as shift, control and shift+control will change actor's rotation
+            and scale.
+        </li>
+        <li>
+            <span class="apicode">function setAsButton()</span>. Will set mouse methods to allow a given actor behave
+            as a button.
+        </li>
+    </ul>
+    </p>
+    <p>
+        Other input types such as <b>keys and accelerometer</b> are handled directly by
+        <span class="apicode">CAAT.Foundation.Director</span> instances.
+    </p>
+
+</div>
+
+<div class="section">
+<h2>Example</h2>
+
+<p>In this example, you can see some rectangle-shaped actors with other rectangle child inside.</p>
+
+<p>A CAAT.ActorContainer can contain any number of Actors and hence any number of other ActorContainer
+    instances.</p>
+
+<div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            var director_1 = new CAAT.Foundation.Director().initialize(
+                    600,120,
+                    document.getElementById('_c1'));
+
+            var scene_1=     director_1.createScene().setFillStyle('#fff');
+            
+            // make the scene clear background and draw a black rectangle
+            scene_1.paint= function(director, time) {
+                var ctx= director.ctx;
+                ctx.fillStyle= this.fillStyle;
+                ctx.fillRect(0,0,this.width,this.height);
+                ctx.strokeStyle= '#000';
+                ctx.strokeRect(0,0,this.width-1,this.height-1);
+            }
+
+
+            // create six actors for this scene.
+            for(var i=0; i<6; i++ ) {
+
+                // rectangle shaped actors of 80x80 pixels.
+                var s = 80;
+
+                // containers can contain other actors or containers.
+                var _c1_container = new CAAT.Foundation.ActorContainer().
+                        setBounds(i*100+10, 20, s, s).
+                        setRotation( Math.PI*2*Math.random() ).
+                        setFillStyle('#ff3fff').
+                        enableDrag();
+
+                _c1_container.name = 'rectangle'+i;
+                // set container paint routine to draw an arrow
+                _c1_container.paint= function(director, time) {
+
+                    var crx= director.ctx;
+
+                    // fill actor
+                    crx.fillStyle= this.fillStyle;
+                    crx.fillRect(0,0,this.width,this.height );
+
+                    // outline it.
+                    crx.strokeStyle= 'black';
+                    crx.strokeRect(0,0,this.width,this.height );
+
+                    // draw a white arrow. just to point where position 0,0 is.
+                    crx.strokeStyle='white';
+                    crx.beginPath();
+                    crx.moveTo(5,10);
+                    crx.lineTo(20,10);
+                    crx.lineTo(15,5);
+
+                    crx.moveTo(20,10);
+                    crx.lineTo(15,15);
+
+                    crx.lineWidth=2;
+                    crx.lineJoin='round';
+                    crx.lineCap='round';
+
+                    crx.stroke();
+                };
+
+                // add actor to scene.
+                scene_1.addChild(_c1_container);
+
+                // create a container.
+                var _c1_container_child= new CAAT.Foundation.ActorContainer().
+                        setBounds(s/2,s/2,s/4,s/4).
+                        setRotation( Math.PI*2*Math.random() ).
+                        setFillStyle('#00ff00').
+                        enableDrag();
+
+                // set a custom paint function for children inside containers.
+                _c1_container_child.paint= function(director,time) {
+                    // call default container paint method.
+                    CAAT.Foundation.ActorContainer.superclass.paint.call(this,director,time);
+                    var ctx= director.ctx;
+
+                    // fill a white circle of 10x10 pixels at position 2,2
+                    // just to show where 0,0 is positioned on screen.
+                    ctx.fillStyle='white';
+                    ctx.beginPath();
+                    ctx.arc(7,7,5,0,2*Math.PI,false);
+                    ctx.fill();
+                }
+
+
+                // add this container as a child of the previous created container.
+                _c1_container.addChild(_c1_container_child);
+            }
+
+            // set animation to 10fps.
+            CAAT.loop(10);
+        </pre>
+</div>
+
+<div class="sample">
+    <div>
+        <canvas id="_c1"></canvas>
+    </div>
+    <div>
+        <small><span id="_c1_coords"></span></small>
+    </div>
+    <script>
+        (function() {
+            var director_1 = new CAAT.Foundation.Director().initialize(
+                    600, 400,
+                    document.getElementById('_c1'));
+            var scene_1 = director_1.createScene().setFillStyle('#fff');
+
+            // make the scene clear background and draw a black rectangle
+            scene_1.paint = function(director, time) {
+                var ctx = director.ctx;
+                ctx.fillStyle = this.fillStyle;
+                ctx.fillRect(0, 0, this.width, this.height);
+                ctx.strokeStyle = '#000';
+                ctx.strokeRect(0, 0, this.width - 1, this.height - 1);
+            }
+
+            // create six actors for this scene.
+            for (var i = 0; i < 6; i++) {
+
+                // rectangle shaped actors of 80x80 pixels.
+                var s = 80;
+
+                // containers can contain other actors or containers.
+                var _c1_container = new CAAT.Foundation.ActorContainer().
+                        setBounds(i * 100 + 10, 20, s, s).
+                        setRotation(Math.PI * 2 * Math.random()).
+                        setFillStyle('#ff3fff').
+                        enableDrag();
+
+                _c1_container.name = 'rectangle' + i;
+                // set container paint routine to draw an arrow
+                _c1_container.paint = function(director, time) {
+
+                    var crx = director.ctx;
+
+                    // fill actor
+                    crx.fillStyle = this.fillStyle;
+                    crx.fillRect(0, 0, this.width, this.height);
+
+                    // outline it.
+                    crx.strokeStyle = 'black';
+                    crx.strokeRect(0, 0, this.width, this.height);
+
+                    // draw a white arrow. just to point where position 0,0 is.
+                    crx.strokeStyle = 'white';
+                    crx.beginPath();
+                    crx.moveTo(5, 10);
+                    crx.lineTo(20, 10);
+                    crx.lineTo(15, 5);
+
+                    crx.moveTo(20, 10);
+                    crx.lineTo(15, 15);
+
+                    crx.lineWidth = 2;
+                    crx.lineJoin = 'round';
+                    crx.lineCap = 'round';
+
+                    crx.stroke();
+                };
+
+                // add actor to scene.
+                scene_1.addChild(_c1_container);
+
+                // create a container.
+                var _c1_container_child = new CAAT.Foundation.Actor().
+                        setBounds(s / 2, s / 2, s / 4, s / 4).
+                        setRotation(Math.PI * 2 * Math.random()).
+                        setFillStyle('#00ff00').
+                        enableDrag();
+
+                // set a custom paint function for children inside containers.
+                _c1_container_child.paint = function(director, time) {
+                    // call default container paint method.
+                    CAAT.Foundation.ActorContainer.superclass.paint.call(this, director, time);
+                    var ctx = director.ctx;
+
+                    // fill a white circle of 10x10 pixels at position 2,2
+                    // just to show where 0,0 is positioned on screen.
+                    ctx.fillStyle = 'white';
+                    ctx.beginPath();
+                    ctx.arc(7, 7, 5, 0, 2 * Math.PI, false);
+                    ctx.fill();
+                };
+
+                // add this container as a child of the previous created container.
+                _c1_container.addChild(_c1_container_child);
+            }
+
+            // set animation to 10fps.
+            CAAT.loop(30);
+        })();
+    </script>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

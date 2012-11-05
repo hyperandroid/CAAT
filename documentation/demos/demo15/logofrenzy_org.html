@@ -1,0 +1,220 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+
+    <title>CAAT example: SpriteImage in action</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>SpriteImage</h1>
+            </div>
+            <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>SpriteImage optimum usage.</li>
+                        <li>Adding PathBehaviors.</li>
+                        <li>Correct CompoundBehavior usage.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+    (function() {
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener('load', load, false);
+
+        function load() {
+            CAAT.ModuleManager.
+                baseURL("../../../src/").
+                setModulePath("CAAT.Core", "Core").
+                setModulePath("CAAT.Math", "Math").
+                setModulePath("CAAT.Behavior", "Behavior").
+                setModulePath("CAAT.Foundation", "Foundation").
+                setModulePath("CAAT.Event", "Event").
+                setModulePath("CAAT.PathUtil", "PathUtil").
+                setModulePath("CAAT.Module", "Modules").
+                setModulePath("CAAT.Module.Preloader", "Modules/Image/Preloader").
+                setModulePath("CAAT.WebGL", "WebGL").
+
+                // get modules, and solve their dependencies.
+                bring([
+                   "CAAT.Foundation.Director",
+                   "CAAT.Foundation.Actor",
+                   "CAAT.Foundation.SpriteImage",
+                   "CAAT.Foundation.ActorContainer",
+                   "CAAT.Foundation.UI.TextActor",
+                   "CAAT.Behavior.PathBehavior",
+                   "CAAT.Behavior.ContainerBehavior",
+                   "CAAT.PathUtil.Path",
+                   "CAAT.Module.Preloader.Preloader"
+                ]).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( function () {
+                    // simply load js files. call start when all of them have been loaded.
+                    // load won't start until all 'bring' dependencies have been solved.
+
+                    new CAAT.Module.Preloader.Preloader().
+                            addElement("logo", "../demo-resources/img/logo.png").
+                            load( function(images) {
+                                __scene1(images);
+                            });
+
+                } );
+        }
+
+        function __scene1(images) {
+            var director= new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas');
+            director.setImagesCache(images);
+            var slide= director.createScene();
+            slide.setFillStyle('eee');
+
+            var rows= 4;
+            var columns= 16;
+
+            var logo_ci= new CAAT.Foundation.SpriteImage().initialize(
+                director.getImage('logo'), rows, columns
+            );
+
+            var i,j;
+            var xoff= (slide.width-logo_ci.width)/2;
+            var yoff= (slide.height-logo_ci.height)/2;
+
+            for( i=0; i<rows; i++ ) {
+                for( j=0; j<columns; j++ ) {
+                    var actor= new CAAT.Foundation.Actor().
+                        setBackgroundImage( logo_ci.getRef(), true ).
+                        setSpriteIndex( j + i * columns ).
+                        setLocation(-100,-100);
+
+                    var bc= new CAAT.Behavior.ContainerBehavior().
+                                setFrameTime(0, 23000).
+                                setCycle( true );
+
+
+                    var b1=new CAAT.Behavior.PathBehavior().
+                                setFrameTime( Math.random()*2000, 5000+Math.random()*2000 ).
+                                setValues(
+                                    new CAAT.PathUtil.Path().
+                                        setCubic(
+                                            Math.random()<.5 ? slide.width+Math.random() * 50 : -50-Math.random()*slide.width,
+                                            Math.random()<.5 ? slide.width+Math.random() * 50 : -50-Math.random()*slide.height,
+                                            (Math.random()<.5 ?1 :-1) * Math.random() * slide.width,
+                                            (Math.random()<.5 ?1 :-1) * Math.random() * slide.height,
+                                            (Math.random()<.5 ?1 :-1) * Math.random() * slide.width,
+                                            (Math.random()<.5 ?1 :-1) * Math.random() * slide.height,
+                                            xoff + j * logo_ci.singleWidth,
+                                            yoff + i * logo_ci.singleHeight
+                                        )
+                                ).
+                                addListener({
+                                    behaviorExpired : function(behavior, time, actor) {
+                                        behavior.path.pathSegments[0].curve.coordlist[0].set(
+                                            Math.random()<.5 ? slide.width+Math.random() * 50 : -20-Math.random()*slide.width,
+                                            Math.random()<.5 ? slide.width+Math.random() * 50 : -20-Math.random()*slide.height
+                                        )
+                                    }
+                                });
+                    var b2= new CAAT.Behavior.PathBehavior().
+                                setFrameTime( 15000+Math.random()*2000, 5000 ).
+                                setValues(
+                                    new CAAT.PathUtil.Path().
+                                        setCubic(
+                                            xoff + j * logo_ci.singleWidth,
+                                            yoff + i * logo_ci.singleHeight,
+                                            (Math.random()<.5 ?1 :-1) * Math.random() * slide.width,
+                                            (Math.random()<.5 ?1 :-1) * Math.random() * slide.height,
+                                            (Math.random()<.5 ?1 :-1) * Math.random() * slide.width,
+                                            (Math.random()<.5 ?1 :-1) * Math.random() * slide.height,
+                                            Math.random()<.5 ? slide.width+Math.random() * 50 : -20-Math.random()*slide.width,
+                                            Math.random()<.5 ? slide.width+Math.random() * 50 : -20-Math.random()*slide.height
+                                        )
+                                ).
+                                addListener({
+                                    behaviorExpired : function(behavior, time, actor) {
+                                        behavior.path.pathSegments[0].curve.coordlist[3].set(
+                                            Math.random()<.5 ? slide.width+Math.random() * 50 : -20-Math.random()*slide.width,
+                                            Math.random()<.5 ? slide.width+Math.random() * 50 : -20-Math.random()*slide.height
+                                        )
+                                    }
+                                });
+
+                    bc.addBehavior(b1);
+                    bc.addBehavior(b2);
+
+                    actor.addBehavior( bc );
+                    slide.addChild( actor );
+                }
+            }
+
+            CAAT.loop(60);
+        }
+
+    })();
+
+
+</script>
+
+
+</html>

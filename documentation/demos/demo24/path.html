@@ -1,0 +1,226 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+
+    <title>CAAT example: Compund Path</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+</head>
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Path Segments</h1>
+            </div>
+            <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>
+                        Use the following controls:
+                    </p>
+                    <ul>
+                        <li>Click on screen</li>
+                    </ul>
+                </div>
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>Build paths out of base primitives.</li>
+                        <li>Combine paths to build a more complex one.</li>
+                        <li>Set an actor to traverse a path in a given amount of time.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+
+
+
+    (function() {
+
+        window.addEventListener('load', load, false);
+
+        function load() {
+            CAAT.ModuleManager.
+                baseURL("../../../src/").
+                setModulePath("CAAT.Core", "Core").
+                setModulePath("CAAT.Math", "Math").
+                setModulePath("CAAT.Behavior", "Behavior").
+                setModulePath("CAAT.Foundation", "Foundation").
+                setModulePath("CAAT.Event", "Event").
+                setModulePath("CAAT.PathUtil", "PathUtil").
+                setModulePath("CAAT.Module", "Modules").
+                setModulePath("CAAT.Module.Preloader", "Modules/Image/Preloader").
+                setModulePath("CAAT.WebGL", "WebGL").
+
+                setModulePath("CAAT.FC",                "../documentation/demos/demo20").
+
+                // get modules, and solve their dependencies.
+                bring([
+                    "CAAT.PathUtil.Path",
+                    "CAAT.PathUtil.ArcPath",
+                    "CAAT.PathUtil.RectPath",
+                    "CAAT.Foundation.Director",
+                    "CAAT.Foundation.Actor",
+                    "CAAT.Foundation.ActorContainer",
+                    "CAAT.Foundation.UI.PathActor",
+                    "CAAT.Math.Point",
+                    "CAAT.FC.Ship",
+                    "CAAT.Behavior.PathBehavior"
+                ]).
+
+                // this function will be fired every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( __start );
+        }
+
+
+        function __start() {
+
+            CAAT.DEBUG=1;
+
+            var director= new CAAT.Foundation.Director().initialize(800, 500, "experiment-canvas");
+            var scene= director.createScene();
+
+            var i;
+            var R= 100;
+            var pp= [];
+            var angle;
+            var NP=7;
+            for( i=0; i<NP; i++ ) {
+                angle= i*Math.PI/(NP);
+
+                pp.push( new CAAT.Math.Point(
+                        500 + R*Math.cos(angle + (Math.PI*(i%2)) ) ,
+                        200 + R*Math.sin(angle + (Math.PI*(i%2))) ) );
+
+            }
+
+            var path5= new CAAT.PathUtil.Path().
+                setCatmullRom(
+                    pp,
+                    true
+                ).
+                endPath();
+
+            var path1= new CAAT.PathUtil.Path().
+                    beginPath(100,100).
+                    addLineTo( 200,200).
+                    addLineTo( 10, 250).
+                    addLineTo( 100,100).
+                    closePath();
+
+            var path2= new CAAT.PathUtil.Path().
+                    beginPath( 300,300).
+                    addQuadricTo( 600,300, 500,400).
+                    addQuadricTo( 500,490, 320, 450).
+                    closePath();
+
+            var path3= new CAAT.PathUtil.ArcPath().
+                    initialize( 300,200, 50, Math.PI*2).
+                    setClockWise(true);
+
+            var path4= new CAAT.PathUtil.RectPath().
+                    setInitialPosition( 100,300).
+                    setFinalPosition( 200,450 );
+
+            var path= new CAAT.PathUtil.Path().
+                    addSegment( path1).
+                    addSegment( path3).
+                    addSegment( path2).
+                    addSegment( path4).
+                    addSegment( path5).
+                    endPath();
+
+            var paths= [path1, path2, path3, path4, path5, path];
+            var colors= [
+                'rgba(32,32,255,.7)',
+                'rgba(32,255,255,.7)',
+                'rgba(255,32,255,.7)',
+                'rgba(255,255,32,.7)',
+                'rgba(255,32,32,.7)',
+                'rgba(32,255,32,.7)'
+            ]
+
+            var pa= new CAAT.Foundation.UI.PathActor().
+                    setBounds(0,0,800,500).
+                    setInteractive(true).
+                    setPath( path ).
+                    showBoundingBox(true);
+
+
+            scene.addChild( pa );
+
+            for( i=0; i<paths.length; i++ ) {
+                scene.addChild( new CAAT.FC.Ship().
+                        setSize( 30,30 ).
+                        enableEvents(false).
+                        addBehavior(
+                            new CAAT.Behavior.PathBehavior().
+                                    setValues( paths[i] ).
+                                    setDelayTime( 0, 20000).
+                                    setCycle(true).
+                                    setAutoRotate(true, CAAT.PathBehavior.autorotate.FREE)
+                        ).
+                        setPositionAnchor(.5,.5).
+                        setFillStyle( colors[i] )
+                );
+            }
+
+            CAAT.loop(60);
+
+        }
+
+    })();
+
+</script>
+</html>
