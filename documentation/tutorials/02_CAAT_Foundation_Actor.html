@@ -1,0 +1,115 @@
+
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 2 - Actors</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+
+
+<div class="section">
+    <h1>CAAT.Actor</h1>
+    <p>CAAT.Actor is the simplest object instance CAAT manages. Every on-screen element is an Actor instance.
+        An Actor has entity, it has a size, position and can have input sent to it. Everything that has a
+        visual representation is an Actor, including Director and Scene objects.</p>
+    <p>This object has functionality for:</p>
+    <ol>
+        <li>Set location and size on screen. Actors are always rectangular shapes, but not needed to be AABB.</li>
+        <li>Set affine transforms (rotation, scale and translation).</li>
+        <li>Define life cycle.</li>
+        <li>Manage alpha transparency.</li>
+        <li>Manage and keep track of applied Behaviors. Behaviors apply transformations via key-framing.</li>
+        <li>Compose transformations. A container Actor will transform its children before they apply their own transformation.</li>
+        <li>Clipping capabilities. Either rectangular or arbitrary shapes.</li>
+        <li>The API is developed to allow method chaining when possible.</li>
+        <li>Handle input (either mouse events, touch, multitouch, keys and accelerometer).</li>
+        <li>Show an image.</li>
+        <li>Show some image animations.</li>
+        <li>etc.</li>
+    </ol>
+    <p>This class is the superclass for other Actors, so it must be specialized to
+        perform new behaviors. There some out-of-the-box Actors already available in CAAT:</p>
+    <ul>
+        <li>Label. Shows multiline text with embedded font styles.</li>
+        <li>Dock. A container which behaves like OSX's dock.</li>
+        <li>TextActor. Show single line text with a font or Sprite font.</li>
+        <li>ShapeActor. Shows rectangles or circles.</li>
+        <li>StarActor. Shows an star where you can customize number of vertex, radius, etc..</li>
+        <li>InterpolatorActor. Shows curves for CAAT.Behavior.Interpolator objects.</li>
+        <li>PathActor. Shows and handles a CAAT.PathUtil.Path object.</li>
+        <li>...</li>
+    </ul>
+    <p>but as you'll see, developing a new breed of Actors will be just a few lines of code.</p>
+    <p>Take a look at Sumon sourcecode: https://github.com/hyperandroid/Sumon which defines lots of new Actors.</p>
+
+    <p>
+        One important fact about Actors is the coordinate system. An Actor will always report local coordinates
+        despite the transformation applied to it. In example, an Actor can be scaled twice widely, and rotated
+        45 degrees, and on mouseMove the received event will report local Actor coordinates as if the actor itself
+        weren't transformed.
+    </p>
+    <p>
+        Additionally, each actor defines anchors por position, rotation and scale independently. See methods
+        <span class="apicode">setPositionAnchor( ax, ay );</span> <span class="apicode">setRotateAnchor( ax, ay );</span> and
+        <span class="apicode">setScaleAnchor( ax, ay );</span>. Anchors are defined in relative coordinates, so if for example,
+        a rotation anchor by an actor's center is to be set, you must call setRotateAnchor(.5,.5);
+    </p>
+</div>
+
+<div class="section">
+    <h2>More info on CAAT.Actor class</h2>
+    <p>
+        <a href="02_CAAT_Foundation_Actor_Events.html">Events</a><br>
+        <a href="t2-2.html">Lifecycle</a><br>
+        <a href="t2-3.html">Transformations</a><br>
+        <a href="t2-4.html">Behaviors</a><br>
+        <a href="t2-5.html">Background Image</a><br>
+        <a href="t2-6.html">Paint method</a><br>
+        <a href="t2-7.html">Caching</a><br>
+    </p>
+</div>
+
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+
+
