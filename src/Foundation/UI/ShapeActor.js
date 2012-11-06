@@ -114,7 +114,7 @@ CAAT.Module({
         paintCircle : function(director,time) {
 
             if ( this.cached ) {
-                CAAT.ActorContainer.prototype.paint.call( this, director, time );
+                CAAT.Foundation.ActorContainer.prototype.paint.call( this, director, time );
                 return;
             }
 
@@ -148,7 +148,7 @@ CAAT.Module({
         paintRectangle : function(director,time) {
 
             if ( this.cached ) {
-                CAAT.ActorContainer.prototype.paint.call( this, director, time );
+                CAAT.Foundation.ActorContainer.prototype.paint.call( this, director, time );
                 return;
             }
 

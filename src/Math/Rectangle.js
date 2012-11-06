@@ -162,7 +162,7 @@ CAAT.Module( {
 
             intersect : function( i, r ) {
                 if ( typeof r==='undefined' ) {
-                    r= new CAAT.Rectangle();
+                    r= new CAAT.Math.Rectangle();
                 }
 
                 r.x= Math.max( this.x, i.x );

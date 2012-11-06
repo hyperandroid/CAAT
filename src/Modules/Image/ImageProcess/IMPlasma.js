@@ -58,7 +58,7 @@ CAAT.Module({
             this.pos3=Math.floor(255*Math.random());
             this.pos4=Math.floor(255*Math.random());
 
-            this.m_colorMap= CAAT.Color.prototype.makeRGBColorRamp(
+            this.m_colorMap= CAAT.Module.ColorUtil.Color.makeRGBColorRamp(
                     colors!==null ? colors : this.color,
                     256,
                     CAAT.Module.ColorUtil.Color.RampEnumeration.RAMP_CHANNEL_RGBA_ARRAY );

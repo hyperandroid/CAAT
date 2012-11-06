@@ -22,7 +22,7 @@ CAAT.Module({
                     document.body.appendChild(canvascontainer);
                 }
 
-                director= new CAAT.Director().
+                director= new CAAT.Foundation.Director().
                     initialize(
                         width||800,
                         height||600,

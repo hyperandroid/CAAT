@@ -598,7 +598,7 @@ CAAT.Module( {
             this.width= image.getWidth();
             this.height= image.getHeight();
 
-            if ( this.image instanceof CAAT.SpriteImage ) {
+            if ( this.image instanceof CAAT.SpriteImage || this.image instanceof CAAT.Foundation.SpriteImage ) {
                 this.spriteIndex= r*image.columns+c;
                 this.paint= this.paintSI;
             }

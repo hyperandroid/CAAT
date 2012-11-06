@@ -57,10 +57,10 @@ CAAT.Module( {
 
                 this.coordlist= [];
 
-                this.coordlist.push( new CAAT.Point().set(cp0x, cp0y ) );
-                this.coordlist.push( new CAAT.Point().set(cp1x, cp1y ) );
-                this.coordlist.push( new CAAT.Point().set(cp2x, cp2y ) );
-                this.coordlist.push( new CAAT.Point().set(cp3x, cp3y ) );
+                this.coordlist.push( new CAAT.Math.Point().set(cp0x, cp0y ) );
+                this.coordlist.push( new CAAT.Math.Point().set(cp1x, cp1y ) );
+                this.coordlist.push( new CAAT.Math.Point().set(cp2x, cp2y ) );
+                this.coordlist.push( new CAAT.Math.Point().set(cp3x, cp3y ) );
 
                 this.cubic= true;
                 this.update();
@@ -80,9 +80,9 @@ CAAT.Module( {
 
                 this.coordlist= [];
 
-                this.coordlist.push( new CAAT.Point().set(cp0x, cp0y ) );
-                this.coordlist.push( new CAAT.Point().set(cp1x, cp1y ) );
-                this.coordlist.push( new CAAT.Point().set(cp2x, cp2y ) );
+                this.coordlist.push( new CAAT.Math.Point().set(cp0x, cp0y ) );
+                this.coordlist.push( new CAAT.Math.Point().set(cp1x, cp1y ) );
+                this.coordlist.push( new CAAT.Math.Point().set(cp2x, cp2y ) );
 
                 this.cubic= false;
                 this.update();
@@ -136,7 +136,7 @@ CAAT.Module( {
                 ctx.beginPath();
                 ctx.moveTo(x1,y1);
 
-                var point= new CAAT.Point();
+                var point= new CAAT.Math.Point();
                 for(var t=this.k;t<=1+this.k;t+=this.k){
                     this.solve(point,t);
                     ctx.lineTo(point.x, point.y );
@@ -165,7 +165,7 @@ CAAT.Module( {
                 ctx.beginPath();
                 ctx.moveTo(x1,y1);
 
-                var point= new CAAT.Point();
+                var point= new CAAT.Math.Point();
                 for(var t=this.k;t<=1+this.k;t+=this.k){
                     this.solve(point,t);
                     ctx.lineTo(point.x, point.y );

@@ -53,7 +53,7 @@ CAAT.Module({
              * @return this
              */
             setQuadric:function (p0x, p0y, p1x, p1y, p2x, p2y) {
-                var curve = new CAAT.Bezier();
+                var curve = new CAAT.Math.Bezier();
                 curve.setQuadric(p0x, p0y, p1x, p1y, p2x, p2y);
                 this.curve = curve;
                 this.updatePath();
@@ -74,7 +74,7 @@ CAAT.Module({
              * @return this
              */
             setCubic:function (p0x, p0y, p1x, p1y, p2x, p2y, p3x, p3y) {
-                var curve = new CAAT.Bezier();
+                var curve = new CAAT.Math.Bezier();
                 curve.setCubic(p0x, p0y, p1x, p1y, p2x, p2y, p3x, p3y);
                 this.curve = curve;
                 this.updatePath();

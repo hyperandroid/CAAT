@@ -62,9 +62,9 @@ CAAT.Module({
             setPoints:function (points) {
                 this.points = [];
                 this.points.push(points[0]);
-                this.points.push(new CAAT.Point().set(points[1].x, points[0].y));
+                this.points.push(new CAAT.Math.Point().set(points[1].x, points[0].y));
                 this.points.push(points[1]);
-                this.points.push(new CAAT.Point().set(points[0].x, points[1].y));
+                this.points.push(new CAAT.Math.Point().set(points[0].x, points[1].y));
                 this.points.push(points[0].clone());
                 this.updatePath();
 

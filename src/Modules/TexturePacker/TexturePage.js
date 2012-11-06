@@ -58,7 +58,7 @@ CAAT.Module( {
 
                 var img= this.images[i];
                 if ( img.inverted ) {
-                    img= CAAT.Modules.Image.ImageUtil.rotate( img, -90 );
+                    img= CAAT.Module.Image.ImageUtil.rotate( img, -90 );
                 }
 
                 gl.texSubImage2D(

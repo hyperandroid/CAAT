@@ -36,7 +36,7 @@ CAAT.Module( {
             var b= this.worldBody;
             var xf= b.m_xf;
             //this.setLocation(
-            CAAT.Actor.prototype.setLocation.call( this,
+            CAAT.Foundation.Actor.prototype.setLocation.call( this,
                     CAAT.PMR*xf.position.x - this.width/2,
                     CAAT.PMR*xf.position.y - this.height/2 );
             this.setRotation( b.GetAngle() );

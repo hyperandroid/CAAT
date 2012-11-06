@@ -103,7 +103,7 @@ CAAT.Module( {
 
 		pushAllCirclesTowardTarget: function(aTarget)
 		{
-			var v = new CAAT.Point(0,0,0),
+			var v = new CAAT.Math.Point(0,0,0),
 				circleList = this.allCircles,
 				len = circleList.length;
 

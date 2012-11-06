@@ -98,7 +98,7 @@ CAAT.Module( {
                 }
             }
 
-            return new CAAT.Dimension(
+            return new CAAT.Math.Dimension(
                 this.padding.left + this.padding.right + ncols * w + (ncols - 1) * this.hgap,
                 this.padding.top + this.padding.bottom + nrows * h + (nrows - 1) * this.vgap
             );

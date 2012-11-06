@@ -77,7 +77,7 @@ CAAT.Module({
                 var contour = [], i;
 
                 for (i = 0; i <= numSamples; i++) {
-                    var point = new CAAT.Point();
+                    var point = new CAAT.Math.Point();
                     this.solve(point, i / numSamples);
                     contour.push(point);
                 }
@@ -92,14 +92,14 @@ CAAT.Module({
              */
             getBoundingBox:function (rectangle) {
                 if (!rectangle) {
-                    rectangle = new CAAT.Rectangle();
+                    rectangle = new CAAT.Math.Rectangle();
                 }
 
                 // thanks yodesoft.com for spotting the first point is out of the BB
                 rectangle.setEmpty();
                 rectangle.union(this.coordlist[0].x, this.coordlist[0].y);
 
-                var pt = new CAAT.Point();
+                var pt = new CAAT.Math.Point();
                 for (var t = this.k; t <= 1 + this.k; t += this.k) {
                     this.solve(pt, t);
                     rectangle.union(pt.x, pt.y);
@@ -118,7 +118,7 @@ CAAT.Module({
                 x1 = this.coordlist[0].x;
                 y1 = this.coordlist[0].y;
                 var llength = 0;
-                var pt = new CAAT.Point();
+                var pt = new CAAT.Math.Point();
                 for (var t = this.k; t <= 1 + this.k; t += this.k) {
                     this.solve(pt, t);
                     llength += Math.sqrt((pt.x - x1) * (pt.x - x1) + (pt.y - y1) * (pt.y - y1));

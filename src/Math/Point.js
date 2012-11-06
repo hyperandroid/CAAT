@@ -47,7 +47,7 @@ CAAT.Module( {
              * @return {CAAT.Point}
              */
             clone : function() {
-                var p= new CAAT.Point(this.x, this.y, this.z );
+                var p= new CAAT.Math.Point(this.x, this.y, this.z );
                 return p;
             },
             /**
@@ -212,7 +212,7 @@ CAAT.Module( {
              * @return {string}
              */
             toString: function() {
-                return "(CAAT.Point)" +
+                return "(CAAT.Math.Point)" +
                     " x:" + String(Math.round(Math.floor(this.x*10))/10) +
                     " y:" + String(Math.round(Math.floor(this.y*10))/10) +
                     " z:" + String(Math.round(Math.floor(this.z*10))/10);

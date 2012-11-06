@@ -159,7 +159,7 @@ CAAT.Module( {
             if ( font instanceof CAAT.Module.Font.Font ) {
                 font.setAsSpriteImage();
             } else if (font instanceof CAAT.Foundation.SpriteImage ) {
-                CAAT.log("WARN: setFont will no more accept a CAAT.SpriteImage as argument.");
+                //CAAT.log("WARN: setFont will no more accept a CAAT.SpriteImage as argument.");
             }
             this.font= font;
 

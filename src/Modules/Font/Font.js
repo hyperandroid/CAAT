@@ -276,7 +276,7 @@ CAAT.Module({
                     };
                 }
 
-                this.spriteImage = new CAAT.SpriteImage().initializeAsGlyphDesigner(this.image, cm);
+                this.spriteImage = new CAAT.Foundation.SpriteImage().initializeAsGlyphDesigner(this.image, cm);
                 return this;
             },
 

@@ -167,7 +167,7 @@ CAAT.Module({
 
             getPreferredLayoutSize:function (container) {
 
-                var dim = new CAAT.Dimension();
+                var dim = new CAAT.Math.Dimension();
                 var computedW = 0, computedH = 0;
                 var i, l;
 
@@ -192,7 +192,7 @@ CAAT.Module({
             },
 
             getMinimumLayoutSize:function (container) {
-                var dim = new CAAT.Dimension();
+                var dim = new CAAT.Math.Dimension();
                 var computedW = 0, computedH = 0;
                 var i, l;
 

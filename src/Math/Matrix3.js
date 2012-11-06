@@ -155,11 +155,11 @@ CAAT.Module({
              * @static
              */
             rotate:function (xy, xz, yz) {
-                var res = new CAAT.Matrix3();
+                var res = new CAAT.Math.Matrix3();
                 var s, c, m;
 
                 if (xy !== 0) {
-                    m = new CAAT.Matrix3();
+                    m = new CAAT.Math.Math.Matrix3();
                     s = Math.sin(xy);
                     c = Math.cos(xy);
                     m.matrix[1][1] = c;
@@ -170,7 +170,7 @@ CAAT.Module({
                 }
 
                 if (xz !== 0) {
-                    m = new CAAT.Matrix3();
+                    m = new CAAT.Math.Matrix3();
                     s = Math.sin(xz);
                     c = Math.cos(xz);
                     m.matrix[0][0] = c;
@@ -181,7 +181,7 @@ CAAT.Module({
                 }
 
                 if (yz !== 0) {
-                    m = new CAAT.Matrix3();
+                    m = new CAAT.Math.Matrix3();
                     s = Math.sin(yz);
                     c = Math.cos(yz);
                     m.matrix[0][0] = c;
@@ -198,7 +198,7 @@ CAAT.Module({
              * @return {CAAT.Matrix3} a newly allocated matrix object.
              */
             getClone:function () {
-                var m = new CAAT.Matrix3();
+                var m = new CAAT.Math.Matrix3();
                 m.copy(this);
                 return m;
             },
@@ -361,7 +361,7 @@ CAAT.Module({
              * @return {CAAT.Matrix3} a new matrix.
              */
             translate:function (x, y, z) {
-                var m = new CAAT.Matrix3();
+                var m = new CAAT.Math.Matrix3();
                 m.setTranslate(x, y, z);
                 return m;
             },
@@ -373,7 +373,7 @@ CAAT.Module({
                 return this;
             },
             scale:function (sx, sy, sz) {
-                var m = new CAAT.Matrix3();
+                var m = new CAAT.Math.Matrix3();
                 m.setScale(sx, sy, sz);
                 return m;
             },
@@ -480,7 +480,7 @@ CAAT.Module({
                     m31 = mm[2][0], m32 = mm[2][1], m33 = mm[2][2], m34 = mm[2][3],
                     m41 = mm[3][0], m42 = mm[3][1], m43 = mm[3][2], m44 = mm[3][3];
 
-                var m2 = new CAAT.Matrix3();
+                var m2 = new CAAT.Math.Matrix3();
                 m2.matrix[0][0] = m23 * m34 * m42 + m24 * m32 * m43 + m22 * m33 * m44 - m24 * m33 * m42 - m22 * m34 * m43 - m23 * m32 * m44;
                 m2.matrix[0][1] = m14 * m33 * m42 + m12 * m34 * m43 + m13 * m32 * m44 - m12 * m33 * m44 - m13 * m34 * m42 - m14 * m32 * m43;
                 m2.matrix[0][2] = m13 * m24 * m42 + m12 * m23 * m44 + m14 * m22 * m43 - m12 * m24 * m43 - m13 * m22 * m44 - m14 * m23 * m42;

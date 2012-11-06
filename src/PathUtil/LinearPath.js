@@ -19,7 +19,7 @@ CAAT.Module({
                 this.points.push(new CAAT.Math.Point());
                 this.points.push(new CAAT.Math.Point());
 
-                this.newPosition = new CAAT.Point(0, 0, 0);
+                this.newPosition = new CAAT.Math.Point(0, 0, 0);
                 return this;
             },
 

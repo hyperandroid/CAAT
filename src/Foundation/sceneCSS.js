@@ -212,10 +212,10 @@ CAAT.Module({
              */
             easeTranslation:function (time, alpha, anchor, isIn, interpolator) {
 
-                this.easeContainerBehaviour = new CAAT.ContainerBehavior();
+                this.easeContainerBehaviour = new CAAT.Behavior.ContainerBehavior();
                 this.easeIn = isIn;
 
-                var pb = new CAAT.PathBehavior();
+                var pb = new CAAT.Behavior.PathBehavior();
                 if (interpolator) {
                     pb.setInterpolator(interpolator);
                 }
@@ -231,28 +231,28 @@ CAAT.Module({
 
 
                 switch (anchor) {
-                    case CAAT.Actor.ANCHOR_TOP:
+                    case CAAT.Foundation.Actor.ANCHOR_TOP:
                         if (isIn) {
                             pb.setPath(new CAAT.Path().setLinear(0, -this.height, 0, 0));
                         } else {
                             pb.setPath(new CAAT.Path().setLinear(0, 0, 0, -this.height));
                         }
                         break;
-                    case CAAT.Actor.ANCHOR_BOTTOM:
+                    case CAAT.Foundation.Actor.ANCHOR_BOTTOM:
                         if (isIn) {
                             pb.setPath(new CAAT.Path().setLinear(0, this.height, 0, 0));
                         } else {
                             pb.setPath(new CAAT.Path().setLinear(0, 0, 0, this.height));
                         }
                         break;
-                    case CAAT.Actor.ANCHOR_LEFT:
+                    case CAAT.Foundation.Actor.ANCHOR_LEFT:
                         if (isIn) {
                             pb.setPath(new CAAT.Path().setLinear(-this.width, 0, 0, 0));
                         } else {
                             pb.setPath(new CAAT.Path().setLinear(0, 0, -this.width, 0));
                         }
                         break;
-                    case CAAT.Actor.ANCHOR_RIGHT:
+                    case CAAT.Foundation.Actor.ANCHOR_RIGHT:
                         if (isIn) {
                             pb.setPath(new CAAT.Path().setLinear(this.width, 0, 0, 0));
                         } else {
@@ -320,23 +320,23 @@ CAAT.Module({
                 var y2 = 0;
 
                 switch (anchor) {
-                    case CAAT.Actor.ANCHOR_TOP_LEFT:
-                    case CAAT.Actor.ANCHOR_TOP_RIGHT:
-                    case CAAT.Actor.ANCHOR_BOTTOM_LEFT:
-                    case CAAT.Actor.ANCHOR_BOTTOM_RIGHT:
-                    case CAAT.Actor.ANCHOR_CENTER:
+                    case CAAT.Foundation.Actor.ANCHOR_TOP_LEFT:
+                    case CAAT.Foundation.Actor.ANCHOR_TOP_RIGHT:
+                    case CAAT.Foundation.Actor.ANCHOR_BOTTOM_LEFT:
+                    case CAAT.Foundation.Actor.ANCHOR_BOTTOM_RIGHT:
+                    case CAAT.Foundation.Actor.ANCHOR_CENTER:
                         x2 = 1;
                         y2 = 1;
                         break;
-                    case CAAT.Actor.ANCHOR_TOP:
-                    case CAAT.Actor.ANCHOR_BOTTOM:
+                    case CAAT.Foundation.Actor.ANCHOR_TOP:
+                    case CAAT.Foundation.Actor.ANCHOR_BOTTOM:
                         x = 1;
                         x2 = 1;
                         y = 0;
                         y2 = 1;
                         break;
-                    case CAAT.Actor.ANCHOR_LEFT:
-                    case CAAT.Actor.ANCHOR_RIGHT:
+                    case CAAT.Foundation.Actor.ANCHOR_LEFT:
+                    case CAAT.Foundation.Actor.ANCHOR_RIGHT:
                         y = 1;
                         y2 = 1;
                         x = 0;
@@ -417,26 +417,26 @@ CAAT.Module({
              * @param isIn boolean indicating whehter the Scene is brought in.
              */
             easeRotation:function (time, alpha, anchor, isIn, interpolator) {
-                this.easeContainerBehaviour = new CAAT.ContainerBehavior();
+                this.easeContainerBehaviour = new CAAT.Behavior.ContainerBehavior();
 
                 var start = 0;
                 var end = 0;
 
-                if (anchor == CAAT.Actor.ANCHOR_CENTER) {
-                    anchor = CAAT.Actor.ANCHOR_TOP;
+                if (anchor == CAAT.Foundation.Actor.ANCHOR_CENTER) {
+                    anchor = CAAT.Foundation.Actor.ANCHOR_TOP;
                 }
 
                 switch (anchor) {
-                    case CAAT.Actor.ANCHOR_TOP:
-                    case CAAT.Actor.ANCHOR_BOTTOM:
-                    case CAAT.Actor.ANCHOR_LEFT:
-                    case CAAT.Actor.ANCHOR_RIGHT:
+                    case CAAT.Foundation.Actor.ANCHOR_TOP:
+                    case CAAT.Foundation.Actor.ANCHOR_BOTTOM:
+                    case CAAT.Foundation.Actor.ANCHOR_LEFT:
+                    case CAAT.Foundation.Actor.ANCHOR_RIGHT:
                         start = Math.PI * (Math.random() < 0.5 ? 1 : -1);
                         break;
-                    case CAAT.Actor.ANCHOR_TOP_LEFT:
-                    case CAAT.Actor.ANCHOR_TOP_RIGHT:
-                    case CAAT.Actor.ANCHOR_BOTTOM_LEFT:
-                    case CAAT.Actor.ANCHOR_BOTTOM_RIGHT:
+                    case CAAT.Foundation.Actor.ANCHOR_TOP_LEFT:
+                    case CAAT.Foundation.Actor.ANCHOR_TOP_RIGHT:
+                    case CAAT.Foundation.Actor.ANCHOR_BOTTOM_LEFT:
+                    case CAAT.Foundation.Actor.ANCHOR_BOTTOM_RIGHT:
                         start = Math.PI / 2 * (Math.random() < 0.5 ? 1 : -1);
                         break;
                     default:
@@ -454,7 +454,7 @@ CAAT.Module({
                 }
 
                 var anchorPercent = this.getAnchorPercent(anchor);
-                var rb = new CAAT.RotateBehavior().
+                var rb = new CAAT.Behavior.RotateBehavior().
                     setFrameTime(0, time).
                     setValues(start, end, anchorPercent.x, anchorPercent.y);
 
@@ -468,7 +468,7 @@ CAAT.Module({
                 this.easeContainerBehaviour.addListener(this);
 
                 this.emptyBehaviorList();
-                CAAT.Scene.superclass.addBehavior.call(this, this.easeContainerBehaviour);
+                CAAT.Foundation.Scene.superclass.addBehavior.call(this, this.easeContainerBehaviour);
             },
             /**
              * Registers a listener for listen for transitions events.

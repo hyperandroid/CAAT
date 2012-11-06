@@ -52,7 +52,7 @@ CAAT.Module({
              * @static
              */
             rotate:function (angle) {
-                var m = new CAAT.Matrix();
+                var m = new CAAT.Math.Matrix();
                 m.setRotation(angle);
                 return m;
             },
@@ -80,7 +80,7 @@ CAAT.Module({
              * @static
              */
             scale:function (scalex, scaley) {
-                var m = new CAAT.Matrix();
+                var m = new CAAT.Math.Matrix();
 
                 m.matrix[0] = scalex;
                 m.matrix[4] = scaley;
@@ -105,7 +105,7 @@ CAAT.Module({
              *
              */
             translate:function (x, y) {
-                var m = new CAAT.Matrix();
+                var m = new CAAT.Math.Matrix();
 
                 m.matrix[2] = x;
                 m.matrix[5] = y;
@@ -260,7 +260,7 @@ CAAT.Module({
                 var m21 = tm[7];
                 var m22 = tm[8];
 
-                var newMatrix = new CAAT.Matrix();
+                var newMatrix = new CAAT.Math.Matrix();
 
                 var determinant = m00 * (m11 * m22 - m21 * m12) - m10 * (m01 * m22 - m21 * m02) + m20 * (m01 * m12 - m11 * m02);
                 if (determinant === 0) {

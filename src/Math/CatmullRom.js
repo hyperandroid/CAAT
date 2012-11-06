@@ -81,7 +81,7 @@ CAAT.Module({
 
                 var ctx = director.ctx;
 
-                var point = new CAAT.Point();
+                var point = new CAAT.Math.Point();
 
                 for (var t = this.k; t <= 1 + this.k; t += this.k) {
                     this.solve(point, t);

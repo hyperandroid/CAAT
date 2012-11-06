@@ -42,7 +42,7 @@ CAAT.Module( {
             var ty = - (top + bottom) / (top - bottom) ;
             var tz = - (zfar + znear) / (zfar - znear);
 
-            return new CAAT.Matrix3().initWithMatrix(
+            return new CAAT.Math.Matrix3().initWithMatrix(
                     [
                         [2 / (right - left), 0, 0, tx ],
                         [0, 2 / (top - bottom), 0, ty ],
