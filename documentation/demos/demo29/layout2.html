@@ -252,7 +252,8 @@ CAAT.DEBUG=1;
                     }).
                     setStyle("link", {
                         fontSize : s+5,
-                        fill:      "#00f"
+                        fill:      "#00f",
+                        italic : true
                     }).
                     setText("Bacon ipsum dolor sit amet salami pork belly tail <style=link><a=#"+(textPanelIndex++)+">tongue</a></style> pancetta, pork loin tri-tip drumstick bresaola shankle. Bacon ham hock pork belly, sausage tri-tip tongue strip steak fatback. Tail t-bone salami bacon. Bresaola turkey ribeye hamburger meatball t-bone. Turkey pancetta ground round, pig sirloin tenderloin corned beef meatloaf venison sausage jerky pork loin shank bacon tail. Pancetta beef ham hock, jowl pork chop pork belly bacon venison rump shoulder shankle cow pastrami sausage. Beef ribs drumstick meatball, pancetta biltong swine bresaola ribeye jerky spare ribs ham chuck corned beef pork chop.").
                     cacheAsBitmap().
@@ -375,7 +376,7 @@ CAAT.DEBUG=1;
 
             cont2.addChild( createPanel( true, 500, 200, new CAAT.Foundation.UI.Layout.GridLayout(0,5) ), "center" );
 
-            director.enableResizeEvents( CAAT.Foundation.Director.prototype.RESIZE_BOTH );
+            director.enableResizeEvents( CAAT.Foundation.Director.RESIZE_BOTH );
 
             director.loop(60);
         }

@@ -118,6 +118,10 @@ CAAT.Module({
             viewVertices:null, // model to view transformed vertices.
             isAA:true,
 
+            invalidate:function () {
+                this.invalid = true;
+                return this;
+            },
 
             invalidateLayout:function () {
                 if (this.parent && !this.parent.layoutInvalidated) {
@@ -1893,6 +1897,10 @@ CAAT.Module({
                 this.style('overflow', this.clip ? 'hidden' : 'visible');
                 return this;
             },
+            stopCacheAsBitmap : function() {
+                return this;
+            },
+
             /**
              *
              * @param time {Number=}

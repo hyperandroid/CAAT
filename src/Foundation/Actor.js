@@ -430,6 +430,7 @@ CAAT.Module({
             },
             invalidate:function () {
                 this.invalid = true;
+                return this;
             },
             setGestureEnabled:function (enable) {
                 this.gestureEnabled = !!enable;

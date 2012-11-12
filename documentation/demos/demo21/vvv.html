@@ -210,6 +210,15 @@
                 if ( this.r2.width>this.r2.height ) {   // colliding vertically
                     if ( e0.y<=e1.y ) {                     // falling
                         e0.setStand();
+
+
+                        if (e0.onPlatform) {
+                            e0.onPlatform.heroOn= null;
+                        }
+                        e0.onPlatform= e1.entity;
+                        e1.entity.heroOn= e0;
+
+
                         e0.y-= this.r2.height;
                     } else {                                // collision bottom-up (jumping)
                         e0.y+= this.r2.height;
@@ -530,6 +539,8 @@
                                         )
                             );
                         }
+
+                        return false;
                     }
                 });
             },
@@ -744,6 +755,8 @@
             time            : 0,
             dt              : 0,
 
+            heroOn          : null,
+
             setPath : function( path, time, offset ) {
                 this.path= path;
                 this.time= time;
@@ -758,6 +771,9 @@
             },
 
             tick : function( t, map ) {
+
+                var res1= this.pb.setForTime( (this.dt%this.time)/this.time, null );
+
                 var dt= (t-this.dt);
 
                 var res= this.pb.setForTime( (t%this.time)/this.time, null );
@@ -765,6 +781,11 @@
                 this.y= res.y;
 
                 this.dt= t;
+
+                if ( this.heroOn ) {
+                    this.heroOn.x+= res.x - res1.x;
+                    this.heroOn.y+= res.y - res1.y;
+                }
             }
 
         };
@@ -1069,7 +1090,7 @@
 
                                 this.status= CAAT.TileEntity.ST_JUMP;
                                 this.vY= -this.vY*0.5;
-                                if ( this.vY>-10 & this.vY<10 ) {
+                                if ( this.vY>-10 && this.vY<10 ) {
                                     this.vY= 0;
                                     this.setStand();
                                 }
@@ -1160,7 +1181,7 @@
                 if ( cr.yCollides ) {
                     if( vy.sign()===map.gravityY.sign() ) {
                         this.vY= -this.vY*0.8;
-                        if ( this.vY>-10 & this.vY<10 ) {
+                        if ( this.vY>-10 && this.vY<10 ) {
                             this.setRemoved();
                         }
                     }
@@ -1237,7 +1258,7 @@
                     cacheMap();
             scene.addChild( map );
 
-            scene.onRenderStart= function( time ) {
+            scene.onRenderEnd= function( time ) {
                     map.tick( time );
                 };
 
