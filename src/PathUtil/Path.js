@@ -512,6 +512,14 @@ CAAT.Module( {
                             (time-psstv)/psdt[m] :
                             0;
 
+                    // Clamp this segment's time to a maximum since it is relative to the path.
+                    // thanks https://github.com/donaldducky for spotting.
+                    if (time>1) {
+                        time=1;
+                    } else if (time<0 ) {
+                        time= 0;
+                    }
+
                     var pointInPath= ps[m].getPosition(time);
                     np.x= pointInPath.x;
                     np.y= pointInPath.y;

@@ -1028,6 +1028,9 @@
 
             setFall : function() {
                 this.status= CAAT.TileEntity.ST_JUMP;
+                if ( this.onPlatform ) {
+                    this.onPlatform.heroOn= null;
+                }
                 this.vY= 0;
             },
 

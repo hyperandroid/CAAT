@@ -335,6 +335,7 @@ CAAT.Module({
                 if (this.cycleBehavior) {
                     time %= this.behaviorDuration;
                 }
+
                 return this.interpolator.getPosition(time / this.behaviorDuration).y;
             },
             /**

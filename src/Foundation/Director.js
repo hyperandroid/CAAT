@@ -164,6 +164,8 @@ CAAT.Module({
 
             timerManager:null,
 
+            SCREEN_RATIO : 1,    // retina display deicePixels/backingStorePixels ratio
+
             clean:function () {
                 this.scenes = null;
                 this.currentScene = null;
@@ -237,11 +239,14 @@ CAAT.Module({
 
                 var factor = Math.min(w / this.referenceWidth, h / this.referenceHeight);
 
-                this.setScaleAnchored(factor, factor, 0, 0);
-
                 this.canvas.width = this.referenceWidth * factor;
                 this.canvas.height = this.referenceHeight * factor;
                 this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d');
+
+                this.__setupRetina();
+
+                this.setScaleAnchored(factor * this.scaleX, factor * this.scaleY, 0, 0);
+//                this.setScaleAnchored(factor, factor, 0, 0);
 
                 if (this.glEnabled) {
                     this.glReset();
@@ -274,6 +279,51 @@ CAAT.Module({
 
                 return this;
             },
+
+            __setupRetina : function() {
+
+                if ( CAAT.RETINA_DISPLAY_ENABLED ) {
+
+                    // The world is full of opensource awesomeness.
+                    //
+                    // Source: http://www.html5rocks.com/en/tutorials/canvas/hidpi/
+                    //
+                    var devicePixelRatio= CAAT.Module.Runtime.BrowserInfo.DevicePixelRatio;
+                    var backingStoreRatio = this.ctx.webkitBackingStorePixelRatio || /* maybe more prefixes to come...
+                                            this.ctx.mozBackingStorePixelRatio ||
+                                            this.ctx.msBackingStorePixelRatio ||
+                                            this.ctx.oBackingStorePixelRatio ||
+                                            this.ctx.backingStorePixelRatio || */
+                                            1;
+
+                    var ratio = devicePixelRatio / backingStoreRatio;
+
+                    if (devicePixelRatio !== backingStoreRatio) {
+
+                        var oldWidth = this.canvas.width;
+                        var oldHeight = this.canvas.height;
+
+                        this.canvas.width = oldWidth * ratio;
+                        this.canvas.height = oldHeight * ratio;
+
+                        this.canvas.style.width = oldWidth + 'px';
+                        this.canvas.style.height = oldHeight + 'px';
+
+                        this.setScaleAnchored( ratio, ratio, 0, 0 );
+                    } else {
+                        this.setScaleAnchored( 1, 1, 0, 0 );
+                    }
+
+                    this.SCREEN_RATIO= ratio;
+                } else {
+                    this.setScaleAnchored( 1, 1, 0, 0 );
+                }
+
+                for (var i = 0; i < this.scenes.length; i++) {
+                    this.scenes[i].setBounds(0, 0, this.width, this.height);
+                }
+            },
+
             /**
              * Set this director's bounds as well as its contained scenes.
              * @param x {number} ignored, will be 0.
@@ -284,15 +334,15 @@ CAAT.Module({
              * @return this
              */
             setBounds:function (x, y, w, h) {
+
                 CAAT.Foundation.Director.superclass.setBounds.call(this, x, y, w, h);
 
                 this.canvas.width = w;
                 this.canvas.height = h;
+
                 this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d');
 
-                for (var i = 0; i < this.scenes.length; i++) {
-                    this.scenes[i].setBounds(0, 0, w, h);
-                }
+                this.__setupRetina();
 
                 if (this.glEnabled) {
                     this.glReset();
@@ -687,11 +737,11 @@ CAAT.Module({
                             }
                             ctx.clip();
                         } else {
-                            ctx.clearRect(0, 0, this.width, this.height);
+                            ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                         }
 
                     } else if (this.clear === CAAT.Foundation.Director.CLEAR_ALL) {
-                        ctx.clearRect(0, 0, this.width, this.height);
+                        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                     }
 
                     for (i = 0; i < ne; i++) {
@@ -752,7 +802,7 @@ CAAT.Module({
 
                         ctx.clip();
                         ctx.fillStyle = 'rgba(160,255,150,.4)';
-                        ctx.fillRect(0, 0, this.width, this.height);
+                        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
                     }
 
                     ctx.restore();
@@ -1633,6 +1683,9 @@ CAAT.Module({
 
                 posx -= offset.x;
                 posy -= offset.y;
+
+                posx*= this.SCREEN_RATIO;
+                posy*= this.SCREEN_RATIO;
 
                 //////////////
                 // transformar coordenada inversamente con affine transform de director.

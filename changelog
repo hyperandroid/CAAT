@@ -1,3 +1,11 @@
+* 11/16/2012 0.5 Build *
+---------------------------
+
+* FIX. https://github.com/hyperandroid/CAAT/issues/95
+* Added retina display support. Set CAAT.RETINA_DISPLAY_ENABLED=true before building director instances.
+
+
+
 * This version is a major update. CAAT structure has been changed, but keeps backwards compatibility except
   for some prototype constants which have been moved from prototypes to Constructor functions. This means that
   deprecated constant values have been removed, more concretely: prototype constants from: CAAT.SpriteImage,

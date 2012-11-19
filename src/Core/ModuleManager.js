@@ -60,6 +60,7 @@
 
         assignNamespace( name, CAATClass );
         if ( constants ) {
+            constants= (isFunction(constants) ? constants() : constants);
             for( var constant in constants ) {
                 if ( constants.hasOwnProperty(constant) ) {
                     CAATClass[ constant ]= constants[constant];

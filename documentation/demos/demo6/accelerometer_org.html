@@ -264,8 +264,8 @@
                     setOutline(true).
                     calcTextSize(director).
                     cacheAsBitmap();
-            scene.addChild(text.setLocation((director.canvas.width - text.width) / 2,
-                    (director.canvas.height - text.height) / 2) );
+            scene.addChild(text.setLocation((director.width - text.width) / 2,
+                    (director.height - text.height) / 2) );
 
             scene.onRenderEnd = function(director, time) {
                 var rx = CAAT.rotationRate.gamma;

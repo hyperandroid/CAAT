@@ -9,7 +9,7 @@
 CAAT.Module({
     defines:"CAAT.Module.Runtime.BrowserInfo",
 
-    extendsWith: function() {
+    constants: function() {
 
         function searchString(data) {
             for (var i = 0; i < data.length; i++) {
@@ -132,10 +132,13 @@ CAAT.Module({
                       "an unknown version";
         var OS = searchString(dataOS) || "an unknown OS";
 
+        var DevicePixelRatio = window.devicePixelRatio || 1;
+
         return {
             browser: browser,
             version: version,
-            OS: OS
+            OS: OS,
+            DevicePixelRatio : DevicePixelRatio
         }
 
     }

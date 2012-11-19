@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.5 build: 3
+Version: 0.5 build: 13
 
 Created on:
-DATE: 2012-11-05
-TIME: 10:06:13
+DATE: 2012-11-17
+TIME: 10:12:57
 */
 
 
@@ -91,6 +91,7 @@ TIME: 10:06:13
 
         assignNamespace( name, CAATClass );
         if ( constants ) {
+            constants= (isFunction(constants) ? constants() : constants);
             for( var constant in constants ) {
                 if ( constants.hasOwnProperty(constant) ) {
                     CAATClass[ constant ]= constants[constant];
@@ -858,9 +859,13 @@ CAAT.Module( {
             if ( clamp ) {
                 CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
                 CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
+                CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
+                CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
             } else {
                 CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
                 CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
+                CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
+                CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
             }
         };
 
@@ -1434,10 +1439,10 @@ CAAT.Module( {
 
                 this.coordlist= [];
 
-                this.coordlist.push( new CAAT.Point().set(cp0x, cp0y ) );
-                this.coordlist.push( new CAAT.Point().set(cp1x, cp1y ) );
-                this.coordlist.push( new CAAT.Point().set(cp2x, cp2y ) );
-                this.coordlist.push( new CAAT.Point().set(cp3x, cp3y ) );
+                this.coordlist.push( new CAAT.Math.Point().set(cp0x, cp0y ) );
+                this.coordlist.push( new CAAT.Math.Point().set(cp1x, cp1y ) );
+                this.coordlist.push( new CAAT.Math.Point().set(cp2x, cp2y ) );
+                this.coordlist.push( new CAAT.Math.Point().set(cp3x, cp3y ) );
 
                 this.cubic= true;
                 this.update();
@@ -1457,9 +1462,9 @@ CAAT.Module( {
 
                 this.coordlist= [];
 
-                this.coordlist.push( new CAAT.Point().set(cp0x, cp0y ) );
-                this.coordlist.push( new CAAT.Point().set(cp1x, cp1y ) );
-                this.coordlist.push( new CAAT.Point().set(cp2x, cp2y ) );
+                this.coordlist.push( new CAAT.Math.Point().set(cp0x, cp0y ) );
+                this.coordlist.push( new CAAT.Math.Point().set(cp1x, cp1y ) );
+                this.coordlist.push( new CAAT.Math.Point().set(cp2x, cp2y ) );
 
                 this.cubic= false;
                 this.update();
@@ -1513,7 +1518,7 @@ CAAT.Module( {
                 ctx.beginPath();
                 ctx.moveTo(x1,y1);
 
-                var point= new CAAT.Point();
+                var point= new CAAT.Math.Point();
                 for(var t=this.k;t<=1+this.k;t+=this.k){
                     this.solve(point,t);
                     ctx.lineTo(point.x, point.y );
@@ -1542,7 +1547,7 @@ CAAT.Module( {
                 ctx.beginPath();
                 ctx.moveTo(x1,y1);
 
-                var point= new CAAT.Point();
+                var point= new CAAT.Math.Point();
                 for(var t=this.k;t<=1+this.k;t+=this.k){
                     this.solve(point,t);
                     ctx.lineTo(point.x, point.y );
@@ -1696,7 +1701,7 @@ CAAT.Module({
 
                 var ctx = director.ctx;
 
-                var point = new CAAT.Point();
+                var point = new CAAT.Math.Point();
 
                 for (var t = this.k; t <= 1 + this.k; t += this.k) {
                     this.solve(point, t);
@@ -1802,7 +1807,7 @@ CAAT.Module({
                 var contour = [], i;
 
                 for (i = 0; i <= numSamples; i++) {
-                    var point = new CAAT.Point();
+                    var point = new CAAT.Math.Point();
                     this.solve(point, i / numSamples);
                     contour.push(point);
                 }
@@ -1817,14 +1822,14 @@ CAAT.Module({
              */
             getBoundingBox:function (rectangle) {
                 if (!rectangle) {
-                    rectangle = new CAAT.Rectangle();
+                    rectangle = new CAAT.Math.Rectangle();
                 }
 
                 // thanks yodesoft.com for spotting the first point is out of the BB
                 rectangle.setEmpty();
                 rectangle.union(this.coordlist[0].x, this.coordlist[0].y);
 
-                var pt = new CAAT.Point();
+                var pt = new CAAT.Math.Point();
                 for (var t = this.k; t <= 1 + this.k; t += this.k) {
                     this.solve(pt, t);
                     rectangle.union(pt.x, pt.y);
@@ -1843,7 +1848,7 @@ CAAT.Module({
                 x1 = this.coordlist[0].x;
                 y1 = this.coordlist[0].y;
                 var llength = 0;
-                var pt = new CAAT.Point();
+                var pt = new CAAT.Math.Point();
                 for (var t = this.k; t <= 1 + this.k; t += this.k) {
                     this.solve(pt, t);
                     llength += Math.sqrt((pt.x - x1) * (pt.x - x1) + (pt.y - y1) * (pt.y - y1));
@@ -1966,7 +1971,7 @@ CAAT.Module({
              * @static
              */
             rotate:function (angle) {
-                var m = new CAAT.Matrix();
+                var m = new CAAT.Math.Matrix();
                 m.setRotation(angle);
                 return m;
             },
@@ -1994,7 +1999,7 @@ CAAT.Module({
              * @static
              */
             scale:function (scalex, scaley) {
-                var m = new CAAT.Matrix();
+                var m = new CAAT.Math.Matrix();
 
                 m.matrix[0] = scalex;
                 m.matrix[4] = scaley;
@@ -2019,7 +2024,7 @@ CAAT.Module({
              *
              */
             translate:function (x, y) {
-                var m = new CAAT.Matrix();
+                var m = new CAAT.Math.Matrix();
 
                 m.matrix[2] = x;
                 m.matrix[5] = y;
@@ -2174,7 +2179,7 @@ CAAT.Module({
                 var m21 = tm[7];
                 var m22 = tm[8];
 
-                var newMatrix = new CAAT.Matrix();
+                var newMatrix = new CAAT.Math.Matrix();
 
                 var determinant = m00 * (m11 * m22 - m21 * m12) - m10 * (m01 * m22 - m21 * m02) + m20 * (m01 * m12 - m11 * m02);
                 if (determinant === 0) {
@@ -2414,11 +2419,11 @@ CAAT.Module({
              * @static
              */
             rotate:function (xy, xz, yz) {
-                var res = new CAAT.Matrix3();
+                var res = new CAAT.Math.Matrix3();
                 var s, c, m;
 
                 if (xy !== 0) {
-                    m = new CAAT.Matrix3();
+                    m = new CAAT.Math.Math.Matrix3();
                     s = Math.sin(xy);
                     c = Math.cos(xy);
                     m.matrix[1][1] = c;
@@ -2429,7 +2434,7 @@ CAAT.Module({
                 }
 
                 if (xz !== 0) {
-                    m = new CAAT.Matrix3();
+                    m = new CAAT.Math.Matrix3();
                     s = Math.sin(xz);
                     c = Math.cos(xz);
                     m.matrix[0][0] = c;
@@ -2440,7 +2445,7 @@ CAAT.Module({
                 }
 
                 if (yz !== 0) {
-                    m = new CAAT.Matrix3();
+                    m = new CAAT.Math.Matrix3();
                     s = Math.sin(yz);
                     c = Math.cos(yz);
                     m.matrix[0][0] = c;
@@ -2457,7 +2462,7 @@ CAAT.Module({
              * @return {CAAT.Matrix3} a newly allocated matrix object.
              */
             getClone:function () {
-                var m = new CAAT.Matrix3();
+                var m = new CAAT.Math.Matrix3();
                 m.copy(this);
                 return m;
             },
@@ -2620,7 +2625,7 @@ CAAT.Module({
              * @return {CAAT.Matrix3} a new matrix.
              */
             translate:function (x, y, z) {
-                var m = new CAAT.Matrix3();
+                var m = new CAAT.Math.Matrix3();
                 m.setTranslate(x, y, z);
                 return m;
             },
@@ -2632,7 +2637,7 @@ CAAT.Module({
                 return this;
             },
             scale:function (sx, sy, sz) {
-                var m = new CAAT.Matrix3();
+                var m = new CAAT.Math.Matrix3();
                 m.setScale(sx, sy, sz);
                 return m;
             },
@@ -2739,7 +2744,7 @@ CAAT.Module({
                     m31 = mm[2][0], m32 = mm[2][1], m33 = mm[2][2], m34 = mm[2][3],
                     m41 = mm[3][0], m42 = mm[3][1], m43 = mm[3][2], m44 = mm[3][3];
 
-                var m2 = new CAAT.Matrix3();
+                var m2 = new CAAT.Math.Matrix3();
                 m2.matrix[0][0] = m23 * m34 * m42 + m24 * m32 * m43 + m22 * m33 * m44 - m24 * m33 * m42 - m22 * m34 * m43 - m23 * m32 * m44;
                 m2.matrix[0][1] = m14 * m33 * m42 + m12 * m34 * m43 + m13 * m32 * m44 - m12 * m33 * m44 - m13 * m34 * m42 - m14 * m32 * m43;
                 m2.matrix[0][2] = m13 * m24 * m42 + m12 * m23 * m44 + m14 * m22 * m43 - m12 * m24 * m43 - m13 * m22 * m44 - m14 * m23 * m42;
@@ -2833,7 +2838,7 @@ CAAT.Module( {
              * @return {CAAT.Point}
              */
             clone : function() {
-                var p= new CAAT.Point(this.x, this.y, this.z );
+                var p= new CAAT.Math.Point(this.x, this.y, this.z );
                 return p;
             },
             /**
@@ -2998,7 +3003,7 @@ CAAT.Module( {
              * @return {string}
              */
             toString: function() {
-                return "(CAAT.Point)" +
+                return "(CAAT.Math.Point)" +
                     " x:" + String(Math.round(Math.floor(this.x*10))/10) +
                     " y:" + String(Math.round(Math.floor(this.y*10))/10) +
                     " z:" + String(Math.round(Math.floor(this.z*10))/10);
@@ -3170,7 +3175,7 @@ CAAT.Module( {
 
             intersect : function( i, r ) {
                 if ( typeof r==='undefined' ) {
-                    r= new CAAT.Rectangle();
+                    r= new CAAT.Math.Rectangle();
                 }
 
                 r.x= Math.max( this.x, i.x );
@@ -3976,6 +3981,7 @@ CAAT.Module({
                 if (this.cycleBehavior) {
                     time %= this.behaviorDuration;
                 }
+
                 return this.interpolator.getPosition(time / this.behaviorDuration).y;
             },
             /**
@@ -5082,7 +5088,7 @@ CAAT.Module({
 CAAT.Module({
     defines:"CAAT.Module.Runtime.BrowserInfo",
 
-    extendsWith: function() {
+    constants: function() {
 
         function searchString(data) {
             for (var i = 0; i < data.length; i++) {
@@ -5205,10 +5211,13 @@ CAAT.Module({
                       "an unknown version";
         var OS = searchString(dataOS) || "an unknown OS";
 
+        var DevicePixelRatio = window.devicePixelRatio || 1;
+
         return {
             browser: browser,
             version: version,
-            OS: OS
+            OS: OS,
+            DevicePixelRatio : DevicePixelRatio
         }
 
     }
@@ -6645,7 +6654,7 @@ CAAT.Module({
                     };
                 }
 
-                this.spriteImage = new CAAT.SpriteImage().initializeAsGlyphDesigner(this.image, cm);
+                this.spriteImage = new CAAT.Foundation.SpriteImage().initializeAsGlyphDesigner(this.image, cm);
                 return this;
             },
 
@@ -6981,7 +6990,7 @@ CAAT.Module( {
 
 		pushAllCirclesTowardTarget: function(aTarget)
 		{
-			var v = new CAAT.Point(0,0,0),
+			var v = new CAAT.Math.Point(0,0,0),
 				circleList = this.allCircles,
 				len = circleList.length;
 
@@ -8190,7 +8199,7 @@ CAAT.Module( {
 
                 var img= this.images[i];
                 if ( img.inverted ) {
-                    img= CAAT.Modules.Image.ImageUtil.rotate( img, -90 );
+                    img= CAAT.Module.Image.ImageUtil.rotate( img, -90 );
                 }
 
                 gl.texSubImage2D(
@@ -8509,7 +8518,7 @@ CAAT.Module({
                     document.body.appendChild(canvascontainer);
                 }
 
-                director= new CAAT.Director().
+                director= new CAAT.Foundation.Director().
                     initialize(
                         width||800,
                         height||600,
@@ -9269,7 +9278,7 @@ CAAT.Module({
              * @return this
              */
             setQuadric:function (p0x, p0y, p1x, p1y, p2x, p2y) {
-                var curve = new CAAT.Bezier();
+                var curve = new CAAT.Math.Bezier();
                 curve.setQuadric(p0x, p0y, p1x, p1y, p2x, p2y);
                 this.curve = curve;
                 this.updatePath();
@@ -9290,7 +9299,7 @@ CAAT.Module({
              * @return this
              */
             setCubic:function (p0x, p0y, p1x, p1y, p2x, p2y, p3x, p3y) {
-                var curve = new CAAT.Bezier();
+                var curve = new CAAT.Math.Bezier();
                 curve.setCubic(p0x, p0y, p1x, p1y, p2x, p2y, p3x, p3y);
                 this.curve = curve;
                 this.updatePath();
@@ -9418,7 +9427,7 @@ CAAT.Module({
                 this.points.push(new CAAT.Math.Point());
                 this.points.push(new CAAT.Math.Point());
 
-                this.newPosition = new CAAT.Point(0, 0, 0);
+                this.newPosition = new CAAT.Math.Point(0, 0, 0);
                 return this;
             },
 
@@ -9649,9 +9658,9 @@ CAAT.Module({
             setPoints:function (points) {
                 this.points = [];
                 this.points.push(points[0]);
-                this.points.push(new CAAT.Point().set(points[1].x, points[0].y));
+                this.points.push(new CAAT.Math.Point().set(points[1].x, points[0].y));
                 this.points.push(points[1]);
-                this.points.push(new CAAT.Point().set(points[0].x, points[1].y));
+                this.points.push(new CAAT.Math.Point().set(points[0].x, points[1].y));
                 this.points.push(points[0].clone());
                 this.updatePath();
 
@@ -10397,6 +10406,14 @@ CAAT.Module( {
                             (time-psstv)/psdt[m] :
                             0;
 
+                    // Clamp this segment's time to a maximum since it is relative to the path.
+                    // thanks https://github.com/donaldducky for spotting.
+                    if (time>1) {
+                        time=1;
+                    } else if (time<0 ) {
+                        time= 0;
+                    }
+
                     var pointInPath= ps[m].getPosition(time);
                     np.x= pointInPath.x;
                     np.y= pointInPath.y;
@@ -10934,7 +10951,7 @@ CAAT.Module( {
             var ty = - (top + bottom) / (top - bottom) ;
             var tz = - (zfar + znear) / (zfar - znear);
 
-            return new CAAT.Matrix3().initWithMatrix(
+            return new CAAT.Math.Matrix3().initWithMatrix(
                     [
                         [2 / (right - left), 0, 0, tx ],
                         [0, 2 / (top - bottom), 0, ty ],
@@ -11906,7 +11923,7 @@ CAAT.Module({
 
         /**
          * Return current scene.
-         * @return {CAAT.Scene}
+         * @return {CAAT.Foundation.Scene}
          */
         CAAT.getCurrentScene=function () {
             return CAAT.currentDirector.getCurrentScene();
@@ -11961,7 +11978,7 @@ CAAT.Module({
 
                         for (var i = 0, l = CAAT.director.length; i < l; i++) {
                             var dr = CAAT.director[i];
-                            if (dr.renderMode === CAAT.Director.RENDER_MODE_CONTINUOUS || dr.needsRepaint) {
+                            if (dr.renderMode === CAAT.Foundation.Director.RENDER_MODE_CONTINUOUS || dr.needsRepaint) {
                                 dr.renderFrame();
                             }
                         }
@@ -12503,7 +12520,7 @@ CAAT.Module({
 
             getPreferredLayoutSize:function (container) {
 
-                var dim = new CAAT.Dimension();
+                var dim = new CAAT.Math.Dimension();
                 var computedW = 0, computedH = 0;
                 var i, l;
 
@@ -12528,7 +12545,7 @@ CAAT.Module({
             },
 
             getMinimumLayoutSize:function (container) {
-                var dim = new CAAT.Dimension();
+                var dim = new CAAT.Math.Dimension();
                 var computedW = 0, computedH = 0;
                 var i, l;
 
@@ -12840,7 +12857,7 @@ CAAT.Module( {
                 }
             }
 
-            return new CAAT.Dimension(
+            return new CAAT.Math.Dimension(
                 this.padding.left + this.padding.right + ncols * w + (ncols - 1) * this.hgap,
                 this.padding.top + this.padding.bottom + nrows * h + (nrows - 1) * this.vgap
             );
@@ -13819,8 +13836,8 @@ CAAT.Module({
             tAnchorX:0,
             tAnchorY:0,
 
-            scaleX:0, // transformation. width scale parameter
-            scaleY:0, // transformation. height scale parameter
+            scaleX:1, // transformation. width scale parameter
+            scaleY:1, // transformation. height scale parameter
             scaleTX:.50, // transformation. scale anchor x position
             scaleTY:.50, // transformation. scale anchor y position
             scaleAnchor:0, // transformation. scale anchor
@@ -14166,6 +14183,7 @@ CAAT.Module({
             },
             invalidate:function () {
                 this.invalid = true;
+                return this;
             },
             setGestureEnabled:function (enable) {
                 this.gestureEnabled = !!enable;
@@ -16645,28 +16663,28 @@ CAAT.Module({
 
 
                 switch (anchor) {
-                    case CAAT.Actor.ANCHOR_TOP:
+                    case CAAT.Foundation.Actor.ANCHOR_TOP:
                         if (isIn) {
                             pb.setPath(new CAAT.PathUtil.Path().setLinear(0, -this.height + 1, 0, 0));
                         } else {
                             pb.setPath(new CAAT.PathUtil.Path().setLinear(0, 0, 0, -this.height + 1));
                         }
                         break;
-                    case CAAT.Actor.ANCHOR_BOTTOM:
+                    case CAAT.Foundation.Actor.ANCHOR_BOTTOM:
                         if (isIn) {
                             pb.setPath(new CAAT.PathUtil.Path().setLinear(0, this.height - 1, 0, 0));
                         } else {
                             pb.setPath(new CAAT.PathUtil.Path().setLinear(0, 0, 0, this.height - 1));
                         }
                         break;
-                    case CAAT.Actor.ANCHOR_LEFT:
+                    case CAAT.Foundation.Actor.ANCHOR_LEFT:
                         if (isIn) {
                             pb.setPath(new CAAT.PathUtil.Path().setLinear(-this.width + 1, 0, 0, 0));
                         } else {
                             pb.setPath(new CAAT.PathUtil.Path().setLinear(0, 0, -this.width + 1, 0));
                         }
                         break;
-                    case CAAT.Actor.ANCHOR_RIGHT:
+                    case CAAT.Foundation.Actor.ANCHOR_RIGHT:
                         if (isIn) {
                             pb.setPath(new CAAT.PathUtil.Path().setLinear(this.width - 1, 0, 0, 0));
                         } else {
@@ -16731,23 +16749,23 @@ CAAT.Module({
                 var y2 = 0;
 
                 switch (anchor) {
-                    case CAAT.Actor.ANCHOR_TOP_LEFT:
-                    case CAAT.Actor.ANCHOR_TOP_RIGHT:
-                    case CAAT.Actor.ANCHOR_BOTTOM_LEFT:
-                    case CAAT.Actor.ANCHOR_BOTTOM_RIGHT:
-                    case CAAT.Actor.ANCHOR_CENTER:
+                    case CAAT.Foundation.Actor.ANCHOR_TOP_LEFT:
+                    case CAAT.Foundation.Actor.ANCHOR_TOP_RIGHT:
+                    case CAAT.Foundation.Actor.ANCHOR_BOTTOM_LEFT:
+                    case CAAT.Foundation.Actor.ANCHOR_BOTTOM_RIGHT:
+                    case CAAT.Foundation.Actor.ANCHOR_CENTER:
                         x2 = 1;
                         y2 = 1;
                         break;
-                    case CAAT.Actor.ANCHOR_TOP:
-                    case CAAT.Actor.ANCHOR_BOTTOM:
+                    case CAAT.Foundation.Actor.ANCHOR_TOP:
+                    case CAAT.Foundation.Actor.ANCHOR_BOTTOM:
                         x = 1;
                         x2 = 1;
                         y = 0;
                         y2 = 1;
                         break;
-                    case CAAT.Actor.ANCHOR_LEFT:
-                    case CAAT.Actor.ANCHOR_RIGHT:
+                    case CAAT.Foundation.Actor.ANCHOR_LEFT:
+                    case CAAT.Foundation.Actor.ANCHOR_RIGHT:
                         y = 1;
                         y2 = 1;
                         x = 0;
@@ -16829,26 +16847,26 @@ CAAT.Module({
              * @param isIn boolean indicating whehter the Scene is brought in.
              */
             easeRotation:function (time, alpha, anchor, isIn, interpolator) {
-                this.easeContainerBehaviour = new CAAT.ContainerBehavior();
+                this.easeContainerBehaviour = new CAAT.Behavior.ContainerBehavior();
 
                 var start = 0;
                 var end = 0;
 
-                if (anchor == CAAT.Actor.ANCHOR_CENTER) {
-                    anchor = CAAT.Actor.ANCHOR_TOP;
+                if (anchor == CAAT.Foundation.Actor.ANCHOR_CENTER) {
+                    anchor = CAAT.Foundation.Actor.ANCHOR_TOP;
                 }
 
                 switch (anchor) {
-                    case CAAT.Actor.ANCHOR_TOP:
-                    case CAAT.Actor.ANCHOR_BOTTOM:
-                    case CAAT.Actor.ANCHOR_LEFT:
-                    case CAAT.Actor.ANCHOR_RIGHT:
+                    case CAAT.Foundation.Actor.ANCHOR_TOP:
+                    case CAAT.Foundation.Actor.ANCHOR_BOTTOM:
+                    case CAAT.Foundation.Actor.ANCHOR_LEFT:
+                    case CAAT.Foundation.Actor.ANCHOR_RIGHT:
                         start = Math.PI * (Math.random() < 0.5 ? 1 : -1);
                         break;
-                    case CAAT.Actor.ANCHOR_TOP_LEFT:
-                    case CAAT.Actor.ANCHOR_TOP_RIGHT:
-                    case CAAT.Actor.ANCHOR_BOTTOM_LEFT:
-                    case CAAT.Actor.ANCHOR_BOTTOM_RIGHT:
+                    case CAAT.Foundation.Actor.ANCHOR_TOP_LEFT:
+                    case CAAT.Foundation.Actor.ANCHOR_TOP_RIGHT:
+                    case CAAT.Foundation.Actor.ANCHOR_BOTTOM_LEFT:
+                    case CAAT.Foundation.Actor.ANCHOR_BOTTOM_RIGHT:
                         start = Math.PI / 2 * (Math.random() < 0.5 ? 1 : -1);
                         break;
                     default:
@@ -16866,7 +16884,7 @@ CAAT.Module({
                 }
 
                 var anchorPercent = this.getAnchorPercent(anchor);
-                var rb = new CAAT.RotateBehavior().
+                var rb = new CAAT.Behavior.RotateBehavior().
                     setFrameTime(0, time).
                     setValues(start, end, anchorPercent.x, anchorPercent.y);
 
@@ -17211,6 +17229,8 @@ CAAT.Module({
 
             timerManager:null,
 
+            SCREEN_RATIO : 1,    // retina display deicePixels/backingStorePixels ratio
+
             clean:function () {
                 this.scenes = null;
                 this.currentScene = null;
@@ -17284,11 +17304,14 @@ CAAT.Module({
 
                 var factor = Math.min(w / this.referenceWidth, h / this.referenceHeight);
 
-                this.setScaleAnchored(factor, factor, 0, 0);
-
                 this.canvas.width = this.referenceWidth * factor;
                 this.canvas.height = this.referenceHeight * factor;
                 this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d');
+
+                this.__setupRetina();
+
+                this.setScaleAnchored(factor * this.scaleX, factor * this.scaleY, 0, 0);
+//                this.setScaleAnchored(factor, factor, 0, 0);
 
                 if (this.glEnabled) {
                     this.glReset();
@@ -17321,6 +17344,51 @@ CAAT.Module({
 
                 return this;
             },
+
+            __setupRetina : function() {
+
+                if ( CAAT.RETINA_DISPLAY_ENABLED ) {
+
+                    // The world is full of opensource awesomeness.
+                    //
+                    // Source: http://www.html5rocks.com/en/tutorials/canvas/hidpi/
+                    //
+                    var devicePixelRatio= CAAT.Module.Runtime.BrowserInfo.DevicePixelRatio;
+                    var backingStoreRatio = this.ctx.webkitBackingStorePixelRatio || /* maybe more prefixes to come...
+                                            this.ctx.mozBackingStorePixelRatio ||
+                                            this.ctx.msBackingStorePixelRatio ||
+                                            this.ctx.oBackingStorePixelRatio ||
+                                            this.ctx.backingStorePixelRatio || */
+                                            1;
+
+                    var ratio = devicePixelRatio / backingStoreRatio;
+
+                    if (devicePixelRatio !== backingStoreRatio) {
+
+                        var oldWidth = this.canvas.width;
+                        var oldHeight = this.canvas.height;
+
+                        this.canvas.width = oldWidth * ratio;
+                        this.canvas.height = oldHeight * ratio;
+
+                        this.canvas.style.width = oldWidth + 'px';
+                        this.canvas.style.height = oldHeight + 'px';
+
+                        this.setScaleAnchored( ratio, ratio, 0, 0 );
+                    } else {
+                        this.setScaleAnchored( 1, 1, 0, 0 );
+                    }
+
+                    this.SCREEN_RATIO= ratio;
+                } else {
+                    this.setScaleAnchored( 1, 1, 0, 0 );
+                }
+
+                for (var i = 0; i < this.scenes.length; i++) {
+                    this.scenes[i].setBounds(0, 0, this.width, this.height);
+                }
+            },
+
             /**
              * Set this director's bounds as well as its contained scenes.
              * @param x {number} ignored, will be 0.
@@ -17331,15 +17399,15 @@ CAAT.Module({
              * @return this
              */
             setBounds:function (x, y, w, h) {
+
                 CAAT.Foundation.Director.superclass.setBounds.call(this, x, y, w, h);
 
                 this.canvas.width = w;
                 this.canvas.height = h;
+
                 this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d');
 
-                for (var i = 0; i < this.scenes.length; i++) {
-                    this.scenes[i].setBounds(0, 0, w, h);
-                }
+                this.__setupRetina();
 
                 if (this.glEnabled) {
                     this.glReset();
@@ -17734,11 +17802,11 @@ CAAT.Module({
                             }
                             ctx.clip();
                         } else {
-                            ctx.clearRect(0, 0, this.width, this.height);
+                            ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                         }
 
                     } else if (this.clear === CAAT.Foundation.Director.CLEAR_ALL) {
-                        ctx.clearRect(0, 0, this.width, this.height);
+                        ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                     }
 
                     for (i = 0; i < ne; i++) {
@@ -17799,7 +17867,7 @@ CAAT.Module({
 
                         ctx.clip();
                         ctx.fillStyle = 'rgba(160,255,150,.4)';
-                        ctx.fillRect(0, 0, this.width, this.height);
+                        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
                     }
 
                     ctx.restore();
@@ -18680,6 +18748,9 @@ CAAT.Module({
 
                 posx -= offset.x;
                 posy -= offset.y;
+
+                posx*= this.SCREEN_RATIO;
+                posy*= this.SCREEN_RATIO;
 
                 //////////////
                 // transformar coordenada inversamente con affine transform de director.
@@ -20088,6 +20159,7 @@ CAAT.Module( {
         "CAAT.Foundation.SpriteImage",
         "CAAT.Module.Font.Font"
     ],
+    aliases : ["CAAT.UI.Label"],
     extendsClass : "CAAT.Foundation.Actor",
     extendsWith : function() {
 
@@ -20681,7 +20753,7 @@ CAAT.Module( {
             this.width= image.getWidth();
             this.height= image.getHeight();
 
-            if ( this.image instanceof CAAT.SpriteImage ) {
+            if ( this.image instanceof CAAT.SpriteImage || this.image instanceof CAAT.Foundation.SpriteImage ) {
                 this.spriteIndex= r*image.columns+c;
                 this.paint= this.paintSI;
             }
@@ -21453,7 +21525,7 @@ CAAT.Module({
         paintCircle : function(director,time) {
 
             if ( this.cached ) {
-                CAAT.ActorContainer.prototype.paint.call( this, director, time );
+                CAAT.Foundation.ActorContainer.prototype.paint.call( this, director, time );
                 return;
             }
 
@@ -21487,7 +21559,7 @@ CAAT.Module({
         paintRectangle : function(director,time) {
 
             if ( this.cached ) {
-                CAAT.ActorContainer.prototype.paint.call( this, director, time );
+                CAAT.Foundation.ActorContainer.prototype.paint.call( this, director, time );
                 return;
             }
 
@@ -21865,7 +21937,7 @@ CAAT.Module( {
             if ( font instanceof CAAT.Module.Font.Font ) {
                 font.setAsSpriteImage();
             } else if (font instanceof CAAT.Foundation.SpriteImage ) {
-                CAAT.log("WARN: setFont will no more accept a CAAT.SpriteImage as argument.");
+                //CAAT.log("WARN: setFont will no more accept a CAAT.SpriteImage as argument.");
             }
             this.font= font;
 

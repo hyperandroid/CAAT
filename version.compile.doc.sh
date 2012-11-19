@@ -40,7 +40,7 @@ SOURCE_DIR=/Users/ibon/js/CAAT/src
 "${SOURCE_DIR}"/Modules/TexturePacker/TextureScanMap.js \
 "${SOURCE_DIR}"/Modules/TexturePacker/TexturePage.js \
 "${SOURCE_DIR}"/Modules/TexturePacker/TexturePageManager.js \
-"${SOURCE_DIR}"/Modules/LayoutUtils/Row.js \
+"${SOURCE_DIR}"/Modules/LayoutUtils/RowLayout.js \
 "${SOURCE_DIR}"/Modules/Initialization/Template.js \
 "${SOURCE_DIR}"/Modules/Initialization/TemplateWithSplash.js \
 "${SOURCE_DIR}"/PathUtil/PathSegment.js \

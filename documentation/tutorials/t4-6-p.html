@@ -75,8 +75,6 @@ function __scene(director) {
 
 function __init()   {
 
-    CAAT.setCoordinateClamping(false);
-
     var director = new CAAT.Foundation.Director().
             initialize(300,300).
             setClear(false);
@@ -84,7 +82,7 @@ function __init()   {
 
     director.enableResizeEvents(CAAT.Foundation.Director.RESIZE_PROPORTIONAL);
 
-    new CAAT.ImagePreloader().loadImages(
+    new CAAT.Module.Preloader.ImagePreloader().loadImages(
         [
             {id:'stars',    url:'../demos/demo-resources/img/stars.png'}
         ],

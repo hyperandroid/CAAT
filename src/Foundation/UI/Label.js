@@ -5,6 +5,7 @@ CAAT.Module( {
         "CAAT.Foundation.SpriteImage",
         "CAAT.Module.Font.Font"
     ],
+    aliases : ["CAAT.UI.Label"],
     extendsClass : "CAAT.Foundation.Actor",
     extendsWith : function() {
 

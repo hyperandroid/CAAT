@@ -4,9 +4,9 @@ CAAT.Module({
         "Lib/Box2dWeb-2.1.a.3.js",
         "CAAT.Foundation.Actor"
     ],
+    aliases : ["CAAT.B2DBodyActor"],
     extendsClass:"CAAT.Foundation.Actor",
     extendsWith:function () {
-
 
         CAAT.PMR = 64;
         /**

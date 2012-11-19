@@ -3,6 +3,7 @@ CAAT.Module( {
     depends : [
         "CAAT.Foundation.Box2D.B2DBodyActor"
     ],
+    aliases : ["CAAT.B2DCircularBody"],
     extendsClass : "CAAT.Foundation.Box2D.B2DBodyActor",
     extendsWith : {
 

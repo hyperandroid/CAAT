@@ -92,6 +92,7 @@
         window.addEventListener('load',
             function() {
                 CAAT.ModuleManager.
+
                     baseURL("../../../src/").
                     setModulePath("CAAT.Core",              "Core").
                     setModulePath("CAAT.Math",              "Math").
@@ -99,8 +100,9 @@
                     setModulePath("CAAT.Foundation",        "Foundation").
                     setModulePath("CAAT.Event",             "Event").
                     setModulePath("CAAT.PathUtil",          "PathUtil").
-                    setModulePath("CAAT.Module",            "Modules").
                     setModulePath("CAAT.Module.Preloader",  "Modules/Image/Preloader").
+                    setModulePath("CAAT.Module",            "Modules").
+
                     setModulePath("CAAT.WebGL",             "WebGL").
 
                     // get modules, and solve their dependencies.

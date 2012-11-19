@@ -20,11 +20,11 @@ CAAT.Module( {
         sineOffset:1212, // some arbitary number i liked
 
         initDirector:function (director) {
-            this.mousePosition = new CAAT.Math.Point(director.canvas.width / 2, director.canvas.height / 2);
+            this.mousePosition = new CAAT.Math.Point(director.width / 2, director.height / 2);
             this.director = director;
             this.scene = director.createScene();
             this.root = new CAAT.Foundation.ActorContainer().
-                    setBounds(0, 0, director.canvas.width, director.canvas.height);
+                    setBounds(0, 0, director.width, director.height);
             this.scene.addChild(this.root);
 
             // Collision simulation
@@ -46,7 +46,7 @@ CAAT.Module( {
 
                 var circleActor = new CAAT.Foundation.UI.ShapeActor()
                         .setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_CIRCLE)
-                        .setLocation(Math.random() * director.canvas.width, Math.random() * director.canvas.height)
+                        .setLocation(Math.random() * director.width, Math.random() * director.height)
                         .setSize(aRadius * 2, aRadius * 2)// Size is in diameters
                         .setFillStyle('#' + hex);
 

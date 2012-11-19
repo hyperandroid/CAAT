@@ -179,10 +179,10 @@
                 var root = new CAAT.Foundation.UI.Dock().
                         initialize(scene).
                         setBounds(
-                            director.canvas.width - (j + 1) * max,
+                            director.width - (j + 1) * max,
                             0,
                             max,
-                            director.canvas.height).
+                            director.height).
                         setSizes(min, max).
                         setApplicationRange(3).
                         setLayoutOp(CAAT.Foundation.UI.Dock.OP_LAYOUT_RIGHT);

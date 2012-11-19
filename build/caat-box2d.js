@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.5 build: 3
+Version: 0.5 build: 13
 
 Created on:
-DATE: 2012-11-05
-TIME: 10:06:14
+DATE: 2012-11-17
+TIME: 10:12:58
 */
 
 
@@ -281,7 +281,7 @@ CAAT.Module( {
             var b= this.worldBody;
             var xf= b.m_xf;
             //this.setLocation(
-            CAAT.Actor.prototype.setLocation.call( this,
+            CAAT.Foundation.Actor.prototype.setLocation.call( this,
                     CAAT.PMR*xf.position.x - this.width/2,
                     CAAT.PMR*xf.position.y - this.height/2 );
             this.setRotation( b.GetAngle() );

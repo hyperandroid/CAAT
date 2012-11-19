@@ -89,6 +89,9 @@
 
         function load() {
             CAAT.ModuleManager.
+
+                    debug(true).
+
                     baseURL("../../../src/").
                     setModulePath("CAAT.Core",              "Core").
                     setModulePath("CAAT.Math",              "Math").
@@ -96,8 +99,8 @@
                     setModulePath("CAAT.Foundation",        "Foundation").
                     setModulePath("CAAT.Event",             "Event").
                     setModulePath("CAAT.PathUtil",          "PathUtil").
-                    setModulePath("CAAT.Module",            "Modules").
                     setModulePath("CAAT.Module.Preloader",  "Modules/Image/Preloader").
+                    setModulePath("CAAT.Module",            "Modules").
                     setModulePath("CAAT.WebGL",             "WebGL").
 
                 // get modules, and solve their dependencies.
@@ -292,20 +295,28 @@
 
             scene.addChild(container);
 
-            scene.mouseMove= function(mouseEvent) {
+            var fnx= function(mouseEvent) {
                 var x= mouseEvent.point.x;
                 var y= mouseEvent.point.y;
                 circle.setPosition(x,y);
                 fishLookAt(x,y);
             };
+
+            scene.mouseMove= fnx;
+            scene.mouseDrag= fnx;
+
             scene.mouseEnter= function(mouseEvent) {
                 this.pointed= true;
                 circle.__animate= false;
             };
-            scene.mouseExit= function(mouseEvent) {
+
+            var fnexit= function(mouseEvent) {
                 this.pointed= false;
                 circle.__animate= true;
             };
+
+            scene.mouseExit= fnexit;
+            scene.mouseUp= fnexit;
 
             function fishLookAt(x,y) {
                 for(var i=0; i<peces.length; i++ ) {
@@ -318,7 +329,7 @@
             };
 
             var circle= new CAAT.Foundation.UI.ShapeActor().
-                    setBounds( director.canvas.width/2, director.canvas.height/2, 25, 25 ).
+                    setBounds( director.width/2, director.height/2, 25, 25 ).
                     setFillStyle('blue').
                     enableEvents(false).
                     setPositionAnchor(.5,.5).

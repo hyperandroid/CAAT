@@ -83,8 +83,8 @@ CAAT.Module({
             tAnchorX:0,
             tAnchorY:0,
 
-            scaleX:0, // transformation. width scale parameter
-            scaleY:0, // transformation. height scale parameter
+            scaleX:1, // transformation. width scale parameter
+            scaleY:1, // transformation. height scale parameter
             scaleTX:.50, // transformation. scale anchor x position
             scaleTY:.50, // transformation. scale anchor y position
             scaleAnchor:0, // transformation. scale anchor

@@ -26,7 +26,7 @@ CAAT.Module({
 
         /**
          * Return current scene.
-         * @return {CAAT.Scene}
+         * @return {CAAT.Foundation.Scene}
          */
         CAAT.getCurrentScene=function () {
             return CAAT.currentDirector.getCurrentScene();
@@ -81,7 +81,7 @@ CAAT.Module({
 
                         for (var i = 0, l = CAAT.director.length; i < l; i++) {
                             var dr = CAAT.director[i];
-                            if (dr.renderMode === CAAT.Director.RENDER_MODE_CONTINUOUS || dr.needsRepaint) {
+                            if (dr.renderMode === CAAT.Foundation.Director.RENDER_MODE_CONTINUOUS || dr.needsRepaint) {
                                 dr.renderFrame();
                             }
                         }

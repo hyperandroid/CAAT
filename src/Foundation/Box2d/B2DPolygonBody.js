@@ -4,6 +4,7 @@ CAAT.Module( {
         "CAAT.Foundation.Box2D.B2DBodyActor",
         "CAAT.Foundation.SpriteImage"
     ],
+    aliases : ["CAAT.B2DPolygonBody"],
     constants: {
         TYPE: {
             EDGE:   'edge',
