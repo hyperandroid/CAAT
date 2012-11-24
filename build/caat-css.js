@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.5 build: 25
+Version: 0.5 build: 28
 
 Created on:
 DATE: 2012-11-24
-TIME: 00:30:04
+TIME: 11:24:27
 */
 
 
@@ -12930,7 +12930,25 @@ CAAT.Module( {
         }
     }
 });
-/**
+CAAT.Module({
+    defines : "CAAT.Foundation.SpriteImageAnimationHelper",
+    extendsWith : function() {
+        return {
+
+            __init : function( animation, time, onEndPlayCallback ) {
+                this.animation= animation;
+                this.time= time;
+                this.onEndPlayCallback= onEndPlayCallback;
+                return this;
+            },
+
+            animation :         null,
+            time :              0,
+            onEndPlayCallback : null
+
+        }
+    }
+});/**
  * See LICENSE file.
  *
  * TODO: allow set of margins, spacing, etc. to define subimages.

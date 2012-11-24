@@ -225,7 +225,7 @@
                     addBehavior(
                         new CAAT.Behavior.ScaleBehavior().
                                 setFrameTime(0, 30000).
-                                setValues(1,2.5, 1,2.5).
+                                setValues(.7,1.5,.7,1.5).
                                 setCycle(true).
                                 setPingPong()
                     );
@@ -236,7 +236,7 @@
             var i;
 
             for (i = 0; i < arms; i++) {
-                __createTentacle(sun, 2 * Math.PI / arms * i, segments, 4, 30, i, Math.PI / segments / 2);
+                __createTentacle(sun, 2 * Math.PI / arms * i, segments, 4, 50, i, Math.PI / segments / 2);
             }
 
 

@@ -22,11 +22,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.5 build: 24
+Version: 0.5 build: 27
 
 Created on:
 DATE: 2012-11-24
-TIME: 00:29:37
+TIME: 11:23:37
 */
 
 
@@ -339,6 +339,7 @@ CAAT.Module({defines:"CAAT.Foundation.UI.Layout.GridLayout",aliases:["CAAT.UI.Gr
 h.getMinimumSize();if(e<h.width)e=h.width;if(f<h.height)f=h.height}}return new CAAT.Math.Dimension(this.padding.left+this.padding.right+c*e+(c-1)*this.hgap,this.padding.top+this.padding.bottom+b*f+(b-1)*this.vgap)},getPreferredLayoutSize:function(a){var b=this.rows,c=this.columns,d=a.getNumChildren(),e=0,f=0,g;b>0?c=Math.ceil((d+b-1)/b):b=Math.ceil((d+c-1)/c);for(g=0;g<d;g+=1){var h=a.getChildAt(g);if(actorisVisible()&&h.isInAnimationFrame(CAAT.getCurrentSceneTime())){h=h.getPreferredSize();if(e<
 h.width)e=h.width;if(f<h.height)f=h.height}}return new CAAT.Math.Dimension(this.padding.left+this.padding.right+c*e+(c-1)*this.hgap,this.padding.top+this.padding.bottom+b*f+(b-1)*this.vgap)}}});
 CAAT.Module({defines:"CAAT.Foundation.SpriteImageHelper",extendsWith:{__init:function(a,b,c,d,e,f){this.x=parseFloat(a);this.y=parseFloat(b);this.width=parseFloat(c);this.height=parseFloat(d);this.setGL(a/e,b/f,(a+c-1)/e,(b+d-1)/f);return this},x:0,y:0,width:0,height:0,u:0,v:0,u1:0,v1:0,setGL:function(a,b,c,d){this.u=a;this.v=b;this.u1=c;this.v1=d;return this}}});
+CAAT.Module({defines:"CAAT.Foundation.SpriteImageAnimationHelper",extendsWith:function(){return{__init:function(a,b,c){this.animation=a;this.time=b;this.onEndPlayCallback=c;return this},animation:null,time:0,onEndPlayCallback:null}}});
 CAAT.Module({defines:"CAAT.Foundation.SpriteImage",aliases:["CAAT.SpriteImage"],depends:["CAAT.Foundation.SpriteImageHelper","CAAT.Foundation.SpriteImageAnimationHelper","CAAT.Math.Rectangle"],constants:{TR_NONE:0,TR_FLIP_HORIZONTAL:1,TR_FLIP_VERTICAL:2,TR_FLIP_ALL:3,TR_FIXED_TO_SIZE:4,TR_FIXED_WIDTH_TO_SIZE:6,TR_TILE:5},extendsWith:function(){return{__init:function(){this.paint=this.paintN;this.setAnimationImageIndex([0]);this.mapInfo={};this.animationsMap={};return this},animationImageIndex:null,
 prevAnimationTime:-1,changeFPS:1E3,transformation:0,spriteIndex:0,prevIndex:0,currentAnimation:null,image:null,rows:1,columns:1,width:0,height:0,singleWidth:0,singleHeight:0,scaleX:1,scaleY:1,offsetX:0,offsetY:0,ownerActor:null,mapInfo:null,map:null,animationsMap:null,callback:null,getOwnerActor:function(){return this.ownerActor},addAnimation:function(a,b,c,d){this.animationsMap[a]=new CAAT.Foundation.SpriteImageAnimationHelper(b,c,d);return this},setAnimationEndCallback:function(a){this.callback=
 a},playAnimation:function(a){if(a===this.currentAnimation)return this;var b=this.animationsMap[a];if(!b)return this;this.currentAnimation=a;this.setAnimationImageIndex(b.animation);this.changeFPS=b.time;this.callback=b.onEndPlayCallback;return this},setOwner:function(a){this.ownerActor=a;return this},getRows:function(){return this.rows},getColumns:function(){return this.columns},getWidth:function(){return this.mapInfo[this.spriteIndex].width},getHeight:function(){return this.mapInfo[this.spriteIndex].height},
