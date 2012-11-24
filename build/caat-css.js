@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.5 build: 13
+Version: 0.5 build: 16
 
 Created on:
-DATE: 2012-11-17
-TIME: 10:12:58
+DATE: 2012-11-21
+TIME: 21:56:24
 */
 
 
@@ -12903,10 +12903,10 @@ CAAT.Module( {
 
     extendsWith : {
         __init : function (x, y, w, h, iw, ih) {
-            this.x = x;
-            this.y = y;
-            this.width = w;
-            this.height = h;
+            this.x = parseFloat(x);
+            this.y = parseFloat(y);
+            this.width = parseFloat(w);
+            this.height = parseFloat(h);
 
             this.setGL(x / iw, y / ih, (x + w - 1) / iw, (y + h - 1) / ih);
             return this;
@@ -12960,6 +12960,7 @@ CAAT.Module({
                 this.paint = this.paintN;
                 this.setAnimationImageIndex([0]);
                 this.mapInfo = {};
+                this.animationsMap= {};
                 return this;
             },
 
@@ -12988,6 +12989,38 @@ CAAT.Module({
 
             mapInfo:null,
             map:null,
+
+            animationsMap : null,
+
+            /**
+             * Add an animation to this sprite image.
+             * An animation is defines by an array of pretend-to-be-played sprite sequence.
+             *
+             * @param name {string} animation name.
+             * @param array {Array<number|string>} the sprite animation sequence array. It can be defined
+             *              as number array for Grid-like sprite images or strings for a map-like sprite
+             *              image.
+             * @param time {number} change animation sequence every 'time' ms.
+             * @param callback {function({SpriteImage},{string}} a callback function to invoke when the sprite
+             *              animation sequence has ended.
+             */
+            addAnimation : function( name, array, time, callback ) {
+                this.animationsMap[name]= new CAAT.Foundation.SpriteImageAnimationHelper(array,time,callback);
+                return this;
+            },
+
+            /**
+             * Start playing a SpriteImage animation
+             * @param name
+             */
+            play : function(name) {
+                var animation= this.animationsMap[name];
+                if ( !animation ) {
+                    return this;
+                }
+
+                return this;
+            },
 
             setOwner:function (actor) {
                 this.ownerActor = actor;
@@ -13579,6 +13612,24 @@ CAAT.Module({
 
                     count++;
                 }
+
+                return this;
+            },
+
+            addElement : function( key, value ) {
+                var helper = new CAAT.Foundation.SpriteImageHelper(
+                    value.x,
+                    value.y,
+                    value.width,
+                    value.height,
+                    this.image.width,
+                    this.image.height );
+
+                helper.xoffset = typeof value.xoffset === 'undefined' ? 0 : parseFloat(value.xoffset);
+                helper.yoffset = typeof value.yoffset === 'undefined' ? 0 : parseFloat(value.yoffset);
+                helper.xadvance = typeof value.xadvance === 'undefined' ? value.width : parseFloat(value.xadvance);
+
+                this.mapInfo[key] = helper;
 
                 return this;
             },

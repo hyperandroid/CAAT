@@ -551,6 +551,26 @@ CAAT.Module({
                 return this;
             },
 
+            addAnimation : function( name, array, time, callback ) {
+                if (this.backgroundImage) {
+                    this.backgroundImage.addAnimation(name, array, time, callback);
+                }
+                return this;
+            },
+
+            playAnimation : function(name) {
+                if (this.backgroundImage) {
+                    this.backgroundImage.playAnimation(name);
+                }
+                return this;
+            },
+
+            setAnimationEndCallback : function(f) {
+                if (this.backgroundImage) {
+                    this.backgroundImage.setAnimationEndCallback(f);
+                }
+            },
+
             resetAnimationTime:function () {
                 if (this.backgroundImage) {
                     this.backgroundImage.resetAnimationTime();
@@ -1505,8 +1525,11 @@ CAAT.Module({
 
                 this.inFrame = true;
 
-                return this.AABB.intersects(director.AABB);
+                if ( this.backgroundImage ) {
+                    this.backgroundImage.setSpriteIndexAtTime(time);
+                }
 
+                return this.AABB.intersects(director.AABB);
                 //return true;
             },
             /**

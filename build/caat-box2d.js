@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.5 build: 13
+Version: 0.5 build: 16
 
 Created on:
-DATE: 2012-11-17
-TIME: 10:12:58
+DATE: 2012-11-21
+TIME: 21:56:24
 */
 
 
@@ -35,9 +35,9 @@ CAAT.Module({
         "Lib/Box2dWeb-2.1.a.3.js",
         "CAAT.Foundation.Actor"
     ],
+    aliases : ["CAAT.B2DBodyActor"],
     extendsClass:"CAAT.Foundation.Actor",
     extendsWith:function () {
-
 
         CAAT.PMR = 64;
         /**
@@ -248,6 +248,7 @@ CAAT.Module( {
     depends : [
         "CAAT.Foundation.Box2D.B2DBodyActor"
     ],
+    aliases : ["CAAT.B2DCircularBody"],
     extendsClass : "CAAT.Foundation.Box2D.B2DBodyActor",
     extendsWith : {
 
@@ -351,6 +352,7 @@ CAAT.Module( {
         "CAAT.Foundation.Box2D.B2DBodyActor",
         "CAAT.Foundation.SpriteImage"
     ],
+    aliases : ["CAAT.B2DPolygonBody"],
     constants: {
         TYPE: {
             EDGE:   'edge',

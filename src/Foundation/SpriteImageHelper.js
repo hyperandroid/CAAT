@@ -3,10 +3,10 @@ CAAT.Module( {
 
     extendsWith : {
         __init : function (x, y, w, h, iw, ih) {
-            this.x = x;
-            this.y = y;
-            this.width = w;
-            this.height = h;
+            this.x = parseFloat(x);
+            this.y = parseFloat(y);
+            this.width = parseFloat(w);
+            this.height = parseFloat(h);
 
             this.setGL(x / iw, y / ih, (x + w - 1) / iw, (y + h - 1) / ih);
             return this;
