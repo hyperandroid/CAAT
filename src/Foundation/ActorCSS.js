@@ -672,6 +672,28 @@ CAAT.Module({
                 }
                 return this;
             },
+
+            addAnimation : function( name, array, time, callback ) {
+                if (this.backgroundImage) {
+                    this.backgroundImage.addAnimation(name, array, time, callback);
+                }
+                return this;
+            },
+
+            playAnimation : function(name) {
+                if (this.backgroundImage) {
+                    this.backgroundImage.playAnimation(name);
+                }
+                return this;
+            },
+
+            setAnimationEndCallback : function(f) {
+                if (this.backgroundImage) {
+                    this.backgroundImage.setAnimationEndCallback(f);
+                }
+            },
+
+
             setChangeFPS:function (time) {
                 if (this.backgroundImage) {
                     this.backgroundImage.setChangeFPS(time);
@@ -1657,6 +1679,17 @@ CAAT.Module({
 
                 this.dirty = false;
 
+                if ( this.backgroundImage ) {
+                    var bi = this.backgroundImage;
+                    if (bi) {
+                        var pi = bi.spriteIndex;
+                        bi.setSpriteIndexAtTime(time);
+                        if (pi != bi.spriteIndex) {
+                            this.setSpriteIndex(bi.spriteIndex);
+                        }
+                    }
+                }
+
                 //return true;
                 return this.AABB.intersects(director.AABB);
             },
@@ -1852,15 +1885,6 @@ CAAT.Module({
              * @return boolean indicating whether the Actor isInFrameTime
              */
             paintActor:function (director, time) {
-                var bi = this.backgroundImage;
-                if (bi) {
-                    var pi = bi.spriteIndex;
-                    bi.setSpriteIndexAtTime(time);
-                    if (pi != bi.spriteIndex) {
-                        this.setSpriteIndex(bi.spriteIndex);
-                    }
-
-                }
 
                 return true;
             },

@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.5 build: 16
+Version: 0.5 build: 25
 
 Created on:
-DATE: 2012-11-21
-TIME: 21:56:24
+DATE: 2012-11-24
+TIME: 00:30:04
 */
 
 
@@ -12942,6 +12942,7 @@ CAAT.Module({
     aliases : ["CAAT.SpriteImage"],
     depends : [
         "CAAT.Foundation.SpriteImageHelper",
+        "CAAT.Foundation.SpriteImageAnimationHelper",
         "CAAT.Math.Rectangle"
     ],
     constants:{
@@ -12970,6 +12971,8 @@ CAAT.Module({
             changeFPS:1000, // how much Scene time to take before changing an Sprite frame.
             transformation:0, // any of the TR_* constants.
             spriteIndex:0, // the current sprite frame
+            prevIndex:0,    // current index of sprite frames array.
+            currentAnimation: null, // current animation name
 
             image:null,
             rows:1,
@@ -12991,6 +12994,11 @@ CAAT.Module({
             map:null,
 
             animationsMap : null,
+            callback : null,        // on end animation callback
+
+            getOwnerActor : function() {
+                return this.ownerActor;
+            },
 
             /**
              * Add an animation to this sprite image.
@@ -13009,15 +13017,30 @@ CAAT.Module({
                 return this;
             },
 
+            setAnimationEndCallback : function(f) {
+                this.callback= f;
+            },
+
             /**
-             * Start playing a SpriteImage animation
+             * Start playing a SpriteImage animation.
+             * If it does not exist, nothing happens.
              * @param name
              */
-            play : function(name) {
+            playAnimation : function(name) {
+                if (name===this.currentAnimation) {
+                    return this;
+                }
+
                 var animation= this.animationsMap[name];
                 if ( !animation ) {
                     return this;
                 }
+
+                this.currentAnimation= name;
+
+                this.setAnimationImageIndex( animation.animation );
+                this.changeFPS= animation.time;
+                this.callback= animation.onEndPlayCallback;
 
                 return this;
             },
@@ -13070,6 +13093,7 @@ CAAT.Module({
                 ret.offsetY = this.offsetY;
                 ret.scaleX = this.scaleX;
                 ret.scaleY = this.scaleY;
+                ret.animationsMap= this.animationsMap;
                 return ret;
             },
             /**
@@ -13181,7 +13205,6 @@ CAAT.Module({
              * @param y
              */
             paintTiled:function (director, time, x, y) {
-                this.setSpriteIndexAtTime(time);
                 var el = this.mapInfo[this.spriteIndex];
 
                 var r = new CAAT.Math.Rectangle();
@@ -13226,8 +13249,6 @@ CAAT.Module({
              */
             paintInvertedH:function (director, time, x, y) {
 
-                this.setSpriteIndexAtTime(time);
-
                 var el = this.mapInfo[this.spriteIndex];
 
                 var ctx = director.ctx;
@@ -13259,7 +13280,6 @@ CAAT.Module({
              */
             paintInvertedV:function (director, time, x, y) {
 
-                this.setSpriteIndexAtTime(time);
                 var el = this.mapInfo[this.spriteIndex];
 
                 var ctx = director.ctx;
@@ -13290,7 +13310,6 @@ CAAT.Module({
              */
             paintInvertedHV:function (director, time, x, y) {
 
-                this.setSpriteIndexAtTime(time);
                 var el = this.mapInfo[this.spriteIndex];
 
                 var ctx = director.ctx;
@@ -13322,7 +13341,7 @@ CAAT.Module({
              * @return this
              */
             paintN:function (director, time, x, y) {
-                this.setSpriteIndexAtTime(time);
+
                 var el = this.mapInfo[this.spriteIndex];
 
                 director.ctx.drawImage(
@@ -13344,7 +13363,7 @@ CAAT.Module({
              * @return this
              */
             paintScaledWidth:function (director, time, x, y) {
-                this.setSpriteIndexAtTime(time);
+
                 var el = this.mapInfo[this.spriteIndex];
 
                 director.ctx.drawImage(
@@ -13380,7 +13399,7 @@ CAAT.Module({
              * @return this
              */
             paintScaled:function (director, time, x, y) {
-                this.setSpriteIndexAtTime(time);
+
                 var el = this.mapInfo[this.spriteIndex];
 
                 director.ctx.drawImage(
@@ -13558,6 +13577,7 @@ CAAT.Module({
 
                         //thanks Phloog and ghthor, well spotted.
                         this.spriteIndex = this.animationImageIndex[0];
+                        this.prevIndex= 0;
                         this.ownerActor.invalidate();
                     }
                     else {
@@ -13565,9 +13585,17 @@ CAAT.Module({
                         ttime -= this.prevAnimationTime;
                         ttime /= this.changeFPS;
                         ttime %= this.animationImageIndex.length;
-                        var idx = this.animationImageIndex[Math.floor(ttime)];
+                        var idx = Math.floor(ttime);
 //                    if ( this.spriteIndex!==idx ) {
-                        this.spriteIndex = idx;
+
+                        if ( idx<this.prevIndex ) {   // we are getting back in time, or ended playing the animation
+                            if ( this.callback ) {
+                                this.callback( this, time );
+                            }
+                        }
+
+                        this.prevIndex= idx;
+                        this.spriteIndex = this.animationImageIndex[idx];
                         this.ownerActor.invalidate();
 //                    }
                     }
@@ -13616,6 +13644,20 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * Add one element to the spriteImage.
+             * @param key {string|number} index or sprite identifier.
+             * @param value object{
+             *      x: {number},
+             *      y: {number},
+             *      width: {number},
+             *      height: {number},
+             *      xoffset: {number=},
+             *      yoffset: {number=},
+             *      xadvance: {number=}
+             *      }
+             * @return {*}
+             */
             addElement : function( key, value ) {
                 var helper = new CAAT.Foundation.SpriteImageHelper(
                     value.x,
@@ -13780,10 +13822,9 @@ CAAT.Module({
 
             drawText:function (str, ctx, x, y) {
                 var i, l, charInfo, w;
-                var charArr = str.split("");
 
-                for (i = 0; i < charArr.length; i++) {
-                    charInfo = this.mapInfo[ charArr[i] ];
+                for (i = 0; i < str.length; i++) {
+                    charInfo = this.mapInfo[ str.charAt(i) ];
                     if (charInfo) {
                         w = charInfo.width;
                         ctx.drawImage(
@@ -14477,6 +14518,28 @@ CAAT.Module({
                 }
                 return this;
             },
+
+            addAnimation : function( name, array, time, callback ) {
+                if (this.backgroundImage) {
+                    this.backgroundImage.addAnimation(name, array, time, callback);
+                }
+                return this;
+            },
+
+            playAnimation : function(name) {
+                if (this.backgroundImage) {
+                    this.backgroundImage.playAnimation(name);
+                }
+                return this;
+            },
+
+            setAnimationEndCallback : function(f) {
+                if (this.backgroundImage) {
+                    this.backgroundImage.setAnimationEndCallback(f);
+                }
+            },
+
+
             setChangeFPS:function (time) {
                 if (this.backgroundImage) {
                     this.backgroundImage.setChangeFPS(time);
@@ -15462,6 +15525,17 @@ CAAT.Module({
 
                 this.dirty = false;
 
+                if ( this.backgroundImage ) {
+                    var bi = this.backgroundImage;
+                    if (bi) {
+                        var pi = bi.spriteIndex;
+                        bi.setSpriteIndexAtTime(time);
+                        if (pi != bi.spriteIndex) {
+                            this.setSpriteIndex(bi.spriteIndex);
+                        }
+                    }
+                }
+
                 //return true;
                 return this.AABB.intersects(director.AABB);
             },
@@ -15657,15 +15731,6 @@ CAAT.Module({
              * @return boolean indicating whether the Actor isInFrameTime
              */
             paintActor:function (director, time) {
-                var bi = this.backgroundImage;
-                if (bi) {
-                    var pi = bi.spriteIndex;
-                    bi.setSpriteIndexAtTime(time);
-                    if (pi != bi.spriteIndex) {
-                        this.setSpriteIndex(bi.spriteIndex);
-                    }
-
-                }
 
                 return true;
             },

@@ -2002,6 +2002,11 @@ CAAT.Module({
              * @return this
              */
             cacheAsBitmap:function (time, strategy) {
+
+                if (this.width<=0 || this.height<=0 ) {
+                    return this;
+                }
+
                 time = time || 0;
                 var canvas = document.createElement('canvas');
                 canvas.width = this.width;

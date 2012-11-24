@@ -1,10 +1,11 @@
-* 11/16/2012 0.5 Build *
+* 11/24/2012 0.5 Build 23 *
 ---------------------------
 
 * FIX. https://github.com/hyperandroid/CAAT/issues/95
 * Added retina display support. Set CAAT.RETINA_DISPLAY_ENABLED=true before building director instances.
 * Added sprite animations.
 * Created demo31: sprite animation management.
+* FIX. cacheAsBitmap when actor width or height is less or equal 0;
 
 
 * This version is a major update. CAAT structure has been changed, but keeps backwards compatibility except

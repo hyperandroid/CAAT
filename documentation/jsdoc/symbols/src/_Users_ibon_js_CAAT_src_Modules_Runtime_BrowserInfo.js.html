@@ -16,7 +16,7 @@
 <span class='line'>  9</span> </span><span class="NAME">CAAT.Module</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 10</span> </span><span class="WHIT">    </span><span class="NAME">defines</span><span class="PUNC">:</span><span class="STRN">"CAAT.Module.Runtime.BrowserInfo"</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'> 11</span> 
-<span class='line'> 12</span> </span><span class="WHIT">    </span><span class="NAME">extendsWith</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 12</span> </span><span class="WHIT">    </span><span class="NAME">constants</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 13</span> 
 <span class='line'> 14</span> </span><span class="WHIT">        </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="NAME">searchString</span><span class="PUNC">(</span><span class="NAME">data</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'> 15</span> </span><span class="WHIT">            </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">data.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
@@ -139,12 +139,15 @@
 <span class='line'>132</span> </span><span class="WHIT">                      </span><span class="STRN">"an unknown version"</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>133</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">OS</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">searchString</span><span class="PUNC">(</span><span class="NAME">dataOS</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">"an unknown OS"</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>134</span> 
-<span class='line'>135</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>136</span> </span><span class="WHIT">            </span><span class="NAME">browser</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">browser</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>137</span> </span><span class="WHIT">            </span><span class="NAME">version</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">version</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>138</span> </span><span class="WHIT">            </span><span class="NAME">OS</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">OS</span><span class="WHIT">
-<span class='line'>139</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>140</span> 
-<span class='line'>141</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>142</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>143</span> </span></pre></body></html>
+<span class='line'>135</span> </span><span class="WHIT">        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">DevicePixelRatio</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">window.devicePixelRatio</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>136</span> 
+<span class='line'>137</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>138</span> </span><span class="WHIT">            </span><span class="NAME">browser</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">browser</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>139</span> </span><span class="WHIT">            </span><span class="NAME">version</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">version</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>140</span> </span><span class="WHIT">            </span><span class="NAME">OS</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">OS</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>141</span> </span><span class="WHIT">            </span><span class="NAME">DevicePixelRatio</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">DevicePixelRatio</span><span class="WHIT">
+<span class='line'>142</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>143</span> 
+<span class='line'>144</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>145</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>146</span> </span></pre></body></html>
