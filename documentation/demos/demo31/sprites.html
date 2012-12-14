@@ -127,6 +127,33 @@
 
             CAAT.DEBUG=1;
 
+            var actor= null;
+
+            CAAT.Foundation.Actor.extend(
+                {
+                    paint : function(director,time) {
+                        CAAT.Dude.superclass.paint.call(this,director,time);
+
+                        if (actor===this) {
+                            var ctx= director.ctx;
+                            ctx.strokeStyle='#aaa';
+                            ctx.strokeRect(0,0,this.width,this.height);
+                        }
+                    },
+                    mouseEnter : function(e) {
+                        CAAT.setCursor("pointer");
+                    },
+                    mouseExit : function(e) {
+                        CAAT.setCursor("default");
+                    },
+                    mouseUp : function(e) {
+                        actor= this;
+                    }
+                },
+                null,
+                "CAAT.Dude"
+            );
+
             new CAAT.Module.Preloader.Preloader().
                     addElement("dude", "dude.png").
                     load( function(images) {
@@ -155,7 +182,7 @@
                         var actors= [];
                         for( var i=0; i<3; i++ ) {
                             for( var j=0; j<3; j++ ) {
-                                var a= new CAAT.Foundation.Actor().
+                                var a= new CAAT.Dude().
                                     setBackgroundImage(si).
                                         setLocation( j*si.getWidth(), i*si.getHeight() );
 
@@ -168,7 +195,7 @@
                             }
                         }
 
-                        var actor= actors[0];
+                        actor= actors[0];
 
                         var keys=[0,0,0,0];
                         var index= 0;
