@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 1 - Getting started</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../lib/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <div>
+                <p>
+                    <span class="apicode">CAAT.DEBUG</span>
+                </p>
+                <p>
+                    Set this varible to show a control panel showing some debug info, like FPS, currently animated
+                    actors, bounding boxes, etc.
+                </p>
+            </div>
+
+            <div>
+                <p>
+                    <span class="apicode">CAAT.TOUCH_BEHAVIOR</span>
+                </p>
+                <p>
+                    By default this variable defaults to <span class="apicode">CAAT.TOUCH_AS_MOUSE</span>,
+                    which means, only one touch event will be handled, and will behave as a mouse.
+                </p>
+                <p>
+                    It can also be set to <span class="apicode">CAAT.TOUCH_AS_MULTITOUCH</span>,
+                    which will handle multitouch events.
+                </p>
+            </div>
+
+            <div>
+                <p>
+                    <span class="apicode">CAAT.PMR</span>
+                </p>
+                <p>
+                    Default value for "points by meter" ratio. This value is needed for CAAT to Box2D binding.
+                </p>
+            </div>
+
+            <div>
+                <p>
+                    <span class="apicode">CAAT.DEBUG_DIRTYRECTS</span>
+                </p>
+                <p>
+                    Show affected dirty rectangles.
+                </p>
+            </div>
+
+            <div>
+                <p>
+                    <span class="apicode">CAAT.DRAG_THRESHOLD_X, CAAT.DRAG_THRESHOLD_Y</span>
+                </p>
+                <p>
+                    These values are a threshold that mouse drag events (or touch if CAAT.TOUCH_BEHAVIOR==CAAt.TOUCH_AS_MOUSE)
+                    must traverse previously to have mouseDrag events triggered. These are needed when pointing with another
+                    device than a mouse, like a Wacom tablet. Since these devices don't report the same coordinate when
+                    pointing than when releasing, those values come handy.
+                </p>
+            </div>
+
+            <div>
+                <p>
+                    <span class="apicode">CAAT.SET_INTERVAL</span>
+                </p>
+                <p>
+                    Prevent using RAF for loop control in favor of setInterval function. Weird ? I've been reported
+                    that with online games, when in another tab, the game will suspend. So I was asked for this
+                    possibility. So there it is.
+                </p>
+            </div>
+
+            <div>
+                <p>
+                    <span class="apicode">CAAT.currentDirector</span>
+                </p>
+                <p>
+                    Readonly value which holds the reference of the currently rendering Director.
+                </p>
+            </div>
+
+            <div>
+                <p>
+                    <span class="apicode">CAAT.getCurrentScene()</span>
+                </p>
+                <p>
+                    Get current Director's current Scene.
+                </p>
+            </div>
+
+            <div>
+                <p>
+                    <span class="apicode">CAAT.RETINA_DISPLAY_ENABLED</span>
+                </p>
+                <p>
+                    If not false, CAAT will honor retina display and HIDPI screens behind the scenes.
+                    This will set up a bigger as needed canvas object and set up appropriate scale
+                    operations for drawing purposes.
+                </p>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,320 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 2- Actor Transformations</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+
+<div class="chapter">
+    <h1>CAAT.Foundation.Actor</h1>
+    <h2>Transformations</h2>
+    <p>Transformations are the way an Actor can modify its appearance and still be the same Actor.
+    In example, when the developer sets a width Scaling transformation, though the actor visually
+    has a different size, it is still the same size. This may seem a little bit odd, but one
+    property of an Actor is its dimension (either set by the method setSize, setBounds, or directly
+    modifying its width and height attributes), and other property is how it is seen and managed
+    through out the Director via affine transformations.</p>
+    <p>
+        Homogeneous Coordinates FTW!!!.
+    </p>
+    <p>An Actor can have three different transformations applied.</p>
+
+    <div>
+        <h3>Translation</h3>
+        <p>
+            This is a trivial translation which does not affect the visual appearance, but
+            just location. It is not recommended to directly set Actor.x and Actor.y attributes since this will
+            prevent CAAT to set the correct transformation in certain renderers.</p>
+        <p>
+            As a rule of thumb, always use accesor/mutator methods to get/set an actor instance properties.
+        </p>
+        <ul>
+            <li><span class="apicode">setPosition( x, y )</span>. Set an actor's position at x,y inside its parent.</li>
+            <li><span class="apicode">setPositionAnchor( x, y )</span>. Set an actor's anchor position. By default
+            the anchor position is (0,0) or top left corner. Call setLocationAnchor(.5,.5) to set default actor's
+            position to its center.</li>
+            <li><span class="apicode">setPositionAnchored( x, y, ax, ay )</span>. Set an actor's anchor position
+                and anchor at the same time.
+        </ul>
+    </div>
+    <div>
+        <h3>Rotation</h3>
+        <p>
+            This transformation will rotate the Actor a number of radians. There are two methods for applying
+            rotations:
+        </p>
+        <p><span class="apicode">function setRotation( angle_in_radians )</span></p>
+        <p><span class="apicode">function setRotationAnchor( center_x, center_y )</span>. Set rotation point. Again the
+            values are between 0 and 1.</p>
+        <p><span class="apicode">function setRotationAnchored( angle_in_radians, center_x, center_y )</span></p>
+        <p>the function setRotation is a helper for setRotationAnchored, and assumes the developer
+        wants to rotate around actor's center. The default rotation is 0 radians, ie, no rotation.</p>
+        <p>
+            The values center_x and center_y define an offset position to rotate around in
+            <span class="important">pixels</span> from
+            the top left corner of the actor (0,0 posisiton). The value in pixels is opposed to that in percentage
+            specified in <code>setValues</code> method of RotateBehavior as we'll see.
+        </p>
+    </div>
+    <div>
+        <h3>Scale</h3>
+        <p>
+            This transformation will make the Actor wider and or taller. The developer
+            specifies two scale values one for width and another for height. These values are a multiplier
+            for Actors dimension. The default values for scale are both 1, meaning the resulting Actor size
+            will be width*1 and height*1, ie, no changes. The developer could specify negative values,
+            meaning that the Actor would be mirrored. The methods to set Actor's Scale are:
+        </p>
+        <p><span class="apicode">function setScale( scale_x, scale_y )</span>
+        <p><span class="apicode">function setScaleAnchor( anchorX, anchorY )</span>
+        <p><span class="apicode">function setScaleAnchored( scale_x, scale_y, anchorX, anchorY )</span>
+        <p>
+            As with rotations, setScale is a helper method for setScaleAnchored. Also the
+            anchor values are interpreted the same way.
+        </p>
+    </div>
+    <div>
+        <p>One important thing about rotation and scale transformations is that the <span class="important">
+            rotation anchor and the scale anchor can be different</span>.</p>
+    </div>
+</div>
+
+<div class="sample">
+    <h3>Example</h3>
+    <p>In this example, we see some transformations applied to different 80x80 pixels Actors.
+       Move the mouse over the green actors, and see how the Local coord parameter varies.
+       Despite the size on screen, it will always give the correct values from 0 to 80 in width
+       and height.</p>
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+
+                // Initialize director.
+                var _director_3= new CAAT.Director().initialize(
+                        400,
+                        120,
+                        document.getElementById('_c3'));
+
+                // create scene.
+                var _scene_3=    _director_3.createScene();
+
+                // create a simple actor. no transformations.
+                var _pulsating_actor_3_0= new CAAT.Actor().
+                        setBounds(10,20,80,80).
+                        setFillStyle('#00ff00');
+                _pulsating_actor_3_0.name= 'no transformation';
+
+                // rotated 30 degrees
+                var _pulsating_actor_3_1= new CAAT.Actor().
+                        setBounds(120,20,80,80).
+                        setFillStyle('#00ff00').
+                        setRotation( Math.PI/6 );
+                _pulsating_actor_3_1.name= 'rotated 30 degrees';
+
+                // half in width
+                var _pulsating_actor_3_2= new CAAT.Actor().
+                        setBounds(200,20,80,80).
+                        setFillStyle('#00ff00').
+                        setScale( .5, 1 );
+                _pulsating_actor_3_2.name= 'scaled(.5,1)';
+
+                // 125% width, half height
+                var _pulsating_actor_3_3= new CAAT.Actor().
+                        setBounds(300,20,80,80).
+                        setFillStyle('#00ff00').
+                        setScale( 1.2, .4 );
+                _pulsating_actor_3_3.name= 'scaled(1.25,.5)';
+
+                // from example 1
+                var mouseMoveHandler= function(mouseEvent) {
+                    // get the scene Actor the event was generated for.
+                    var actor= mouseEvent.source;
+
+                    // show some event info:
+                    document.getElementById('_c3_coords').innerHTML=
+                            "<b>Actor:</b>"+ actor.name+" "+
+                            "<b>Local Coord:</b> ("+
+                                // with all this stuff i'm just stripping
+                                // off any decimal beyond .99
+                                ((mouseEvent.point.x*100)>>0)/100+", "+
+                                ((mouseEvent.point.y*100)>>0)/100+") "+
+                            "<b>Screen Coord:</b> ("+
+                                mouseEvent.screenPoint.x+", "+
+                                mouseEvent.screenPoint.y+") ";
+                };
+
+                // change default mouse handler to report coordinates.
+                _pulsating_actor_3_0.mouseMove= mouseMoveHandler;
+                _pulsating_actor_3_1.mouseMove= mouseMoveHandler;
+                _pulsating_actor_3_2.mouseMove= mouseMoveHandler;
+                _pulsating_actor_3_3.mouseMove= mouseMoveHandler;
+
+                // don't forget to actors to the scene.
+                _scene_3.addChild( _pulsating_actor_3_0 );
+                _scene_3.addChild( _pulsating_actor_3_1 );
+                _scene_3.addChild( _pulsating_actor_3_2 );
+                _scene_3.addChild( _pulsating_actor_3_3 );
+
+                var p= _scene_3, s= 150;
+                for( var i=0; i<5; i++ ) {
+                    var c= new CAAT.Foundation.ActorContainer().
+                            setSize( s, s).
+                            centerAt(p.width/2, p.height/2).
+                            setFillStyle( CAAT.Module.ColorUtil.Color.random()).
+                            enableEvents(false).
+                            addBehavior( new CAAT.Behavior.RotateBehavior().
+                                setValues( 0 , 2*Math.PI).
+                                setDelayTime( 0, 30000 + i*1000).
+                                setCycle( true )
+                            );
+                    p.addChild( c );
+                    p= c;
+                    s-=25-i*3;
+                }
+
+                // set 20 fps animation
+                CAAT.loop(20);
+
+        </pre>
+    </div>
+    <div><span id="_c3_coords"></span></div>
+    <div><canvas id="_c3"></canvas></div>
+
+    <script>
+        (function() {
+
+        // Initialize director.
+            var _director_3= new CAAT.Director().initialize(
+                    400,
+                    400,
+                    document.getElementById('_c3'));
+
+            // create scene.
+            var _scene_3=    _director_3.createScene();
+
+            // create a simple actor. no transformations.
+            var _pulsating_actor_3_0= new CAAT.Actor().
+                    setBounds(10,20,80,80).
+                    setFillStyle('#00ff00');
+            _pulsating_actor_3_0.name= 'no transformation';
+
+            // rotated 30 degrees
+            var _pulsating_actor_3_1= new CAAT.Actor().
+                    setBounds(120,20,80,80).
+                    setFillStyle('#00ff00').
+                    setRotation( Math.PI/6 );
+            _pulsating_actor_3_1.name= 'rotated 30 degrees';
+
+            // half in width
+            var _pulsating_actor_3_2= new CAAT.Actor().
+                    setBounds(200,20,80,80).
+                    setFillStyle('#00ff00').
+                    setScale( .5, 1 );
+            _pulsating_actor_3_2.name= 'scaled(.5,1)';
+
+            // 125% width, half height
+            var _pulsating_actor_3_3= new CAAT.Actor().
+                    setBounds(300,20,80,80).
+                    setFillStyle('#00ff00').
+                    setScale( 1.8, .25 );
+            _pulsating_actor_3_3.name= 'scaled(1.8,.25)';
+
+            // from example 1
+            var mouseMoveHandler= function(mouseEvent) {
+                // get the scene Actor the event was generated for.
+                var actor= mouseEvent.source;
+
+                // show some event info:
+                document.getElementById('_c3_coords').innerHTML=
+                        "<b>Actor:</b>"+ actor.name+" "+
+                        "<b>Local Coord:</b> ("+
+                            // with all this stuff i'm just stripping
+                            // off any decimal beyond .99
+                            ((mouseEvent.point.x*100)>>0)/100+", "+
+                            ((mouseEvent.point.y*100)>>0)/100+") "+
+                        "<b>Screen Coord:</b> ("+
+                            mouseEvent.screenPoint.x+", "+
+                            mouseEvent.screenPoint.y+") ";
+            };
+
+            // change default mouse handler to report coordinates.
+            _pulsating_actor_3_0.mouseMove= mouseMoveHandler;
+            _pulsating_actor_3_1.mouseMove= mouseMoveHandler;
+            _pulsating_actor_3_2.mouseMove= mouseMoveHandler;
+            _pulsating_actor_3_3.mouseMove= mouseMoveHandler;
+
+            // don't forget to actors to the scene.
+            _scene_3.addChild( _pulsating_actor_3_0 );
+            _scene_3.addChild( _pulsating_actor_3_1 );
+            _scene_3.addChild( _pulsating_actor_3_2 );
+            _scene_3.addChild( _pulsating_actor_3_3 );
+
+            var p= _scene_3, s= 150;
+            for( var i=0; i<5; i++ ) {
+                var c= new CAAT.Foundation.ActorContainer().
+                        setSize( s, s).
+                        centerAt(p.width/2, p.height/2).
+                        setFillStyle( CAAT.Module.ColorUtil.Color.random()).
+                        enableEvents(false).
+                        addBehavior( new CAAT.Behavior.RotateBehavior().
+                            setValues( 0 , 2*Math.PI).
+                            setDelayTime( 0, 30000 + i*1000).
+                            setCycle( true )
+                        );
+                p.addChild( c );
+                p= c;
+                s-=25-i*3;
+            }
+
+            // set 20 fps animation
+            CAAT.loop(20);
+
+        })();
+    </script>
+</div>
+
+
+        </div>
+    </div>
+
+<p>
+    
+</p>
+</div>
+</body>
+</html>

@@ -18,21 +18,21 @@ function __scene(director) {
 
     var scene= director.createScene();
 
-    var bg= new CAAT.ActorContainer().
+    var bg= new CAAT.Foundation.ActorContainer().
             setBounds(0,0,director.width,director.height).
             setFillStyle('#222');
 
     scene.addChild(bg);
 
     // create a sprite image of 1 row by 6 columns
-    var starsImage= new CAAT.SpriteImage().
+    var starsImage= new CAAT.Foundation.SpriteImage().
             initialize(director.getImage('stars'), 1,6 );
 
     var T= 2500;
 
     var mouseStars= function(mouseEvent) {
 
-        var actorStar= new CAAT.Actor().
+        var actorStar= new CAAT.Foundation.Actor().
             // set background image to be a reference of a SpriteImage instance
             // and set actor's size equal to a SpriteImage's subimage size
                 setBackgroundImage(
@@ -49,18 +49,18 @@ function __scene(director) {
                 setFrameTime(scene.time, T).
             // add a scaling behavior
                 addBehavior(
-                    new CAAT.ScaleBehavior().
+                    new CAAT.Behavior.ScaleBehavior().
                         setFrameTime(scene.time, T).
                         setValues( 1,5, 1,5 ).
                         setInterpolator(
-                            new CAAT.Interpolator().createExponentialInInterpolator(
+                            new CAAT.Behavior.Interpolator().createExponentialInInterpolator(
                                 3,
                                 false)
                         )
                 ).
             // add an alpha behavior so the actor takes 1000 ms to fade out to zero alpha
                 addBehavior(
-                    new CAAT.AlphaBehavior().
+                    new CAAT.Behavior.AlphaBehavior().
                         setFrameTime(scene.time, T).
                         setValues( 1, 0 ) );
 
@@ -75,14 +75,14 @@ function __scene(director) {
 
 function __init()   {
 
-    var director = new CAAT.Director().
+    var director = new CAAT.Foundation.Director().
             initialize(300,300).
             setClear(false);
     document.getElementById('i').appendChild(director.canvas);
 
-    director.enableResizeEvents(CAAT.Director.prototype.RESIZE_PROPORTIONAL);
+    director.enableResizeEvents(CAAT.Foundation.Director.RESIZE_PROPORTIONAL);
 
-    new CAAT.ImagePreloader().loadImages(
+    new CAAT.Module.Preloader.ImagePreloader().loadImages(
         [
             {id:'stars',    url:'../demos/demo-resources/img/stars.png'}
         ],

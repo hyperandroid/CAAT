@@ -26,6 +26,7 @@
                     <h1>Interactivity. Setting behaviors.</h1>
                 </div>
                 <div id="experiment-holder">
+                    <canvas id="experiment-canvas"></canvas>
                 </div>
                 <div id="experiment-description">
                     <div>
@@ -53,8 +54,8 @@
 </body>
 
 <script type="text/javascript" src="../menu/menu.js"></script>
-<script type="text/javascript" src="../../../build/caat.js"></script>
-<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+
 <script type="text/javascript">
     /**
      * @license
@@ -87,23 +88,53 @@
          * Startup it all up when the document is ready.
          * Change for your favorite frameworks initialization code.
          */
-        window.addEventListener(
-                'load',
-                function() {
-                    CAAT.modules.initialization.init(
-                            800, 500,
-                            'experiment-holder',
-                            [
-                                {id:'numbers', url:'../demo-resources/img/numbers.png'},
-                                {id:'stars', url:'../demo-resources/img/stars.png'}
-                            ],
-                            behaviors
-                            );
-                },
-                false);
+
+        window.addEventListener('load',
+            function() {
+                CAAT.ModuleManager.
+
+                    baseURL("../../../src/").
+                    setModulePath("CAAT.Core",              "Core").
+                    setModulePath("CAAT.Math",              "Math").
+                    setModulePath("CAAT.Behavior",          "Behavior").
+                    setModulePath("CAAT.Foundation",        "Foundation").
+                    setModulePath("CAAT.Event",             "Event").
+                    setModulePath("CAAT.PathUtil",          "PathUtil").
+                    setModulePath("CAAT.Module.Preloader",  "Modules/Image/Preloader").
+                    setModulePath("CAAT.Module",            "Modules").
+
+                    setModulePath("CAAT.WebGL",             "WebGL").
+
+                    // get modules, and solve their dependencies.
+                    bring(
+                    [
+                        "CAAT.PathUtil.Path",
+                        "CAAT.Foundation.Director",
+                        "CAAT.Foundation.Scene",
+                        "CAAT.Foundation.SpriteImage",
+                        "CAAT.Behavior.PathBehavior",
+                        "CAAT.Module.Preloader.Preloader"
+                    ]).
+
+                    // this function will be firer every time all dependencies have been solved.
+                    // if you call again bring, this function could be fired again.
+                    onReady(function () {
+                        // simply load js files. call start when all of them have been loaded.
+                        // load won't start until all 'bring' dependencies have been solved.
+
+                        new CAAT.Module.Preloader.Preloader().
+                                addElement("numbers", "../demo-resources/img/numbers.png").
+                                addElement("stars","../demo-resources/img/stars.png").
+                                load( function(images) {
+                                    behaviors(images);
+                                });
+
+                    });
+            },
+            false);
 
         function createStarCache(director, ci) {
-            var actor= new CAAT.Actor().
+            var actor= new CAAT.Foundation.Actor().
                 setBackgroundImage( ci.getRef(), true ).
                 setSpriteIndex( (Math.random()*6)>>0 ).
                 enableEvents(false).
@@ -112,11 +143,13 @@
             return actor;
         }
 
-        function behaviors(director) {
+        function behaviors(images) {
+            var director= new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas');
+            director.setImagesCache(images);
             var scene= director.createScene();
-            var ci= new CAAT.SpriteImage().
+            var ci= new CAAT.Foundation.SpriteImage().
                         initialize(director.getImage('numbers'), 9, 9);
-            var cistars= new CAAT.SpriteImage().
+            var cistars= new CAAT.Foundation.SpriteImage().
                         initialize(director.getImage('stars'), 1, 6);
 
             var i,j;
@@ -129,13 +162,13 @@
             /**
              * create a cache of 400 falling stars.
              */
-            var starContainer= new CAAT.ActorContainer().
+            var starContainer= new CAAT.Foundation.ActorContainer().
                     setBounds(0,0,director.width,director.height).
                     enableEvents(false);
             for( var i=0; i<400; i++ ) {
                 starCache.push( createStarCache(director, cistars) );
             }
-            var numberContainer= new CAAT.ActorContainer().
+            var numberContainer= new CAAT.Foundation.ActorContainer().
                     setBounds(0,0,director.width,director.height);
 
 
@@ -157,7 +190,7 @@
             for( var i=0; i<rows; i++ ) {
                 for( var j=0; j<columns; j++ ) {
 
-                    var number= new CAAT.Actor().
+                    var number= new CAAT.Foundation.Actor().
                             setBackgroundImage(ci.getRef(),true).
                             setLocation(
                                 paddingLeft + j*(numberPadding/2+numberW),
@@ -189,7 +222,11 @@
                     number.mouseClick= function(mouseEvent) {
                         var NS= 20;
                         for( var i=0; i<NS; i++ ) {
-                            var star= starCache[(i+starCacheIndex++)%starCache.length];
+                            if ( !starCache.length ) {
+                                return;
+                            }
+
+                            var star= starCache.pop();
 
                             var x= this.x+this.width/2;
                             var y= this.y+this.height/2;
@@ -203,10 +240,10 @@
                             
                             star.emptyBehaviorList().
                                     addBehavior(
-                                            new CAAT.PathBehavior().
+                                            new CAAT.Behavior.PathBehavior().
                                                     setFrameTime( this.time, 600+(400*Math.random()) ).
                                                     setPath(
-                                                            new CAAT.Path().
+                                                            new CAAT.PathUtil.Path().
                                                                     beginPath( x,y ).
                                                                     addQuadricTo( cpx, cpy, fpx, fpy ).
                                                                     endPath()
@@ -214,6 +251,7 @@
                                                     addListener( {
                                                             behaviorExpired : function(behavior, time, actor) {
                                                                 actor.setExpired(true);
+                                                                starCache.push(actor);
                                                             }
                                                     })
                                             ).
@@ -228,6 +266,7 @@
                 }
             }
 
+            CAAT.loop(60);
         }
 
     })();

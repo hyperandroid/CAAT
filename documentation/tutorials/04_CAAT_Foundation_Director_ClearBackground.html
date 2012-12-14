@@ -1,0 +1,91 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 4 - Director, cleaning the background</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>Director</h1>
+            <h2>Clear background</h2>
+
+            <p>
+                A CAAT.Director object will by default clean every frame the animations background.
+            </p>
+            <p>
+                Despite a Director object is an Actor, it will surpass the effects of calling either
+                <span class="apicode">setFillStle( style )</span> or
+                <span class="apicode">setBackgroundImage( image )</span>
+                methods. The Director instance clears the background by calling rendering context's
+                <span class="apicode">clearRect</span> when using a Canvas renderer and
+                <span class="apicode">gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT)</span>
+                if webGL is enabled. It has no effect when using the CSS renderer.
+            </p>
+            <p>
+                It will be a common error and performance sinker to let a canvas based director
+                to clean the background once and doing it again in the scene. It is interesting al least during
+                scene transition to have Director clear the screen since in can leave uncleared areas while
+                scenes are brought in-out.
+            </p>
+            <p>
+                To avoid this you could call director's <span class="apicode">setClear(false)</span>.
+            </p>
+            <p>
+                It will be more proper to do it as follows:
+            </p>
+            <div class="code">
+                <pre class="brush: js; auto-links: false; toolbar: false;">
+                    scene.activated= function() {
+                        director.setClear( CAAT.Foundation.Director.CLEAR_NONE );
+                    };
+                </pre>
+            </div>
+            <div>
+                <p>
+                    Recently, CAAT has added more background clear modes. Right now, you can call
+                    <span class="apicode">director.setClear( CAAT.Director.CLEAR_XXX ).</span>. Accepted values are:
+                </p>
+                <li><span class="apicode">CAAT.Director.CLEAR_NONE</span>: the background is not cleared previous to draw a frame. Suitable when
+                    the scene has Actors which cover the whole background.
+                <li><span class="apicode">CAAT.Director.CLEAR_ALL</span>: the background will be cleared previous to draw a frame.</li>
+                <li><span class="apicode">CAAT.Director.CLEAR_DIRTY_RECTS</span>: the background will be cleared and repainted only in dirty areas.
+                    These areas will be optimized. Consider switching from CLEAR_DIRTY_RECTS to CLEAR_ALL when there're
+                    many areas to repaint (8 or more).
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

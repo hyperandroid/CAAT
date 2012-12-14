@@ -26,6 +26,7 @@
                 <h1>Homogeneous coordinates</h1>
             </div>
             <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
             </div>
             <div id="experiment-description">
                 <div>
@@ -66,8 +67,8 @@
 </body>
 
 <script type="text/javascript" src="../menu/menu.js"></script>
-<script type="text/javascript" src="../../../build/caat.js"></script>
-<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+
 <script type="text/javascript">
     /**
      * @license
@@ -97,36 +98,50 @@
 
     (function() {
 
-        /**
-         * Startup it all up when the document is ready.
-         * Change for your favorite frameworks initialization code.
-         */
-        window.addEventListener(
-                'load',
-                function() {
-                    CAAT.modules.initialization.init(
-                            800, 500,
-                            'experiment-holder',
-                            [
+        window.addEventListener('load',load,false);
 
-                            ],
-                            __coordinates
-                            );
-                },
-                false);
+        function load() {
+            CAAT.ModuleManager.
+                    baseURL("../../../src/").
+                    setModulePath("CAAT.Core",              "Core").
+                    setModulePath("CAAT.Math",              "Math").
+                    setModulePath("CAAT.Behavior",          "Behavior").
+                    setModulePath("CAAT.Foundation",        "Foundation").
+                    setModulePath("CAAT.Event",             "Event").
+                    setModulePath("CAAT.PathUtil",          "PathUtil").
+                    setModulePath("CAAT.Module",            "Modules").
+                    setModulePath("CAAT.Module.Preloader",  "Modules/Image/Preloader").
+                    setModulePath("CAAT.WebGL",             "WebGL").
 
-        function __coordinates(director) {
+                // get modules, and solve their dependencies.
+                    bring(
+                    [
+                        "CAAT.Foundation.Director",
+                        "CAAT.Foundation.Actor",
+                        "CAAT.Foundation.ActorContainer",
+                        "CAAT.Foundation.UI.TextActor",
+                        "CAAT.Behavior.Interpolator",
+                        "CAAT.Behavior.RotateBehavior"
+                    ]).
 
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                    onReady( __coordinates );
+        }
+
+        function __coordinates() {
+
+            var director= new CAAT.Foundation.Director().initialize( 800,500,'experiment-canvas' );
             var scene= director.createScene();
 
 
-            var cc= new CAAT.ActorContainer().
+            var cc= new CAAT.Foundation.ActorContainer().
                 setBounds( 0,0,director.width,director.height );
             cc.setGestureEnabled(true);
 
             scene.addChild(cc);
 
-            var coords= new CAAT.TextActor().
+            var coords= new CAAT.Foundation.UI.TextActor().
                     setFont("20px sans-serif").
                     setTextAlign('left').
                     setTextBaseline('top').
@@ -137,7 +152,7 @@
                     setOutline(true);
             scene.addChild(coords);
 
-            var coords2= new CAAT.TextActor().
+            var coords2= new CAAT.Foundation.UI.TextActor().
                 setFont("20px sans-serif").
                 setTextAlign('left').
                 setTextBaseline('top').
@@ -148,7 +163,7 @@
                 setOutline(true);
             scene.addChild(coords2);
 
-            var coords3= new CAAT.TextActor().
+            var coords3= new CAAT.Foundation.UI.TextActor().
                 setFont("20px sans-serif").
                 setTextAlign('left').
                 setTextBaseline('top').
@@ -177,10 +192,10 @@
             for ( var i = 0; i < np; i++) {
                 var sc= 1+Math.random()*.25;
 
-                var p = new CAAT.ActorContainer().
+                var p = new CAAT.Foundation.ActorContainer().
                     setBounds(
-                        Math.random() * director.canvas.width,
-                        Math.random()* director.canvas.height,
+                        Math.random() * director.width,
+                        Math.random()* director.height,
                         s,
                         s).
                     setRotation( Math.PI*2*Math.random() ).
@@ -228,7 +243,7 @@
                 cc.addChild(p);
 
                 var fpaint= function(director,time) {
-                    var canvas= director.crc;
+                    var canvas= director.ctx;
 
                     if ( null!=this.parent && null!=this.fillStyle ) {
                         canvas.fillStyle= this.pointed ? 'orange' : (this.fillStyle!=null ? this.fillStyle : 'white'); //'white';
@@ -297,17 +312,17 @@
                 coords3.setText("");
             };
 
-            var gradient= director.crc.createLinearGradient(0,0,0,50);
+            var gradient= director.ctx.createLinearGradient(0,0,0,50);
             gradient.addColorStop(0,'green');
             gradient.addColorStop(0.5,'red');
             gradient.addColorStop(1,'yellow');
 
             // texts
-            var cc1= new CAAT.ActorContainer().
+            var cc1= new CAAT.Foundation.ActorContainer().
                     setBounds( 480,30, 300, 140 ).
                     enableEvents(false).
                     addBehavior(
-                        new CAAT.RotateBehavior().
+                        new CAAT.Behavior.RotateBehavior().
                                 setCycle(true).
                                 setFrameTime( 0, 4000 ).
                                 setValues( -Math.PI/8, Math.PI/8, .50, 0 ).  // anchor at 50%, 0%
@@ -321,7 +336,7 @@
                     );
             scene.addChild(cc1);
 
-            var text= new CAAT.TextActor().
+            var text= new CAAT.Foundation.UI.TextActor().
                     setFont("30px sans-serif").
                     setText("Perfect Pixel").
                     calcTextSize(director).
@@ -331,7 +346,7 @@
                     cacheAsBitmap();
             cc1.addChild(text.setLocation(cc1.width/2,0));
 
-            var text2= new CAAT.TextActor().
+            var text2= new CAAT.Foundation.UI.TextActor().
                     setFont("30px sans-serif").
                     setTextAlign("center").
                     setText("Collision detection").
@@ -341,7 +356,7 @@
                     cacheAsBitmap();
             cc1.addChild(text2.setLocation(cc1.width/2,30));
 
-            var text3= new CAAT.TextActor().
+            var text3= new CAAT.Foundation.UI.TextActor().
                     setFont("30px sans-serif").
                     setTextAlign("center").
                     setText("Drag Enabled").
@@ -351,7 +366,7 @@
                     cacheAsBitmap();
             cc1.addChild(text3.setLocation(cc1.width/2,60));
 
-            var text4= new CAAT.TextActor().
+            var text4= new CAAT.Foundation.UI.TextActor().
                     setFont("20px sans-serif").
                     setTextAlign("center").
                     setText("Drag + [Control,Shift,Alt]").
@@ -361,7 +376,7 @@
                     cacheAsBitmap();
             cc1.addChild(text4.setLocation(cc1.width/2,100));
 
-            var text5= new CAAT.TextActor().
+            var text5= new CAAT.Foundation.UI.TextActor().
                     setFont("20px sans-serif").
                     setTextAlign("center").
                     setText("Double Click").
@@ -369,9 +384,9 @@
                     setTextFillStyle('black').
                     setOutline(true).
                     cacheAsBitmap();
-            cc1.addChild( text5.setLocation(cc1.width,120) );
+            cc1.addChild( text5.setLocation(cc1.width/2,120) );
 
-            return scene;
+            CAAT.loop(60);
         }
 
     })();

@@ -27,6 +27,7 @@
                 <h1>Accelerometer</h1>
             </div>
             <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
             </div>
             <div id="experiment-description">
                 <div>
@@ -53,9 +54,8 @@
 </body>
 
 <script type="text/javascript" src="../menu/menu.js"></script>
-<script type="text/javascript" src="../../../build/caat.js"></script>
-<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
-
+<script src="../../../src/Core/ModuleManager.js"></script>
+"
 <script type="text/javascript">
     /**
      * @license
@@ -87,21 +87,36 @@
 
         var CW= 800;
         var CH= 500;
-        /**
-         * Startup it all up when the document is ready.
-         * Change for your favorite frameworks initialization code.
-         */
-        window.addEventListener(
-                'load',
-                function() {
-                    CAAT.modules.initialization.init(
-                            CW, CH,
-                            'experiment-holder',
-                            [],
-                            __accelerometer
-                            );
-                },
-                false);
+        window.addEventListener('load',load,false);
+
+        function load() {
+            CAAT.ModuleManager.
+                    baseURL("../../../src/").
+                    setModulePath("CAAT.Core",              "Core").
+                    setModulePath("CAAT.Math",              "Math").
+                    setModulePath("CAAT.Behavior",          "Behavior").
+                    setModulePath("CAAT.Foundation",        "Foundation").
+                    setModulePath("CAAT.Event",             "Event").
+                    setModulePath("CAAT.PathUtil",          "PathUtil").
+                    setModulePath("CAAT.Module",            "Modules").
+                    setModulePath("CAAT.Module.Preloader",  "Modules/Image/Preloader").
+                    setModulePath("CAAT.WebGL",             "WebGL").
+
+                // get modules, and solve their dependencies.
+                    bring(
+                    [
+                        "CAAT.Foundation.Director",
+                        "CAAT.Foundation.Actor",
+                        "CAAT.Foundation.ActorContainer",
+                        "CAAT.Foundation.UI.TextActor",
+                        "CAAT.Behavior.Interpolator",
+                        "CAAT.Behavior.RotateBehavior"
+                    ]).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                    onReady( __accelerometer );
+        }
 
 
         function drawStarfield(ctx) {
@@ -215,17 +230,20 @@
         }
 
 
-        function __accelerometer(director) {
+        function __accelerometer() {
+
+            CAAT.enableDeviceMotion();
 
             createStars();
             var i;
+            var director= new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas');
             var scene = director.createScene();
 
             scene.activated= function() {
                 director.setClear(false);
             };
 
-            var root= new CAAT.ActorContainer().setBounds(0,0,director.width,director.height);
+            var root= new CAAT.Foundation.ActorContainer().setBounds(0,0,director.width,director.height);
             scene.addChild(root);
             root.paint= function(dirctor, time) {
                 var ctx= director.ctx;
@@ -236,7 +254,9 @@
 
             __scene11_text(director, scene);
 
-            var text = new CAAT.TextActor().
+            CAAT.loop(60);
+
+            var text = new CAAT.Foundation.UI.TextActor().
                     setFont("100px sans-serif").
                     setText("Rotate Device").
                     setTextFillStyle('red').
@@ -244,8 +264,8 @@
                     setOutline(true).
                     calcTextSize(director).
                     cacheAsBitmap();
-            scene.addChild(text.setLocation((director.canvas.width - text.width) / 2,
-                    (director.canvas.height - text.height) / 2) );
+            scene.addChild(text.setLocation((director.width - text.width) / 2,
+                    (director.height - text.height) / 2) );
 
             scene.onRenderEnd = function(director, time) {
                 var rx = CAAT.rotationRate.gamma;
@@ -262,16 +282,16 @@
         }
 
         function __scene11_text(director, scene) {
-            var gradient = director.crc.createLinearGradient(0, 0, 0, 50);
+            var gradient = director.ctx.createLinearGradient(0, 0, 0, 50);
             gradient.addColorStop(0, 'orange');
             gradient.addColorStop(0.5, 'yellow');
             gradient.addColorStop(1, '#7f00ff');
 
-            var cc = new CAAT.ActorContainer().
+            var cc = new CAAT.Foundation.ActorContainer().
                     setBounds(550, 50, 150, 100).
                     enableEvents(false).
                     addBehavior(
-                    new CAAT.RotateBehavior().
+                    new CAAT.Behavior.RotateBehavior().
                             setCycle(true).
                             setFrameTime(0, 4000).
                             setValues(-Math.PI / 8, Math.PI / 8, .50, 0).
@@ -281,7 +301,7 @@
                     );
             scene.addChild(cc);
 
-            var text = new CAAT.TextActor().
+            var text = new CAAT.Foundation.UI.TextActor().
                     setFont("50px sans-serif").
                     setText("Accelerometer").
                     setTextFillStyle(gradient).
@@ -290,7 +310,7 @@
                     cacheAsBitmap();
             cc.addChild(text.setLocation((cc.width - text.width) / 2, 0));
 
-            var text2 = new CAAT.TextActor().
+            var text2 = new CAAT.Foundation.UI.TextActor().
                     setFont("50px sans-serif").
                     setText("Enabled").
                     calcTextSize(director).

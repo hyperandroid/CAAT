@@ -11,7 +11,7 @@
 <span class='line'>  4</span>  * This file contains some image processing effects.
 <span class='line'>  5</span>  * Currently contains the following out-of-the-box effects:
 <span class='line'>  6</span>  *
-<span class='line'>  7</span>  *  + IMPlasma:     creates a plasma texture. The plasma is generated out of a color ramp (see color.js file)
+<span class='line'>  7</span>  *  + IMPlasma:     creates a plasma texture. The plasma is generated out of a color ramp (see Color.js file)
 <span class='line'>  8</span>  *  + IMBump:       creates a realtime bump-mapping from a given image. It supports multiple light sources
 <span class='line'>  9</span>  *                  as well as different light colors.
 <span class='line'> 10</span>  *  + IMRotoZoom:   produces a roto zoom effect out of a given square sized image. Image must be 2^n in size.
@@ -214,7 +214,7 @@
 <span class='line'>207</span>      * Creates an additive plasma wave image.
 <span class='line'>208</span>      *
 <span class='line'>209</span>      * @constructor
-<span class='line'>210</span>      * @extends CAAT.ImageProcessor
+<span class='line'>210</span>      * @extendsClass CAAT.ImageProcessor
 <span class='line'>211</span>      *
 <span class='line'>212</span>      */</span><span class="WHIT">
 <span class='line'>213</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.IMPlasma</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
@@ -386,7 +386,7 @@
 <span class='line'>379</span>      * effect on affected pixels.
 <span class='line'>380</span>      *
 <span class='line'>381</span>      * @constructor
-<span class='line'>382</span>      * @extends CAAT.ImageProcessor
+<span class='line'>382</span>      * @extendsClass CAAT.ImageProcessor
 <span class='line'>383</span>      */</span><span class="WHIT">
 <span class='line'>384</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.IMBump</span><span class="PUNC">=</span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>385</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.IMBump.superclass.constructor.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
@@ -648,7 +648,7 @@
 <span class='line'>641</span>      * This class creates an image processing Rotozoom effect.
 <span class='line'>642</span>      *
 <span class='line'>643</span>      * @constructor
-<span class='line'>644</span>      * @extends CAAT.ImageProcessor
+<span class='line'>644</span>      * @extendsClass CAAT.ImageProcessor
 <span class='line'>645</span>      */</span><span class="WHIT">
 <span class='line'>646</span> </span><span class="WHIT">    </span><span class="NAME">CAAT.IMRotoZoom</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='line'>647</span> </span><span class="WHIT">        </span><span class="NAME">CAAT.IMRotoZoom.superclass.constructor.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">

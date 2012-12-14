@@ -129,8 +129,10 @@
 
 </body>
 
-<script src="../../../build/caat.js"></script>
+
+
 <script type="text/javascript" src="../menu/menu.js"></script>
+<script src="../../../src/core/ModuleManager.js"></script>
 
 <script type="text/javascript">
     /**
@@ -158,6 +160,7 @@
      * THE SOFTWARE.
      *
      */
+CAAT.DEBUG=1;
 
     (function() {
 
@@ -165,10 +168,41 @@
          * Startup it all up when the document is ready.
          * Change for your favorite frameworks initialization code.
          */
-        window.addEventListener(
-                'load',
-                paint,
-                false);
+        window.addEventListener('load',load,false);
+
+        function load() {
+            CAAT.ModuleManager.
+                    baseURL("../../../src/").
+                    setModulePath("CAAT.Core",              "Core").
+                    setModulePath("CAAT.Math",              "Math").
+                    setModulePath("CAAT.Behavior",          "Behavior").
+                    setModulePath("CAAT.Foundation",        "Foundation").
+                    setModulePath("CAAT.Event",             "Event").
+                    setModulePath("CAAT.PathUtil",          "PathUtil").
+                    setModulePath("CAAT.Module",            "Modules").
+                    setModulePath("CAAT.Module.Preloader",  "Modules/Image/Preloader").
+                    setModulePath("CAAT.WebGL",             "WebGL").
+
+                // get modules, and solve their dependencies.
+                    bring(
+                    [
+                        "CAAT.Foundation.Director",
+                        "CAAT.Foundation.Actor",
+                        "CAAT.Foundation.ActorContainer",
+                        "CAAT.Foundation.SpriteImage",
+                        "CAAT.Foundation.UI.Layout.BorderLayout",
+                        "CAAT.Foundation.UI.Layout.BoxLayout",
+                        "CAAT.Foundation.UI.Layout.GridLayout",
+                        "CAAT.Foundation.UI.Label",
+                        "CAAT.Module.ColorUtil.Color"
+                    ]).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                    onReady( paint );
+        }
+
+        var textId= 0;
 
         /**
          * Creates a button
@@ -194,18 +228,48 @@
             ctx.strokeRect(0,0,w,h);
             ctx.strokeRect(w,0,w,h);
 
-            return new CAAT.SpriteImage().initialize( canvas, 1, 2 );
+            return new CAAT.Foundation.SpriteImage().initialize( canvas, 1, 2 );
         }
 
-        /**
-         * Creates a panel with add/remove buttons, and adding area.
-         */
-        function createPanel( buttonsInBottom, pw, ph, __layout ) {
+        var textPanelIndex=0;
+        function createTextPanel( buttonsInBottom, pw, ph, __layout ) {
+            var s= 5+ (Math.random()*15)|0;
+            var r= Math.random();
+            var al;
+            if ( r<.25 ) {
+                al="left";
+            } else if ( r<.5 ) {
+                al="center";
+            } else if (r<.75 ) {
+                al="right";
+            } else {
+                al= "justify"
+            }
+            var label= new CAAT.Foundation.UI.Label().
+                    setStyle("default", {
+                        fontSize : s,
+                        alignment: al
+                    }).
+                    setStyle("link", {
+                        fontSize : s+5,
+                        fill:      "#00f",
+                        italic : true
+                    }).
+                    setText("Bacon ipsum dolor sit amet salami pork belly tail <style=link><a=#"+(textPanelIndex++)+">tongue</a></style> pancetta, pork loin tri-tip drumstick bresaola shankle. Bacon ham hock pork belly, sausage tri-tip tongue strip steak fatback. Tail t-bone salami bacon. Bresaola turkey ribeye hamburger meatball t-bone. Turkey pancetta ground round, pig sirloin tenderloin corned beef meatloaf venison sausage jerky pork loin shank bacon tail. Pancetta beef ham hock, jowl pork chop pork belly bacon venison rump shoulder shankle cow pastrami sausage. Beef ribs drumstick meatball, pancetta biltong swine bresaola ribeye jerky spare ribs ham chuck corned beef pork chop.").
+                    cacheAsBitmap().
+                    setClickCallback( function(id) {
+                        alert("Clicked: "+id);
+                    }).
+                    setClip(true);
 
+            return label;
+        }
+
+        function createPanel( buttonsInBottom, pw, ph, __layout ) {
             var fn =  function( button ) {
                 content.addChild(
-                        new CAAT.Actor().
-                                setFillStyle( CAAT.Color.RGB.random() ).
+                        new CAAT.Foundation.Actor().
+                                setFillStyle( CAAT.Module.ColorUtil.Color.random() ).
                                 setSize(
                                     !buttonsInBottom ? 5+(15*Math.random()) : 15+(content.width-20)*Math.random(),
                                     !buttonsInBottom ? 5+(content.height-20)*Math.random() : 5+(15*Math.random()) )
@@ -213,27 +277,31 @@
             };
 
             var fn3 =  function( button ) {
-                content.addChild( createPanel( Math.random()<.5, 100, 100 ) );
+                if ( Math.random()<.5 ) {
+                    content.addChild( createTextPanel( Math.random()<.5, 100, 100 ) );
+                } else {
+                    content.addChild( createPanel( Math.random()<.5, 100, 100 ) );
+                }
             };
 
             function fn2( button ) {
                 content.removeLastChild();
             }
 
-            var buttons= new CAAT.ActorContainer();
+            var buttons= new CAAT.Foundation.ActorContainer();
 
-            var layout= new CAAT.UI.BoxLayout().
-                    setAxis( buttonsInBottom ? CAAT.UI.BoxLayout.AXIS.X : CAAT.UI.BoxLayout.AXIS.Y).
+            var layout= new CAAT.Foundation.UI.Layout.BoxLayout().
+                    setAxis( buttonsInBottom ? CAAT.Foundation.UI.Layout.LayoutManager.AXIS.X : CAAT.Foundation.UI.Layout.LayoutManager.AXIS.Y).
                     setHGap( 4 ).
                     setVGap( 4 ).
                     setAllPadding( 5 ).
-                    setVerticalAlignment( buttonsInBottom ? CAAT.UI.BoxLayout.ALIGNMENT.BOTTOM : CAAT.UI.BoxLayout.ALIGNMENT.CENTER ).
-                    setHorizontalAlignment( CAAT.UI.BoxLayout.ALIGNMENT.CENTER );
+                    setVerticalAlignment( buttonsInBottom ? CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.BOTTOM : CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER ).
+                    setHorizontalAlignment( CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER );
 
             buttons.setLayout( layout );
 
-            var buttonPlus=  new CAAT.Actor().setAsButton( createButton(30,30,"+","50px Arial", "#000"), 0,0,0,0, __layout ? fn3 : fn );
-            var buttonMinus= new CAAT.Actor().setAsButton( createButton(30,30,"-","50px Arial", "#000"), 0,0,0,0, fn2 );
+            var buttonPlus=  new CAAT.Foundation.Actor().setAsButton( createButton(30,30,"+","50px Arial", "#000"), 0,0,0,0, __layout ? fn3 : fn );
+            var buttonMinus= new CAAT.Foundation.Actor().setAsButton( createButton(30,30,"-","50px Arial", "#000"), 0,0,0,0, fn2 );
 
             buttons.addChild( buttonPlus );
             buttons.addChild( buttonMinus );
@@ -244,9 +312,9 @@
                 buttons.setPreferredSize( 40, ph );
             }
 
-            var panel= new CAAT.ActorContainer().
+            var panel= new CAAT.Foundation.ActorContainer().
                     setPreferredSize( pw, ph).
-                    setLayout( new CAAT.UI.BorderLayout() );
+                    setLayout( new CAAT.Foundation.UI.Layout.BorderLayout() );
 
             panel.addChild( buttons, buttonsInBottom ? "bottom" : "right" );
 
@@ -254,21 +322,25 @@
             var ha, va;
 
             var d= Math.random();
-            ha= ( d<.33 ) ? CAAT.UI.BoxLayout.ALIGNMENT.LEFT : ( d<.66 ) ? CAAT.UI.BoxLayout.ALIGNMENT.CENTER : CAAT.UI.BoxLayout.ALIGNMENT.RIGHT;
+            ha= ( d<.33 ) ? CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.LEFT :
+                ( d<.66 ) ? CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER :
+                            CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.RIGHT;
             d= Math.random();
-            va= ( d<.33 ) ? CAAT.UI.BoxLayout.ALIGNMENT.TOP : ( d<.66 ) ? CAAT.UI.BoxLayout.ALIGNMENT.CENTER : CAAT.UI.BoxLayout.ALIGNMENT.BOTTOM;
+            va= ( d<.33 ) ? CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.TOP :
+                ( d<.66 ) ? CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER :
+                            CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.BOTTOM;
 
             if ( !buttonsInBottom ) {
-                layout2= new CAAT.UI.BoxLayout().
-                            setAxis( CAAT.UI.BoxLayout.AXIS.X ).
+                layout2= new CAAT.Foundation.UI.Layout.BoxLayout().
+                            setAxis( CAAT.Foundation.UI.Layout.LayoutManager.AXIS.X ).
                             setHGap( 4 ).
                             setVGap( 4 ).
                             setAllPadding( 5 ).
                             setVerticalAlignment( va ).
                             setHorizontalAlignment( ha )
             } else {
-                layout2= new CAAT.UI.BoxLayout().
-                            setAxis( CAAT.UI.BoxLayout.AXIS.Y ).
+                layout2= new CAAT.Foundation.UI.Layout.BoxLayout().
+                            setAxis( CAAT.Foundation.UI.Layout.LayoutManager.AXIS.Y ).
                             setHGap( 4 ).
                             setVGap( 4 ).
                             setAllPadding( 5 ).
@@ -276,11 +348,11 @@
                             setHorizontalAlignment( ha )
 
             }
-            var content= new CAAT.ActorContainer().
+            var content= new CAAT.Foundation.ActorContainer().
                     setPreferredSize( pw, ph - 40).
                     setLayout( typeof __layout!=="undefined" ? __layout : layout2).
                     setClip( true).
-                    setFillStyle( CAAT.Color.RGB.random() );
+                    setFillStyle( CAAT.Module.ColorUtil.Color.random() );
             panel.addChild( content, "center" );
 
             return panel;
@@ -288,23 +360,23 @@
 
         function paint() {
 
-            var director= new CAAT.Director().initialize( window.innerWidth, window.innerHeight );
+            var director= new CAAT.Foundation.Director().initialize( window.innerWidth, window.innerHeight );
 
-            var scene = director.createScene().setLayout( new CAAT.UI.BorderLayout() );
-            var cont= new CAAT.ActorContainer().
-                    setLayout( new CAAT.UI.BorderLayout()).
+            var scene = director.createScene().setLayout( new CAAT.Foundation.UI.Layout.BorderLayout() );
+            var cont= new CAAT.Foundation.ActorContainer().
+                    setLayout( new CAAT.Foundation.UI.Layout.BorderLayout()).
                     setBounds( 0,0,director.width,director.height);
             scene.addChild(cont, "center" );
 
             cont.addChild( createPanel( true, 200, 200 ), "left");
 
-            var cont2= new CAAT.ActorContainer().setLayout( new CAAT.UI.BorderLayout() );
+            var cont2= new CAAT.Foundation.ActorContainer().setLayout( new CAAT.Foundation.UI.Layout.BorderLayout() );
             cont.addChild( cont2, "center");
             cont2.addChild( createPanel( false, 200, 100 ), "top");
 
-            cont2.addChild( createPanel( true, 500, 200, new CAAT.UI.GridLayout(0,5) ), "center" );
+            cont2.addChild( createPanel( true, 500, 200, new CAAT.Foundation.UI.Layout.GridLayout(0,5) ), "center" );
 
-            director.enableResizeEvents( CAAT.Director.prototype.RESIZE_BOTH );
+            director.enableResizeEvents( CAAT.Foundation.Director.RESIZE_BOTH );
 
             director.loop(60);
         }

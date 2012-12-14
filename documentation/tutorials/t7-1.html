@@ -53,7 +53,7 @@
         <script type="text/javascript">
 
             (function() {
-                var director= new CAAT.Director().initialize(
+                var director= new CAAT.Foundation.Director().initialize(
                         800,
                         600,
                         document.getElementById('_sample')).
@@ -61,7 +61,7 @@
 
                 var scene= director.createScene().setFillStyle('#fff');
 
-                var lerps= CAAT.Interpolator.prototype.enumerateInterpolators();
+                var lerps= CAAT.Behavior.Interpolator.enumerateInterpolators();
 
                 var cols= 20;
                 var j=0, i=0;
@@ -73,10 +73,10 @@
                 // generate interpolator actors.
                 for( j=0; j<rows; j++ ) {
 
-                    var root= new CAAT.Dock().
+                    var root= new CAAT.Foundation.UI.Dock().
                             setBounds(0,director.canvas.height-(j+1)*max, director.canvas.width, max).
                             setSizes(min, max).
-                            setLayoutOp( CAAT.Dock.prototype.OP_LAYOUT_BOTTOM );
+                            setLayoutOp( CAAT.Foundation.UI.Dock.OP_LAYOUT_BOTTOM );
                     root.scene= scene;
 
                     scene.addChild(root);
@@ -87,7 +87,7 @@
                             break;
                         }
 
-                        var actor= new CAAT.InterpolatorActor().
+                        var actor= new CAAT.Foundation.UI.InterpolatorActor().
                              setInterpolator( lerps[(j*cols+i)*2] ).
                              setBounds( 0, 0, min, min ).
                              setFillStyle('#fff').
@@ -145,16 +145,16 @@
 
                 // generate actors to apply interpolators to
                 for( i=0; i<3; i++ ) {
-                    var _text_r0= new CAAT.TextActor().
+                    var _text_r0= new CAAT.Foundation.UI.TextActor().
                             setFont("50px sans-serif").
                             setText("CAAT").
-                            setFillStyle('yellow').
+                            setTextFillStyle('yellow').
                             setOutline(true).
                             setOutlineColor('gray').
                             setLocation( 30,60+140*i ).
                             calcTextSize(director).
                             cacheAsBitmap();
-                    var text_r0_rb= new CAAT.RotateBehavior().
+                    var text_r0_rb= new CAAT.Behavior.RotateBehavior().
                             setFrameTime(0,5000).
                             setAngles(0,Math.PI*2).
                             setCycle(true);
@@ -166,16 +166,16 @@
                 }
 
                 for( i=0; i<3; i++ ) {
-                    var _text_r0= new CAAT.TextActor().
+                    var _text_r0= new CAAT.Foundation.UI.TextActor().
                             setFont("50px sans-serif").
                             setText("CAAT").
-                            setFillStyle('blue').
+                            setTextFillStyle('blue').
                             setOutline(true).
                             setOutlineColor('gray').
                             setLocation( 250,60+140*i ).
                             calcTextSize(director).
                             cacheAsBitmap();
-                    var text_r0_rb= new CAAT.ScaleBehavior().
+                    var text_r0_rb= new CAAT.Behavior.ScaleBehavior().
                             setFrameTime(0,5000).
                             setValues(1, 2, 1, 2).
                             setCycle(true);
@@ -187,12 +187,12 @@
                 }
 
                 for( i=0; i<3; i++ ) {
-                    var _text_r0= new CAAT.ShapeActor().
-                            setShape( CAAT.ShapeActor.prototype.SHAPE_CIRCLE ).
+                    var _text_r0= new CAAT.Foundation.UI.ShapeActor().
+                            setShape( CAAT.Foundation.UI.ShapeActor.SHAPE_CIRCLE ).
                             setFillStyle('red').
                             setStrokeStyle('orange').
                             setBounds( 470,60+130*i, 80, 80 );
-                    var text_r0_rb= new CAAT.AlphaBehavior().
+                    var text_r0_rb= new CAAT.Behavior.AlphaBehavior().
                             setFrameTime(0,5000).
                             setValues(0, 1).
                             setCycle(true);
@@ -205,19 +205,19 @@
 
                 for( i=0; i<3; i++ ) {
 
-                    var shape= new CAAT.ShapeActor().
-                            setShape(CAAT.ShapeActor.prototype.SHAPE_CIRCLE ).
+                    var shape= new CAAT.Foundation.UI.ShapeActor().
+                            setShape(CAAT.Foundation.UI.ShapeActor.SHAPE_CIRCLE ).
                             setFillStyle('yellow').
                             setStrokeStyle('blue').
                             setBounds(0,0,40,40);
 
-                    var path= new CAAT.Path().
+                    var path= new CAAT.PathUtil.Path().
                             setInteractive(false).
                             setLinear(590+ i*70, 90, 590+ i*70, 370);
 
-                    var pa= new CAAT.PathActor().
+                    var pa= new CAAT.Foundation.UI.PathActor().
                             setPath(path);
-                    var pb= new CAAT.PathBehavior().
+                    var pb= new CAAT.Behavior.PathBehavior().
                             setValues( path ).
                             setFrameTime( 0,10000 ).
                             setTranslation(shape.width/2, shape.height/2 ).

@@ -26,7 +26,7 @@
                 <h1>Masking with arbitrary paths</h1>
             </div>
             <div id="experiment-holder">
-                <canvas id="c"></canvas>
+                <canvas id="experiment-canvas"></canvas>
             </div>
             <div id="experiment-description">
                 <div>
@@ -54,8 +54,8 @@
 </body>
 
 <script type="text/javascript" src="../menu/menu.js"></script>
-<script type="text/javascript" src="../../../build/caat.js"></script>
-<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+
 <script type="text/javascript">
     /**
      * @license
@@ -83,265 +83,62 @@
      *
      */
 
-    (function() {
-        CAAT.Fish= function() {
-            CAAT.Fish.superclass.constructor.call(this);
-            this.tail=  [];
-            this.tail1= [];
-            this.tail2= [];
-            this.head1= [];
-            this.head2= [];
-
-            return this;
-        };
-
-        CAAT.Fish.prototype= {
-
-            tail:       null,
-            tail1:      null,
-            tail2:      null,
-            head1:      null,
-            head2:      null,
-            maxAngle:   45,
-            bodyColor:  'red',
-            f1:         0,
-            f2:         0,
-            f3:         0,
-            f4:         0,
-            tailSize:   0,
-            timeOffset: 0,  // para que las colas se muevan a distinta frecuencia.
-            headProportion:  0,  // proporcion desde donde tiene la cabeza.
-            antihead:   false,
-
-            headStart:  0,
-
-            setBodyColor : function(color) {
-                this.bodyColor= color;
-                return this;
-            },
-            /**
-             * born method must be called after Actor complete definition.
-             */
-            born : function() {
-                this.f1= ((Math.random()*2)>>0)/1000 + .002;
-                this.f2= ((Math.random()*2)>>0)/1000 + .002;
-                this.f3= ((Math.random()*5)>>0)/1000;
-                this.f4= ((Math.random()*5)>>0)/1000;
-
-                this.tailSize= (Math.random()*3+2)>>0;
-                this.timeOffset= (Math.random()*10000);
-
-                this.antihead= Math.random()<.25;
-                if ( this.antihead ) {
-                    this.headProportion= Math.random()*.25+.65;
-                    if ( this.headProportion<.8 ) {
-                        this.headProportion=.8;
-                    }
-                } else {
-                    this.headProportion= Math.random()*.25+.6;
-                }
-
-                this.maxAngle= 40+25*Math.random();
-
-                var w= this.width;
-                var h= this.height;
-
-                var w2= w/2;
-                var h2= h/2;
-
-                this.headStart= this.antihead ? w : w*this.headProportion;
-
-                this.tail[0]= 0;
-                this.tail[1]= h2;
-
-
-                /////////////---------------
-
-
-
-
-                // tail son 1 y 2 punto de control, y el ultimo punto de la cubica.
-                // ek primer punto fijo sera tail.
-                this.tail1[0]= w2;
-                this.tail1[1]= h2;
-
-                this.tail1[2]= w2;
-                this.tail1[3]= 0;
-
-                this.tail1[4]= this.headStart;
-                this.tail1[5]= 0;
-
-                this.headpos= w;
-                if ( this.antihead ) {
-                    this.headpos= w*this.headProportion;
-                }
-
-                this.head1[0]= this.headpos;
-                this.head1[1]= 0;
-                this.head1[2]= this.headpos;
-                this.head1[3]= h2;
-
-                this.head2[0]= this.headpos;
-                this.head2[1]= h;
-                this.head2[2]= this.headStart;
-                this.head2[3]= h;
-
-
-                this.tail2[0]= w2;
-                this.tail2[1]= h;
-
-                this.tail2[2]= w2;
-                this.tail2[3]= h2;
-
-                return this;
-            },
-            paint : function(director, time) {
-                var ctx= director.ctx;
-
-                time+= this.timeOffset;
-
-                var w= this.width;
-                var h= this.height;
-                var w2= w/2;
-                var w4= w2/2
-                var h2= h/2;
-
-
-                // .002 .003
-                var ang= Math.cos(time*this.f1)*this.maxAngle*Math.sin(time*this.f2)*Math.PI/180;
-                var px= w4-w4*Math.cos(ang);
-                var py= w4*Math.sin(ang);
-
-                this.tail[0]= px;
-                this.tail[1]= h2+ py;
-
-
-                var inc= -3*(Math.sin(time*.005)+Math.cos(time*.001))/2;
-
-                this.tail1[0]= w4;
-                this.tail1[1]= h2+inc;
-                this.tail1[2]= w2;
-                this.tail1[3]= inc;
-
-
-                ///// curva de cabeza.
-                /*
-                this.tail1[5]= -inc;
-                this.head1[1]= -inc;
-                this.head1[3]= h2-inc;
-                this.head2[1]= h-inc;
-                this.head2[3]= h-inc;
-                */
-
-                this.tail2[0]= w2;
-                this.tail2[1]= h+inc;
-                this.tail2[2]= w4;
-                this.tail2[3]= h2+inc;
-
-
-                ctx.beginPath();
-                ctx.fillStyle='orange';
-
-                //////////////////////////////////////////////// START ALETAS
-                var aletaSize= h2;      // ancho
-                var aletaHeight= 7;   // alto aleta
-                var aletaWidth= 5;
-                var aletaPos= w*2/3 + aletaWidth;
-
-                ctx.beginPath();
-                    ctx.moveTo( aletaPos, 2 );
-                    ctx.quadraticCurveTo(
-                            aletaPos, -aletaHeight,
-                            aletaPos-aletaSize, -aletaHeight-3*Math.sin(time*.002) );
-                    ctx.lineTo( aletaPos-aletaWidth, 2);
-                    ctx.closePath();
-                ctx.fill();
-                ctx.beginPath();
-                    ctx.moveTo( aletaPos, h-2 );
-                    ctx.quadraticCurveTo(
-                            aletaPos, h+aletaHeight,
-                            aletaPos-aletaSize, h+aletaHeight-3*Math.cos(time*.002) );
-                    ctx.lineTo( aletaPos-aletaWidth, h-2 );
-                    ctx.closePath();
-                ctx.fill();
-                //////////////////////////////////////////////// END ALETAS
-
-                //////////////////////////////////////////////// START BODY
-    /*
-                this.head1[3]= h2-inc ;
-
-                // subir bajar cuerpo
-                this.tail1[5]= inc;
-                this.head2[3]= h+inc;
-    */
-                ctx.beginPath();
-                    ctx.moveTo( this.tail[0], this.tail[1] + this.tailSize );
-                    ctx.bezierCurveTo(
-                            this.tail1[0], this.tail1[1],
-                            this.tail1[2], this.tail1[3],
-                            this.tail1[4], this.tail1[5] );
-                    ctx.quadraticCurveTo(
-                            this.head1[0], this.head1[1],
-                            this.head1[2], this.head1[3]
-                            );
-                    ctx.quadraticCurveTo(
-                            this.head2[0], this.head2[1],
-                            this.head2[2], this.head2[3]
-                            );
-                    ctx.bezierCurveTo(
-                            this.tail2[0], this.tail2[1],
-                            this.tail2[2], this.tail2[3],
-                            this.tail[0], this.tail[1] - this.tailSize );
-                ctx.closePath();
-                ctx.fillStyle=this.bodyColor;
-                ctx.fill();
-                ctx.strokeStyle=this.bodyColor;
-                ctx.stroke();
-                //////////////////////////////////////////////// END BODY
-
-                //////////////////////////////////////////////// START EYES
-                ctx.beginPath();
-                ctx.fillStyle='black';
-                var eyeradius= h2/6;
-
-                if ( this.antihead ) {
-                    ctx.arc(this.headpos-eyeradius*2, h2-h2/3, eyeradius, 0, 2*Math.PI, false );
-                    ctx.arc(this.headpos-eyeradius*2, h2+h2/3, eyeradius, 0, 2*Math.PI, false );
-
-                } else {
-                    ctx.arc(w-w2/4, h2-h2/3, eyeradius, 0, 2*Math.PI, false );
-                    ctx.arc(w-w2/4, h2+h2/3, eyeradius, 0, 2*Math.PI, false );
-                }
-                ctx.fill();
-                //////////////////////////////////////////////// END EYES
-            }
-        };
-
-        extend( CAAT.Fish, CAAT.Actor );
-    })();
 
     (function() {
         /**
          * Startup it all up when the document is ready.
          * Change for your favorite frameworks initialization code.
          */
-        window.addEventListener(
-                'load',
-                __fishpond,
-                false);
+        window.addEventListener('load',load,false);
+
+        function load() {
+            CAAT.ModuleManager.
+                baseURL( "../../../src/").
+                setModulePath("CAAT.Core",              "Core").
+                setModulePath("CAAT.Math",              "Math").
+                setModulePath("CAAT.Behavior",          "Behavior").
+                setModulePath("CAAT.Foundation",        "Foundation").
+                setModulePath("CAAT.Event",             "Event").
+                setModulePath("CAAT.PathUtil",          "PathUtil").
+                setModulePath("CAAT.Module",            "Modules").
+                setModulePath("CAAT.WebGL",             "WebGL").
+
+                setModulePath("CAAT.Procedural",        "../documentation/demos/demo2").
+
+                // get modules, and solve their dependencies.
+                bring(
+                    [
+                        "CAAT.PathUtil.Path",
+                        "CAAT.Foundation.Director",
+                        "CAAT.Foundation.ActorContainer",
+                        "CAAT.Math.Point",
+                        "CAAT.Behavior.Interpolator",
+                        "CAAT.Behavior.RotateBehavior",
+                        "CAAT.Behavior.ScaleBehavior",
+                        "CAAT.Behavior.PathBehavior",
+
+                        "CAAT.Procedural.Fish"
+
+                    ]
+                ).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( __fishpond );
+        }
 
 
         function __fishpond() {
 
-            var director= new CAAT.Director().initialize( 800,600,document.getElementById("c") );
+            var director= new CAAT.Foundation.Director().initialize( 800,600,'experiment-canvas' );
 
             var scene= director.createScene();
 
-            var gradient= director.crc.createLinearGradient(0,0,director.width,director.height);
+            var gradient= director.ctx.createLinearGradient(0,0,director.width,director.height);
             gradient.addColorStop(0,'#000000');
             gradient.addColorStop(1,'#00007f');
 
-            var gr= new CAAT.ActorContainer().
+            var gr= new CAAT.Foundation.ActorContainer().
                     setBounds(0,0,director.width,director.height).
                     setFillStyle(gradient).
                     cacheAsBitmap();
@@ -369,17 +166,17 @@
             for( i=0; i<NP; i++ ) {
                 angle= i*Math.PI/(NP);
 
-                pp.push( new CAAT.Point(
+                pp.push( new CAAT.Math.Point(
                         dw/2 + R*Math.cos(angle + (Math.PI*(i%2)) ) ,
                         dh/2 + R*Math.sin(angle + (Math.PI*(i%2))) ) );
 
             }
             var pp2= [];
             for( i=0; i<pp.length; i++ ) {
-                pp2.push(new CAAT.Point( pp[i].x, pp[i].y ) );
+                pp2.push(new CAAT.Math.Point( pp[i].x, pp[i].y ) );
             }
 
-            var path2= new CAAT.Path().
+            var path2= new CAAT.PathUtil.Path().
                 setCatmullRom(
                     pp,
                     true
@@ -388,7 +185,7 @@
 
             var path =
                     [
-                        new CAAT.Path().
+                        new CAAT.PathUtil.Path().
                                 beginPath(100, director.height / 2).
                                 addCubicTo(
                                 100, 10,
@@ -401,13 +198,13 @@
                                 closePath().
                                 setPositionAnchor(.5,.5),
 
-                        new CAAT.Path().
+                        new CAAT.PathUtil.Path().
                                 beginPath(100,100).
                                 addRectangleTo( director.width-100, director.height-100 ).
                                 endPath().
                                 setPositionAnchor(.5,.5),
 
-                        new CAAT.Path().
+                        new CAAT.PathUtil.Path().
                                 setCatmullRom(
                                     pp2,
                                     true
@@ -418,22 +215,22 @@
 
             for( var i=0; i<path.length; i++ ) {
                 path[i].addBehavior(
-                    new CAAT.PathBehavior().
+                    new CAAT.Behavior.PathBehavior().
                         setValues( path2 ).
                         setFrameTime( 0,15000 ).
                         setCycle( true )
                 ).addBehavior(
-                    new CAAT.RotateBehavior().
+                    new CAAT.Behavior.RotateBehavior().
                         setValues( 0,Math.PI*2, .5, .5 ).
                         setFrameTime( 0,5000 ).
                         setCycle( true )
                 ).addBehavior(
-                    new CAAT.ScaleBehavior().
+                    new CAAT.Behavior.ScaleBehavior().
                         setValues( .2, 1, .2, 1 ).
                         setFrameTime( 0,10000 ).
                         setCycle( true ).
                         setInterpolator(
-                            new CAAT.Interpolator().createLinearInterpolator(true, false)
+                            new CAAT.Behavior.Interpolator().createLinearInterpolator(true, false)
                     )
                 )
                 ;
@@ -460,7 +257,7 @@
 
                 var inTime= i*1000;
 
-                var pb = new CAAT.PathBehavior().
+                var pb = new CAAT.Behavior.PathBehavior().
                         setPath(new CAAT.Path().setCubic(
                         -fw - Math.random() * 300,
                         Math.random() * director.height,
@@ -500,7 +297,7 @@
                                 }
                             });
 
-                var f= new CAAT.Fish().
+                var f= new CAAT.Procedural.Fish().
                         setBounds(300,400,fw,fh).
                         born().
                         setFrameTime( scene.time+inTime, Number.MAX_VALUE ).

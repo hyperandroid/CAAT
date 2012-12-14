@@ -1,0 +1,216 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 2 - Actors Lifecycle</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+<div class="chapter">
+    <h1>CAAT.Foundation.Actor</h1>
+    <h2>Life cycle</h2>
+    <p>An actor by default is shown in the Scene as soon as the Scene is showing, and lasts forever.
+    But the life cycle can be limited to certain range of time on the <span class="important">Scene timeline</span>.
+    By calling the method <span class="apicode">setFrameTime( start_time, duration )</span> an actors lifecycle can
+    be controlled.</p>
+
+    <p>
+        While the Scene time is less than actor's start_time or the Scene time is bigger than actor's start_time+duration,
+        the Actor is considered to be out of frame time. Otherwise the Actor is considered to be in frame time
+        and will be processed, have <span class="apicode">beaviors</span> applied and probably be drawn on screen.
+    </p>
+
+    <p>
+        When the Scene time is greater than Actor.start_time+Actor.duration, besides out of frame time, the actor
+        is considered to be <span class="important">expired</span>. This is a readonly property by calling the method
+        <span class="apicode">isExpired()</span>.
+        An Actor will only be set as Expired once. During this expiration setting, an
+        Actor will notify its registered <span class="important">life cycle listeners</span>.
+        One of these listeners could for instance reset the Actor's frame time to let the Actor be again in
+        frame time.
+    </p>
+
+    <p>
+        An actor's destroy operation can be delegated to CAAT by flagging an actor as <span class="important">discardable</span>
+        by calling the method <span class="apicode">setDiscardable(true)</span>.
+        By default an Actor is non discardable.
+        This means that at the end of a Director's frame cycle, that is, when finished processing
+        and rendering a frame, every Actor that is expired, and flagged as discardable, will be
+        thrown away from the scene and properly destroyed.
+        This means that the Actor won't be drawn again since it is not
+        present at Scene's Actor list anymore. The destroyed actor will also be removed from its parent.
+        Upon destruction, the Actor will notify its listeners about this fact by calling the
+        <span class="important">listener life cycle</span>.
+    </p>
+
+    <h3>Life cycle listener</h3>
+
+    <p>
+        An Actor has some methods to expose its lifecycle to third party interested entities.</p>
+
+    <p>
+        The actor methods <span class="apicode">addListener( actor_life_cycle_listener )</span>,
+         <span class="apicode">removeListener( actor_life_cycle_listener )</span> and
+        <span class="apicode">fireEvent( event_type, time )</span> control an actor's lifecycle notification
+    </p>
+
+    <p>
+        The developer has only control over the add/remove methods, and it is the Director/Scene
+        animation cycle that will notify the life cycle changes to interested parties for us by
+        calling actor's <span class="apicode">fireEvent</span> method.</p>
+    <p>
+        The Actor life cycle listener must be an object with a method of the form
+    </p>
+    <p>
+        <span class="apicode">
+        {
+            actorLifeCycleEvent : function( actor_ref, event_type, time) {
+            }
+        }
+            </span>
+    </p>
+
+
+    <p>This method will receive on its parameters:</p>
+        <ul>
+            <li>actor_ref: A reference to the actor that is notifying its life cycle events. It is necessary
+            since the developer can reuse the same listener for different Actors, and surely would
+            like to know which of them is notifying about the event</li>
+            <li>event_type: Event type. It must be one of these string values:
+                <span class="important">expired, destroyed</span>.
+            The minimum action a life cycle Actor listener must perform is remove himself as listener,
+            so that all references to the destroyed Actor are removed and the garbage collector could
+            do its job properly.</li>
+            <li>time: the Scene time at which the Actor has been destroyed.</li>
+        </ul>
+    </p>
+    <p>Here's some sample code featuring life cycle listener. It is a green-colored pulsating rectangle.
+    This Actor is in frame time since the Scene started, and will last for two seconds. After these two
+    seconds, the life cycle listener is notified about Actor expiration, which will stablish again
+    Actor's lifecycle to start again one second after notification and lasting for two more seconds.</p>
+
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+                 // Initialize director.
+                 var _director_2= new CAAT.Foundation.Director().initialize(
+                         400,
+                         100,
+                         document.getElementById('_c2'));
+
+                 // create scene.
+                 var _scene_2=    _director_2.createScene();
+
+                 // create a simple actor. will last for two seconds on Scene.
+                 var _pulsating_actor_2= new CAAT.Foundation.Actor().
+                         create().
+                         setBounds(10,10,80,80).
+                         setFillStyle('#00ff00').
+                         setFrameTime(0,2000);
+
+                 // add a life cycle listener to the actor.
+                 _pulsating_actor_2.addListener( {
+                     actorLifeCycleEvent : function( actor, event_type, time ) {
+
+                         // on expiration notification,
+                         if ( event_type==='expired' ) {
+                             // just make the Actor sleep for 1 second.
+                             // After waking up, last for 2 seconds.
+                             actor.setFrameTime( time+1000, 2000 );
+                         }
+                     }
+                 } );
+
+                 // don't forget to add the actor to the scene.
+                 _scene_2.addChild( _pulsating_actor_2 );
+
+                 // set 20 fps animation
+                 CAAT.loop(20);
+        </pre>
+    </div>
+
+    <div class="sample">
+        <div><canvas id="_c2"></canvas></div>
+        <script>
+            (function() {
+
+            // Initialize director.
+            var _director_2= new CAAT.Foundation.Director().initialize(
+                    400,
+                    100,
+                    document.getElementById('_c2'));
+
+            // create scene.
+            var _scene_2=    _director_2.createScene();
+
+            // create a simple actor. will last for two seconds on Scene.
+            var _pulsating_actor_2= new CAAT.Foundation.Actor().
+                    setBounds(10,10,80,80).
+                    setFillStyle('#00ff00').
+                    setFrameTime(0,2000);
+
+            // add a life cycle listener to the actor.
+            _pulsating_actor_2.addListener( {
+                actorLifeCycleEvent : function( actor, event_type, time ) {
+
+                    // on expiration notification,
+                    if ( event_type==='expired' ) {
+                        // just make the Actor sleep for 1 second.
+                        // After waking up, last for 2 seconds.
+                        actor.setFrameTime( time+1000, 2000 );
+                    }
+                }
+            } );
+
+            // don't forget to add the actor to the scene.
+            _scene_2.addChild( _pulsating_actor_2 );
+
+            // set 20 fps animation
+            CAAT.loop(20);
+            })();
+        </script>
+    </div>
+</div>
+            
+
+
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+

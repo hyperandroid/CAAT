@@ -3,7 +3,7 @@
 <head>
     <script src="../track.js" type="text/javascript"></script>
     <meta charset="UTF-8">
-    <title>CAAT Tutorial 7 - CAAT.Interpolator</title>
+    <title>CAAT Tutorial 7 - CAAT.Behavior.Interpolator</title>
 
     <script type="text/javascript" src="sh/shCore.js"></script>
     <script type="text/javascript" src="sh/shBrushJScript.js"></script>
@@ -37,7 +37,7 @@
 
         </div>
         <div id="tutorial">
-            <h1>CAAT.Interpolator</h1>
+            <h1>CAAT.Behavior.Interpolator</h1>
             <p>
                 Interpolator object instances are used mainly in CAAT.Behavior objects to define
                 the way they are applied.
@@ -45,7 +45,7 @@
                 The default interpolator applied to any Behavior is a linear ramp, that is,
                 the Behavior is applied in regular time increments.
             <p>
-                A CAAT.Interpolator object has the ability to modify this linearity, and apply
+                A CAAT.Behavior.Interpolator object has the ability to modify this linearity, and apply
                 Behaviors differently, in example accelerating, exponentially, etc.
                 Despite the interpolator function being applied, the behavior will apply
                 for the range of values it had defined.
@@ -63,7 +63,7 @@
             </p>
 
             <p>
-                Here you can see the visual representation of every defined CAAT.Interpolator.
+                Here you can see the visual representation of every defined CAAT.Behavior.Interpolator.
                 The x axis means behavior application time, and the y axis means the resulting
                 value time to apply the behavior for.
             </p>
@@ -72,7 +72,7 @@
                 <h2>Linear Interpolator</h2>
                 <p>
                     Instance interpolators are created by calling <span class="apicode">
-                    new CAAT.Interpolator().createLinearInterpolator</span>
+                    new CAAT.Behavior.Interpolator().createLinearInterpolator</span>
                 </p>
                 <div>
                     <table cellpadding="5">
@@ -90,8 +90,8 @@
                 <script>
                     (function() {
                         var lerps= [
-                                new CAAT.Interpolator().createLinearInterpolator(false, false),
-                                new CAAT.Interpolator().createLinearInterpolator(true,  false)
+                                new CAAT.Behavior.Interpolator().createLinearInterpolator(false, false),
+                                new CAAT.Behavior.Interpolator().createLinearInterpolator(true,  false)
                         ];
 
                         var i, count=0;
@@ -104,7 +104,7 @@
                             var _scene_1= _director_1.createScene();
 
                             _scene_1.addChild(
-                                    new CAAT.InterpolatorActor().
+                                    new CAAT.Foundation.UI.InterpolatorActor().
                                         setInterpolator( lerps[i] ).
                                         setBounds( 10, 10, 80, 80 ).
                                         setFillStyle('#77f').
@@ -120,7 +120,7 @@
                 <h2>Linear Inverse Interpolator</h2>
                 <p>
                     Instance interpolators are created by calling <span class="apicode">
-                    new CAAT.Interpolator().createLinearInterpolator</span>
+                    new CAAT.Behavior.Interpolator().createLinearInterpolator</span>
                 </p>
 
                 <div>
@@ -139,8 +139,8 @@
                 <script>
                     (function() {
                         var lerps= [
-                                new CAAT.Interpolator().createLinearInterpolator(false, true),
-                                new CAAT.Interpolator().createLinearInterpolator(true,  true)
+                                new CAAT.Behavior.Interpolator().createLinearInterpolator(false, true),
+                                new CAAT.Behavior.Interpolator().createLinearInterpolator(true,  true)
                         ];
 
                         var i, count=0;
@@ -153,7 +153,7 @@
                             var _scene_1= _director_1.createScene();
 
                             _scene_1.addChild(
-                                    new CAAT.InterpolatorActor().
+                                    new CAAT.Foundation.UI.InterpolatorActor().
                                         setInterpolator( lerps[i] ).
                                         setBounds( 10, 10, 80, 80 ).
                                         setFillStyle('#77f').
@@ -169,11 +169,11 @@
                 <h2>Exponential Interpolator</h2>
                 <p>
                     Instance interpolators are created by calling <span class="apicode">
-                    new CAAT.Interpolator().createExponentialInInterpolator</span> or
+                    new CAAT.Behavior.Interpolator().createExponentialInInterpolator</span> or
                     <span class="apicode">
-                    new CAAT.Interpolator().createExponentialOutInterpolator</span> or
+                    new CAAT.Behavior.Interpolator().createExponentialOutInterpolator</span> or
                     <span class="apicode">
-                    new CAAT.Interpolator().createExponentialInOutInterpolator</span>.
+                    new CAAT.Behavior.Interpolator().createExponentialInOutInterpolator</span>.
                 </p>
 
                 <p>
@@ -246,31 +246,31 @@
 
                         var lerps= [
                             [
-                                new CAAT.Interpolator().createExponentialInInterpolator(    2, false),
-                                new CAAT.Interpolator().createExponentialOutInterpolator(   2, false),
-                                new CAAT.Interpolator().createExponentialInOutInterpolator( 2, false),
+                                new CAAT.Behavior.Interpolator().createExponentialInInterpolator(    2, false),
+                                new CAAT.Behavior.Interpolator().createExponentialOutInterpolator(   2, false),
+                                new CAAT.Behavior.Interpolator().createExponentialInOutInterpolator( 2, false),
 
-                                new CAAT.Interpolator().createExponentialInInterpolator(    2, true),
-                                new CAAT.Interpolator().createExponentialOutInterpolator(   2, true),
-                                new CAAT.Interpolator().createExponentialInOutInterpolator( 2, true)
+                                new CAAT.Behavior.Interpolator().createExponentialInInterpolator(    2, true),
+                                new CAAT.Behavior.Interpolator().createExponentialOutInterpolator(   2, true),
+                                new CAAT.Behavior.Interpolator().createExponentialInOutInterpolator( 2, true)
                             ],
                             [
-                                new CAAT.Interpolator().createExponentialInInterpolator(    4, false),
-                                new CAAT.Interpolator().createExponentialOutInterpolator(   4, false),
-                                new CAAT.Interpolator().createExponentialInOutInterpolator( 4, false),
+                                new CAAT.Behavior.Interpolator().createExponentialInInterpolator(    4, false),
+                                new CAAT.Behavior.Interpolator().createExponentialOutInterpolator(   4, false),
+                                new CAAT.Behavior.Interpolator().createExponentialInOutInterpolator( 4, false),
 
-                                new CAAT.Interpolator().createExponentialInInterpolator(    4, true),
-                                new CAAT.Interpolator().createExponentialOutInterpolator(   4, true),
-                                new CAAT.Interpolator().createExponentialInOutInterpolator( 4, true)
+                                new CAAT.Behavior.Interpolator().createExponentialInInterpolator(    4, true),
+                                new CAAT.Behavior.Interpolator().createExponentialOutInterpolator(   4, true),
+                                new CAAT.Behavior.Interpolator().createExponentialInOutInterpolator( 4, true)
                             ],
                             [
-                                new CAAT.Interpolator().createExponentialInInterpolator(    6, false),
-                                new CAAT.Interpolator().createExponentialOutInterpolator(   6, false),
-                                new CAAT.Interpolator().createExponentialInOutInterpolator( 6, false),
+                                new CAAT.Behavior.Interpolator().createExponentialInInterpolator(    6, false),
+                                new CAAT.Behavior.Interpolator().createExponentialOutInterpolator(   6, false),
+                                new CAAT.Behavior.Interpolator().createExponentialInOutInterpolator( 6, false),
 
-                                new CAAT.Interpolator().createExponentialInInterpolator(    6, true),
-                                new CAAT.Interpolator().createExponentialOutInterpolator(   6, true),
-                                new CAAT.Interpolator().createExponentialInOutInterpolator( 6, true)
+                                new CAAT.Behavior.Interpolator().createExponentialInInterpolator(    6, true),
+                                new CAAT.Behavior.Interpolator().createExponentialOutInterpolator(   6, true),
+                                new CAAT.Behavior.Interpolator().createExponentialInOutInterpolator( 6, true)
                             ]
                         ];
 
@@ -286,7 +286,7 @@
                                 var _scene_1= _director_1.createScene();
 
                                 _scene_1.addChild(
-                                        new CAAT.InterpolatorActor().
+                                        new CAAT.Foundation.UI.InterpolatorActor().
                                             setInterpolator( lerps[j][i] ).
                                             setBounds( 10, 10, 80, 80 ).
                                             setFillStyle('#77f').
@@ -304,11 +304,11 @@
                  <h2>Bounce Interpolator</h2>
                 <p>
                     Instance interpolators are created by calling <span class="apicode">
-                    new CAAT.Interpolator().createBounceInInterpolator</span> or
+                    new CAAT.Behavior.Interpolator().createBounceInInterpolator</span> or
                     <span class="apicode">
-                    new CAAT.Interpolator().createBounceOutInterpolator</span> or
+                    new CAAT.Behavior.Interpolator().createBounceOutInterpolator</span> or
                     <span class="apicode">
-                    new CAAT.Interpolator().createBounceInOutInterpolator</span>.
+                    new CAAT.Behavior.Interpolator().createBounceInOutInterpolator</span>.
                 </p>
                 <div>
                     <table cellpadding="5">
@@ -346,13 +346,13 @@
                      (function() {
                          var lerps= [
                             [
-                                 new CAAT.Interpolator().createBounceInInterpolator(false),
-                                 new CAAT.Interpolator().createBounceOutInterpolator(false),
-                                 new CAAT.Interpolator().createBounceInOutInterpolator(false),
+                                 new CAAT.Behavior.Interpolator().createBounceInInterpolator(false),
+                                 new CAAT.Behavior.Interpolator().createBounceOutInterpolator(false),
+                                 new CAAT.Behavior.Interpolator().createBounceInOutInterpolator(false),
 
-                                 new CAAT.Interpolator().createBounceInInterpolator(true),
-                                 new CAAT.Interpolator().createBounceOutInterpolator(true),
-                                 new CAAT.Interpolator().createBounceInOutInterpolator(true)
+                                 new CAAT.Behavior.Interpolator().createBounceInInterpolator(true),
+                                 new CAAT.Behavior.Interpolator().createBounceOutInterpolator(true),
+                                 new CAAT.Behavior.Interpolator().createBounceInOutInterpolator(true)
                             ]
                          ];
 
@@ -368,7 +368,7 @@
                                  var _scene_1= _director_1.createScene();
 
                                  _scene_1.addChild(
-                                         new CAAT.InterpolatorActor().
+                                         new CAAT.Foundation.UI.InterpolatorActor().
                                              setInterpolator( lerps[j][i] ).
                                              setBounds( 10, 10, 80, 80 ).
                                              setFillStyle('#77f').
@@ -386,11 +386,11 @@
                 <h2>Elastic Interpolator</h2>
                 <p>
                     Instance interpolators are created by calling <span class="apicode">
-                    new CAAT.Interpolator().createElasticInInterpolator</span> or
+                    new CAAT.Behavior.Interpolator().createElasticInInterpolator</span> or
                     <span class="apicode">
-                    new CAAT.Interpolator().createElasticOutInterpolator</span> or
+                    new CAAT.Behavior.Interpolator().createElasticOutInterpolator</span> or
                     <span class="apicode">
-                    new CAAT.Interpolator().createElasticInOutInterpolator</span>.
+                    new CAAT.Behavior.Interpolator().createElasticInOutInterpolator</span>.
                 </p>
                 <div>
                     <table cellpadding="5">
@@ -444,22 +444,22 @@
                      (function() {
                          var lerps= [
                              [
-                                new CAAT.Interpolator().createElasticInInterpolator(    1.1, .4, false),
-                                new CAAT.Interpolator().createElasticOutInterpolator(   1.1, .4, false),
-                                new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, .4, false),
+                                new CAAT.Behavior.Interpolator().createElasticInInterpolator(    1.1, .4, false),
+                                new CAAT.Behavior.Interpolator().createElasticOutInterpolator(   1.1, .4, false),
+                                new CAAT.Behavior.Interpolator().createElasticInOutInterpolator( 1.1, .4, false),
 
-                                new CAAT.Interpolator().createElasticInInterpolator(    1.1, .4, true),
-                                new CAAT.Interpolator().createElasticOutInterpolator(   1.1, .4, true),
-                                new CAAT.Interpolator().createElasticInOutInterpolator( 1.1, .4, true)
+                                new CAAT.Behavior.Interpolator().createElasticInInterpolator(    1.1, .4, true),
+                                new CAAT.Behavior.Interpolator().createElasticOutInterpolator(   1.1, .4, true),
+                                new CAAT.Behavior.Interpolator().createElasticInOutInterpolator( 1.1, .4, true)
                              ],
                              [
-                                new CAAT.Interpolator().createElasticInInterpolator(    1.0, .2, false),
-                                new CAAT.Interpolator().createElasticOutInterpolator(   1.0, .2, false),
-                                new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, .2, false),
+                                new CAAT.Behavior.Interpolator().createElasticInInterpolator(    1.0, .2, false),
+                                new CAAT.Behavior.Interpolator().createElasticOutInterpolator(   1.0, .2, false),
+                                new CAAT.Behavior.Interpolator().createElasticInOutInterpolator( 1.0, .2, false),
 
-                                new CAAT.Interpolator().createElasticInInterpolator(    1.0, .2, true),
-                                new CAAT.Interpolator().createElasticOutInterpolator(   1.0, .2, true),
-                                new CAAT.Interpolator().createElasticInOutInterpolator( 1.0, .2, true)
+                                new CAAT.Behavior.Interpolator().createElasticInInterpolator(    1.0, .2, true),
+                                new CAAT.Behavior.Interpolator().createElasticOutInterpolator(   1.0, .2, true),
+                                new CAAT.Behavior.Interpolator().createElasticInOutInterpolator( 1.0, .2, true)
                             ]
                          ];
 
@@ -475,7 +475,7 @@
                                  var _scene_1= _director_1.createScene();
 
                                  _scene_1.addChild(
-                                         new CAAT.InterpolatorActor().
+                                         new CAAT.Foundation.UI.InterpolatorActor().
                                              setInterpolator( lerps[j][i] ).
                                              setBounds( 10, 30, 80, 80 ).
                                              setFillStyle('#77f').

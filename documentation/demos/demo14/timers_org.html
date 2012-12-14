@@ -27,6 +27,7 @@
                 <h1>Scene Timers</h1>
             </div>
             <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
             </div>
             <div id="experiment-description">
                 <div>
@@ -47,8 +48,7 @@
 </body>
 
 <script type="text/javascript" src="../menu/menu.js"></script>
-<script type="text/javascript" src="../../../build/caat.js"></script>
-<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
 
 <script type="text/javascript">
     /**
@@ -81,20 +81,36 @@
          * Startup it all up when the document is ready.
          * Change for your favorite frameworks initialization code.
          */
-        window.addEventListener(
-                'load',
-                function() {
-                    CAAT.modules.initialization.init(
-                            800, 500,
-                            'experiment-holder',
-                            [],
-                            __scene1
-                            );
-                },
-                false);
+        window.addEventListener('load', load, false);
+
+        function load() {
+            CAAT.ModuleManager.
+                baseURL("../../../src/").
+                setModulePath("CAAT.Core", "Core").
+                setModulePath("CAAT.Math", "Math").
+                setModulePath("CAAT.Behavior", "Behavior").
+                setModulePath("CAAT.Foundation", "Foundation").
+                setModulePath("CAAT.Event", "Event").
+                setModulePath("CAAT.PathUtil", "PathUtil").
+                setModulePath("CAAT.Module", "Modules").
+                setModulePath("CAAT.Module.Preloader", "Modules/Image/Preloader").
+                setModulePath("CAAT.WebGL", "WebGL").
+
+                // get modules, and solve their dependencies.
+                bring([
+                   "CAAT.Foundation.Director",
+                   "CAAT.Foundation.Actor",
+                   "CAAT.Foundation.ActorContainer",
+                   "CAAT.Foundation.UI.TextActor"
+                ]).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( __scene1 );
+        }
 
         function createText(director, color) {
-            var actor= new CAAT.TextActor().
+            var actor= new CAAT.Foundation.UI.TextActor().
                     setFont("100px Lucida sans").
                     calcTextSize(director).
                     setTextFillStyle(color).
@@ -105,7 +121,7 @@
         }
 
         function createButton(director, rotated) {
-            var actor= new CAAT.Actor().
+            var actor= new CAAT.Foundation.Actor().
                     setSize( 60, 60 ).
                     centerAt( director.width - 40, director.height - 40 );
 
@@ -234,10 +250,12 @@
 
         }
 
-        function __scene1(director) {
+        function __scene1() {
+            var director= new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas');
             // create 2 scenes to show timers are per scene.
             createScene(director, false);
             createScene(director, true);
+            CAAT.loop(60);
         }
 
     })();

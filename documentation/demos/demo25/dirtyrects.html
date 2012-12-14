@@ -56,8 +56,8 @@
 </body>
 
 <script type="text/javascript" src="../menu/menu.js"></script>
-<script type="text/javascript" src="../../../build/caat.js"></script>
-<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+
 <script type="text/javascript">
     /**
      * @license
@@ -86,30 +86,62 @@
      */
 
     (function() {
-        CAAT.DEBUG=1;
+        window.addEventListener('load', load, false);
+
+        function load() {
+            CAAT.ModuleManager.
+                baseURL("../../../src/").
+                setModulePath("CAAT.Core", "Core").
+                setModulePath("CAAT.Math", "Math").
+                setModulePath("CAAT.Behavior", "Behavior").
+                setModulePath("CAAT.Foundation", "Foundation").
+                setModulePath("CAAT.Event", "Event").
+                setModulePath("CAAT.PathUtil", "PathUtil").
+                setModulePath("CAAT.Module", "Modules").
+                setModulePath("CAAT.Module.Preloader", "Modules/Image/Preloader").
+                setModulePath("CAAT.WebGL", "WebGL").
+
+                // get modules, and solve their dependencies.
+                bring([
+                    "CAAT.PathUtil.Path",
+                    "CAAT.Foundation.Director",
+                    "CAAT.Foundation.Actor",
+                    "CAAT.Foundation.ActorContainer",
+                    "CAAT.Foundation.SpriteImage",
+                    "CAAT.Foundation.UI.TextActor",
+                    "CAAT.Math.Point",
+                    "CAAT.Behavior.PathBehavior",
+                    "CAAT.Behavior.Interpolator",
+                    "CAAT.Module.Font.Font",
+                    "CAAT.Module.ColorUtil.Color"
+                ]).
+
+                // this function will be fired every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( __start );
+        }
 
         function __start() {
 
-            var director= new CAAT.Director().initialize(800,500,document.getElementById('experiment-canvas')).setClear( CAAT.Director.CLEAR_DIRTY_RECTS );
+            var director= new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas').setClear( CAAT.Director.CLEAR_DIRTY_RECTS );
             var scene= director.createScene();
 
-
-            var bg= new CAAT.Actor().setBounds(0,0,director.width,director.height).enableEvents(false);
+            var bg= new CAAT.Foundation.Actor().setBounds(0,0,director.width,director.height).enableEvents(false);
             scene.addChild( bg );
 
-            var c= new CAAT.ActorContainer().setBounds(0,0,director.width/2,director.height).setFillStyle('#aaf');
+            var c= new CAAT.Foundation.ActorContainer().setBounds(0,0,director.width/2,director.height).setFillStyle('#aaf');
             scene.addChild( c );
             for( var i=0; i<50; i++ ) {
                 c.addChild(
-                        new CAAT.Actor().
+                        new CAAT.Foundation.Actor().
                                 setSize(100,100).
                                 setLocation(Math.random()*director.width/2, Math.random()*director.height).
-                                setFillStyle( CAAT.Color.RGB.random() ).
+                                setFillStyle( CAAT.Module.ColorUtil.Color.random() ).
                                 enableEvents(false)
                 );
             }
 
-            var headerTitle0 = new CAAT.TextActor().
+            var headerTitle0 = new CAAT.Foundation.UI.TextActor().
                     setFont('40px Arial').
                     setTextFillStyle('#001f3c').
                     setOutline(true).
@@ -119,14 +151,14 @@
                     setLocation(director.width / 4, 14).
                     cacheAsBitmap().
                     addBehavior(
-                        new CAAT.PathBehavior().
+                        new CAAT.Behavior.PathBehavior().
                                 setDelayTime(0, 4000).
-                                setValues(new CAAT.Path().setLinear(director.width / 4, 14, director.width / 4, 400)).
+                                setValues(new CAAT.PathUtil.Path().setLinear(director.width / 4, 14, director.width / 4, 400)).
                                 setCycle(true).
                                 setPingPong());
             scene.addChild(headerTitle0);
 
-            var headerTitle1 = new CAAT.TextActor().
+            var headerTitle1 = new CAAT.Foundation.UI.TextActor().
                     setFont('40px Arial').
                     setTextFillStyle('#001f3c').
                     setOutline(true).
@@ -135,9 +167,9 @@
                     setAlign("center").
                     setLocation(director.width / 4, 54).
                     addBehavior(
-                    new CAAT.PathBehavior().
+                    new CAAT.Behavior.PathBehavior().
                             setDelayTime(0, 4000).
-                            setValues(new CAAT.Path().setLinear(director.width / 4, 54, director.width / 4, 440)).
+                            setValues(new CAAT.PathUtil.Path().setLinear(director.width / 4, 54, director.width / 4, 440)).
                             setCycle(true).
                             setPingPong().
                             addListener({
@@ -148,7 +180,7 @@
             );
             scene.addChild(headerTitle1);
 
-            var font_baumans= new CAAT.Font().
+            var font_baumans= new CAAT.Module.Font.Font().
                 setFont('"Voltaire"').
                 setFontSize(50,"px").
                 setFillStyle( '#33a' ).
@@ -156,7 +188,7 @@
                 setStrokeSize(.5).
                 createDefault(2);
 
-            var headerTitle2 = new CAAT.TextActor().
+            var headerTitle2 = new CAAT.Foundation.UI.TextActor().
                     setFont(font_baumans).
                     setTextFillStyle('#001f3c').
                     setOutline(true).
@@ -167,7 +199,7 @@
                     addBehavior(
                         new CAAT.PathBehavior().
                             setDelayTime(0, 4000).
-                            setValues(new CAAT.Path().setLinear(director.width / 4, 94, director.width / 4, 480)).
+                            setValues(new CAAT.PathUtil.Path().setLinear(director.width / 4, 94, director.width / 4, 480)).
                             setCycle(true).
                             setPingPong()
             );
@@ -175,17 +207,17 @@
             scene.addChild(headerTitle2);
 
 
-            var d= new CAAT.ActorContainer().setBounds(director.width/2,0,director.width/2,director.height).setFillStyle('#aaf');
+            var d= new CAAT.Foundation.ActorContainer().setBounds(director.width/2,0,director.width/2,director.height).setFillStyle('#aaf');
             scene.addChild( d );
 
             scene.createTimer( 0, 500, function( time, ttime, timerTask ) {
                 timerTask.reset( time );
                 d.addChild(
-                    new CAAT.Actor().
+                    new CAAT.Foundation.Actor().
                             setSize(100,100).
                             setLocation(Math.random()*director.width/2, Math.random()*director.height).
                             setFrameTime( scene.time, 5000 + Math.random()*5000 ).
-                            setFillStyle( CAAT.Color.RGB.random() ).
+                            setFillStyle( CAAT.Module.ColorUtil.Color.random() ).
                             setDiscardable(true).
                             enableEvents(false)
                 );
@@ -208,8 +240,8 @@
                 ctx.fillStyle= color[i];
                 ctx.fillRect( i*20, 0, 20, 20 );
             }
-            var si= new CAAT.SpriteImage().initialize( img, 1, 5 );
-            var ac= new CAAT.Actor().
+            var si= new CAAT.Foundation.SpriteImage().initialize( img, 1, 5 );
+            var ac= new CAAT.Foundation.Actor().
                     setBackgroundImage(si).
                     setChangeFPS(200).
                     setAnimationImageIndex([0,1,2,3,4]);
@@ -220,17 +252,6 @@
 
             CAAT.loop(60);
         }
-        /**
-         * Startup it all up when the document is ready.
-         * Change for your favorite frameworks initialization code.
-         */
-        window.addEventListener(
-                'load',
-                // Nasty HACK which allows fonts referenced in the first div to be loaded.
-                // if not, the font may or may not be available when defining the CAAT.Font object.
-                // WTF !!!
-                setTimeout(__start,200),
-                false);
 
     })();
 

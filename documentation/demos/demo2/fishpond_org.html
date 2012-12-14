@@ -26,6 +26,7 @@
                 <h1>Procedural Fish Pond</h1>
             </div>
             <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
             </div>
             <div id="experiment-description">
                 <div>
@@ -48,9 +49,8 @@
 </body>
 
 <script type="text/javascript" src="../menu/menu.js"></script>
-<script type="text/javascript" src="../../../build/caat.js"></script>
-<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
-<script type="text/javascript" src="fish.js"></script>
+<script src="../../../src/CAAT.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
 <script type="text/javascript">
     /**
      * @license
@@ -83,20 +83,45 @@ CAAT.DEBUG=1;
          * Startup it all up when the document is ready.
          * Change for your favorite frameworks initialization code.
          */
-        window.addEventListener(
-                'load',
-                function() {
-                    CAAT.modules.initialization.init(
-                            800, 500,
-                            'experiment-holder',
-                            [],
-                            __fishpond
-                            );
-                },
-                false);
+        window.addEventListener('load',load,false);
+
+        function load() {
+            CAAT.ModuleManager.
+
+                debug(true).
+
+                baseURL( "../../../src/").
+                setModulePath("CAAT.Core",              "Core").
+                setModulePath("CAAT.Math",              "Math").
+                setModulePath("CAAT.Behavior",          "Behavior").
+                setModulePath("CAAT.Foundation",        "Foundation").
+                setModulePath("CAAT.Event",             "Event").
+                setModulePath("CAAT.PathUtil",          "PathUtil").
+                setModulePath("CAAT.Module",            "Modules").
+                setModulePath("CAAT.WebGL",             "WebGL").
+
+                setModulePath("CAAT.Procedural",        "../documentation/demos/demo2").
+
+                // get modules, and solve their dependencies.
+                bring(
+                    [
+                        "CAAT.PathUtil.Path",
+                        "CAAT.Procedural.Fish",
+                        "CAAT.Foundation.Director"
+                    ]
+                ).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( start );
 
 
-        function __fishpond(director) {
+        }
+
+        function start() {
+            CAAT.DEBUG=1;
+
+            var director= new CAAT.Foundation.Director().initialize( 800,500,'experiment-canvas' );
 
             var scene= director.createScene();
 
@@ -107,7 +132,7 @@ CAAT.DEBUG=1;
             }
             var NP=20;
             var colors= ['red', 'blue', 'white', 'rgb(0,255,255)', 'yellow'];
-            var gradient= director.crc.createLinearGradient(0,0,director.width,director.height);
+            var gradient= director.ctx.createLinearGradient(0,0,director.width,director.height);
             gradient.addColorStop(0,'#000000');
             gradient.addColorStop(1,'#00007f');
 
@@ -125,7 +150,7 @@ CAAT.DEBUG=1;
                 var inTime= i*1000;
 
                 var pb = new CAAT.PathBehavior().
-                        setPath(new CAAT.Path().setCubic(
+                        setPath(new CAAT.PathUtil.Path().setCubic(
                         -fw - Math.random() * 300,
                         Math.random() * director.height,
 
@@ -164,7 +189,7 @@ CAAT.DEBUG=1;
                                 }
                             });
 
-                var f= new CAAT.Fish().
+                var f= new CAAT.Procedural.Fish().
                         setBounds(300,400,fw,fh).
                         born().
                         setFrameTime( scene.time+inTime, Number.MAX_VALUE ).
@@ -175,6 +200,8 @@ CAAT.DEBUG=1;
             }
 
             scene.addChild(gr);
+
+            CAAT.loop(60);
 
         }
 

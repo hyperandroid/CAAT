@@ -45,7 +45,7 @@
                 the new conditions, either by conforming its size, or by scaling accordingly.
             </p>
             <p>
-                The resize values are defined in CAAT.Director.prototype and are the following:
+                The resize values are defined in CAAT.Foundation.Director and are the following:
                 <ul>
                     <li>RESIZE_WIDTH, only conforms director's width.
                     <li>RESIZE_HEIGHT, only conforms director's height.
@@ -56,7 +56,16 @@
             </p>
             <p>
                 To enable the resizing event listening, a call to director's
-                <span class="apicode">enableResizeEvents(resize_constant)</span>.
+                <span class="apicode">enableResizeEvents(resize_constant, onResizeCallback)</span>.
+            </p>
+            <p>
+                This method, will cause a director, and its contained scenes resize. But has no idea on how to make
+                your scene actors conform to the new size. The <span class="important">onResizeCallback</span> function
+                is comes handy for this purpose, since you have the opportunity to modify your actor's dimension,
+                position or desired attributes upon being called.
+            </p>
+            <p>
+                The callback function signature is as follow: <span class="apicode">function( director, newWidth, newHeight )</span>.
             </p>
         </div>
     </div>

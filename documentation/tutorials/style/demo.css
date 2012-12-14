@@ -1,6 +1,6 @@
 body {
-  background: #333 url(../resource/body_bg.jpg) repeat 50% 0;
-  color: #fff;
+  background: #fff;
+  color: #000;
   font-family: "Oswald", Arial, sans-serif;
   font-size: 13px;
   line-height: 1.2em;
@@ -17,16 +17,16 @@ body {
 
 h1 {
     border-bottom: 1px solid #888;
-    color: #ffd;
+    color: #33d;
     line-height: 1.5em;
 }
 
 h2 {
-    color: #ffd;
+    color: #336;
 }
 
 h3 {
-    color: #ffd;
+    color: #336;
 }
 
 
@@ -86,7 +86,7 @@ h3 {
 
 a {
     text-decoration: none;
-    color: #f73;
+    color: #73f;
 }
 
 a:hover {
@@ -107,7 +107,7 @@ a:hover {
     padding:        0 5px;
     border:         1px;
     border-style:   solid;
-    background:     #ffd;
+    background:     #ddd;
     color:          #000;
     font-family:    monospace;
     font-size:      1em;
@@ -118,10 +118,10 @@ a:hover {
     padding:        0 5px;
     border:         1px;
     border-style:   solid;
-    background:     #eee;
+    background:     #ffe;
     color:          #000;
     font-family:    monospace;
-    font-size:      1.1em;
+    font-size:      1em;
 }
 
 .sample {

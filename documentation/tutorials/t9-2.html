@@ -83,10 +83,7 @@
                 <script>
                     (function() {
 
-                        var _director_8 = new CAAT.Director().initialize(
-                                700,
-                                300,
-                                document.getElementById('_c8')).
+                        var _director_8 = new CAAT.Foundation.Director().initialize(700,300,'_c8').
                                 setClear(false);
 
                         var _scene_8 = _director_8.createScene();
@@ -95,8 +92,7 @@
                         var color_index=0;
 
                         // create a container, equals in size to the director.
-                        var root = new CAAT.ActorContainer().
-                                create().
+                        var root = new CAAT.Foundation.ActorContainer().
                                 setBounds(0, 0,
                                 _director_8.canvas.width, _director_8.canvas.height).
                                 setFillStyle('#000000')
@@ -114,7 +110,7 @@
 
                             var star;
 
-                            star = new CAAT.StarActor().
+                            star = new CAAT.Foundation.UI.StarActor().
                                     initialize( 6, r, 5 ).
                                     setInitialAngle( Math.random()*2*Math.PI ).
                                     setLocation(mouseEvent.point.x, mouseEvent.point.y).
@@ -126,7 +122,7 @@
                             root.addChild(star);
 
                             // fade from opacity to total transparency
-                            var ab = new CAAT.AlphaBehavior().
+                            var ab = new CAAT.Behavior.AlphaBehavior().
                                     setFrameTime(_scene_8.time + 2000, 500 +  500 * Math.random()).
                                     setValues(1, 0).
                                     addListener(
@@ -155,101 +151,70 @@
             </div>
                 <div class="code">
         <pre class="brush: js; auto-links: false; toolbar: false;">
+            var _director_8 = new CAAT.Director().initialize(700,300,'_c8').
+                    setClear(false);
 
-                        var _director_8 = new CAAT.Director().initialize(
-                                700,
-                                300,
-                                document.getElementById('_c8')).
-                                setClear(false);
+            var _scene_8 = _director_8.createScene();
 
-                        var _scene_8 = _director_8.createScene();
+            var colors= [ 'blue', 'red', 'yellow', 'white', 'gray' ,'orange' ];
+            var color_index=0;
 
-                        var colors= [ 'blue', 'red', 'yellow', 'white', 'gray' ,'orange' ];
-                        var color_index=0;
+            // create a container, equals in size to the director.
+            var root = new CAAT.Foundation.ActorContainer().
+                    setBounds(0, 0,
+                    _director_8.canvas.width, _director_8.canvas.height).
+                    setFillStyle('#000000')
+            root.mouseEnter = function(mouseEvent) {
+            };
+            root.mouseExit = function(mouseEvent) {
+            };
 
-                        // create a container, equals in size to the director.
-                        var root = new CAAT.ActorContainer().
-                                create().
-                                setBounds(0, 0,
-                                _director_8.canvas.width, _director_8.canvas.height).
-                                setFillStyle('#000000')
-                        root.mouseEnter = function(mouseEvent) {
-                        };
-                        root.mouseExit = function(mouseEvent) {
-                        };
+            _scene_8.addChild(root);
 
-                        _scene_8.addChild(root);
+            // on mouse move over the root Actor
+            root.mouseMove = function(mouseEvent) {
 
-                        // on mouse move over the root Actor
-                        root.mouseMove = function(mouseEvent) {
+                var r = 10 + 15 * Math.random();
 
-                            var r = 5 + 15 * Math.random();
+                var star;
 
-                            var bubble;
+                star = new CAAT.Foundation.UI.StarActor().
+                        initialize( 6, r, 5 ).
+                        setInitialAngle( Math.random()*2*Math.PI ).
+                        setLocation(mouseEvent.point.x, mouseEvent.point.y).
+                        setSize(r, r).
+                        enableEvents(false).
+                        setCompositeOp('lighter').
+                        setFillStyle( colors[(color_index++)%colors.length] );
 
-                            // is pressing control, add a Rectangle-Shaped blue Actor
-                            if ( Math.random()<.5 ) {
-                                bubble = new CAAT.ShapeActor().
-                                        setLocation(mouseEvent.point.x, mouseEvent.point.y).
-                                        setSize(r, r).
-                                        setShape(CAAT.ShapeActor.prototype.SHAPE_RECTANGLE).
-                                        enableEvents(false).
-                                        setCompositeOp('lighter').
-                                        setFillStyle( colors[(color_index++)%colors.length] );
+                root.addChild(star);
 
-                            } else {
-                                // else, add a Circle-Shaped red Actor
-                                bubble = new CAAT.ShapeActor().
-                                        setLocation(mouseEvent.point.x, mouseEvent.point.y).
-                                        setSize(r, r).
-                                        enableEvents(false).
-                                        setCompositeOp('lighter').
-                                        setFillStyle( colors[(color_index++)%colors.length] );
-                            }
+                // fade from opacity to total transparency
+                var ab = new CAAT.Behavior.AlphaBehavior().
+                        setFrameTime(_scene_8.time + 2000, 500 +  500 * Math.random()).
+                        setValues(1, 0).
+                        addListener(
+                    // when the container behavior is expired, expire and discard
+                    // the actor.
+                            {
+                                behaviorExpired : function(behaviour, time, actor) {
+                                    actor.
+                                            setDiscardable(true).
+                                            setExpired(true);
+                                }
+                            });
 
-                            root.addChild(bubble);
+                star.addBehavior(ab);
+            };
 
-                            // Add a container behavior, to hold a fading behavior and a moving
-                            // behavior.
-                            var cb = new CAAT.ContainerBehavior().
-                                    setFrameTime(_scene_8.time + 2000 + 1000 * Math.random(), 500).
-                                    addListener(
-                                    // when the container behavior is expired, expire and discard
-                                    // the actor.
-                                    {
-                                        behaviorExpired : function(behaviour, time, actor) {
-                                            actor.
-                                                    setDiscardable(true).
-                                                    setExpired(true);
-                                        }
-                                    });
+            var span = document.getElementById('_c8_data');
 
-                            // fade from opacity to total transparency
-                            var ab = new CAAT.AlphaBehavior().
-                                    setFrameTime(0, 500).
-                                    setValues(1, 0);
+            _scene_8.onRenderEnd= function() {
+                span.innerText= 'Actors: '+root.getNumChildren();
+            };
 
-                            cb.addBehavior(ab);
+            CAAT.loop(20);
 
-                            // follow a vertical path of at least 100 pixels
-                            var tb = new CAAT.PathBehavior().
-                                    setFrameTime(0, 500).
-                                    setPath(
-                                    new CAAT.Path().setLinear(
-                                            bubble.x, bubble.y,
-                                            bubble.x, bubble.y - 100 - 100 * Math.random()));
-                            cb.addBehavior(tb);
-
-                            bubble.addBehavior(cb);
-                        };
-
-                        var span = document.getElementById('_c8_data');
-
-                        _scene_8.onRenderEnd= function() {
-                            span.innerText= 'Actors: '+root.getNumChildren();
-                        };
-
-                        CAAT.loop(20);
 
                     </pre>
                 </div>

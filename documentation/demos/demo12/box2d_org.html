@@ -26,6 +26,7 @@
                 <h1>CAAT & Box2D</h1>
             </div>
             <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
             </div>
             <div id="experiment-description">
                 <div>
@@ -44,9 +45,6 @@
                         <li>Lifecycle of a CAAT actor and its box2d delegate.</li>
                     </ul>
                 </div>
-                <div>
-                    For a deeper box2d demo see <a href="/static/ibasket/template.html">Basket Game</a>.
-                </div>
             </div>
         </div>
     </div>
@@ -55,11 +53,7 @@
 </body>
 
 <script type="text/javascript" src="../menu/menu.js"></script>
-<script type="text/javascript" src="../../../src/lib/Box2dWeb-2.1.a.3.js"></script>
-<script type="text/javascript" src="../../../build/caat.js"></script>
-<script type="text/javascript" src="../../../build/caat-box2d.js"></script>
-<script type="text/javascript" src="../templates/startup-wo-splash/template.js"></script>
-
+<script src="../../../src/Core/ModuleManager.js"></script>
 
 <script type="text/javascript">
     /**
@@ -88,28 +82,57 @@
      *
      */
     (function() {
-        /**
-         * Startup it all up when the document is ready.
-         * Change for your favorite frameworks initialization code.
-         */
-        window.addEventListener(
-                'load',
-                function() {
-                    CAAT.modules.initialization.init(
-                            800, 500,
-                            'experiment-holder',
-                            [
-                                {id:'ball',  url:'../demo-resources/img/naranja.png'},
-                                {id:'rugby', url:'../demo-resources/img/rugby.png'}
-                            ],
-                            __box2d
-                            );
-                },
-                false);
 
-        function __box2d(director) {
+        window.addEventListener('load', load, false);
+
+        function load() {
+            CAAT.ModuleManager.
+                baseURL("../../../src/").
+                setModulePath("CAAT.Core", "Core").
+                setModulePath("CAAT.Math", "Math").
+                setModulePath("CAAT.Behavior", "Behavior").
+                setModulePath("CAAT.Foundation", "Foundation").
+                setModulePath("CAAT.Event", "Event").
+                setModulePath("CAAT.PathUtil", "PathUtil").
+                setModulePath("CAAT.Module", "Modules").
+                setModulePath("CAAT.Module.Preloader", "Modules/Image/Preloader").
+                setModulePath("CAAT.WebGL", "WebGL").
+
+                // get modules, and solve their dependencies.
+                bring([
+                    "Lib/Box2dWeb-2.1.a.3.js",
+                    "CAAT.Foundation.Director",
+                    "CAAT.Foundation.Actor",
+                    "CAAT.Foundation.ActorContainer",
+                    "CAAT.Foundation.UI.TextActor",
+                    "CAAT.Foundation.UI.Layout.BoxLayout",
+                    "CAAT.Foundation.Box2D.B2DBodyActor",
+                    "CAAT.Foundation.Box2D.B2DPolygonBody",
+                    "CAAT.Foundation.Box2D.B2DCircularBody",
+                    "CAAT.Module.Preloader.Preloader"
+
+                ]).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( function() {
+                    new CAAT.Module.Preloader.Preloader().
+                        addElement("ball", "../demo-resources/img/naranja.png").
+                        addElement("rugby","../demo-resources/img/rugby.png").
+                        load( function(images) {
+                            __box2d(images);
+                        });
+                });
+        }
+
+
+        function __box2d(images) {
+
+            var director= new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas');
             CAAT.PMR= director.width/10;    // set Point meter ratio to 10 meters.
+            director.setImagesCache( images );
             var scene= new MenuScene().initialize(director);
+            CAAT.loop(60);
         };
 
         MenuScene= function() {
@@ -176,14 +199,14 @@
 CAAT.enableBox2DDebug( true, director, this.world );
 
                 for( i=0; i<4; i++ )    {
-                    var actor0= new CAAT.B2DPolygonBody().createBody(
+                    var actor0= new CAAT.Foundation.Box2D.B2DPolygonBody().createBody(
                                 this.world,
                                 {
                                     bodyType:   Box2D.Dynamics.b2Body.b2_staticBody,
                                     density:    BOUNDS_DENSITY,
                                     friction:   BOUNDS_FRICTION,
                                     restitution:BOUNDS_RESTITUTION,
-                                    polygonType:CAAT.B2DPolygonBody.Type.EDGE,
+                                    polygonType:CAAT.Foundation.Box2D.B2DPolygonBody.TYPE.EDGE,
                                     bodyDef:    [
                                         {x: bounds[i*2  ],  y: bounds[i*2+1] },
                                         {x: bounds[i*2+2],  y: bounds[i*2+3] }
@@ -197,30 +220,32 @@ CAAT.enableBox2DDebug( true, director, this.world );
 
             createButtons : function(director) {
 
-                var buttons= [
-                    new CAAT.Actor().setFillStyle('orange').setSize(100,150),
-                    new CAAT.Actor().setFillStyle('orange').setSize(100,150),
-                    new CAAT.Actor().setFillStyle('orange').setSize(100,150)
-                ];
-
-                CAAT.modules.LayoutUtils.row(
-                    this.scene,
-                    buttons,
-                    {
-                        padding_left:   150,
-                        padding_right:  150,
-                        top:            300
-                    });
-
-                for( var i=0; i<buttons.length; i++ ) {
-                    this.scene.addChild( buttons[i].enableEvents(false) );
-                    this.bodyFromActor( buttons[i] );
+                var b= [];
+                for( var i=0; i<4; i++ ) {
+                    var a= new CAAT.Foundation.Actor().
+                            setFillStyle('orange').
+                            setSize(100,150).
+                            enableEvents(false);
+                    this.scene.addChild( a );
+                    b.push(a);
                 }
+
+                var l= new CAAT.Foundation.UI.Layout.BoxLayout().
+                        setAxis( CAAT.Foundation.UI.Layout.LayoutManager.AXIS.X).
+                        setPadding(150,150,250,0).
+                        setHGap(80).
+                        setVerticalAlignment(CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.TOP).
+                        doLayout( this.scene );
+
+                for( var i=0; i<b.length; i++ ) {
+                    this.bodyFromActor( b[i] );
+                }
+
             },
 
             bodyFromActor : function(actor) {
                 // Call helper function
-                CAAT.B2DPolygonBody.createPolygonBody(
+                CAAT.Foundation.Box2D.B2DPolygonBody.createPolygonBody(
                     this.world,
                     {
                         x:                      actor.x,
@@ -230,7 +255,7 @@ CAAT.enableBox2DDebug( true, director, this.world );
                         restitution:            1,
                         friction:               1,
                         image:                  null,
-                        polygonType:            CAAT.B2DPolygonBody.Type.BOX,
+                        polygonType:            CAAT.Foundation.Box2D.B2DPolygonBody.TYPE.BOX,
                         bodyDef:                [
                             { x: actor.x,               y: actor.y },
                             { x: actor.x + actor.width, y: actor.y + actor.height }
@@ -250,7 +275,7 @@ CAAT.enableBox2DDebug( true, director, this.world );
             createBackground : function(director) {
                 var me= this;
 
-                var bg= new CAAT.ActorContainer().
+                var bg= new CAAT.Foundation.ActorContainer().
                         setBounds(0,0,director.width,director.height);
 
                 bg.mouseClick= function(e) {
@@ -365,7 +390,7 @@ CAAT.enableBox2DDebug( true, director, this.world );
             },
 
             createBall : function(director,world,x,y,data) {
-                return new CAAT.B2DCircularBody().enableEvents(false).createBody(
+                return new CAAT.Foundation.Box2D.B2DCircularBody().enableEvents(false).createBody(
                     world,
                     {
                         x:                      x,
@@ -382,7 +407,7 @@ CAAT.enableBox2DDebug( true, director, this.world );
             },
 
             createPolygon : function(director,world,x,y,data) {
-                return new CAAT.B2DPolygonBody().enableEvents(false).createBody(
+                return new CAAT.Foundation.Box2D.B2DPolygonBody().enableEvents(false).createBody(
                     world,
                     {
                         x:                      x,
@@ -392,7 +417,7 @@ CAAT.enableBox2DDebug( true, director, this.world );
                         restitution:            data.restitution,
                         friction:               data.friction,
                         image:                  director.getImage(data.image),
-                        polygonType:            CAAT.B2DPolygonBody.Type.POLYGON,
+                        polygonType:            CAAT.Foundation.Box2D.B2DPolygonBody.TYPE.POLYGON,
                         bodyDef:                data.polygonDef,
                         bodyDefScale:           data.polygonScale,
                         bodyDefScaleTolerance:  data.tolerance,

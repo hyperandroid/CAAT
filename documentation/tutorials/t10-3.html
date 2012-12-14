@@ -1,0 +1,152 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 11 - SpriteImage</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <h1>CAAT.Foundation.SpriteImage</h1>
+            <div>
+                <p>
+                    This function creates the base object to hold Actor images. When setting a background image,
+                    if a plain call to diretor.getImage("img_name") is called, the result will be encapsulated in
+                    one instance of CAAT.SpriteImage.
+                </p>
+                <p>
+                    The basic usage form, is to define a grid of subimages out of an image object. For example:
+                    <span class="apicode">var si= new CAAT.SpriteImage().initialize( director.getImage("img"), rows, columns )</span>
+                    will set an image as an array of rows*columns sub-images. After calling the method, the attributes
+                    <span class="apicode">spriteImage.singleWidth, spriteImage.singleHeight</span> will give each subimage's dimension.
+                </p>
+                <p>
+                    The way to assign an image to an actor is by calling <span class="apicode">actor.setBackgroundImage( si, resize );</span>.
+                    If resize is true (default value), the actor size will be set to that of the sprite image subimage size. That means,
+                    for an image 200x200 pixels, and an spriteImage of 4x2, the actor will be resized to 200/2 by 200/4 pixels.
+                    The default subimage selected as actor image will the the zero index, or the first subimage.
+                </p>
+                <p>
+                    From this point, you can select any of the SpriteImage subimages as actor background by calling
+                    <span class="apicode">actor.setSpriteIndex(index)</span>. index is a value in the rango 0..rows*columns-1.
+                </p>
+                <p>
+                    You can share the same sprite image among different actors to save some resources. To do so, a call to
+                    actor.setBackgroundImage should be called the following way: <span class="apicode">actor.setBackgroundImage(
+                    spriteImage.getRef() );</span>. Otherwise, when changing the spriteImage's sprite index, it will be changed
+                    for every actor.
+                </p>
+                <p>
+                    A good feature of CAAT.SpriteImage actor, is the capability to define animation sequences. A call to
+                    <span class="apicode">actor.setAnimationImageIndex( [] )</span>. The array parameter are index values
+                    to the SpriteImage's sub images. The combination of this method and <span class="apicode">
+                    actor.setChangeFPS( millis )</span> is a perfect fit to create sprite animations.
+                </p>
+                <p>
+                    Another feature of an actor sprite image is the call to the method <span class="apicode">
+                    actor.setImageTransformation( value )</span>. Values can be the following <span class="apicode">
+                    CAAT.Foundation.SpriteImage</span>.
+                    <li>TR_FLIP_HORIZONTAL: invert horizontally.</li>
+                    <li>TR_FLIP_VERTICAL: invert vertically.</li>
+                    <li>TR_FLIP_ALL: invert vertical and horizontally at the same time.</li>
+                    <li>TR_FIXED_TO_SIZE: scale the sprite image subimage to fit actor's size.</li>
+                    <li>TR_TILE: tile with selected subimage.</li>
+                </p>
+            </div>
+            <div>
+                <h2>More initialization functions:</h2>
+                <p>
+                    The previous functions are all (but the initialization) proxied to the SpriteImage instance through
+                    out the actor object instance. But there're more initialization methods.
+                </p>
+            </div>
+            <div>
+                <p>
+                    <span class="apicode">SpriteImage.initializeFromMap( image, map )</span> defines an atlas image.
+                    The format of the map parameter is an object of the form:
+                    <div class="code">
+                        <pre class="brush: js; auto-links: false; toolbar: false;">
+                        {
+                            id : {
+                                x       : &lt;number&gt;,
+                                y       : &lt;number&gt;,
+                                width   : &lt;number&gt;,
+                                height  : &lt;number&gt;
+                            },
+                            ...
+                        }
+                        </pre>
+                    </div>
+                </p>
+                <p>
+                    This output can be automatically generated with <a target="_black" href="http://labs.hyperandroid.com/static/texture/spriter.html">this tool</a>.
+                    It can only be use to extract individual sprites out of an atlas image.
+                </p>
+            </div>
+            <div>
+                <span class="apicode">SpriteImage.initializeAsMonoTypeFontMap( director.getImage("img"), chars ).</span>
+                <p>
+                    This function, assumes a sprite image of size 1 row, and chars.length columns. This function relies
+                    on the function spriteImage.initializeAsFontMap.
+                </p>
+                <p>
+                    For example, this function could be called like: <span class="apicode">
+                    spriteImage.initializeAsMonoTypeFontMap( director.getImage("img"), "0123456789" )</span> to have
+                    defined a numbers font.
+                </p>
+                <p>
+                    The resulting spriteImage, is initialized in a way so that a call to <span class="apicode">
+                    spriteImage.drawString( ctx, str, x, y )</span> can be performed. Characters in str that weren't defined
+                    in the initializeAsMonoTypeFontMap chars parameter won't be renderer on screen.
+                </p>
+            </div>
+            <div>
+                <span class="apicode">SpriteImage.initializeAsFontMap( director.getImage("img"), map )</span>
+                <p>
+                    This function assumes a sprite image of 1 row and a number of non equal columns. The map parameter
+                    has the following structure:
+                    <div class="code">
+                        <pre class="brush: js; auto-links: false; toolbar: false;">
+                            [
+                                c       : &lt;char&gt;,
+                                width   : &lt;number&gt; // character width in pixels
+                            ]
+                        </pre>
+                    </div>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

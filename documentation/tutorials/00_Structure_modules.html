@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 0 - CAAT.Module</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+            <div class="section">
+                <h1>Modules and Classes</h1>
+
+                <div>
+                    <p>
+                        CAAT is Object Oriented. Classes (constructor functions), constants and its names are
+                        defined declaratively using CAAT's module manager: MoMa.
+                    </p>
+                    <p>
+                        Every CAAT Class object is defined in a module. A module creates a new Class, can extend
+                        one sinle Class, defines Class level constants, declares dependencies and a list of Class aliases.
+                        MoMa will take care of loading dependency files and solving them.
+                    </p>
+                    <p>
+                        CAAT can be bundled either in one single file instead of a file per module too.
+                    </p>
+                    <p>
+                        You can find CAAT bulk bundled library files under the "build" folder. These files
+                        contain all CAAT's modules and classes.
+                    </p>
+                </div>
+                <div>
+                    <p>
+                        A module is defined as follows:
+                    </p>
+                    <div class="code">
+                        <pre class="brush: js; auto-links: false; toolbar: false;">
+                            CAAT.Module( {
+                                defines : "CAAT.Foundation.UI.StarActor",
+                                aliases : ["CAAT.StarActor"],
+                                depends : [
+                                    "CAAT.Foundation.ActorContainer"
+                                ],
+                                extendsClass : "CAAT.Foundation.ActorContainer",
+                                extendsWith : function() {
+
+                                    return {
+                                        __init : function() {
+                                            this.__super();
+                                            this.compositeOp= 'source-over';
+                                            return this;
+                                        },
+                                        ...
+                                    }
+                                },
+                                decorated : false
+                            });
+
+                        </pre>
+                    </div>
+                    <div>
+                        <p>
+                            This definition is for the StarActor object. MoMa will build a Class object (constructor
+                            function) and assign it to CAAT.Foundation.UI.StarActor, as well as to the aliases
+                            collection CAAT.StarActor. Both objects are the same constructor function. The aliases
+                            block is optional.
+                        </p>
+                        <p>
+                            To build a new ShapeActor, you can call new CAAT.StarActor() or new CAAT.Foundation.UI.StarActor
+                            interchangeably.
+                        </p>
+                        <p>
+                            This Class <span class="important">depends</span> on CAAT.Foundation.ActorContainer, meaning that before building this
+                            object class, CAAT.Foundation.ActorContainer and its dependencies will be loaded and solved.
+                            The depends block is optional.
+                        </p>
+                        <p>
+                            The <span class="important">extendsClass</span> means a ShapeActor is an ActorContainer, and
+                            can have other Actors contained inside. This is a kind of Object Oriented extension
+                            mechanism where ShapeActor has all of ActorContainer's functionality. The extendsClass block
+                            is optional.
+                        </p>
+                        <p>
+                            The <span class="important">extendsWith</span> clause can be either a function, which must
+                            return an object that will be used as the new Class prototype (and possibly extending
+                            the base Class defined in the extendsClass clause).
+                        </p>
+                        <p>
+                            CAAT Class definition does not rely on the Constructor function to perform initialization.
+                            Instead, an special function can be defined which must hold construction code. This
+                            function is <span class="important">__init</span> and if present is called from the
+                            constructor function. If you want to chain constructors, the correct way of doing it is
+                            by calling <span class="important">this.__super(arg1, arg2, ...);</span>.
+                        </p>
+                        <p>
+                            The <span class="important">decorated</span> clause instruments MoMa to create a decorated
+                            Class, which will be slower in execution, but more maintainable. When set to true, MoMa
+                            will make all base class' overriden methods have a <span class="important">__super</span>
+                            attribute. So calling any overriden method will be via: this.__super(arg1, arg2, ...).
+                            If <span class="important">decorated</span> is set to true (default value), calling a super
+                            class' overriden method will be faster in execution, but uglier. For example, for the
+                            ShapeActor example you must call:
+                        </p>
+                        <div class="code">
+                            <pre class="brush: js; auto-links: false; toolbar: false;">
+                                CAAT.Foundation.UI.ShapeActor.superclass.method.call(this, arg1, arg2, ...);
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <h2>Creating new Modules</h2>
+                <div>
+                    <p>
+                        For any given Class object, you could extend it, either by defining a new module
+                        which sets an appropriate <span class="important">extendsClass</span> clause or use the legacy
+                        <span class="apicode">extend(subclass, superclass)</span> function.
+                    </p>
+                    <h3>MoMa module:</h3>
+                    <p>
+                        <div class="code">
+                            <pre class="brush: js; auto-links: false; toolbar: false;">
+                                CAAT.Foundation.UI.ShapeActor.extend(
+                                    {
+                                        abcd : 1234
+                                    },
+                                    {
+                                        constant : 1
+                                    },
+                                    "MyNewClass",
+                                    [
+                                        "MyNewClassAlias1"
+                                    ],
+                                    decorated : true_or_false
+                                );
+                            </pre>
+                        </div>
+                    </p>
+                    <p>
+                        This code will create a new Class called MyNewClass, which extendsClass CAAT.Foundation.UI.ShapeActor
+                        with abcd:1234, defines a constant: CAAT.Foundation.UI.ShapeActor.constant= 1, creates an alias
+                        MyNewClassAlias1, etc.
+                    </p>
+                    <p>
+                        From this point, calling new MyNewClass or new MyNewClassAlias1 will have the same effect and
+                        is creating a new Actor instance.
+                    </p>
+                    <h3>Calling legacy extend function</h3>
+                    <p>
+                        The following code:
+                        <div class="code">
+                            <pre class="brush: js; auto-links: false; toolbar: false;">
+                                (function() {
+                                    HN.Chrono= function() {
+                                        HN.Chrono.superclass.constructor.call(this);
+                                        return this;
+                                    };
+
+                                    HN.Chrono.prototype= {
+
+                                        maxTime:    0,
+                                        elapsedTime:0,
+
+                                        animate : function(director, time) {
+                                            var size=
+                                                    this.maxTime!=0 ?
+                                                            this.elapsedTime/this.maxTime * this.progressHole :
+                                                            0;
+                                            // make sure this actor is marked as dirty by calling setSize and not .width=new_size.
+                                            this.actorcrono.setSize( this.progressHole-size, this.actorcrono.height );
+
+                                            return HN.Chrono.superclass.animate.call(this,director,time);
+                                        }
+                                    };
+
+                                    extend( HN.Chrono, CAAT.ActorContainer);
+                                })();
+                            </pre>
+                        </div>
+                    </p>
+                    <p>
+                        Will create a new Class: HN.Chrono which extendsClass CAAT.ActorContainer. It has the same
+                        effect as calling <b>extend</b> on a Module, or creating a CAAT.Module definition.
+                        This is the way CAAT objects were extended and has full compatibility with current
+                        Modules definition.
+                    </p>
+                    <p class="important">
+                        Both ways of creating new Actor classes are valid. It is preferred though using the
+                        Module method.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

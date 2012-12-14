@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 2 - CAAT.Actor as a button</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+    <script type="text/javascript" src="../demos/templates/startup-wo-splash/template.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+            <div class="chapter">
+                <h1>CAAT.Foundation.Actor</h1>
+                <h2>Actors as buttons</h2>
+
+                <p>
+                    A CAAT.Actor instance can behave as a button simply by invoking the method
+                    <span class="apicode">setAsButton( sprite_image, normal, over, press, disabled, on_click)</span>.
+                </p>
+                <p>
+                    This methos instruments that this actor will set as its background image the suplied
+                    sprite_image and that its size will be set equivalent to a sprite_image's subimage.
+                    The <span class="important">normal, over, press, disabled</span> are sprite_image's
+                    subimage indexes indicating which subimage to use under the buttons states described
+                    by the parameters.
+                </p>
+                <p>
+                    The on_click parameter is a callback function that will be invoked upon button click.
+                    <span class="important">This function receives the button itself as parameter.</span>.
+                </p>
+            </div>
+            <div>
+                <div>
+                    <p>
+                        In this example, we're setting up a button and showing an alert upon click.
+                        We'll be using a common CAAT's template for this sample.
+                    </p>
+                    <div class="code">
+                        <pre class="brush: js; auto-links: false; toolbar: false;">
+                            <script type="text/javascript" src="../lib/caat.js"></script>
+
+
+                            window.addEventListener(
+                                    'load',
+                                    function() {
+                                        CAAT.Module.Initialization.Template.init(
+                                                800, 100,
+                                                '_c1',
+                                                [
+                                                    {id:'botones', url:'resource/botones.png'}
+                                                ],
+                                                __scene1
+                                                );
+                                    },
+                                    false);
+
+                            function __scene1(director) {
+
+                                // an image of 7 rows by 3 columns
+                                var ci= new CAAT.Foundation.SpriteImage().initialize(
+                                        director.getImage('botones'), 7, 3 );
+
+                                var scene= director.createScene();
+
+                                var b1= new CAAT.Foundation.Actor().setAsButton(
+                                            ci.getRef(), 0, 1, 2, 0, function(button) {
+                                                alert('easy pressed');
+                                            }
+                                        ).
+                                        setLocation(0,30);
+
+                                var b2= new CAAT.Foundation.Actor().setAsButton(
+                                            ci.getRef(), 6, 7, 8, 6, function(button) {
+                                                alert('start pressed');
+                                            }
+                                        ).
+                                        setLocation(1.5*ci.singleWidth, 30);
+
+                                scene.addChild( b1 );
+                                scene.addChild( b2 );
+                            }
+
+                        </pre>
+                    </div>
+                    <div><canvas id="_c1"></canvas></div>
+                    <script>
+            (function() {
+
+                window.addEventListener(
+                        'load',
+                        function() {
+                            CAAT.Module.Initialization.Template.init(
+                                    800, 100,
+                                    '_c1',
+                                    [
+                                        {id:'botones', url:'resource/botones.png'}
+                                    ],
+                                    __scene1
+                                    );
+                        },
+                        false);
+
+                function __scene1(director) {
+
+                    // an image of 7 rows by 3 columns
+                    var ci= new CAAT.Foundation.SpriteImage().initialize(
+                            director.getImage('botones'), 7, 3 );
+
+                    var scene= director.createScene();
+
+                    var b1= new CAAT.Foundation.Actor().setAsButton(
+                                ci.getRef(), 0, 1, 2, 0, function(button) {
+                                    alert('easy pressed');
+                                }
+                            ).
+                            setLocation(0,30);
+
+                    var b2= new CAAT.Foundation.Actor().setAsButton(
+                                ci.getRef(), 6, 7, 8, 6, function(button) {
+                                    alert('start pressed');
+                                }
+                            ).
+                            setLocation(1.5*ci.singleWidth, 30);
+
+                    scene.addChild( b1 );
+                    scene.addChild( b2 );
+                }
+
+                })();
+                    </script>
+
+            </div>
+        </div>
+    </div>
+        </div>
+</div>
+</body>
+</html>

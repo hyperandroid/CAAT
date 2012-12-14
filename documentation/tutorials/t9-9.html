@@ -97,14 +97,14 @@
                         (function() {
 
                         // initialize director and preload images.
-                            new CAAT.ImagePreloader().loadImages(
+                            new CAAT.Module.Preloader.ImagePreloader().loadImages(
                                     [
                                         {id:'nums', url:'../demos/demo-resources/img/numbers.png'}
                                     ],
                                     function(counter, images) {
                                         if ( counter==images.length ) {
-                                            var director= new CAAT.Director().initialize(
-                                                    800, 500, document.getElementById('_c1'));
+                                            var director= new CAAT.Foundation.Director().initialize(
+                                                    800, 500, '_c1');
                                             director.setImagesCache(images);
                                             __scene(director);
                                         }
@@ -124,51 +124,51 @@
                                 var insets= 50;
 
                             // reuse a sprite image
-                                var ic= new CAAT.SpriteImage().initialize(
+                                var ic= new CAAT.Foundation.SpriteImage().initialize(
                                         director.getImage('nums'), 9, 9);
 
                                 var i,j;
                                 var dock = [];
                             // build 4 dock actors with the different layout ops available.
                                 dock.push(
-                                    new CAAT.Dock().
+                                    new CAAT.Foundation.UI.Dock().
                                         initialize(scene).
                                         setBounds( (director.width-width)/2, insets, width, height ).
                                         setSizes(min, max).
                                         setApplicationRange(3).
-                                        setLayoutOp(CAAT.Dock.prototype.OP_LAYOUT_TOP) );
+                                        setLayoutOp(CAAT.Foundation.UI.Dock.OP_LAYOUT_TOP) );
                                 dock.push(
-                                    new CAAT.Dock().
+                                    new CAAT.Foundation.UI.Dock().
                                         initialize(scene).
                                         setBounds( (director.width-width)/2, director.height-height-insets, width, height ).
                                         setSizes(min, max).
                                         setApplicationRange(5).
-                                        setLayoutOp(CAAT.Dock.prototype.OP_LAYOUT_BOTTOM) );
+                                        setLayoutOp(CAAT.Foundation.UI.Dock.OP_LAYOUT_BOTTOM) );
                                 dock.push(
-                                    new CAAT.Dock().
+                                    new CAAT.Foundation.UI.Dock().
                                         initialize(scene).
                                         setBounds( insets, insets, height, 400 ).
                                         setSizes(min, max).
                                         setApplicationRange(3).
-                                        setLayoutOp(CAAT.Dock.prototype.OP_LAYOUT_LEFT) );
+                                        setLayoutOp(CAAT.Foundation.UI.Dock.OP_LAYOUT_LEFT) );
                                 dock.push(
-                                    new CAAT.Dock().
+                                    new CAAT.Foundation.UI.Dock().
                                         initialize(scene).
                                         setBounds( director.width-height-insets, insets, height, 400 ).
                                         setSizes(min, max).
                                         setApplicationRange(6).
-                                        setLayoutOp(CAAT.Dock.prototype.OP_LAYOUT_RIGHT) );
+                                        setLayoutOp(CAAT.Foundation.UI.Dock.OP_LAYOUT_RIGHT) );
 
                                 for( j=0; j<dock.length; j++ ) {
                             // add 10 elements for each docking actor.
                                     for( i=0; i<10; i++ ) {
 
                             // create an actor
-                                        var img= new CAAT.Actor().
+                                        var img= new CAAT.Foundation.Actor().
                                                 setBackgroundImage( ic.getRef(), true ).
                                                 setSpriteIndex( (Math.random()*ic.rows*ic.columns)>>0 ).
                             // and make its image conform to all the available space.
-                                                setImageTransformation( CAAT.SpriteImage.prototype.TR_FIXED_TO_SIZE );
+                                                setImageTransformation( CAAT.Foundation.SpriteImage.TR_FIXED_TO_SIZE );
 
                                         dock[j].addChild(img);
                                     }
@@ -185,21 +185,21 @@
                 <div class="code">
                     <pre class="brush: js; auto-links: false; toolbar: false;">
                         // initialize director and preload images.
-                            new CAAT.ImagePreloader().loadImages(
+                            new CAAT.Module.Preloader.ImagePreloader().loadImages(
                                     [
                                         {id:'nums', url:'../demos/demo-resources/img/numbers.png'}
                                     ],
                                     function(counter, images) {
                                         if ( counter==images.length ) {
-                                            var director= new CAAT.Director().initialize(
-                                                    800, 500, document.getElementById('_c1'));
+                                            var director= new CAAT.Foundation.Director().initialize(
+                                                    800, 500, '_c1');
                                             director.setImagesCache(images);
                                             __scene(director);
                                         }
                                     }
                             );
 
-                        function __scene(director) {
+                            function __scene(director) {
 
                                 var scene= director.createScene();
 
@@ -212,51 +212,51 @@
                                 var insets= 50;
 
                             // reuse a sprite image
-                                var ic= new CAAT.SpriteImage().initialize(
+                                var ic= new CAAT.Foundation.SpriteImage().initialize(
                                         director.getImage('nums'), 9, 9);
 
                                 var i,j;
                                 var dock = [];
                             // build 4 dock actors with the different layout ops available.
                                 dock.push(
-                                    new CAAT.Dock().
+                                    new CAAT.Foundation.UI.Dock().
                                         initialize(scene).
                                         setBounds( (director.width-width)/2, insets, width, height ).
                                         setSizes(min, max).
                                         setApplicationRange(3).
-                                        setLayoutOp(CAAT.Dock.prototype.OP_LAYOUT_TOP) );
+                                        setLayoutOp(CAAT.Foundation.UI.Dock.OP_LAYOUT_TOP) );
                                 dock.push(
-                                    new CAAT.Dock().
+                                    new CAAT.Foundation.UI.Dock().
                                         initialize(scene).
                                         setBounds( (director.width-width)/2, director.height-height-insets, width, height ).
                                         setSizes(min, max).
                                         setApplicationRange(5).
-                                        setLayoutOp(CAAT.Dock.prototype.OP_LAYOUT_BOTTOM) );
+                                        setLayoutOp(CAAT.Foundation.UI.Dock.OP_LAYOUT_BOTTOM) );
                                 dock.push(
-                                    new CAAT.Dock().
+                                    new CAAT.Foundation.UI.Dock().
                                         initialize(scene).
                                         setBounds( insets, insets, height, 400 ).
                                         setSizes(min, max).
                                         setApplicationRange(3).
-                                        setLayoutOp(CAAT.Dock.prototype.OP_LAYOUT_LEFT) );
+                                        setLayoutOp(CAAT.Foundation.UI.Dock.OP_LAYOUT_LEFT) );
                                 dock.push(
-                                    new CAAT.Dock().
+                                    new CAAT.Foundation.UI.Dock().
                                         initialize(scene).
                                         setBounds( director.width-height-insets, insets, height, 400 ).
                                         setSizes(min, max).
                                         setApplicationRange(6).
-                                        setLayoutOp(CAAT.Dock.prototype.OP_LAYOUT_RIGHT) );
+                                        setLayoutOp(CAAT.Foundation.UI.Dock.OP_LAYOUT_RIGHT) );
 
-                                for( j=0; j&lt;dock.length; j++ ) {
+                                for( j=0; j<dock.length; j++ ) {
                             // add 10 elements for each docking actor.
-                                    for( i=0; i&lt;10; i++ ) {
+                                    for( i=0; i<10; i++ ) {
 
                             // create an actor
-                                        var img= new CAAT.Actor().
+                                        var img= new CAAT.Foundation.Actor().
                                                 setBackgroundImage( ic.getRef(), true ).
                                                 setSpriteIndex( (Math.random()*ic.rows*ic.columns)>>0 ).
                             // and make its image conform to all the available space.
-                                                setImageTransformation( CAAT.SpriteImage.prototype.TR_FIXED_TO_SIZE );
+                                                setImageTransformation( CAAT.Foundation.SpriteImage.TR_FIXED_TO_SIZE );
 
                                         dock[j].addChild(img);
                                     }
@@ -266,6 +266,7 @@
                                 }
 
                                 CAAT.loop(33);
+
                     </pre>
                 </div>
             </div>

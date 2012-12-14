@@ -82,15 +82,14 @@
                 <script>
                     (function() {
 
-                        var director= new CAAT.Director().initialize(800,500,document.getElementById('_c1'));
+                        var director= new CAAT.Foundation.Director().initialize(800,500,'_c1');
                         var scene= director.createScene().setFillStyle('#fff');
 
                         // path actor. to show the path and manipulate its control points.
-                        var pa= new CAAT.PathActor().
+                        var pa= new CAAT.Foundation.UI.PathActor().
                             setBounds(100,0,600,director.height).
-                            create().
                             setPath(
-                                new CAAT.Path().
+                                new CAAT.PathUtil.Path().
                                     beginPath(200,200).
                                     addCubicTo( 300,15, 400,10, 500,200 ).
                                     addQuadricTo( 550,300, 450,350 ).
@@ -111,15 +110,14 @@
             <div>
                 <div class="code">
                     <pre class="brush: js; auto-links: false; toolbar: false;">
-                        var director= new CAAT.Director().initialize(800,500,document.getElementById('_c1'));
+                        var director= new CAAT.Foundation.Director().initialize(800,500,'_c1');
                         var scene= director.createScene().setFillStyle('#fff');
 
                         // path actor. to show the path and manipulate its control points.
-                        var pa= new CAAT.PathActor().
+                        var pa= new CAAT.Foundation.UI.PathActor().
                             setBounds(100,0,600,director.height).
-                            create().
                             setPath(
-                                new CAAT.Path().
+                                new CAAT.PathUtil.Path().
                                     beginPath(200,200).
                                     addCubicTo( 300,15, 400,10, 500,200 ).
                                     addQuadricTo( 550,300, 450,350 ).

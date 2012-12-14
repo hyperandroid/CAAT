@@ -55,7 +55,7 @@
 </body>
 
 <script type="text/javascript" src="../menu/menu.js"></script>
-<script type="text/javascript" src="../../../build/caat.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
 <script type="text/javascript">
     /**
      * @license
@@ -83,54 +83,52 @@
      *
      */
 
-    var FC= {};
+
 
     (function() {
 
-        FC.Ship= function() {
-            FC.Ship.superclass.constructor.call(this);
-            return this;
-        };
+        window.addEventListener('load', load, false);
 
-        FC.Ship.prototype= {
+        function load() {
+            CAAT.ModuleManager.
+                baseURL("../../../src/").
+                setModulePath("CAAT.Core", "Core").
+                setModulePath("CAAT.Math", "Math").
+                setModulePath("CAAT.Behavior", "Behavior").
+                setModulePath("CAAT.Foundation", "Foundation").
+                setModulePath("CAAT.Event", "Event").
+                setModulePath("CAAT.PathUtil", "PathUtil").
+                setModulePath("CAAT.Module", "Modules").
+                setModulePath("CAAT.Module.Preloader", "Modules/Image/Preloader").
+                setModulePath("CAAT.WebGL", "WebGL").
 
-            paint : function( director, time ) {
-                var ctx = director.ctx;
+                setModulePath("CAAT.FC",                "../documentation/demos/demo20").
 
-                ctx.strokeStyle = this.fillStyle;
-                ctx.lineWidth = 4;
-                ctx.beginPath();
-                ctx.arc(this.width / 2, this.height / 2, this.width / 2, 0, 2 * Math.PI, false);
-                ctx.stroke();
+                // get modules, and solve their dependencies.
+                bring([
+                    "CAAT.PathUtil.Path",
+                    "CAAT.PathUtil.ArcPath",
+                    "CAAT.PathUtil.RectPath",
+                    "CAAT.Foundation.Director",
+                    "CAAT.Foundation.Actor",
+                    "CAAT.Foundation.ActorContainer",
+                    "CAAT.Foundation.UI.PathActor",
+                    "CAAT.Math.Point",
+                    "CAAT.FC.Ship",
+                    "CAAT.Behavior.PathBehavior"
+                ]).
 
-                var _sizeship = this.width / 2 - 4;
-                ctx.globalAlpha = 1;
-                ctx.fillStyle = this.fillStyle;
-
-                ctx.save();
-                ctx.beginPath();
-
-                ctx.translate(this.width / 2, this.height / 2);
-                ctx.moveTo(_sizeship, 0);
-                ctx.lineTo(_sizeship * Math.cos(3 * Math.PI / 4), _sizeship * Math.sin(3 * Math.PI / 4));
-                ctx.lineTo(_sizeship * Math.cos(5 * Math.PI / 4), _sizeship * Math.sin(5 * Math.PI / 4));
-                ctx.closePath();
-                ctx.fill();
-                ctx.restore();
-            }
-
+                // this function will be fired every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( __start );
         }
 
-        extend( FC.Ship, CAAT.Actor );
-    }());
-
-    (function() {
-        CAAT.DEBUG=1;
-        CAAT.TOUCH_BEHAVIOR= CAAT.TOUCH_AS_MULTITOUCH;
 
         function __start() {
 
-            var director= new CAAT.Director().initialize(800, 500, document.getElementById("experiment-canvas"));
+            CAAT.DEBUG=1;
+
+            var director= new CAAT.Foundation.Director().initialize(800, 500, "experiment-canvas");
             var scene= director.createScene();
 
             var i;
@@ -141,41 +139,41 @@
             for( i=0; i<NP; i++ ) {
                 angle= i*Math.PI/(NP);
 
-                pp.push( new CAAT.Point(
+                pp.push( new CAAT.Math.Point(
                         500 + R*Math.cos(angle + (Math.PI*(i%2)) ) ,
                         200 + R*Math.sin(angle + (Math.PI*(i%2))) ) );
 
             }
 
-            var path5= new CAAT.Path().
+            var path5= new CAAT.PathUtil.Path().
                 setCatmullRom(
                     pp,
                     true
                 ).
                 endPath();
 
-            var path1= new CAAT.Path().
+            var path1= new CAAT.PathUtil.Path().
                     beginPath(100,100).
                     addLineTo( 200,200).
                     addLineTo( 10, 250).
                     addLineTo( 100,100).
                     closePath();
 
-            var path2= new CAAT.Path().
+            var path2= new CAAT.PathUtil.Path().
                     beginPath( 300,300).
                     addQuadricTo( 600,300, 500,400).
                     addQuadricTo( 500,490, 320, 450).
                     closePath();
 
-            var path3= new CAAT.ArcPath().
+            var path3= new CAAT.PathUtil.ArcPath().
                     initialize( 300,200, 50, Math.PI*2).
                     setClockWise(true);
 
-            var path4= new CAAT.RectPath().
+            var path4= new CAAT.PathUtil.RectPath().
                     setInitialPosition( 100,300).
                     setFinalPosition( 200,450 );
 
-            var path= new CAAT.Path().
+            var path= new CAAT.PathUtil.Path().
                     addSegment( path1).
                     addSegment( path3).
                     addSegment( path2).
@@ -193,7 +191,7 @@
                 'rgba(32,255,32,.7)'
             ]
 
-            var pa= new CAAT.PathActor().
+            var pa= new CAAT.Foundation.UI.PathActor().
                     setBounds(0,0,800,500).
                     setInteractive(true).
                     setPath( path ).
@@ -203,11 +201,11 @@
             scene.addChild( pa );
 
             for( i=0; i<paths.length; i++ ) {
-                scene.addChild( new FC.Ship().
+                scene.addChild( new CAAT.FC.Ship().
                         setSize( 30,30 ).
                         enableEvents(false).
                         addBehavior(
-                            new CAAT.PathBehavior().
+                            new CAAT.Behavior.PathBehavior().
                                     setValues( paths[i] ).
                                     setDelayTime( 0, 20000).
                                     setCycle(true).
@@ -221,11 +219,6 @@
             CAAT.loop(60);
 
         }
-        /**
-         * Startup it all up when the document is ready.
-         * Change for your favorite frameworks initialization code.
-         */
-        window.addEventListener('load', __start, false);
 
     })();
 

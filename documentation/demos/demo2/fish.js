@@ -23,19 +23,24 @@
  * THE SOFTWARE.
  *
  */
-(function() {
-    CAAT.Fish= function() {
-        CAAT.Fish.superclass.constructor.call(this);
-        this.tail=  [];
-        this.tail1= [];
-        this.tail2= [];
-        this.head1= [];
-        this.head2= [];
 
-        return this;
-    };
+CAAT.Module( {
+    defines : "CAAT.Procedural.Fish",
+    depends : [
+        "CAAT.Foundation.Actor"
+    ],
+    extendsClass : "CAAT.Foundation.Actor",
+    extendsWith : {
+        __init : function() {
+            this.__super();
+            this.tail=  [];
+            this.tail1= [];
+            this.tail2= [];
+            this.head1= [];
+            this.head2= [];
 
-    CAAT.Fish.prototype= {
+            return this;
+        },
 
         tail:       null,
         tail1:      null,
@@ -143,7 +148,7 @@
             var w= this.width;
             var h= this.height;
             var w2= w/2;
-            var w4= w2/2
+            var w4= w2/2;
             var h2= h/2;
 
 
@@ -183,7 +188,7 @@
             ctx.fillStyle='orange';
 
             //////////////////////////////////////////////// START ALETAS
-            var aletaSize= h2;      // ancho
+            aletaSize= h2;      // ancho
             var aletaHeight= 7;   // alto aleta
             var aletaWidth= 5;
             var aletaPos= w*2/3 + aletaWidth;
@@ -255,7 +260,6 @@
             ctx.fill();
             //////////////////////////////////////////////// END EYES
         }
-    };
+    }
 
-    extend( CAAT.Fish, CAAT.Actor );
-})();
+});

@@ -61,7 +61,8 @@
 </body>
 
 <script type="text/javascript" src="../menu/menu.js"></script>
-<script type="text/javascript" src="../../../build/caat.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+
 <script type="text/javascript">
     /**
      * @license
@@ -96,7 +97,45 @@
          * Startup it all up when the document is ready.
          * Change for your favorite frameworks initialization code.
          */
-        window.addEventListener('load', __start, false);
+        window.addEventListener('load',load,false);
+
+        function load() {
+            CAAT.ModuleManager.
+                baseURL( "../../../src/").
+                setModulePath("CAAT.Core",              "Core").
+                setModulePath("CAAT.Math",              "Math").
+                setModulePath("CAAT.Behavior",          "Behavior").
+                setModulePath("CAAT.Foundation",        "Foundation").
+                setModulePath("CAAT.Event",             "Event").
+                setModulePath("CAAT.PathUtil",          "PathUtil").
+                setModulePath("CAAT.Module",            "Modules").
+                setModulePath("CAAT.WebGL",             "WebGL").
+
+                // get modules, and solve their dependencies.
+                bring(
+                    [
+                        "CAAT.PathUtil.Path",
+                        "CAAT.Foundation.Director",
+                        "CAAT.Foundation.ActorContainer",
+                        "CAAT.Foundation.Actor",
+                        "CAAT.Foundation.UI.StarActor",
+
+                        "CAAT.Module.Collision.SpatialHash",
+                        "CAAT.Module.Collision.QuadTree",
+
+                        "CAAT.Math.Point",
+                        "CAAT.Math.Rectangle",
+
+                        "CAAT.Behavior.RotateBehavior",
+                        "CAAT.Behavior.ScaleBehavior",
+                        "CAAT.Behavior.PathBehavior"
+                    ]
+                ).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                onReady( __start );
+        }
 
         var keys=               [0,0,0,0];
         var prevTime=           -1;
@@ -104,8 +143,8 @@
         var collision=          null;
         var entitiesCollision=  null;
         var hero=               null;
-        var r0=                 new CAAT.Rectangle();
-        var r1=                 new CAAT.Rectangle();
+        var r0=                 null;
+        var r1=                 null;
 
         var enemies=            null;
 
@@ -118,11 +157,14 @@
 
         function __start() {
 
-            var director= new CAAT.Director().
-                    initialize( 800,500, document.getElementById('experiment-canvas') ).
-                    setClear( CAAT.Director.CLEAR_ALL );    //  enable dirty rects cleaning
+            r0=                 new CAAT.Math.Rectangle();
+            r1=                 new CAAT.Math.Rectangle();
 
-            hash= new CAAT.SpatialHash().initialize( director.width, director.height, 10, 16 );
+            var director= new CAAT.Foundation.Director().
+                    initialize( 800,500, 'experiment-canvas' ).
+                    setClear( CAAT.Foundation.Director.CLEAR_ALL );
+
+            hash= new CAAT.Module.Collision.SpatialHash().initialize( director.width, director.height, 10, 16 );
 
             var scene= director.createScene();
             scene.setFillStyle( '#fff' );
@@ -224,14 +266,14 @@
                      * this code will appropriately flip horizontally that background image.
                      */
                     if ( keys[0] ^ keys[1] ) {
-                            selected.setImageTransformation( keys[0] ? CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL : CAAT.SpriteImage.prototype.TR_NONE );
+                            selected.setImageTransformation( keys[0] ? CAAT.Foundation.SpriteImage.TR_FLIP_HORIZONTAL : CAAT.Foundation.SpriteImage.TR_NONE );
                     }
                 }
                 if ( keyEvent.getKeyCode()===CAAT.Keys.RIGHT ) {
                     keyEvent.preventDefault();
                     keys[1]= ( keyEvent.getAction()==='up' ) ? 0 : 1;
                     if ( keys[0] ^ keys[1] ) {
-                        selected.setImageTransformation( keys[1] ? CAAT.SpriteImage.prototype.TR_NONE : CAAT.SpriteImage.prototype.TR_FLIP_HORIZONTAL );
+                        selected.setImageTransformation( keys[1] ? CAAT.Foundation.SpriteImage.TR_NONE : CAAT.Foundation.SpriteImage.TR_FLIP_HORIZONTAL );
                     }
                 }
 
@@ -243,8 +285,8 @@
             var x,y;
 
             var lerp= [
-                    new CAAT.Interpolator().createBounceOutInterpolator(false),
-                    new CAAT.Interpolator().createExponentialInInterpolator(3,true)
+                    new CAAT.Behavior.Interpolator().createBounceOutInterpolator(false),
+                    new CAAT.Behavior.Interpolator().createExponentialInInterpolator(3,true)
             ];
 
             enemies= [];
@@ -255,13 +297,13 @@
                  */
                 x= 50 + (director.width-100)/NUM_ENEMIES * i;
                 var enemy=
-                    new CAAT.Actor().
+                    new CAAT.Foundation.Actor().
                         setFillStyle( '#bb0' ).
                         setBounds(x,0,7,21).
                         addBehavior(
                             new CAAT.PathBehavior().
                                     setValues(
-                                        new CAAT.Path().
+                                        new CAAT.PathUtil.Path().
                                                 setLinear( x, 20, x, director.height-20 )
                                     ).
                                     setPingPong().
@@ -277,13 +319,13 @@
                  */
                 y= 50 + (director.height-100)/NUM_ENEMIES * i;
                 enemy=
-                    new CAAT.Actor().
+                    new CAAT.Foundation.Actor().
                         setFillStyle( '#bb0' ).
                         setBounds(x,0,21,7).
                         addBehavior(
                             new CAAT.PathBehavior().
                                     setValues(
-                                        new CAAT.Path().
+                                        new CAAT.PathUtil.Path().
                                                 setLinear( 50, y, director.width-50, y )
                                     ).
                                     setPingPong().
@@ -320,7 +362,7 @@
                     hash.collide( hero.x, hero.y, hero.width, hero.height, function(collide_width) {
                         hero.setLocation(112,112);
                         return true;
-                    })
+                    });
 
                 },
                 null);
@@ -332,7 +374,7 @@
              * create a 32x32 star actor.
              */
             var size= 16;
-            hero= new CAAT.StarActor().
+            hero= new CAAT.Foundation.UI.StarActor().
                     setBounds( 112, 112, size, size ).
                     setStrokeStyle( "#f0f" ).
                     setFilled( false ).
@@ -340,7 +382,7 @@
                     initialize( 12, size, size/2 ).
                     cacheAsBitmap().
                     addBehavior(
-                        new CAAT.RotateBehavior().
+                        new CAAT.Behavior.RotateBehavior().
                                 setValues( 0, 2*Math.PI ).
                                 setCycle( true ).
                                 setFrameTime( 0, 2000 )
@@ -381,19 +423,19 @@
                     if ( level.charAt(j + i*levelW)==='1' ) {
 
                         ctx.fillRect( j*TW, i*TH, TW, TH );
-                        entities.push( { AABB : new CAAT.Rectangle().setBounds( j*TW, i*TH, TW, TH ) } );
+                        entities.push( { AABB : new CAAT.Math.Rectangle().setBounds( j*TW, i*TH, TW, TH ) } );
                     }
                 }
             }
 
-            scene.addChild( new CAAT.Actor().setBackgroundImage( canvas ) );
+            scene.addChild( new CAAT.Foundation.Actor().setBackgroundImage( canvas ) );
 
             var max= Math.max( levelW, levelH );
 
             /**
              * Create a map collision spatial structure.
              */
-            collision= new CAAT.QuadTree().create( 0,0,max*TW,max*TH, entities );
+            collision= new CAAT.Module.Collision.QuadTree().create( 0,0,max*TW,max*TH, entities );
         }
 
     })();
