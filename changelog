@@ -1,4 +1,4 @@
-* 12/13/2012 0.5 Build 40 *
+* 12/13/2012 0.5 Build 46 *
 ---------------------------
 
 * SpriteImage now can set subImages as director images. Useful if packing textures.
