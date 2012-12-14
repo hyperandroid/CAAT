@@ -31,6 +31,7 @@
                 <div>
                     <p>Controls:</p>
                     <ul>
+                        <li>Click on a character to select it.</li>
                         <li>Click on buttons to play different sprite animations.</li>
                         <li>Use cursors to trigger animations.
                     </ul>
@@ -135,14 +136,11 @@
                         var dw= director.width;
                         var dh= director.height;
 
-                        var si= new CAAT.Foundation.SpriteImage().initialize( images[0].image, 21, 7 );
-
                         var reset= function(spriteImage, time) {
                             spriteImage.playAnimation("stand");
                         };
 
-                        var actor= new CAAT.Foundation.Actor().
-                                setBackgroundImage(si).
+                        var si= new CAAT.Foundation.SpriteImage().initialize( images[0].image, 21, 7).
                                 addAnimation("stand",   [123,124,125, 126,127,128,129,130,131,132, 133,134,135,136,137,138,139, 140,141,142,143,144], 100).
                                 addAnimation("fall",    [0,1,2,3,4,5,6,7], 100, reset).
                                 addAnimation("wall_ud", [74,75,76, 77,78,79,80,81], 100).
@@ -154,7 +152,23 @@
                                 addAnimation("run_f",   [122,121,120,119, 118,117,116,115,114,113,112, 111,110,109,108,107,106,105, 104,103,102,101,100,99,98, 97,96], 30).
                                 addAnimation("sad",     [26,27, 28,29,30,31,32,33], 100);
 
-                        actor.playAnimation("fall");
+                        var actors= [];
+                        for( var i=0; i<3; i++ ) {
+                            for( var j=0; j<3; j++ ) {
+                                var a= new CAAT.Foundation.Actor().
+                                    setBackgroundImage(si).
+                                        setLocation( j*si.getWidth(), i*si.getHeight() );
+
+                                actors.push(a);
+                                a.playAnimation("fall");
+                                scene.addChild(a);
+                                a.mouseUp= function(e) {
+                                    actor= e.source;
+                                }
+                            }
+                        }
+
+                        var actor= actors[0];
 
                         var keys=[0,0,0,0];
                         var index= 0;
@@ -227,8 +241,6 @@
                             }
 
                         });
-
-                        scene.addChild(actor);
 
                         CAAT.loop(60);
                     });

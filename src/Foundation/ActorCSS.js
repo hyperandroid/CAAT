@@ -118,6 +118,13 @@ CAAT.Module({
             viewVertices:null, // model to view transformed vertices.
             isAA:true,
 
+            preventLayout : false,
+
+            setPreventLayout : function(b) {
+                this.preventLayout= b;
+                return this;
+            },
+
             invalidate:function () {
                 this.invalid = true;
                 return this;
@@ -581,16 +588,18 @@ CAAT.Module({
                 if (image) {
                     // Opera will complaint about instanceof Image, so better HTMLImageElement.
                     if (image instanceof HTMLImageElement) {
-                        image = new CAAT.SpriteImage().initialize(image, 1, 1);
+                        image = new CAAT.Foundation.SpriteImage().initialize(image, 1, 1);
                     } else if (image instanceof HTMLCanvasElement) {
                         image.src = image.toDataURL();
-                        image = new CAAT.SpriteImage().initialize(image, 1, 1);
+                        image = new CAAT.Foundation.SpriteImage().initialize(image, 1, 1);
                     } else if (image instanceof CAAT.SpriteImage) {
                         if (image.image instanceof HTMLCanvasElement) {
                             if (!image.image.src) {
                                 image.image.src = image.image.toDataURL();
                             }
                         }
+                    } else if (isString(image)) {
+                        image= new CAAT.Foundation.SpriteImage().initialize( CAAT.currentDirector.getImage(image), 1, 1 );
                     } else {
                         throw "Invalid image object to set actor's background";
                     }
@@ -1450,6 +1459,10 @@ CAAT.Module({
              * @return null if the point is not inside the Actor. The Actor otherwise.
              */
             findActorAtPosition:function (point) {
+                if (this.scaleX===0 || this.scaleY===0) {
+                    return null;
+                }
+
                 if (!this.mouseEnabled || !this.isInAnimationFrame(this.time)) {
                     return null;
                 }
@@ -2064,6 +2077,10 @@ CAAT.Module({
                 };
 
                 return this;
+            },
+
+            findActorById : function(id) {
+                return this.id===id ? this : null;
             }
         }
     }

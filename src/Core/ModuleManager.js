@@ -15,13 +15,13 @@
                 }
             };
 
-    isArray = function (input) {
+    global.isArray = function (input) {
         return typeof(input) == 'object' && (input instanceof Array);
     };
-    isString = function (input) {
+    global.isString = function (input) {
         return typeof(input) == 'string';
     };
-    isFunction = function( input ) {
+    global.isFunction = function( input ) {
         return typeof input == "function"
     }
 
@@ -456,7 +456,27 @@
             return false;
         },
 
+        exists : function(path) {
+            var path= path.split(".");
+            var root= global;
+
+            for( var i=0; i<path.length; i++ ) {
+                if (!root[path[i]]) {
+                    return false;
+                }
+
+                root= root[path[i]];
+            }
+
+            return true;
+        },
+
         loadFile : function( module ) {
+
+
+            if (this.exists(module)) {
+                return;
+            }
 
             var path= this.getPath( module );
 
@@ -558,7 +578,7 @@
         moduleLoaded : function(e) {
             if (e.type==="load") {
 
-                var node = e.currentTarget || e.srcElement;
+                var node = e.currentTarget || e.srcElement || e.target;
                 var mod= node.getAttribute("module-name");
 
                 // marcar fichero de modulo como procesado.

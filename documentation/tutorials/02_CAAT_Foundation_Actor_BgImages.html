@@ -105,88 +105,7 @@
         so setting a SpriteImage of one row by six columns will treat each image's piece as an
         independent star.
     </p>
-    <div class="code">
-        <pre class="brush: js; auto-links: false; toolbar: false;">
-            function __scene(director) {
 
-                var scene= director.createScene();
-
-                var bg= new CAAT.Foundation.ActorContainer().
-                        setBounds(0,0,director.width,director.height).
-                        setFillStyle('#fff');
-
-                scene.addChild(bg);
-
-                // create a sprite image of 1 row by 6 columns
-                var starsImage= new CAAT.Foundation.SpriteImage().
-                        initialize(director.getImage('stars'), 1,6 );
-
-                var T= 1000;
-
-                var mouseStars= function(mouseEvent) {
-
-                    var actorStar= new CAAT.Foundation.Actor().
-                        // set background image to be a reference of a SpriteImage instance
-                        // and set actor's size equal to a SpriteImage's subimage size
-                            setBackgroundImage( starsImage ).
-                        // set background as a random SpriteImage's subimage.
-                            setSpriteIndex( (Math.random()*6)>>0 ).
-                        // center the actor on mouse position
-                            centerOn( mouseEvent.x, mouseEvent.y).
-                        // when the actor expires, remove in from the director
-                            setDiscardable(true).
-                        // avoid mouse event handling.
-                            enableEvents(false).
-                        // make this actor last to T milliseconds (1000)
-                            setFrameTime(scene.time, T).
-                        // add a scaling behavior
-                            addBehavior(
-                                new CAAT.Behavior.ScaleBehavior().
-                                    setFrameTime(scene.time, T).
-                                    setValues( 1,5, 1,5 ).
-                                    setInterpolator(
-                                        new CAAT.Behavior.Interpolator().createExponentialInInterpolator(
-                                            3,
-                                            false)
-                                    )
-                            ).
-                        // add an alpha behavior so the actor takes 1000 ms to fade out to zero alpha
-                            addBehavior(
-                                new CAAT.Behavior.AlphaBehavior().
-                                    setFrameTime(scene.time, T).
-                                    setValues( 1, 0 ) );
-
-                    // add the actor.
-                    bg.addChild(actorStar);
-                };
-
-                // set background's mouse handlers.
-                bg.mouseMove= mouseStars;
-                bg.mouseDrag= mouseStars;
-            }
-
-            function __init()   {
-
-                var director = new CAAT.Foundation.Director().
-                        initialize(700,500, document.getElementById('_c1')).
-                        setClear(false);
-
-                new CAAT.Module.Preloader.ImagePreloader().loadImages(
-                    [
-                        {id:'stars',    url:'../demos/demo-resources/img/stars.png'}
-                    ],
-                    function( counter, images ) {
-                        director.setImagesCache(images);
-                        __scene(director);
-                    }
-                );
-
-                CAAT.loop(60);
-            }
-
-            __init();
-        </pre>
-    </div>
     <canvas id="_c1"></canvas>
     <script>
         (function() {
@@ -273,6 +192,89 @@
 
         })();
     </script>
+
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+            function __scene(director) {
+
+                var scene= director.createScene();
+
+                var bg= new CAAT.Foundation.ActorContainer().
+                        setBounds(0,0,director.width,director.height).
+                        setFillStyle('#fff');
+
+                scene.addChild(bg);
+
+                // create a sprite image of 1 row by 6 columns
+                var starsImage= new CAAT.Foundation.SpriteImage().
+                        initialize(director.getImage('stars'), 1,6 );
+
+                var T= 1000;
+
+                var mouseStars= function(mouseEvent) {
+
+                    var actorStar= new CAAT.Foundation.Actor().
+                        // set background image to be a reference of a SpriteImage instance
+                        // and set actor's size equal to a SpriteImage's subimage size
+                            setBackgroundImage( starsImage ).
+                        // set background as a random SpriteImage's subimage.
+                            setSpriteIndex( (Math.random()*6)>>0 ).
+                        // center the actor on mouse position
+                            centerOn( mouseEvent.x, mouseEvent.y).
+                        // when the actor expires, remove in from the director
+                            setDiscardable(true).
+                        // avoid mouse event handling.
+                            enableEvents(false).
+                        // make this actor last to T milliseconds (1000)
+                            setFrameTime(scene.time, T).
+                        // add a scaling behavior
+                            addBehavior(
+                                new CAAT.Behavior.ScaleBehavior().
+                                    setFrameTime(scene.time, T).
+                                    setValues( 1,5, 1,5 ).
+                                    setInterpolator(
+                                        new CAAT.Behavior.Interpolator().createExponentialInInterpolator(
+                                            3,
+                                            false)
+                                    )
+                            ).
+                        // add an alpha behavior so the actor takes 1000 ms to fade out to zero alpha
+                            addBehavior(
+                                new CAAT.Behavior.AlphaBehavior().
+                                    setFrameTime(scene.time, T).
+                                    setValues( 1, 0 ) );
+
+                    // add the actor.
+                    bg.addChild(actorStar);
+                };
+
+                // set background's mouse handlers.
+                bg.mouseMove= mouseStars;
+                bg.mouseDrag= mouseStars;
+            }
+
+            function __init()   {
+
+                var director = new CAAT.Foundation.Director().
+                        initialize(700,500, document.getElementById('_c1')).
+                        setClear(false);
+
+                new CAAT.Module.Preloader.ImagePreloader().loadImages(
+                    [
+                        {id:'stars',    url:'../demos/demo-resources/img/stars.png'}
+                    ],
+                    function( counter, images ) {
+                        director.setImagesCache(images);
+                        __scene(director);
+                    }
+                );
+
+                CAAT.loop(60);
+            }
+
+            __init();
+        </pre>
+    </div>
 </div>
 
 

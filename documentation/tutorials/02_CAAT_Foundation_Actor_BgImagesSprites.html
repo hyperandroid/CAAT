@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+    <script src="../track.js" type="text/javascript"></script>
+
+
+    <meta charset="UTF-8">
+    <title>CAAT Tutorial 2- Actor Sprite animations</title>
+
+    <script type="text/javascript" src="sh/shCore.js"></script>
+    <script type="text/javascript" src="sh/shBrushJScript.js"></script>
+    <link href="sh/shCore.css" rel="stylesheet" type="text/css"/>
+    <link href="sh/shThemeDefault.css" rel="stylesheet" type="text/css"/>
+
+    <script type="text/javascript" src="menu/menu.js"></script>
+    <script type="text/javascript" src="../../build/caat.js"></script>
+
+    <script type="text/javascript">
+        SyntaxHighlighter.all()
+    </script>
+
+    <link rel="stylesheet" href="style/demo.css">
+
+
+</head>
+
+
+<body>
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="tutorial">
+
+
+
+<div class="chapter">
+    <h1>CAAT.Actor</h1>
+    <h2>Sprites Animation</h2>
+    <p>
+        CAAT offers fine grained sprite animation control with the methods:
+    </p>
+    <p>
+        <li><span class="apicode">addAnimation( name, images_array, time, onAnimationEndCallback )</span></li>
+        <li><span class="apicode">playAnimation( name )</span></li>
+    </p>
+    <p>
+        For example, the following code:
+    </p>
+    <div class="code">
+        <pre class="brush: js; auto-links: false; toolbar: false;">
+        var reset= function(spriteImage, time) {
+            spriteImage.playAnimation("stand");
+        };
+
+        var si= new CAAT.Foundation.SpriteImage().initialize( image, 21, 7).
+                addAnimation("stand",   [123,124,125, 126,127,128,129,130,131,132], 100).
+                addAnimation("fall",    [0,1,2,3,4,5,6,7], 100, reset).
+                addAnimation("wall_ud", [74,75,76, 77,78,79,80,81], 100).
+                addAnimation("wall_lr", [82,83, 84,85,86,87,88,89], 100).
+                addAnimation("tidy",    [42,43,44,45,46,47,48, 49,50], 100, reset).
+                addAnimation("die",     [68,69, 70,71,72,73], 100, reset).
+                addAnimation("jump",    [95,94,93,92,91, 90], 100, reset).
+                addAnimation("run_b",   [96,97, 98,99,100,101,102,103,104, 105,106], 30).
+                addAnimation("run_f",   [122,121,120,119, 118,117,116,115], 30).
+                addAnimation("sad",     [26,27, 28,29,30,31,32,33], 100);
+
+        actor.setBackgroundImage(si).playAnimation("fall");
+        </pre>
+    </div>
+    <p>
+        will create an spriteImage instance with several animations. The animations are defined in this case
+        as indexes into an array of 21x7 elements over the image supplied as parameter.
+        For example, the "fall" animation uses the following animation [0,1,2,3,4,5,6,7] and will rotate
+        among these images every 100 milliseconds. Additionally, when it has ended playing the sequence,
+        the callback function "reset" will be invoked.
+    </p>
+    <p>
+        It is safe to change an animation in the callback function, and should be the preferred way to go.
+    </p>
+    <p>
+        In the sample, we're using <span class="apicode">addAnimation</span> directly on the SpriteImage
+        instance. This is valid since an actor's <span class="apicode">addAnimation</span> and
+        <span class="apicode">playAnimation</span> methods simply delegate the call to their background
+        image SpriteImage instance.
+    </p>
+    <p>
+        It is important to note that a shared SpriteImage object instance via a call to its
+        <span class="apicode">getRef()</span> method, shares the sprite's animations definition with
+        the original SpriteImage object. <span class="important">This
+        means that changing a animation duration or the sprite sequence for an SpriteImage will be changed
+        for all actors sharing that SpriteImage</span>.
+    </p>
+
+    <p>
+        <a href="../demos/demo31/sprites.html">Click here for a complete sprite management example.</a>
+    </p>
+</div>
+
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

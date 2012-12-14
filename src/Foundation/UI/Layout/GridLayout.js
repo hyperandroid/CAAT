@@ -50,7 +50,7 @@ CAAT.Module( {
                     var i = r * ncols + c;
                     if (i < nactors) {
                         var child= container.getChildAt(i);
-                        if ( child.isVisible() && child.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                        if ( !child.preventLayout && child.isVisible() && child.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
                             if ( !this.animated ) {
                                 child.setBounds(x, y, widthOnComponent, heightOnComponent);
                             } else {
@@ -87,7 +87,7 @@ CAAT.Module( {
 
             for ( i= 0; i < nchildren; i+=1 ) {
                 var actor= container.getChildAt(i);
-                if ( actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                if ( !actor.preventLayout && actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
                     var d = actor.getMinimumSize();
                     if (w < d.width) {
                         w = d.width;
@@ -119,7 +119,7 @@ CAAT.Module( {
 
             for ( i= 0; i < nchildren; i+=1 ) {
                 var actor= container.getChildAt(i);
-                if ( actorisVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
+                if ( !actor.preventLayout && actor.isVisible() && actor.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
                     var d = actor.getPreferredSize();
                     if (w < d.width) {
                         w = d.width;

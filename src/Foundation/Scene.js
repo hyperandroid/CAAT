@@ -64,11 +64,11 @@ CAAT.Module({
              * @param director {CAAT.Foundation.Director}
              * @param time {number} scene time the animation is being performed at.
              */
-            animate:function (director, time) {
-                this.timerManager.checkTimers(time);
-                CAAT.Foundation.Scene.superclass.animate.call(this, director, time);
-                this.timerManager.removeExpiredTimers();
-            },
+//            animate:function (director, time) {
+//                this.timerManager.checkTimers(time);
+//                CAAT.Foundation.Scene.superclass.animate.call(this, director, time);
+//                this.timerManager.removeExpiredTimers();
+//            },
             /**
              * Helper method to manage alpha transparency fading on Scene switch by the Director.
              * @param time {number} time in milliseconds the fading will take.
@@ -144,29 +144,37 @@ CAAT.Module({
                     case CAAT.Foundation.Actor.ANCHOR_TOP:
                         if (isIn) {
                             pb.setPath(new CAAT.PathUtil.Path().setLinear(0, -this.height + 1, 0, 0));
+                            this.setPosition(0,-this.height+1);
                         } else {
                             pb.setPath(new CAAT.PathUtil.Path().setLinear(0, 0, 0, -this.height + 1));
+                            this.setPosition(0,0);
                         }
                         break;
                     case CAAT.Foundation.Actor.ANCHOR_BOTTOM:
                         if (isIn) {
                             pb.setPath(new CAAT.PathUtil.Path().setLinear(0, this.height - 1, 0, 0));
+                            this.setPosition(0,this.height-1);
                         } else {
                             pb.setPath(new CAAT.PathUtil.Path().setLinear(0, 0, 0, this.height - 1));
+                            this.setPosition(0,0);
                         }
                         break;
                     case CAAT.Foundation.Actor.ANCHOR_LEFT:
                         if (isIn) {
                             pb.setPath(new CAAT.PathUtil.Path().setLinear(-this.width + 1, 0, 0, 0));
+                            this.setPosition(-this.width+1,0);
                         } else {
                             pb.setPath(new CAAT.PathUtil.Path().setLinear(0, 0, -this.width + 1, 0));
+                            this.setPosition(0,0);
                         }
                         break;
                     case CAAT.Foundation.Actor.ANCHOR_RIGHT:
                         if (isIn) {
                             pb.setPath(new CAAT.PathUtil.Path().setLinear(this.width - 1, 0, 0, 0));
+                            this.setPosition(this.width-1,0);
                         } else {
                             pb.setPath(new CAAT.PathUtil.Path().setLinear(0, 0, this.width - 1, 0));
+                            this.setPosition(0,0);
                         }
                         break;
                 }
@@ -535,7 +543,16 @@ CAAT.Module({
                 }
 
                 return this;
+            },
+
+            getIn : function( out_scene ) {
+
+            },
+
+            goOut : function( in_scene ) {
+
             }
+
         }
     }
 

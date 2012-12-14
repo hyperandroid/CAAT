@@ -79,6 +79,10 @@ CAAT.Module( {
                 this.callback_cancel( this.scene.time, this.scene.time-this.startTime, this );
             }
             return this;
+        },
+        addTime : function( time ) {
+            this.duration+= time;
+            return this;
         }
     }
 });

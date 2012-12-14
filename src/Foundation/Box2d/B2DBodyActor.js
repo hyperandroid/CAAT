@@ -1,7 +1,6 @@
 CAAT.Module({
     defines:"CAAT.Foundation.Box2D.B2DBodyActor",
     depends:[
-        "Lib/Box2dWeb-2.1.a.3.js",
         "CAAT.Foundation.Actor"
     ],
     aliases : ["CAAT.B2DBodyActor"],
@@ -15,7 +14,7 @@ CAAT.Module({
          * @param director
          * @param world
          */
-        CAAT.enableBox2DDebug = function (set, director, world) {
+        CAAT.enableBox2DDebug = function (set, director, world, scale) {
 
             if (set) {
                 var debugDraw = new Box2D.Dynamics.b2DebugDraw();
@@ -28,7 +27,7 @@ CAAT.Module({
                 world.SetDebugDraw(debugDraw);
 
                 debugDraw.SetSprite(director.ctx);
-                debugDraw.SetDrawScale(CAAT.PMR);
+                debugDraw.SetDrawScale(scale || CAAT.PMR);
                 debugDraw.SetFillAlpha(.5);
                 debugDraw.SetLineThickness(1.0);
                 debugDraw.SetFlags(0x0001 | 0x0002);
@@ -200,14 +199,41 @@ CAAT.Module({
              * This method will return box2d body's centroid.
              */
             getCenter:function () {
-                return {x:0, y:0};
+                return this.worldBody.GetPosition();
             },
 
             /**
              * Get a distance joint's position on pixels.
              */
             getDistanceJointLocalAnchor:function () {
-                return {x:0, y:0};
+                return new Box2D.Common.Math.b2Vec2(0,0);
+            },
+
+            /**
+             * Method override to get position and rotation angle from box2d body.
+             * @param director {CAAT.Director}
+             * @param time {number}
+             */
+            animate: function(director, time) {
+
+                var pos= this.worldBody.GetPosition();
+
+                if (this.bodyData.polygonType === CAAT.Foundation.Box2D.B2DPolygonBody.TYPE.EDGE) {
+                    CAAT.Foundation.Actor.prototype.setLocation.call(
+                            this,
+                            CAAT.PMR*pos.x,
+                            CAAT.PMR*pos.y );
+
+                } else {
+                    CAAT.Foundation.Actor.prototype.setLocation.call(
+                            this,
+                            CAAT.PMR*pos.x - this.width/2,
+                            CAAT.PMR*pos.y - this.height/2 );
+                }
+
+                this.setRotation( this.worldBody.GetAngle() );
+
+                return CAAT.Foundation.Box2D.B2DBodyActor.superclass.animate.call(this,director,time);
             }
         }
     }

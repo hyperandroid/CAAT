@@ -49,9 +49,10 @@ CAAT.Module( {
                 if (y > maxy) {
                     maxy = y;
                 }
-
+/*
                 x += bodyData.x || 0;
                 y += bodyData.y || 0;
+                */
                 vec.push(new Box2D.Common.Math.b2Vec2(x / CAAT.PMR, y / CAAT.PMR));
             }
 
@@ -62,18 +63,24 @@ CAAT.Module( {
 
             var bodyDef = new Box2D.Dynamics.b2BodyDef();
             bodyDef.type = bodyData.bodyType;
+            bodyDef.position.Set(
+                ((maxx - minx) / 2 + (bodyData.x || 0)) / CAAT.PMR,
+                ((maxy - miny) / 2 + (bodyData.y || 0)) / CAAT.PMR );
 
             if (bodyData.polygonType === CAAT.Foundation.Box2D.B2DPolygonBody.TYPE.EDGE) {
 
-                fixDef.shape.SetAsEdge(vec[0], vec[1]);
+                var v0= new Box2D.Common.Math.b2Vec2(vec[0].x, vec[0].y );
+                var v1= new Box2D.Common.Math.b2Vec2(vec[1].x-vec[0].x, vec[1].y-vec[0].y );
+
+                bodyDef.position.Set(v0.x, v0.y);
+                fixDef.shape.SetAsEdge(new Box2D.Common.Math.b2Vec2(0,0), v1);
+
 
             } else if (bodyData.polygonType === CAAT.Foundation.Box2D.B2DPolygonBody.TYPE.BOX) {
 
                 fixDef.shape.SetAsBox(
                     (maxx - minx) / 2 / CAAT.PMR,
                     (maxy - miny) / 2 / CAAT.PMR);
-                bodyDef.position.x = ((maxx - minx) / 2 + (bodyData.x || 0)) / CAAT.PMR;
-                bodyDef.position.y = ((maxy - miny) / 2 + (bodyData.y || 0)) / CAAT.PMR;
 
             } else if (bodyData.polygonType === CAAT.Foundation.Box2D.B2DPolygonBody.TYPE.POLYGON ) {
 
@@ -117,42 +124,8 @@ CAAT.Module( {
          */
         getDistanceJointLocalAnchor : function() {
             var b= this.worldBody;
-            var xf= b.m_xf;
-            var poly= b.GetFixtureList().GetShape();
-            return poly.m_centroid;
-        },
-
-        /**
-         * Get this polygon's centroid on screen coordinates.
-         */
-        getCenter : function() {
-            var b= this.worldBody;
-            var xf= b.m_xf;
-            var poly= b.GetFixtureList().GetShape();
-            return Box2D.Common.Math.b2Math.MulX(xf, poly.m_centroid);
-        },
-
-        /**
-         * Method override to get position and rotation angle from box2d body.
-         * @param director {CAAT.Director}
-         * @param time {number}
-         */
-        animate: function(director, time) {
-
-            var b= this.worldBody;
-            var xf= b.m_xf;
-
-            var poly= this.worldBodyFixture.GetShape();
-            if ( poly ) {
-                var v= Box2D.Common.Math.b2Math.MulX(xf, poly.m_centroid);
-                //this.setLocation(
-                CAAT.Foundation.Actor.prototype.setLocation.call( this,
-                        v.x*CAAT.PMR - this.width/2,
-                        v.y*CAAT.PMR - this.height/2 );
-                this.setRotation( b.GetAngle() );
-            }
-            
-            return CAAT.Foundation.Box2D.B2DPolygonBody.superclass.animate.call(this,director,time);
+            var poly= b.GetFixtureList().GetShape().GetLocalCenter();
+            return poly;
         },
 
         /**
@@ -178,7 +151,7 @@ CAAT.Module( {
                 setSize(
                     box2D_data.boundingBox[1].x-box2D_data.boundingBox[0].x+1,
                     box2D_data.boundingBox[1].y-box2D_data.boundingBox[0].y+1 ).
-                setFillStyle( box2D_data.worldBodyFixture.IsSensor() ? 'red' : 'green').
+                setFillStyle( box2D_data.worldBodyFixture.IsSensor() ? '#0f0' : '#f00').
                 setImageTransformation(CAAT.Foundation.SpriteImage.TR_FIXED_TO_SIZE);
 
             return this;

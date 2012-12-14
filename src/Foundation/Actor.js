@@ -136,8 +136,15 @@ CAAT.Module({
             collides:false,
             collidesAsRect:true,
 
+            preventLayout : false,
+
             isAA:true, // is this actor/container Axis aligned ? if so, much faster inverse matrices
             // can be calculated.
+
+            setPreventLayout : function(b) {
+                this.preventLayout= b;
+                return this;
+            },
 
             invalidateLayout:function () {
                 if (this.parent && !this.parent.layoutInvalidated) {
@@ -479,7 +486,11 @@ CAAT.Module({
             setBackgroundImage:function (image, adjust_size_to_image) {
                 if (image) {
                     if (!(image instanceof CAAT.Foundation.SpriteImage)) {
-                        image = new CAAT.Foundation.SpriteImage().initialize(image, 1, 1);
+                        if ( isString(image) ) {
+                            image = new CAAT.Foundation.SpriteImage().initialize(CAAT.currentDirector.getImage(image), 1, 1);
+                        } else {
+                            image = new CAAT.Foundation.SpriteImage().initialize(image, 1, 1);
+                        }
                     } else {
                         image= image.getRef();
                     }
@@ -569,6 +580,7 @@ CAAT.Module({
                 if (this.backgroundImage) {
                     this.backgroundImage.setAnimationEndCallback(f);
                 }
+                return this;
             },
 
             resetAnimationTime:function () {
@@ -1248,6 +1260,9 @@ CAAT.Module({
              * @return null if the point is not inside the Actor. The Actor otherwise.
              */
             findActorAtPosition:function (point) {
+                if (this.scaleX===0 || this.scaleY===0) {
+                    return null;
+                }
                 if (!this.visible || !this.mouseEnabled || !this.isInAnimationFrame(this.time)) {
                     return null;
                 }
@@ -2057,6 +2072,16 @@ CAAT.Module({
 
                 return this;
             },
+            resetAsButton : function() {
+                this.actionPerformed= null;
+                this.mouseEnter=    function() {};
+                this.mouseExit=     function() {};
+                this.mouseDown=     function() {};
+                this.mouseUp=       function() {};
+                this.mouseClick=    function() {};
+                this.mouseDrag=     function() {};
+                return this;
+            },
             /**
              * Set this actor behavior as if it were a Button. The actor size will be set as SpriteImage's
              * single size.
@@ -2196,6 +2221,10 @@ CAAT.Module({
                 };
 
                 return this;
+            },
+
+            findActorById : function(id) {
+                return this.id===id ? this : null;
             }
         }
     }

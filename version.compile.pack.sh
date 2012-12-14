@@ -255,6 +255,8 @@ more ./src/Foundation/Box2D/B2DBodyActor.js >> "${FILE_CAAT_BOX2D}"
 more ./src/Foundation/Box2D/B2DCircularBody.js >> "${FILE_CAAT_BOX2D}"
 more ./src/Foundation/Box2D/B2DPolygonBody.js >> "${FILE_CAAT_BOX2D}"
 
+echo -e "CAAT.ModuleManager.solveAll();" >> "${FILE_CAAT_BOX2D}"
+
 # Distribute resulting compiled files
 #
 echo -e "\nCopying:"

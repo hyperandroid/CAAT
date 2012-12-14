@@ -158,6 +158,7 @@ CAAT.Module( {
          * @return this
          */
         setLinear : function(x0,y0,x1,y1) {
+            this.pathSegments= [];
             this.beginPath(x0,y0);
             this.addLineTo(x1,y1);
             this.endPath();

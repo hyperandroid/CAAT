@@ -52,7 +52,7 @@ CAAT.Module({
                 for (i = 0, l = container.getNumChildren(); i < l; i += 1) {
 
                     actor = container.getChildAt(i);
-                    if (actor.isVisible() && actor.isInAnimationFrame(CAAT.getCurrentSceneTime())) {
+                    if (!actor.preventLayout && actor.isVisible() && actor.isInAnimationFrame(CAAT.getCurrentSceneTime())) {
                         if (computedH < actor.height) {
                             computedH = actor.height;
                         }
@@ -77,7 +77,7 @@ CAAT.Module({
 
                 for (i = 0, l = container.getNumChildren(); i < l; i += 1) {
                     actor = container.getChildAt(i);
-                    if (actor.isVisible() && actor.isInAnimationFrame(CAAT.getCurrentSceneTime())) {
+                    if (!actor.preventLayout && actor.isVisible() && actor.isInAnimationFrame(CAAT.getCurrentSceneTime())) {
                         switch (this.valign) {
                             case CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.TOP:
                                 yoffset = this.padding.top;
@@ -121,7 +121,7 @@ CAAT.Module({
                 for (i = 0, l = container.getNumChildren(); i < l; i += 1) {
 
                     actor = container.getChildAt(i);
-                    if (actor.isVisible() && actor.isInAnimationFrame(CAAT.getCurrentSceneTime())) {
+                    if (!actor.preventLayout && actor.isVisible() && actor.isInAnimationFrame(CAAT.getCurrentSceneTime())) {
                         if (computedW < actor.width) {
                             computedW = actor.width;
                         }
@@ -146,7 +146,7 @@ CAAT.Module({
 
                 for (i = 0, l = container.getNumChildren(); i < l; i += 1) {
                     actor = container.getChildAt(i);
-                    if (actor.isVisible() && actor.isInAnimationFrame(CAAT.getCurrentSceneTime())) {
+                    if (!actor.preventLayout && actor.isVisible() && actor.isInAnimationFrame(CAAT.getCurrentSceneTime())) {
                         switch (this.halign) {
                             case CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.LEFT:
                                 xoffset = this.padding.left;
@@ -175,7 +175,7 @@ CAAT.Module({
                 for (i = 0, l = container.getNumChildren(); i < l; i += 1) {
 
                     var actor = container.getChildAt(i);
-                    if (actor.isVisible() && actor.isInAnimationFrame(CAAT.getCurrentSceneTime())) {
+                    if (!actor.preventLayout && actor.isVisible() && actor.isInAnimationFrame(CAAT.getCurrentSceneTime())) {
                         var ps = actor.getPreferredSize();
 
                         if (computedH < ps.height) {
@@ -200,7 +200,7 @@ CAAT.Module({
                 for (i = 0, l = container.getNumChildren(); i < l; i += 1) {
 
                     var actor = container.getChildAt(i);
-                    if (actor.isVisible() && actor.isInAnimationFrame(CAAT.getCurrentSceneTime())) {
+                    if (!actor.preventLayout && actor.isVisible() && actor.isInAnimationFrame(CAAT.getCurrentSceneTime())) {
                         var ps = actor.getMinimumSize();
 
                         if (computedH < ps.height) {

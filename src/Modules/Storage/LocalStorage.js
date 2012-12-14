@@ -29,9 +29,11 @@ CAAT.Module({
          *
          * @static
          */
-        load : function( key ) {
+        load : function( key, defValue ) {
             try {
-                return JSON.parse(localStorage.getItem( key ));
+                var v= localStorage.getItem( key );
+
+                return null===v ? defValue : JSON.parse(v);
             } catch(e) {
                 return null;
             }

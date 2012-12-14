@@ -33,6 +33,16 @@ CAAT.Module({
                 return this;
             },
 
+            getBehaviorById : function(id) {
+                for( var i=0; i<this.behaviors.length; i++ ) {
+                    if ( this.behaviors[i].id===id ) {
+                        return this.behaviors[i];
+                    }
+                }
+
+                return null;
+            },
+
             /**
              * Adds a new behavior to the container.
              * @param behavior
@@ -100,18 +110,25 @@ CAAT.Module({
             },
 
             setExpired:function (actor, time) {
-                CAAT.Behavior.ContainerBehavior.superclass.setExpired.call(this, actor, time);
+
+                //CAAT.Behavior.ContainerBehavior.superclass.setExpired.call(this, actor, time);
 
                 var bh = this.behaviors;
                 // set for final interpolator value.
                 for (var i = 0; i < bh.length; i++) {
                     var bb = bh[i];
-                    if (/*!bb.expired*/ bb.status !== CAAT.Behavior.BaseBehavior.Status.EXPIRED) {
+                    if ( bb.status !== CAAT.Behavior.BaseBehavior.Status.EXPIRED) {
                         bb.setExpired(actor, time - this.behaviorStartTime);
                     }
                 }
-                // already notified in base class.
-                // this.fireBehaviorExpiredEvent(actor,time);
+
+                /**
+                 * moved here from the beggining of the method.
+                 * allow for expiration observers to reset container behavior and its sub-behaviors
+                 * to redeem.
+                 */
+                CAAT.Behavior.ContainerBehavior.superclass.setExpired.call(this, actor, time);
+
                 return this;
             },
 

@@ -30,6 +30,10 @@ CAAT.Module({
                 this.setAnimationImageIndex([0]);
                 this.mapInfo = {};
                 this.animationsMap= {};
+
+                if ( arguments.length===3 ) {
+                    this.initialize.apply(this, arguments);
+                }
                 return this;
             },
 
@@ -56,6 +60,9 @@ CAAT.Module({
             offsetX:0,
             offsetY:0,
 
+            parentOffsetX:0,    // para especificar una subimagen dentro un textmap.
+            parentOffsetY:0,
+
             ownerActor:null,
 
             mapInfo:null,
@@ -63,6 +70,9 @@ CAAT.Module({
 
             animationsMap : null,
             callback : null,        // on end animation callback
+
+            // pending: refactor -> font scale to a font object.
+            fontScale : 1,
 
             getOwnerActor : function() {
                 return this.ownerActor;
@@ -162,6 +172,11 @@ CAAT.Module({
                 ret.scaleX = this.scaleX;
                 ret.scaleY = this.scaleY;
                 ret.animationsMap= this.animationsMap;
+                ret.parentOffsetX= this.parentOffsetX;
+                ret.parentOffsetY= this.parentOffsetY;
+
+                ret.scaleFont= this.scaleFont;
+
                 return ret;
             },
             /**
@@ -198,14 +213,44 @@ CAAT.Module({
              * @return this
              */
             initialize:function (image, rows, columns) {
-                this.image = image;
+
+                if (!image) {
+                    console.log("Null image for SpriteImage.");
+                }
+
+                if ( isString(image) ) {
+                    image= CAAT.currentDirector.getImage(image);
+                }
+
+                this.parentOffsetX= 0;
+                this.parentOffsetY= 0;
+
                 this.rows = rows;
                 this.columns = columns;
-                this.width = image.width;
-                this.height = image.height;
+
+                if ( image instanceof CAAT.Foundation.SpriteImage || image instanceof CAAT.SpriteImage ) {
+                    this.image =        image.image;
+                    var sihelper= image.mapInfo[0];
+                    this.width= sihelper.width;
+                    this.height= sihelper.height;
+
+                    this.parentOffsetX= sihelper.x;
+                    this.parentOffsetY= sihelper.y;
+
+                    this.width= image.mapInfo[0].width;
+                    this.height= image.mapInfo[0].height;
+
+
+                } else {
+                    this.image = image;
+                    this.width = image.width;
+                    this.height = image.height;
+                    this.mapInfo = {};
+
+                }
+
                 this.singleWidth = Math.floor(this.width / columns);
                 this.singleHeight = Math.floor(this.height / rows);
-                this.mapInfo = {};
 
                 var i, sx0, sy0;
                 var helper;
@@ -253,8 +298,8 @@ CAAT.Module({
 
                 } else {
                     for (i = 0; i < rows * columns; i++) {
-                        sx0 = ((i % this.columns) | 0) * this.singleWidth;
-                        sy0 = ((i / this.columns) | 0) * this.singleHeight;
+                        sx0 = ((i % this.columns) | 0) * this.singleWidth + this.parentOffsetX;
+                        sy0 = ((i / this.columns) | 0) * this.singleHeight + this.parentOffsetY;
 
                         helper = new CAAT.Foundation.SpriteImageHelper(sx0, sy0, this.singleWidth, this.singleHeight, image.width, image.height);
                         this.mapInfo[i] = helper;
@@ -421,6 +466,19 @@ CAAT.Module({
 
                 return this;
             },
+            paintAtRect:function (director, time, x, y, w, h) {
+
+                var el = this.mapInfo[this.spriteIndex];
+
+                director.ctx.drawImage(
+                    this.image,
+                    el.x, el.y,
+                    el.width, el.height,
+                    (this.offsetX + x) >> 0, (this.offsetY + y) >> 0,
+                    w, h);
+
+                return this;
+            },
             /**
              * Draws the subimage pointed by imageIndex.
              * @param director {CAAT.Foundation.Director}
@@ -482,8 +540,8 @@ CAAT.Module({
             getCurrentSpriteImageCSSPosition:function () {
                 var el = this.mapInfo[this.spriteIndex];
 
-                var x = -(el.x - this.offsetX);
-                var y = -(el.y - this.offsetY);
+                var x = -(el.x + this.parentOffsetX - this.offsetX);
+                var y = -(el.y + this.parentOffsetY - this.offsetY);
 
                 return '' + x + 'px ' +
                     y + 'px ' +
@@ -691,10 +749,10 @@ CAAT.Module({
                     var value = map[key];
 
                     helper = new CAAT.Foundation.SpriteImageHelper(
-                        value.x,
-                        value.y,
-                        value.width,
-                        value.height,
+                        parseFloat(value.x) + this.parentOffsetX,
+                        parseFloat(value.y) + this.parentOffsetY,
+                        parseFloat(value.width),
+                        parseFloat(value.height),
                         image.width,
                         image.height
                     );
@@ -728,10 +786,10 @@ CAAT.Module({
              */
             addElement : function( key, value ) {
                 var helper = new CAAT.Foundation.SpriteImageHelper(
-                    value.x,
-                    value.y,
-                    value.width,
-                    value.height,
+                    parseFloat(value.x) + this.parentOffsetX,
+                    parseFloat(value.y) + this.parentOffsetY,
+                    parseFloat(value.width),
+                    parseFloat(value.height),
                     this.image.width,
                     this.image.height );
 
@@ -770,10 +828,10 @@ CAAT.Module({
                     var value = map[key];
 
                     helper = new CAAT.Foundation.SpriteImageHelper(
-                        value.x,
-                        value.y,
-                        value.width,
-                        value.height,
+                        parseFloat(value.x) + this.parentOffsetX,
+                        parseFloat(value.y) + this.parentOffsetX,
+                        parseFloat(value.width),
+                        parseFloat(value.height),
                         image.width,
                         image.height
                     );
@@ -807,9 +865,9 @@ CAAT.Module({
                     var value = chars[i];
 
                     helper = new CAAT.Foundation.SpriteImageHelper(
-                        x,
-                        0,
-                        value.width,
+                        parseFloat(x) + this.parentOffsetX,
+                        0 + this.parentOffsetY,
+                        parseFloat(value.width),
                         image.height,
                         image.width,
                         image.height
@@ -862,7 +920,7 @@ CAAT.Module({
                 for (i = 0, l = str.length; i < l; i++) {
                     charInfo = this.mapInfo[ str.charAt(i) ];
                     if (charInfo) {
-                        w += charInfo.xadvance;
+                        w += charInfo.xadvance * this.fontScale;
                     }
                 }
 
@@ -871,7 +929,7 @@ CAAT.Module({
 
             stringHeight:function () {
                 if (this.fontHeight) {
-                    return this.fontHeight;
+                    return this.fontHeight * this.fontScale;
                 }
 
                 var y = 0;
@@ -885,7 +943,7 @@ CAAT.Module({
                 }
 
                 this.fontHeight = y;
-                return this.fontHeight;
+                return this.fontHeight * this.fontScale;
             },
 
             drawText:function (str, ctx, x, y) {
@@ -900,14 +958,23 @@ CAAT.Module({
                             charInfo.x, charInfo.y,
                             w, charInfo.height,
 
-                            x + charInfo.xoffset, y + charInfo.yoffset,
-                            w, charInfo.height);
+                            x + charInfo.xoffset* this.fontScale, y + charInfo.yoffset* this.fontScale,
+                            w* this.fontScale, charInfo.height* this.fontScale);
 
-                        x += charInfo.xadvance;
+                        x += charInfo.xadvance* this.fontScale;
                     }
                 }
-            }
+            },
 
+            getFontData : function() {
+                var as= (this.stringHeight() *.8)>>0;
+                return {
+                    height : this.stringHeight(),
+                    ascent : as,
+                    descent: this.stringHeight() - as
+                };
+
+            }
 
         }
     }

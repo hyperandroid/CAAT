@@ -153,11 +153,11 @@ CAAT.Module({
              * @param director {CAAT.Director} a CAAT.Director instance.
              * @param time {number} an integer indicating the Scene time the animation is being performed at.
              */
-            animate:function (director, time) {
-                this.checkTimers(time);
-                CAAT.Scene.superclass.animate.call(this, director, time);
-                this.removeExpiredTimers();
-            },
+//            animate:function (director, time) {
+//                this.checkTimers(time);
+//                CAAT.Scene.superclass.animate.call(this, director, time);
+//                this.removeExpiredTimers();
+//            },
             /**
              * Helper method to manage alpha transparency fading on Scene switch by the Director.
              * @param time {number} integer indicating the time in milliseconds the fading will take.
@@ -509,6 +509,14 @@ CAAT.Module({
              * @param time
              */
             paint:function (director, time) {
+            },
+
+            getIn : function( out_scene ) {
+
+            },
+
+            goOut : function( in_scene ) {
+
             }
         }
     }

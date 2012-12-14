@@ -412,8 +412,9 @@ CAAT.Module({
             findActorById:function (id) {
                 var cl = this.childrenList;
                 for (var i = 0, l = cl.length; i < l; i++) {
-                    if (cl[i].id === id) {
-                        return cl[i];
+                    var ret= cl[i].findActorById(id);
+                    if (null!=ret) {
+                        return ret;
                     }
                 }
 

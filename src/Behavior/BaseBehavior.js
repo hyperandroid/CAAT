@@ -166,6 +166,7 @@ CAAT.Module({
                 this.behaviorDuration = duration;
                 this.status =CAAT.Behavior.BaseBehavior.Status.NOT_STARTED;
                 this.solved = false;
+                this.expired = false;
 
                 return this;
 

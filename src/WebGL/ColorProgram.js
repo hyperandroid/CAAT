@@ -2,6 +2,9 @@ CAAT.Module( {
     defines : "CAAT.WebGL.ColorProgram",
     aliases : ["CAAT.ColorProgram"],
     extendsClass : "CAAT.WebGL.Program",
+    depends : [
+        "CAAT.WebGL.Program"
+    ],
     extendsWith : {
         __init : function(gl) {
             this.__super(gl);

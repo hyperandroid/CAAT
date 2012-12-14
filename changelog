@@ -1,3 +1,13 @@
+* 12/13/2012 0.5 Build 40 *
+---------------------------
+
+* SpriteImage now can set subImages as director images. Useful if packing textures.
+* Changed scene timers semantics. Now they're not processed during animation stage, but independently from that.
+  This prevents some strange glitches when EASE Translating scenes in/out where behaviors where not applied until
+  next frame. Now this is fixed.
+* Fixed odd bug with ContainerBehavior. Now you can safely setDelayTime on a container during expiration callback
+  process.
+
 * 11/24/2012 0.5 Build 23 *
 ---------------------------
 

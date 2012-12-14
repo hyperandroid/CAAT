@@ -75,6 +75,7 @@ CAAT.Module({
                 this.touches = {};
 
                 this.timerManager = new CAAT.Foundation.Timer.TimerManager();
+                this.__map= {};
 
                 return this;
             },
@@ -166,6 +167,8 @@ CAAT.Module({
 
             SCREEN_RATIO : 1,    // retina display deicePixels/backingStorePixels ratio
 
+            __map : null,
+
             clean:function () {
                 this.scenes = null;
                 this.currentScene = null;
@@ -183,9 +186,19 @@ CAAT.Module({
                 this.dirtyRectsEnabled = false;
                 this.nDirtyRects = 0;
                 this.onResizeCallback = null;
+                this.__map= {};
                 return this;
             },
 
+            setValueForKey : function( key, value ) {
+                this.__map[key]= value;
+                return this;
+            },
+
+            getValueForKey : function( key ) {
+                return this.__map[key];
+                return this;
+            },
 
             createTimer:function (startTime, duration, callback_timeout, callback_tick, callback_cancel) {
                 this.timerManager.createTimer(startTime, duration, callback_timeout, callback_tick, callback_cancel);
@@ -201,7 +214,7 @@ CAAT.Module({
             },
 
             checkDebug:function () {
-                if (CAAT.DEBUG) {
+                if (!navigator.isCocoonJS && CAAT.DEBUG) {
                     var dd = new CAAT.Module.Debug.Debug().initialize(this.width, 60);
                     this.debugInfo = dd.debugInfo.bind(dd);
                 }
@@ -289,11 +302,11 @@ CAAT.Module({
                     // Source: http://www.html5rocks.com/en/tutorials/canvas/hidpi/
                     //
                     var devicePixelRatio= CAAT.Module.Runtime.BrowserInfo.DevicePixelRatio;
-                    var backingStoreRatio = this.ctx.webkitBackingStorePixelRatio || /* maybe more prefixes to come...
+                    var backingStoreRatio = this.ctx.webkitBackingStorePixelRatio ||
                                             this.ctx.mozBackingStorePixelRatio ||
                                             this.ctx.msBackingStorePixelRatio ||
                                             this.ctx.oBackingStorePixelRatio ||
-                                            this.ctx.backingStorePixelRatio || */
+                                            this.ctx.backingStorePixelRatio ||
                                             1;
 
                     var ratio = devicePixelRatio / backingStoreRatio;
@@ -337,8 +350,13 @@ CAAT.Module({
 
                 CAAT.Foundation.Director.superclass.setBounds.call(this, x, y, w, h);
 
-                this.canvas.width = w;
-                this.canvas.height = h;
+                if ( this.canvas.width!==w ) {
+                    this.canvas.width = w;
+                }
+
+                if ( this.canvas.height!==h ) {
+                    this.canvas.height = h;
+                }
 
                 this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d');
 
@@ -671,9 +689,19 @@ CAAT.Module({
 
                 this.time += time;
 
+                for (i = 0, l = this.childrenList.length; i < l; i++) {
+                    var c = this.childrenList[i];
+                    if (c.isInAnimationFrame(this.time) && !c.isPaused()) {
+                        var tt = c.time - c.start_time;
+                        c.timerManager.checkTimers(tt);
+                        c.timerManager.removeExpiredTimers();
+                    }
+                }
+
+
                 this.animate(this, this.time);
 
-                if (CAAT.DEBUG) {
+                if (!navigator.isCocoonJS && CAAT.DEBUG) {
                     this.resetStats();
                 }
 
@@ -706,7 +734,7 @@ CAAT.Module({
                                 c.time += time;
                             }
 
-                            if (CAAT.DEBUG) {
+                            if (!navigator.isCocoonJS && CAAT.DEBUG) {
                                 this.statistics.size_total += c.size_total;
                                 this.statistics.size_active += c.size_active;
                             }
@@ -779,7 +807,7 @@ CAAT.Module({
                                 c.time += time;
                             }
 
-                            if (CAAT.DEBUG) {
+                            if (!navigator.isCocoonJS && CAAT.DEBUG) {
                                 this.statistics.size_total += c.size_total;
                                 this.statistics.size_active += c.size_active;
                                 this.statistics.size_dirtyRects = this.nDirtyRects;
@@ -788,7 +816,7 @@ CAAT.Module({
                         }
                     }
 
-                    if (this.nDirtyRects > 0 && CAAT.DEBUG && CAAT.DEBUG_DIRTYRECTS) {
+                    if (this.nDirtyRects > 0 && (!navigator.isCocoonJS && CAAT.DEBUG) && CAAT.DEBUG_DIRTYRECTS) {
                         ctx.beginPath();
                         this.nDirtyRects = 0;
                         var dr = this.cDirtyRects;
@@ -1144,6 +1172,9 @@ CAAT.Module({
 
                 this.childrenList = [];
 
+                sout.goOut(ssin);
+                ssin.getIn(sout);
+
                 this.addChild(sout);
                 this.addChild(ssin);
             },
@@ -1277,6 +1308,7 @@ CAAT.Module({
                 sin.setLocation(0, 0);
                 sin.alpha = 1;
 
+                sin.getIn();
                 sin.activated();
             },
             /**
@@ -1449,6 +1481,12 @@ CAAT.Module({
                 }
 
                 return null;
+            },
+            musicPlay: function(id) {
+                this.audioManager.playMusic(id);
+            },
+            musicStop : function() {
+                this.audioManager.stopMusic();
             },
             /**
              * Adds an audio to the cache.
@@ -2593,8 +2631,17 @@ CAAT.Module({
                  */
                 var i, l, tt;
 
-                if (CAAT.DEBUG) {
+                if (!navigator.isCocoonJS && CAAT.DEBUG) {
                     this.resetStats();
+                }
+
+                for (i = 0, l = this.childrenList.length; i < l; i++) {
+                    var c = this.childrenList[i];
+                    if (c.isInAnimationFrame(this.time) && !c.isPaused()) {
+                        tt = c.time - c.start_time;
+                        c.timerManager.checkTimers(tt);
+                        c.timerManager.removeExpiredTimers();
+                    }
                 }
 
                 for (i = 0, l = this.childrenList.length; i < l; i++) {
@@ -2615,7 +2662,7 @@ CAAT.Module({
                             c.time += time;
                         }
 
-                        if (CAAT.DEBUG) {
+                        if (!navigator.isCocoonJS && CAAT.DEBUG) {
                             this.statistics.size_discarded_by_dirtyRects += this.drDiscarded;
                             this.statistics.size_total += c.size_total;
                             this.statistics.size_active += c.size_active;

@@ -227,6 +227,7 @@ CAAT.Module( {
 
         centerAt : function(x,y) {
             this.textAlign="left";
+            this.textBaseline="top";
             return CAAT.Foundation.UI.TextActor.superclass.centerAt.call( this, x, y );
         },
 
@@ -254,14 +255,15 @@ CAAT.Module( {
                 this.textHeight=this.font.stringHeight();
                 this.width= this.textWidth;
                 this.height= this.textHeight;
-
+                this.fontData= this.font.getFontData();
+/*
                 var as= (this.font.singleHeight *.8)>>0;
                 this.fontData= {
                     height : this.font.singleHeight,
                     ascent : as,
                     descent: this.font.singleHeight - as
                 };
-
+*/
                 return this;
             }
 
@@ -317,6 +319,10 @@ CAAT.Module( {
          * @param time an integer with the Scene time the Actor is being drawn.
          */
 		paint : function(director, time) {
+
+            if (!this.text) {
+                return;
+            }
 
             CAAT.Foundation.UI.TextActor.superclass.paint.call(this, director, time );
 

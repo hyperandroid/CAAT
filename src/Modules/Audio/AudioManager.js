@@ -16,6 +16,7 @@ CAAT.Module({
                 return this;
             },
 
+            musicChannel: null,
             browserInfo:null,
             musicEnabled:true,
             fxEnabled:true,
@@ -45,7 +46,7 @@ CAAT.Module({
                 this.channels = [];
                 this.workingChannels = [];
 
-                for (var i = 0; i < numChannels; i++) {
+                for (var i = 0; i <= numChannels; i++) {
                     var channel = document.createElement('audio');
 
                     if (null !== channel) {
@@ -78,6 +79,8 @@ CAAT.Module({
                         );
                     }
                 }
+
+                this.musicChannel= this.channels.pop();
 
                 return this;
             },
@@ -241,6 +244,43 @@ CAAT.Module({
                 return null;
             },
 
+            stopMusic : function() {
+                this.musicChannel.pause();
+            },
+
+            playMusic : function(id) {
+                if (!this.musicEnabled) {
+                    return this;
+                }
+
+                var audio_in_cache = this.getAudio(id);
+                // existe el audio, y ademas hay un canal de audio disponible.
+                if (null !== audio_in_cache) {
+                    var audio =this.musicChannel;
+                    if (null !== audio) {
+                        audio.src = audio_in_cache.src;
+                        audio.preload = "auto";
+
+                        if (this.browserInfo.browser === 'Firefox') {
+                            audio.addEventListener(
+                                'ended',
+                                // on sound end, set channel to available channels list.
+                                function (audioEvent) {
+                                    var target = audioEvent.target;
+                                    target.currentTime = 0;
+                                },
+                                false
+                            );
+                        } else {
+                            audio.loop = true;
+                        }
+                        audio.load();
+                        audio.play();
+                        return audio;
+                    }
+                }
+            },
+
             /**
              * Set an audio object volume.
              * @param id {object} an audio Id
@@ -345,17 +385,12 @@ CAAT.Module({
                     this.loopingChannels[i].pause();
                 }
 
+                this.stopMusic();
+
                 return this;
             },
             setSoundEffectsEnabled:function (enable) {
                 this.fxEnabled = enable;
-                return this;
-            },
-            isSoundEffectsEnabled:function () {
-                return this.fxEnabled;
-            },
-            setMusicEnabled:function (enable) {
-                this.musicEnabled = enable;
                 for (var i = 0; i < this.loopingChannels.length; i++) {
                     if (enable) {
                         this.loopingChannels[i].play();
@@ -363,6 +398,14 @@ CAAT.Module({
                         this.loopingChannels[i].pause();
                     }
                 }
+                return this;
+            },
+            isSoundEffectsEnabled:function () {
+                return this.fxEnabled;
+            },
+            setMusicEnabled:function (enable) {
+                this.musicEnabled = enable;
+                this.stopMusic();
                 return this;
             },
             isMusicEnabled:function () {
