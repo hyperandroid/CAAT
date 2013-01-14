@@ -201,8 +201,7 @@ CAAT.Module({
             },
 
             createTimer:function (startTime, duration, callback_timeout, callback_tick, callback_cancel) {
-                this.timerManager.createTimer(startTime, duration, callback_timeout, callback_tick, callback_cancel);
-                return this;
+                return this.timerManager.createTimer(startTime, duration, callback_timeout, callback_tick, callback_cancel, this);
             },
 
             requestRepaint:function () {
@@ -1429,6 +1428,14 @@ CAAT.Module({
             getScene:function (index) {
                 return this.scenes[index];
             },
+            getSceneById : function(id) {
+                for( var i=0; i<this.scenes.length; i++ ) {
+                    if (this.scenes[i].id===id) {
+                        return this.scenes[i];
+                    }
+                }
+                return null;
+            },
             /**
              * Return the index of the current scene in the Director's scene list.
              * @return {number} the current scene's index.
@@ -1483,7 +1490,7 @@ CAAT.Module({
                 return null;
             },
             musicPlay: function(id) {
-                this.audioManager.playMusic(id);
+                return this.audioManager.playMusic(id);
             },
             musicStop : function() {
                 this.audioManager.stopMusic();
@@ -1503,7 +1510,7 @@ CAAT.Module({
              * @param id {object} the object used to store a sound in the audioCache.
              */
             audioPlay:function (id) {
-                this.audioManager.play(id);
+                return this.audioManager.play(id);
             },
             /**
              * Loops an audio instance identified by the id.
@@ -1829,7 +1836,7 @@ CAAT.Module({
 
                 // drag
 
-                if (this.isMouseDown && null !== this.lastSelectedActor) {
+                if (this.isMouseDown && null!==this.lastSelectedActor) {
 
                     lactor = this.lastSelectedActor;
                     pos = lactor.viewToModel(
@@ -1837,7 +1844,7 @@ CAAT.Module({
 
                     // check for mouse move threshold.
                     if (!this.dragging) {
-                        if (Math.abs(this.prevMousePoint.x - pos.x) < CAAT.DRAG_THRESHOLD_X &&
+                        if (Math.abs(this.prevMousePoint.x - pos.x) < CAAT.DRAG_THRESHOLD_X ||
                             Math.abs(this.prevMousePoint.y - pos.y) < CAAT.DRAG_THRESHOLD_Y) {
                             return;
                         }

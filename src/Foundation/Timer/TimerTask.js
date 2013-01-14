@@ -9,7 +9,8 @@ CAAT.Module( {
         callback_tick:      null,
         callback_cancel:    null,
 
-        scene:              null,
+        owner:              null,   // TimerManager instance
+        scene:              null,   // scene or director instance
         taskId:             0,
         remove:             false,
 
@@ -57,6 +58,9 @@ CAAT.Module( {
             }
             return this;
         },
+        remainingTime : function() {
+            return this.duration - (this.scene.time-this.startTime);
+        },
         /**
          * Reschedules this TimerTask by changing its startTime to current scene's time.
          * @param time {number} an integer indicating scene time.
@@ -65,7 +69,7 @@ CAAT.Module( {
         reset : function( time ) {
             this.remove= false;
             this.startTime=  time;
-            this.scene.ensureTimerTask(this);
+            this.owner.ensureTimerTask(this);
             return this;
         },
         /**

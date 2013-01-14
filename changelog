@@ -1,3 +1,9 @@
+* Fixed Safari and MOMA bug. Now loads modules correctly. Thanks for being so picky.
+* Fixed Actor.centerAt. Now takes into consideration positional anchor.
+* Director.createTimer function now returns the created CAAT.Foundation.Timer.TimerTask object.
+* Forced Box2D objects to keep their position anchor in the middle.
+* Added ResourceBundle module. Allows for control of localized strings.
+
 * 12/13/2012 0.5 Build 46 *
 ---------------------------
 
@@ -23,7 +29,7 @@
   deprecated constant values have been removed, more concretely: prototype constants from: CAAT.SpriteImage,
   CAAT.Actor, CAAT.ActorContainer, CAAT.Scene and CAAT.Director have been removed.
 
-  A new structure based on a ModuleManager has been imposed which exposes more apropriately CAAT's structure and
+  A new structure based on a ModuleManager has been imposed which exposes more appropriately CAAT's structure and
   allows for better maintainbility. This module manager takes care of Class definition and extensibility, solves
   deep circular dependencies, loads libraries and modules, etc.
 

@@ -250,7 +250,7 @@ CAAT.Module({
 
             playMusic : function(id) {
                 if (!this.musicEnabled) {
-                    return this;
+                    return null;
                 }
 
                 var audio_in_cache = this.getAudio(id);
@@ -279,6 +279,8 @@ CAAT.Module({
                         return audio;
                     }
                 }
+
+                return null;
             },
 
             /**
@@ -302,11 +304,11 @@ CAAT.Module({
              * The playing sound will occupy a sound channel and when ends playing will leave
              * the channel free for any other sound to be played in.
              * @param id {object} an object identifying a sound in the sound cache.
-             * @return this.
+             * @return {(Audio|HTMLAudioElement)}
              */
             play:function (id) {
                 if (!this.fxEnabled) {
-                    return this;
+                    return null;
                 }
 
                 var audio = this.getAudio(id);
@@ -320,7 +322,7 @@ CAAT.Module({
                     this.workingChannels.push(channel);
                 }
 
-                return this;
+                return audio;
             },
             /**
              * This method creates a new AudioChannel to loop the sound with.
@@ -335,7 +337,7 @@ CAAT.Module({
             loop:function (id) {
 
                 if (!this.musicEnabled) {
-                    return this;
+                    return null;
                 }
 
                 var audio_in_cache = this.getAudio(id);

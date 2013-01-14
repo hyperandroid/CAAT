@@ -197,7 +197,7 @@
                 this.world = new Box2D.Dynamics.b2World(gravity, doSleep);
                 this.world.SetContinuousPhysics(true);
 
-CAAT.enableBox2DDebug( true, director, this.world );
+                CAAT.enableBox2DDebug( true, director, this.world );
 
                 for( i=0; i<4; i++ )    {
                     var actor0= new CAAT.Foundation.Box2D.B2DPolygonBody().createBody(
@@ -348,7 +348,7 @@ CAAT.enableBox2DDebug( true, director, this.world );
                                                 restitution:    .7,
                                                 friction:       .3,
                                                 tolerance:      .1,
-                                                polygonScale:   1,
+                                                polygonScale:.5+Math.random() *.5,
                                                 polygonDef:     [
                                                     {x:-17.6, y:13.2},
                                                     {x:-28.5, y:0.8},

@@ -55,7 +55,11 @@ CAAT.Module({
             },
 
             createTimer:function (startTime, duration, callback_timeout, callback_tick, callback_cancel) {
-                return this.timerManager.createTimer(startTime, duration, callback_timeout, callback_tick, callback_cancel);
+                return this.timerManager.createTimer(startTime, duration, callback_timeout, callback_tick, callback_cancel, this);
+            },
+
+            setTimeout:function (duration, callback_timeout, callback_tick, callback_cancel) {
+                return this.timerManager.createTimer(this.time, duration, callback_timeout, callback_tick, callback_cancel, this);
             },
 
             /**
@@ -71,7 +75,7 @@ CAAT.Module({
 //            },
             /**
              * Helper method to manage alpha transparency fading on Scene switch by the Director.
-             * @param time {number} time in milliseconds the fading will take.
+             * @param time {number} time in milliseconds then fading will taableIne.
              * @param isIn {boolean} whether this Scene is being brought in.
              *
              * @private
