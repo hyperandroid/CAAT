@@ -40,7 +40,7 @@ CAAT.Module({
 
             animationImageIndex:null, // an Array defining the sprite frame sequence
             prevAnimationTime:-1,
-            changeFPS:1000, // how much Scene time to take before changing an Sprite frame.
+            animationTimeDelta:1000, // how much Scene time to take before changing an Sprite frame.
             transformation:0, // any of the TR_* constants.
             spriteIndex:0, // the current sprite frame
             prevIndex:0,    // current index of sprite frames array.
@@ -117,7 +117,7 @@ CAAT.Module({
                 this.currentAnimation= name;
 
                 this.setAnimationImageIndex( animation.animation );
-                this.changeFPS= animation.time;
+                this.animationTimeDelta= animation.time;
                 this.callback= animation.onEndPlayCallback;
 
                 return this;
@@ -617,9 +617,18 @@ CAAT.Module({
              * Set the elapsed time needed to change the image index.
              * @param fps an integer indicating the time in milliseconds to change.
              * @return this
+             * @deprecated
              */
             setChangeFPS:function (fps) {
-                this.changeFPS = fps;
+                return this.setAnimationSpeed(fps);
+            },
+            /**
+             * Set the time between two frames of the animation (i.e., time needed to change the image index).
+             * @param timeDelta an integer indicating the time delta between frames in milliseconds.
+             * @return this
+             */
+            setAnimationSpeed:function(timeDelta) {
+                this.animationTimeDelta = timeDelta;
                 return this;
             },
             /**
@@ -709,7 +718,7 @@ CAAT.Module({
                     else {
                         var ttime = time;
                         ttime -= this.prevAnimationTime;
-                        ttime /= this.changeFPS;
+                        ttime /= this.animationTimeDelta;
                         ttime %= this.animationImageIndex.length;
                         var idx = Math.floor(ttime);
 //                    if ( this.spriteIndex!==idx ) {
