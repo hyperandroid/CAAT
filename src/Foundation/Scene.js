@@ -71,7 +71,7 @@ CAAT.Module({
 //            },
             /**
              * Helper method to manage alpha transparency fading on Scene switch by the Director.
-             * @param time {number} time in milliseconds the fading will take.
+             * @param time {number} time in milliseconds then fading will taableIne.
              * @param isIn {boolean} whether this Scene is being brought in.
              *
              * @private

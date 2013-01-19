@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.5 build: 47
+Version: 0.5 build: 55
 
 Created on:
-DATE: 2012-12-13
-TIME: 21:30:46
+DATE: 2013-01-19
+TIME: 22:53:06
 */
 
 
@@ -3682,9 +3682,16 @@ CAAT.Module({
  *
  **/
 
+/**
+ * @class
+ */
 CAAT.Module({
     defines:        "CAAT.Behavior.BaseBehavior",
     constants:      {
+
+        /**
+         * @enum
+         */
         Status: {
             NOT_STARTED: 0,
             STARTED:    1,
@@ -3697,6 +3704,7 @@ CAAT.Module({
         var DefaultInterpolator=    new CAAT.Behavior.Interpolator().createLinearInterpolator(false);
         var DefaultInterpolatorPP=  new CAAT.Behavior.Interpolator().createLinearInterpolator(true);
 
+        /** @lends CAAT.Behavior.BaseBehavior.prototype */
         return {
             /**
              * Behavior base class.
@@ -3737,7 +3745,7 @@ CAAT.Module({
              * <p>
              * Other Behaviors simply must supply with the method <code>setForTime(time, actor)</code> overriden.
              *
-             * @constructor
+             *
              */
             __init:function () {
                 this.lifecycleListenerList = [];
@@ -3764,6 +3772,7 @@ CAAT.Module({
 
             discardable:false, // is true, this behavior will be removed from the this.actor instance when it expires.
 
+            /*  @memberOf CAAT.Behavior.BaseBehavior */
             setValueApplication:function (apply) {
                 this.doValueApplication = apply;
                 return this;
@@ -12871,8 +12880,16 @@ CAAT.Module( {
 
         doLayout : function( container ) {
 
-            var nactors= container.getNumChildren();
-            if (nactors === 0) {
+            var actors= [];
+            for( var i=0; i<container.getNumChildren(); i++ ) {
+                var child= container.getChildAt(i);
+                if (!child.preventLayout && child.isVisible() && child.isInAnimationFrame( CAAT.getCurrentSceneTime()) ) {
+                    actors.push(child);
+                }
+            }
+            var nactors= actors.length;
+
+            if (nactors.length=== 0) {
                 return;
             }
 
@@ -12898,20 +12915,31 @@ CAAT.Module( {
             for (var c = 0, x = this.padding.left + extraWidthAvailable; c < ncols ; c++, x += widthOnComponent + this.hgap) {
                 for (var r = 0, y = this.padding.top + extraHeightAvailable; r < nrows ; r++, y += heightOnComponent + this.vgap) {
                     var i = r * ncols + c;
-                    if (i < nactors) {
-                        var child= container.getChildAt(i);
+                    if (i < actors.length) {
+                        var child= actors[i];
                         if ( !child.preventLayout && child.isVisible() && child.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
                             if ( !this.animated ) {
-                                child.setBounds(x, y, widthOnComponent, heightOnComponent);
+                                child.setBounds(
+                                    x + (widthOnComponent-child.width)/2,
+                                    y,
+                                    widthOnComponent,
+                                    heightOnComponent);
                             } else {
                                 if ( child.width!==widthOnComponent || child.height!==heightOnComponent ) {
                                     child.setSize(widthOnComponent, heightOnComponent);
                                     if ( this.newChildren.indexOf( child ) !==-1 ) {
-                                        child.setPosition( x,y );
+                                        child.setPosition(
+                                            x + (widthOnComponent-child.width)/2,
+                                            y );
                                         child.setScale(0.01,0.01);
                                         child.scaleTo( 1,1, 500, 0,.5,.5, this.newElementInterpolator );
                                     } else {
-                                        child.moveTo( x, y, 500, 0, this.moveElementInterpolator );
+                                        child.moveTo(
+                                            x + (widthOnComponent-child.width)/2,
+                                            y,
+                                            500,
+                                            0,
+                                            this.moveElementInterpolator );
                                     }
                                 }
                             }
@@ -13080,7 +13108,7 @@ CAAT.Module({
 
             animationImageIndex:null, // an Array defining the sprite frame sequence
             prevAnimationTime:-1,
-            changeFPS:1000, // how much Scene time to take before changing an Sprite frame.
+            animationTimeDelta:1000, // how much Scene time to take before changing an Sprite frame.
             transformation:0, // any of the TR_* constants.
             spriteIndex:0, // the current sprite frame
             prevIndex:0,    // current index of sprite frames array.
@@ -13157,7 +13185,7 @@ CAAT.Module({
                 this.currentAnimation= name;
 
                 this.setAnimationImageIndex( animation.animation );
-                this.changeFPS= animation.time;
+                this.animationTimeDelta= animation.time;
                 this.callback= animation.onEndPlayCallback;
 
                 return this;
@@ -13657,9 +13685,18 @@ CAAT.Module({
              * Set the elapsed time needed to change the image index.
              * @param fps an integer indicating the time in milliseconds to change.
              * @return this
+             * @deprecated
              */
             setChangeFPS:function (fps) {
-                this.changeFPS = fps;
+                return this.setAnimationSpeed(fps);
+            },
+            /**
+             * Set the time between two frames of the animation (i.e., time needed to change the image index).
+             * @param timeDelta an integer indicating the time delta between frames in milliseconds.
+             * @return this
+             */
+            setAnimationSpeed:function(timeDelta) {
+                this.animationTimeDelta = timeDelta;
                 return this;
             },
             /**
@@ -13749,7 +13786,7 @@ CAAT.Module({
                     else {
                         var ttime = time;
                         ttime -= this.prevAnimationTime;
-                        ttime /= this.changeFPS;
+                        ttime /= this.animationTimeDelta;
                         ttime %= this.animationImageIndex.length;
                         var idx = Math.floor(ttime);
 //                    if ( this.spriteIndex!==idx ) {
@@ -14651,7 +14688,9 @@ CAAT.Module({
              * @return this
              */
             centerAt:function (x, y) {
-                this.setPosition(x - this.width / 2, y - this.height / 2);
+                this.setPosition(
+                    x - this.width * (.5 - this.tAnchorX ),
+                    y - this.height * (.5 - this.tAnchorY ) );
                 return this;
             },
             /**
@@ -16361,7 +16400,7 @@ CAAT.Module({
                     return;
                 }
 
-                var cl = this.childrenList;
+                var cl = this.activeChildren;
                 for (var i = 0; i < cl.length; i++) {
                     cl[i].drawScreenBoundingBox(director, time);
                 }
@@ -16919,7 +16958,7 @@ CAAT.Module({
 //            },
             /**
              * Helper method to manage alpha transparency fading on Scene switch by the Director.
-             * @param time {number} time in milliseconds the fading will take.
+             * @param time {number} time in milliseconds then fading will taableIne.
              * @param isIn {boolean} whether this Scene is being brought in.
              *
              * @private
@@ -17609,8 +17648,7 @@ CAAT.Module({
             },
 
             createTimer:function (startTime, duration, callback_timeout, callback_tick, callback_cancel) {
-                this.timerManager.createTimer(startTime, duration, callback_timeout, callback_tick, callback_cancel);
-                return this;
+                return this.timerManager.createTimer(startTime, duration, callback_timeout, callback_tick, callback_cancel);
             },
 
             requestRepaint:function () {

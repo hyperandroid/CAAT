@@ -201,8 +201,7 @@ CAAT.Module({
             },
 
             createTimer:function (startTime, duration, callback_timeout, callback_tick, callback_cancel) {
-                this.timerManager.createTimer(startTime, duration, callback_timeout, callback_tick, callback_cancel);
-                return this;
+                return this.timerManager.createTimer(startTime, duration, callback_timeout, callback_tick, callback_cancel);
             },
 
             requestRepaint:function () {

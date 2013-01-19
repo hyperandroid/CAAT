@@ -1,3 +1,7 @@
+CAAT_DST="./build/caat"
+SOURCE_DIR="./src"
+COMPILER="../../closure-compiler/compiler.jar"
+
 if [ "${CAAT_DST}" == "" ]; then
   echo CAAT_DST is not defined.
   exit -1;
@@ -24,8 +28,6 @@ FILE_CAAT_BOX2D="${DST_FILE_NAME}-box2d-min.js"
 echo "" > "${FILE_CAAT}"
 echo "" > "${FILE_CAAT_CSS}"
 echo "" > "${FILE_CAAT_BOX2D}"
-
-SOURCE_DIR=/Users/ibon/js/CAAT/src
 
 #
 # set compilation level
@@ -89,7 +91,7 @@ echo -e "*/\n\n" >> "${FILE_CAAT_BOX2D}"
 # Compile canvas/GL
 #
 echo -e "\nCreating CAAT canvas/webGL"
-/usr/bin/java -jar /Users/ibon/applications/closure/compiler.jar --compilation_level "${COMPILATION_LEVEL}" \
+/usr/bin/java -jar ${COMPILER_JAR} --compilation_level "${COMPILATION_LEVEL}" \
 --js build/caat.js \
  >> "${FILE_CAAT}"
 
@@ -97,14 +99,14 @@ echo -e "\nCreating CAAT canvas/webGL"
 # Compile box2d
 #
 echo "Creating CAAT Box2d"
- /usr/bin/java -jar /Users/ibon/applications/closure/compiler.jar --compilation_level "${COMPILATION_LEVEL}" --js build/caat-box2d.js >> "${FILE_CAAT_BOX2D}"
+ /usr/bin/java -jar ${COMPILER_JAR} --compilation_level "${COMPILATION_LEVEL}" --js build/caat-box2d.js >> "${FILE_CAAT_BOX2D}"
 
 #
 # Compile css
 #
 echo "Creating CAAT CSS"
 echo -e "CAAT.__CSS__=1;" >> /tmp/__css.js
-java -jar /Users/ibon/applications/closure/compiler.jar --compilation_level "${COMPILATION_LEVEL}" \
+java -jar ${COMPILER_JAR} --compilation_level "${COMPILATION_LEVEL}" \
  --js build/caat-css.js >> "${FILE_CAAT_CSS}"
 
 #
@@ -123,5 +125,5 @@ done < version.distribution
 #
 # Generating JSDoc.
 #
-echo -e "\nGenerating JSDoc"
-./version.compile.doc.sh
+#echo -e "\nGenerating JSDoc"
+#./version.compile.doc.sh
