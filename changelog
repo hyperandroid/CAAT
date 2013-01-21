@@ -1,8 +1,15 @@
+* 01/22/2013 0.5 Build 65 *
+---------------------------
+
 * Fixed Safari and MOMA bug. Now loads modules correctly. Thanks for being so picky.
 * Fixed Actor.centerAt. Now takes into consideration positional anchor.
 * Director.createTimer function now returns the created CAAT.Foundation.Timer.TimerTask object.
 * Forced Box2D objects to keep their position anchor in the middle.
 * Added ResourceBundle module. Allows for control of localized strings.
+* Fixed director.endAudio method.
+* Added director methods cancelPlay : function(id) and cancelPlayByChannel : function(audioObject) which
+  allow to stop a playing channel or all the channels playing a given audio id.
+
 
 * 12/13/2012 0.5 Build 46 *
 ---------------------------

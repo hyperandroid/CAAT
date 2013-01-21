@@ -190,6 +190,14 @@ CAAT.Module({
                 return this;
             },
 
+            cancelPlay : function(id) {
+                return this.audioManager.cancelPlay(id);
+            },
+
+            cancelPlayByChannel : function(audioObject) {
+                return this.audioManager.cancelPlayByChannel(audioObject);
+            },
+
             setValueForKey : function( key, value ) {
                 this.__map[key]= value;
                 return this;

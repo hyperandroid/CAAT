@@ -264,7 +264,7 @@ CAAT.Module({
                         if (this.browserInfo.browser === 'Firefox') {
                             audio.addEventListener(
                                 'ended',
-                                // on sound end, set channel to available channels list.
+                                // on sound end, restart music.
                                 function (audioEvent) {
                                     var target = audioEvent.target;
                                     target.currentTime = 0;
@@ -304,7 +304,7 @@ CAAT.Module({
              * The playing sound will occupy a sound channel and when ends playing will leave
              * the channel free for any other sound to be played in.
              * @param id {object} an object identifying a sound in the sound cache.
-             * @return {(Audio|HTMLAudioElement)}
+             * @return { id: {Object}, audio: {(Audio|HTMLAudioElement)} }
              */
             play:function (id) {
                 if (!this.fxEnabled) {
@@ -316,7 +316,7 @@ CAAT.Module({
                 if (null !== audio && this.channels.length > 0) {
                     var channel = this.channels.shift();
                     channel.src = audio.src;
-                    channel.load();
+//                    channel.load();
                     channel.volume = audio.volume;
                     channel.play();
                     this.workingChannels.push(channel);
@@ -324,6 +324,45 @@ CAAT.Module({
 
                 return audio;
             },
+
+            /**
+             * cancel all instances of a sound identified by id. This id is the value set
+             * to identify a sound.
+             * @param id
+             * @return {*}
+             */
+            cancelPlay : function(id) {
+
+                for( var i=0 ; this.workingChannels.length; i++ ) {
+                    var audio= this.workingChannels[i];
+                    if ( audio.caat_id===id ) {
+                        audio.pause();
+                        this.channels.push(audio);
+                        this.workingChannels.splice(i,1);
+                    }
+                }
+
+                return this;
+            },
+
+            /**
+             * cancel a channel sound
+             * @param audioObject
+             * @return {*}
+             */
+            cancelPlayByChannel : function(audioObject) {
+
+                for( var i=0 ; this.workingChannels.length; i++ ) {
+                    if ( this.workingChannels[i]===audioObject ) {
+                        this.channels.push(audioObject);
+                        this.workingChannels.splice(i,1);
+                        return this;
+                    }
+                }
+
+                return this;
+            },
+
             /**
              * This method creates a new AudioChannel to loop the sound with.
              * It returns an Audio object so that the developer can cancel the sound loop at will.
@@ -386,6 +425,9 @@ CAAT.Module({
                 for (i = 0; i < this.loopingChannels.length; i++) {
                     this.loopingChannels[i].pause();
                 }
+
+                this.workingChannels= [];
+                this.loopingChannels= [];
 
                 this.stopMusic();
 

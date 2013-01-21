@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.5 build: 63
+Version: 0.5 build: 66
 
 Created on:
-DATE: 2013-01-11
-TIME: 10:12:43
+DATE: 2013-01-21
+TIME: 14:29:46
 */
 
 
@@ -251,21 +251,11 @@ TIME: 10:12:43
                     return;
                 }
 
-                c= c.extend(
-                    this.extendWith,
-                    this.constants,
-                    this.name,
-                    this.aliases,
-                    { decorated : this.decorated } );
-
             } else {
-                c= Class.extend(
-                    this.extendWith,
-                    this.constants,
-                    this.name,
-                    this.aliases,
-                    { decorated : this.decorated } );
+                c= Class;
             }
+
+            c= c.extend( this.extendWith, this.constants, this.name, this.aliases, { decorated : this.decorated } );
 
             console.log("Created module: "+this.name);
 
@@ -5529,7 +5519,7 @@ CAAT.Module({
 
             playMusic : function(id) {
                 if (!this.musicEnabled) {
-                    return this;
+                    return null;
                 }
 
                 var audio_in_cache = this.getAudio(id);
@@ -5543,7 +5533,7 @@ CAAT.Module({
                         if (this.browserInfo.browser === 'Firefox') {
                             audio.addEventListener(
                                 'ended',
-                                // on sound end, set channel to available channels list.
+                                // on sound end, restart music.
                                 function (audioEvent) {
                                     var target = audioEvent.target;
                                     target.currentTime = 0;
@@ -5558,6 +5548,8 @@ CAAT.Module({
                         return audio;
                     }
                 }
+
+                return null;
             },
 
             /**
@@ -5581,11 +5573,11 @@ CAAT.Module({
              * The playing sound will occupy a sound channel and when ends playing will leave
              * the channel free for any other sound to be played in.
              * @param id {object} an object identifying a sound in the sound cache.
-             * @return this.
+             * @return { id: {Object}, audio: {(Audio|HTMLAudioElement)} }
              */
             play:function (id) {
                 if (!this.fxEnabled) {
-                    return this;
+                    return null;
                 }
 
                 var audio = this.getAudio(id);
@@ -5593,14 +5585,53 @@ CAAT.Module({
                 if (null !== audio && this.channels.length > 0) {
                     var channel = this.channels.shift();
                     channel.src = audio.src;
-                    channel.load();
+//                    channel.load();
                     channel.volume = audio.volume;
                     channel.play();
                     this.workingChannels.push(channel);
                 }
 
+                return audio;
+            },
+
+            /**
+             * cancel all instances of a sound identified by id. This id is the value set
+             * to identify a sound.
+             * @param id
+             * @return {*}
+             */
+            cancelPlay : function(id) {
+
+                for( var i=0 ; this.workingChannels.length; i++ ) {
+                    var audio= this.workingChannels[i];
+                    if ( audio.caat_id===id ) {
+                        audio.pause();
+                        this.channels.push(audio);
+                        this.workingChannels.splice(i,1);
+                    }
+                }
+
                 return this;
             },
+
+            /**
+             * cancel a channel sound
+             * @param audioObject
+             * @return {*}
+             */
+            cancelPlayByChannel : function(audioObject) {
+
+                for( var i=0 ; this.workingChannels.length; i++ ) {
+                    if ( this.workingChannels[i]===audioObject ) {
+                        this.channels.push(audioObject);
+                        this.workingChannels.splice(i,1);
+                        return this;
+                    }
+                }
+
+                return this;
+            },
+
             /**
              * This method creates a new AudioChannel to loop the sound with.
              * It returns an Audio object so that the developer can cancel the sound loop at will.
@@ -5614,7 +5645,7 @@ CAAT.Module({
             loop:function (id) {
 
                 if (!this.musicEnabled) {
-                    return this;
+                    return null;
                 }
 
                 var audio_in_cache = this.getAudio(id);
@@ -5663,6 +5694,9 @@ CAAT.Module({
                 for (i = 0; i < this.loopingChannels.length; i++) {
                     this.loopingChannels[i].pause();
                 }
+
+                this.workingChannels= [];
+                this.loopingChannels= [];
 
                 this.stopMusic();
 
@@ -13399,6 +13433,9 @@ CAAT.Module({
              * @param y
              */
             paintTiled:function (director, time, x, y) {
+
+                // PENDING: study using a pattern
+
                 var el = this.mapInfo[this.spriteIndex];
 
                 var r = new CAAT.Math.Rectangle();
@@ -17340,11 +17377,13 @@ CAAT.Module({
                     for (i = 0; i < il.length; i++) {
                         var ill = il[i];
                         for (j = 0; j < ill.length; j++) {
-                            p.set(point.x, point.y);
-                            var modelViewMatrixI = ill[j].worldModelViewMatrix.getInverse();
-                            modelViewMatrixI.transformCoord(p);
-                            if (ill[j].contains(p.x, p.y)) {
-                                return ill[j];
+                            if ( ill[j].visible ) {
+                                p.set(point.x, point.y);
+                                var modelViewMatrixI = ill[j].worldModelViewMatrix.getInverse();
+                                modelViewMatrixI.transformCoord(p);
+                                if (ill[j].contains(p.x, p.y)) {
+                                    return ill[j];
+                                }
                             }
                         }
                     }
@@ -17643,6 +17682,14 @@ CAAT.Module({
                 this.onResizeCallback = null;
                 this.__map= {};
                 return this;
+            },
+
+            cancelPlay : function(id) {
+                return this.audioManager.cancelPlay(id);
+            },
+
+            cancelPlayByChannel : function(audioObject) {
+                return this.audioManager.cancelPlayByChannel(audioObject);
             },
 
             setValueForKey : function( key, value ) {
@@ -18945,7 +18992,7 @@ CAAT.Module({
                 return null;
             },
             musicPlay: function(id) {
-                this.audioManager.playMusic(id);
+                return this.audioManager.playMusic(id);
             },
             musicStop : function() {
                 this.audioManager.stopMusic();
@@ -18965,7 +19012,7 @@ CAAT.Module({
              * @param id {object} the object used to store a sound in the audioCache.
              */
             audioPlay:function (id) {
-                this.audioManager.play(id);
+                return this.audioManager.play(id);
             },
             /**
              * Loops an audio instance identified by the id.
