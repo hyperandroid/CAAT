@@ -8,6 +8,7 @@ CAAT.Module({
     extendsWith:function () {
 
         CAAT.PMR = 64;
+
         /**
          * As Eemeli Kelokorpi suggested,
          * @param set
@@ -79,6 +80,25 @@ CAAT.Module({
 
             recycle:false,
 
+            __init : function() {
+                this.__super();
+                this.setPositionAnchor(.5,.5);
+
+                return this;
+            },
+
+            setPositionAnchor : function( ax, ay ) {
+                this.tAnchorX= .5;
+                this.tAnchorY= .5;
+            },
+
+            setPositionAnchored : function(x,y,ax,ay) {
+                this.x= x;
+                this.y= y;
+                this.tAnchorX= .5;
+                this.tAnchorY= .5;
+            },
+
             /**
              * set this actor to recycle its body, that is, do not destroy it.
              */
@@ -111,8 +131,8 @@ CAAT.Module({
             setLocation:function (x, y) {
                 this.worldBody.SetPosition(
                     new Box2D.Common.Math.b2Vec2(
-                        (x + this.width / 2) / CAAT.PMR,
-                        (y + this.height / 2) / CAAT.PMR));
+                        x / CAAT.PMR,
+                        y / CAAT.PMR));
                 return this;
             },
             /**
@@ -218,18 +238,10 @@ CAAT.Module({
 
                 var pos= this.worldBody.GetPosition();
 
-                if (this.bodyData.polygonType === CAAT.Foundation.Box2D.B2DPolygonBody.TYPE.EDGE) {
-                    CAAT.Foundation.Actor.prototype.setLocation.call(
-                            this,
-                            CAAT.PMR*pos.x,
-                            CAAT.PMR*pos.y );
-
-                } else {
-                    CAAT.Foundation.Actor.prototype.setLocation.call(
-                            this,
-                            CAAT.PMR*pos.x - this.width/2,
-                            CAAT.PMR*pos.y - this.height/2 );
-                }
+                CAAT.Foundation.Actor.prototype.setLocation.call(
+                        this,
+                        CAAT.PMR*pos.x,
+                        CAAT.PMR*pos.y);
 
                 this.setRotation( this.worldBody.GetAngle() );
 

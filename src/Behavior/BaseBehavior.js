@@ -16,9 +16,16 @@
  *
  **/
 
+/**
+ * @class
+ */
 CAAT.Module({
     defines:        "CAAT.Behavior.BaseBehavior",
     constants:      {
+
+        /**
+         * @enum
+         */
         Status: {
             NOT_STARTED: 0,
             STARTED:    1,
@@ -31,7 +38,9 @@ CAAT.Module({
         var DefaultInterpolator=    new CAAT.Behavior.Interpolator().createLinearInterpolator(false);
         var DefaultInterpolatorPP=  new CAAT.Behavior.Interpolator().createLinearInterpolator(true);
 
+        /** @lends CAAT.Behavior.BaseBehavior.prototype */
         return {
+
             /**
              * Behavior base class.
              *
@@ -71,7 +80,7 @@ CAAT.Module({
              * <p>
              * Other Behaviors simply must supply with the method <code>setForTime(time, actor)</code> overriden.
              *
-             * @constructor
+             *
              */
             __init:function () {
                 this.lifecycleListenerList = [];
@@ -98,6 +107,7 @@ CAAT.Module({
 
             discardable:false, // is true, this behavior will be removed from the this.actor instance when it expires.
 
+            /*  @memberOf CAAT.Behavior.BaseBehavior */
             setValueApplication:function (apply) {
                 this.doValueApplication = apply;
                 return this;
