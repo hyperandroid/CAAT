@@ -109,7 +109,7 @@ CAAT.Module({
                     return;
                 }
 
-                var cl = this.childrenList;
+                var cl = this.activeChildren;
                 for (var i = 0; i < cl.length; i++) {
                     cl[i].drawScreenBoundingBox(director, time);
                 }

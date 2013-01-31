@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.5 build: 47
+Version: 0.5 build: 66
 
 Created on:
-DATE: 2012-12-13
-TIME: 21:30:47
+DATE: 2013-01-21
+TIME: 14:29:46
 */
 
 
@@ -251,21 +251,11 @@ TIME: 21:30:47
                     return;
                 }
 
-                c= c.extend(
-                    this.extendWith,
-                    this.constants,
-                    this.name,
-                    this.aliases,
-                    { decorated : this.decorated } );
-
             } else {
-                c= Class.extend(
-                    this.extendWith,
-                    this.constants,
-                    this.name,
-                    this.aliases,
-                    { decorated : this.decorated } );
+                c= Class;
             }
+
+            c= c.extend( this.extendWith, this.constants, this.name, this.aliases, { decorated : this.decorated } );
 
             console.log("Created module: "+this.name);
 
@@ -773,8 +763,15 @@ TIME: 21:30:47
             ModuleManager.modulePath[ module ]= path;
 
             ModuleManager.sortedModulePath.push( module );
+
+            /**
+             * Sort function so that CAAT.AB is below CAAT.AB.CD
+             */
             ModuleManager.sortedModulePath.sort( function(a,b) {
-                return a<b;
+                if (a==b) {
+                    return 0;
+                }
+                return a<b ? 1 : -1;
             } );
         }
         return CAAT.ModuleManager;
@@ -3683,9 +3680,16 @@ CAAT.Module({
  *
  **/
 
+/**
+ * @class
+ */
 CAAT.Module({
     defines:        "CAAT.Behavior.BaseBehavior",
     constants:      {
+
+        /**
+         * @enum
+         */
         Status: {
             NOT_STARTED: 0,
             STARTED:    1,
@@ -3698,7 +3702,9 @@ CAAT.Module({
         var DefaultInterpolator=    new CAAT.Behavior.Interpolator().createLinearInterpolator(false);
         var DefaultInterpolatorPP=  new CAAT.Behavior.Interpolator().createLinearInterpolator(true);
 
+        /** @lends CAAT.Behavior.BaseBehavior.prototype */
         return {
+
             /**
              * Behavior base class.
              *
@@ -3738,7 +3744,7 @@ CAAT.Module({
              * <p>
              * Other Behaviors simply must supply with the method <code>setForTime(time, actor)</code> overriden.
              *
-             * @constructor
+             *
              */
             __init:function () {
                 this.lifecycleListenerList = [];
@@ -3765,6 +3771,7 @@ CAAT.Module({
 
             discardable:false, // is true, this behavior will be removed from the this.actor instance when it expires.
 
+            /*  @memberOf CAAT.Behavior.BaseBehavior */
             setValueApplication:function (apply) {
                 this.doValueApplication = apply;
                 return this;
@@ -5513,7 +5520,7 @@ CAAT.Module({
 
             playMusic : function(id) {
                 if (!this.musicEnabled) {
-                    return this;
+                    return null;
                 }
 
                 var audio_in_cache = this.getAudio(id);
@@ -5527,7 +5534,7 @@ CAAT.Module({
                         if (this.browserInfo.browser === 'Firefox') {
                             audio.addEventListener(
                                 'ended',
-                                // on sound end, set channel to available channels list.
+                                // on sound end, restart music.
                                 function (audioEvent) {
                                     var target = audioEvent.target;
                                     target.currentTime = 0;
@@ -5542,6 +5549,8 @@ CAAT.Module({
                         return audio;
                     }
                 }
+
+                return null;
             },
 
             /**
@@ -5565,11 +5574,11 @@ CAAT.Module({
              * The playing sound will occupy a sound channel and when ends playing will leave
              * the channel free for any other sound to be played in.
              * @param id {object} an object identifying a sound in the sound cache.
-             * @return this.
+             * @return { id: {Object}, audio: {(Audio|HTMLAudioElement)} }
              */
             play:function (id) {
                 if (!this.fxEnabled) {
-                    return this;
+                    return null;
                 }
 
                 var audio = this.getAudio(id);
@@ -5577,14 +5586,53 @@ CAAT.Module({
                 if (null !== audio && this.channels.length > 0) {
                     var channel = this.channels.shift();
                     channel.src = audio.src;
-                    channel.load();
+//                    channel.load();
                     channel.volume = audio.volume;
                     channel.play();
                     this.workingChannels.push(channel);
                 }
 
+                return audio;
+            },
+
+            /**
+             * cancel all instances of a sound identified by id. This id is the value set
+             * to identify a sound.
+             * @param id
+             * @return {*}
+             */
+            cancelPlay : function(id) {
+
+                for( var i=0 ; this.workingChannels.length; i++ ) {
+                    var audio= this.workingChannels[i];
+                    if ( audio.caat_id===id ) {
+                        audio.pause();
+                        this.channels.push(audio);
+                        this.workingChannels.splice(i,1);
+                    }
+                }
+
                 return this;
             },
+
+            /**
+             * cancel a channel sound
+             * @param audioObject
+             * @return {*}
+             */
+            cancelPlayByChannel : function(audioObject) {
+
+                for( var i=0 ; this.workingChannels.length; i++ ) {
+                    if ( this.workingChannels[i]===audioObject ) {
+                        this.channels.push(audioObject);
+                        this.workingChannels.splice(i,1);
+                        return this;
+                    }
+                }
+
+                return this;
+            },
+
             /**
              * This method creates a new AudioChannel to loop the sound with.
              * It returns an Audio object so that the developer can cancel the sound loop at will.
@@ -5598,7 +5646,7 @@ CAAT.Module({
             loop:function (id) {
 
                 if (!this.musicEnabled) {
-                    return this;
+                    return null;
                 }
 
                 var audio_in_cache = this.getAudio(id);
@@ -5647,6 +5695,9 @@ CAAT.Module({
                 for (i = 0; i < this.loopingChannels.length; i++) {
                     this.loopingChannels[i].pause();
                 }
+
+                this.workingChannels= [];
+                this.loopingChannels= [];
 
                 this.stopMusic();
 
@@ -12142,7 +12193,8 @@ CAAT.Module( {
         callback_tick:      null,
         callback_cancel:    null,
 
-        scene:              null,
+        owner:              null,   // TimerManager instance
+        scene:              null,   // scene or director instance
         taskId:             0,
         remove:             false,
 
@@ -12190,6 +12242,9 @@ CAAT.Module( {
             }
             return this;
         },
+        remainingTime : function() {
+            return this.duration - (this.scene.time-this.startTime);
+        },
         /**
          * Reschedules this TimerTask by changing its startTime to current scene's time.
          * @param time {number} an integer indicating scene time.
@@ -12198,7 +12253,7 @@ CAAT.Module( {
         reset : function( time ) {
             this.remove= false;
             this.startTime=  time;
-            this.scene.ensureTimerTask(this);
+            this.owner.ensureTimerTask(this);
             return this;
         },
         /**
@@ -12292,7 +12347,7 @@ CAAT.Module({
          *
          * @return {CAAT.TimerTask} a CAAT.TimerTask class instance.
          */
-        createTimer:function (startTime, duration, callback_timeout, callback_tick, callback_cancel) {
+        createTimer:function (startTime, duration, callback_timeout, callback_tick, callback_cancel, scene) {
 
             var tt = new CAAT.Foundation.Timer.TimerTask().create(
                 startTime,
@@ -12302,8 +12357,9 @@ CAAT.Module({
                 callback_cancel);
 
             tt.taskId = this.timerSequence++;
-            tt.sceneTime = this.time;
-            tt.scene = this;
+            tt.sceneTime = scene.time;
+            tt.owner = this;
+            tt.scene = scene;
 
             this.timerList.push(tt);
 
@@ -12872,8 +12928,16 @@ CAAT.Module( {
 
         doLayout : function( container ) {
 
-            var nactors= container.getNumChildren();
-            if (nactors === 0) {
+            var actors= [];
+            for( var i=0; i<container.getNumChildren(); i++ ) {
+                var child= container.getChildAt(i);
+                if (!child.preventLayout && child.isVisible() && child.isInAnimationFrame( CAAT.getCurrentSceneTime()) ) {
+                    actors.push(child);
+                }
+            }
+            var nactors= actors.length;
+
+            if (nactors.length=== 0) {
                 return;
             }
 
@@ -12899,20 +12963,31 @@ CAAT.Module( {
             for (var c = 0, x = this.padding.left + extraWidthAvailable; c < ncols ; c++, x += widthOnComponent + this.hgap) {
                 for (var r = 0, y = this.padding.top + extraHeightAvailable; r < nrows ; r++, y += heightOnComponent + this.vgap) {
                     var i = r * ncols + c;
-                    if (i < nactors) {
-                        var child= container.getChildAt(i);
+                    if (i < actors.length) {
+                        var child= actors[i];
                         if ( !child.preventLayout && child.isVisible() && child.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
                             if ( !this.animated ) {
-                                child.setBounds(x, y, widthOnComponent, heightOnComponent);
+                                child.setBounds(
+                                    x + (widthOnComponent-child.width)/2,
+                                    y,
+                                    widthOnComponent,
+                                    heightOnComponent);
                             } else {
                                 if ( child.width!==widthOnComponent || child.height!==heightOnComponent ) {
                                     child.setSize(widthOnComponent, heightOnComponent);
                                     if ( this.newChildren.indexOf( child ) !==-1 ) {
-                                        child.setPosition( x,y );
+                                        child.setPosition(
+                                            x + (widthOnComponent-child.width)/2,
+                                            y );
                                         child.setScale(0.01,0.01);
                                         child.scaleTo( 1,1, 500, 0,.5,.5, this.newElementInterpolator );
                                     } else {
-                                        child.moveTo( x, y, 500, 0, this.moveElementInterpolator );
+                                        child.moveTo(
+                                            x + (widthOnComponent-child.width)/2,
+                                            y,
+                                            500,
+                                            0,
+                                            this.moveElementInterpolator );
                                     }
                                 }
                             }
@@ -13359,6 +13434,9 @@ CAAT.Module({
              * @param y
              */
             paintTiled:function (director, time, x, y) {
+
+                // PENDING: study using a pattern
+
                 var el = this.mapInfo[this.spriteIndex];
 
                 var r = new CAAT.Math.Rectangle();
@@ -17303,6 +17381,14 @@ CAAT.Module({
                 return this;
             },
 
+            cancelPlay : function(id) {
+                return this.audioManager.cancelPlay(id);
+            },
+
+            cancelPlayByChannel : function(audioObject) {
+                return this.audioManager.cancelPlayByChannel(audioObject);
+            },
+
             setValueForKey : function( key, value ) {
                 this.__map[key]= value;
                 return this;
@@ -17314,8 +17400,7 @@ CAAT.Module({
             },
 
             createTimer:function (startTime, duration, callback_timeout, callback_tick, callback_cancel) {
-                this.timerManager.createTimer(startTime, duration, callback_timeout, callback_tick, callback_cancel);
-                return this;
+                return this.timerManager.createTimer(startTime, duration, callback_timeout, callback_tick, callback_cancel, this);
             },
 
             requestRepaint:function () {
@@ -18542,6 +18627,14 @@ CAAT.Module({
             getScene:function (index) {
                 return this.scenes[index];
             },
+            getSceneById : function(id) {
+                for( var i=0; i<this.scenes.length; i++ ) {
+                    if (this.scenes[i].id===id) {
+                        return this.scenes[i];
+                    }
+                }
+                return null;
+            },
             /**
              * Return the index of the current scene in the Director's scene list.
              * @return {number} the current scene's index.
@@ -18596,7 +18689,7 @@ CAAT.Module({
                 return null;
             },
             musicPlay: function(id) {
-                this.audioManager.playMusic(id);
+                return this.audioManager.playMusic(id);
             },
             musicStop : function() {
                 this.audioManager.stopMusic();
@@ -18616,7 +18709,7 @@ CAAT.Module({
              * @param id {object} the object used to store a sound in the audioCache.
              */
             audioPlay:function (id) {
-                this.audioManager.play(id);
+                return this.audioManager.play(id);
             },
             /**
              * Loops an audio instance identified by the id.
@@ -18942,7 +19035,7 @@ CAAT.Module({
 
                 // drag
 
-                if (this.isMouseDown && null !== this.lastSelectedActor) {
+                if (this.isMouseDown && null!==this.lastSelectedActor) {
 
                     lactor = this.lastSelectedActor;
                     pos = lactor.viewToModel(
@@ -18950,7 +19043,7 @@ CAAT.Module({
 
                     // check for mouse move threshold.
                     if (!this.dragging) {
-                        if (Math.abs(this.prevMousePoint.x - pos.x) < CAAT.DRAG_THRESHOLD_X &&
+                        if (Math.abs(this.prevMousePoint.x - pos.x) < CAAT.DRAG_THRESHOLD_X ||
                             Math.abs(this.prevMousePoint.y - pos.y) < CAAT.DRAG_THRESHOLD_Y) {
                             return;
                         }

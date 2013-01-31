@@ -220,21 +220,11 @@
                     return;
                 }
 
-                c= c.extend(
-                    this.extendWith,
-                    this.constants,
-                    this.name,
-                    this.aliases,
-                    { decorated : this.decorated } );
-
             } else {
-                c= Class.extend(
-                    this.extendWith,
-                    this.constants,
-                    this.name,
-                    this.aliases,
-                    { decorated : this.decorated } );
+                c= Class;
             }
+
+            c= c.extend( this.extendWith, this.constants, this.name, this.aliases, { decorated : this.decorated } );
 
             console.log("Created module: "+this.name);
 
@@ -742,8 +732,15 @@
             ModuleManager.modulePath[ module ]= path;
 
             ModuleManager.sortedModulePath.push( module );
+
+            /**
+             * Sort function so that CAAT.AB is below CAAT.AB.CD
+             */
             ModuleManager.sortedModulePath.sort( function(a,b) {
-                return a<b;
+                if (a==b) {
+                    return 0;
+                }
+                return a<b ? 1 : -1;
             } );
         }
         return CAAT.ModuleManager;

@@ -21,8 +21,16 @@ CAAT.Module( {
 
         doLayout : function( container ) {
 
-            var nactors= container.getNumChildren();
-            if (nactors === 0) {
+            var actors= [];
+            for( var i=0; i<container.getNumChildren(); i++ ) {
+                var child= container.getChildAt(i);
+                if (!child.preventLayout && child.isVisible() && child.isInAnimationFrame( CAAT.getCurrentSceneTime()) ) {
+                    actors.push(child);
+                }
+            }
+            var nactors= actors.length;
+
+            if (nactors.length=== 0) {
                 return;
             }
 
@@ -48,20 +56,31 @@ CAAT.Module( {
             for (var c = 0, x = this.padding.left + extraWidthAvailable; c < ncols ; c++, x += widthOnComponent + this.hgap) {
                 for (var r = 0, y = this.padding.top + extraHeightAvailable; r < nrows ; r++, y += heightOnComponent + this.vgap) {
                     var i = r * ncols + c;
-                    if (i < nactors) {
-                        var child= container.getChildAt(i);
+                    if (i < actors.length) {
+                        var child= actors[i];
                         if ( !child.preventLayout && child.isVisible() && child.isInAnimationFrame( CAAT.getCurrentSceneTime() ) ) {
                             if ( !this.animated ) {
-                                child.setBounds(x, y, widthOnComponent, heightOnComponent);
+                                child.setBounds(
+                                    x + (widthOnComponent-child.width)/2,
+                                    y,
+                                    widthOnComponent,
+                                    heightOnComponent);
                             } else {
                                 if ( child.width!==widthOnComponent || child.height!==heightOnComponent ) {
                                     child.setSize(widthOnComponent, heightOnComponent);
                                     if ( this.newChildren.indexOf( child ) !==-1 ) {
-                                        child.setPosition( x,y );
+                                        child.setPosition(
+                                            x + (widthOnComponent-child.width)/2,
+                                            y );
                                         child.setScale(0.01,0.01);
                                         child.scaleTo( 1,1, 500, 0,.5,.5, this.newElementInterpolator );
                                     } else {
-                                        child.moveTo( x, y, 500, 0, this.moveElementInterpolator );
+                                        child.moveTo(
+                                            x + (widthOnComponent-child.width)/2,
+                                            y,
+                                            500,
+                                            0,
+                                            this.moveElementInterpolator );
                                     }
                                 }
                             }
