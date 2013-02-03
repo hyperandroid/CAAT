@@ -181,6 +181,7 @@ CAAT.Module({
                     new Box2D.Common.Math.b2Vec2(
                         x / CAAT.PMR,
                         y / CAAT.PMR));
+
                 return this;
             },
 
