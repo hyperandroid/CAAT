@@ -134,8 +134,10 @@ CAAT.Module({
                 this.dirty = true;
                 this.worldBody.SetPosition(
                     new Box2D.Common.Math.b2Vec2(
-                        x / CAAT.PMR,
-                        y / CAAT.PMR));
+                        (x + this.width / 2) / CAAT.PMR,
+                        (y + this.height / 2) / CAAT.PMR));
+//                        x / CAAT.PMR,
+//                        y / CAAT.PMR));
                 return this;
             },
 
@@ -258,7 +260,19 @@ CAAT.Module({
             animate: function(director, time) {
 
                 var pos= this.worldBody.GetPosition();
-
+/*
+                if (this.bodyData.polygonType === CAAT.Foundation.Box2D.B2DPolygonBody.TYPE.EDGE) {
+                    CAAT.Foundation.Actor.prototype.setLocation.call(
+                            this,
+                            CAAT.PMR*pos.x,
+                            CAAT.PMR*pos.y );
+                } else {
+                    CAAT.Foundation.Actor.prototype.setLocation.call(
+                            this,
+                            CAAT.PMR*pos.x - this.width/2,
+                            CAAT.PMR*pos.y - this.height/2 );
+                }
+*/
                 CAAT.Foundation.Actor.prototype.setLocation.call(
                         this,
                         CAAT.PMR*pos.x,

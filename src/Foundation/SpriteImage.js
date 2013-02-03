@@ -318,6 +318,9 @@ CAAT.Module({
              * @param y
              */
             paintTiled:function (director, time, x, y) {
+
+                // PENDING: study using a pattern
+
                 var el = this.mapInfo[this.spriteIndex];
 
                 var r = new CAAT.Math.Rectangle();

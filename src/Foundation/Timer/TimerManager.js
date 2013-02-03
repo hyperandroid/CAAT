@@ -71,7 +71,7 @@ CAAT.Module({
          *
          * @return {CAAT.TimerTask} a CAAT.TimerTask class instance.
          */
-        createTimer:function (startTime, duration, callback_timeout, callback_tick, callback_cancel) {
+        createTimer:function (startTime, duration, callback_timeout, callback_tick, callback_cancel, scene) {
 
             var tt = new CAAT.Foundation.Timer.TimerTask().create(
                 startTime,
@@ -81,8 +81,9 @@ CAAT.Module({
                 callback_cancel);
 
             tt.taskId = this.timerSequence++;
-            tt.sceneTime = this.time;
-            tt.scene = this;
+            tt.sceneTime = scene.time;
+            tt.owner = this;
+            tt.scene = scene;
 
             this.timerList.push(tt);
 

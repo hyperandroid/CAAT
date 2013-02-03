@@ -40,6 +40,7 @@ CAAT.Module({
 
         /** @lends CAAT.Behavior.BaseBehavior.prototype */
         return {
+
             /**
              * Behavior base class.
              *

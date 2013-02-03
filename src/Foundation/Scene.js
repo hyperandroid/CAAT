@@ -55,7 +55,11 @@ CAAT.Module({
             },
 
             createTimer:function (startTime, duration, callback_timeout, callback_tick, callback_cancel) {
-                return this.timerManager.createTimer(startTime, duration, callback_timeout, callback_tick, callback_cancel);
+                return this.timerManager.createTimer(startTime, duration, callback_timeout, callback_tick, callback_cancel, this);
+            },
+
+            setTimeout:function (duration, callback_timeout, callback_tick, callback_cancel) {
+                return this.timerManager.createTimer(this.time, duration, callback_timeout, callback_tick, callback_cancel, this);
             },
 
             /**
@@ -445,11 +449,13 @@ CAAT.Module({
                     for (i = 0; i < il.length; i++) {
                         var ill = il[i];
                         for (j = 0; j < ill.length; j++) {
-                            p.set(point.x, point.y);
-                            var modelViewMatrixI = ill[j].worldModelViewMatrix.getInverse();
-                            modelViewMatrixI.transformCoord(p);
-                            if (ill[j].contains(p.x, p.y)) {
-                                return ill[j];
+                            if ( ill[j].visible ) {
+                                p.set(point.x, point.y);
+                                var modelViewMatrixI = ill[j].worldModelViewMatrix.getInverse();
+                                modelViewMatrixI.transformCoord(p);
+                                if (ill[j].contains(p.x, p.y)) {
+                                    return ill[j];
+                                }
                             }
                         }
                     }
