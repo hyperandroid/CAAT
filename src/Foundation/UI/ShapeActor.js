@@ -106,8 +106,8 @@ CAAT.Module({
         paint : function(director,time) {
         },
         /**
-         * @private
          * Draws a circle.
+         * @private
          * @param director a valid CAAT.Director instance.
          * @param time an integer with the Scene time the Actor is being drawn.
          */

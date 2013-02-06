@@ -1,0 +1,24 @@
+{
+  "name": "CAAT",
+  "description": "Canvas Advanced Animation Toolkit",
+  "version": "0.5.65",
+  "author": "Ibon Tolosana - Hyperandroid",
+  "homepage": "http://hyperandroid.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hyperandroid/CAAT.git"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/hyperandroid/CAAT/blob/master/LICENSE"
+    }
+  ],
+  "devDependencies": {
+    "grunt": "~0.4.0rc7",
+    "grunt-contrib-jsdoc": "~0.2.2",
+    "grunt-contrib-concat": "~0.1.1",
+    "grunt-contrib-uglify": "~0.1.0",
+    "grunt-contrib-jshint": "~0.1.0"
+  }
+}

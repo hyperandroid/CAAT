@@ -377,9 +377,9 @@ CAAT.Module({
             },
 
             /**
-             * @private
-             *
              * Gets the Actor inside this ActorContainer at a given Screen coordinate.
+             *
+             * @private
              *
              * @param point an object of the form { x: float, y: float }
              *

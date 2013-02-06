@@ -12,9 +12,6 @@ CAAT.Module({
     depends:["CAAT.Math.Point"],
     aliases:["CAAT.Interpolator"],
     constants : {
-        /**
-         *
-         */
         enumerateInterpolators: function () {
             return [
                 new CAAT.Behavior.Interpolator().createLinearInterpolator(false, false), 'Linear pingpong=false, inverse=false',

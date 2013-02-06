@@ -1,34 +1,3 @@
-/*
-The MIT License
-
-Copyright (c) 2010-2011-2012 Ibon Tolosana [@hyperandroid]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
-
-Version: 0.5 build: 66
-
-Created on:
-DATE: 2013-01-21
-TIME: 14:29:46
-*/
-
-
 (function(global) {
 
     String.prototype.endsWith= function(suffix) {
@@ -851,7 +820,7 @@ TIME: 14:29:46
     }
 
 })(this);
-/**
+;/**
  * See LICENSE file.
  *
  **/
@@ -931,7 +900,7 @@ CAAT.Module( {
         }
     }
 } );
-
+;
 extend = function (subc, superc) {
     var subcp = subc.prototype;
 
@@ -1397,7 +1366,7 @@ CAAT.Module({
 
         };
     }
-});/**
+});;/**
  * See LICENSE file.
  *
  **/
@@ -1635,7 +1604,7 @@ CAAT.Module( {
         }
     }
 });
-CAAT.Module({
+;CAAT.Module({
     defines:"CAAT.Math.CatmullRom",
     depends:["CAAT.Math.Curve"],
     extendsClass:"CAAT.Math.Curve",
@@ -1745,7 +1714,7 @@ CAAT.Module({
         }
     }
 });
-/**
+;/**
  * See LICENSE file.
  *
  **/
@@ -1917,7 +1886,7 @@ CAAT.Module({
 
 });
 
-CAAT.Module({
+;CAAT.Module({
     defines:"CAAT.Math.Dimension",
     aliases:["CAAT.Dimension"],
     extendsWith:function () {
@@ -1934,7 +1903,7 @@ CAAT.Module({
         }
     }
 });
-/**
+;/**
  * See LICENSE file.
  *
  **/
@@ -2279,7 +2248,7 @@ CAAT.Module({
         }
     }
 });
-/**
+;/**
  * See LICENSE file.
  *
  **/
@@ -2806,7 +2775,7 @@ CAAT.Module({
     }
 
 });
-/**
+;/**
  * See LICENSE file.
  *
  **/
@@ -3028,7 +2997,7 @@ CAAT.Module( {
         }
     }
 });
-/**
+;/**
  * See LICENSE file.
  *
  */
@@ -3207,7 +3176,7 @@ CAAT.Module( {
         }
 	}
 });
-/**
+;/**
  * See LICENSE file.
  *
  * Partially based on Robert Penner easing equations.
@@ -3221,9 +3190,6 @@ CAAT.Module({
     depends:["CAAT.Math.Point"],
     aliases:["CAAT.Interpolator"],
     constants : {
-        /**
-         *
-         */
         enumerateInterpolators: function () {
             return [
                 new CAAT.Behavior.Interpolator().createLinearInterpolator(false, false), 'Linear pingpong=false, inverse=false',
@@ -3661,7 +3627,7 @@ CAAT.Module({
         }
     }
 });
-/**
+;/**
  * See LICENSE file.
  *
  * Behaviors are keyframing elements.
@@ -4063,7 +4029,7 @@ CAAT.Module({
 
 
 
-CAAT.Module({
+;CAAT.Module({
     defines:"CAAT.Behavior.AlphaBehavior",
     aliases:["CAAT.AlphaBehavior"],
     depends:["CAAT.Behavior.BaseBehavior"],
@@ -4147,7 +4113,7 @@ CAAT.Module({
         }
     }
 });
-CAAT.Module({
+;CAAT.Module({
     defines:"CAAT.Behavior.ContainerBehavior",
     depends:["CAAT.Behavior.BaseBehavior", "CAAT.Behavior.GenericBehavior"],
     aliases: ["CAAT.ContainerBehavior"],
@@ -4425,7 +4391,7 @@ CAAT.Module({
         }
     }
 });
-CAAT.Module({
+;CAAT.Module({
     defines:"CAAT.Behavior.GenericBehavior",
     depends:["CAAT.Behavior.BaseBehavior"],
     aliases:["CAAT.GenericBehavior"],
@@ -4477,7 +4443,7 @@ CAAT.Module({
         };
     }
 });
-CAAT.Module({
+;CAAT.Module({
     defines:"CAAT.Behavior.PathBehavior",
     aliases: ["CAAT.PathBehavior"],
     depends:[
@@ -4685,7 +4651,7 @@ CAAT.Module({
         };
     }
 });
-CAAT.Module({
+;CAAT.Module({
     defines:"CAAT.Behavior.RotateBehavior",
     extendsClass: "CAAT.Behavior.BaseBehavior",
     depends:[
@@ -4820,7 +4786,7 @@ CAAT.Module({
 
     }
 });
-CAAT.Module({
+;CAAT.Module({
 
     defines:"CAAT.Behavior.Scale1Behavior",
     depends:[
@@ -4974,7 +4940,7 @@ CAAT.Module({
 
     }
 });
-CAAT.Module({
+;CAAT.Module({
     defines:"CAAT.Behavior.ScaleBehavior",
     depends:[
         "CAAT.Behavior.BaseBehavior",
@@ -5122,7 +5088,7 @@ CAAT.Module({
 
     }
 });
-/**
+;/**
  *
  * taken from: http://www.quirksmode.org/js/detect.html
  *
@@ -5267,7 +5233,7 @@ CAAT.Module({
 
     }
 });
-/**
+;/**
  * See LICENSE file.
  *
  * Sound implementation.
@@ -5727,7 +5693,7 @@ CAAT.Module({
         }
     }
 });
-/**
+;/**
  * See LICENSE file.
  *
  **/
@@ -5789,7 +5755,7 @@ CAAT.Module({
     }
 
 });
-/**
+;/**
  * See LICENSE file.
  *
  * @author: Mario Gonzalez (@onedayitwilltake) and Ibon Tolosana (@hyperandroid)
@@ -6063,7 +6029,7 @@ CAAT.Module({
         }
     }
 });
-/**
+;/**
  * See LICENSE file.
  *
  * Get realtime Debug information of CAAT's activity.
@@ -6510,7 +6476,7 @@ CAAT.Module( {
     }
 
 });
-/**
+;/**
  * See LICENSE file.
  *
  **/
@@ -6866,7 +6832,7 @@ CAAT.Module({
 
 });
 
-/**
+;/**
  * See LICENSE file.
  *
 	  ####  #####  ##### ####    ###  #   # ###### ###### ##     ##  #####  #     #      ########    ##    #  #  #####
@@ -7019,7 +6985,7 @@ CAAT.Module( {
 		}
 	}
 });
-/**
+;/**
  *
  * See LICENSE file.
  * 
@@ -7387,7 +7353,7 @@ CAAT.Module( {
 		}
 	}
 });
-/**
+;/**
  * See LICENSE file.
  *
  * Image/Resource preloader.
@@ -7476,7 +7442,7 @@ CAAT.Module( {
         }
     }
 });
-/**
+;/**
  * See LICENSE file.
  *
  * Image/Resource preloader.
@@ -7545,7 +7511,7 @@ CAAT.Module( {
 
     }
 });
-/**
+;/**
  * See LICENSE file.
  */
 CAAT.Module({
@@ -7759,7 +7725,7 @@ CAAT.Module({
     }
 
 })
-/**
+;/**
  * See LICENSE file.
  *
  * This file contains the definition for objects QuadTree and HashMap.
@@ -7860,7 +7826,7 @@ CAAT.Module({
         }
     }
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.Module.Collision.SpatialHash",
     aliases : ["CAAT.SpatialHash"],
     depends : [
@@ -8062,7 +8028,7 @@ CAAT.Module( {
 
     }
 });
-CAAT.Module({
+;CAAT.Module({
     defines : "CAAT.Module.TexturePacker.TextureElement",
     extendsWith : {
 
@@ -8073,7 +8039,7 @@ CAAT.Module({
         glTexture:  null
     }
 });
-CAAT.Module({
+;CAAT.Module({
     defines : "CAAT.Module.TexturePacker.TextureScan",
     depends : [
         "CAAT.Module.TexturePacker.TextureElement"
@@ -8167,7 +8133,7 @@ CAAT.Module({
         }
     }
 });
-CAAT.Module({
+;CAAT.Module({
     defines : "CAAT.Module.TexturePacker.TextureScanMap",
     depends : [
         "CAAT.Module.TexturePacker.TextureScan"
@@ -8273,7 +8239,7 @@ CAAT.Module({
         }
     }
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.Module.TexturePacker.TexturePage",
     depends : [
         "CAAT.Module.TexturePacker.TextureScanMap"
@@ -8520,7 +8486,7 @@ CAAT.Module( {
         }
     }
 });
-/**
+;/**
  * See LICENSE file.
  */
 
@@ -8568,7 +8534,7 @@ CAAT.Module({
     }
 
 });
-CAAT.Module({
+;CAAT.Module({
     defines:"CAAT.Module.LayoutUtils.RowLayout",
     constants:{
         Row:function (dst, what_to_layout_array, constraint_object) {
@@ -8628,7 +8594,7 @@ CAAT.Module({
 
         }
     }
-});CAAT.Module({
+});;CAAT.Module({
     defines : "CAAT.Module.Initialization.Template",
     depends : [
         "CAAT.Foundation.Director",
@@ -8718,7 +8684,7 @@ CAAT.Module({
         }
     }
 });
-CAAT.Module({
+;CAAT.Module({
     defines : "CAAT.Module.Initialization.TemplateWithSplash",
     depends : [
         "CAAT.Foundation.Director",
@@ -8899,7 +8865,7 @@ CAAT.Module({
         }
 
     }
-});/**
+});;/**
  * See LICENSE file.
  *
  * These classes encapsulate different kinds of paths.
@@ -9080,7 +9046,7 @@ CAAT.Module({
     }
 
 });
-CAAT.Module({
+;CAAT.Module({
     defines:"CAAT.PathUtil.ArcPath",
     depends:[
         "CAAT.PathUtil.PathSegment",
@@ -9357,7 +9323,7 @@ CAAT.Module({
     }
 
 });
-/**
+;/**
  * CAAT.CurvePath
  */
 CAAT.Module({
@@ -9540,7 +9506,7 @@ CAAT.Module({
     }
 
 });
-/**
+;/**
  * CAAT.LinearPath
  */
 CAAT.Module({
@@ -9728,7 +9694,7 @@ CAAT.Module({
         }
     }
 });
-CAAT.Module({
+;CAAT.Module({
     defines:"CAAT.PathUtil.RectPath",
     depends:[
         "CAAT.PathUtil.PathSegment",
@@ -10026,7 +9992,7 @@ CAAT.Module({
         }
     }
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.PathUtil.Path",
     aliases : ["CAAT.Path"],
     depends : [
@@ -11042,7 +11008,7 @@ CAAT.Module( {
     }
 	
 });
-/**
+;/**
  * See LICENSE file.
  *
  */
@@ -11097,7 +11063,7 @@ CAAT.Module( {
 
     }
 });
-/**
+;/**
  * See LICENSE file.
  */
 
@@ -11207,7 +11173,7 @@ CAAT.Module( {
         }
     }
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.WebGL.ColorProgram",
     aliases : ["CAAT.ColorProgram"],
     extendsClass : "CAAT.WebGL.Program",
@@ -11295,7 +11261,7 @@ CAAT.Module( {
     }
 
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.WebGL.TextureProgram",
     aliases : ["CAAT.TextureProgram"],
     extendsClass : "CAAT.WebGL.Program",
@@ -11538,7 +11504,7 @@ CAAT.Module( {
         }
     }
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.Event.TouchInfo",
     aliases : ["CAAT.TouchInfo"],
     extendsWith : {
@@ -11556,7 +11522,7 @@ CAAT.Module( {
         }
     }
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.Event.TouchEvent",
     aliases : ["CAAT.TouchEvent"],
     depends : [
@@ -11634,7 +11600,7 @@ CAAT.Module( {
         }
 	}
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.Event.MouseEvent",
     aliases : ["CAAT.MouseEvent"],
     depends : [
@@ -11693,7 +11659,7 @@ CAAT.Module( {
         }
 	}
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.Event.KeyEvent",
     aliases : "CAAT.KeyEvent",
     extendsWith : {
@@ -11861,7 +11827,7 @@ CAAT.Module( {
     }
 
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.Event.Input",
     depends : [
         "CAAT.Event.KeyEvent",
@@ -12033,7 +11999,7 @@ CAAT.Module( {
     extendsWith : {
     }
 });
-CAAT.Module({
+;CAAT.Module({
     defines:"CAAT.Event.AnimationLoop",
     onCreate : function() {
         CAAT.ENDRAF=false; // if RAF, this value signals end of RAF.
@@ -12181,7 +12147,7 @@ CAAT.Module({
         };
     }
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.Foundation.Timer.TimerTask",
     aliases : ["CAAT.TimerTask"],
     extendsWith : {
@@ -12273,7 +12239,7 @@ CAAT.Module( {
         }
     }
 });
-/**
+;/**
  * See LICENSE file.
  */
 CAAT.Module({
@@ -12378,7 +12344,7 @@ CAAT.Module({
         }
     }
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.Foundation.UI.Layout.LayoutManager",
     aliases : ["CAAT.UI.LayoutManager"],
     depends : [
@@ -12498,7 +12464,7 @@ CAAT.Module( {
         }
     }
 });
-CAAT.Module({
+;CAAT.Module({
     defines:"CAAT.Foundation.UI.Layout.BoxLayout",
     aliases:["CAAT.UI.BoxLayout"],
     depends:[
@@ -12718,7 +12684,7 @@ CAAT.Module({
         }
     }
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.Foundation.UI.Layout.BorderLayout",
     aliases : ["CAAT.UI.BorderLayout"],
     depends : [
@@ -12904,7 +12870,7 @@ CAAT.Module( {
     }
 
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.Foundation.UI.Layout.GridLayout",
     aliases : ["CAAT.UI.GridLayout"],
     depends : [
@@ -13063,7 +13029,7 @@ CAAT.Module( {
 
     }
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.Foundation.SpriteImageHelper",
 
     extendsWith : {
@@ -13095,7 +13061,7 @@ CAAT.Module( {
         }
     }
 });
-CAAT.Module({
+;CAAT.Module({
     defines : "CAAT.Foundation.SpriteImageAnimationHelper",
     extendsWith : function() {
         return {
@@ -13113,7 +13079,7 @@ CAAT.Module({
 
         }
     }
-});/**
+});;/**
  * See LICENSE file.
  *
  * TODO: allow set of margins, spacing, etc. to define subimages.
@@ -14097,7 +14063,7 @@ CAAT.Module({
         }
     }
 });
-/**
+;/**
  * See LICENSE file.
  *
  **/
@@ -16330,7 +16296,7 @@ CAAT.Module({
         }
     }
 });
-CAAT.Module({
+;CAAT.Module({
     defines:"CAAT.Foundation.ActorContainer",
     aliases:["CAAT.ActorContainer"],
     depends:[
@@ -16753,8 +16719,8 @@ CAAT.Module({
                 return null;
             },
             /**
-             * Private
              * Gets a contained Actor z-index on this ActorContainer.
+             * Private
              *
              * @param child a CAAT.Foundation.Actor object instance.
              *
@@ -16829,9 +16795,9 @@ CAAT.Module({
                 return null;
             },
             /**
-             * @private
-             *
              * Gets the Actor inside this ActorContainer at a given Screen coordinate.
+             *
+             * @private
              *
              * @param point an object of the form { x: float, y: float }
              *
@@ -16926,7 +16892,7 @@ CAAT.Module({
         }
     }
 });
-/**
+;/**
  * See LICENSE file.
  *
  */
@@ -17492,7 +17458,7 @@ CAAT.Module({
 
 
 });
-/**
+;/**
  * See LICENSE file.
  *
  **/
@@ -20230,7 +20196,7 @@ CAAT.Module({
         }
     }
 });
-/**
+;/**
  * See LICENSE file.
  *
  * In this file we'll be adding every useful Actor that is specific for certain purpose.
@@ -20554,7 +20520,7 @@ CAAT.Module( {
     }
 
 });
-/**
+;/**
  * See LICENSE file.
  *
  **/
@@ -20643,7 +20609,7 @@ CAAT.Module( {
 
 
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.Foundation.UI.Label",
     depends : [
         "CAAT.Foundation.Actor",
@@ -21771,7 +21737,7 @@ CAAT.Module( {
     }
 
 });
-/**
+;/**
  * See LICENSE file.
  *
  * An actor to show the path and its handles in the scene graph. 
@@ -21900,7 +21866,7 @@ CAAT.Module( {
 		}
 	}
 });
-CAAT.Module({
+;CAAT.Module({
     defines : "CAAT.Foundation.UI.ShapeActor",
     aliases : ["CAAT.ShapeActor"],
     extendsClass : "CAAT.Foundation.ActorContainer",
@@ -22008,8 +21974,8 @@ CAAT.Module({
         paint : function(director,time) {
         },
         /**
-         * @private
          * Draws a circle.
+         * @private
          * @param director a valid CAAT.Director instance.
          * @param time an integer with the Scene time the Actor is being drawn.
          */
@@ -22086,7 +22052,7 @@ CAAT.Module({
     }
 
 });
-CAAT.Module( {
+;CAAT.Module( {
     defines : "CAAT.Foundation.UI.StarActor",
     aliases : ["CAAT.StarActor"],
     depends : [
@@ -22267,7 +22233,7 @@ CAAT.Module( {
     }
 
 });
-CAAT.Module( {
+;CAAT.Module( {
 
     defines : "CAAT.Foundation.UI.TextActor",
     aliases : ["CAAT.TextActor"],
@@ -22794,4 +22760,4 @@ CAAT.Module( {
 	}
 
 });
-CAAT.ModuleManager.solveAll();
+;CAAT.ModuleManager.solveAll();

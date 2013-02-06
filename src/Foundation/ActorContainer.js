@@ -421,8 +421,8 @@ CAAT.Module({
                 return null;
             },
             /**
-             * Private
              * Gets a contained Actor z-index on this ActorContainer.
+             * Private
              *
              * @param child a CAAT.Foundation.Actor object instance.
              *
@@ -497,9 +497,9 @@ CAAT.Module({
                 return null;
             },
             /**
-             * @private
-             *
              * Gets the Actor inside this ActorContainer at a given Screen coordinate.
+             *
+             * @private
              *
              * @param point an object of the form { x: float, y: float }
              *
