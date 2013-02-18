@@ -90,11 +90,17 @@ CAAT.Module( {
         clipOffsetX             :   0,
         clipOffsetY             :   0,
 
+        /**
+         * Apply this path as a Canvas context path.
+         * You must explicitly call context.beginPath
+         * @param director
+         * @return {*}
+         */
         applyAsPath : function(director) {
             var ctx= director.ctx;
 
             director.modelViewMatrix.transformRenderingContext( ctx );
-            ctx.beginPath();
+//            ctx.beginPath();
             ctx.globalCompositeOperation= 'source-out';
             ctx.moveTo(
                 this.getFirstPathSegment().startCurvePosition().x,
@@ -585,6 +591,9 @@ CAAT.Module( {
 			this.ax= -1;
 			this.ay= -1;
 		},
+        isEmpty : function() {
+            return !this.pathSegments.length;
+        },
         /**
          * Returns an integer with the number of path segments that conform this path.
          * @return {number}

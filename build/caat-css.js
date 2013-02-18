@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.5 build: 66
+Version: 0.5 build: 76
 
 Created on:
-DATE: 2013-01-21
-TIME: 14:29:46
+DATE: 2013-02-17
+TIME: 15:51:43
 */
 
 
@@ -859,8 +859,13 @@ CAAT.__CSS__=1;
 
 CAAT.Module( {
     defines: "CAAT.Core.Constants",
+    depends : [
+        "CAAT.Math.Matrix"
+    ],
 
     extendsWith: function() {
+
+        CAAT.CLAMP= false;  // do not clamp coordinates. speeds things up in older browsers.
 
         /**
          * This function makes the system obey decimal point calculations for actor's position, size, etc.
@@ -874,17 +879,8 @@ CAAT.Module( {
          * @param clamp {boolean}
          */
         CAAT.setCoordinateClamping= function( clamp ) {
-            if ( clamp ) {
-                CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
-                CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
-                CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
-                CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
-            } else {
-                CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
-                CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
-                CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
-                CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
-            }
+            CAAT.CLAMP= clamp;
+            CAAT.Math.Matrix.setCoordinateClamping(clamp);
         };
 
         /**
@@ -927,6 +923,8 @@ CAAT.Module( {
          */
         CAAT.DRAG_THRESHOLD_X=      5;
         CAAT.DRAG_THRESHOLD_Y=      5;
+
+        CAAT.CACHE_SCENE_ON_CHANGE= true;   // cache scenes on change. set before building director instance.
 
         return {
         }
@@ -1948,6 +1946,21 @@ CAAT.Module({
     onCreate : function() {
         CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Math.Matrix.prototype.transformRenderingContext_NoClamp;
         CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Math.Matrix.prototype.transformRenderingContextSet_NoClamp;
+    },
+    constants : {
+        setCoordinateClamping : function( clamp ) {
+            if ( clamp ) {
+                CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
+                CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
+                CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
+                CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
+            } else {
+                CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
+                CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
+                CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
+                CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
+            }
+        }
     },
     extendsWith:function () {
         return {
@@ -10119,11 +10132,17 @@ CAAT.Module( {
         clipOffsetX             :   0,
         clipOffsetY             :   0,
 
+        /**
+         * Apply this path as a Canvas context path.
+         * You must explicitly call context.beginPath
+         * @param director
+         * @return {*}
+         */
         applyAsPath : function(director) {
             var ctx= director.ctx;
 
             director.modelViewMatrix.transformRenderingContext( ctx );
-            ctx.beginPath();
+//            ctx.beginPath();
             ctx.globalCompositeOperation= 'source-out';
             ctx.moveTo(
                 this.getFirstPathSegment().startCurvePosition().x,
@@ -10614,6 +10633,9 @@ CAAT.Module( {
 			this.ax= -1;
 			this.ay= -1;
 		},
+        isEmpty : function() {
+            return !this.pathSegments.length;
+        },
         /**
          * Returns an integer with the number of path segments that conform this path.
          * @return {number}
@@ -11043,7 +11065,465 @@ CAAT.Module( {
     }
 	
 });
-/**
+CAAT.Module({
+
+    defines:"CAAT.PathUtil.SVGPath",
+    depends:[
+        "CAAT.PathUtil.Path"
+    ],
+    constants:function () {
+    },
+    extendsWith:function () {
+
+        var OK = 0;
+        var EOF = 1;
+        var NAN = 2;
+
+        function error(pathInfo, c) {
+            var cpos = c;
+            if (cpos < 0) {
+                cpos = 0;
+            }
+            console.log("parse error near ..." + pathInfo.substr(cpos, 20));
+        }
+
+        return {
+
+            __init:function () {
+
+            },
+
+            c:0,
+            bezierInfo:null,
+
+            skipBlank:function (pathInfo, c) {
+                var p = pathInfo.charAt(c);
+                while (c < pathInfo.length && (p == ' ' || p == '\n' || p == '\t' || p == ',')) {
+                    ++c;
+                    var p = pathInfo.charAt(c);
+                }
+
+                return c;
+            },
+
+            maybeNumber:function (pathInfo, c) {
+
+                if (c < pathInfo.length - 2) {
+
+                    var p = pathInfo.charAt(c);
+                    var p1 = pathInfo.charAt(c + 1);
+
+                    return  p == '-' ||
+                        this.isDigit(p) ||
+                        (p === "." && this.isDigit(p1) );
+                }
+
+                return false;
+            },
+
+            isDigit:function (c) {
+                return c >= "0" && c <= "9";
+            },
+
+
+            getNumber:function (pathInfo, c, v, error) {
+                c = this.skipBlank(pathInfo, c);
+                if (c < pathInfo.length) {
+                    var nc = this.findNumber(pathInfo, c);
+                    if (nc !== -1) {
+                        v.push(parseFloat(pathInfo.substr(c, nc)));
+                        c = this.skipBlank(pathInfo, nc);
+                        error.pos = c;
+                        error.result = OK;
+                        return;
+                    } else {
+                        error.result = NAN;
+                        return;
+                    }
+                }
+
+                error.result = EOF;
+            },
+
+            getNumbers:function (pathInfo, c, v, n, error) {
+
+                for (var i = 0; i < n; i++) {
+                    this.getNumber(pathInfo, c, v, error);
+                    if (error.result != OK) {
+                        break;
+                    } else {
+                        c = error.pos;
+                    }
+                }
+
+                return c;
+            },
+
+
+            findNumber:function (pathInfo, c) {
+
+                var p;
+
+                if ((p = pathInfo.charAt(c)) == '-') {
+                    ++c;
+                }
+
+                if (!this.isDigit((p = pathInfo.charAt(c)))) {
+                    if ((p = pathInfo.charAt(c)) != '.' || !this.isDigit(pathInfo.charAt(c + 1))) {
+                        return -1;
+                    }
+                }
+
+                while (this.isDigit((p = pathInfo.charAt(c)))) {
+                    ++c;
+                }
+
+                if ((p = pathInfo.charAt(c)) == '.') {
+                    ++c;
+                    if (!this.isDigit((p = pathInfo.charAt(c)))) {   // asumo un numero [d+]\. como valido.
+                        return c;
+                    }
+                    while (this.isDigit((p = pathInfo.charAt(c)))) {
+                        ++c;
+                    }
+                }
+
+                return c;
+            },
+
+            __parseMoveTo:function (pathInfo, c, absolute, path, error) {
+
+                var numbers = [];
+
+                c = this.getNumbers(pathInfo, c, numbers, 2, error);
+
+                if (error.result === OK) {
+                    if (!absolute) {
+                        numbers[0] += path.trackPathX;
+                        numbers[1] += path.trackPathY;
+                    }
+                    path.beginPath(numbers[0], numbers[1]);
+                } else {
+                    return;
+                }
+
+                if (this.maybeNumber(pathInfo, c)) {
+                    c = this.parseLine(pathInfo, c, absolute, path, error);
+                }
+
+                error.pos = c;
+            },
+
+            __parseLine:function (pathInfo, c, absolute, path, error) {
+
+                var numbers = [];
+
+                do {
+                    c = this.getNumbers(pathInfo, c, numbers, 2, error);
+                    if (!absolute) {
+                        numbers[0] += path.trackPathX;
+                        numbers[1] += path.trackPathY;
+                    }
+                    path.addLineTo(numbers[0], numbers[1]);
+
+                } while (this.maybeNumber(pathInfo, c));
+
+                error.pos = c;
+            },
+
+
+            __parseLineH:function (pathInfo, c, absolute, path, error) {
+
+                var numbers = [];
+
+                do {
+                    c = this.getNumbers(pathInfo, c, numbers, 1, error);
+
+                    if (!absolute) {
+                        numbers[0] += path.trackPathX;
+                    }
+                    numbers[1].push(path.trackPathY);
+
+                    path.addLineTo(numbers[0], numbers[1]);
+
+                } while (this.maybeNumber(pathInfo, c));
+
+                error.pos = c;
+            },
+
+            __parseLineV:function (pathInfo, c, absolute, path, error) {
+
+                var numbers = [ path.trackPathX ];
+
+                do {
+                    c = getNumbers(pathInfo, c, numbers, 1, error);
+
+                    if (!absolute) {
+                        numbers[1] += path.trackPathY;
+                    }
+
+                    path.addLineTo(numbers[0], numbers[1]);
+
+                } while (this.maybeNumber(pathInfo, c));
+
+                error.pos = c;
+            },
+
+            __parseCubic:function (pathInfo, c, absolute, path, error) {
+
+                var v = [];
+
+                do {
+                    c = this.getNumbers(pathInfo, c, v, 6, error);
+                    if (error.result === OK) {
+                        if (!absolute) {
+                            v[0] += path.trackPathX;
+                            v[1] += path.trackPathY;
+                            v[2] += path.trackPathX;
+                            v[3] += path.trackPathY;
+                            v[4] += path.trackPathX;
+                            v[5] += path.trackPathY;
+                        }
+
+                        path.addCubicTo(v[0], v[1], v[2], v[3], v[4], v[5]);
+
+
+                        v.shift();
+                        v.shift();
+                        this.bezierInfo = v;
+
+                    } else {
+                        return;
+                    }
+                } while (this.maybeNumber(pathInfo, c));
+
+                error.pos = c;
+            },
+
+            __parseCubicS:function (pathInfo, c, absolute, path, error) {
+
+                var v = [];
+
+                do {
+                    c = this.getNumbers(pathInfo, c, v, 4, error);
+                    if (error.result == OK) {
+                        if (!absolute) {
+
+                            v[0] += path.trackPathX;
+                            v[1] += path.trackPathY;
+                            v[2] += path.trackPathX;
+                            v[3] += path.trackPathY;
+                        }
+
+                        var x, y;
+
+                        x = this.bezierInfo[2] + (this.bezierInfo[2] - this.bezierInfo[0]);
+                        y = this.bezierInfo[3] + (this.bezierInfo[3] - this.bezierInfo[1]);
+
+                        path.addCubicTo(x, y, v[0], v[1], v[2], v[3]);
+
+                        this.bezierInfo = v;
+
+                    } else {
+                        return;
+                    }
+                } while (this.maybeNumber(c));
+
+                error.pos = c;
+            },
+
+            __parseQuadricS:function (pathInfo, c, absolute, path, error) {
+
+                var v = [];
+
+                do {
+                    c = this.getNumbers(pathInfo, c, v, 4, error);
+                    if (error.result === OK) {
+
+                        if (!absolute) {
+
+                            v[0] += path.trackPathX;
+                            v[1] += path.trackPathY;
+                        }
+
+                        var x, y;
+
+                        x = this.bezierInfo[2] + (this.bezierInfo[2] - this.bezierInfo[0]);
+                        y = this.bezierInfo[3] + (this.bezierInfo[3] - this.bezierInfo[1]);
+
+                        path.addQuadricTo(x, y, v[0], v[1]);
+
+                        this.bezierInfo = [];
+                        bezierInfo.push(x);
+                        bezierInfo.push(y);
+                        bezierInfo.push(v[0]);
+                        bezierInfo.push(v[1]);
+
+
+                    } else {
+                        return;
+                    }
+                } while (this.maybeNumber(c));
+
+                error.pos = c;
+            },
+
+
+            __parseQuadric:function (pathInfo, c, absolute, path, error) {
+
+                var v = [];
+
+                do {
+                    c = this.getNumbers(pathInfo, c, v, 4, error);
+                    if (error.result === OK) {
+                        if (!absolute) {
+
+                            v[0] += path.trackPathX;
+                            v[1] += path.trackPathY;
+                            v[2] += path.trackPathX;
+                            v[3] += path.trackPathY;
+                        }
+
+                        path.addQuadricTo(v[0], v[1], v[2], v[3]);
+
+                        this.bezierInfo = v;
+                    } else {
+                        return;
+                    }
+                } while (this.maybeNumber(c));
+
+                error.pos = c;
+            },
+
+            __parseClosePath:function (pathInfo, c, path, error) {
+
+                path.closePath();
+                error.pos= c;
+
+            },
+
+            /**
+             * This method will create a CAAT.PathUtil.Path object with as many contours as needed.
+             * @param pathInfo {string} a SVG path
+             * @return Array.<CAAT.PathUtil.Path>
+             */
+            parsePath:function (pathInfo) {
+
+                this.c = 0;
+                this.contours= [];
+
+                var path = new CAAT.PathUtil.Path();
+                this.contours.push( path );
+
+                this.c = this.skipBlank(pathInfo, this.c);
+                if (this.c === pathInfo.length) {
+                    return path;
+                }
+
+                var ret = {
+                    pos:0,
+                    result:0
+                }
+
+                while (this.c != pathInfo.length) {
+                    var segment = pathInfo.charAt(this.c);
+                    switch (segment) {
+                        case 'm':
+                            this.__parseMoveTo(pathInfo, this.c + 1, false, path, ret);
+                            break;
+                        case 'M':
+                            this.__parseMoveTo(pathInfo, this.c + 1, true, path, ret);
+                            break;
+                        case 'c':
+                            this.__parseCubic(pathInfo, this.c + 1, false, path, ret);
+                            break;
+                        case 'C':
+                            this.__parseCubic(pathInfo, this.c + 1, true, path, ret);
+                            break;
+                        case 's':
+                            this.__parseCubicS(pathInfo, this.c + 1, false, path, ret);
+                            break;
+                        case 'S':
+                            this.__parseCubicS(pathInfo, this.c + 1, true, path, ret);
+                            break;
+                        case 'q':
+                            this.__parseQuadric(pathInfo, this.c + 1, false, path, ret);
+                            break;
+                        case 'Q':
+                            this.__parseQuadricS(pathInfo, this.c + 1, true, path, ret);
+                            break;
+                        case 't':
+                            this.__parseQuadricS(pathInfo, this.c + 1, false, path, ret);
+                            break;
+                        case 'T':
+                            this.__parseQuadric(pathInfo, this.c + 1, true, path, ret);
+                            break;
+                        case 'l':
+                            this.__parseLine(pathInfo, this.c + 1, false, path, ret);
+                            break;
+                        case 'L':
+                            this.__parseLine(pathInfo, this.c + 1, true, path, ret);
+                            break;
+                        case 'h':
+                            this.__parseLineH(pathInfo, this.c + 1, false, path, ret);
+                            break;
+                        case 'H':
+                            this.__parseLineH(pathInfo, this.c + 1, true, path, ret);
+                            break;
+                        case 'v':
+                            this.__parseLineV(pathInfo, this.c + 1, false, path, ret);
+                            break;
+                        case 'V':
+                            this.__parseLineV(pathInfo, this.c + 1, true, path, ret);
+                            break;
+                        case 'z':
+                        case 'Z':
+                            this.__parseClosePath(pathInfo, this.c + 1, path, ret);
+                            path= new CAAT.PathUtil.Path();
+                            this.contours.push( path );
+                            break;
+                        case 0:
+                            break;
+                        default:
+                            error(pathInfo, this.c);
+                            break;
+                    }
+
+                    if (ret.result != OK) {
+                        error(pathInfo, this.c);
+                        break;
+                    } else {
+                        this.c = ret.pos;
+                    }
+
+                } // while
+
+                var count= 0;
+                var fpath= null;
+                for( var i=0; i<this.contours.length; i++ ) {
+                    if ( !this.contours[i].isEmpty() ) {
+                        fpath= this.contours[i];
+                        count++;
+                    }
+                }
+
+                if ( count===1 ) {
+                    return fpath;
+                }
+
+                path= new CAAT.PathUtil.Path();
+                for( var i=0; i<this.contours.length; i++ ) {
+                    if ( !this.contours[i].isEmpty() ) {
+                        path.addSegment( this.contours[i] );
+                    }
+                }
+                return path.endPath();
+
+            }
+
+        }
+    }
+});/**
  * See LICENSE file.
  *
  */
@@ -12139,7 +12619,7 @@ CAAT.Module({
             }
         };
         
-        CAAT.renderFrameRAF= function () {
+        CAAT.renderFrameRAF= function (now) {
             var c= CAAT;
 
             if (c.ENDRAF) {
@@ -12147,17 +12627,14 @@ CAAT.Module({
                 return;
             }
 
-            var t = new Date().getTime();
+            if (!now) now = new Date().getTime();
+
+            c.REQUEST_ANIMATION_FRAME_TIME = c.RAF ? now - c.RAF : 0.16;
             for (var i = 0, l = c.director.length; i < l; i++) {
                 c.director[i].renderFrame();
             }
-            t = new Date().getTime() - t;
-            c.FRAME_TIME = t;
+            c.RAF = now;
 
-            if (c.RAF) {
-                c.REQUEST_ANIMATION_FRAME_TIME = new Date().getTime() - c.RAF;
-            }
-            c.RAF = new Date().getTime();
 
             window.requestAnimFrame(c.renderFrameRAF, 0);
         };
@@ -17607,14 +18084,16 @@ CAAT.Module({
                 this.timeline = new Date().getTime();
 
                 // transition scene
-                this.transitionScene = new CAAT.Foundation.Scene().setBounds(0, 0, width, height);
-                var transitionCanvas = document.createElement('canvas');
-                transitionCanvas.width = width;
-                transitionCanvas.height = height;
-                var transitionImageActor = new CAAT.Foundation.Actor().setBackgroundImage(transitionCanvas);
-                this.transitionScene.ctx = transitionCanvas.getContext('2d');
-                this.transitionScene.addChildImmediately(transitionImageActor);
-                this.transitionScene.setEaseListener(this);
+                if (CAAT.CACHE_SCENE_ON_CHANGE) {
+                    this.transitionScene = new CAAT.Foundation.Scene().setBounds(0, 0, width, height);
+                    var transitionCanvas = document.createElement('canvas');
+                    transitionCanvas.width = width;
+                    transitionCanvas.height = height;
+                    var transitionImageActor = new CAAT.Foundation.Actor().setBackgroundImage(transitionCanvas);
+                    this.transitionScene.ctx = transitionCanvas.getContext('2d');
+                    this.transitionScene.addChildImmediately(transitionImageActor);
+                    this.transitionScene.setEaseListener(this);
+                }
 
                 this.checkDebug();
 
@@ -18332,7 +18811,7 @@ CAAT.Module({
                 var ssin = this.scenes[ inSceneIndex ];
                 var sout = this.scenes[ outSceneIndex ];
 
-                if (!CAAT.__CSS__ && !this.glEnabled) {
+                if (!CAAT.__CSS__ && CAAT.CACHE_SCENE_ON_CHANGE) {
                     this.renderToContext(this.transitionScene.ctx, sout);
                     sout = this.transitionScene;
                 }
@@ -19270,6 +19749,8 @@ CAAT.Module({
 
                 if (e.target === this.canvas) {
                     e.preventDefault();
+                    e.returnValue = false;
+
                     e = e.targetTouches[0];
 
                     var mp = this.mousePoint;
@@ -19288,6 +19769,8 @@ CAAT.Module({
 
                 if (this.touching) {
                     e.preventDefault();
+                    e.returnValue = false;
+
                     e = e.changedTouches[0];
                     var mp = this.mousePoint;
                     this.getCanvasCoord(mp, e);
@@ -19302,6 +19785,7 @@ CAAT.Module({
 
                 if (this.touching) {
                     e.preventDefault();
+                    e.returnValue = false;
 
                     if (this.gesturing) {
                         return;
@@ -19347,6 +19831,7 @@ CAAT.Module({
             __touchEndHandlerMT:function (e) {
 
                 e.preventDefault();
+                e.returnValue = false;
 
                 var i, j;
                 var recent = [];
@@ -19416,6 +19901,7 @@ CAAT.Module({
             __touchMoveHandlerMT:function (e) {
 
                 e.preventDefault();
+                e.returnValue = false;
 
                 var i;
                 var recent = [];
@@ -19491,7 +19977,7 @@ CAAT.Module({
 
             __touchStartHandlerMT:function (e) {
                 e.preventDefault();
-
+                e.returnValue = false;
 
                 var i;
                 var recent = [];
@@ -19728,18 +20214,21 @@ CAAT.Module({
                     canvas.addEventListener("gesturestart", function (e) {
                         if (e.target === canvas) {
                             e.preventDefault();
+                            e.returnValue = false;
                             me.__gestureStart(e.scale, e.rotation);
                         }
                     }, false);
                     canvas.addEventListener("gestureend", function (e) {
                         if (e.target === canvas) {
                             e.preventDefault();
+                            e.returnValue = false;
                             me.__gestureEnd(e.scale, e.rotation);
                         }
                     }, false);
                     canvas.addEventListener("gesturechange", function (e) {
                         if (e.target === canvas) {
                             e.preventDefault();
+                            e.returnValue = false;
                             me.__gestureChange(e.scale, e.rotation);
                         }
                     }, false);
@@ -22394,7 +22883,11 @@ CAAT.Module( {
 
 				ctx.save();
 
-					ctx.translate( p0.x>>0, p0.y>>0 );
+                    if ( CAAT.CLAMP ) {
+					    ctx.translate( p0.x>>0, p0.y>>0 );
+                    } else {
+                        ctx.translate( p0.x, p0.y );
+                    }
 					ctx.rotate( angle );
                     if ( this.fill ) {
 					    ctx.fillText(caracter,0,0);
@@ -22454,7 +22947,11 @@ CAAT.Module( {
 
 				context.save();
 
-				context.translate( p0.x|0, p0.y|0 );
+                if ( CAAT.CLAMP ) {
+				    context.translate( p0.x|0, p0.y|0 );
+                } else {
+                    context.translate( p0.x, p0.y );
+                }
 				context.rotate( angle );
 				
 				var y = this.textBaseline === "bottom" ? 0 - this.font.getHeight() : 0;

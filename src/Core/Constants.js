@@ -5,8 +5,13 @@
 
 CAAT.Module( {
     defines: "CAAT.Core.Constants",
+    depends : [
+        "CAAT.Math.Matrix"
+    ],
 
     extendsWith: function() {
+
+        CAAT.CLAMP= false;  // do not clamp coordinates. speeds things up in older browsers.
 
         /**
          * This function makes the system obey decimal point calculations for actor's position, size, etc.
@@ -20,17 +25,8 @@ CAAT.Module( {
          * @param clamp {boolean}
          */
         CAAT.setCoordinateClamping= function( clamp ) {
-            if ( clamp ) {
-                CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
-                CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
-                CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
-                CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
-            } else {
-                CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
-                CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
-                CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
-                CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
-            }
+            CAAT.CLAMP= clamp;
+            CAAT.Math.Matrix.setCoordinateClamping(clamp);
         };
 
         /**
@@ -73,6 +69,8 @@ CAAT.Module( {
          */
         CAAT.DRAG_THRESHOLD_X=      5;
         CAAT.DRAG_THRESHOLD_Y=      5;
+
+        CAAT.CACHE_SCENE_ON_CHANGE= true;   // cache scenes on change. set before building director instance.
 
         return {
         }

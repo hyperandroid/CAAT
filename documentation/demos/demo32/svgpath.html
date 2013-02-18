@@ -3,7 +3,7 @@
 <head>
     <script src="../../track.js" type="text/javascript"></script>
 
-    <title>CAAT example: Multitouch</title>
+    <title>CAAT example: SVG Path parser</title>
 
     <link rel="stylesheet" href="../style/demo.css">
 
@@ -56,10 +56,6 @@
 
 <script type="text/javascript" src="../menu/menu.js"></script>
 <script type="text/javascript" src="../../../build/caat.js"></script>
-<script type="text/javascript" src="p1.js"></script>
-<script type="text/javascript" src="p2.js"></script>
-<script type="text/javascript" src="p3.js"></script>
-<script type="text/javascript" src="lion.js"></script>
 <script type="text/javascript">
     /**
      * @license
@@ -87,18 +83,11 @@
      *
      */
 
-    var FC= {};
-
     (function() {
-        CAAT.DEBUG=1;
-        CAAT.TOUCH_BEHAVIOR= CAAT.TOUCH_AS_MULTITOUCH;
-
         function __start() {
 
             var director= new CAAT.Director().initialize(800, 500, document.getElementById("experiment-canvas"));
             var scene= director.createScene();
-
-
 
             var parser= new CAAT.PathUtil.SVGPath();
             director.ctx.beginPath();

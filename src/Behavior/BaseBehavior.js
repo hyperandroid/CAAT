@@ -30,6 +30,41 @@ CAAT.Module({
             NOT_STARTED: 0,
             STARTED:    1,
             EXPIRED:    2
+        },
+
+        /**
+         *
+         * @param obj
+         */
+        parse : function( obj ) {
+
+            function findClass( qualifiedClassName ) {
+                var ns= qualifiedClassName.split(".");
+                var _global= window;
+                for( var i=0; i<ns.length; i++ ) {
+                    if ( !_global[ns[i]] ) {
+                        return null;
+                    }
+
+                    _global= _global[ns[i]];
+                }
+
+                return _global;
+            }
+
+            try {
+
+                var type= obj.type.toLowerCase;
+                type= "CAAT.Behavior."+type.substr(0,1).toUpperCase() + type.substr(1) + "Behavior";
+                var cl= new findClass(type);
+
+                var behavior= new cl();
+                behavior.parse(obj);
+
+            } catch(e) {
+                console.log("Error parsing behavior: "+e);
+            }
+
         }
     },
     depends:        ["CAAT.Behavior.Interpolator"],

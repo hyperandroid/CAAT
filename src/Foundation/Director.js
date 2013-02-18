@@ -416,14 +416,16 @@ CAAT.Module({
                 this.timeline = new Date().getTime();
 
                 // transition scene
-                this.transitionScene = new CAAT.Foundation.Scene().setBounds(0, 0, width, height);
-                var transitionCanvas = document.createElement('canvas');
-                transitionCanvas.width = width;
-                transitionCanvas.height = height;
-                var transitionImageActor = new CAAT.Foundation.Actor().setBackgroundImage(transitionCanvas);
-                this.transitionScene.ctx = transitionCanvas.getContext('2d');
-                this.transitionScene.addChildImmediately(transitionImageActor);
-                this.transitionScene.setEaseListener(this);
+                if (CAAT.CACHE_SCENE_ON_CHANGE) {
+                    this.transitionScene = new CAAT.Foundation.Scene().setBounds(0, 0, width, height);
+                    var transitionCanvas = document.createElement('canvas');
+                    transitionCanvas.width = width;
+                    transitionCanvas.height = height;
+                    var transitionImageActor = new CAAT.Foundation.Actor().setBackgroundImage(transitionCanvas);
+                    this.transitionScene.ctx = transitionCanvas.getContext('2d');
+                    this.transitionScene.addChildImmediately(transitionImageActor);
+                    this.transitionScene.setEaseListener(this);
+                }
 
                 this.checkDebug();
 
@@ -1141,7 +1143,7 @@ CAAT.Module({
                 var ssin = this.scenes[ inSceneIndex ];
                 var sout = this.scenes[ outSceneIndex ];
 
-                if (!CAAT.__CSS__ && !this.glEnabled) {
+                if (!CAAT.__CSS__ && CAAT.CACHE_SCENE_ON_CHANGE) {
                     this.renderToContext(this.transitionScene.ctx, sout);
                     sout = this.transitionScene;
                 }
@@ -2079,6 +2081,8 @@ CAAT.Module({
 
                 if (e.target === this.canvas) {
                     e.preventDefault();
+                    e.returnValue = false;
+
                     e = e.targetTouches[0];
 
                     var mp = this.mousePoint;
@@ -2097,6 +2101,8 @@ CAAT.Module({
 
                 if (this.touching) {
                     e.preventDefault();
+                    e.returnValue = false;
+
                     e = e.changedTouches[0];
                     var mp = this.mousePoint;
                     this.getCanvasCoord(mp, e);
@@ -2111,6 +2117,7 @@ CAAT.Module({
 
                 if (this.touching) {
                     e.preventDefault();
+                    e.returnValue = false;
 
                     if (this.gesturing) {
                         return;
@@ -2156,6 +2163,7 @@ CAAT.Module({
             __touchEndHandlerMT:function (e) {
 
                 e.preventDefault();
+                e.returnValue = false;
 
                 var i, j;
                 var recent = [];
@@ -2225,6 +2233,7 @@ CAAT.Module({
             __touchMoveHandlerMT:function (e) {
 
                 e.preventDefault();
+                e.returnValue = false;
 
                 var i;
                 var recent = [];
@@ -2300,7 +2309,7 @@ CAAT.Module({
 
             __touchStartHandlerMT:function (e) {
                 e.preventDefault();
-
+                e.returnValue = false;
 
                 var i;
                 var recent = [];
@@ -2537,18 +2546,21 @@ CAAT.Module({
                     canvas.addEventListener("gesturestart", function (e) {
                         if (e.target === canvas) {
                             e.preventDefault();
+                            e.returnValue = false;
                             me.__gestureStart(e.scale, e.rotation);
                         }
                     }, false);
                     canvas.addEventListener("gestureend", function (e) {
                         if (e.target === canvas) {
                             e.preventDefault();
+                            e.returnValue = false;
                             me.__gestureEnd(e.scale, e.rotation);
                         }
                     }, false);
                     canvas.addEventListener("gesturechange", function (e) {
                         if (e.target === canvas) {
                             e.preventDefault();
+                            e.returnValue = false;
                             me.__gestureChange(e.scale, e.rotation);
                         }
                     }, false);

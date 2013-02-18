@@ -428,7 +428,11 @@ CAAT.Module( {
 
 				ctx.save();
 
-					ctx.translate( p0.x>>0, p0.y>>0 );
+                    if ( CAAT.CLAMP ) {
+					    ctx.translate( p0.x>>0, p0.y>>0 );
+                    } else {
+                        ctx.translate( p0.x, p0.y );
+                    }
 					ctx.rotate( angle );
                     if ( this.fill ) {
 					    ctx.fillText(caracter,0,0);
@@ -488,7 +492,11 @@ CAAT.Module( {
 
 				context.save();
 
-				context.translate( p0.x|0, p0.y|0 );
+                if ( CAAT.CLAMP ) {
+				    context.translate( p0.x|0, p0.y|0 );
+                } else {
+                    context.translate( p0.x, p0.y );
+                }
 				context.rotate( angle );
 				
 				var y = this.textBaseline === "bottom" ? 0 - this.font.getHeight() : 0;

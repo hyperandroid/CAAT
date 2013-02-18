@@ -33,12 +33,40 @@ CAAT.Module({
         CACHE_SIMPLE :  1,
         CACHE_DEEP :    2
     },
+
+    /**
+     *
+     * @memberof Actor
+     */
     extendsWith : function () {
 
         var __index = 0;
 
+        /**
+         * @name CAAT
+         * @namespace
+         */
+
+        /**
+         * @name Foundation
+         * @namespace
+         * @memberOf CAAT
+         */
+
+        /**
+         * @name Actor
+         * @memberOf CAAT.Foundation
+         * @constructor
+         *
+         */
+
+
         return  {
 
+            /**
+             * @name CAAT.Foundation.Actor.__init
+             * @function
+             */
             __init:function () {
                 this.behaviorList = [];
                 this.lifecycleListenerList = [];
@@ -141,6 +169,14 @@ CAAT.Module({
             isAA:true, // is this actor/container Axis aligned ? if so, much faster inverse matrices
             // can be calculated.
 
+
+            /**
+             *
+             * Make this actor not be laid out.
+             *
+             * @memberof CAAT.Foundation.Actor
+             * @function
+             */
             setPreventLayout : function(b) {
                 this.preventLayout= b;
                 return this;

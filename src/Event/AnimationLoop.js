@@ -103,7 +103,7 @@ CAAT.Module({
             }
         };
         
-        CAAT.renderFrameRAF= function () {
+        CAAT.renderFrameRAF= function (now) {
             var c= CAAT;
 
             if (c.ENDRAF) {
@@ -111,17 +111,14 @@ CAAT.Module({
                 return;
             }
 
-            var t = new Date().getTime();
+            if (!now) now = new Date().getTime();
+
+            c.REQUEST_ANIMATION_FRAME_TIME = c.RAF ? now - c.RAF : 0.16;
             for (var i = 0, l = c.director.length; i < l; i++) {
                 c.director[i].renderFrame();
             }
-            t = new Date().getTime() - t;
-            c.FRAME_TIME = t;
+            c.RAF = now;
 
-            if (c.RAF) {
-                c.REQUEST_ANIMATION_FRAME_TIME = new Date().getTime() - c.RAF;
-            }
-            c.RAF = new Date().getTime();
 
             window.requestAnimFrame(c.renderFrameRAF, 0);
         };
