@@ -65,7 +65,19 @@ CAAT.Module({
                 new CAAT.Behavior.Interpolator().createElasticOutInterpolator(1.0, 0.2, true), 'ElasticOut pingpong=true, amp=1.0, d=.2',
                 new CAAT.Behavior.Interpolator().createElasticInOutInterpolator(1.0, 0.2, true), 'ElasticInOut pingpong=true, amp=1.0, d=.2'
             ];
-        }        
+        },
+        parse : function( obj ) {
+            var name= "create"+obj.type+"Interpolator";
+            var interpolator= new CAAT.Behavior.Interpolator();
+            try {
+                interpolator[name].apply( interpolator, obj.params||[] );
+            } catch(e) {
+                interpolator.createLinearInterpolator(false, false);
+            }
+
+            return interpolator;
+        }
+
     },
     extendsWith:function () {
 

@@ -34,6 +34,16 @@ CAAT.Module({
             anchorX:.50,
             anchorY:.50,
 
+            parse : function( obj ) {
+                CAAT.Behavior.ScaleBehavior.superclass.parse.call(this,obj);
+                this.startScaleX= (obj.scaleX && obj.scaleX.start) || 0;
+                this.endScaleX= (obj.scaleX && obj.scaleX.end) || 0;
+                this.startScaleY= (obj.scaleY && obj.scaleY.start) || 0;
+                this.endScaleY= (obj.scaleY && obj.scaleY.end) || 0;
+                this.anchorX= parseInt(obj.anchorX || 0.5);
+                this.anchorY= parseInt(obj.anchorY || 0.5);
+            },
+
             getPropertyName:function () {
                 return "scale";
             },

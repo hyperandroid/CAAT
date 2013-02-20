@@ -54,17 +54,19 @@ CAAT.Module({
 
             try {
 
-                var type= obj.type.toLowerCase;
+                var type= obj.type.toLowerCase();
                 type= "CAAT.Behavior."+type.substr(0,1).toUpperCase() + type.substr(1) + "Behavior";
                 var cl= new findClass(type);
 
                 var behavior= new cl();
                 behavior.parse(obj);
+                return behavior;
 
             } catch(e) {
                 console.log("Error parsing behavior: "+e);
             }
 
+            return null;
         }
     },
     depends:        ["CAAT.Behavior.Interpolator"],
@@ -141,6 +143,23 @@ CAAT.Module({
             solved:true,
 
             discardable:false, // is true, this behavior will be removed from the this.actor instance when it expires.
+
+            parse : function( obj ) {
+                if ( obj.pingpong ) {
+                    this.setPingPong();
+                }
+                if ( obj.cycle ) {
+                    this.setCycle(true);
+                }
+                var delay= obj.delay || 0;
+                var duration= obj.duration || 1000;
+
+                this.setDelayTime( delay, duration );
+
+                if ( obj.interpolator ) {
+                    this.setInterpolator( CAAT.Behavior.Interpolator.parse(obj.interpolator) );
+                }
+            },
 
             /*  @memberOf CAAT.Behavior.BaseBehavior */
             setValueApplication:function (apply) {

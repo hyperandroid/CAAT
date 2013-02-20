@@ -9,6 +9,12 @@ CAAT.Module({
             startAlpha:0,
             endAlpha:0,
 
+            parse : function( obj ) {
+                CAAT.Behavior.AlphaBehavior.superclass.parse.call(this,obj);
+                this.startAlpha= obj.start || 0;
+                this.endAlpha= obj.end || 0;
+            },
+
             getPropertyName:function () {
                 return "opacity";
             },

@@ -74,7 +74,7 @@
             return;
         }
 
-        var keyframesRule= behavior.calculateKeyframesData(CAAT.CSS.PREFIX, name, size );
+        var keyframesRule= behavior.calculateKeyFramesData(CAAT.CSS.PREFIX, name, size );
 
         if (document.styleSheets) {
             if ( !document.styleSheets.length) {
@@ -91,6 +91,7 @@
             document.styleSheets[0].insertRule( keyframesRule, 0 );
         }
 
+        return keyframesRule;
     };
 
     CAAT.CSS.getCSSKeyframesIndex= function(name) {

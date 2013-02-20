@@ -7,6 +7,15 @@ CAAT.Module({
 
         return {
 
+            parse : function( obj ) {
+                if ( obj.behaviors && obj.behaviors.length ) {
+                    for( var i=0; i<obj.behaviors.length; i+=1 ) {
+                        this.addBehavior( CAAT.Behavior.BaseBehavior.parse( obj.behaviors[i] ) );
+                    }
+                }
+                CAAT.Behavior.ContainerBehavior.superclass.parse.call(this,obj);
+            },
+
             behaviors:null, // contained behaviors array
 
             __init:function () {
@@ -165,7 +174,7 @@ CAAT.Module({
 
                 for (i = 0; i < this.behaviors.length; i++) {
                     bh = this.behaviors[i];
-                    if (bh.status !== CAAT.Behavior.BehaviorConstants.Status.EXPIRED && !(bh instanceof CAAT.Behavior.GenericBehavior)) {
+                    if (bh.status !== CAAT.Behavior.BaseBehavior.Status.EXPIRED && !(bh instanceof CAAT.Behavior.GenericBehavior)) {
 
                         // ajustar tiempos:
                         //  time es tiempo normalizado a duracion de comportamiento contenedor.

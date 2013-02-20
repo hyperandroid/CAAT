@@ -17,6 +17,16 @@ CAAT.Module({
 
         return {
 
+            parse : function( obj ) {
+                CAAT.Behavior.PathBehavior.superclass.parse.call(this,obj);
+
+                if ( obj.SVG ) {
+                    var parser= new CAAT.PathUtil.SVGPath();
+                    var path=parser.parsePath( obj.SVG );
+                    this.setValues(path);
+                }
+            },
+
             path:null, // the path to traverse
             autoRotate:false, // set whether the actor must be rotated tangentially to the path.
             prevX:-1, // private, do not use.

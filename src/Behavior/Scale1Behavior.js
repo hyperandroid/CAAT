@@ -33,6 +33,15 @@ CAAT.Module({
 
             applyOnX:true,
 
+            parse : function( obj ) {
+                CAAT.Behavior.Scale1Behavior.superclass.parse.call(this,obj);
+                this.startScale= obj.start || 0;
+                this.endScale= obj.end || 0;
+                this.anchorX= parseInt(obj.anchorX || 0.5);
+                this.anchorY= parseInt(obj.anchorY || 0.5);
+                this.applyOnX= (obj.axis && obj.axis.toLowerCase()==="x") || true;
+            },
+
             /**
              *
              * @param axis {Axis}

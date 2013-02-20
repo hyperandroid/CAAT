@@ -16,6 +16,14 @@ CAAT.Module({
                 return this;
             },
 
+            parse : function( obj ) {
+                CAAT.Behavior.RotateBehavior.superclass.parse.call(this,obj);
+                this.startAngle= obj.start || 0;
+                this.endAngle= obj.end || 0;
+                this.anchorX= parseInt(obj.anchorX || 0.5);
+                this.anchorY= parseInt(obj.anchorY || 0.5);
+            },
+
             startAngle:0, // behavior start angle
             endAngle:0, // behavior end angle
             anchorX:.50, // rotation center x.
