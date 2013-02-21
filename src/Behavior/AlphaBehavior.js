@@ -54,6 +54,13 @@ CAAT.Module({
                 return  (this.startAlpha + time * (this.endAlpha - this.startAlpha));
             },
 
+            getKeyFrameDataValues : function(time) {
+                time = this.interpolator.getPosition(time).y;
+                return {
+                    alpha : this.startAlpha + time * (this.endAlpha - this.startAlpha)
+                };
+            },
+
             /**
              * @param prefix {string} browser vendor prefix
              * @param name {string} keyframes animation name

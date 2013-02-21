@@ -37,9 +37,9 @@ CAAT.Module({
                 CAAT.Behavior.Scale1Behavior.superclass.parse.call(this,obj);
                 this.startScale= obj.start || 0;
                 this.endScale= obj.end || 0;
-                this.anchorX= parseInt(obj.anchorX || 0.5);
-                this.anchorY= parseInt(obj.anchorY || 0.5);
-                this.applyOnX= (obj.axis && obj.axis.toLowerCase()==="x") || true;
+                this.anchorX= (typeof obj.anchorX!=="undefined" ? parseInt(obj.anchorX) : 0.5);
+                this.anchorY= (typeof obj.anchorY!=="undefined" ? parseInt(obj.anchorY) : 0.5);
+                this.applyOnX= obj.axis ? obj.axis.toLowerCase()==="x" : true;
             },
 
             /**
@@ -132,6 +132,14 @@ CAAT.Module({
                 return this.applyOnX ? "scaleX(" + scale + ")" : "scaleY(" + scale + ")";
             },
 
+            getKeyFrameDataValues : function(time) {
+                time = this.interpolator.getPosition(time).y;
+                var obj= {};
+                obj[ this.applyOnX ? "scaleX" : "scaleY" ]= this.startScale + time * (this.endScale - this.startScale);
+
+                return obj;
+            },
+
             calculateKeyFramesData:function (prefix, name, keyframessize) {
 
                 if (typeof keyframessize === 'undefined') {
@@ -148,12 +156,13 @@ CAAT.Module({
                         (i / keyframessize * 100) + "%" + // percentage
                         "{" +
                         "-" + prefix + "-transform:" + this.calculateKeyFrameData(i / keyframessize) +
-                        "}";
+                        "; -" + prefix + "-transform-origin:" + (this.anchorX*100) + "% " + (this.anchorY*100) + "% " +
+                        "}\n";
 
                     kfd += kfr;
                 }
 
-                kfd += "}";
+                kfd += "}\n";
 
                 return kfd;
             }

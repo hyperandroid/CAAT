@@ -90,6 +90,8 @@ CAAT.Module( {
         clipOffsetX             :   0,
         clipOffsetY             :   0,
 
+        closed                  :   false,
+
         /**
          * Apply this path as a Canvas context path.
          * You must explicitly call context.beginPath
@@ -433,6 +435,8 @@ CAAT.Module( {
 
 			this.trackPathX= this.beginPathX;
 			this.trackPathY= this.beginPathY;
+
+            this.closed= true;
 
 			this.endPath();
             return this;

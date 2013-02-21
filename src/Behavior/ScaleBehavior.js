@@ -40,8 +40,8 @@ CAAT.Module({
                 this.endScaleX= (obj.scaleX && obj.scaleX.end) || 0;
                 this.startScaleY= (obj.scaleY && obj.scaleY.start) || 0;
                 this.endScaleY= (obj.scaleY && obj.scaleY.end) || 0;
-                this.anchorX= parseInt(obj.anchorX || 0.5);
-                this.anchorY= parseInt(obj.anchorY || 0.5);
+                this.anchorX= (typeof obj.anchorX!=="undefined" ? parseInt(obj.anchorX) : 0.5);
+                this.anchorY= (typeof obj.anchorY!=="undefined" ? parseInt(obj.anchorY) : 0.5);
             },
 
             getPropertyName:function () {
@@ -124,8 +124,17 @@ CAAT.Module({
                 scaleX = this.startScaleX + time * (this.endScaleX - this.startScaleX);
                 scaleY = this.startScaleY + time * (this.endScaleY - this.startScaleY);
 
-                return "scaleX(" + scaleX + ") scaleY(" + scaleY + ")";
+                return "scale(" + scaleX +"," + scaleY + ")";
             },
+
+            getKeyFrameDataValues : function(time) {
+                time = this.interpolator.getPosition(time).y;
+                return {
+                    scaleX : this.startScaleX + time * (this.endScaleX - this.startScaleX),
+                    scaleY : this.startScaleY + time * (this.endScaleY - this.startScaleY)
+                };
+            },
+
 
             calculateKeyFramesData:function (prefix, name, keyframessize) {
 
@@ -143,12 +152,13 @@ CAAT.Module({
                         (i / keyframessize * 100) + "%" + // percentage
                         "{" +
                         "-" + prefix + "-transform:" + this.calculateKeyFrameData(i / keyframessize) +
-                        "}";
+                        "; -" + prefix + "-transform-origin:" + (this.anchorX*100) + "% " + (this.anchorY*100) + "% " +
+                        "}\n";
 
                     kfd += kfr;
                 }
 
-                kfd += "}";
+                kfd += "}\n";
 
                 return kfd;
             }

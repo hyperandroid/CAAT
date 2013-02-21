@@ -20,8 +20,8 @@ CAAT.Module({
                 CAAT.Behavior.RotateBehavior.superclass.parse.call(this,obj);
                 this.startAngle= obj.start || 0;
                 this.endAngle= obj.end || 0;
-                this.anchorX= parseInt(obj.anchorX || 0.5);
-                this.anchorY= parseInt(obj.anchorY || 0.5);
+                this.anchorX= (typeof obj.anchorX!=="undefined" ? parseInt(obj.anchorX) : 0.5);
+                this.anchorY= (typeof obj.anchorY!=="undefined" ? parseInt(obj.anchorY) : 0.5);
             },
 
             startAngle:0, // behavior start angle
@@ -105,6 +105,13 @@ CAAT.Module({
                 return "rotate(" + (this.startAngle + time * (this.endAngle - this.startAngle)) + "rad)";
             },
 
+            getKeyFrameDataValues : function(time) {
+                time = this.interpolator.getPosition(time).y;
+                return {
+                    angle : this.startAngle + time * (this.endAngle - this.startAngle)
+                };
+            },
+
             /**
              * @param prefix {string} browser vendor prefix
              * @param name {string} keyframes animation name
@@ -127,12 +134,13 @@ CAAT.Module({
                         (i / keyframessize * 100) + "%" + // percentage
                         "{" +
                         "-" + prefix + "-transform:" + this.calculateKeyFrameData(i / keyframessize) +
+                        "; -" + prefix + "-transform-origin:" + (this.anchorX*100) + "% " + (this.anchorY*100) + "% " +
                         "}\n";
 
                     kfd += kfr;
                 }
 
-                kfd += "}";
+                kfd += "}\n";
 
                 return kfd;
             }

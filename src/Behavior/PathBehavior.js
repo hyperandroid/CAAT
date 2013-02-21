@@ -25,6 +25,10 @@ CAAT.Module({
                     var path=parser.parsePath( obj.SVG );
                     this.setValues(path);
                 }
+
+                if ( obj.autoRotate ) {
+                    this.autoRotate= obj.autoRotate;
+                }
             },
 
             path:null, // the path to traverse
@@ -89,6 +93,27 @@ CAAT.Module({
                 time = this.interpolator.getPosition(time).y;
                 var point = this.path.getPosition(time);
                 return "translateX(" + point.x + "px) translateY(" + point.y + "px)";
+            },
+
+            getKeyFrameDataValues : function(time) {
+                time = this.interpolator.getPosition(time).y;
+                var point = this.path.getPosition(time);
+                var obj= {
+                    x : point.x,
+                    y : point.y
+                };
+
+                if ( this.autoRotate ) {
+
+                    var point2= time===0 ? point : this.path.getPosition(time -.001);
+                    var ax = point.x - point2.x;
+                    var ay = point.y - point2.y;
+                    var angle = Math.atan2(ay, ax);
+
+                    obj.angle= angle;
+                }
+
+                return obj;
             },
 
             calculateKeyFramesData:function (prefix, name, keyframessize) {

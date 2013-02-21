@@ -28,8 +28,8 @@
         return prefix;
     })();
 
-    CAAT.CSS.applyKeyframe= function( domElement, name, secs, forever ) {
-        domElement.style[CAAT.CSS.PROP_ANIMATION]= name+' '+(secs/1000)+'s linear both '+(forever ? 'infinite' : '') ;
+    CAAT.CSS.applyKeyframe= function( domElement, name, duration_millis, delay_millis, forever ) {
+        domElement.style[CAAT.CSS.PROP_ANIMATION]= name+' '+(duration_millis/1000)+'s '+(delay_millis/1000)+'s linear both '+(forever ? 'infinite' : '') ;
     };
 
     CAAT.CSS.unregisterKeyframes= function( name ) {
@@ -74,7 +74,7 @@
             return;
         }
 
-        var keyframesRule= behavior.calculateKeyFramesData(CAAT.CSS.PREFIX, name, size );
+        var keyframesRule= behavior.calculateKeyFramesData(CAAT.CSS.PREFIX, name, size, kfDescriptor.anchorX, kfDescriptor.anchorY );
 
         if (document.styleSheets) {
             if ( !document.styleSheets.length) {

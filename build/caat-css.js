@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.5 build: 76
+Version: 0.5 build: 114
 
 Created on:
-DATE: 2013-02-17
-TIME: 15:51:43
+DATE: 2013-02-20
+TIME: 17:01:09
 */
 
 
@@ -2289,6 +2289,45 @@ CAAT.Module({
                 var m = this.matrix;
                 ctx.transform(m[0], m[3], m[1], m[4], m[2] >> 0, m[5] >> 0);
                 return this;
+            },
+
+            setModelViewMatrix:function ( x, y, sx, sy, r  ) {
+                var c, s, _m00, _m01, _m10, _m11;
+                var mm0, mm1, mm2, mm3, mm4, mm5;
+                var mm;
+
+                mm = this.matrix;
+
+                mm0 = 1;
+                mm1 = 0;
+                mm3 = 0;
+                mm4 = 1;
+
+                mm2 = x;
+                mm5 = y;
+
+                c = Math.cos(r);
+                s = Math.sin(r);
+                _m00 = mm0;
+                _m01 = mm1;
+                _m10 = mm3;
+                _m11 = mm4;
+                mm0 = _m00 * c + _m01 * s;
+                mm1 = -_m00 * s + _m01 * c;
+                mm3 = _m10 * c + _m11 * s;
+                mm4 = -_m10 * s + _m11 * c;
+
+                mm0 = mm0 * this.scaleX;
+                mm1 = mm1 * this.scaleY;
+                mm3 = mm3 * this.scaleX;
+                mm4 = mm4 * this.scaleY;
+
+                mm[0] = mm0;
+                mm[1] = mm1;
+                mm[2] = mm2;
+                mm[3] = mm3;
+                mm[4] = mm4;
+                mm[5] = mm5;
             }
         }
     }
@@ -3288,7 +3327,19 @@ CAAT.Module({
                 new CAAT.Behavior.Interpolator().createElasticOutInterpolator(1.0, 0.2, true), 'ElasticOut pingpong=true, amp=1.0, d=.2',
                 new CAAT.Behavior.Interpolator().createElasticInOutInterpolator(1.0, 0.2, true), 'ElasticInOut pingpong=true, amp=1.0, d=.2'
             ];
-        }        
+        },
+        parse : function( obj ) {
+            var name= "create"+obj.type+"Interpolator";
+            var interpolator= new CAAT.Behavior.Interpolator();
+            try {
+                interpolator[name].apply( interpolator, obj.params||[] );
+            } catch(e) {
+                interpolator.createLinearInterpolator(false, false);
+            }
+
+            return interpolator;
+        }
+
     },
     extendsWith:function () {
 
@@ -3707,6 +3758,43 @@ CAAT.Module({
             NOT_STARTED: 0,
             STARTED:    1,
             EXPIRED:    2
+        },
+
+        /**
+         *
+         * @param obj
+         */
+        parse : function( obj ) {
+
+            function findClass( qualifiedClassName ) {
+                var ns= qualifiedClassName.split(".");
+                var _global= window;
+                for( var i=0; i<ns.length; i++ ) {
+                    if ( !_global[ns[i]] ) {
+                        return null;
+                    }
+
+                    _global= _global[ns[i]];
+                }
+
+                return _global;
+            }
+
+            try {
+
+                var type= obj.type.toLowerCase();
+                type= "CAAT.Behavior."+type.substr(0,1).toUpperCase() + type.substr(1) + "Behavior";
+                var cl= new findClass(type);
+
+                var behavior= new cl();
+                behavior.parse(obj);
+                return behavior;
+
+            } catch(e) {
+                console.log("Error parsing behavior: "+e);
+            }
+
+            return null;
         }
     },
     depends:        ["CAAT.Behavior.Interpolator"],
@@ -3783,6 +3871,23 @@ CAAT.Module({
             solved:true,
 
             discardable:false, // is true, this behavior will be removed from the this.actor instance when it expires.
+
+            parse : function( obj ) {
+                if ( obj.pingpong ) {
+                    this.setPingPong();
+                }
+                if ( obj.cycle ) {
+                    this.setCycle(true);
+                }
+                var delay= obj.delay || 0;
+                var duration= obj.duration || 1000;
+
+                this.setDelayTime( delay, duration );
+
+                if ( obj.interpolator ) {
+                    this.setInterpolator( CAAT.Behavior.Interpolator.parse(obj.interpolator) );
+                }
+            },
 
             /*  @memberOf CAAT.Behavior.BaseBehavior */
             setValueApplication:function (apply) {
@@ -4088,6 +4193,12 @@ CAAT.Module({
             startAlpha:0,
             endAlpha:0,
 
+            parse : function( obj ) {
+                CAAT.Behavior.AlphaBehavior.superclass.parse.call(this,obj);
+                this.startAlpha= obj.start || 0;
+                this.endAlpha= obj.end || 0;
+            },
+
             getPropertyName:function () {
                 return "opacity";
             },
@@ -4125,6 +4236,13 @@ CAAT.Module({
             calculateKeyFrameData:function (time) {
                 time = this.interpolator.getPosition(time).y;
                 return  (this.startAlpha + time * (this.endAlpha - this.startAlpha));
+            },
+
+            getKeyFrameDataValues : function(time) {
+                time = this.interpolator.getPosition(time).y;
+                return {
+                    alpha : this.startAlpha + time * (this.endAlpha - this.startAlpha)
+                };
             },
 
             /**
@@ -4169,6 +4287,15 @@ CAAT.Module({
     extendsWith:function () {
 
         return {
+
+            parse : function( obj ) {
+                if ( obj.behaviors && obj.behaviors.length ) {
+                    for( var i=0; i<obj.behaviors.length; i+=1 ) {
+                        this.addBehavior( CAAT.Behavior.BaseBehavior.parse( obj.behaviors[i] ) );
+                    }
+                }
+                CAAT.Behavior.ContainerBehavior.superclass.parse.call(this,obj);
+            },
 
             behaviors:null, // contained behaviors array
 
@@ -4315,7 +4442,44 @@ CAAT.Module({
                 return this;
             },
 
-            calculateKeyFrameData:function (referenceTime, prefix, prevValues) {
+            getKeyFrameDataValues : function(referenceTime) {
+
+                var i, bh, time;
+                var keyFrameData= {
+                    angle : 0,
+                    scaleX : 1,
+                    scaleY : 1,
+                    x : 0,
+                    y : 0
+                };
+
+                for (i = 0; i < this.behaviors.length; i++) {
+                    bh = this.behaviors[i];
+                    if (bh.status !== CAAT.Behavior.BaseBehavior.Status.EXPIRED && !(bh instanceof CAAT.Behavior.GenericBehavior)) {
+
+                        // ajustar tiempos:
+                        //  time es tiempo normalizado a duracion de comportamiento contenedor.
+                        //      1.- desnormalizar
+                        time = referenceTime * this.behaviorDuration;
+
+                        //      2.- calcular tiempo relativo de comportamiento respecto a contenedor
+                        if (bh.behaviorStartTime <= time && bh.behaviorStartTime + bh.behaviorDuration >= time) {
+                            //      3.- renormalizar tiempo reltivo a comportamiento.
+                            time = (time - bh.behaviorStartTime) / bh.behaviorDuration;
+
+                            //      4.- obtener valor de comportamiento para tiempo normalizado relativo a contenedor
+                            var obj= bh.getKeyFrameDataValues(time);
+                            for( var pr in obj ) {
+                                keyFrameData[pr]= obj[pr];
+                            }
+                        }
+                    }
+                }
+
+                return keyFrameData;
+            },
+
+            calculateKeyFrameData:function (referenceTime, prefix) {
 
                 var i;
                 var bh;
@@ -4328,7 +4492,7 @@ CAAT.Module({
 
                 for (i = 0; i < this.behaviors.length; i++) {
                     bh = this.behaviors[i];
-                    if (bh.status !== CAAT.Behavior.BehaviorConstants.Status.EXPIRED && !(bh instanceof CAAT.Behavior.GenericBehavior)) {
+                    if (bh.status !== CAAT.Behavior.BaseBehavior.Status.EXPIRED && !(bh instanceof CAAT.Behavior.GenericBehavior)) {
 
                         // ajustar tiempos:
                         //  time es tiempo normalizado a duracion de comportamiento contenedor.
@@ -4371,7 +4535,6 @@ CAAT.Module({
                             }
                         }
                     }
-
                 }
 
                 xx('translate');
@@ -4390,6 +4553,8 @@ CAAT.Module({
                     keyFrameRule += ' opacity: ' + tr + ';';
                 }
 
+                keyFrameRule+=" -webkit-transform-origin: 0% 0%";
+
                 return {
                     rules:keyFrameRule,
                     ret:retValue
@@ -4402,7 +4567,7 @@ CAAT.Module({
              * @param prefix
              * @param name
              * @param keyframessize
-             */
+             *//*
             calculateKeyFramesData:function (prefix, name, keyframessize) {
 
                 if (this.duration === Number.MAX_VALUE) {
@@ -4422,6 +4587,8 @@ CAAT.Module({
 
                 for (i = 0; i <= keyframessize; i++) {
                     time = this.interpolator.getPosition(i / keyframessize).y;
+
+
                     ret = this.calculateKeyFrameData(time, prefix, prevValues);
                     kfr = "" +
                         (i / keyframessize * 100) + "%" + // percentage
@@ -4435,7 +4602,84 @@ CAAT.Module({
 
                 return kfd;
             }
+*/
+            calculateKeyFramesData:function (prefix, name, keyframessize, anchorX, anchorY) {
 
+                function toKeyFrame(obj, prevKF) {
+
+                    for( var i in prevKF ) {
+                        if ( !obj[i] ) {
+                            obj[i]= prevKF[i];
+                        }
+                    }
+
+                    var ret= "-" + prefix + "-transform:";
+
+                    if ( obj.x || obj.y ) {
+                        var x= obj.x || 0;
+                        var y= obj.y || 0;
+                        ret+= "translate("+x+"px,"+y+"px)";
+                    }
+
+                    if ( obj.angle ) {
+                        ret+= " rotate("+obj.angle+"rad)";
+                    }
+
+                    if ( obj.scaleX!==1 || obj.scaleY!==1 ) {
+                        ret+= " scale("+(obj.scaleX)+","+(obj.scaleY)+")";
+                    }
+
+                    ret+=";";
+
+                    if ( obj.alpha ) {
+                        ret+= " opacity: "+obj.alpha+";";
+                    }
+
+                    if ( anchorX!==.5 || anchorY!==.5) {
+                        ret+= " -" + prefix + "-transform-origin:"+ (anchorX*100) + "% " + (anchorY*100) + "%;";
+                    }
+
+                    return ret;
+                }
+
+                if (this.duration === Number.MAX_VALUE) {
+                    return "";
+                }
+
+                if (typeof anchorX==="undefined") {
+                    anchorX= .5;
+                }
+
+                if (typeof anchorY==="undefined") {
+                    anchorY= .5;
+                }
+
+                if (typeof keyframessize === 'undefined') {
+                    keyframessize = 100;
+                }
+
+                var i;
+                var kfd = "@-" + prefix + "-keyframes " + name + " {";
+                var time;
+                var prevKF= {};
+
+                for (i = 0; i <= keyframessize; i++) {
+                    time = this.interpolator.getPosition(i / keyframessize).y;
+
+                    var obj = this.getKeyFrameDataValues(time);
+
+                    kfd += "" +
+                        (i / keyframessize * 100) + "%" + // percentage
+                        "{" + toKeyFrame(obj, prevKF) + "}\n";
+
+                    prevKF= obj;
+
+                }
+
+                kfd += "}\n";
+
+                return kfd;
+            }
         }
     }
 });
@@ -4510,6 +4754,20 @@ CAAT.Module({
 
         return {
 
+            parse : function( obj ) {
+                CAAT.Behavior.PathBehavior.superclass.parse.call(this,obj);
+
+                if ( obj.SVG ) {
+                    var parser= new CAAT.PathUtil.SVGPath();
+                    var path=parser.parsePath( obj.SVG );
+                    this.setValues(path);
+                }
+
+                if ( obj.autoRotate ) {
+                    this.autoRotate= obj.autoRotate;
+                }
+            },
+
             path:null, // the path to traverse
             autoRotate:false, // set whether the actor must be rotated tangentially to the path.
             prevX:-1, // private, do not use.
@@ -4572,6 +4830,27 @@ CAAT.Module({
                 time = this.interpolator.getPosition(time).y;
                 var point = this.path.getPosition(time);
                 return "translateX(" + point.x + "px) translateY(" + point.y + "px)";
+            },
+
+            getKeyFrameDataValues : function(time) {
+                time = this.interpolator.getPosition(time).y;
+                var point = this.path.getPosition(time);
+                var obj= {
+                    x : point.x,
+                    y : point.y
+                };
+
+                if ( this.autoRotate ) {
+
+                    var point2= time===0 ? point : this.path.getPosition(time -.001);
+                    var ax = point.x - point2.x;
+                    var ay = point.y - point2.y;
+                    var angle = Math.atan2(ay, ax);
+
+                    obj.angle= angle;
+                }
+
+                return obj;
             },
 
             calculateKeyFramesData:function (prefix, name, keyframessize) {
@@ -4717,6 +4996,14 @@ CAAT.Module({
                 return this;
             },
 
+            parse : function( obj ) {
+                CAAT.Behavior.RotateBehavior.superclass.parse.call(this,obj);
+                this.startAngle= obj.start || 0;
+                this.endAngle= obj.end || 0;
+                this.anchorX= (typeof obj.anchorX!=="undefined" ? parseInt(obj.anchorX) : 0.5);
+                this.anchorY= (typeof obj.anchorY!=="undefined" ? parseInt(obj.anchorY) : 0.5);
+            },
+
             startAngle:0, // behavior start angle
             endAngle:0, // behavior end angle
             anchorX:.50, // rotation center x.
@@ -4798,6 +5085,13 @@ CAAT.Module({
                 return "rotate(" + (this.startAngle + time * (this.endAngle - this.startAngle)) + "rad)";
             },
 
+            getKeyFrameDataValues : function(time) {
+                time = this.interpolator.getPosition(time).y;
+                return {
+                    angle : this.startAngle + time * (this.endAngle - this.startAngle)
+                };
+            },
+
             /**
              * @param prefix {string} browser vendor prefix
              * @param name {string} keyframes animation name
@@ -4820,12 +5114,13 @@ CAAT.Module({
                         (i / keyframessize * 100) + "%" + // percentage
                         "{" +
                         "-" + prefix + "-transform:" + this.calculateKeyFrameData(i / keyframessize) +
+                        "; -" + prefix + "-transform-origin:" + (this.anchorX*100) + "% " + (this.anchorY*100) + "% " +
                         "}\n";
 
                     kfd += kfr;
                 }
 
-                kfd += "}";
+                kfd += "}\n";
 
                 return kfd;
             }
@@ -4868,6 +5163,15 @@ CAAT.Module({
             sy:1,
 
             applyOnX:true,
+
+            parse : function( obj ) {
+                CAAT.Behavior.Scale1Behavior.superclass.parse.call(this,obj);
+                this.startScale= obj.start || 0;
+                this.endScale= obj.end || 0;
+                this.anchorX= (typeof obj.anchorX!=="undefined" ? parseInt(obj.anchorX) : 0.5);
+                this.anchorY= (typeof obj.anchorY!=="undefined" ? parseInt(obj.anchorY) : 0.5);
+                this.applyOnX= obj.axis ? obj.axis.toLowerCase()==="x" : true;
+            },
 
             /**
              *
@@ -4959,6 +5263,14 @@ CAAT.Module({
                 return this.applyOnX ? "scaleX(" + scale + ")" : "scaleY(" + scale + ")";
             },
 
+            getKeyFrameDataValues : function(time) {
+                time = this.interpolator.getPosition(time).y;
+                var obj= {};
+                obj[ this.applyOnX ? "scaleX" : "scaleY" ]= this.startScale + time * (this.endScale - this.startScale);
+
+                return obj;
+            },
+
             calculateKeyFramesData:function (prefix, name, keyframessize) {
 
                 if (typeof keyframessize === 'undefined') {
@@ -4975,12 +5287,13 @@ CAAT.Module({
                         (i / keyframessize * 100) + "%" + // percentage
                         "{" +
                         "-" + prefix + "-transform:" + this.calculateKeyFrameData(i / keyframessize) +
-                        "}";
+                        "; -" + prefix + "-transform-origin:" + (this.anchorX*100) + "% " + (this.anchorY*100) + "% " +
+                        "}\n";
 
                     kfd += kfr;
                 }
 
-                kfd += "}";
+                kfd += "}\n";
 
                 return kfd;
             }
@@ -5023,6 +5336,16 @@ CAAT.Module({
             endScaleY:1,
             anchorX:.50,
             anchorY:.50,
+
+            parse : function( obj ) {
+                CAAT.Behavior.ScaleBehavior.superclass.parse.call(this,obj);
+                this.startScaleX= (obj.scaleX && obj.scaleX.start) || 0;
+                this.endScaleX= (obj.scaleX && obj.scaleX.end) || 0;
+                this.startScaleY= (obj.scaleY && obj.scaleY.start) || 0;
+                this.endScaleY= (obj.scaleY && obj.scaleY.end) || 0;
+                this.anchorX= (typeof obj.anchorX!=="undefined" ? parseInt(obj.anchorX) : 0.5);
+                this.anchorY= (typeof obj.anchorY!=="undefined" ? parseInt(obj.anchorY) : 0.5);
+            },
 
             getPropertyName:function () {
                 return "scale";
@@ -5104,8 +5427,17 @@ CAAT.Module({
                 scaleX = this.startScaleX + time * (this.endScaleX - this.startScaleX);
                 scaleY = this.startScaleY + time * (this.endScaleY - this.startScaleY);
 
-                return "scaleX(" + scaleX + ") scaleY(" + scaleY + ")";
+                return "scale(" + scaleX +"," + scaleY + ")";
             },
+
+            getKeyFrameDataValues : function(time) {
+                time = this.interpolator.getPosition(time).y;
+                return {
+                    scaleX : this.startScaleX + time * (this.endScaleX - this.startScaleX),
+                    scaleY : this.startScaleY + time * (this.endScaleY - this.startScaleY)
+                };
+            },
+
 
             calculateKeyFramesData:function (prefix, name, keyframessize) {
 
@@ -5123,12 +5455,13 @@ CAAT.Module({
                         (i / keyframessize * 100) + "%" + // percentage
                         "{" +
                         "-" + prefix + "-transform:" + this.calculateKeyFrameData(i / keyframessize) +
-                        "}";
+                        "; -" + prefix + "-transform-origin:" + (this.anchorX*100) + "% " + (this.anchorY*100) + "% " +
+                        "}\n";
 
                     kfd += kfr;
                 }
 
-                kfd += "}";
+                kfd += "}\n";
 
                 return kfd;
             }
@@ -10132,6 +10465,8 @@ CAAT.Module( {
         clipOffsetX             :   0,
         clipOffsetY             :   0,
 
+        closed                  :   false,
+
         /**
          * Apply this path as a Canvas context path.
          * You must explicitly call context.beginPath
@@ -10475,6 +10810,8 @@ CAAT.Module( {
 
 			this.trackPathX= this.beginPathX;
 			this.trackPathY= this.beginPathY;
+
+            this.closed= true;
 
 			this.endPath();
             return this;
@@ -11256,7 +11593,7 @@ CAAT.Module({
                 var numbers = [ path.trackPathX ];
 
                 do {
-                    c = getNumbers(pathInfo, c, numbers, 1, error);
+                    c = this.getNumbers(pathInfo, c, numbers, 1, error);
 
                     if (!absolute) {
                         numbers[1] += path.trackPathY;
@@ -11503,6 +11840,9 @@ CAAT.Module({
                 for( var i=0; i<this.contours.length; i++ ) {
                     if ( !this.contours[i].isEmpty() ) {
                         fpath= this.contours[i];
+                        if ( !fpath.closed ) {
+                            fpath.endPath();
+                        }
                         count++;
                     }
                 }

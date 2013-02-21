@@ -161,7 +161,44 @@ CAAT.Module({
                 return this;
             },
 
-            calculateKeyFrameData:function (referenceTime, prefix, prevValues) {
+            getKeyFrameDataValues : function(referenceTime) {
+
+                var i, bh, time;
+                var keyFrameData= {
+                    angle : 0,
+                    scaleX : 1,
+                    scaleY : 1,
+                    x : 0,
+                    y : 0
+                };
+
+                for (i = 0; i < this.behaviors.length; i++) {
+                    bh = this.behaviors[i];
+                    if (bh.status !== CAAT.Behavior.BaseBehavior.Status.EXPIRED && !(bh instanceof CAAT.Behavior.GenericBehavior)) {
+
+                        // ajustar tiempos:
+                        //  time es tiempo normalizado a duracion de comportamiento contenedor.
+                        //      1.- desnormalizar
+                        time = referenceTime * this.behaviorDuration;
+
+                        //      2.- calcular tiempo relativo de comportamiento respecto a contenedor
+                        if (bh.behaviorStartTime <= time && bh.behaviorStartTime + bh.behaviorDuration >= time) {
+                            //      3.- renormalizar tiempo reltivo a comportamiento.
+                            time = (time - bh.behaviorStartTime) / bh.behaviorDuration;
+
+                            //      4.- obtener valor de comportamiento para tiempo normalizado relativo a contenedor
+                            var obj= bh.getKeyFrameDataValues(time);
+                            for( var pr in obj ) {
+                                keyFrameData[pr]= obj[pr];
+                            }
+                        }
+                    }
+                }
+
+                return keyFrameData;
+            },
+
+            calculateKeyFrameData:function (referenceTime, prefix) {
 
                 var i;
                 var bh;
@@ -217,7 +254,6 @@ CAAT.Module({
                             }
                         }
                     }
-
                 }
 
                 xx('translate');
@@ -236,6 +272,8 @@ CAAT.Module({
                     keyFrameRule += ' opacity: ' + tr + ';';
                 }
 
+                keyFrameRule+=" -webkit-transform-origin: 0% 0%";
+
                 return {
                     rules:keyFrameRule,
                     ret:retValue
@@ -248,7 +286,7 @@ CAAT.Module({
              * @param prefix
              * @param name
              * @param keyframessize
-             */
+             *//*
             calculateKeyFramesData:function (prefix, name, keyframessize) {
 
                 if (this.duration === Number.MAX_VALUE) {
@@ -268,6 +306,8 @@ CAAT.Module({
 
                 for (i = 0; i <= keyframessize; i++) {
                     time = this.interpolator.getPosition(i / keyframessize).y;
+
+
                     ret = this.calculateKeyFrameData(time, prefix, prevValues);
                     kfr = "" +
                         (i / keyframessize * 100) + "%" + // percentage
@@ -281,7 +321,84 @@ CAAT.Module({
 
                 return kfd;
             }
+*/
+            calculateKeyFramesData:function (prefix, name, keyframessize, anchorX, anchorY) {
 
+                function toKeyFrame(obj, prevKF) {
+
+                    for( var i in prevKF ) {
+                        if ( !obj[i] ) {
+                            obj[i]= prevKF[i];
+                        }
+                    }
+
+                    var ret= "-" + prefix + "-transform:";
+
+                    if ( obj.x || obj.y ) {
+                        var x= obj.x || 0;
+                        var y= obj.y || 0;
+                        ret+= "translate("+x+"px,"+y+"px)";
+                    }
+
+                    if ( obj.angle ) {
+                        ret+= " rotate("+obj.angle+"rad)";
+                    }
+
+                    if ( obj.scaleX!==1 || obj.scaleY!==1 ) {
+                        ret+= " scale("+(obj.scaleX)+","+(obj.scaleY)+")";
+                    }
+
+                    ret+=";";
+
+                    if ( obj.alpha ) {
+                        ret+= " opacity: "+obj.alpha+";";
+                    }
+
+                    if ( anchorX!==.5 || anchorY!==.5) {
+                        ret+= " -" + prefix + "-transform-origin:"+ (anchorX*100) + "% " + (anchorY*100) + "%;";
+                    }
+
+                    return ret;
+                }
+
+                if (this.duration === Number.MAX_VALUE) {
+                    return "";
+                }
+
+                if (typeof anchorX==="undefined") {
+                    anchorX= .5;
+                }
+
+                if (typeof anchorY==="undefined") {
+                    anchorY= .5;
+                }
+
+                if (typeof keyframessize === 'undefined') {
+                    keyframessize = 100;
+                }
+
+                var i;
+                var kfd = "@-" + prefix + "-keyframes " + name + " {";
+                var time;
+                var prevKF= {};
+
+                for (i = 0; i <= keyframessize; i++) {
+                    time = this.interpolator.getPosition(i / keyframessize).y;
+
+                    var obj = this.getKeyFrameDataValues(time);
+
+                    kfd += "" +
+                        (i / keyframessize * 100) + "%" + // percentage
+                        "{" + toKeyFrame(obj, prevKF) + "}\n";
+
+                    prevKF= obj;
+
+                }
+
+                kfd += "}\n";
+
+                return kfd;
+            }
         }
     }
 });

@@ -189,7 +189,7 @@ CAAT.Module({
                 var numbers = [ path.trackPathX ];
 
                 do {
-                    c = getNumbers(pathInfo, c, numbers, 1, error);
+                    c = this.getNumbers(pathInfo, c, numbers, 1, error);
 
                     if (!absolute) {
                         numbers[1] += path.trackPathY;
@@ -436,6 +436,9 @@ CAAT.Module({
                 for( var i=0; i<this.contours.length; i++ ) {
                     if ( !this.contours[i].isEmpty() ) {
                         fpath= this.contours[i];
+                        if ( !fpath.closed ) {
+                            fpath.endPath();
+                        }
                         count++;
                     }
                 }
