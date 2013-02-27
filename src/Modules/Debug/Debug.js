@@ -381,8 +381,9 @@ CAAT.Module( {
 
             /* Update the framerate counter */
             this.framerate.frames++;
-            if ( cc.RAF > this.framerate.timeLastRefresh + this.framerate.refreshInterval ) {
-                this.framerate.fps = ( ( this.framerate.frames * 1000 ) / ( cc.RAF - this.framerate.timeLastRefresh ) ) | 0;
+            var tt= new Date().getTime() ;
+            if ( tt> this.framerate.timeLastRefresh + this.framerate.refreshInterval ) {
+                this.framerate.fps = ( ( this.framerate.frames * 1000 ) / ( tt - this.framerate.timeLastRefresh ) ) | 0;
                 this.framerate.fpsMin = this.framerate.frames > 0 ? Math.min( this.framerate.fpsMin, this.framerate.fps ) : this.framerate.fpsMin;
                 this.framerate.fpsMax = Math.max( this.framerate.fpsMax, this.framerate.fps );
 
@@ -396,7 +397,7 @@ CAAT.Module( {
                 this.frameRAFAcc=0;
                 this.textRAFTime.innerHTML= value2;
 
-                this.framerate.timeLastRefresh = cc.RAF;
+                this.framerate.timeLastRefresh = tt;
                 this.framerate.frames = 0;
 
                 this.paint(value2);

@@ -177,11 +177,13 @@ CAAT.Module({
 
             if (!now) now = new Date().getTime();
 
-            c.REQUEST_ANIMATION_FRAME_TIME = c.RAF ? now - c.RAF : 0.16;
+            var t= new Date().getTime();
+            c.REQUEST_ANIMATION_FRAME_TIME = c.RAF ? now - c.RAF : 16;
             for (var i = 0, l = c.director.length; i < l; i++) {
                 c.director[i].renderFrame();
             }
             c.RAF = now;
+            c.FRAME_TIME = new Date().getTime() - t;
 
 
             window.requestAnimFrame(c.renderFrameRAF, 0);

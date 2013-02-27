@@ -1,3 +1,6 @@
+* 02/27/2013 0.6 Build 1 *
+---------------------------
+
 * Added CAAT.CACHE_SCENE_ON_CHANGE which controls caching of entering/exiting scene. Set it before building director.
 * Added CAAT.PathUtil.SVGPath which parses an SVG path and creates a Path object.
 * Added demo32: CAAT.PathUtil.SVGPath sample.
@@ -7,6 +10,7 @@
 * Added thorough keyframing capabilities to CAAT.Behavior.Behavior classes.
 * Added functionality to CAAT.CSS object.
 * Added JSDoc pages.
+* Fixed Debug info.
 
 
 * 01/22/2013 0.5 Build 65 *

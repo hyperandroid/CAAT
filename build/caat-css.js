@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.5 build: 114
+Version: 0.6 build: 2
 
 Created on:
-DATE: 2013-02-20
-TIME: 17:01:09
+DATE: 2013-02-27
+TIME: 08:57:20
 */
 
 
@@ -710,11 +710,22 @@ TIME: 17:01:09
     var mm= new ModuleManager();
     var DEBUG= false;
 
+
+    /**
+     * CAAT is the namespace for all CAAT gaming engine object classes.
+     *
+     * @name CAAT
+     * @namespace
+     */
+
     global.CAAT= global.CAAT || {};
 
     /**
      *
-     * @param obj {
+     * This function defines CAAT modules, and creates Constructor Class objects.
+     *
+     * obj parameter has the following structure:
+     * {
      *   defines{string},             // class name
      *   depends{Array<string>=},   // dependencies class names
      *   extendsClass{string},            // class to extend from
@@ -723,6 +734,9 @@ TIME: 17:01:09
      *   onCreation{function=}        // optional callback to call after class creation.
      *   onPreCreation{function=}        // optional callback to call after namespace class creation.
      * }
+     *
+     * @param obj {object}
+     * @private
      */
     CAAT.Module= function loadModule(obj) {
 
@@ -737,8 +751,18 @@ TIME: 17:01:09
 
     };
 
+    /**
+     * @name ModuleManager
+     * @memberOf CAAT
+     * @namespace
+     */
     CAAT.ModuleManager= {};
 
+    /**
+     * Define global base position for modules structure.
+     * @param baseURL {string}
+     * @return {*}
+     */
     CAAT.ModuleManager.baseURL= function(baseURL) {
 
         if ( !baseURL ) {
@@ -753,6 +777,11 @@ TIME: 17:01:09
         return CAAT.ModuleManager;
     };
 
+    /**
+     * Define a module path. Multiple module paths can be specified.
+     * @param module {string}
+     * @param path {string}
+     */
     CAAT.ModuleManager.setModulePath= function( module, path ) {
 
         if ( !path.endsWith("/") ) {
@@ -777,6 +806,12 @@ TIME: 17:01:09
         return CAAT.ModuleManager;
     };
 
+    /**
+     * Define a symbol, or file to be loaded and checked dependencies against.
+     * @param symbol {string}
+     * @param path {string}
+     * @return {*}
+     */
     CAAT.ModuleManager.symbol= function( symbol, path ) {
 
         if ( !ModuleManager.symbol[symbol] ) {
@@ -786,6 +821,11 @@ TIME: 17:01:09
         return CAAT.ModuleManager;
     };
 
+    /**
+     * Bring the given object, and if no present, start solving and loading dependencies.
+     * @param file {string}
+     * @return {*}
+     */
     CAAT.ModuleManager.bring= function( file ) {
 
         if ( !isArray(file) ) {
@@ -799,15 +839,30 @@ TIME: 17:01:09
         return CAAT.ModuleManager;
     };
 
+    /**
+     * Get CAAT´s module manager status.
+     */
     CAAT.ModuleManager.status= function() {
         mm.status();
     }
 
+    /**
+     * Add an observer for a given module load event.
+     * @param modulename {string}
+     * @param callback {function()}
+     * @return {*}
+     */
     CAAT.ModuleManager.addModuleSolvedListener= function(modulename,callback) {
         mm.addSolveListener( modulename, callback );
         return CAAT.ModuleManager;
     }
 
+    /**
+     * Load a javascript file.
+     * @param file {string}
+     * @param onload {function()}
+     * @param onerror {function()}
+     */
     CAAT.ModuleManager.load= function(file, onload, onerror) {
         var node= document.createElement("script");
         node.type = 'text/javascript';
@@ -832,23 +887,43 @@ TIME: 17:01:09
 
     }
 
+    /**
+     * Dump solved modules and get them sorted in the order they were resolved.
+     */
     CAAT.ModuleManager.solvedInOrder= function() {
         mm.solvedInOrder();
     }
 
+    /**
+     * This method will be called everytime all the specified to-be-brought dependencies have been solved.
+     * @param f
+     * @return {*}
+     */
     CAAT.ModuleManager.onReady= function(f) {
         mm.onReady(f);
         return CAAT.ModuleManager;
     }
 
+    /**
+     * Solve all elements specified in the module loaded.
+     * It is useful when minimizing a file.
+     */
     CAAT.ModuleManager.solveAll= function() {
         mm.solveAll();
     }
 
+    /**
+     * Enable debug capabilities for the loaded modules.
+     * Otherwise, the modules will have cache invalidation features.
+     * @param d {boolean}
+     * @return {*}
+     */
     CAAT.ModuleManager.debug= function(d) {
         DEBUG= d;
         return CAAT.ModuleManager;
     }
+
+    CAAT.Class= Class;
 
 })(this);
 CAAT.__CSS__=1;
@@ -858,6 +933,7 @@ CAAT.__CSS__=1;
  **/
 
 CAAT.Module( {
+
     defines: "CAAT.Core.Constants",
     depends : [
         "CAAT.Math.Matrix"
@@ -865,7 +941,16 @@ CAAT.Module( {
 
     extendsWith: function() {
 
-        CAAT.CLAMP= false;  // do not clamp coordinates. speeds things up in older browsers.
+        /**
+         * @lends CAAT
+         */
+
+        /**
+         * // do not clamp coordinates. speeds things up in older browsers.
+         * @type {Boolean}
+         * @private
+         */
+        CAAT.CLAMP= false;
 
         /**
          * This function makes the system obey decimal point calculations for actor's position, size, etc.
@@ -902,19 +987,46 @@ CAAT.Module( {
          */
         CAAT.CSS_TEXT_METRICS=      0;
 
+        /**
+         * is GLRendering enabled.
+         * @type {Boolean}
+         */
         CAAT.GLRENDER= false;
 
         /**
-         * DEBUGGING CONSTANTS
+         * set this variable before building CAAT.Director intances to enable debug panel.
          */
-        CAAT.DEBUG= false;              // set this variable before building CAAT.Director intances to
-                                    // enable debug panel.
-        CAAT.DEBUGBB= false;            // show Bounding Boxes
-        CAAT.DEBUGBBBCOLOR = '#00f';      // Bounding Boxes color.
-        CAAT.DEBUGAABB = false;         // debug axis aligned bounding boxes.
+        CAAT.DEBUG= false;
+
+        /**
+         * show Bounding Boxes
+         * @type {Boolean}
+         */
+        CAAT.DEBUGBB= false;
+
+        /**
+         * Bounding Boxes color.
+         * @type {String}
+         */
+        CAAT.DEBUGBBBCOLOR = '#00f';
+
+        /**
+         * debug axis aligned bounding boxes.
+         * @type {Boolean}
+         */
+        CAAT.DEBUGAABB = false;
+
+        /**
+         * Bounding boxes color.
+         * @type {String}
+         */
         CAAT.DEBUGAABBCOLOR = '#f00';
-        CAAT.DEBUG_DIRTYRECTS= false;    // if CAAT.Director.setClear uses CLEAR_DIRTY_RECTS, this will show them
-                                    // on screen.
+
+        /**
+         * if CAAT.Director.setClear uses CLEAR_DIRTY_RECTS, this will show them on screen.
+         * @type {Boolean}
+         */
+        CAAT.DEBUG_DIRTYRECTS= false;
 
         /**
          * Do not consider mouse drag gesture at least until you have dragged
@@ -924,7 +1036,11 @@ CAAT.Module( {
         CAAT.DRAG_THRESHOLD_X=      5;
         CAAT.DRAG_THRESHOLD_Y=      5;
 
-        CAAT.CACHE_SCENE_ON_CHANGE= true;   // cache scenes on change. set before building director instance.
+        /**
+         * When switching scenes, cache exiting scene or not. Set before building director instance.
+         * @type {Boolean}
+         */
+        CAAT.CACHE_SCENE_ON_CHANGE= true;
 
         return {
         }
@@ -1402,13 +1518,34 @@ CAAT.Module({
  **/
 
 CAAT.Module( {
+
+    /**
+     * @name Math
+     * @memberOf CAAT
+     * @namespace
+     */
+
+    /**
+     * @name Bezier
+     * @memberOf CAAT.Math
+     * @extends CAAT.Math.Curve
+     * @constructor
+     */
+
     defines:    "CAAT.Math.Bezier",
     depends:    ["CAAT.Math.Curve"],
     extendsClass:    "CAAT.Math.Curve",
     aliases:    ["CAAT.Bezier"],
     extendsWith:    function() {
-            return {
+        return {
 
+            /**
+             * @lends CAAT.Math.Bezier.prototype
+             */
+
+            /**
+             * This curbe is cubic or quadratic bezier ?
+             */
             cubic:		false,
 
             applyAsPath : function( director ) {
@@ -1635,12 +1772,24 @@ CAAT.Module( {
     }
 });
 CAAT.Module({
+
+    /**
+     * @name CatmullRom
+     * @memberOf CAAT.Math
+     * @extends CAAT.Math.Curve
+     * @constructor
+     */
+
     defines:"CAAT.Math.CatmullRom",
     depends:["CAAT.Math.Curve"],
     extendsClass:"CAAT.Math.Curve",
     aliases:["CAAT.CatmullRom"],
     extendsWith:function () {
         return {
+
+            /**
+             * @lends CAAT.Math.CatmullRom.prototype
+             */
 
             /**
              * Set curve control points.
@@ -1750,16 +1899,46 @@ CAAT.Module({
  **/
 
 CAAT.Module({
+
+    /**
+     * @name Curve
+     * @memberOf CAAT.Math
+     * @constructor
+     */
+
     defines:"CAAT.Math.Curve",
     depends:["CAAT.Math.Point"],
     extendsWith:function () {
 
         return {
+
+            /**
+             * @lends CAAT.Math.Curve.prototype
+             */
+
+            /**
+             * A collection of CAAT.Math.Point objects.
+             */
             coordlist:null,
+
+            /**
+             * Minimun solver step.
+             */
             k:0.05,
+
+            /**
+             * Curve length.
+             */
             length:-1,
-            interpolator:false,
+
+            /**
+             * If this segments belongs to an interactive path, the handlers will be this size.
+             */
             HANDLE_SIZE:20,
+
+            /**
+             * Draw interactive handlers ?
+             */
             drawHandles:true,
 
             /**
@@ -1917,12 +2096,31 @@ CAAT.Module({
 });
 
 CAAT.Module({
+
+    /**
+     * @name Dimension
+     * @memberOf CAAT.Math
+     * @constructor
+     */
+
+
     defines:"CAAT.Math.Dimension",
     aliases:["CAAT.Dimension"],
     extendsWith:function () {
         return {
 
+            /**
+             * @lends CAAT.Math.Dimension.prototype
+             */
+
+            /**
+             * Width dimension.
+             */
             width:0,
+
+            /**
+             * Height dimension.
+             */
             height:0,
 
             __init:function (w, h) {
@@ -1940,6 +2138,14 @@ CAAT.Module({
 
 
 CAAT.Module({
+
+    /**
+     * @name Matrix
+     * @memberOf CAAT.Math
+     * @constructor
+     */
+
+
     defines:"CAAT.Math.Matrix",
     depends:["CAAT.Math.Point"],
     aliases:["CAAT.Matrix"],
@@ -1948,6 +2154,11 @@ CAAT.Module({
         CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Math.Matrix.prototype.transformRenderingContextSet_NoClamp;
     },
     constants : {
+
+        /**
+         * @lends CAAT.Math.Matrix.prototype
+         */
+
         setCoordinateClamping : function( clamp ) {
             if ( clamp ) {
                 CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
@@ -1964,6 +2175,14 @@ CAAT.Module({
     },
     extendsWith:function () {
         return {
+
+            /**
+             * @lends CAAT.Math.Matrix.prototype
+             */
+
+            /**
+             * An array of 9 numbers.
+             */
             matrix:null,
 
             __init:function () {
@@ -2338,12 +2557,30 @@ CAAT.Module({
  **/
 
 CAAT.Module({
+
+    /**
+     * @name Matrix3
+     * @memberOf CAAT.Math
+     * @constructor
+     */
+
     defines:"CAAT.Math.Matrix3",
     aliases:["CAAT.Matrix3"],
     extendsWith:function () {
         return {
+
+            /**
+             * @lends CAAT.Math.Matrix3.prototype
+             */
+
+            /**
+             * An Array of 4 Array of 4 numbers.
+             */
             matrix:null,
 
+            /**
+             * An array of 16 numbers.
+             */
             fmatrix:null,
 
             __init:function () {
@@ -2863,52 +3100,66 @@ CAAT.Module({
  * See LICENSE file.
  *
  **/
-CAAT.Module( {
+CAAT.Module({
 
-    defines:        "CAAT.Math.Point",
-    aliases:        ["CAAT.Point"],
-    extendsWith:    function() {
+    /**
+     * @name Point
+     * @memberOf CAAT.Math
+     * @constructor
+     */
+
+    defines:"CAAT.Math.Point",
+    aliases:["CAAT.Point"],
+    extendsWith:function () {
         return {
 
             /**
-             *
-             * A point defined by two coordinates.
-             *
-             * @param xpos {number}
-             * @param ypos {number}
-             *
-             * @constructor
+             * @lends CAAT.Math.Point.prototype
              */
-            x:  0,
-                y:  0,
-            z:  0,
 
-            __init : function(xpos, ypos, zpos) {
-            this.x= xpos;
-            this.y= ypos;
-            this.z= zpos||0;
-            return this;
-        },
+
+            /**
+             * point x coordinate.
+             */
+            x:0,
+
+            /**
+             * point y coordinate.
+             */
+            y:0,
+
+            /**
+             * point z coordinate.
+             */
+            z:0,
+
+            __init:function (xpos, ypos, zpos) {
+                this.x = xpos;
+                this.y = ypos;
+                this.z = zpos || 0;
+                return this;
+            },
 
             /**
              * Sets this point coordinates.
              * @param x {number}
              * @param y {number}
+             * @param z {number=}
              *
              * @return this
              */
-            set : function(x,y,z) {
-            this.x= x;
-            this.y= y;
-            this.z= z||0;
-            return this;
-        },
+            set:function (x, y, z) {
+                this.x = x;
+                this.y = y;
+                this.z = z || 0;
+                return this;
+            },
             /**
              * Create a new CAAT.Point equal to this one.
              * @return {CAAT.Point}
              */
-            clone : function() {
-                var p= new CAAT.Math.Point(this.x, this.y, this.z );
+            clone:function () {
+                var p = new CAAT.Math.Point(this.x, this.y, this.z);
                 return p;
             },
             /**
@@ -2918,10 +3169,10 @@ CAAT.Module( {
              *
              * @return this
              */
-            translate : function(x,y,z) {
-                this.x+= x;
-                this.y+= y;
-                this.z+= z;
+            translate:function (x, y, z) {
+                this.x += x;
+                this.y += y;
+                this.z += z;
 
                 return this;
             },
@@ -2930,7 +3181,7 @@ CAAT.Module( {
              * @param aPoint {CAAT.Point}
              * @return this
              */
-            translatePoint: function(aPoint) {
+            translatePoint:function (aPoint) {
                 this.x += aPoint.x;
                 this.y += aPoint.y;
                 this.z += aPoint.z;
@@ -2941,7 +3192,7 @@ CAAT.Module( {
              * @param aPoint {CAAT.Point}
              * @return this
              */
-            subtract: function(aPoint) {
+            subtract:function (aPoint) {
                 this.x -= aPoint.x;
                 this.y -= aPoint.y;
                 this.z -= aPoint.z;
@@ -2952,7 +3203,7 @@ CAAT.Module( {
              * @param factor {number}
              * @return this
              */
-            multiply: function(factor) {
+            multiply:function (factor) {
                 this.x *= factor;
                 this.y *= factor;
                 this.z *= factor;
@@ -2963,7 +3214,7 @@ CAAT.Module( {
              * @param angle {number}
              * @return this
              */
-            rotate: function(angle) {
+            rotate:function (angle) {
                 var x = this.x, y = this.y;
                 this.x = x * Math.cos(angle) - Math.sin(angle) * y;
                 this.y = x * Math.sin(angle) + Math.cos(angle) * y;
@@ -2975,7 +3226,7 @@ CAAT.Module( {
              * @param angle {number}
              * @return this
              */
-            setAngle: function(angle) {
+            setAngle:function (angle) {
                 var len = this.getLength();
                 this.x = Math.cos(angle) * len;
                 this.y = Math.sin(angle) * len;
@@ -2987,7 +3238,7 @@ CAAT.Module( {
              * @param length {number}
              * @return this
              */
-            setLength: function(length)	{
+            setLength:function (length) {
                 var len = this.getLength();
                 if (len)this.multiply(length / len);
                 else this.x = this.y = this.z = length;
@@ -2997,7 +3248,7 @@ CAAT.Module( {
              * Normalize this point, that is, both set coordinates proportionally to values raning 0..1
              * @return this
              */
-            normalize: function() {
+            normalize:function () {
                 var len = this.getLength();
                 this.x /= len;
                 this.y /= len;
@@ -3008,7 +3259,7 @@ CAAT.Module( {
              * Return the angle from -Pi to Pi of this point.
              * @return {number}
              */
-            getAngle: function() {
+            getAngle:function () {
                 return Math.atan2(this.y, this.x);
             },
             /**
@@ -3016,14 +3267,13 @@ CAAT.Module( {
              * @param max {number}
              * @return this
              */
-            limit: function(max) {
+            limit:function (max) {
                 var aLenthSquared = this.getLengthSquared();
-                if(aLenthSquared+0.01 > max*max)
-                {
+                if (aLenthSquared + 0.01 > max * max) {
                     var aLength = Math.sqrt(aLenthSquared);
-                    this.x= (this.x/aLength) * max;
-                    this.y= (this.y/aLength) * max;
-                    this.z= (this.z/aLength) * max;
+                    this.x = (this.x / aLength) * max;
+                    this.y = (this.y / aLength) * max;
+                    this.z = (this.z / aLength) * max;
                 }
                 return this;
             },
@@ -3031,9 +3281,9 @@ CAAT.Module( {
              * Get this point's lenght.
              * @return {number}
              */
-            getLength: function() {
-                var length = Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
-                if ( length < 0.005 && length > -0.005) return 0.000001;
+            getLength:function () {
+                var length = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+                if (length < 0.005 && length > -0.005) return 0.000001;
                 return length;
 
             },
@@ -3041,9 +3291,9 @@ CAAT.Module( {
              * Get this point's squared length.
              * @return {number}
              */
-            getLengthSquared: function() {
-                var lengthSquared = this.x*this.x + this.y*this.y + this.z*this.z;
-                if ( lengthSquared < 0.005 && lengthSquared > -0.005) return 0;
+            getLengthSquared:function () {
+                var lengthSquared = this.x * this.x + this.y * this.y + this.z * this.z;
+                if (lengthSquared < 0.005 && lengthSquared > -0.005) return 0;
                 return lengthSquared;
             },
             /**
@@ -3051,32 +3301,32 @@ CAAT.Module( {
              * @param point {CAAT.Point}
              * @return {number}
              */
-            getDistance: function(point) {
+            getDistance:function (point) {
                 var deltaX = this.x - point.x;
                 var deltaY = this.y - point.y;
                 var deltaZ = this.z - point.z;
-                return Math.sqrt( deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ );
+                return Math.sqrt(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
             },
             /**
              * Get the squared distance between two points.
              * @param point {CAAT.Point}
              * @return {number}
              */
-            getDistanceSquared: function(point) {
+            getDistanceSquared:function (point) {
                 var deltaX = this.x - point.x;
                 var deltaY = this.y - point.y;
                 var deltaZ = this.z - point.z;
-                return deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ;
+                return deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ;
             },
             /**
              * Get a string representation.
              * @return {string}
              */
-            toString: function() {
+            toString:function () {
                 return "(CAAT.Math.Point)" +
-                    " x:" + String(Math.round(Math.floor(this.x*10))/10) +
-                    " y:" + String(Math.round(Math.floor(this.y*10))/10) +
-                    " z:" + String(Math.round(Math.floor(this.z*10))/10);
+                    " x:" + String(Math.round(Math.floor(this.x * 10)) / 10) +
+                    " y:" + String(Math.round(Math.floor(this.y * 10)) / 10) +
+                    " z:" + String(Math.round(Math.floor(this.z * 10)) / 10);
             }
         }
     }
@@ -3088,21 +3338,56 @@ CAAT.Module( {
 
 
 CAAT.Module( {
+
+    /**
+     * @name Rectangle
+     * @memberOf CAAT.Math
+     * @constructor
+     */
+
+
     defines:        "CAAT.Math.Rectangle",
     aliases:        ["CAAT.Rectangle"],
     extendsWith:    function() {
         return {
+
+            /**
+             * @lends CAAT.Math.Rectangle.prototype
+             */
 
             __init : function( x,y,w,h ) {
                 this.setLocation(x,y);
                 this.setDimension(w,h);
             },
 
+            /**
+             * Rectangle x position.
+             */
             x:		0,
+
+            /**
+             * Rectangle y position.
+             */
             y:		0,
+
+            /**
+             * Rectangle x1 position.
+             */
             x1:		0,
+
+            /**
+             * Rectangle y1 position.
+             */
             y1:		0,
+
+            /**
+             * Rectangle width.
+             */
             width:	-1,
+
+            /**
+             * Rectangle height.
+             */
             height:	-1,
 
             setEmpty : function() {
@@ -3270,13 +3555,21 @@ CAAT.Module( {
  **/
 
 CAAT.Module({
+
+    /**
+     * @name Interpolator
+     * @memberOf CAAT.Behavior
+     * @constructor
+     */
+
     defines:"CAAT.Behavior.Interpolator",
     depends:["CAAT.Math.Point"],
     aliases:["CAAT.Interpolator"],
     constants : {
         /**
-         *
+         * @lends CAAt.Behavior.Interpolator
          */
+
         enumerateInterpolators: function () {
             return [
                 new CAAT.Behavior.Interpolator().createLinearInterpolator(false, false), 'Linear pingpong=false, inverse=false',
@@ -3328,6 +3621,7 @@ CAAT.Module({
                 new CAAT.Behavior.Interpolator().createElasticInOutInterpolator(1.0, 0.2, true), 'ElasticInOut pingpong=true, amp=1.0, d=.2'
             ];
         },
+
         parse : function( obj ) {
             var name= "create"+obj.type+"Interpolator";
             var interpolator= new CAAT.Behavior.Interpolator();
@@ -3344,6 +3638,10 @@ CAAT.Module({
     extendsWith:function () {
 
         return {
+
+            /**
+             * @lends CAAT.Behavior.Interpolator.prototype
+             */
 
             interpolated:null, // a coordinate holder for not building a new CAAT.Point for each interpolation call.
             paintScale:90, // the size of the interpolation draw on screen in pixels.
@@ -3385,6 +3683,7 @@ CAAT.Module({
 
                 return this;
             },
+
             createBackOutInterpolator:function (bPingPong) {
                 this.getPosition = function getPosition(time) {
                     var orgTime = time;
@@ -3690,6 +3989,7 @@ CAAT.Module({
 
                 return this;
             },
+
             /**
              * Paints an interpolator on screen.
              * @param ctx {CanvasRenderingContext}
@@ -3709,11 +4009,12 @@ CAAT.Module({
                 ctx.stroke();
                 ctx.restore();
             },
+
             /**
              * Gets an array of coordinates which define the polyline of the intepolator's curve contour.
              * Values for both coordinates range from 0 to 1.
              * @param iSize {number} an integer indicating the number of contour segments.
-             * @return array{CAAT.Point} of object of the form {x:float, y:float}.
+             * @return Array.<CAAT.Math.Point> of object of the form {x:float, y:float}.
              */
             getContour:function (iSize) {
                 var contour = [];
@@ -3744,25 +4045,97 @@ CAAT.Module({
  *
  **/
 
-/**
- * @class
- */
 CAAT.Module({
+
+    /**
+     *
+     * Namespace for all behavior-based actor properties instrumenter objects.
+     *
+     * @name Behavior
+     * @memberOf CAAT
+     * @namespace
+     */
+
+    /**
+     *
+     * The BaseBehavior is the base class of all Behavior modifiers:
+     *
+     * <li>AlphaBehabior
+     * <li>RotateBehavior
+     * <li>ScaleBehavior
+     * <li>Scale1Behavior
+     * <li>PathBehavior
+     * <li>GenericBehavior
+     * <li>ContainerBehavior
+     *
+     * Behavior base class.
+     *
+     * <p>
+     * A behavior is defined by a frame time (behavior duration) and a behavior application function called interpolator.
+     * In its default form, a behaviour is applied linearly, that is, the same amount of behavior is applied every same
+     * time interval.
+     * <p>
+     * A concrete Behavior, a rotateBehavior in example, will change a concrete Actor's rotationAngle during the specified
+     * period.
+     * <p>
+     * A behavior is guaranteed to notify (if any observer is registered) on behavior expiration.
+     * <p>
+     * A behavior can keep an unlimited observers. Observers are objects of the form:
+     * <p>
+     * <code>
+     * {
+     *      behaviorExpired : function( behavior, time, actor);
+     *      behaviorApplied : function( behavior, time, normalizedTime, actor, value);
+     * }
+     * </code>
+     * <p>
+     * <strong>behaviorExpired</strong>: function( behavior, time, actor). This method will be called for any registered observer when
+     * the scene time is greater than behavior's startTime+duration. This method will be called regardless of the time
+     * granurality.
+     * <p>
+     * <strong>behaviorApplied</strong> : function( behavior, time, normalizedTime, actor, value). This method will be called once per
+     * frame while the behavior is not expired and is in frame time (behavior startTime>=scene time). This method can be
+     * called multiple times.
+     * <p>
+     * Every behavior is applied to a concrete Actor.
+     * Every actor must at least define an start and end value. The behavior will set start-value at behaviorStartTime and
+     * is guaranteed to apply end-value when scene time= behaviorStartTime+behaviorDuration.
+     * <p>
+     * You can set behaviors to apply forever that is cyclically. When a behavior is cycle=true, won't notify
+     * behaviorExpired to its registered observers.
+     * <p>
+     * Other Behaviors simply must supply with the method <code>setForTime(time, actor)</code> overriden.
+     *
+     * @name BaseBehavior
+     * @memberOf CAAT.Behavior
+     * @constructor
+     *
+     */
+
+
+
+
     defines:        "CAAT.Behavior.BaseBehavior",
     constants:      {
 
         /**
-         * @enum
+         * @name Status
+         * @memberOf CAAT.Behavior.BaseBehavior
          */
         Status: {
-            NOT_STARTED: 0,
-            STARTED:    1,
-            EXPIRED:    2
+            /**
+             * @lends CAAT.Behavior.BaseBehavior.Status
+             */
+
+            /** @const @type {number}*/ NOT_STARTED: 0,
+            /** @const @type {number} */ STARTED:    1,
+            /** @const  @type {number}*/ EXPIRED:    2
         },
 
         /**
-         *
-         * @param obj
+         * @lends CAAT.Behavior.BaseBehavior
+         * @function
+         * @param obj a JSON object with a behavior definition.
          */
         parse : function( obj ) {
 
@@ -3807,45 +4180,13 @@ CAAT.Module({
         return {
 
             /**
-             * Behavior base class.
-             *
-             * <p>
-             * A behavior is defined by a frame time (behavior duration) and a behavior application function called interpolator.
-             * In its default form, a behaviour is applied linearly, that is, the same amount of behavior is applied every same
-             * time interval.
-             * <p>
-             * A concrete Behavior, a rotateBehavior in example, will change a concrete Actor's rotationAngle during the specified
-             * period.
-             * <p>
-             * A behavior is guaranteed to notify (if any observer is registered) on behavior expiration.
-             * <p>
-             * A behavior can keep an unlimited observers. Observers are objects of the form:
-             * <p>
-             * <code>
-             * {
-             *      behaviorExpired : function( behavior, time, actor);
-             *      behaviorApplied : function( behavior, time, normalizedTime, actor, value);
-             * }
-             * </code>
-             * <p>
-             * <strong>behaviorExpired</strong>: function( behavior, time, actor). This method will be called for any registered observer when
-             * the scene time is greater than behavior's startTime+duration. This method will be called regardless of the time
-             * granurality.
-             * <p>
-             * <strong>behaviorApplied</strong> : function( behavior, time, normalizedTime, actor, value). This method will be called once per
-             * frame while the behavior is not expired and is in frame time (behavior startTime>=scene time). This method can be
-             * called multiple times.
-             * <p>
-             * Every behavior is applied to a concrete Actor.
-             * Every actor must at least define an start and end value. The behavior will set start-value at behaviorStartTime and
-             * is guaranteed to apply end-value when scene time= behaviorStartTime+behaviorDuration.
-             * <p>
-             * You can set behaviors to apply forever that is cyclically. When a behavior is cycle=true, won't notify
-             * behaviorExpired to its registered observers.
-             * <p>
-             * Other Behaviors simply must supply with the method <code>setForTime(time, actor)</code> overriden.
-             *
-             *
+             * @lends CAAT.Behavior.BaseBehavior.prototype
+             */
+
+            /**
+             * Constructor delegate function.
+             * @return {this}
+             * @private
              */
             __init:function () {
                 this.lifecycleListenerList = [];
@@ -3853,25 +4194,88 @@ CAAT.Module({
                 return this;
             },
 
-            lifecycleListenerList:null, // observer list.
-            behaviorStartTime:-1, // scene time to start applying the behavior
-            behaviorDuration:-1, // behavior duration in ms.
-            cycleBehavior:false, // apply forever ?
+            /**
+             * Behavior lifecycle observer list.
+             * @private
+             */
+            lifecycleListenerList:null,
 
+            /**
+             * Behavior application start time related to scene time.
+             * @private
+             */
+            behaviorStartTime:-1,
+
+            /**
+             * Behavior application duration time related to scene time.
+             * @private
+             */
+            behaviorDuration:-1,
+
+            /**
+             * Will this behavior apply for ever in a loop ?
+             * @private
+             */
+            cycleBehavior:false,
+
+            /**
+             * behavior status.
+             * @private
+             */
             status: CAAT.Behavior.BaseBehavior.Status.NOT_STARTED, // Status.NOT_STARTED
 
-            interpolator:null, // behavior application function. linear by default.
+            /**
+             * An interpolator object to apply behaviors using easing functions, etc.
+             * Unless otherwise specified, it will be linearly applied.
+             * @type {CAAT.Behavior.Interpolator}
+             * @private
+             */
+            interpolator:null,
+
+            /**
+             * The actor this behavior will be applied to.
+             * @type {CAAT.Foundation.Actor}
+             * @private
+             */
             actor:null, // actor the Behavior acts on.
+
+            /**
+             * An id to identify this behavior.
+             */
             id:0, // an integer id suitable to identify this behavior by number.
 
+            /**
+             * Initial offset to apply this behavior the first time.
+             * @type {number}
+             * @private
+             */
             timeOffset:0,
 
+            /**
+             * Apply the behavior, or just calculate the values ?
+             * @type {boolean}
+             */
             doValueApplication:true,
 
+            /**
+             * Is this behavior solved ? When called setDelayTime, this flag identifies whether the behavior
+             * is in time relative to the scene.
+             * @type {boolean}
+             * @private
+             */
             solved:true,
 
-            discardable:false, // is true, this behavior will be removed from the this.actor instance when it expires.
+            /**
+             * if true, this behavior will be removed from the this.actor instance when it expires.
+             * @type {boolean}
+             * @private
+             */
+            discardable:false,
 
+            /**
+             * Parse a behavior of this type.
+             * @param obj {object} an object with a behavior definition.
+             */
             parse : function( obj ) {
                 if ( obj.pingpong ) {
                     this.setPingPong();
@@ -3889,17 +4293,34 @@ CAAT.Module({
                 }
             },
 
-            /*  @memberOf CAAT.Behavior.BaseBehavior */
+            /**
+             * Set whether this behavior will apply behavior values to a reference Actor instance.
+             * @param apply {boolean}
+             * @return {*}
+             */
             setValueApplication:function (apply) {
                 this.doValueApplication = apply;
                 return this;
             },
 
+            /**
+             * Set this behavior offset time.
+             * This method is intended to make a behavior start applying (the first) time from a different
+             * start time.
+             * @param offset {number} between 0 and 1
+             * @return {*}
+             */
             setTimeOffset:function (offset) {
                 this.timeOffset = offset;
                 return this;
             },
 
+            /**
+             * Set this behavior status
+             * @param st {CAAT.Behavior.BaseBehavior.Status}
+             * @return {*}
+             * @private
+             */
             setStatus : function(st) {
                 this.status= st;
                 return this;
@@ -3907,13 +4328,14 @@ CAAT.Module({
 
             /**
              * Sets this behavior id.
-             * @param id an integer.
+             * @param id {object}
              *
              */
             setId:function (id) {
                 this.id = id;
                 return this;
             },
+
             /**
              * Sets the default interpolator to a linear ramp, that is, behavior will be applied linearly.
              * @return this
@@ -3922,6 +4344,7 @@ CAAT.Module({
                 this.interpolator = DefaultInterpolator;
                 return this;
             },
+
             /**
              * Sets default interpolator to be linear from 0..1 and from 1..0.
              * @return this
@@ -3932,8 +4355,7 @@ CAAT.Module({
             },
 
             /**
-             * Sets behavior start time and duration.
-             * Scene time will be the time of the scene the behavior actor is bound to.
+             * Sets behavior start time and duration. Start time is set absolutely relative to scene time.
              * @param startTime {number} an integer indicating behavior start time in scene time in ms..
              * @param duration {number} an integer indicating behavior duration in ms.
              */
@@ -3944,9 +4366,10 @@ CAAT.Module({
 
                 return this;
             },
+
             /**
-             * Sets behavior start time and duration but instead as setFrameTime which sets initial time as absolute time
-             * regarding scene's time, it uses a relative time offset from current scene time.
+             * Sets behavior start time and duration. Start time is relative to scene time.
+             *
              * a call to
              *   setFrameTime( scene.time, duration ) is equivalent to
              *   setDelayTime( 0, duration )
@@ -3963,12 +4386,18 @@ CAAT.Module({
                 return this;
 
             },
+
+            /**
+             * Make this behavior not applicable.
+             * @return {*}
+             */
             setOutOfFrameTime:function () {
                 this.status =CAAT.Behavior.BaseBehavior.Status.EXPIRED;
                 this.behaviorStartTime = Number.MAX_VALUE;
                 this.behaviorDuration = 0;
                 return this;
             },
+
             /**
              * Changes behavior default interpolator to another instance of CAAT.Interpolator.
              * If the behavior is not defined by CAAT.Interpolator factory methods, the interpolation function must return
@@ -3979,6 +4408,7 @@ CAAT.Module({
                 this.interpolator = interpolator;
                 return this;
             },
+
             /**
              * This method must no be called directly.
              * The director loop will call this method in orther to apply actor behaviors.
@@ -4013,6 +4443,7 @@ CAAT.Module({
                 this.cycleBehavior = bool;
                 return this;
             },
+
             /**
              * Adds an observer to this behavior.
              * @param behaviorListener an observer instance.
@@ -4021,6 +4452,7 @@ CAAT.Module({
                 this.lifecycleListenerList.push(behaviorListener);
                 return this;
             },
+
             /**
              * Remove all registered listeners to the behavior.
              */
@@ -4028,12 +4460,14 @@ CAAT.Module({
                 this.lifecycleListenerList = [];
                 return this;
             },
+
             /**
              * @return an integer indicating the behavior start time in ms..
              */
             getStartTime:function () {
                 return this.behaviorStartTime;
             },
+
             /**
              * @return an integer indicating the behavior duration time in ms.
              */
@@ -4041,6 +4475,7 @@ CAAT.Module({
                 return this.behaviorDuration;
 
             },
+
             /**
              * Chekcs whether the behaviour is in scene time.
              * In case it gets out of scene time, and has not been tagged as expired, the behavior is expired and observers
@@ -4079,6 +4514,12 @@ CAAT.Module({
                 return this.behaviorStartTime <= time; // && time<this.behaviorStartTime+this.behaviorDuration;
             },
 
+            /**
+             * Notify observers the first time the behavior is applied.
+             * @param actor
+             * @param time
+             * @private
+             */
             fireBehaviorStartedEvent:function (actor, time) {
                 for (var i = 0, l = this.lifecycleListenerList.length; i < l; i++) {
                     var b = this.lifecycleListenerList[i];
@@ -4092,6 +4533,7 @@ CAAT.Module({
              * Notify observers about expiration event.
              * @param actor a CAAT.Actor instance
              * @param time an integer with the scene time the behavior was expired at.
+             * @private
              */
             fireBehaviorExpiredEvent:function (actor, time) {
                 for (var i = 0, l = this.lifecycleListenerList.length; i < l; i++) {
@@ -4101,6 +4543,7 @@ CAAT.Module({
                     }
                 }
             },
+
             /**
              * Notify observers about behavior being applied.
              * @param actor a CAAT.Actor instance the behavior is being applied to.
@@ -4108,6 +4551,7 @@ CAAT.Module({
              * @param normalizedTime the normalized time (0..1) considering 0 behavior start time and 1
              * behaviorStartTime+behaviorDuration.
              * @param value the value being set for actor properties. each behavior will supply with its own value version.
+             * @private
              */
             fireBehaviorAppliedEvent:function (actor, time, normalizedTime, value) {
                 for (var i = 0, l = this.lifecycleListenerList.length; i < l; i++) {
@@ -4117,11 +4561,13 @@ CAAT.Module({
                     }
                 }
             },
+
             /**
              * Convert scene time into something more manageable for the behavior.
              * behaviorStartTime will be 0 and behaviorStartTime+behaviorDuration will be 1.
              * the time parameter will be proportional to those values.
              * @param time the scene time to be normalized. an integer.
+             * @private
              */
             normalizeTime:function (time) {
                 time = time - this.behaviorStartTime;
@@ -4131,12 +4577,12 @@ CAAT.Module({
 
                 return this.interpolator.getPosition(time / this.behaviorDuration).y;
             },
+
             /**
              * Sets the behavior as expired.
              * This method must not be called directly. It is an auxiliary method to isBehaviorInTime method.
              * @param actor {CAAT.Actor}
              * @param time {integer} the scene time.
-             *
              * @private
              */
             setExpired:function (actor, time) {
@@ -4149,17 +4595,18 @@ CAAT.Module({
                     this.actor.removeBehavior(this);
                 }
             },
+
             /**
              * This method must be overriden for every Behavior breed.
              * Must not be called directly.
              * @param actor {CAAT.Actor} a CAAT.Actor instance.
              * @param time {number} an integer with the scene time.
-             *
              * @private
              */
             setForTime:function (time, actor) {
 
             },
+
             /**
              * @param overrides
              */
@@ -4173,9 +4620,37 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * Get this behaviors CSS property name application.
+             * @return {String}
+             */
             getPropertyName:function () {
                 return "";
+            },
+
+            /**
+             * Calculate a CSS3 @key-frame for this behavior at the given time.
+             * @param time {number}
+             */
+            calculateKeyFrameData:function (time) {
+            },
+
+            /**
+             * Calculate a CSS3 @key-frame data values instead of building a CSS3 @key-frame value.
+             * @param time {number}
+             */
+            getKeyFrameDataValues : function(time) {
+            },
+
+            /**
+             * Calculate a complete CSS3 @key-frame set for this behavior.
+             * @param prefix {string} browser vendor prefix
+             * @param name {string} keyframes animation name
+             * @param keyframessize {number} number of keyframes to generate
+             */
+            calculateKeyFramesData:function (prefix, name, keyframessize) {
             }
+
         }
     }
 });
@@ -4183,6 +4658,14 @@ CAAT.Module({
 
 
 CAAT.Module({
+
+    /**
+     * @name AlphaBehavior
+     * @memberOf CAAT.Behavior
+     * @extends CAAT.Behavior.BaseBehavior
+     * @constructor
+     */
+
     defines:"CAAT.Behavior.AlphaBehavior",
     aliases:["CAAT.AlphaBehavior"],
     depends:["CAAT.Behavior.BaseBehavior"],
@@ -4190,15 +4673,37 @@ CAAT.Module({
     extendsWith:function () {
         return {
 
+            /**
+             * @lends CAAT.Behavior.AlphaBehavior.prototype
+             */
+
+            /**
+             * Starting alpha transparency value. Between 0 and 1.
+             * @type {number}
+             * @private
+             */
             startAlpha:0,
+
+            /**
+             * Ending alpha transparency value. Between 0 and 1.
+             * @type {number}
+             * @private
+             */
             endAlpha:0,
 
+            /**
+             * @inheritsDoc
+             * @param obj
+             */
             parse : function( obj ) {
                 CAAT.Behavior.AlphaBehavior.superclass.parse.call(this,obj);
                 this.startAlpha= obj.start || 0;
                 this.endAlpha= obj.end || 0;
             },
 
+            /**
+             * @inheritDoc
+             */
             getPropertyName:function () {
                 return "opacity";
             },
@@ -4220,6 +4725,7 @@ CAAT.Module({
                 }
                 return alpha;
             },
+
             /**
              * Set alpha transparency minimum and maximum value.
              * This value can be coerced by Actor's property isGloblAlpha.
@@ -4233,11 +4739,17 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFrameData:function (time) {
                 time = this.interpolator.getPosition(time).y;
                 return  (this.startAlpha + time * (this.endAlpha - this.startAlpha));
             },
 
+            /**
+             * @inheritDoc
+             */
             getKeyFrameDataValues : function(time) {
                 time = this.interpolator.getPosition(time).y;
                 return {
@@ -4246,9 +4758,7 @@ CAAT.Module({
             },
 
             /**
-             * @param prefix {string} browser vendor prefix
-             * @param name {string} keyframes animation name
-             * @param keyframessize {number} number of keyframes to generate
+             * @inheritDoc
              * @override
              */
             calculateKeyFramesData:function (prefix, name, keyframessize) {
@@ -4280,6 +4790,14 @@ CAAT.Module({
     }
 });
 CAAT.Module({
+
+    /**
+     * @name ContainerBehavior
+     * @memberOf CAAT.Behavior
+     * @extends CAAT.Behavior.BaseBehavior
+     * @constructor
+     */
+
     defines:"CAAT.Behavior.ContainerBehavior",
     depends:["CAAT.Behavior.BaseBehavior", "CAAT.Behavior.GenericBehavior"],
     aliases: ["CAAT.ContainerBehavior"],
@@ -4288,6 +4806,13 @@ CAAT.Module({
 
         return {
 
+            /**
+             * @lends CAAT.Behavior.ContainerBehavior.prototype
+             */
+
+            /**
+             * @inheritDoc
+             */
             parse : function( obj ) {
                 if ( obj.behaviors && obj.behaviors.length ) {
                     for( var i=0; i<obj.behaviors.length; i+=1 ) {
@@ -4297,8 +4822,16 @@ CAAT.Module({
                 CAAT.Behavior.ContainerBehavior.superclass.parse.call(this,obj);
             },
 
+            /**
+             * A collection of behaviors.
+             * @type {Array.<CAAT.Behavior.BaseBehavior>}
+             */
             behaviors:null, // contained behaviors array
 
+            /**
+             * @inheritDoc
+             * @private
+             */
             __init:function () {
                 this.__super();
                 this.behaviors = [];
@@ -4323,6 +4856,10 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * Get a behavior by mathing its id.
+             * @param id {object}
+             */
             getBehaviorById : function(id) {
                 for( var i=0; i<this.behaviors.length; i++ ) {
                     if ( this.behaviors[i].id===id ) {
@@ -4334,16 +4871,15 @@ CAAT.Module({
             },
 
             /**
-             * Adds a new behavior to the container.
-             * @param behavior
-             *
-             * @override
+             * Add a new behavior to the container.
+             * @param behavior {CAAT.Behavior.BaseBehavior}
              */
             addBehavior:function (behavior) {
                 this.behaviors.push(behavior);
                 behavior.addListener(this);
                 return this;
             },
+
             /**
              * Applies every contained Behaviors.
              * The application time the contained behaviors will receive will be ContainerBehavior related and not the
@@ -4372,6 +4908,7 @@ CAAT.Module({
                     }
                 }
             },
+
             /**
              * This method is the observer implementation for every contained behavior.
              * If a container is Cycle=true, won't allow its contained behaviors to be expired.
@@ -4384,6 +4921,7 @@ CAAT.Module({
                     behavior.setStatus(CAAT.Behavior.BaseBehavior.Status.STARTED);
                 }
             },
+
             /**
              * Implementation method of the behavior.
              * Just call implementation method for its contained behaviors.
@@ -4399,9 +4937,13 @@ CAAT.Module({
                 return null;
             },
 
+            /**
+             * Expire this behavior and the children applied at the parameter time.
+             * @param actor {CAAT.Foundation.Actor}
+             * @param time {number}
+             * @return {*}
+             */
             setExpired:function (actor, time) {
-
-                //CAAT.Behavior.ContainerBehavior.superclass.setExpired.call(this, actor, time);
 
                 var bh = this.behaviors;
                 // set for final interpolator value.
@@ -4422,6 +4964,9 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             setFrameTime:function (start, duration) {
                 CAAT.Behavior.ContainerBehavior.superclass.setFrameTime.call(this, start, duration);
 
@@ -4432,6 +4977,9 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             setDelayTime:function (start, duration) {
                 CAAT.Behavior.ContainerBehavior.superclass.setDelayTime.call(this, start, duration);
 
@@ -4442,6 +4990,9 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             getKeyFrameDataValues : function(referenceTime) {
 
                 var i, bh, time;
@@ -4479,6 +5030,9 @@ CAAT.Module({
                 return keyFrameData;
             },
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFrameData:function (referenceTime, prefix) {
 
                 var i;
@@ -4563,46 +5117,8 @@ CAAT.Module({
             },
 
             /**
-             *
-             * @param prefix
-             * @param name
-             * @param keyframessize
-             *//*
-            calculateKeyFramesData:function (prefix, name, keyframessize) {
-
-                if (this.duration === Number.MAX_VALUE) {
-                    return "";
-                }
-
-                if (typeof keyframessize === 'undefined') {
-                    keyframessize = 100;
-                }
-
-                var i;
-                var prevValues = null;
-                var kfd = "@-" + prefix + "-keyframes " + name + " {";
-                var ret;
-                var time;
-                var kfr;
-
-                for (i = 0; i <= keyframessize; i++) {
-                    time = this.interpolator.getPosition(i / keyframessize).y;
-
-
-                    ret = this.calculateKeyFrameData(time, prefix, prevValues);
-                    kfr = "" +
-                        (i / keyframessize * 100) + "%" + // percentage
-                        "{" + ret.rules + "}\n";
-
-                    prevValues = ret.ret;
-                    kfd += kfr;
-                }
-
-                kfd += "}";
-
-                return kfd;
-            }
-*/
+             * @inheritDoc
+             */
             calculateKeyFramesData:function (prefix, name, keyframessize, anchorX, anchorY) {
 
                 function toKeyFrame(obj, prevKF) {
@@ -4684,6 +5200,12 @@ CAAT.Module({
     }
 });
 CAAT.Module({
+    /**
+     * @name GenericBehavior
+     * @memberOf CAAT.Behavior
+     * @extends CAAT.Behavior.BaseBehavior
+     * @constructor
+     */
     defines:"CAAT.Behavior.GenericBehavior",
     depends:["CAAT.Behavior.BaseBehavior"],
     aliases:["CAAT.GenericBehavior"],
@@ -4692,18 +5214,38 @@ CAAT.Module({
 
         return {
 
+            /**
+             *  @lends CAAT.Behavior.GenericBehavior.prototype
+             */
+
+
+            /**
+             * starting value.
+             */
             start:0,
+
+            /**
+             * ending value.
+             */
             end:0,
+
+            /**
+             * target to apply this generic behvior.
+             */
             target:null,
+
+            /**
+             * property to apply values to.
+             */
             property:null,
+
+            /**
+             * this callback will be invoked for every behavior application.
+             */
             callback:null,
 
             /**
-             * Sets the target objects property to the corresponding value for the given time.
-             * If a callback function is defined, it is called as well.
-             *
-             * @param time {number} the scene time to apply the behavior at.
-             * @param actor {CAAT.Actor} a CAAT.Actor object instance.
+             * @inheritDoc
              */
             setForTime:function (time, actor) {
                 var value = this.start + time * (this.end - this.start);
@@ -4715,6 +5257,7 @@ CAAT.Module({
                     this.target[this.property] = value;
                 }
             },
+
             /**
              * Defines the values to apply this behavior.
              *
@@ -4736,6 +5279,14 @@ CAAT.Module({
     }
 });
 CAAT.Module({
+
+    /**
+     * @name PathBehavior
+     * @memberOf CAAT.Behavior
+     * @extends CAAT.Behavior.BaseBehavior
+     * @constructor
+     */
+
     defines:"CAAT.Behavior.PathBehavior",
     aliases: ["CAAT.PathBehavior"],
     depends:[
@@ -4754,6 +5305,14 @@ CAAT.Module({
 
         return {
 
+            /**
+             * @lends CAAT.Behavior.PathBehavior.prototype
+             * @param obj
+             */
+
+            /**
+             * @inheritDoc
+             */
             parse : function( obj ) {
                 CAAT.Behavior.PathBehavior.superclass.parse.call(this,obj);
 
@@ -4768,13 +5327,32 @@ CAAT.Module({
                 }
             },
 
-            path:null, // the path to traverse
-            autoRotate:false, // set whether the actor must be rotated tangentially to the path.
+            /**
+             * A path to traverse.
+             * @type {CAAT.PathUtil.Path}
+             * @private
+             */
+            path:null,
+
+            /**
+             * Whether to set rotation angle while traversing the path.
+             * @private
+             */
+            autoRotate:false,
+
             prevX:-1, // private, do not use.
             prevY:-1, // private, do not use.
 
+            /**
+             * Autorotation hint.
+             * @type {CAAT.Behavior.PathBehavior.autorotate}
+             * @private
+             */
             autoRotateOp: CAAT.Behavior.PathBehavior.autorotate.FREE,
 
+            /**
+             * @inheritDoc
+             */
             getPropertyName:function () {
                 return "translate";
             },
@@ -4794,6 +5372,7 @@ CAAT.Module({
                 }
                 return this;
             },
+
             /**
              * Set the behavior path.
              * The path can be any length, and will take behaviorDuration time to be traversed.
@@ -4826,12 +5405,18 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFrameData:function (time) {
                 time = this.interpolator.getPosition(time).y;
                 var point = this.path.getPosition(time);
                 return "translateX(" + point.x + "px) translateY(" + point.y + "px)";
             },
 
+            /**
+             * @inheritDoc
+             */
             getKeyFrameDataValues : function(time) {
                 time = this.interpolator.getPosition(time).y;
                 var point = this.path.getPosition(time);
@@ -4853,6 +5438,9 @@ CAAT.Module({
                 return obj;
             },
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFramesData:function (prefix, name, keyframessize) {
 
                 if (typeof keyframessize === 'undefined') {
@@ -4881,11 +5469,7 @@ CAAT.Module({
             },
 
             /**
-             * Translates the Actor to the corresponding time path position.
-             * If autoRotate=true, the actor is rotated as well. The rotation anchor will (if set) always be ANCHOR_CENTER.
-             * @param time an integer indicating the time the behavior is being applied at.
-             * @param actor a CAAT.Actor instance to be translated.
-             * @return {object} an object of the form <code>{ x: {float}, y: {float}�}</code>.
+             * @inheritDoc
              */
             setForTime:function (time, actor) {
 
@@ -4958,6 +5542,7 @@ CAAT.Module({
 
 
             },
+
             /**
              * Get a point on the path.
              * If the time to get the point at is in behaviors frame time, a point on the path will be returned, otherwise
@@ -4979,6 +5564,14 @@ CAAT.Module({
     }
 });
 CAAT.Module({
+
+    /**
+     * @name RotateBehavior
+     * @memberOf CAAT.Behavior
+     * @extends CAAT.Behavior.BaseBehavior
+     * @constructor
+     */
+
     defines:"CAAT.Behavior.RotateBehavior",
     extendsClass: "CAAT.Behavior.BaseBehavior",
     depends:[
@@ -4990,12 +5583,20 @@ CAAT.Module({
 
         return {
 
+            /**
+             * @lends CAAT.Behavior.RotateBehavior.prototype
+             */
+
+
             __init:function () {
                 this.__super();
                 this.anchor = CAAT.Foundation.Actor.ANCHOR_CENTER;
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             parse : function( obj ) {
                 CAAT.Behavior.RotateBehavior.superclass.parse.call(this,obj);
                 this.startAngle= obj.start || 0;
@@ -5004,21 +5605,43 @@ CAAT.Module({
                 this.anchorY= (typeof obj.anchorY!=="undefined" ? parseInt(obj.anchorY) : 0.5);
             },
 
-            startAngle:0, // behavior start angle
-            endAngle:0, // behavior end angle
-            anchorX:.50, // rotation center x.
-            anchorY:.50, // rotation center y.
+            /**
+             * Start rotation angle.
+             * @type {number}
+             * @private
+             */
+            startAngle:0,
 
+            /**
+             * End rotation angle.
+             * @type {number}
+             * @private
+             */
+            endAngle:0,
+
+            /**
+             * Rotation X anchor.
+             * @type {number}
+             * @private
+             */
+            anchorX:.50,
+
+            /**
+             * Rotation Y anchor.
+             * @type {number}
+             * @private
+             */
+            anchorY:.50,
+
+            /**
+             * @inheritDoc
+             */
             getPropertyName:function () {
                 return "rotate";
             },
 
             /**
-             * Behavior application function.
-             * Do not call directly.
-             * @param time an integer indicating the application time.
-             * @param actor a CAAT.Actor the behavior will be applied to.
-             * @return the set angle.
+             * @inheritDoc
              */
             setForTime:function (time, actor) {
                 var angle = this.startAngle + time * (this.endAngle - this.startAngle);
@@ -5030,6 +5653,7 @@ CAAT.Module({
                 return angle;
 
             },
+
             /**
              * Set behavior bound values.
              * if no anchorx,anchory values are supplied, the behavior will assume
@@ -5052,6 +5676,7 @@ CAAT.Module({
                 }
                 return this;
             },
+
             /**
              * @deprecated
              * Use setValues instead
@@ -5061,14 +5686,15 @@ CAAT.Module({
             setAngles:function (start, end) {
                 return this.setValues(start, end);
             },
+
             /**
              * Set the behavior rotation anchor. Use this method when setting an exact percent
              * by calling setValues is complicated.
              * @see CAAT.Actor
-             * @param anchor any of CAAT.Actor.prototype.ANCHOR_* constants.
              *
              * These parameters are to set a custom rotation anchor point. if <code>anchor==CAAT.Actor.ANCHOR_CUSTOM
              * </code> the custom rotation point is set.
+             * @param actor
              * @param rx
              * @param ry
              *
@@ -5079,12 +5705,17 @@ CAAT.Module({
                 return this;
             },
 
-
+            /**
+             * @inheritDoc
+             */
             calculateKeyFrameData:function (time) {
                 time = this.interpolator.getPosition(time).y;
                 return "rotate(" + (this.startAngle + time * (this.endAngle - this.startAngle)) + "rad)";
             },
 
+            /**
+             * @inheritDoc
+             */
             getKeyFrameDataValues : function(time) {
                 time = this.interpolator.getPosition(time).y;
                 return {
@@ -5093,10 +5724,7 @@ CAAT.Module({
             },
 
             /**
-             * @param prefix {string} browser vendor prefix
-             * @param name {string} keyframes animation name
-             * @param keyframessize {integer} number of keyframes to generate
-             * @override
+             * @inheritDoc
              */
             calculateKeyFramesData:function (prefix, name, keyframessize) {
 
@@ -5130,6 +5758,12 @@ CAAT.Module({
     }
 });
 CAAT.Module({
+    /**
+     * @name Scale1Behavior
+     * @memberOf CAAT.Behavior
+     * @extends CAAT.Behavior.BaseBehavior
+     * @constructor
+     */
 
     defines:"CAAT.Behavior.Scale1Behavior",
     depends:[
@@ -5138,6 +5772,7 @@ CAAT.Module({
     ],
     aliases: ["CAAT.Scale1Behavior"],
     constants : {
+
         Axis : {
             X:  0,
             Y:  1
@@ -5148,20 +5783,43 @@ CAAT.Module({
 
         return {
 
+            /**
+             * @lends CAAT.Behavior.Scale1Behavior.prototype
+             */
+
             __init:function () {
                 this.__super();
                 this.anchor = CAAT.Foundation.Actor.ANCHOR_CENTER;
                 return this;
             },
 
+            /**
+             * Start scale value.
+             * @private
+             */
             startScale:1,
+
+            /**
+             * End scale value.
+             * @private
+             */
             endScale:1,
+
+            /**
+             * Scale X anchor.
+             * @private
+             */
             anchorX:.50,
+
+            /**
+             * Scale Y anchor.
+             * @private
+             */
             anchorY:.50,
 
-            sx:1,
-            sy:1,
-
+            /**
+             * Apply on Axis X or Y ?
+             */
             applyOnX:true,
 
             parse : function( obj ) {
@@ -5174,8 +5832,7 @@ CAAT.Module({
             },
 
             /**
-             *
-             * @param axis {Axis}
+             * @param axis {CAAT.Behavior.Scale1Behavior.Axis}
              */
             applyOnAxis:function (axis) {
                 if (axis === CAAT.Behavior.Scale1Behavior.Axis.X) {
@@ -5185,16 +5842,15 @@ CAAT.Module({
                 }
             },
 
+            /**
+             * @inheritDoc
+             */
             getPropertyName:function () {
                 return "scale";
             },
 
             /**
-             * Applies corresponding scale values for a given time.
-             *
-             * @param time the time to apply the scale for.
-             * @param actor the target actor to Scale.
-             * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}�}</code>
+             * @inheritDoc
              */
             setForTime:function (time, actor) {
 
@@ -5215,6 +5871,7 @@ CAAT.Module({
 
                 return scale;
             },
+
             /**
              * Define this scale behaviors values.
              *
@@ -5240,6 +5897,7 @@ CAAT.Module({
 
                 return this;
             },
+
             /**
              * Set an exact position scale anchor. Use this method when it is hard to
              * set a thorough anchor position expressed in percentage.
@@ -5254,6 +5912,9 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFrameData:function (time) {
                 var scale;
 
@@ -5263,6 +5924,9 @@ CAAT.Module({
                 return this.applyOnX ? "scaleX(" + scale + ")" : "scaleY(" + scale + ")";
             },
 
+            /**
+             * @inheritDoc
+             */
             getKeyFrameDataValues : function(time) {
                 time = this.interpolator.getPosition(time).y;
                 var obj= {};
@@ -5271,6 +5935,9 @@ CAAT.Module({
                 return obj;
             },
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFramesData:function (prefix, name, keyframessize) {
 
                 if (typeof keyframessize === 'undefined') {
@@ -5302,6 +5969,14 @@ CAAT.Module({
     }
 });
 CAAT.Module({
+
+    /**
+     * @name ScaleBehavior
+     * @memberOf CAAT.Behavior
+     * @extends CAAT.Behavior.BaseBehavior
+     * @constructor
+     */
+
     defines:"CAAT.Behavior.ScaleBehavior",
     depends:[
         "CAAT.Behavior.BaseBehavior",
@@ -5314,29 +5989,60 @@ CAAT.Module({
         return  {
 
             /**
-             * ScaleBehavior applies scale affine transforms in both axis.
-             * StartScale and EndScale must be supplied for each axis. This method takes care of a FF bug in which if a Scale is
-             * set to 0, the animation will fail playing.
-             *
-             * This behavior specifies anchors in values ranges 0..1
-             *
-             * @constructor
-             * @extendsClass CAAT.Behavior
-             *
+             * @lends CAAT.Behavior.ScaleBehavior
              */
+
             __init:function () {
                 this.__super();
                 this.anchor = CAAT.Foundation.Actor.ANCHOR_CENTER;
                 return this;
             },
 
+            /**
+             * Start X scale value.
+             * @private
+             * @type {number}
+             */
             startScaleX:1,
+
+            /**
+             * End X scale value.
+             * @private
+             * @type {number}
+             */
             endScaleX:1,
+
+            /**
+             * Start Y scale value.
+             * @private
+             * @type {number}
+             */
             startScaleY:1,
+
+            /**
+             * End Y scale value.
+             * @private
+             * @type {number}
+             */
             endScaleY:1,
+
+            /**
+             * Scale X anchor value.
+             * @private
+             * @type {number}
+             */
             anchorX:.50,
+
+            /**
+             * Scale Y anchor value.
+             * @private
+             * @type {number}
+             */
             anchorY:.50,
 
+            /**
+             * @inheritDoc
+             */
             parse : function( obj ) {
                 CAAT.Behavior.ScaleBehavior.superclass.parse.call(this,obj);
                 this.startScaleX= (obj.scaleX && obj.scaleX.start) || 0;
@@ -5347,6 +6053,9 @@ CAAT.Module({
                 this.anchorY= (typeof obj.anchorY!=="undefined" ? parseInt(obj.anchorY) : 0.5);
             },
 
+            /**
+             * @inheritDoc
+             */
             getPropertyName:function () {
                 return "scale";
             },
@@ -5419,6 +6128,9 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFrameData:function (time) {
                 var scaleX;
                 var scaleY;
@@ -5430,6 +6142,9 @@ CAAT.Module({
                 return "scale(" + scaleX +"," + scaleY + ")";
             },
 
+            /**
+             * @inheritDoc
+             */
             getKeyFrameDataValues : function(time) {
                 time = this.interpolator.getPosition(time).y;
                 return {
@@ -5439,6 +6154,9 @@ CAAT.Module({
             },
 
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFramesData:function (prefix, name, keyframessize) {
 
                 if (typeof keyframessize === 'undefined') {
@@ -5478,9 +6196,26 @@ CAAT.Module({
  *
  */
 CAAT.Module({
+
+    /**
+     * @name Runtime
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name BrowserInfo
+     * @memberOf CAAT.Module.Runtime
+     * @namespace
+     */
+
     defines:"CAAT.Module.Runtime.BrowserInfo",
 
     constants: function() {
+
+        /**
+         * @lends CAAT.Module.Runtime.BrowserInfo
+         */
 
         function searchString(data) {
             for (var i = 0; i < data.length; i++) {
@@ -5621,25 +6356,85 @@ CAAT.Module({
  */
 
 CAAT.Module({
+
+    /**
+     * @name Module
+     * @memberOf CAAT
+     * @namespace
+     */
+
+    /**
+     * @name Audio
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name AudioManager
+     * @memberOf CAAT.Module.Audio
+     * @constructor
+     */
+
     defines:"CAAT.Module.Audio.AudioManager",
     depends:[
         "CAAT.Module.Runtime.BrowserInfo"
     ],
     extendsWith:function () {
         return {
+
+            /**
+             * @lends CAAT.Module.Audio.AudioManager.prototype
+             */
+
             __init:function () {
                 this.browserInfo = CAAT.Module.Runtime.BrowserInfo;
                 return this;
             },
 
+            /**
+             * The only background music audio channel.
+             */
             musicChannel: null,
+
+            /**
+             * Some browser info needed to know whether we´re in FF so we can fix the loop bug.
+             */
             browserInfo:null,
+
+            /**
+             * Is music enabled ?
+             */
             musicEnabled:true,
+
+            /**
+             * Are FX sounds enabled ?
+             */
             fxEnabled:true,
-            audioCache:null, // audio elements.
-            channels:null, // available playing channels.
-            workingChannels:null, // currently playing channels.
+
+            /**
+             * A collection of Audio objects.
+             */
+            audioCache:null,
+
+            /**
+             * A cache of empty Audio objects.
+             */
+            channels:null,
+
+            /**
+             * Currently used Audio objects.
+             */
+            workingChannels:null,
+
+            /**
+             * Currently looping Audio objects.
+             */
             loopingChannels:[],
+
+            /**
+             * Audio formats.
+             * @dict
+             */
             audioTypes:{               // supported audio formats. Don't remember where i took them from :S
                 'mp3':'audio/mpeg;',
                 'ogg':'audio/ogg; codecs="vorbis"',
@@ -6079,8 +6874,25 @@ CAAT.Module({
  *
  **/
 CAAT.Module({
+
+    /**
+     * @name Storage
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name LocalStorage
+     * @memberOf CAAT.Module.Storage
+     * @namespace
+     */
+
     defines : "CAAT.Module.Storage.LocalStorage",
     constants : {
+
+        /**
+         * @lends CAAT.Module.Storage.LocalStorage
+         */
 
         /**
          * Stores an object in local storage. The data will be saved as JSON.stringify.
@@ -6146,10 +6958,29 @@ CAAT.Module({
  **/
 
 CAAT.Module({
+
+    /**
+     * @name ColorUtil
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name Color
+     * @memberOf CAAT.Module.ColorUtil
+     * @namespace
+     */
+
+
     defines:"CAAT.Module.ColorUtil.Color",
     depends:[
     ],
     constants:{
+
+        /**
+         * @lends CAAT.Module.ColorUtil.Color
+         */
+
         /**
          * Enumeration to define types of color ramps.
          * @enum {number}
@@ -6256,7 +7087,7 @@ CAAT.Module({
          * 14 colors plus the two initial ones will be calculated.
          * @param step {number} return this color index of all the calculated colors.
          *
-         * @return { r{number}, g{number}, b{number} } return an object with the new calculated color components.
+         * @return { {r{number}, g{number}, b{number}} } return an object with the new calculated color components.
          * @static
          */
         interpolate:function (r0, g0, b0, r1, g1, b1, nsteps, step) {
@@ -6421,11 +7252,28 @@ CAAT.Module({
  */
 
 CAAT.Module( {
+
+    /**
+     * @name Debug
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name Debug
+     * @memberOf CAAT.Module.Debug
+     * @constructor
+     */
+
     defines : "CAAT.Module.Debug.Debug",
     depends : [
         "CAAT.Event.AnimationLoop"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Module.Debug.Debug.prototype
+         */
 
         width:              0,
         height:             0,
@@ -6776,8 +7624,9 @@ CAAT.Module( {
 
             /* Update the framerate counter */
             this.framerate.frames++;
-            if ( cc.RAF > this.framerate.timeLastRefresh + this.framerate.refreshInterval ) {
-                this.framerate.fps = ( ( this.framerate.frames * 1000 ) / ( cc.RAF - this.framerate.timeLastRefresh ) ) | 0;
+            var tt= new Date().getTime() ;
+            if ( tt> this.framerate.timeLastRefresh + this.framerate.refreshInterval ) {
+                this.framerate.fps = ( ( this.framerate.frames * 1000 ) / ( tt - this.framerate.timeLastRefresh ) ) | 0;
                 this.framerate.fpsMin = this.framerate.frames > 0 ? Math.min( this.framerate.fpsMin, this.framerate.fps ) : this.framerate.fpsMin;
                 this.framerate.fpsMax = Math.max( this.framerate.fpsMax, this.framerate.fps );
 
@@ -6791,7 +7640,7 @@ CAAT.Module( {
                 this.frameRAFAcc=0;
                 this.textRAFTime.innerHTML= value2;
 
-                this.framerate.timeLastRefresh = cc.RAF;
+                this.framerate.timeLastRefresh = tt;
                 this.framerate.frames = 0;
 
                 this.paint(value2);
@@ -6863,12 +7712,29 @@ CAAT.Module( {
  **/
 
 CAAT.Module({
+
+    /**
+     * @name Font
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name Font
+     * @memberOf CAAT.Module.Font
+     * @constructor
+     */
+
     defines : "CAAT.Module.Font.Font",
     aliases : "CAAT.Font",
     depends : [
         "CAAT.Foundation.SpriteImage"
     ],
     constants: {
+
+        /**
+         * @lends CAAT.Module.Font.Font
+         */
 
         getFontMetrics:function (font) {
             var ret;
@@ -6988,6 +7854,10 @@ CAAT.Module({
         var UNKNOWN_CHAR_WIDTH = 10;
 
         return {
+
+            /**
+             * @lends CAAT.Module.Font.Font.prototype
+             */
 
             fontSize:10,
             fontSizeUnit:"px",
@@ -7182,13 +8052,14 @@ CAAT.Module({
                     charInfo = this.charMap[ str.charAt(i) ];
                     if (charInfo) {
                         w = charInfo.width;
-                        ctx.drawImage(
-                            this.image,
-                            charInfo.x, 0,
-                            w, height,
-                            x, y,
-                            w, height);
-
+                        if ( w>0 && charInfo.height>0 ) {
+                            ctx.drawImage(
+                                this.image,
+                                charInfo.x, 0,
+                                w, height,
+                                x, y,
+                                w, height);
+                        }
                         x += w;
                     } else {
                         ctx.strokeStyle = '#f00';
@@ -7216,155 +8087,199 @@ CAAT.Module({
 /**
  * See LICENSE file.
  *
-	  ####  #####  ##### ####    ###  #   # ###### ###### ##     ##  #####  #     #      ########    ##    #  #  #####
-	 #   # #   #  ###   #   #  #####  ###    ##     ##   ##  #  ##    #    #     #     #   ##   #  #####  ###   ###
-	 ###  #   #  ##### ####   #   #   #   ######   ##   #########  #####  ##### ##### #   ##   #  #   #  #   # #####
+ ####  #####  ##### ####    ###  #   # ###### ###### ##     ##  #####  #     #      ########    ##    #  #  #####
+ #   # #   #  ###   #   #  #####  ###    ##     ##   ##  #  ##    #    #     #     #   ##   #  #####  ###   ###
+ ###  #   #  ##### ####   #   #   #   ######   ##   #########  #####  ##### ##### #   ##   #  #   #  #   # #####
  -
  File:
- 	PackedCircle.js
+ PackedCircle.js
  Created By:
- 	Mario Gonzalez
- Project	:
- 	None
+ Mario Gonzalez
+ Project    :
+ None
  Abstract:
- 	 A single packed circle.
-	 Contains a reference to it's div, and information pertaining to it state.
+ A single packed circle.
+ Contains a reference to it's div, and information pertaining to it state.
  Basic Usage:
-	http://onedayitwillmake.com/CirclePackJS/
-*/
+ http://onedayitwillmake.com/CirclePackJS/
+ */
 
-CAAT.Module( {
-    defines : "CAAT.Module.CircleManager.PackedCircle",
-    depends : [
+CAAT.Module({
+
+    /**
+     * @name CircleManager
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name PackedCircle
+     * @memberOf CAAT.Module.CircleManager
+     * @constructor
+     */
+
+    defines:"CAAT.Module.CircleManager.PackedCircle",
+    depends:[
         "CAAT.Module.CircleManager.PackedCircle",
         "CAAT.Math.Point"
     ],
-    constants : {
-        BOUNDS_RULE_WRAP:		1,      // Wrap to otherside
-        BOUNDS_RULE_CONSTRAINT:	2,      // Constrain within bounds
-        BOUNDS_RULE_DESTROY:	4,      // Destroy when it reaches the edge
-        BOUNDS_RULE_IGNORE:		8		// Ignore when reaching bounds
+    constants:{
+
+        /**
+         * @lends CAAT.Module.CircleManager.PackedCircle
+         */
+
+        /** @const */ BOUNDS_RULE_WRAP:1, // Wrap to otherside
+        /** @const */ BOUNDS_RULE_CONSTRAINT:2, // Constrain within bounds
+        /** @const */ BOUNDS_RULE_DESTROY:4, // Destroy when it reaches the edge
+        /** @const */ BOUNDS_RULE_IGNORE:8        // Ignore when reaching bounds
     },
-    extendsWith : {
-        __init : function() {
+    extendsWith:{
+
+        /**
+         * @lends CAAT.Module.CircleManager.PackedCircle.prototype
+         */
+
+        __init:function () {
             this.boundsRule = CAAT.Module.CircleManager.PackedCircle.BOUNDS_RULE_IGNORE;
-            this.position = new CAAT.Math.Point(0,0,0);
-            this.offset = new CAAT.Math.Point(0,0,0);
-            this.targetPosition = new CAAT.Math.Point(0,0,0);
+            this.position = new CAAT.Math.Point(0, 0, 0);
+            this.offset = new CAAT.Math.Point(0, 0, 0);
+            this.targetPosition = new CAAT.Math.Point(0, 0, 0);
             return this;
         },
 
-		id:             0,
-		delegate:		null,
-		position:		null,
-		offset:			null,
+        /**
+         *
+         */
+        id:0,
 
-		targetPosition:	null,	// Where it wants to go
-		targetChaseSpeed: 0.02,
+        /**
+         *
+         */
+        delegate:null,
 
-		isFixed:		false,
-		boundsRule:		0,
-		collisionMask:	0,
-		collisionGroup:	0,
+        /**
+         *
+         */
+        position:null,
 
-		containsPoint: function(aPoint)
-		{
-			var distanceSquared = this.position.getDistanceSquared(aPoint);
-			return distanceSquared < this.radiusSquared;
-		},
+        /**
+         *
+         */
+        offset:null,
 
-		getDistanceSquaredFromPosition: function(aPosition)
-		{
-			var distanceSquared = this.position.getDistanceSquared(aPosition);
-			// if it's shorter than either radius, we intersect
-			return distanceSquared < this.radiusSquared;
-		},
+        /**
+         *
+         */
+        targetPosition:null, // Where it wants to go
 
-		intersects: function(aCircle)
-		{
-			var distanceSquared = this.position.getDistanceSquared(aCircle.position);
-			return (distanceSquared < this.radiusSquared || distanceSquared < aCircle.radiusSquared);
-		},
+        /**
+         *
+         */
+        targetChaseSpeed:0.02,
 
-/**
- * ACCESSORS
- */
-		setPosition: function(aPosition)
-		{
-			this.position = aPosition;
-			return this;
-		},
+        /**
+         *
+         */
+        isFixed:false,
 
-		setDelegate: function(aDelegate)
-		{
-			this.delegate = aDelegate;
-			return this;
-		},
+        /**
+         *
+         */
+        boundsRule:0,
 
-		setOffset: function(aPosition)
-		{
-			this.offset = aPosition;
-			return this;
-		},
+        /**
+         *
+         */
+        collisionMask:0,
 
-		setTargetPosition: function(aTargetPosition)
-		{
-			this.targetPosition = aTargetPosition;
-			return this;
-		},
+        /**
+         *
+         */
+        collisionGroup:0,
 
-		setTargetChaseSpeed: function(aTargetChaseSpeed)
-		{
-			this.targetChaseSpeed = aTargetChaseSpeed;
-			return this;
-		},
+        containsPoint:function (aPoint) {
+            var distanceSquared = this.position.getDistanceSquared(aPoint);
+            return distanceSquared < this.radiusSquared;
+        },
 
-		setIsFixed: function(value)
-		{
-			this.isFixed = value;
-			return this;
-		},
+        getDistanceSquaredFromPosition:function (aPosition) {
+            var distanceSquared = this.position.getDistanceSquared(aPosition);
+            // if it's shorter than either radius, we intersect
+            return distanceSquared < this.radiusSquared;
+        },
 
-		setCollisionMask: function(aCollisionMask)
-		{
-			this.collisionMask = aCollisionMask;
-			return this;
-		},
+        intersects:function (aCircle) {
+            var distanceSquared = this.position.getDistanceSquared(aCircle.position);
+            return (distanceSquared < this.radiusSquared || distanceSquared < aCircle.radiusSquared);
+        },
 
-		setCollisionGroup: function(aCollisionGroup)
-		{
-			this.collisionGroup = aCollisionGroup;
-			return this;
-		},
+        /**
+         * ACCESSORS
+         */
+        setPosition:function (aPosition) {
+            this.position = aPosition;
+            return this;
+        },
 
-		setRadius: function(aRadius)
-		{
-			this.radius = aRadius;
-			this.radiusSquared = this.radius*this.radius;
-			return this;
-		},
+        setDelegate:function (aDelegate) {
+            this.delegate = aDelegate;
+            return this;
+        },
 
-		initialize : function(overrides)
-		{
-			if (overrides)
-			{
-				for (var i in overrides)
-				{
-					this[i] = overrides[i];
-				}
-			}
+        setOffset:function (aPosition) {
+            this.offset = aPosition;
+            return this;
+        },
 
-			return this;
-		},
+        setTargetPosition:function (aTargetPosition) {
+            this.targetPosition = aTargetPosition;
+            return this;
+        },
 
-		dealloc: function()
-		{
-			this.position = null;
-			this.offset = null;
-			this.delegate = null;
-			this.targetPosition = null;
-		}
-	}
+        setTargetChaseSpeed:function (aTargetChaseSpeed) {
+            this.targetChaseSpeed = aTargetChaseSpeed;
+            return this;
+        },
+
+        setIsFixed:function (value) {
+            this.isFixed = value;
+            return this;
+        },
+
+        setCollisionMask:function (aCollisionMask) {
+            this.collisionMask = aCollisionMask;
+            return this;
+        },
+
+        setCollisionGroup:function (aCollisionGroup) {
+            this.collisionGroup = aCollisionGroup;
+            return this;
+        },
+
+        setRadius:function (aRadius) {
+            this.radius = aRadius;
+            this.radiusSquared = this.radius * this.radius;
+            return this;
+        },
+
+        initialize:function (overrides) {
+            if (overrides) {
+                for (var i in overrides) {
+                    this[i] = overrides[i];
+                }
+            }
+
+            return this;
+        },
+
+        dealloc:function () {
+            this.position = null;
+            this.offset = null;
+            this.delegate = null;
+            this.targetPosition = null;
+        }
+    }
 });
 /**
  *
@@ -7388,6 +8303,15 @@ CAAT.Module( {
 */
 
 CAAT.Module( {
+
+
+    /**
+     * @name PackedCircleManager
+     * @memberOf CAAT.Module.CircleManager
+     * @constructor
+     */
+
+
     defines : "CAAT.Module.CircleManager.PackedCircleManager",
     depends : [
         "CAAT.Math.Point",
@@ -7395,13 +8319,33 @@ CAAT.Module( {
     ],
     extendsWith : {
 
+        /**
+         * @lends CAAT.Module.CircleManager.PackedCircleManager.prototype
+         * @private
+         */
+
         __init : function() {
             this.bounds= new CAAT.Math.Rectangle();
         },
 
+        /**
+         *
+         */
 		allCircles:					[],
+
+        /**
+         *
+         */
 		numberOfCollisionPasses:	1,
+
+        /**
+         *
+         */
 		numberOfTargetingPasses:	0,
+
+        /**
+         *
+         */
 		bounds:						null,
 
 		/**
@@ -7743,6 +8687,14 @@ CAAT.Module( {
  **/
 
 CAAT.Module( {
+
+
+    /**
+     * @name Preloader
+     * @memberOf CAAT.Module.Preloader
+     * @constructor
+     */
+
     defines : "CAAT.Module.Preloader.Preloader",
     extendsWith : function() {
 
@@ -7770,16 +8722,45 @@ CAAT.Module( {
         };
 
         return {
+
+            /**
+             * @lends CAAT.Module.Preloader.Preloader.prototype
+             */
+
             __init : function()   {
                 this.elements= [];
                 return this;
             },
 
-            elements:       null,   // a list of elements to load
-            imageCounter:   0,      // elements counter.
+            /**
+             * a list of elements to load.
+             * @type {Array.<{ id, image }>}
+             */
+            elements:       null,
+
+            /**
+             * elements counter.
+             */
+            imageCounter:   0,
+
+            /**
+             * Callback finished loading.
+             */
             cfinished:      null,
+
+            /**
+             * Callback element loaded.
+             */
             cloaded:        null,
+
+            /**
+             * Callback error loading.
+             */
             cerrored:       null,
+
+            /**
+             * loaded elements count.
+             */
             loadedCount:    0,
 
             addElement : function( id, path ) {
@@ -7832,17 +8813,48 @@ CAAT.Module( {
  **/
 
 CAAT.Module( {
+
+
+    /**
+     * @name Preloader
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name ImagePreloader
+     * @memberOf CAAT.Module.Preloader
+     * @constructor
+     */
+
     defines : "CAAT.Module.Preloader.ImagePreloader",
     aliases : ["CAAT.ImagePreloader"],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Module.Preloader.ImagePreloader.prototype
+         */
+
         __init : function()   {
             this.images = [];
             return this;
         },
 
-        images:                 null,   // a list of elements to load
-        notificationCallback:   null,   // notification callback invoked for each image loaded.
-        imageCounter:           0,      // elements counter.
+        /**
+         * a list of elements to load.
+         * @type {Array.<{ id, image }>}
+         */
+        images:                 null,
+
+        /**
+         * notification callback invoked for each image loaded.
+         */
+        notificationCallback:   null,
+
+        /**
+         * elements counter.
+         */
+        imageCounter:           0,
 
         /**
          * Start images loading asynchronous process. This method will notify every image loaded event
@@ -7896,6 +8908,13 @@ CAAT.Module( {
  * See LICENSE file.
  */
 CAAT.Module({
+
+    /**
+     * @name ImageUtil
+     * @memberOf CAAT.Module.Image
+     * @namespace
+     */
+
     defines:"CAAT.Module.Image.ImageUtil",
     depends : [
         "CAAT.Math.Matrix"
@@ -7904,6 +8923,11 @@ CAAT.Module({
 
     },
     constants:{
+
+        /**
+         * @lends CAAT.Module.Image.ImageUtil
+         */
+
         createAlphaSpriteSheet:function (maxAlpha, minAlpha, sheetSize, image, bg_fill_style) {
 
             if (maxAlpha < minAlpha) {
@@ -8110,11 +9134,25 @@ CAAT.Module({
  * See LICENSE file.
  *
  * This file contains the definition for objects QuadTree and HashMap.
- * Quadtree offers an exact list of collisioning areas, while HashMap offers a list of potentially colliding elements.
+ * Quadtree offers an exact list of collisioning areas, while HashMap offers a list of potentially colliding
+ * elements.
+ * Specially suited for static content.
  *
  **/
 
 CAAT.Module({
+
+    /**
+     * @name Collision
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name QuadTree
+     * @memberOf CAAT.Module.Collision
+     * @constructor
+     */
 
     defines:"CAAT.Module.Collision.QuadTree",
     depends:[
@@ -8128,8 +9166,18 @@ CAAT.Module({
 
         return {
 
+            /**
+             * @lends CAAT.Module.Collision.QuadTree.prototype
+             */
+
+            /**
+             * For each quadtree level this keeps the list of overlapping elements.
+             */
             bgActors:null,
 
+            /**
+             * For each quadtree, this quadData keeps another 4 quadtrees up to the  maximum recursion level.
+             */
             quadData:null,
 
             create:function (l, t, r, b, backgroundElements, minWidth, maxElements) {
@@ -8177,6 +9225,11 @@ CAAT.Module({
                 return tmpList;
             },
 
+            /**
+             * Call this method to thet the list of colliding elements with the parameter rectangle.
+             * @param rectangle
+             * @return {Array}
+             */
             getOverlappingActors:function (rectangle) {
                 var i, j, l;
                 var overlappingActors = [];
@@ -8208,6 +9261,15 @@ CAAT.Module({
     }
 });
 CAAT.Module( {
+
+
+    /**
+     * @name SpatialHash
+     * @memberOf CAAT.Module.Collision
+     * @constructor
+     */
+
+
     defines : "CAAT.Module.Collision.SpatialHash",
     aliases : ["CAAT.SpatialHash"],
     depends : [
@@ -8215,13 +9277,33 @@ CAAT.Module( {
     ],
     extendsWith : {
 
+        /**
+         * @lends CAAT.Module.Collision.SpatialHash.prototype
+         */
 
+        /**
+         * A collection ob objects to test collision among them.
+         */
         elements    :   null,
 
+        /**
+         * Space width
+         */
         width       :   null,
+
+        /**
+         * Space height
+         */
         height      :   null,
 
+        /**
+         * Rows to partition the space.
+         */
         rows        :   null,
+
+        /**
+         * Columns to partition the space.
+         */
         columns     :   null,
 
         xcache      :   null,
@@ -8229,7 +9311,15 @@ CAAT.Module( {
         xycache     :   null,
 
         rectangle   :   null,
+
+        /**
+         * Spare rectangle to hold temporary calculations.
+         */
         r0          :   null,
+
+        /**
+         * Spare rectangle to hold temporary calculations.
+         */
         r1          :   null,
 
         initialize : function( w,h, rows,columns ) {
@@ -8410,28 +9500,79 @@ CAAT.Module( {
     }
 });
 CAAT.Module({
+
+    /**
+     * @name TexturePacker
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name TextureElement
+     * @memberOf CAAT.Module.TexturePacker
+     * @constructor
+     */
+
+
     defines : "CAAT.Module.TexturePacker.TextureElement",
     extendsWith : {
 
+        /**
+         * @lends CAAT.Module.TexturePacker.TextureElement.prototype
+         */
+
+        /**
+         *
+         */
         inverted:   false,
+
+        /**
+         *
+         */
         image:      null,
+
+        /**
+         *
+         */
         u:          0,
+
+        /**
+         *
+         */
         v:          0,
+
+        /**
+         *
+         */
         glTexture:  null
     }
 });
 CAAT.Module({
+
+    /**
+     * @name TextureScan
+     * @memberOf CAAT.Module.TexturePacker
+     * @constructor
+     */
+
     defines : "CAAT.Module.TexturePacker.TextureScan",
     depends : [
         "CAAT.Module.TexturePacker.TextureElement"
     ],
     extendsWith : {
 
+        /**
+         * @lends CAAT.Module.TexturePacker.TextureScan.prototype
+         */
+
         __init : function(w) {
             this.freeChunks=[ {position:0, size:w||1024} ];
             return this;
         },
 
+        /**
+         *
+         */
         freeChunks: null,
 
         /**
@@ -8515,11 +9656,23 @@ CAAT.Module({
     }
 });
 CAAT.Module({
+
+    /**
+     * @name TextureScanMap
+     * @memberOf CAAT.Module.TexturePacker
+     * @constructor
+     */
+
     defines : "CAAT.Module.TexturePacker.TextureScanMap",
     depends : [
         "CAAT.Module.TexturePacker.TextureScan"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Module.TexturePacker.TextureScanMap.prototype
+         */
+
         __init : function(w,h) {
             this.scanMapHeight= h;
             this.scanMapWidth= w;
@@ -8532,8 +9685,19 @@ CAAT.Module({
             return this;
         },
 
+        /**
+         *
+         */
         scanMap:        null,
+
+        /**
+         *
+         */
         scanMapWidth:   0,
+
+        /**
+         *
+         */
         scanMapHeight:  0,
 
         /**
@@ -8621,11 +9785,24 @@ CAAT.Module({
     }
 });
 CAAT.Module( {
+
+    /**
+     * @name TexturePage
+     * @memberOf CAAT.Module.TexturePacker
+     * @constructor
+     */
+
+
     defines : "CAAT.Module.TexturePacker.TexturePage",
     depends : [
         "CAAT.Module.TexturePacker.TextureScanMap"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Module.TexturePacker.TexturePage.prototype
+         */
+
         __init : function(w,h) {
             this.width=         w || 1024;
             this.height=        h || 1024;
@@ -8634,14 +9811,49 @@ CAAT.Module( {
             return this;
         },
 
+        /**
+         *
+         */
         width:                  1024,
+
+        /**
+         *
+         */
         height:                 1024,
+
+        /**
+         *
+         */
         gl:                     null,
+
+        /**
+         *
+         */
         texture:                null,
+
+        /**
+         *
+         */
         allowImagesInvertion:   false,
+
+        /**
+         *
+         */
         padding:                4,
+
+        /**
+         *
+         */
         scan:                   null,
+
+        /**
+         *
+         */
         images:                 null,
+
+        /**
+         *
+         */
         criteria:               'area',
 
         initialize : function(gl) {
@@ -8872,17 +10084,33 @@ CAAT.Module( {
  */
 
 CAAT.Module({
+
+    /**
+     * @name TexturePageManager
+     * @memberOf CAAT.Module.TexturePacker
+     * @constructor
+     */
+
     defines : "CAAT.Module.TexturePacker.TexturePageManager",
     depends : [
         "CAAT.Module.TexturePacker.TexturePage"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Module.TexturePacker.TexturePageManager.prototype
+         */
+
         __init : function() {
             this.pages= [];
             return this;
         },
 
+        /**
+         *
+         */
         pages:  null,
+
         createPages:    function(gl,width,height,imagesCache) {
 
             var end= false;
@@ -9260,10 +10488,21 @@ CAAT.Module({
  *
  **/
 
-/**
- * CAAT.PathSegment
- */
+
 CAAT.Module({
+
+    /**
+     * @name PathUtil
+     * @memberOf CAAT
+     * @namespace
+     */
+
+    /**
+     * @name PathSegment
+     * @memberOf CAAT.PathUtil
+     * @constructor
+     */
+
     defines:"CAAT.PathUtil.PathSegment",
     depends:[
         "CAAT.Math.Rectangle",
@@ -9274,14 +10513,34 @@ CAAT.Module({
     extendsWith:function () {
         return {
 
+            /**
+             * @lends CAAT.PathUtil.PathSegment.prototype
+             */
+
+
             __init:function () {
                 this.bbox = new CAAT.Math.Rectangle();
                 return this;
             },
 
+            /**
+             * Color to draw the segment.
+             */
             color:'#000',
+
+            /**
+             * Segment length.
+             */
             length:0,
+
+            /**
+             * Segment bounding box.
+             */
             bbox:null,
+
+            /**
+             * Path this segment belongs to.
+             */
             parent:null,
 
             /**
@@ -9428,6 +10687,14 @@ CAAT.Module({
 
 });
 CAAT.Module({
+
+    /**
+     * @name ArcPath
+     * @memberOf CAAT.PathUtil
+     * @extends CAAT.PathUtil.PathSegment
+     * @constructor
+     */
+
     defines:"CAAT.PathUtil.ArcPath",
     depends:[
         "CAAT.PathUtil.PathSegment",
@@ -9439,6 +10706,11 @@ CAAT.Module({
     extendsWith:function () {
 
         return {
+
+            /**
+             * @lends CAAT.PathUtil.ArcPath.prototype
+             */
+
             __init:function () {
                 this.__super();
 
@@ -9451,14 +10723,39 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * A collection of CAAT.Math.Point objects which defines the arc (center, start, end)
+             */
             points:null,
-            length:-1,
-            cw:true, // should be clock wise traversed ?
-            bbox:null,
-            newPosition:null, // spare point for calculations
+
+            /**
+             * Defined clockwise or counterclockwise ?
+             */
+            cw:true,
+
+            /**
+             * spare point for calculations
+             */
+            newPosition:null,
+
+            /**
+             * Arc radius.
+             */
             radius:0,
+
+            /**
+             * Arc start angle.
+             */
             startAngle:0,
+
+            /**
+             * Arc end angle.
+             */
             angle:2 * Math.PI,
+
+            /**
+             * is a relative or absolute arc ?
+             */
             arcTo:false,
 
             setRadius:function (r) {
@@ -9708,6 +11005,14 @@ CAAT.Module({
  * CAAT.CurvePath
  */
 CAAT.Module({
+
+    /**
+     * @name CurvePath
+     * @memberOf CAAT.PathUtil
+     * @extends CAAT.PathUtil.PathSegment
+     * @constructor
+     */
+
     defines:"CAAT.PathUtil.CurvePath",
     depends:[
         "CAAT.PathUtil.PathSegment",
@@ -9718,14 +11023,28 @@ CAAT.Module({
     extendsClass:"CAAT.PathUtil.PathSegment",
     extendsWith:function () {
         return {
+
+            /**
+             * @lends CAAT.PathUtil.CurvePath.prototype
+             */
+
+
             __init:function () {
                 this.__super();
                 this.newPosition = new CAAT.Math.Point(0, 0, 0);
                 return this;
             },
 
-            curve:null, // a CAAT.Bezier instance.
-            newPosition:null, // spare holder for getPosition coordinate return.
+            /**
+             * A CAAT.Math.Curve instance.
+             */
+            curve:null,
+
+            /**
+             * spare holder for getPosition coordinate return.
+             * @type {CAAT.Math.Point}
+             */
+            newPosition:null,
 
             applyAsPath:function (director) {
                 this.curve.applyAsPath(director);
@@ -9891,6 +11210,15 @@ CAAT.Module({
  * CAAT.LinearPath
  */
 CAAT.Module({
+
+
+    /**
+     * @name LinearPath
+     * @memberOf CAAT.PathUtil
+     * @extends CAAT.PathUtil.PathSegment
+     * @constructor
+     */
+
     defines:"CAAT.PathUtil.LinearPath",
     depends:[
         "CAAT.PathUtil.PathSegment",
@@ -9901,6 +11229,11 @@ CAAT.Module({
     extendsWith:function () {
 
         return  {
+
+            /**
+             * @lends CAAT.PathUtil.LinearPath.prototype
+             */
+
             __init:function () {
                 this.__super();
 
@@ -9912,8 +11245,16 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * A collection of points.
+             * @type {Array.<CAAT.Math.Point>}
+             */
             points:null,
-            newPosition:null, // spare holder for getPosition coordinate return.
+
+            /**
+             * spare holder for getPosition coordinate return.
+             */
+            newPosition:null,
 
             applyAsPath:function (director) {
                 // Fixed: Thanks https://github.com/roed
@@ -10076,6 +11417,14 @@ CAAT.Module({
     }
 });
 CAAT.Module({
+
+    /**
+     * @name RectPath
+     * @memberOf CAAT.PathUtil
+     * @extends CAAT.PathUtil.PathSegment
+     * @constructor
+     */
+
     defines:"CAAT.PathUtil.RectPath",
     depends:[
         "CAAT.PathUtil.PathSegment",
@@ -10087,6 +11436,10 @@ CAAT.Module({
     extendsWith:function () {
 
         return {
+
+            /**
+             * @lends CAAT.PathUtil.RectPath.prototype
+             */
 
             __init:function () {
                 this.__super();
@@ -10103,11 +11456,21 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * A collection of Points.
+             * @type {Array.<CAAT.Math.Point>}
+             */
             points:null,
-            length:-1,
-            cw:true, // should be clock wise traversed ?
-            bbox:null,
-            newPosition:null, // spare point for calculations
+
+            /**
+             * Traverse this path clockwise or counterclockwise (false).
+             */
+            cw:true,
+
+            /**
+             * spare point for calculations
+             */
+            newPosition:null,
 
             applyAsPath:function (director) {
                 var ctx = director.ctx;
@@ -10374,6 +11737,14 @@ CAAT.Module({
     }
 });
 CAAT.Module( {
+
+    /**
+     * @name Path
+     * @memberOf CAAT.PathUtil
+     * @extends CAAT.PathUtil.PathSegment
+     * @constructor
+     */
+
     defines : "CAAT.PathUtil.Path",
     aliases : ["CAAT.Path"],
     depends : [
@@ -10389,6 +11760,12 @@ CAAT.Module( {
     ],
     extendsClass : "CAAT.PathUtil.PathSegment",
     extendsWith : {
+
+        /**
+         * @lends CAAT.PathUtil.Path.prototype
+         */
+
+
         __init : function()	{
                 this.__super();
 
@@ -10402,18 +11779,42 @@ CAAT.Module( {
                 return this;
         },
 
+        /**
+         * A collection of PathSegments.
+         * @type {Array.<CAAT.PathUtil.PathSegment>}
+         */
 		pathSegments:	            null,   // a collection of CAAT.PathSegment instances.
-		pathSegmentDurationTime:	null,   // precomputed segment duration relative to segment legnth/path length
-		pathSegmentStartTime:		null,   // precomputed segment start time relative to segment legnth/path length and duration.
 
-		newPosition:	            null,   // spare CAAT.Point.
-		
-		pathLength:		            -1,     // path length (sum of every segment length)
+        /**
+         * For each path segment in this path, the normalized calculated duration.
+         * precomputed segment duration relative to segment legnth/path length
+         */
+		pathSegmentDurationTime:	null,
 
-        /*
-            starting path position
+        /**
+         * For each path segment in this path, the normalized calculated start time.
+         * precomputed segment start time relative to segment legnth/path length and duration.
+         */
+		pathSegmentStartTime:		null,
+
+        /**
+         * spare CAAT.Math.Point to return calculated values in the path.
+         */
+		newPosition:	            null,
+
+        /**
+         * path length (sum of every segment length)
+         */
+		pathLength:		            -1,
+
+        /**
+         * starting path x position
          */
 		beginPathX:		            -1,
+
+        /**
+         * starting path y position
+         */
 		beginPathY:                 -1,
 
         /*
@@ -10429,42 +11830,118 @@ CAAT.Module( {
 		ay:                         -1,
 		point:                      [],
 
+        /**
+         * Is this path interactive ?. If so, controls points can be moved with a CAAT.Foundation.UI.PathActor.
+         */
         interactive:                true,
 
+        /**
+         * A list of behaviors to apply to this path.
+         * A path can be affine transformed to create a different path.
+         */
         behaviorList:               null,
 
-        /** rotation behavior info **/
+        /* rotation behavior info **/
+
+        /**
+         * Path rotation angle.
+         */
         rb_angle:                   0,
+
+        /**
+         * Path rotation x anchor.
+         */
         rb_rotateAnchorX:           .5,
+
+        /**
+         * Path rotation x anchor.
+         */
         rb_rotateAnchorY:           .5,
 
-        /** scale behavior info **/
+        /* scale behavior info **/
+
+        /**
+         * Path X scale.
+         */
         sb_scaleX:                  1,
+
+        /**
+         * Path Y scale.
+         */
         sb_scaleY:                  1,
+
+        /**
+         * Path scale X anchor.
+         */
         sb_scaleAnchorX:            .5,
+
+        /**
+         * Path scale Y anchor.
+         */
         sb_scaleAnchorY:            .5,
 
+        /**
+         * Path translation anchor X.
+         */
         tAnchorX:                   0,
+
+        /**
+         * Path translation anchor Y.
+         */
         tAnchorY:                   0,
 
-        /** translate behavior info **/
+        /* translate behavior info **/
+
+        /**
+         * Path translation X.
+         */
         tb_x:                       0,
+
+        /**
+         * Path translation Y.
+         */
         tb_y:                       0,
 
-        /** behavior affine transformation matrix **/
+        /* behavior affine transformation matrix **/
+
+        /**
+         * Path behaviors matrix.
+         */
         matrix:                     null,
+
+        /**
+         * Spare calculation matrix.
+         */
         tmpMatrix:                  null,
 
-        /** if behaviors are to be applied, save original path points **/
+        /**
+         * Original Path´s path segments points.
+         */
         pathPoints:                 null,
 
-        /** path width and height **/
+        /**
+         * Path bounding box width.
+         */
         width:                      0,
+
+        /**
+         * Path bounding box height.
+         */
         height:                     0,
 
+        /**
+         * Path bounding box X position.
+         */
         clipOffsetX             :   0,
+
+        /**
+         * Path bounding box Y position.
+         */
         clipOffsetY             :   0,
 
+        /**
+         * Is this path closed ?
+         */
         closed                  :   false,
 
         /**
@@ -10477,7 +11954,6 @@ CAAT.Module( {
             var ctx= director.ctx;
 
             director.modelViewMatrix.transformRenderingContext( ctx );
-//            ctx.beginPath();
             ctx.globalCompositeOperation= 'source-out';
             ctx.moveTo(
                 this.getFirstPathSegment().startCurvePosition().x,
@@ -11404,12 +12880,24 @@ CAAT.Module( {
 });
 CAAT.Module({
 
+    /**
+     * <p>
+     * This class is a SVG Path parser.
+     * By calling the method parsePath( svgpath ) an instance of CAAT.PathUtil.Path will be built by parsing
+     * its contents.
+     *
+     * <p>
+     * See <a href="../../demos/demo32/svgpath.html">demo32</a>
+     *
+     * @name SVGPath
+     * @memberOf CAAT.PathUtil
+     * @constructor
+     */
+
     defines:"CAAT.PathUtil.SVGPath",
     depends:[
         "CAAT.PathUtil.Path"
     ],
-    constants:function () {
-    },
     extendsWith:function () {
 
         var OK = 0;
@@ -11426,14 +12914,26 @@ CAAT.Module({
 
         return {
 
+            /**
+             * @lends CAAT.PathUtil.SVGPath.prototype
+             */
+
+
             __init:function () {
 
             },
 
+            /**
+             * @private
+             */
             c:0,
+
+            /**
+             * @private
+             */
             bezierInfo:null,
 
-            skipBlank:function (pathInfo, c) {
+            __skipBlank:function (pathInfo, c) {
                 var p = pathInfo.charAt(c);
                 while (c < pathInfo.length && (p == ' ' || p == '\n' || p == '\t' || p == ',')) {
                     ++c;
@@ -11443,7 +12943,7 @@ CAAT.Module({
                 return c;
             },
 
-            maybeNumber:function (pathInfo, c) {
+            __maybeNumber:function (pathInfo, c) {
 
                 if (c < pathInfo.length - 2) {
 
@@ -11451,25 +12951,25 @@ CAAT.Module({
                     var p1 = pathInfo.charAt(c + 1);
 
                     return  p == '-' ||
-                        this.isDigit(p) ||
-                        (p === "." && this.isDigit(p1) );
+                        this.__isDigit(p) ||
+                        (p === "." && this.__isDigit(p1) );
                 }
 
                 return false;
             },
 
-            isDigit:function (c) {
+            __isDigit:function (c) {
                 return c >= "0" && c <= "9";
             },
 
 
-            getNumber:function (pathInfo, c, v, error) {
-                c = this.skipBlank(pathInfo, c);
+            __getNumber:function (pathInfo, c, v, error) {
+                c = this.__skipBlank(pathInfo, c);
                 if (c < pathInfo.length) {
-                    var nc = this.findNumber(pathInfo, c);
+                    var nc = this.__findNumber(pathInfo, c);
                     if (nc !== -1) {
                         v.push(parseFloat(pathInfo.substr(c, nc)));
-                        c = this.skipBlank(pathInfo, nc);
+                        c = this.__skipBlank(pathInfo, nc);
                         error.pos = c;
                         error.result = OK;
                         return;
@@ -11482,10 +12982,10 @@ CAAT.Module({
                 error.result = EOF;
             },
 
-            getNumbers:function (pathInfo, c, v, n, error) {
+            ____getNumbers:function (pathInfo, c, v, n, error) {
 
                 for (var i = 0; i < n; i++) {
-                    this.getNumber(pathInfo, c, v, error);
+                    this.__getNumber(pathInfo, c, v, error);
                     if (error.result != OK) {
                         break;
                     } else {
@@ -11497,7 +12997,7 @@ CAAT.Module({
             },
 
 
-            findNumber:function (pathInfo, c) {
+            __findNumber:function (pathInfo, c) {
 
                 var p;
 
@@ -11505,22 +13005,22 @@ CAAT.Module({
                     ++c;
                 }
 
-                if (!this.isDigit((p = pathInfo.charAt(c)))) {
-                    if ((p = pathInfo.charAt(c)) != '.' || !this.isDigit(pathInfo.charAt(c + 1))) {
+                if (!this.__isDigit((p = pathInfo.charAt(c)))) {
+                    if ((p = pathInfo.charAt(c)) != '.' || !this.__isDigit(pathInfo.charAt(c + 1))) {
                         return -1;
                     }
                 }
 
-                while (this.isDigit((p = pathInfo.charAt(c)))) {
+                while (this.__isDigit((p = pathInfo.charAt(c)))) {
                     ++c;
                 }
 
                 if ((p = pathInfo.charAt(c)) == '.') {
                     ++c;
-                    if (!this.isDigit((p = pathInfo.charAt(c)))) {   // asumo un numero [d+]\. como valido.
+                    if (!this.__isDigit((p = pathInfo.charAt(c)))) {   // asumo un numero [d+]\. como valido.
                         return c;
                     }
-                    while (this.isDigit((p = pathInfo.charAt(c)))) {
+                    while (this.__isDigit((p = pathInfo.charAt(c)))) {
                         ++c;
                     }
                 }
@@ -11532,7 +13032,7 @@ CAAT.Module({
 
                 var numbers = [];
 
-                c = this.getNumbers(pathInfo, c, numbers, 2, error);
+                c = this.____getNumbers(pathInfo, c, numbers, 2, error);
 
                 if (error.result === OK) {
                     if (!absolute) {
@@ -11544,7 +13044,7 @@ CAAT.Module({
                     return;
                 }
 
-                if (this.maybeNumber(pathInfo, c)) {
+                if (this.__maybeNumber(pathInfo, c)) {
                     c = this.parseLine(pathInfo, c, absolute, path, error);
                 }
 
@@ -11556,14 +13056,14 @@ CAAT.Module({
                 var numbers = [];
 
                 do {
-                    c = this.getNumbers(pathInfo, c, numbers, 2, error);
+                    c = this.____getNumbers(pathInfo, c, numbers, 2, error);
                     if (!absolute) {
                         numbers[0] += path.trackPathX;
                         numbers[1] += path.trackPathY;
                     }
                     path.addLineTo(numbers[0], numbers[1]);
 
-                } while (this.maybeNumber(pathInfo, c));
+                } while (this.__maybeNumber(pathInfo, c));
 
                 error.pos = c;
             },
@@ -11574,7 +13074,7 @@ CAAT.Module({
                 var numbers = [];
 
                 do {
-                    c = this.getNumbers(pathInfo, c, numbers, 1, error);
+                    c = this.____getNumbers(pathInfo, c, numbers, 1, error);
 
                     if (!absolute) {
                         numbers[0] += path.trackPathX;
@@ -11583,7 +13083,7 @@ CAAT.Module({
 
                     path.addLineTo(numbers[0], numbers[1]);
 
-                } while (this.maybeNumber(pathInfo, c));
+                } while (this.__maybeNumber(pathInfo, c));
 
                 error.pos = c;
             },
@@ -11593,7 +13093,7 @@ CAAT.Module({
                 var numbers = [ path.trackPathX ];
 
                 do {
-                    c = this.getNumbers(pathInfo, c, numbers, 1, error);
+                    c = this.____getNumbers(pathInfo, c, numbers, 1, error);
 
                     if (!absolute) {
                         numbers[1] += path.trackPathY;
@@ -11601,7 +13101,7 @@ CAAT.Module({
 
                     path.addLineTo(numbers[0], numbers[1]);
 
-                } while (this.maybeNumber(pathInfo, c));
+                } while (this.__maybeNumber(pathInfo, c));
 
                 error.pos = c;
             },
@@ -11611,7 +13111,7 @@ CAAT.Module({
                 var v = [];
 
                 do {
-                    c = this.getNumbers(pathInfo, c, v, 6, error);
+                    c = this.____getNumbers(pathInfo, c, v, 6, error);
                     if (error.result === OK) {
                         if (!absolute) {
                             v[0] += path.trackPathX;
@@ -11632,7 +13132,7 @@ CAAT.Module({
                     } else {
                         return;
                     }
-                } while (this.maybeNumber(pathInfo, c));
+                } while (this.__maybeNumber(pathInfo, c));
 
                 error.pos = c;
             },
@@ -11642,7 +13142,7 @@ CAAT.Module({
                 var v = [];
 
                 do {
-                    c = this.getNumbers(pathInfo, c, v, 4, error);
+                    c = this.____getNumbers(pathInfo, c, v, 4, error);
                     if (error.result == OK) {
                         if (!absolute) {
 
@@ -11664,7 +13164,7 @@ CAAT.Module({
                     } else {
                         return;
                     }
-                } while (this.maybeNumber(c));
+                } while (this.__maybeNumber(c));
 
                 error.pos = c;
             },
@@ -11674,7 +13174,7 @@ CAAT.Module({
                 var v = [];
 
                 do {
-                    c = this.getNumbers(pathInfo, c, v, 4, error);
+                    c = this.____getNumbers(pathInfo, c, v, 4, error);
                     if (error.result === OK) {
 
                         if (!absolute) {
@@ -11700,7 +13200,7 @@ CAAT.Module({
                     } else {
                         return;
                     }
-                } while (this.maybeNumber(c));
+                } while (this.__maybeNumber(c));
 
                 error.pos = c;
             },
@@ -11711,7 +13211,7 @@ CAAT.Module({
                 var v = [];
 
                 do {
-                    c = this.getNumbers(pathInfo, c, v, 4, error);
+                    c = this.____getNumbers(pathInfo, c, v, 4, error);
                     if (error.result === OK) {
                         if (!absolute) {
 
@@ -11727,7 +13227,7 @@ CAAT.Module({
                     } else {
                         return;
                     }
-                } while (this.maybeNumber(c));
+                } while (this.__maybeNumber(c));
 
                 error.pos = c;
             },
@@ -11752,7 +13252,7 @@ CAAT.Module({
                 var path = new CAAT.PathUtil.Path();
                 this.contours.push( path );
 
-                this.c = this.skipBlank(pathInfo, this.c);
+                this.c = this.__skipBlank(pathInfo, this.c);
                 if (this.c === pathInfo.length) {
                     return path;
                 }
@@ -11868,24 +13368,53 @@ CAAT.Module({
  *
  */
 CAAT.Module( {
+
+    /**
+     * @name GLU
+     * @memberOf CAAT.WebGL
+     * @namespace
+     */
+
     defines : "CAAT.WebGL.GLU",
     depends : [
         "CAAT.Math.Matrix3"
     ],
-    onCreate : function() {
-        makePerspective= function (fovy, aspect, znear, zfar, viewportHeight) {
+    constants : {
+
+        /**
+         * @lends CAAT.WebGL.GLU
+         */
+
+        /**
+         * Create a perspective matrix.
+         *
+         * @param fovy
+         * @param aspect
+         * @param znear
+         * @param zfar
+         * @param viewportHeight
+         */
+        makePerspective : function (fovy, aspect, znear, zfar, viewportHeight) {
             var ymax = znear * Math.tan(fovy * Math.PI / 360.0);
             var ymin = -ymax;
             var xmin = ymin * aspect;
             var xmax = ymax * aspect;
 
             return makeFrustum(xmin, xmax, ymin, ymax, znear, zfar, viewportHeight);
-        }
+        },
 
-        //
-        // glFrustum
-        //
-        makeFrustum= function (left, right, bottom, top, znear, zfar, viewportHeight) {
+        /**
+         * Create a matrix for a frustum.
+         *
+         * @param left
+         * @param right
+         * @param bottom
+         * @param top
+         * @param znear
+         * @param zfar
+         * @param viewportHeight
+         */
+        makeFrustum : function (left, right, bottom, top, znear, zfar, viewportHeight) {
             var X = 2*znear/(right-left);
             var Y = 2*znear/(top-bottom);
             var A = (right+left)/(right-left);
@@ -11900,9 +13429,18 @@ CAAT.Module( {
                         [0,  0,  C,                 D ],
                         [0,  0, -1,                 0 ]
                     ]);
-        }
+        },
 
-        makeOrtho= function (left, right, bottom, top, znear, zfar) {
+        /**
+         * Create an orthogonal projection matrix.
+         * @param left
+         * @param right
+         * @param bottom
+         * @param top
+         * @param znear
+         * @param zfar
+         */
+        makeOrtho : function (left, right, bottom, top, znear, zfar) {
             var tx = - (right + left) / (right - left) ;
             var ty = - (top + bottom) / (top - bottom) ;
             var tz = - (zfar + znear) / (zfar - znear);
@@ -11923,15 +13461,41 @@ CAAT.Module( {
  */
 
 CAAT.Module( {
+
+
+    /**
+     * @name WebGL
+     * @memberOf CAAT
+     * @namespace
+     */
+
+    /**
+     * @name Program
+     * @memberOf CAAT.WebGL
+     * @constructor
+     */
+
+
     defines : "CAAT.WebGL.Program",
     extendsWith : {
+
+        /**
+         * @lends CAAT.WebGL.Program.prototype
+         */
 
         __init : function(gl) {
             this.gl= gl;
             return this;
         },
 
+        /**
+         *
+         */
         shaderProgram:  null,
+
+        /**
+         * Canvas 3D context.
+         */
         gl:             null,
 
         /**
@@ -12029,6 +13593,14 @@ CAAT.Module( {
     }
 });
 CAAT.Module( {
+
+    /**
+     * @name ColorProgram
+     * @memberOf CAAT.WebGL
+     * @extends CAAT.WebGL.Program
+     * @constructor
+     */
+
     defines : "CAAT.WebGL.ColorProgram",
     aliases : ["CAAT.ColorProgram"],
     extendsClass : "CAAT.WebGL.Program",
@@ -12036,13 +13608,30 @@ CAAT.Module( {
         "CAAT.WebGL.Program"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.WebGL.ColorProgram.prototype
+         */
+
+
         __init : function(gl) {
             this.__super(gl);
             return this;
         },
 
+        /**
+         * int32 Array for color Buffer
+         */
         colorBuffer:    null,
+
+        /**
+         * GLBuffer for vertex buffer.
+         */
         vertexPositionBuffer:   null,
+
+        /**
+         * Float32 Array for vertex buffer.
+         */
         vertexPositionArray:    null,
 
         getFragmentShader : function() {
@@ -12117,6 +13706,14 @@ CAAT.Module( {
 
 });
 CAAT.Module( {
+
+    /**
+     * @name TextureProgram
+     * @memberOf CAAT.WebGL
+     * @extends CAAT.WebGL.Program
+     * @constructor
+     */
+
     defines : "CAAT.WebGL.TextureProgram",
     aliases : ["CAAT.TextureProgram"],
     extendsClass : "CAAT.WebGL.Program",
@@ -12124,24 +13721,74 @@ CAAT.Module( {
         "CAAT.WebGL.Program"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.WebGL.TextureProgram.prototype
+         */
+
         __init : function(gl) {
             this.__super(gl);
             return this;
         },
 
+        /**
+         * VertextBuffer GLBuffer
+         */
         vertexPositionBuffer:   null,
+
+        /**
+         * VertextBuffer Float32 Array
+         */
         vertexPositionArray:    null,
+
+        /**
+         * UVBuffer GLBuffer
+         */
         vertexUVBuffer:         null,
+
+        /**
+         * VertexBuffer Float32 Array
+         */
         vertexUVArray:          null,
+
+        /**
+         * VertexIndex GLBuffer.
+         */
         vertexIndexBuffer:      null,
 
+        /**
+         * Lines GLBuffer
+         */
         linesBuffer:            null,
 
+        /**
+         *
+         */
         prevAlpha:              -1,
+
+        /**
+         *
+         */
         prevR:                  -1,
+
+        /**
+         *
+         */
         prevG:                  -1,
+
+        /**
+         *
+         */
         prevB:                  -1,
+
+        /**
+         *
+         */
         prevA:                  -1,
+
+        /**
+         *
+         */
         prevTexture:            null,
 
         getFragmentShader : function() {
@@ -12360,9 +14007,29 @@ CAAT.Module( {
     }
 });
 CAAT.Module( {
+
+    /**
+     * @name TouchInfo
+     * @memberOf CAAT.Event
+     * @constructor
+     */
+
     defines : "CAAT.Event.TouchInfo",
     aliases : ["CAAT.TouchInfo"],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Event.TouchInfo.prototype
+         */
+
+        /**
+         * Constructor delegate.
+         * @param id {number}
+         * @param x {number}
+         * @param y {number}
+         * @param target {DOMElement}
+         * @private
+         */
         __init : function( id, x, y, target ) {
 
             this.identifier= id;
@@ -12378,29 +14045,78 @@ CAAT.Module( {
     }
 });
 CAAT.Module( {
+
+    /**
+     * @name TouchEvent
+     * @memberOf CAAT.Event
+     * @constructor
+     */
+
+
     defines : "CAAT.Event.TouchEvent",
     aliases : ["CAAT.TouchEvent"],
     depends : [
         "CAAT.Event.TouchInfo"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Event.TouchEvent.prototype
+         */
+
+        /**
+         * Constructor delegate
+         * @private
+         */
         __init : function() {
             this.touches= [];
             this.changedTouches= [];
             return this;
         },
 
+        /**
+         * Time the touch event was triggered at.
+         */
 		time:			0,
+
+        /**
+         * Source Actor the event happened in.
+         */
 		source:			null,
+
+        /**
+         * Original touch event.
+         */
         sourceEvent:    null,
 
+        /**
+         * Was shift pressed ?
+         */
         shift:          false,
+
+        /**
+         * Was control pressed ?
+         */
         control:        false,
+
+        /**
+         * Was alt pressed ?
+         */
         alt:            false,
+
+        /**
+         * Was meta pressed ?
+         */
         meta:           false,
 
-
+        /**
+         * touches collection
+         */
         touches         : null,
+
+        /**
+         * changed touches collection
+         */
         changedTouches  : null,
 
 		init : function( sourceEvent,source,time ) {
@@ -12456,12 +14172,28 @@ CAAT.Module( {
 	}
 });
 CAAT.Module( {
+
+    /**
+     * @name MouseEvent
+     * @memberOf CAAT.Event
+     * @constructor
+     */
+
     defines : "CAAT.Event.MouseEvent",
     aliases : ["CAAT.MouseEvent"],
     depends : [
         "CAAT.Math.Point"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Event.MouseEvent.prototype
+         */
+
+        /**
+         * Constructor delegate
+         * @private
+         */
         __init : function() {
             this.point= new CAAT.Math.Point(0,0,0);
             this.screenPoint= new CAAT.Math.Point(0,0,0);
@@ -12469,16 +14201,49 @@ CAAT.Module( {
             return this;
         },
 
+        /**
+         * Original mouse/touch screen coord
+         */
 		screenPoint:	null,
+
+        /**
+         * Transformed in-actor coordinate
+         */
 		point:			null,
+
+        /**
+         * scene time when the event was triggered.
+         */
 		time:			0,
+
+        /**
+         * Actor the event was produced in.
+         */
 		source:			null,
 
+        /**
+         * Was shift pressed ?
+         */
         shift:          false,
+
+        /**
+         * Was control pressed ?
+         */
         control:        false,
+
+        /**
+         * was alt pressed ?
+         */
         alt:            false,
+
+        /**
+         * was Meta key pressed ?
+         */
         meta:           false,
 
+        /**
+         * Original mouse/touch event
+         */
         sourceEvent:    null,
 
         touches     :   null,
@@ -12515,12 +14280,29 @@ CAAT.Module( {
 	}
 });
 CAAT.Module( {
+
+    /**
+     * @name Event
+     * @memberOf CAAT
+     * @namespace
+     */
+
+    /**
+     * @name KeyEvent
+     * @memberOf CAAT.Event
+     * @constructor
+     */
+
     defines : "CAAT.Event.KeyEvent",
     aliases : "CAAT.KeyEvent",
     extendsWith : {
+
+        /**
+         * @lends CAAT.Event.KeyEvent.prototype
+         */
+
         /**
          * Define a key event.
-         * @constructor
          * @param keyCode
          * @param up_or_down
          * @param modifiers
@@ -12567,6 +14349,14 @@ CAAT.Module( {
     },
     onCreate : function() {
 
+        /**
+         * @lends CAAT
+         */
+
+        /**
+         * Key codes
+         * @type {Object}
+         */
         CAAT.Keys = {
             ENTER:13,
             BACKSPACE:8,
@@ -12666,9 +14456,28 @@ CAAT.Module( {
             SINGLEQUOTE:222
         };
 
+        /**
+         * Shift key code
+         * @type {Number}
+         */
         CAAT.SHIFT_KEY=    16;
+
+        /**
+         * Control key code
+         * @type {Number}
+         */
         CAAT.CONTROL_KEY=  17;
+
+        /**
+         * Alt key code
+         * @type {Number}
+         */
         CAAT.ALT_KEY=      18;
+
+        /**
+         * Enter key code
+         * @type {Number}
+         */
         CAAT.ENTER_KEY=    13;
 
         /**
@@ -12691,71 +14500,109 @@ CAAT.Module( {
     ],
     onCreate : function() {
 
-        (function() {
-
-            CAAT.setCursor= function(cursor) {
-                if ( navigator.browser!=='iOS' ) {
-                    document.body.style.cursor= cursor;
-                }
-            };
-
-        })();
+        /**
+         * @lends CAAT
+         */
 
         /**
-         * Constants to define input behavior: route as mouse or as multitouch device
+         * Set the cursor.
+         * @param cursor
+         */
+        CAAT.setCursor= function(cursor) {
+            if ( navigator.browser!=='iOS' ) {
+                document.body.style.cursor= cursor;
+            }
+        };
+
+
+        /**
+         * Constant to set touch behavior as single touch, compatible with mouse.
+         * @type {Number}
+         * @constant
+         */
+        CAAT.TOUCH_AS_MOUSE=        1;
+
+        /**
+         * Constant to set CAAT touch behavior as multitouch.
+         * @type {Number}
+         * @contant
+         */
+        CAAT.TOUCH_AS_MULTITOUCH=   2;
+
+        /**
+         * Set CAAT touch behavior as single or multi touch.
          * @type {Number}
          */
-        (function() {
-            CAAT.TOUCH_AS_MOUSE=        1;
-            CAAT.TOUCH_AS_MULTITOUCH=   2;
-
-            CAAT.TOUCH_BEHAVIOR= CAAT.TOUCH_AS_MOUSE;
-        })();
+        CAAT.TOUCH_BEHAVIOR= CAAT.TOUCH_AS_MOUSE;
 
         /**
-         * Set window resize listeners.
+         * Array of window resize listeners.
+         * @type {Array}
          */
-        (function() {
+        CAAT.windowResizeListeners= [];
 
+        /**
+         * Register a function callback as window resize listener.
+         * @param f
+         */
+        CAAT.registerResizeListener= function(f) {
+            CAAT.windowResizeListeners.push(f);
+        };
 
-            CAAT.windowResizeListeners= [];
-
-            CAAT.registerResizeListener= function(f) {
-                CAAT.windowResizeListeners.push(f);
-            };
-
-            CAAT.unregisterResizeListener= function(director) {
-                for( var i=0; i<CAAT.windowResizeListeners.length; i++ ) {
-                    if ( director===CAAT.windowResizeListeners[i] ) {
-                        CAAT.windowResizeListeners.splice(i,1);
-                        return;
-                    }
+        /**
+         * Remove a function callback as window resize listener.
+         * @param director
+         */
+        CAAT.unregisterResizeListener= function(director) {
+            for( var i=0; i<CAAT.windowResizeListeners.length; i++ ) {
+                if ( director===CAAT.windowResizeListeners[i] ) {
+                    CAAT.windowResizeListeners.splice(i,1);
+                    return;
                 }
-            };
-        })();
+            }
+        };
 
         /**
-         * Key listeners.
+         * Aray of Key listeners.
          */
-        (function() {
-
-            CAAT.keyListeners= [];
-
-            CAAT.registerKeyListener= function(f) {
-                CAAT.keyListeners.push(f);
-            };
-        })();
-
+        CAAT.keyListeners= [];
 
         /**
-         * Enable at window level accelerometer events.
+         * Register a function callback as key listener.
+         * @param f
+         */
+        CAAT.registerKeyListener= function(f) {
+            CAAT.keyListeners.push(f);
+        };
+
+        /**
+         * Acceleration data.
+         * @type {Object}
+         */
+        CAAT.accelerationIncludingGravity= {
+            x:0,
+            y:0,
+            z:0
+        };
+
+        /**
+         * Device motion angles.
+         * @type {Object}
+         */
+        CAAT.rotationRate= {
+            alpha: 0,
+            beta:0,
+            gamma: 0 };
+
+        /**
+         * Enable device motion events.
+         * This function does not register a callback, instear it sets
+         * CAAT.rotationRate and CAAt.accelerationIncludingGravity values.
          */
         CAAT.enableDeviceMotion= function() {
 
             CAAT.prevOnDeviceMotion=    null;   // previous accelerometer callback function.
             CAAT.onDeviceMotion=        null;   // current accelerometer callback set for CAAT.
-            CAAT.accelerationIncludingGravity= { x:0, y:0, z:0 };   // acceleration data.
-            CAAT.rotationRate= { alpha: 0, beta:0, gamma: 0 };      // angles data.
 
             function tilt(data) {
                 CAAT.rotationRate= {
@@ -12785,71 +14632,69 @@ CAAT.Module( {
         /**
          * Enable window level input events, keys and redimension.
          */
-        (function() {
+        window.addEventListener('keydown',
+            function(evt) {
+                var key = (evt.which) ? evt.which : evt.keyCode;
 
-            window.addEventListener('keydown',
-                function(evt) {
-                    var key = (evt.which) ? evt.which : evt.keyCode;
-
-                    if ( key===CAAT.SHIFT_KEY ) {
-                        CAAT.KEY_MODIFIERS.shift= true;
-                    } else if ( key===CAAT.CONTROL_KEY ) {
-                        CAAT.KEY_MODIFIERS.control= true;
-                    } else if ( key===CAAT.ALT_KEY ) {
-                        CAAT.KEY_MODIFIERS.alt= true;
-                    } else {
-                        for( var i=0; i<CAAT.keyListeners.length; i++ ) {
-                            CAAT.keyListeners[i]( new CAAT.KeyEvent(
-                                key,
-                                'down',
-                                {
-                                    alt:        CAAT.KEY_MODIFIERS.alt,
-                                    control:    CAAT.KEY_MODIFIERS.control,
-                                    shift:      CAAT.KEY_MODIFIERS.shift
-                                },
-                                evt)) ;
-                        }
+                if ( key===CAAT.SHIFT_KEY ) {
+                    CAAT.KEY_MODIFIERS.shift= true;
+                } else if ( key===CAAT.CONTROL_KEY ) {
+                    CAAT.KEY_MODIFIERS.control= true;
+                } else if ( key===CAAT.ALT_KEY ) {
+                    CAAT.KEY_MODIFIERS.alt= true;
+                } else {
+                    for( var i=0; i<CAAT.keyListeners.length; i++ ) {
+                        CAAT.keyListeners[i]( new CAAT.KeyEvent(
+                            key,
+                            'down',
+                            {
+                                alt:        CAAT.KEY_MODIFIERS.alt,
+                                control:    CAAT.KEY_MODIFIERS.control,
+                                shift:      CAAT.KEY_MODIFIERS.shift
+                            },
+                            evt)) ;
                     }
-                },
-                false);
+                }
+            },
+            false);
 
-            window.addEventListener('keyup',
-                function(evt) {
+        window.addEventListener('keyup',
+            function(evt) {
 
-                    var key = (evt.which) ? evt.which : evt.keyCode;
-                    if ( key===CAAT.SHIFT_KEY ) {
-                        CAAT.KEY_MODIFIERS.shift= false;
-                    } else if ( key===CAAT.CONTROL_KEY ) {
-                        CAAT.KEY_MODIFIERS.control= false;
-                    } else if ( key===CAAT.ALT_KEY ) {
-                        CAAT.KEY_MODIFIERS.alt= false;
-                    } else {
+                var key = (evt.which) ? evt.which : evt.keyCode;
+                if ( key===CAAT.SHIFT_KEY ) {
+                    CAAT.KEY_MODIFIERS.shift= false;
+                } else if ( key===CAAT.CONTROL_KEY ) {
+                    CAAT.KEY_MODIFIERS.control= false;
+                } else if ( key===CAAT.ALT_KEY ) {
+                    CAAT.KEY_MODIFIERS.alt= false;
+                } else {
 
-                        for( var i=0; i<CAAT.keyListeners.length; i++ ) {
-                            CAAT.keyListeners[i]( new CAAT.KeyEvent(
-                                key,
-                                'up',
-                                {
-                                    alt:        CAAT.KEY_MODIFIERS.alt,
-                                    control:    CAAT.KEY_MODIFIERS.control,
-                                    shift:      CAAT.KEY_MODIFIERS.shift
-                                },
-                                evt));
-                        }
+                    for( var i=0; i<CAAT.keyListeners.length; i++ ) {
+                        CAAT.keyListeners[i]( new CAAT.KeyEvent(
+                            key,
+                            'up',
+                            {
+                                alt:        CAAT.KEY_MODIFIERS.alt,
+                                control:    CAAT.KEY_MODIFIERS.control,
+                                shift:      CAAT.KEY_MODIFIERS.shift
+                            },
+                            evt));
                     }
-                },
-                false );
+                }
+            },
+            false );
 
-            window.addEventListener('resize',
-                function(evt) {
-                    for( var i=0; i<CAAT.windowResizeListeners.length; i++ ) {
-                        CAAT.windowResizeListeners[i].windowResized(
-                                window.innerWidth,
-                                window.innerHeight);
-                    }
-                },
-                false);
-        })();
+        window.addEventListener('resize',
+            function(evt) {
+                for( var i=0; i<CAAT.windowResizeListeners.length; i++ ) {
+                    CAAT.windowResizeListeners[i].windowResized(
+                            window.innerWidth,
+                            window.innerHeight);
+                }
+            },
+            false);
+
     },
     extendsWith : {
     }
@@ -12857,17 +14702,81 @@ CAAT.Module( {
 CAAT.Module({
     defines:"CAAT.Event.AnimationLoop",
     onCreate : function() {
-        CAAT.ENDRAF=false; // if RAF, this value signals end of RAF.
-        CAAT.INTERVAL_ID=null; // if setInterval, this value holds CAAT.setInterval return value.
-        CAAT.renderEnabled=false; // Boolean flag to determine if CAAT.loop has already been called.
-        CAAT.FPS=60; // expected FPS when using setInterval animation.
-        CAAT.NO_RAF=0; // Use RAF shim instead of setInterval.
-        CAAT.FPS_REFRESH=500; // debug panel update time.
-        CAAT.RAF=0; // requestAnimationFrame time reference.
-        CAAT.REQUEST_ANIMATION_FRAME_TIME=0; // time between two consecutive RAF. usually bigger than FRAME_TIME
-        CAAT.SET_INTERVAL=0; // time between two consecutive setInterval calls.
-        CAAT.FRAME_TIME=0; // time to process one frame.
-        CAAT.currentDirector=null; // Current animated director.
+
+        /**
+         * @lends CAAT
+         */
+
+        /**
+         * if RAF, this value signals end of RAF.
+         * @type {Boolean}
+         */
+        CAAT.ENDRAF=false;
+
+        /**
+         * if setInterval, this value holds CAAT.setInterval return value.
+         * @type {null}
+         */
+        CAAT.INTERVAL_ID=null;
+
+        /**
+         * Boolean flag to determine if CAAT.loop has already been called.
+         * @type {Boolean}
+         */
+        CAAT.renderEnabled=false;
+
+        /**
+         * expected FPS when using setInterval animation.
+         * @type {Number}
+         */
+        CAAT.FPS=60;
+
+        /**
+         * Use RAF shim instead of setInterval. Set to != 0 to use setInterval.
+         * @type {Number}
+         */
+        CAAT.NO_RAF=0;
+
+        /**
+         * debug panel update time.
+         * @type {Number}
+         */
+        CAAT.FPS_REFRESH=500;
+
+        /**
+         * requestAnimationFrame time reference.
+         * @type {Number}
+         */
+        CAAT.RAF=0;
+
+        /**
+         * time between two consecutive RAF. usually bigger than FRAME_TIME
+         * @type {Number}
+         */
+        CAAT.REQUEST_ANIMATION_FRAME_TIME=0;
+
+        /**
+         * time between two consecutive setInterval calls.
+         * @type {Number}
+         */
+        CAAT.SET_INTERVAL=0;
+
+        /**
+         * time to process one frame.
+         * @type {Number}
+         */
+        CAAT.FRAME_TIME=0;
+
+        /**
+         * Current animated director.
+         * @type {CAAT.Foundation.Director}
+         */
+        CAAT.currentDirector=null;
+
+        /**
+         * Registered director objects.
+         * @type {Array}
+         */
         CAAT.director=[];
 
         /**
@@ -12969,11 +14878,13 @@ CAAT.Module({
 
             if (!now) now = new Date().getTime();
 
-            c.REQUEST_ANIMATION_FRAME_TIME = c.RAF ? now - c.RAF : 0.16;
+            var t= new Date().getTime();
+            c.REQUEST_ANIMATION_FRAME_TIME = c.RAF ? now - c.RAF : 16;
             for (var i = 0, l = c.director.length; i < l; i++) {
                 c.director[i].renderFrame();
             }
             c.RAF = now;
+            c.FRAME_TIME = new Date().getTime() - t;
 
 
             window.requestAnimFrame(c.renderFrameRAF, 0);
@@ -13000,19 +14911,64 @@ CAAT.Module({
     }
 });
 CAAT.Module( {
+
+    /**
+     * @name TimerTask
+     * @memberOf CAAT.Foundation.Timer
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.Timer.TimerTask",
     aliases : ["CAAT.TimerTask"],
     extendsWith : {
 
+        /**
+         * @lends CAAT.Foundation.Timer.TimerTask.prototype
+         */
+
+        /**
+         * Timer start time. Relative to Scene or Director time, depending who owns this TimerTask.
+         */
         startTime:          0,
+
+        /**
+         * Timer duration.
+         */
         duration:           0,
+
+        /**
+         * This callback will be called only once, when the timer expires.
+         */
         callback_timeout:   null,
+
+        /**
+         * This callback will be called whenever the timer is checked in time.
+         */
         callback_tick:      null,
+
+        /**
+         * This callback will be called when the timer is cancelled.
+         */
         callback_cancel:    null,
 
-        owner:              null,   // TimerManager instance
+        /**
+         * What TimerManager instance owns this task.
+         */
+        owner:              null,
+
+        /**
+         * Scene or director instance that owns this TimerTask owner.
+         */
         scene:              null,   // scene or director instance
+
+        /**
+         * An arbitrry id.
+         */
         taskId:             0,
+
+        /**
+         * Remove this timer task on expiration/cancellation ?
+         */
         remove:             false,
 
         /**
@@ -13095,19 +15051,47 @@ CAAT.Module( {
  * See LICENSE file.
  */
 CAAT.Module({
+
+    /**
+     * @name Timer
+     * @memberOf CAAT.Foundation
+     * @namespace
+     */
+
+    /**
+     * @name TimerManager
+     * @memberOf CAAT.Foundation.Timer
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.Timer.TimerManager",
     aliases : ["CAAT.TimerManager"],
     depends : [
         "CAAT.Foundation.Timer.TimerTask"
     ],
     extendsWith :   {
+
+        /**
+         * @lends CAAT.Foundation.Timer.TimerManager.prototype
+         */
+
         __init:function () {
             this.timerList = [];
             return this;
         },
 
-        timerList:null, // collection of CAAT.TimerTask objects.
-        timerSequence:0, // incremental CAAT.TimerTask id.
+        /**
+         * Collection of registered timers.
+         * @type {CAAT.Foundation.Timer.TimerManager}
+         * @private
+         */
+        timerList:null,
+
+        /**
+         * Index sequence to idenfity registered timers.
+         * @private
+         */
+        timerSequence:0,
 
         /**
          * Check and apply timers in frame time.
@@ -13197,6 +15181,19 @@ CAAT.Module({
     }
 });
 CAAT.Module( {
+
+    /**
+     * @name Layout
+     * @memberOf CAAT.Foundation.UI
+     * @namespace
+     */
+
+    /**
+     * @name LayoutManager
+     * @memberOf CAAT.Foundation.UI.Layout
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.Layout.LayoutManager",
     aliases : ["CAAT.UI.LayoutManager"],
     depends : [
@@ -13204,11 +15201,21 @@ CAAT.Module( {
     ],
     constants : {
 
+        /**
+         * @lends CAAT.Foundation.UI.Layout.LayoutManager
+         */
+
+        /**
+         * @enum {number}
+         */
         AXIS: {
             X : 0,
             Y : 1
         },
 
+        /**
+         * @enum {number}
+         */
         ALIGNMENT : {
             LEFT :  0,
             RIGHT:  1,
@@ -13222,6 +15229,12 @@ CAAT.Module( {
     extendsWith : function() {
 
         return {
+
+            /**
+             * @lends CAAT.Foundation.UI.Layout.LayoutManager.prototype
+             */
+
+
             __init : function( ) {
 
                 this.newChildren= [];
@@ -13235,15 +15248,45 @@ CAAT.Module( {
                 return this;
             },
 
+            /**
+             * If animation enabled, new element interpolator.
+             */
             newElementInterpolator : new CAAT.Behavior.Interpolator().createElasticOutInterpolator(1.1,.7),
+
+            /**
+             * If animation enabled, relayout elements interpolator.
+             */
             moveElementInterpolator : new CAAT.Behavior.Interpolator().createExponentialOutInterpolator(2),
 
+            /**
+             * Defines insets:
+             * @type {{ left, right, top, botton }}
+             */
             padding : null,
+
+            /**
+             * Needs relayout ??
+             */
             invalid : true,
 
+            /**
+             * Horizontal gap between children.
+             */
             hgap        : 2,
+
+            /**
+             * Vertical gap between children.
+             */
             vgap        : 2,
+
+            /**
+             * Animate on adding/removing elements.
+             */
             animated    : false,
+
+            /**
+             * pending to be laid-out actors.
+             */
             newChildren : null,
 
             setAnimated : function( animate ) {
@@ -13317,6 +15360,14 @@ CAAT.Module( {
     }
 });
 CAAT.Module({
+
+    /**
+     * @name BoxLayout
+     * @memberOf CAAT.Foundation.UI.Layout
+     * @extends CAAT.Foundation.UI.Layout.LayoutManager
+     * @constructor
+     */
+
     defines:"CAAT.Foundation.UI.Layout.BoxLayout",
     aliases:["CAAT.UI.BoxLayout"],
     depends:[
@@ -13327,8 +15378,27 @@ CAAT.Module({
     extendsWith:function () {
 
         return {
+
+            /**
+             * @lends CAAT.Foundation.UI.Layout.BoxLayout.prototype
+             */
+
+            /**
+             * Stack elements in this axis.
+             * @type {CAAT.Foundation.UI.Layout.LayoutManager}
+             */
             axis:CAAT.Foundation.UI.Layout.LayoutManager.AXIS.Y,
+
+            /**
+             * Vertical alignment.
+             * @type {CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT}
+             */
             valign:CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER,
+
+            /**
+             * Horizontal alignment.
+             * @type {CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT}
+             */
             halign:CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER,
 
             setAxis:function (axis) {
@@ -13537,6 +15607,14 @@ CAAT.Module({
     }
 });
 CAAT.Module( {
+
+    /**
+     * @name BorderLayout
+     * @memberOf CAAT.Foundation.UI.Layout
+     * @extends CAAT.Foundation.UI.Layout.LayoutManager
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.Layout.BorderLayout",
     aliases : ["CAAT.UI.BorderLayout"],
     depends : [
@@ -13546,15 +15624,39 @@ CAAT.Module( {
     extendsClass : "CAAT.Foundation.UI.Layout.LayoutManager",
     extendsWith : {
 
+        /**
+         * @lends CAAT.Foundation.UI.Layout.BorderLayout.prototype
+         */
+
+
         __init : function() {
             this.__super();
             return this;
         },
 
+        /**
+         * An actor to position left.
+         */
         left    : null,
+
+        /**
+         * An actor to position right.
+         */
         right   : null,
+
+        /**
+         * An actor to position top.
+         */
         top     : null,
+
+        /**
+         * An actor to position botton.
+         */
         bottom  : null,
+
+        /**
+         * An actor to position center.
+         */
         center  : null,
 
         addChild : function( child, constraint ) {
@@ -13723,6 +15825,14 @@ CAAT.Module( {
 
 });
 CAAT.Module( {
+
+    /**
+     * @name GridLayout
+     * @memberOf CAAT.Foundation.UI.Layout
+     * @extends CAAT.Foundation.UI.Layout.LayoutManager
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.Layout.GridLayout",
     aliases : ["CAAT.UI.GridLayout"],
     depends : [
@@ -13732,6 +15842,10 @@ CAAT.Module( {
     extendsClass : "CAAT.Foundation.UI.Layout.LayoutManager",
     extendsWith : {
 
+        /**
+         * @lends CAAT.Foundation.UI.Layout.GridLayout.prototype
+         */
+
         __init : function( rows, columns ) {
             this.__super();
             this.rows= rows;
@@ -13740,7 +15854,14 @@ CAAT.Module( {
             return this;
         },
 
+        /**
+         * Layout elements using this number of rows.
+         */
         rows    : 0,
+
+        /**
+         * Layout elements using this number of columns.
+         */
         columns : 2,
 
         doLayout : function( container ) {
@@ -13882,9 +16003,27 @@ CAAT.Module( {
     }
 });
 CAAT.Module( {
+
+    /**
+     * Define a drawable sub-image inside a bigger image as an independant drawable item.
+     *
+     * @name SpriteImageHelper
+     * @memberOf CAAT.Foundation
+     * @constructor
+     *
+     *
+     *
+     */
+
+
     defines : "CAAT.Foundation.SpriteImageHelper",
 
     extendsWith : {
+
+        /**
+         * @lends  CAAT.Foundation.SpriteImageHelper.prototype
+         */
+
         __init : function (x, y, w, h, iw, ih) {
             this.x = parseFloat(x);
             this.y = parseFloat(y);
@@ -13914,9 +16053,24 @@ CAAT.Module( {
     }
 });
 CAAT.Module({
+
+    /**
+     *
+     * Define an animation frame sequence, name it and supply with a callback which be called when the
+     * sequence ends playing.
+     *
+     * @name SpriteImageAnimationHelper
+     * @memberOf CAAT.Foundation
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.SpriteImageAnimationHelper",
     extendsWith : function() {
         return {
+
+            /**
+             * @lends  CAAT.Foundation.SpriteImageAnimationHelper.prototype
+             */
 
             __init : function( animation, time, onEndPlayCallback ) {
                 this.animation= animation;
@@ -13925,8 +16079,21 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * A sequence of integer values defining a frame animation.
+             * For example [1,2,3,4,3,2,3,4,3,2]
+             * Array.<number>
+             */
             animation :         null,
+
+            /**
+             * Time between any two animation frames.
+             */
             time :              0,
+
+            /**
+             * Call this callback function when the sequence ends.
+             */
             onEndPlayCallback : null
 
         }
@@ -13939,6 +16106,14 @@ CAAT.Module({
  **/
 
 CAAT.Module({
+
+    /**
+     * @name SpriteImage
+     * @memberOf CAAT.Foundation
+     * @constructor
+     */
+
+
     defines : "CAAT.Foundation.SpriteImage",
     aliases : ["CAAT.SpriteImage"],
     depends : [
@@ -13947,17 +16122,26 @@ CAAT.Module({
         "CAAT.Math.Rectangle"
     ],
     constants:{
-        TR_NONE:0, // constants used to determine how to draw the sprite image,
-        TR_FLIP_HORIZONTAL:1,
-        TR_FLIP_VERTICAL:2,
-        TR_FLIP_ALL:3,
-        TR_FIXED_TO_SIZE:4,
-        TR_FIXED_WIDTH_TO_SIZE:6,
-        TR_TILE:5
+        /**
+         * @lends  CAAT.Foundation.SpriteImage
+         */
+
+        /** @const @type {number} */ TR_NONE:0, // constants used to determine how to draw the sprite image,
+        /** @const @type {number} */ TR_FLIP_HORIZONTAL:1,
+        /** @const @type {number} */ TR_FLIP_VERTICAL:2,
+        /** @const @type {number} */ TR_FLIP_ALL:3,
+        /** @const @type {number} */ TR_FIXED_TO_SIZE:4,
+        /** @const @type {number} */ TR_FIXED_WIDTH_TO_SIZE:6,
+        /** @const @type {number} */ TR_TILE:5
     },
     extendsWith:function () {
 
         return {
+
+            /**
+             * @lends  CAAT.Foundation.SpriteImage.prototype
+             */
+
             __init:function () {
                 this.paint = this.paintN;
                 this.setAnimationImageIndex([0]);
@@ -13970,41 +16154,130 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * an Array defining the sprite frame sequence
+             */
+            animationImageIndex:null,
 
-            animationImageIndex:null, // an Array defining the sprite frame sequence
+            /**
+             * Previous animation frame time.
+             */
             prevAnimationTime:-1,
-            changeFPS:1000, // how much Scene time to take before changing an Sprite frame.
-            transformation:0, // any of the TR_* constants.
-            spriteIndex:0, // the current sprite frame
-            prevIndex:0,    // current index of sprite frames array.
-            currentAnimation: null, // current animation name
 
+            /**
+             * how much Scene time to take before changing an Sprite frame.
+             */
+            changeFPS:1000,
+
+            /**
+             * any of the TR_* constants.
+             */
+            transformation:0,
+
+            /**
+             * the current sprite frame
+             */
+            spriteIndex:0,
+
+            /**
+             * current index of sprite frames array.
+             */
+            prevIndex:0,    //
+
+            /**
+             * current animation name
+             */
+            currentAnimation: null,
+
+            /**
+             * Image to get frames from.
+             */
             image:null,
+
+            /**
+             * Number of rows
+             */
             rows:1,
+
+            /**
+             * Number of columns.
+             */
             columns:1,
+
+            /**
+             * This sprite image image´s width
+             */
             width:0,
+
+            /**
+             * This sprite image image´s width
+             */
             height:0,
+
+            /**
+             * For each element in the sprite image array, its size.
+             */
             singleWidth:0,
+
+            /**
+             * For each element in the sprite image array, its height.
+             */
             singleHeight:0,
 
             scaleX:1,
             scaleY:1,
 
+            /**
+             * Displacement offset to get the sub image from. Useful to make images shift.
+             */
             offsetX:0,
+
+            /**
+             * Displacement offset to get the sub image from. Useful to make images shift.
+             */
             offsetY:0,
 
+            /**
+             * When nesting sprite images, this value is the star X position of this sprite image in the parent.
+             */
             parentOffsetX:0,    // para especificar una subimagen dentro un textmap.
+
+            /**
+             * When nesting sprite images, this value is the star Y position of this sprite image in the parent.
+             */
             parentOffsetY:0,
 
+            /**
+             * The actor this sprite image belongs to.
+             */
             ownerActor:null,
 
+            /**
+             * If the sprite image is defined out of a JSON object (sprite packer for example), this is
+             * the subimages calculated definition map.
+             */
             mapInfo:null,
+
+            /**
+             * If the sprite image is defined out of a JSON object (sprite packer for example), this is
+             * the subimages original definition map.
+             */
             map:null,
 
+            /**
+             * This property allows to have multiple different animations defined for one actor.
+             * see demo31 for a sample.
+             */
             animationsMap : null,
+
+            /**
+             * When an animation sequence ends, this callback function will be called.
+             */
             callback : null,        // on end animation callback
 
-            // pending: refactor -> font scale to a font object.
+            /**
+             * pending: refactor -> font scale to a font object.
+             */
             fontScale : 1,
 
             getOwnerActor : function() {
@@ -14889,14 +17162,15 @@ CAAT.Module({
                     charInfo = this.mapInfo[ str.charAt(i) ];
                     if (charInfo) {
                         w = charInfo.width;
-                        ctx.drawImage(
-                            this.image,
-                            charInfo.x, charInfo.y,
-                            w, charInfo.height,
+                        if ( w>0 && charInfo.height>0 ) {
+                            ctx.drawImage(
+                                this.image,
+                                charInfo.x, charInfo.y,
+                                w, charInfo.height,
 
-                            x + charInfo.xoffset* this.fontScale, y + charInfo.yoffset* this.fontScale,
-                            w* this.fontScale, charInfo.height* this.fontScale);
-
+                                x + charInfo.xoffset* this.fontScale, y + charInfo.yoffset* this.fontScale,
+                                w* this.fontScale, charInfo.height* this.fontScale);
+                        }
                         x += charInfo.xadvance* this.fontScale;
                     }
                 }
@@ -18012,6 +20286,15 @@ CAAT.Module({
  **/
 
 CAAT.Module({
+
+    /**
+     * @name Director
+     * @memberOf CAAT.Foundation
+     * @extends CAAT.Foundation.ActorContainer
+     *
+     * @constructor
+     */
+
     defines:"CAAT.Foundation.Director",
     aliases:["CAAT.Director"],
     extendsClass:"CAAT.Foundation.ActorContainer",
@@ -18043,21 +20326,30 @@ CAAT.Module({
         "CAAT.Module.TexturePacker.TexturePageManager"
     ],
     constants:{
-        RENDER_MODE_CONTINUOUS:1, // redraw every frame
-        RENDER_MODE_DIRTY:2, // suitable for evented CAAT.
+        /**
+         * @lends  CAAT.Foundation.Director
+         */
 
-        CLEAR_DIRTY_RECTS:1,
-        CLEAR_ALL:true,
-        CLEAR_NONE:false,
+        /** @const @type {number} */ RENDER_MODE_CONTINUOUS:1, // redraw every frame
+        /** @const @type {number} */ RENDER_MODE_DIRTY:2, // suitable for evented CAAT.
 
-        RESIZE_NONE:1,
-        RESIZE_WIDTH:2,
-        RESIZE_HEIGHT:4,
-        RESIZE_BOTH:8,
-        RESIZE_PROPORTIONAL:16
+        /** @const @type {number} */ CLEAR_DIRTY_RECTS:1,
+        /** @const @type {number} */ CLEAR_ALL:true,
+        /** @const @type {number} */ CLEAR_NONE:false,
+
+        /** @const @type {number} */ RESIZE_NONE:1,
+        /** @const @type {number} */ RESIZE_WIDTH:2,
+        /** @const @type {number} */ RESIZE_HEIGHT:4,
+        /** @const @type {number} */ RESIZE_BOTH:8,
+        /** @const @type {number} */ RESIZE_PROPORTIONAL:16
     },
     extendsWith:function () {
         return {
+
+            /**
+             * @lends  CAAT.Foundation.Director.prototype
+             */
+
             __init:function () {
                 this.__super();
 
@@ -18073,7 +20365,6 @@ CAAT.Module({
                 this.lastSelectedActor = null;
                 this.dragging = false;
 
-                this.cDirtyRects = [];
                 this.sDirtyRects = [];
                 this.dirtyRects = [];
                 for (var i = 0; i < 64; i++) {
@@ -18088,54 +20379,192 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * flag indicating debug mode. It will draw affedted screen areas.
+             * @type {boolean}
+             */
+            debug:false,
 
-            debug:false, // flag indicating debug mode. It will draw affedted screen areas.
-
+            /**
+             * Set CAAT render mode. Right now, this takes no effect.
+             */
             renderMode:CAAT.Foundation.Director.RENDER_MODE_CONTINUOUS,
 
-
+            /**
+             * This method will be called before rendering any director scene.
+             * Use this method to calculate your physics for example.
+             * @private
+             */
             onRenderStart:null,
+
+            /**
+             * This method will be called after rendering any director scene.
+             * Use this method to clean your physics forces for example.
+             * @private
+             */
             onRenderEnd:null,
 
             // input related attributes
-            mousePoint:null, // mouse coordinate related to canvas 0,0 coord.
-            prevMousePoint:null, // previous mouse position cache. Needed for drag events.
-            screenMousePoint:null, // screen mouse coordinates.
-            isMouseDown:false, // is the left mouse button pressed ?
-            lastSelectedActor:null, // director's last actor receiving input.
-            dragging:false, // is in drag mode ?
+            /**
+             * mouse coordinate related to canvas 0,0 coord.
+             * @private
+             */
+            mousePoint:null,
+
+            /**
+             * previous mouse position cache. Needed for drag events.
+             * @private
+             */
+            prevMousePoint:null,
+
+            /**
+             * screen mouse coordinates.
+             * @private
+             */
+            screenMousePoint:null,
+
+            /**
+             * is the left mouse button pressed ?.
+             * Needed to handle dragging.
+             */
+            isMouseDown:false,
+
+            /**
+             * director's last actor receiving input.
+             * Needed to set capture for dragging events.
+             */
+            lastSelectedActor:null,
+
+            /**
+             * is input in drag mode ?
+             */
+            dragging:false,
 
             // other attributes
 
-            scenes:null, // Scenes collection. An array.
-            currentScene:null, // The current Scene. This and only this will receive events.
-            canvas:null, // The canvas the Director draws on.
+            /**
+             * This director scene collection.
+             * @type {Array.<CAAT.Foundation.Scene>}
+             */
+            scenes:null,
 
-            ctx:null, // refactoring ct for a more convenient name
-            time:0, // virtual actor time.
-            timeline:0, // global director timeline.
-            imagesCache:null, // An array of JSON elements of the form { id:string, image:Image }
+            /**
+             * The current Scene. This and only this will receive events.
+             */
+            currentScene:null,
+
+            /**
+             * The canvas the Director draws on.
+             * @private
+             */
+            canvas:null,
+
+            /**
+             * This director´s canvas rendering context.
+             */
+            ctx:null,
+
+            /**
+             * director time.
+             * @private
+             */
+            time:0,
+
+            /**
+             * global director timeline.
+             * @private
+             */
+            timeline:0,
+
+            /**
+             * An array of JSON elements of the form { id:string, image:Image }
+             */
+            imagesCache:null,
+
+            /**
+             * this director´s audio manager.
+             * @private
+             */
             audioManager:null,
-            clear: CAAT.Foundation.Director.CLEAR_ALL, // clear background before drawing scenes ??
 
+            /**
+             * Clear screen strategy:
+             * CAAT.Foundation.Director.CLEAR_NONE : director won´t clear the background.
+             * CAAT.Foundation.Director.CLEAR_DIRTY_RECTS : clear only affected actors screen area.
+             * CAAT.Foundation.Director.CLEAR_ALL : clear the whole canvas object.
+             */
+            clear: CAAT.Foundation.Director.CLEAR_ALL,
+
+            /**
+             * if CAAT.CACHE_SCENE_ON_CHANGE is set, this scene will hold a cached copy of the exiting scene.
+             * @private
+             */
             transitionScene:null,
 
+            /**
+             * Some browser related information.
+             */
             browserInfo:null,
 
+            /**
+             * 3d context
+             * @private
+             */
             gl:null,
+
+            /**
+             * is WebGL enabled as renderer ?
+             * @private
+             */
             glEnabled:false,
+
+            /**
+             * if webGL is on, CAAT will texture pack all images transparently.
+             * @private
+             */
             glTextureManager:null,
+
+            /**
+             * The only GLSL program for webGL
+             * @private
+             */
             glTtextureProgram:null,
             glColorProgram:null,
 
+            /**
+             * webGL projection matrix
+             * @private
+             */
             pMatrix:null, // projection matrix
+
+            /**
+             * webGL vertex array
+             * @private
+             */
             coords:null, // Float32Array
+
+            /**
+             * webGL vertex indices.
+             * @private
+             */
             coordsIndex:0,
+
+            /**
+             * webGL uv texture indices
+             * @private
+             */
             uv:null,
             uvIndex:0,
 
+            /**
+             * draw tris front_to_back or back_to_front ?
+             * @private
+             */
             front_to_back:false,
 
+            /**
+             * statistics object
+             */
             statistics:{
                 size_total:0,
                 size_active:0,
@@ -18144,36 +20573,124 @@ CAAT.Module({
                 size_discarded_by_dirty_rects:0
             },
 
+            /**
+             * webGL current texture page. This minimizes webGL context changes.
+             * @private
+             */
             currentTexturePage:0,
+
+            /**
+             * webGL current shader opacity.
+             * BUGBUG: change this by vertex colors.
+             * @private
+             */
             currentOpacity:1,
 
+            /**
+             * if CAAT.NO_RAF is set (no request animation frame), this value is the setInterval returned
+             * id.
+             * @private
+             */
             intervalId:null,
 
+            /**
+             * Rendered frames counter.
+             */
             frameCounter:0,
 
+            /**
+             * Window resize strategy.
+             * see CAAT.Foundation.Director.RESIZE_* constants.
+             * @private
+             */
             resize:1,
+
+            /**
+             * Callback when the window is resized.
+             */
             onResizeCallback:null,
 
+            /**
+             * Calculated gesture event scale.
+             * @private
+             */
             __gestureScale:0,
+
+            /**
+             * Calculated gesture event rotation.
+             * @private
+             */
             __gestureRotation:0,
 
+            /**
+             * Dirty rects cache.
+             * An array of CAAT.Math.Rectangle object.
+             * @private
+             */
             dirtyRects:null, // dirty rects cache.
-            cDirtyRects:null, // current dirty rects.
+
+            /**
+             * Currently used dirty rects.
+             * @private
+             */
             sDirtyRects:null, // scheduled dirty rects.
+
+            /**
+             * Number of currently allocated dirty rects.
+             * @private
+             */
             dirtyRectsIndex:0,
+
+            /**
+             * Dirty rects enabled ??
+             * @private
+             */
             dirtyRectsEnabled:false,
+
+            /**
+             * Number of dirty rects.
+             * @private
+             */
             nDirtyRects:0,
+
+            /**
+             * Dirty rects count debug info.
+             * @private
+             */
             drDiscarded:0, // discarded by dirty rects.
 
+            /**
+             * Is this director stopped ?
+             */
             stopped:false, // is stopped, this director will do nothing.
 
-            needsRepaint:false, // for rendering mode = dirty, this flags means, paint another frame
+            /**
+             * currently unused.
+             * Intended to run caat in evented mode.
+             * @private
+             */
+            needsRepaint:false,
 
-            touches:null, // Touches information. Associate touch.id with an actor and original touch info.
+            /**
+             * Touches information. Associate touch.id with an actor and original touch info.
+             * @private
+             */
+            touches:null,
 
+            /**
+             * Director´s timer manager.
+             * Each scene has a timerManager as well.
+             * The difference is the scope. Director´s timers will always be checked whereas scene´ timers
+             * will only be scheduled/checked when the scene is director´ current scene.
+             * @private
+             */
             timerManager:null,
 
-            SCREEN_RATIO : 1,    // retina display deicePixels/backingStorePixels ratio
+            /**
+             * Retina display deicePixels/backingStorePixels ratio
+             * @private
+             */
+            SCREEN_RATIO : 1,
 
             __map : null,
 
@@ -18189,7 +20706,6 @@ CAAT.Module({
                 this.__gestureRotation = 0;
                 this.dirty = true;
                 this.dirtyRects = null;
-                this.cDirtyRects = null;
                 this.dirtyRectsIndex = 0;
                 this.dirtyRectsEnabled = false;
                 this.nDirtyRects = 0;
@@ -18440,7 +20956,7 @@ CAAT.Module({
                 return this;
             },
             glReset:function () {
-                this.pMatrix = makeOrtho(0, this.referenceWidth, this.referenceHeight, 0, -1, 1);
+                this.pMatrix = CAAT.WebGL.GLU.makeOrtho(0, this.referenceWidth, this.referenceHeight, 0, -1, 1);
                 this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
                 this.glColorProgram.setMatrixUniform(this.pMatrix);
                 this.glTextureProgram.setMatrixUniform(this.pMatrix);
@@ -18895,7 +21411,6 @@ CAAT.Module({
                 this.dirty = false;
                 this.invalid = false;
                 this.dirtyRectsIndex = -1;
-                this.cDirtyRects = [];
 
                 var cl = this.childrenList;
                 var cli;
@@ -20766,6 +23281,20 @@ CAAT.Module({
  */
 
 CAAT.Module( {
+
+    /**
+     * @name UI
+     * @memberOf CAAT.Foundation
+     * @namespace
+     */
+
+    /**
+     * @name Dock
+     * @memberOf CAAT.Foundation.UI
+     * @extends CAAT.Foundation.ActorContainer
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.Dock",
     aliases : ["CAAT.Dock"],
     extendsClass : "CAAT.Foundation.ActorContainer",
@@ -20774,18 +23303,62 @@ CAAT.Module( {
         "CAAT.Behavior.GenericBehavior"
     ],
     constants : {
+
+        /**
+         * @lends CAAT.Foundation.UI.Dock
+         */
+
+        /**
+         * @const
+         */
         OP_LAYOUT_BOTTOM:   0,
+        /**
+         * @const
+         */
         OP_LAYOUT_TOP:      1,
+        /**
+         * @const
+         */
         OP_LAYOUT_LEFT:     2,
+        /**
+         * @const
+         */
         OP_LAYOUT_RIGHT:    3
     },
     extendsWith : {
 
-        scene:              null,   // scene the actor is in.
-        ttask:              null,   // resetting dimension timer.
-        minSize:            0,      // min contained actor size
-        maxSize:            0,      // max contained actor size
-        range:              2,      // aproximated number of elements affected.
+        /**
+         * @lends CAAT.Foundation.UI.Dock.prototype
+         */
+
+        /**
+         * scene the actor is in.
+         */
+        scene:              null,
+
+        /**
+         * resetting dimension timer task.
+         */
+        ttask:              null,
+
+        /**
+         * min contained actor size.
+         */
+        minSize:            0,
+
+        /**
+         * max contained actor size
+         */
+        maxSize:            0,
+
+        /**
+         * aproximated number of elements affected.
+         */
+        range:              2,
+
+        /**
+         * Any value from CAAT.Foundation.Dock.UI.OP_LAYOUT_*
+         */
         layoutOp:           0,
 
         initialize : function(scene) {
@@ -21086,6 +23659,14 @@ CAAT.Module( {
  **/
 
 CAAT.Module( {
+
+    /**
+     * @name InterpolatorActor
+     * @memberOf CAAT.Foundation.UI
+     * @extends CAAT.Foundation.Actor
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.InterpolatorActor",
     aliases : ["CAAT.InterpolatorActor"],
     depends : [
@@ -21094,9 +23675,30 @@ CAAT.Module( {
     extendsClass : "CAAT.Foundation.Actor",
     extendsWith : {
 
-        interpolator:   null,   // CAAT.Interpolator instance.
+        /**
+         * @lends CAAT.Foundation.UI.InterpolatorActor.prototype
+         */
+
+        /**
+         * The interpolator instance to draw.
+         * @type {CAAT.Behavior.Interpolator}
+         */
+        interpolator:   null,
+
+        /**
+         * This interpolator´s contour.
+         * @type {Array.<CAAT.Math.Point>}
+         */
         contour:        null,   // interpolator contour cache
+
+        /**
+         * Number of samples to calculate a contour.
+         */
         S:              50,     // contour samples.
+
+        /**
+         * padding when drawing the interpolator.
+         */
         gap:            5,      // border size in pixels.
 
         /**
@@ -21170,6 +23772,14 @@ CAAT.Module( {
 
 });
 CAAT.Module( {
+
+    /**
+     * @name Label
+     * @memberOf CAAT.Foundation.UI
+     * @extends CAAT.Foundation.Actor
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.Label",
     depends : [
         "CAAT.Foundation.Actor",
@@ -21186,10 +23796,6 @@ CAAT.Module( {
         /**
          *
          * Current applied rendering context information.
-         *
-         * @constuctor
-         * @param ctx
-         * @return {*}
          */
         var renderContextStyle= function(ctx) {
             this.ctx= ctx;
@@ -21419,8 +24025,6 @@ CAAT.Module( {
 
         /**
          * This class keeps track of styles, images, and the current applied style.
-         * @constructor
-         * @return {*}
          */
         var renderContext= function() {
             this.text= "";
@@ -21710,8 +24314,6 @@ CAAT.Module( {
          * The document contains a collection of DocumentElementText and DocumentElementImage.
          * @param anchor
          * @param style
-         * @return {*}
-         * @constructor
          */
         var DocumentElement= function( anchor, style ) {
             this.link= anchor;
@@ -21756,8 +24358,6 @@ CAAT.Module( {
          * @param c
          * @param style
          * @param anchor
-         * @return {*}
-         * @constructor
          */
         var DocumentElementImage= function( x, image, r, c, style, anchor ) {
 
@@ -21828,8 +24428,6 @@ CAAT.Module( {
          * @param height
          * @param style
          * @param anchor
-         * @return {*}
-         * @constructor
          */
         var DocumentElementText= function( text,x,width,height,style, anchor) {
 
@@ -21886,8 +24484,6 @@ CAAT.Module( {
         /**
          * This class represents a document line.
          * It contains a collection of DocumentElement objects.
-         * @return {*}
-         * @constructor
          */
         var DocumentLine= function() {
             this.elements= [];
@@ -22024,19 +24620,12 @@ CAAT.Module( {
         };
 
         return {
+
             /**
-             * This object represents a label object.
-             * A label is a complex presentation object which is able to:
-             * <li>define comples styles
-             * <li>contains multiline text
-             * <li>keep track of per-line baseline regardless of fonts used.
-             * <li>Mix images and text.
-             * <li>Layout text and images in a fixed width or by parsing a free-flowing document
-             * <li>Add anchoring capabilities.
-             *
-             * @return {*}
-             * @constructor
+             * @lends CAAT.Foundation.UI.Label.prototype
              */
+
+
             __init : function() {
                 this.__super();
 
@@ -22048,24 +24637,86 @@ CAAT.Module( {
                 return this;
             },
 
+            /**
+             * This Label document´s horizontal alignment.
+             * @type {CAAT.Foundation.UI.Layout.LayoutManager}
+             * @private
+             */
             halignment  :   CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.LEFT,
+
+            /**
+             * This Label document´s vertical alignment.
+             * @type {CAAT.Foundation.UI.Layout.LayoutManager}
+             * @private
+             */
             valignment  :   CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.TOP,
+
+            /**
+             * This label text.
+             * @type {string}
+             * @private
+             */
             text        :   null,
+
+            /**
+             * This label document´s render context
+             * @type {RenderContext}
+             * @private
+             */
             rc          :   null,
 
+            /**
+             * Styles object.
+             * @private
+             */
             styles      :   null,
 
+            /**
+             * Calculated document width.
+             * @private
+             */
             documentWidth   : 0,
+
+            /**
+             * Calculated document Height.
+             * @private
+             */
             documentHeight  : 0,
+
+            /**
+             * Document x position.
+             * @private
+             */
             documentX       : 0,
+
+            /**
+             * Document y position.
+             * @private
+             */
             documentY       : 0,
 
+            /**
+             * Does this label document flow ?
+             * @private
+             */
             reflow      :   true,
 
+            /**
+             * Collection of text lines calculated for the label.
+             * @private
+             */
             lines       :   null,   // calculated elements lines...
 
+            /**
+             * Collection of image objects in this label´s document.
+             * @private
+             */
             images      :   null,
 
+            /**
+             * Registered callback to notify on anchor click event.
+             * @private
+             */
             clickCallback   : null,
 
             setStyle : function( name, styleData ) {
@@ -22304,6 +24955,14 @@ CAAT.Module( {
  *
  **/
 CAAT.Module( {
+
+    /**
+     * @name PathActor
+     * @memberOf CAAT.Foundation.UI
+     * @extends CAAT.Foundation.Actor
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.PathActor",
     aliases : ["CAAT.PathActor"],
     depends : [
@@ -22312,13 +24971,41 @@ CAAT.Module( {
     extendsClass : "CAAT.Foundation.Actor",
     extendsWith : {
 
+        /**
+         * @lends CAAT.Foundation.UI.PathActor.prototype
+         */
+
+        /**
+         * Path to draw.
+         * @type {CAAT.PathUtil.Path}
+         */
 		path                    : null,
+
+        /**
+         * Calculated path´s bounding box.
+         */
 		pathBoundingRectangle   : null,
+
+        /**
+         * draw the bounding rectangle too ?
+         */
 		bOutline                : false,
+
+        /**
+         * Outline the path in this color.
+         */
         outlineColor            : 'black',
+
+        /**
+         * If the path is interactive, some handlers are shown to modify the path.
+         * This callback function will be called when the path is interactively changed.
+         */
         onUpdateCallback        : null,
+
+        /**
+         * Set this path as interactive.
+         */
         interactive             : false,
-        showBBox                : false,
 
         /**
          * Return the contained path.
@@ -22368,12 +25055,6 @@ CAAT.Module( {
                     this.pathBoundingRectangle.height
                 );
             }
-/*
-			if ( this.bOutline ) {
-				ctx.strokeStyle= this.outlineColor;
-				ctx.strokeRect(0,0,this.width,this.height);
-			}
-*/
 		},
         /**
          * Enables/disables drawing of the contained path's bounding box.
@@ -22427,6 +25108,14 @@ CAAT.Module( {
 	}
 });
 CAAT.Module({
+
+    /**
+     * @name ShapeActor
+     * @memberOf CAAT.Foundation.UI
+     * @extends CAAT.Foundation.ActorContainer
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.ShapeActor",
     aliases : ["CAAT.ShapeActor"],
     extendsClass : "CAAT.Foundation.ActorContainer",
@@ -22434,10 +25123,20 @@ CAAT.Module({
         "CAAT.Foundation.ActorContainer"
     ],
     constants : {
-        SHAPE_CIRCLE:   0,      // Constants to describe different shapes.
-        SHAPE_RECTANGLE:1
+
+        /**
+         * @lends CAAT.Foundation.UI.ShapeActor
+         */
+
+        /** @const */ SHAPE_CIRCLE:   0,      // Constants to describe different shapes.
+        /** @const */ SHAPE_RECTANGLE:1
     },
     extendsWith : {
+
+        /**
+         * @lends CAAT.Foundation.UI.ShapeActor.prototype
+         */
+
         __init : function() {
             this.__super();
             this.compositeOp= 'source-over';
@@ -22450,11 +25149,34 @@ CAAT.Module({
             return this;
         },
 
+        /**
+         * Define this actor shape: rectangle or circle
+         */
         shape:          0,      // shape type. One of the constant SHAPE_* values
+
+        /**
+         * Set this shape composite operation when drawing it.
+         */
         compositeOp:    null,   // a valid canvas rendering context string describing compositeOps.
+
+        /**
+         * Stroke the shape with this line width.
+         */
         lineWidth:      1,
+
+        /**
+         * Stroke the shape with this line cap.
+         */
         lineCap:        null,
+
+        /**
+         * Stroke the shape with this line Join.
+         */
         lineJoin:       null,
+
+        /**
+         * Stroke the shape with this line mitter limit.
+         */
         miterLimit:     null,
 
         /**
@@ -22613,6 +25335,14 @@ CAAT.Module({
 
 });
 CAAT.Module( {
+
+    /**
+     * @name StarActor
+     * @memberOf CAAT.Foundation.UI
+     * @extends CAAT.Foundation.ActorContainer
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.StarActor",
     aliases : ["CAAT.StarActor"],
     depends : [
@@ -22620,20 +25350,60 @@ CAAT.Module( {
     ],
     extendsClass : "CAAT.Foundation.ActorContainer",
     extendsWith : {
+
+        /**
+         * @lends CAAT.Foundation.UI.StarActor.prototype
+         */
+
         __init : function() {
             this.__super();
             this.compositeOp= 'source-over';
             return this;
         },
 
+        /**
+         * Number of star peaks.
+         */
         nPeaks:         0,
+
+        /**
+         * Maximum radius.
+         */
         maxRadius:      0,
+
+        /**
+         * Minimum radius.
+         */
         minRadius:      0,
+
+        /**
+         * Staring angle in radians.
+         */
         initialAngle:   0,
+
+        /**
+         * Draw the star with this composite operation.
+         */
         compositeOp:    null,
+
+        /**
+         *
+         */
         lineWidth:      1,
+
+        /**
+         *
+         */
         lineCap:        null,
+
+        /**
+         *
+         */
         lineJoin:       null,
+
+        /**
+         *
+         */
         miterLimit:     null,
 
         /**
@@ -22795,6 +25565,13 @@ CAAT.Module( {
 });
 CAAT.Module( {
 
+    /**
+     * @name TextActor
+     * @memberOf CAAT.Foundation.UI
+     * @extends CAAT.Foundation.Actor
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.TextActor",
     aliases : ["CAAT.TextActor"],
     extendsClass : "CAAT.Foundation.Actor",
@@ -22810,6 +25587,11 @@ CAAT.Module( {
         "CAAT.Behavior.Interpolator"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Foundation.UI.TextActor.prototype
+         */
+
         __init : function() {
             this.__super();
             this.font= "10px sans-serif";
@@ -22821,29 +25603,89 @@ CAAT.Module( {
             return this;
         },
 
-		font:			    null,   // a valid canvas rendering context font description. Default font
-                                    // will be "10px sans-serif".
-        fontData:           null,
-		textAlign:		    null,	// a valid canvas rendering context textAlign string. Any of:
-                                    // start, end, left, right, center.
-                                    // defaults to "left".
-		textBaseline:	    "top",	// a valid canvas rendering context textBaseLine string. Any of:
-                                    // top, hanging, middle, alphabetic, ideographic, bottom.
-                                    // defaults to "top".
-		fill:			    true,   // a boolean indicating whether the text should be filled.
-        textFillStyle   :   '#eee', // text fill color
-		text:			    null,   // a string with the text to draw.
-		textWidth:		    0,      // an integer indicating text width in pixels.
-        textHeight:         0,      // an integer indicating text height in pixels.
-		outline:		    false,  // a boolean indicating whether the text should be outlined.
-                                    // not all browsers support it.
-		outlineColor:	    null,   // a valid color description string.
-        lineWidth:          1,      // text's stroke line width.
+        /**
+         * a valid canvas rendering context font description. Default font will be "10px sans-serif".
+         */
+		font:			    null,
 
-		path:			    null,   // a CAAT.Path which will be traversed by the text. [Optional]
-        pathInterpolator:	null,   // a CAAT.Interpolator to apply to the path traversing.
-        pathDuration:       10000,  // an integer indicating the time to be taken to traverse the path. ms.
-		sign:			    1,      // traverse the path forward or backwards.
+        /**
+         * Font info. Calculated in CAAT.
+         */
+        fontData:           null,
+
+        /**
+         * a valid canvas rendering context textAlign string. Any of:
+         *   start, end, left, right, center.
+         * defaults to "left".
+         */
+		textAlign:		    null,
+
+        /**
+         * a valid canvas rendering context textBaseLine string. Any of:
+         *   top, hanging, middle, alphabetic, ideographic, bottom.
+         * defaults to "top".
+         */
+		textBaseline:	    "top",
+
+        /**
+         * a boolean indicating whether the text should be filled.
+         */
+		fill:			    true,
+
+        /**
+         * text fill color
+         */
+        textFillStyle   :   '#eee',
+
+        /**
+         * a string with the text to draw.
+         */
+		text:			    null,
+
+        /**
+         * calculated text width in pixels.
+         */
+		textWidth:		    0,
+
+        /**
+         * calculated text height in pixels.
+         */
+        textHeight:         0,
+
+        /**
+         * a boolean indicating whether the text should be outlined. not all browsers support it.
+         */
+		outline:		    false,
+
+        /**
+         * a valid color description string.
+         */
+		outlineColor:	    null,
+
+        /**
+         * text's stroke line width.
+         */
+        lineWidth:          1,
+
+        /**
+         * a CAAT.PathUtil.Path which will be traversed by the text.
+         */
+		path:			    null,
+
+        /**
+         * A CAAT.Behavior.Interpolator to apply to the path traversal.
+         */
+        pathInterpolator:	null,
+
+        /**
+         * time to be taken to traverse the path. ms.
+         */
+        pathDuration:       10000,
+
+        /**
+         * traverse the path forward (1) or backwards (-1).
+         */
+		sign:			    1,      //
 
         lx:                 0,
         ly:                 0,

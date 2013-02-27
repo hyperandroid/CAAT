@@ -46,6 +46,7 @@ CAAT.Module({
              * Sets this point coordinates.
              * @param x {number}
              * @param y {number}
+             * @param z {number=}
              *
              * @return this
              */

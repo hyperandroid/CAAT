@@ -227,6 +227,8 @@
 
         function __scene1( images ) {
 
+            CAAT.DEBUG=1 ;
+
             var director= new CAAT.Foundation.Director().initialize( 800,500,'experiment-canvas' );
             director.setImagesCache(images);
             var scene = director.createScene();
