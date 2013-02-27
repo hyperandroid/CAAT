@@ -7,8 +7,23 @@
 
 (function() {
 
+    /**
+     * @name CSS
+     * @memberOf CAAT
+     * @namespace
+     */
+
     CAAT.CSS= {};
 
+    /**
+     * @lends CAAT.CSS
+     */
+
+
+    /**
+     * Guess a browser custom prefix.
+     * @type {*}
+     */
     CAAT.CSS.PREFIX= (function() {
 
         var prefix = "";
@@ -28,10 +43,22 @@
         return prefix;
     })();
 
+    /**
+     * Apply a given @key-frames animation to a DOM element.
+     * @param domElement {DOMElement}
+     * @param name {string} animation name
+     * @param duration_millis {number}
+     * @param delay_millis {number}
+     * @param forever {boolean}
+     */
     CAAT.CSS.applyKeyframe= function( domElement, name, duration_millis, delay_millis, forever ) {
         domElement.style[CAAT.CSS.PROP_ANIMATION]= name+' '+(duration_millis/1000)+'s '+(delay_millis/1000)+'s linear both '+(forever ? 'infinite' : '') ;
     };
 
+    /**
+     * Remove a @key-frames animation from the stylesheet.
+     * @param name
+     */
     CAAT.CSS.unregisterKeyframes= function( name ) {
         var index= CAAT.CSS.getCSSKeyframesIndex(name);
         if ( -1!==index ) {
@@ -41,8 +68,8 @@
 
     /**
      *
-     * @param kfDescriptor {
-     *      object{
+     * @param kfDescriptor {object}
+     *      {
      *          name{string},
      *          behavior{CAAT.Behavior},
      *          size{!number},

@@ -1,4 +1,12 @@
 CAAT.Module({
+
+    /**
+     * @name ContainerBehavior
+     * @memberOf CAAT.Behavior
+     * @extends CAAT.Behavior.BaseBehavior
+     * @constructor
+     */
+
     defines:"CAAT.Behavior.ContainerBehavior",
     depends:["CAAT.Behavior.BaseBehavior", "CAAT.Behavior.GenericBehavior"],
     aliases: ["CAAT.ContainerBehavior"],
@@ -7,6 +15,13 @@ CAAT.Module({
 
         return {
 
+            /**
+             * @lends CAAT.Behavior.ContainerBehavior.prototype
+             */
+
+            /**
+             * @inheritDoc
+             */
             parse : function( obj ) {
                 if ( obj.behaviors && obj.behaviors.length ) {
                     for( var i=0; i<obj.behaviors.length; i+=1 ) {
@@ -16,8 +31,16 @@ CAAT.Module({
                 CAAT.Behavior.ContainerBehavior.superclass.parse.call(this,obj);
             },
 
+            /**
+             * A collection of behaviors.
+             * @type {Array.<CAAT.Behavior.BaseBehavior>}
+             */
             behaviors:null, // contained behaviors array
 
+            /**
+             * @inheritDoc
+             * @private
+             */
             __init:function () {
                 this.__super();
                 this.behaviors = [];
@@ -42,6 +65,10 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * Get a behavior by mathing its id.
+             * @param id {object}
+             */
             getBehaviorById : function(id) {
                 for( var i=0; i<this.behaviors.length; i++ ) {
                     if ( this.behaviors[i].id===id ) {
@@ -53,16 +80,15 @@ CAAT.Module({
             },
 
             /**
-             * Adds a new behavior to the container.
-             * @param behavior
-             *
-             * @override
+             * Add a new behavior to the container.
+             * @param behavior {CAAT.Behavior.BaseBehavior}
              */
             addBehavior:function (behavior) {
                 this.behaviors.push(behavior);
                 behavior.addListener(this);
                 return this;
             },
+
             /**
              * Applies every contained Behaviors.
              * The application time the contained behaviors will receive will be ContainerBehavior related and not the
@@ -91,6 +117,7 @@ CAAT.Module({
                     }
                 }
             },
+
             /**
              * This method is the observer implementation for every contained behavior.
              * If a container is Cycle=true, won't allow its contained behaviors to be expired.
@@ -103,6 +130,7 @@ CAAT.Module({
                     behavior.setStatus(CAAT.Behavior.BaseBehavior.Status.STARTED);
                 }
             },
+
             /**
              * Implementation method of the behavior.
              * Just call implementation method for its contained behaviors.
@@ -118,9 +146,13 @@ CAAT.Module({
                 return null;
             },
 
+            /**
+             * Expire this behavior and the children applied at the parameter time.
+             * @param actor {CAAT.Foundation.Actor}
+             * @param time {number}
+             * @return {*}
+             */
             setExpired:function (actor, time) {
-
-                //CAAT.Behavior.ContainerBehavior.superclass.setExpired.call(this, actor, time);
 
                 var bh = this.behaviors;
                 // set for final interpolator value.
@@ -141,6 +173,9 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             setFrameTime:function (start, duration) {
                 CAAT.Behavior.ContainerBehavior.superclass.setFrameTime.call(this, start, duration);
 
@@ -151,6 +186,9 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             setDelayTime:function (start, duration) {
                 CAAT.Behavior.ContainerBehavior.superclass.setDelayTime.call(this, start, duration);
 
@@ -161,6 +199,9 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             getKeyFrameDataValues : function(referenceTime) {
 
                 var i, bh, time;
@@ -198,6 +239,9 @@ CAAT.Module({
                 return keyFrameData;
             },
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFrameData:function (referenceTime, prefix) {
 
                 var i;
@@ -282,46 +326,8 @@ CAAT.Module({
             },
 
             /**
-             *
-             * @param prefix
-             * @param name
-             * @param keyframessize
-             *//*
-            calculateKeyFramesData:function (prefix, name, keyframessize) {
-
-                if (this.duration === Number.MAX_VALUE) {
-                    return "";
-                }
-
-                if (typeof keyframessize === 'undefined') {
-                    keyframessize = 100;
-                }
-
-                var i;
-                var prevValues = null;
-                var kfd = "@-" + prefix + "-keyframes " + name + " {";
-                var ret;
-                var time;
-                var kfr;
-
-                for (i = 0; i <= keyframessize; i++) {
-                    time = this.interpolator.getPosition(i / keyframessize).y;
-
-
-                    ret = this.calculateKeyFrameData(time, prefix, prevValues);
-                    kfr = "" +
-                        (i / keyframessize * 100) + "%" + // percentage
-                        "{" + ret.rules + "}\n";
-
-                    prevValues = ret.ret;
-                    kfd += kfr;
-                }
-
-                kfd += "}";
-
-                return kfd;
-            }
-*/
+             * @inheritDoc
+             */
             calculateKeyFramesData:function (prefix, name, keyframessize, anchorX, anchorY) {
 
                 function toKeyFrame(obj, prevKF) {

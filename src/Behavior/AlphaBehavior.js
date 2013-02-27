@@ -1,4 +1,12 @@
 CAAT.Module({
+
+    /**
+     * @name AlphaBehavior
+     * @memberOf CAAT.Behavior
+     * @extends CAAT.Behavior.BaseBehavior
+     * @constructor
+     */
+
     defines:"CAAT.Behavior.AlphaBehavior",
     aliases:["CAAT.AlphaBehavior"],
     depends:["CAAT.Behavior.BaseBehavior"],
@@ -6,15 +14,37 @@ CAAT.Module({
     extendsWith:function () {
         return {
 
+            /**
+             * @lends CAAT.Behavior.AlphaBehavior.prototype
+             */
+
+            /**
+             * Starting alpha transparency value. Between 0 and 1.
+             * @type {number}
+             * @private
+             */
             startAlpha:0,
+
+            /**
+             * Ending alpha transparency value. Between 0 and 1.
+             * @type {number}
+             * @private
+             */
             endAlpha:0,
 
+            /**
+             * @inheritsDoc
+             * @param obj
+             */
             parse : function( obj ) {
                 CAAT.Behavior.AlphaBehavior.superclass.parse.call(this,obj);
                 this.startAlpha= obj.start || 0;
                 this.endAlpha= obj.end || 0;
             },
 
+            /**
+             * @inheritDoc
+             */
             getPropertyName:function () {
                 return "opacity";
             },
@@ -36,6 +66,7 @@ CAAT.Module({
                 }
                 return alpha;
             },
+
             /**
              * Set alpha transparency minimum and maximum value.
              * This value can be coerced by Actor's property isGloblAlpha.
@@ -49,11 +80,17 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFrameData:function (time) {
                 time = this.interpolator.getPosition(time).y;
                 return  (this.startAlpha + time * (this.endAlpha - this.startAlpha));
             },
 
+            /**
+             * @inheritDoc
+             */
             getKeyFrameDataValues : function(time) {
                 time = this.interpolator.getPosition(time).y;
                 return {
@@ -62,9 +99,7 @@ CAAT.Module({
             },
 
             /**
-             * @param prefix {string} browser vendor prefix
-             * @param name {string} keyframes animation name
-             * @param keyframessize {number} number of keyframes to generate
+             * @inheritDoc
              * @override
              */
             calculateKeyFramesData:function (prefix, name, keyframessize) {

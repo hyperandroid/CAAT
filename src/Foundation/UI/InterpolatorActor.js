@@ -4,6 +4,14 @@
  **/
 
 CAAT.Module( {
+
+    /**
+     * @name InterpolatorActor
+     * @memberOf CAAT.Foundation.UI
+     * @extends CAAT.Foundation.Actor
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.InterpolatorActor",
     aliases : ["CAAT.InterpolatorActor"],
     depends : [
@@ -12,9 +20,30 @@ CAAT.Module( {
     extendsClass : "CAAT.Foundation.Actor",
     extendsWith : {
 
-        interpolator:   null,   // CAAT.Interpolator instance.
+        /**
+         * @lends CAAT.Foundation.UI.InterpolatorActor.prototype
+         */
+
+        /**
+         * The interpolator instance to draw.
+         * @type {CAAT.Behavior.Interpolator}
+         */
+        interpolator:   null,
+
+        /**
+         * This interpolator´s contour.
+         * @type {Array.<CAAT.Math.Point>}
+         */
         contour:        null,   // interpolator contour cache
+
+        /**
+         * Number of samples to calculate a contour.
+         */
         S:              50,     // contour samples.
+
+        /**
+         * padding when drawing the interpolator.
+         */
         gap:            5,      // border size in pixels.
 
         /**

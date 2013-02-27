@@ -1,4 +1,12 @@
 CAAT.Module( {
+
+    /**
+     * @name GridLayout
+     * @memberOf CAAT.Foundation.UI.Layout
+     * @extends CAAT.Foundation.UI.Layout.LayoutManager
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.Layout.GridLayout",
     aliases : ["CAAT.UI.GridLayout"],
     depends : [
@@ -8,6 +16,10 @@ CAAT.Module( {
     extendsClass : "CAAT.Foundation.UI.Layout.LayoutManager",
     extendsWith : {
 
+        /**
+         * @lends CAAT.Foundation.UI.Layout.GridLayout.prototype
+         */
+
         __init : function( rows, columns ) {
             this.__super();
             this.rows= rows;
@@ -16,7 +28,14 @@ CAAT.Module( {
             return this;
         },
 
+        /**
+         * Layout elements using this number of rows.
+         */
         rows    : 0,
+
+        /**
+         * Layout elements using this number of columns.
+         */
         columns : 2,
 
         doLayout : function( container ) {

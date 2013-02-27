@@ -9,11 +9,28 @@
  */
 
 CAAT.Module( {
+
+    /**
+     * @name Debug
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name Debug
+     * @memberOf CAAT.Module.Debug
+     * @constructor
+     */
+
     defines : "CAAT.Module.Debug.Debug",
     depends : [
         "CAAT.Event.AnimationLoop"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Module.Debug.Debug.prototype
+         */
 
         width:              0,
         height:             0,

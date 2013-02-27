@@ -4,12 +4,30 @@
  **/
 
 CAAT.Module({
+
+    /**
+     * @name Matrix3
+     * @memberOf CAAT.Math
+     * @constructor
+     */
+
     defines:"CAAT.Math.Matrix3",
     aliases:["CAAT.Matrix3"],
     extendsWith:function () {
         return {
+
+            /**
+             * @lends CAAT.Math.Matrix3.prototype
+             */
+
+            /**
+             * An Array of 4 Array of 4 numbers.
+             */
             matrix:null,
 
+            /**
+             * An array of 16 numbers.
+             */
             fmatrix:null,
 
             __init:function () {

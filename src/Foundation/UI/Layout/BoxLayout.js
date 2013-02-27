@@ -1,4 +1,12 @@
 CAAT.Module({
+
+    /**
+     * @name BoxLayout
+     * @memberOf CAAT.Foundation.UI.Layout
+     * @extends CAAT.Foundation.UI.Layout.LayoutManager
+     * @constructor
+     */
+
     defines:"CAAT.Foundation.UI.Layout.BoxLayout",
     aliases:["CAAT.UI.BoxLayout"],
     depends:[
@@ -9,8 +17,27 @@ CAAT.Module({
     extendsWith:function () {
 
         return {
+
+            /**
+             * @lends CAAT.Foundation.UI.Layout.BoxLayout.prototype
+             */
+
+            /**
+             * Stack elements in this axis.
+             * @type {CAAT.Foundation.UI.Layout.LayoutManager}
+             */
             axis:CAAT.Foundation.UI.Layout.LayoutManager.AXIS.Y,
+
+            /**
+             * Vertical alignment.
+             * @type {CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT}
+             */
             valign:CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER,
+
+            /**
+             * Horizontal alignment.
+             * @type {CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT}
+             */
             halign:CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER,
 
             setAxis:function (axis) {

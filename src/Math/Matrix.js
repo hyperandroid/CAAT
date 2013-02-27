@@ -5,6 +5,14 @@
 
 
 CAAT.Module({
+
+    /**
+     * @name Matrix
+     * @memberOf CAAT.Math
+     * @constructor
+     */
+
+
     defines:"CAAT.Math.Matrix",
     depends:["CAAT.Math.Point"],
     aliases:["CAAT.Matrix"],
@@ -13,6 +21,11 @@ CAAT.Module({
         CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Math.Matrix.prototype.transformRenderingContextSet_NoClamp;
     },
     constants : {
+
+        /**
+         * @lends CAAT.Math.Matrix.prototype
+         */
+
         setCoordinateClamping : function( clamp ) {
             if ( clamp ) {
                 CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
@@ -29,6 +42,14 @@ CAAT.Module({
     },
     extendsWith:function () {
         return {
+
+            /**
+             * @lends CAAT.Math.Matrix.prototype
+             */
+
+            /**
+             * An array of 9 numbers.
+             */
             matrix:null,
 
             __init:function () {

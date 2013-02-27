@@ -1,4 +1,17 @@
 CAAT.Module( {
+
+    /**
+     * @name Layout
+     * @memberOf CAAT.Foundation.UI
+     * @namespace
+     */
+
+    /**
+     * @name LayoutManager
+     * @memberOf CAAT.Foundation.UI.Layout
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.Layout.LayoutManager",
     aliases : ["CAAT.UI.LayoutManager"],
     depends : [
@@ -6,11 +19,21 @@ CAAT.Module( {
     ],
     constants : {
 
+        /**
+         * @lends CAAT.Foundation.UI.Layout.LayoutManager
+         */
+
+        /**
+         * @enum {number}
+         */
         AXIS: {
             X : 0,
             Y : 1
         },
 
+        /**
+         * @enum {number}
+         */
         ALIGNMENT : {
             LEFT :  0,
             RIGHT:  1,
@@ -24,6 +47,12 @@ CAAT.Module( {
     extendsWith : function() {
 
         return {
+
+            /**
+             * @lends CAAT.Foundation.UI.Layout.LayoutManager.prototype
+             */
+
+
             __init : function( ) {
 
                 this.newChildren= [];
@@ -37,15 +66,45 @@ CAAT.Module( {
                 return this;
             },
 
+            /**
+             * If animation enabled, new element interpolator.
+             */
             newElementInterpolator : new CAAT.Behavior.Interpolator().createElasticOutInterpolator(1.1,.7),
+
+            /**
+             * If animation enabled, relayout elements interpolator.
+             */
             moveElementInterpolator : new CAAT.Behavior.Interpolator().createExponentialOutInterpolator(2),
 
+            /**
+             * Defines insets:
+             * @type {{ left, right, top, botton }}
+             */
             padding : null,
+
+            /**
+             * Needs relayout ??
+             */
             invalid : true,
 
+            /**
+             * Horizontal gap between children.
+             */
             hgap        : 2,
+
+            /**
+             * Vertical gap between children.
+             */
             vgap        : 2,
+
+            /**
+             * Animate on adding/removing elements.
+             */
             animated    : false,
+
+            /**
+             * pending to be laid-out actors.
+             */
             newChildren : null,
 
             setAnimated : function( animate ) {

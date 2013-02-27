@@ -1,5 +1,12 @@
 CAAT.Module( {
 
+    /**
+     * @name TextActor
+     * @memberOf CAAT.Foundation.UI
+     * @extends CAAT.Foundation.Actor
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.TextActor",
     aliases : ["CAAT.TextActor"],
     extendsClass : "CAAT.Foundation.Actor",
@@ -15,6 +22,11 @@ CAAT.Module( {
         "CAAT.Behavior.Interpolator"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Foundation.UI.TextActor.prototype
+         */
+
         __init : function() {
             this.__super();
             this.font= "10px sans-serif";
@@ -26,29 +38,89 @@ CAAT.Module( {
             return this;
         },
 
-		font:			    null,   // a valid canvas rendering context font description. Default font
-                                    // will be "10px sans-serif".
-        fontData:           null,
-		textAlign:		    null,	// a valid canvas rendering context textAlign string. Any of:
-                                    // start, end, left, right, center.
-                                    // defaults to "left".
-		textBaseline:	    "top",	// a valid canvas rendering context textBaseLine string. Any of:
-                                    // top, hanging, middle, alphabetic, ideographic, bottom.
-                                    // defaults to "top".
-		fill:			    true,   // a boolean indicating whether the text should be filled.
-        textFillStyle   :   '#eee', // text fill color
-		text:			    null,   // a string with the text to draw.
-		textWidth:		    0,      // an integer indicating text width in pixels.
-        textHeight:         0,      // an integer indicating text height in pixels.
-		outline:		    false,  // a boolean indicating whether the text should be outlined.
-                                    // not all browsers support it.
-		outlineColor:	    null,   // a valid color description string.
-        lineWidth:          1,      // text's stroke line width.
+        /**
+         * a valid canvas rendering context font description. Default font will be "10px sans-serif".
+         */
+		font:			    null,
 
-		path:			    null,   // a CAAT.Path which will be traversed by the text. [Optional]
-        pathInterpolator:	null,   // a CAAT.Interpolator to apply to the path traversing.
-        pathDuration:       10000,  // an integer indicating the time to be taken to traverse the path. ms.
-		sign:			    1,      // traverse the path forward or backwards.
+        /**
+         * Font info. Calculated in CAAT.
+         */
+        fontData:           null,
+
+        /**
+         * a valid canvas rendering context textAlign string. Any of:
+         *   start, end, left, right, center.
+         * defaults to "left".
+         */
+		textAlign:		    null,
+
+        /**
+         * a valid canvas rendering context textBaseLine string. Any of:
+         *   top, hanging, middle, alphabetic, ideographic, bottom.
+         * defaults to "top".
+         */
+		textBaseline:	    "top",
+
+        /**
+         * a boolean indicating whether the text should be filled.
+         */
+		fill:			    true,
+
+        /**
+         * text fill color
+         */
+        textFillStyle   :   '#eee',
+
+        /**
+         * a string with the text to draw.
+         */
+		text:			    null,
+
+        /**
+         * calculated text width in pixels.
+         */
+		textWidth:		    0,
+
+        /**
+         * calculated text height in pixels.
+         */
+        textHeight:         0,
+
+        /**
+         * a boolean indicating whether the text should be outlined. not all browsers support it.
+         */
+		outline:		    false,
+
+        /**
+         * a valid color description string.
+         */
+		outlineColor:	    null,
+
+        /**
+         * text's stroke line width.
+         */
+        lineWidth:          1,
+
+        /**
+         * a CAAT.PathUtil.Path which will be traversed by the text.
+         */
+		path:			    null,
+
+        /**
+         * A CAAT.Behavior.Interpolator to apply to the path traversal.
+         */
+        pathInterpolator:	null,
+
+        /**
+         * time to be taken to traverse the path. ms.
+         */
+        pathDuration:       10000,
+
+        /**
+         * traverse the path forward (1) or backwards (-1).
+         */
+		sign:			    1,      //
 
         lx:                 0,
         ly:                 0,

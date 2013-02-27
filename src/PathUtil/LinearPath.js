@@ -2,6 +2,15 @@
  * CAAT.LinearPath
  */
 CAAT.Module({
+
+
+    /**
+     * @name LinearPath
+     * @memberOf CAAT.PathUtil
+     * @extends CAAT.PathUtil.PathSegment
+     * @constructor
+     */
+
     defines:"CAAT.PathUtil.LinearPath",
     depends:[
         "CAAT.PathUtil.PathSegment",
@@ -12,6 +21,11 @@ CAAT.Module({
     extendsWith:function () {
 
         return  {
+
+            /**
+             * @lends CAAT.PathUtil.LinearPath.prototype
+             */
+
             __init:function () {
                 this.__super();
 
@@ -23,8 +37,16 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * A collection of points.
+             * @type {Array.<CAAT.Math.Point>}
+             */
             points:null,
-            newPosition:null, // spare holder for getPosition coordinate return.
+
+            /**
+             * spare holder for getPosition coordinate return.
+             */
+            newPosition:null,
 
             applyAsPath:function (director) {
                 // Fixed: Thanks https://github.com/roed

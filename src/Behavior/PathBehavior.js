@@ -1,4 +1,12 @@
 CAAT.Module({
+
+    /**
+     * @name PathBehavior
+     * @memberOf CAAT.Behavior
+     * @extends CAAT.Behavior.BaseBehavior
+     * @constructor
+     */
+
     defines:"CAAT.Behavior.PathBehavior",
     aliases: ["CAAT.PathBehavior"],
     depends:[
@@ -17,6 +25,14 @@ CAAT.Module({
 
         return {
 
+            /**
+             * @lends CAAT.Behavior.PathBehavior.prototype
+             * @param obj
+             */
+
+            /**
+             * @inheritDoc
+             */
             parse : function( obj ) {
                 CAAT.Behavior.PathBehavior.superclass.parse.call(this,obj);
 
@@ -31,13 +47,32 @@ CAAT.Module({
                 }
             },
 
-            path:null, // the path to traverse
-            autoRotate:false, // set whether the actor must be rotated tangentially to the path.
+            /**
+             * A path to traverse.
+             * @type {CAAT.PathUtil.Path}
+             * @private
+             */
+            path:null,
+
+            /**
+             * Whether to set rotation angle while traversing the path.
+             * @private
+             */
+            autoRotate:false,
+
             prevX:-1, // private, do not use.
             prevY:-1, // private, do not use.
 
+            /**
+             * Autorotation hint.
+             * @type {CAAT.Behavior.PathBehavior.autorotate}
+             * @private
+             */
             autoRotateOp: CAAT.Behavior.PathBehavior.autorotate.FREE,
 
+            /**
+             * @inheritDoc
+             */
             getPropertyName:function () {
                 return "translate";
             },
@@ -57,6 +92,7 @@ CAAT.Module({
                 }
                 return this;
             },
+
             /**
              * Set the behavior path.
              * The path can be any length, and will take behaviorDuration time to be traversed.
@@ -89,12 +125,18 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFrameData:function (time) {
                 time = this.interpolator.getPosition(time).y;
                 var point = this.path.getPosition(time);
                 return "translateX(" + point.x + "px) translateY(" + point.y + "px)";
             },
 
+            /**
+             * @inheritDoc
+             */
             getKeyFrameDataValues : function(time) {
                 time = this.interpolator.getPosition(time).y;
                 var point = this.path.getPosition(time);
@@ -116,6 +158,9 @@ CAAT.Module({
                 return obj;
             },
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFramesData:function (prefix, name, keyframessize) {
 
                 if (typeof keyframessize === 'undefined') {
@@ -144,11 +189,7 @@ CAAT.Module({
             },
 
             /**
-             * Translates the Actor to the corresponding time path position.
-             * If autoRotate=true, the actor is rotated as well. The rotation anchor will (if set) always be ANCHOR_CENTER.
-             * @param time an integer indicating the time the behavior is being applied at.
-             * @param actor a CAAT.Actor instance to be translated.
-             * @return {object} an object of the form <code>{ x: {float}, y: {float}�}</code>.
+             * @inheritDoc
              */
             setForTime:function (time, actor) {
 
@@ -221,6 +262,7 @@ CAAT.Module({
 
 
             },
+
             /**
              * Get a point on the path.
              * If the time to get the point at is in behaviors frame time, a point on the path will be returned, otherwise

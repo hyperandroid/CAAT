@@ -8,10 +8,29 @@
  **/
 
 CAAT.Module({
+
+    /**
+     * @name ColorUtil
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name Color
+     * @memberOf CAAT.Module.ColorUtil
+     * @namespace
+     */
+
+
     defines:"CAAT.Module.ColorUtil.Color",
     depends:[
     ],
     constants:{
+
+        /**
+         * @lends CAAT.Module.ColorUtil.Color
+         */
+
         /**
          * Enumeration to define types of color ramps.
          * @enum {number}
@@ -118,7 +137,7 @@ CAAT.Module({
          * 14 colors plus the two initial ones will be calculated.
          * @param step {number} return this color index of all the calculated colors.
          *
-         * @return { r{number}, g{number}, b{number} } return an object with the new calculated color components.
+         * @return { {r{number}, g{number}, b{number}} } return an object with the new calculated color components.
          * @static
          */
         interpolate:function (r0, g0, b0, r1, g1, b1, nsteps, step) {

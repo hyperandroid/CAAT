@@ -1,17 +1,81 @@
 CAAT.Module({
     defines:"CAAT.Event.AnimationLoop",
     onCreate : function() {
-        CAAT.ENDRAF=false; // if RAF, this value signals end of RAF.
-        CAAT.INTERVAL_ID=null; // if setInterval, this value holds CAAT.setInterval return value.
-        CAAT.renderEnabled=false; // Boolean flag to determine if CAAT.loop has already been called.
-        CAAT.FPS=60; // expected FPS when using setInterval animation.
-        CAAT.NO_RAF=0; // Use RAF shim instead of setInterval.
-        CAAT.FPS_REFRESH=500; // debug panel update time.
-        CAAT.RAF=0; // requestAnimationFrame time reference.
-        CAAT.REQUEST_ANIMATION_FRAME_TIME=0; // time between two consecutive RAF. usually bigger than FRAME_TIME
-        CAAT.SET_INTERVAL=0; // time between two consecutive setInterval calls.
-        CAAT.FRAME_TIME=0; // time to process one frame.
-        CAAT.currentDirector=null; // Current animated director.
+
+        /**
+         * @lends CAAT
+         */
+
+        /**
+         * if RAF, this value signals end of RAF.
+         * @type {Boolean}
+         */
+        CAAT.ENDRAF=false;
+
+        /**
+         * if setInterval, this value holds CAAT.setInterval return value.
+         * @type {null}
+         */
+        CAAT.INTERVAL_ID=null;
+
+        /**
+         * Boolean flag to determine if CAAT.loop has already been called.
+         * @type {Boolean}
+         */
+        CAAT.renderEnabled=false;
+
+        /**
+         * expected FPS when using setInterval animation.
+         * @type {Number}
+         */
+        CAAT.FPS=60;
+
+        /**
+         * Use RAF shim instead of setInterval. Set to != 0 to use setInterval.
+         * @type {Number}
+         */
+        CAAT.NO_RAF=0;
+
+        /**
+         * debug panel update time.
+         * @type {Number}
+         */
+        CAAT.FPS_REFRESH=500;
+
+        /**
+         * requestAnimationFrame time reference.
+         * @type {Number}
+         */
+        CAAT.RAF=0;
+
+        /**
+         * time between two consecutive RAF. usually bigger than FRAME_TIME
+         * @type {Number}
+         */
+        CAAT.REQUEST_ANIMATION_FRAME_TIME=0;
+
+        /**
+         * time between two consecutive setInterval calls.
+         * @type {Number}
+         */
+        CAAT.SET_INTERVAL=0;
+
+        /**
+         * time to process one frame.
+         * @type {Number}
+         */
+        CAAT.FRAME_TIME=0;
+
+        /**
+         * Current animated director.
+         * @type {CAAT.Foundation.Director}
+         */
+        CAAT.currentDirector=null;
+
+        /**
+         * Registered director objects.
+         * @type {Array}
+         */
         CAAT.director=[];
 
         /**

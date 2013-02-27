@@ -1,11 +1,23 @@
 CAAT.Module({
 
+    /**
+     * <p>
+     * This class is a SVG Path parser.
+     * By calling the method parsePath( svgpath ) an instance of CAAT.PathUtil.Path will be built by parsing
+     * its contents.
+     *
+     * <p>
+     * See <a href="../../demos/demo32/svgpath.html">demo32</a>
+     *
+     * @name SVGPath
+     * @memberOf CAAT.PathUtil
+     * @constructor
+     */
+
     defines:"CAAT.PathUtil.SVGPath",
     depends:[
         "CAAT.PathUtil.Path"
     ],
-    constants:function () {
-    },
     extendsWith:function () {
 
         var OK = 0;
@@ -22,14 +34,26 @@ CAAT.Module({
 
         return {
 
+            /**
+             * @lends CAAT.PathUtil.SVGPath.prototype
+             */
+
+
             __init:function () {
 
             },
 
+            /**
+             * @private
+             */
             c:0,
+
+            /**
+             * @private
+             */
             bezierInfo:null,
 
-            skipBlank:function (pathInfo, c) {
+            __skipBlank:function (pathInfo, c) {
                 var p = pathInfo.charAt(c);
                 while (c < pathInfo.length && (p == ' ' || p == '\n' || p == '\t' || p == ',')) {
                     ++c;
@@ -39,7 +63,7 @@ CAAT.Module({
                 return c;
             },
 
-            maybeNumber:function (pathInfo, c) {
+            __maybeNumber:function (pathInfo, c) {
 
                 if (c < pathInfo.length - 2) {
 
@@ -47,25 +71,25 @@ CAAT.Module({
                     var p1 = pathInfo.charAt(c + 1);
 
                     return  p == '-' ||
-                        this.isDigit(p) ||
-                        (p === "." && this.isDigit(p1) );
+                        this.__isDigit(p) ||
+                        (p === "." && this.__isDigit(p1) );
                 }
 
                 return false;
             },
 
-            isDigit:function (c) {
+            __isDigit:function (c) {
                 return c >= "0" && c <= "9";
             },
 
 
-            getNumber:function (pathInfo, c, v, error) {
-                c = this.skipBlank(pathInfo, c);
+            __getNumber:function (pathInfo, c, v, error) {
+                c = this.__skipBlank(pathInfo, c);
                 if (c < pathInfo.length) {
-                    var nc = this.findNumber(pathInfo, c);
+                    var nc = this.__findNumber(pathInfo, c);
                     if (nc !== -1) {
                         v.push(parseFloat(pathInfo.substr(c, nc)));
-                        c = this.skipBlank(pathInfo, nc);
+                        c = this.__skipBlank(pathInfo, nc);
                         error.pos = c;
                         error.result = OK;
                         return;
@@ -78,10 +102,10 @@ CAAT.Module({
                 error.result = EOF;
             },
 
-            getNumbers:function (pathInfo, c, v, n, error) {
+            ____getNumbers:function (pathInfo, c, v, n, error) {
 
                 for (var i = 0; i < n; i++) {
-                    this.getNumber(pathInfo, c, v, error);
+                    this.__getNumber(pathInfo, c, v, error);
                     if (error.result != OK) {
                         break;
                     } else {
@@ -93,7 +117,7 @@ CAAT.Module({
             },
 
 
-            findNumber:function (pathInfo, c) {
+            __findNumber:function (pathInfo, c) {
 
                 var p;
 
@@ -101,22 +125,22 @@ CAAT.Module({
                     ++c;
                 }
 
-                if (!this.isDigit((p = pathInfo.charAt(c)))) {
-                    if ((p = pathInfo.charAt(c)) != '.' || !this.isDigit(pathInfo.charAt(c + 1))) {
+                if (!this.__isDigit((p = pathInfo.charAt(c)))) {
+                    if ((p = pathInfo.charAt(c)) != '.' || !this.__isDigit(pathInfo.charAt(c + 1))) {
                         return -1;
                     }
                 }
 
-                while (this.isDigit((p = pathInfo.charAt(c)))) {
+                while (this.__isDigit((p = pathInfo.charAt(c)))) {
                     ++c;
                 }
 
                 if ((p = pathInfo.charAt(c)) == '.') {
                     ++c;
-                    if (!this.isDigit((p = pathInfo.charAt(c)))) {   // asumo un numero [d+]\. como valido.
+                    if (!this.__isDigit((p = pathInfo.charAt(c)))) {   // asumo un numero [d+]\. como valido.
                         return c;
                     }
-                    while (this.isDigit((p = pathInfo.charAt(c)))) {
+                    while (this.__isDigit((p = pathInfo.charAt(c)))) {
                         ++c;
                     }
                 }
@@ -128,7 +152,7 @@ CAAT.Module({
 
                 var numbers = [];
 
-                c = this.getNumbers(pathInfo, c, numbers, 2, error);
+                c = this.____getNumbers(pathInfo, c, numbers, 2, error);
 
                 if (error.result === OK) {
                     if (!absolute) {
@@ -140,7 +164,7 @@ CAAT.Module({
                     return;
                 }
 
-                if (this.maybeNumber(pathInfo, c)) {
+                if (this.__maybeNumber(pathInfo, c)) {
                     c = this.parseLine(pathInfo, c, absolute, path, error);
                 }
 
@@ -152,14 +176,14 @@ CAAT.Module({
                 var numbers = [];
 
                 do {
-                    c = this.getNumbers(pathInfo, c, numbers, 2, error);
+                    c = this.____getNumbers(pathInfo, c, numbers, 2, error);
                     if (!absolute) {
                         numbers[0] += path.trackPathX;
                         numbers[1] += path.trackPathY;
                     }
                     path.addLineTo(numbers[0], numbers[1]);
 
-                } while (this.maybeNumber(pathInfo, c));
+                } while (this.__maybeNumber(pathInfo, c));
 
                 error.pos = c;
             },
@@ -170,7 +194,7 @@ CAAT.Module({
                 var numbers = [];
 
                 do {
-                    c = this.getNumbers(pathInfo, c, numbers, 1, error);
+                    c = this.____getNumbers(pathInfo, c, numbers, 1, error);
 
                     if (!absolute) {
                         numbers[0] += path.trackPathX;
@@ -179,7 +203,7 @@ CAAT.Module({
 
                     path.addLineTo(numbers[0], numbers[1]);
 
-                } while (this.maybeNumber(pathInfo, c));
+                } while (this.__maybeNumber(pathInfo, c));
 
                 error.pos = c;
             },
@@ -189,7 +213,7 @@ CAAT.Module({
                 var numbers = [ path.trackPathX ];
 
                 do {
-                    c = this.getNumbers(pathInfo, c, numbers, 1, error);
+                    c = this.____getNumbers(pathInfo, c, numbers, 1, error);
 
                     if (!absolute) {
                         numbers[1] += path.trackPathY;
@@ -197,7 +221,7 @@ CAAT.Module({
 
                     path.addLineTo(numbers[0], numbers[1]);
 
-                } while (this.maybeNumber(pathInfo, c));
+                } while (this.__maybeNumber(pathInfo, c));
 
                 error.pos = c;
             },
@@ -207,7 +231,7 @@ CAAT.Module({
                 var v = [];
 
                 do {
-                    c = this.getNumbers(pathInfo, c, v, 6, error);
+                    c = this.____getNumbers(pathInfo, c, v, 6, error);
                     if (error.result === OK) {
                         if (!absolute) {
                             v[0] += path.trackPathX;
@@ -228,7 +252,7 @@ CAAT.Module({
                     } else {
                         return;
                     }
-                } while (this.maybeNumber(pathInfo, c));
+                } while (this.__maybeNumber(pathInfo, c));
 
                 error.pos = c;
             },
@@ -238,7 +262,7 @@ CAAT.Module({
                 var v = [];
 
                 do {
-                    c = this.getNumbers(pathInfo, c, v, 4, error);
+                    c = this.____getNumbers(pathInfo, c, v, 4, error);
                     if (error.result == OK) {
                         if (!absolute) {
 
@@ -260,7 +284,7 @@ CAAT.Module({
                     } else {
                         return;
                     }
-                } while (this.maybeNumber(c));
+                } while (this.__maybeNumber(c));
 
                 error.pos = c;
             },
@@ -270,7 +294,7 @@ CAAT.Module({
                 var v = [];
 
                 do {
-                    c = this.getNumbers(pathInfo, c, v, 4, error);
+                    c = this.____getNumbers(pathInfo, c, v, 4, error);
                     if (error.result === OK) {
 
                         if (!absolute) {
@@ -296,7 +320,7 @@ CAAT.Module({
                     } else {
                         return;
                     }
-                } while (this.maybeNumber(c));
+                } while (this.__maybeNumber(c));
 
                 error.pos = c;
             },
@@ -307,7 +331,7 @@ CAAT.Module({
                 var v = [];
 
                 do {
-                    c = this.getNumbers(pathInfo, c, v, 4, error);
+                    c = this.____getNumbers(pathInfo, c, v, 4, error);
                     if (error.result === OK) {
                         if (!absolute) {
 
@@ -323,7 +347,7 @@ CAAT.Module({
                     } else {
                         return;
                     }
-                } while (this.maybeNumber(c));
+                } while (this.__maybeNumber(c));
 
                 error.pos = c;
             },
@@ -348,7 +372,7 @@ CAAT.Module({
                 var path = new CAAT.PathUtil.Path();
                 this.contours.push( path );
 
-                this.c = this.skipBlank(pathInfo, this.c);
+                this.c = this.__skipBlank(pathInfo, this.c);
                 if (this.c === pathInfo.length) {
                     return path;
                 }

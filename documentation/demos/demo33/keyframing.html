@@ -25,10 +25,10 @@
 <div id="page" style="padding:100px;">
 
             <div id="experiment-holder">
-                <div class="element"></div>
-                <div class="element"></div>
-                <div class="element"></div>
-                <div class="element"></div>
+                <div class="element">ABCD</div>
+                <div class="element">ABCD</div>
+                <div class="element">ABCD</div>
+                <div class="element">ABCD</div>
             </div>
 
 </div>
@@ -60,7 +60,18 @@
                                 start : 0,
                                 end : 0
                             }
-                        },
+                        },/*
+                        {
+                            type : "rotate",
+                            delay : 250,
+                            duration : 500,
+                            start : 0,
+                            end : 2*Math.PI,
+                            interpolator : {
+                                type : "BounceOut",
+                                params : [ false]
+                            }
+                        },*/
                         {
                             type : "scale1",
                             delay : 250,
@@ -149,14 +160,14 @@
 
             var names= ["discard", "scale"];
 
-            CAAT.CSS.registerKeyframes( {
+            console.log( CAAT.CSS.registerKeyframes( {
                 name : names[0],
                 behavior : CAAT.Behavior.BaseBehavior.parse( keyframesBehavior.behavior ),
                 size : 100,
                 overwrite : true,
                 anchorX : keyframesBehavior.anchorX,
                 anchorY : keyframesBehavior.anchorY
-            });
+            }) );
             console.log( CAAT.CSS.registerKeyframes( {
                 name : names[1],
                 behavior : CAAT.Behavior.BaseBehavior.parse( scale.behavior ),

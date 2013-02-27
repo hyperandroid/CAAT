@@ -1,4 +1,12 @@
 CAAT.Module({
+
+    /**
+     * @name ScaleBehavior
+     * @memberOf CAAT.Behavior
+     * @extends CAAT.Behavior.BaseBehavior
+     * @constructor
+     */
+
     defines:"CAAT.Behavior.ScaleBehavior",
     depends:[
         "CAAT.Behavior.BaseBehavior",
@@ -11,29 +19,60 @@ CAAT.Module({
         return  {
 
             /**
-             * ScaleBehavior applies scale affine transforms in both axis.
-             * StartScale and EndScale must be supplied for each axis. This method takes care of a FF bug in which if a Scale is
-             * set to 0, the animation will fail playing.
-             *
-             * This behavior specifies anchors in values ranges 0..1
-             *
-             * @constructor
-             * @extendsClass CAAT.Behavior
-             *
+             * @lends CAAT.Behavior.ScaleBehavior
              */
+
             __init:function () {
                 this.__super();
                 this.anchor = CAAT.Foundation.Actor.ANCHOR_CENTER;
                 return this;
             },
 
+            /**
+             * Start X scale value.
+             * @private
+             * @type {number}
+             */
             startScaleX:1,
+
+            /**
+             * End X scale value.
+             * @private
+             * @type {number}
+             */
             endScaleX:1,
+
+            /**
+             * Start Y scale value.
+             * @private
+             * @type {number}
+             */
             startScaleY:1,
+
+            /**
+             * End Y scale value.
+             * @private
+             * @type {number}
+             */
             endScaleY:1,
+
+            /**
+             * Scale X anchor value.
+             * @private
+             * @type {number}
+             */
             anchorX:.50,
+
+            /**
+             * Scale Y anchor value.
+             * @private
+             * @type {number}
+             */
             anchorY:.50,
 
+            /**
+             * @inheritDoc
+             */
             parse : function( obj ) {
                 CAAT.Behavior.ScaleBehavior.superclass.parse.call(this,obj);
                 this.startScaleX= (obj.scaleX && obj.scaleX.start) || 0;
@@ -44,6 +83,9 @@ CAAT.Module({
                 this.anchorY= (typeof obj.anchorY!=="undefined" ? parseInt(obj.anchorY) : 0.5);
             },
 
+            /**
+             * @inheritDoc
+             */
             getPropertyName:function () {
                 return "scale";
             },
@@ -116,6 +158,9 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFrameData:function (time) {
                 var scaleX;
                 var scaleY;
@@ -127,6 +172,9 @@ CAAT.Module({
                 return "scale(" + scaleX +"," + scaleY + ")";
             },
 
+            /**
+             * @inheritDoc
+             */
             getKeyFrameDataValues : function(time) {
                 time = this.interpolator.getPosition(time).y;
                 return {
@@ -136,6 +184,9 @@ CAAT.Module({
             },
 
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFramesData:function (prefix, name, keyframessize) {
 
                 if (typeof keyframessize === 'undefined') {

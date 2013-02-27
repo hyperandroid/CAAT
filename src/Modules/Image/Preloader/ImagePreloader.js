@@ -7,17 +7,48 @@
  **/
 
 CAAT.Module( {
+
+
+    /**
+     * @name Preloader
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name ImagePreloader
+     * @memberOf CAAT.Module.Preloader
+     * @constructor
+     */
+
     defines : "CAAT.Module.Preloader.ImagePreloader",
     aliases : ["CAAT.ImagePreloader"],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Module.Preloader.ImagePreloader.prototype
+         */
+
         __init : function()   {
             this.images = [];
             return this;
         },
 
-        images:                 null,   // a list of elements to load
-        notificationCallback:   null,   // notification callback invoked for each image loaded.
-        imageCounter:           0,      // elements counter.
+        /**
+         * a list of elements to load.
+         * @type {Array.<{ id, image }>}
+         */
+        images:                 null,
+
+        /**
+         * notification callback invoked for each image loaded.
+         */
+        notificationCallback:   null,
+
+        /**
+         * elements counter.
+         */
+        imageCounter:           0,
 
         /**
          * Start images loading asynchronous process. This method will notify every image loaded event

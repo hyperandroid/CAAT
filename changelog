@@ -6,6 +6,7 @@
 * Added closed attribute to path objects.
 * Added thorough keyframing capabilities to CAAT.Behavior.Behavior classes.
 * Added functionality to CAAT.CSS object.
+* Added JSDoc pages.
 
 
 * 01/22/2013 0.5 Build 65 *
