@@ -6,6 +6,14 @@
  **/
 
 CAAT.Module({
+
+    /**
+     * @name SpriteImage
+     * @memberOf CAAT.Foundation
+     * @constructor
+     */
+
+
     defines : "CAAT.Foundation.SpriteImage",
     aliases : ["CAAT.SpriteImage"],
     depends : [
@@ -14,17 +22,26 @@ CAAT.Module({
         "CAAT.Math.Rectangle"
     ],
     constants:{
-        TR_NONE:0, // constants used to determine how to draw the sprite image,
-        TR_FLIP_HORIZONTAL:1,
-        TR_FLIP_VERTICAL:2,
-        TR_FLIP_ALL:3,
-        TR_FIXED_TO_SIZE:4,
-        TR_FIXED_WIDTH_TO_SIZE:6,
-        TR_TILE:5
+        /**
+         * @lends  CAAT.Foundation.SpriteImage
+         */
+
+        /** @const @type {number} */ TR_NONE:0, // constants used to determine how to draw the sprite image,
+        /** @const @type {number} */ TR_FLIP_HORIZONTAL:1,
+        /** @const @type {number} */ TR_FLIP_VERTICAL:2,
+        /** @const @type {number} */ TR_FLIP_ALL:3,
+        /** @const @type {number} */ TR_FIXED_TO_SIZE:4,
+        /** @const @type {number} */ TR_FIXED_WIDTH_TO_SIZE:6,
+        /** @const @type {number} */ TR_TILE:5
     },
     extendsWith:function () {
 
         return {
+
+            /**
+             * @lends  CAAT.Foundation.SpriteImage.prototype
+             */
+
             __init:function () {
                 this.paint = this.paintN;
                 this.setAnimationImageIndex([0]);
@@ -37,41 +54,130 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * an Array defining the sprite frame sequence
+             */
+            animationImageIndex:null,
 
-            animationImageIndex:null, // an Array defining the sprite frame sequence
+            /**
+             * Previous animation frame time.
+             */
             prevAnimationTime:-1,
-            changeFPS:1000, // how much Scene time to take before changing an Sprite frame.
-            transformation:0, // any of the TR_* constants.
-            spriteIndex:0, // the current sprite frame
-            prevIndex:0,    // current index of sprite frames array.
-            currentAnimation: null, // current animation name
 
+            /**
+             * how much Scene time to take before changing an Sprite frame.
+             */
+            changeFPS:1000,
+
+            /**
+             * any of the TR_* constants.
+             */
+            transformation:0,
+
+            /**
+             * the current sprite frame
+             */
+            spriteIndex:0,
+
+            /**
+             * current index of sprite frames array.
+             */
+            prevIndex:0,    //
+
+            /**
+             * current animation name
+             */
+            currentAnimation: null,
+
+            /**
+             * Image to get frames from.
+             */
             image:null,
+
+            /**
+             * Number of rows
+             */
             rows:1,
+
+            /**
+             * Number of columns.
+             */
             columns:1,
+
+            /**
+             * This sprite image image´s width
+             */
             width:0,
+
+            /**
+             * This sprite image image´s width
+             */
             height:0,
+
+            /**
+             * For each element in the sprite image array, its size.
+             */
             singleWidth:0,
+
+            /**
+             * For each element in the sprite image array, its height.
+             */
             singleHeight:0,
 
             scaleX:1,
             scaleY:1,
 
+            /**
+             * Displacement offset to get the sub image from. Useful to make images shift.
+             */
             offsetX:0,
+
+            /**
+             * Displacement offset to get the sub image from. Useful to make images shift.
+             */
             offsetY:0,
 
+            /**
+             * When nesting sprite images, this value is the star X position of this sprite image in the parent.
+             */
             parentOffsetX:0,    // para especificar una subimagen dentro un textmap.
+
+            /**
+             * When nesting sprite images, this value is the star Y position of this sprite image in the parent.
+             */
             parentOffsetY:0,
 
+            /**
+             * The actor this sprite image belongs to.
+             */
             ownerActor:null,
 
+            /**
+             * If the sprite image is defined out of a JSON object (sprite packer for example), this is
+             * the subimages calculated definition map.
+             */
             mapInfo:null,
+
+            /**
+             * If the sprite image is defined out of a JSON object (sprite packer for example), this is
+             * the subimages original definition map.
+             */
             map:null,
 
+            /**
+             * This property allows to have multiple different animations defined for one actor.
+             * see demo31 for a sample.
+             */
             animationsMap : null,
+
+            /**
+             * When an animation sequence ends, this callback function will be called.
+             */
             callback : null,        // on end animation callback
 
-            // pending: refactor -> font scale to a font object.
+            /**
+             * pending: refactor -> font scale to a font object.
+             */
             fontScale : 1,
 
             getOwnerActor : function() {
@@ -956,14 +1062,15 @@ CAAT.Module({
                     charInfo = this.mapInfo[ str.charAt(i) ];
                     if (charInfo) {
                         w = charInfo.width;
-                        ctx.drawImage(
-                            this.image,
-                            charInfo.x, charInfo.y,
-                            w, charInfo.height,
+                        if ( w>0 && charInfo.height>0 ) {
+                            ctx.drawImage(
+                                this.image,
+                                charInfo.x, charInfo.y,
+                                w, charInfo.height,
 
-                            x + charInfo.xoffset* this.fontScale, y + charInfo.yoffset* this.fontScale,
-                            w* this.fontScale, charInfo.height* this.fontScale);
-
+                                x + charInfo.xoffset* this.fontScale, y + charInfo.yoffset* this.fontScale,
+                                w* this.fontScale, charInfo.height* this.fontScale);
+                        }
                         x += charInfo.xadvance* this.fontScale;
                     }
                 }

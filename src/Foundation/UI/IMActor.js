@@ -1,4 +1,12 @@
 CAAT.Module({
+
+    /**
+     * @name IMActor
+     * @memberOf CAAT.Foundation.UI
+     * @extends CAAT.Foundation.Actor
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.IMActor",
     depends : [
         "CAAT.Foundation.Actor",
@@ -7,8 +15,24 @@ CAAT.Module({
     extendsClass : "CAAT.Foundation.Actor",
     extendsWith : {
 
+        /**
+         * @lends CAAT.Foundation.UI.IMActor.prototype
+         */
+
+        /**
+         * Image processing interface.
+         * @type { }
+         */
         imageProcessor:         null,
+
+        /**
+         * Calculate another image processing frame every this milliseconds.
+         */
         changeTime:             100,
+
+        /**
+         * Last scene time this actor calculated a frame.
+         */
         lastApplicationTime:    -1,
 
         /**

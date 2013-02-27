@@ -1,4 +1,12 @@
 CAAT.Module( {
+
+    /**
+     * @name StarActor
+     * @memberOf CAAT.Foundation.UI
+     * @extends CAAT.Foundation.ActorContainer
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.StarActor",
     aliases : ["CAAT.StarActor"],
     depends : [
@@ -6,20 +14,60 @@ CAAT.Module( {
     ],
     extendsClass : "CAAT.Foundation.ActorContainer",
     extendsWith : {
+
+        /**
+         * @lends CAAT.Foundation.UI.StarActor.prototype
+         */
+
         __init : function() {
             this.__super();
             this.compositeOp= 'source-over';
             return this;
         },
 
+        /**
+         * Number of star peaks.
+         */
         nPeaks:         0,
+
+        /**
+         * Maximum radius.
+         */
         maxRadius:      0,
+
+        /**
+         * Minimum radius.
+         */
         minRadius:      0,
+
+        /**
+         * Staring angle in radians.
+         */
         initialAngle:   0,
+
+        /**
+         * Draw the star with this composite operation.
+         */
         compositeOp:    null,
+
+        /**
+         *
+         */
         lineWidth:      1,
+
+        /**
+         *
+         */
         lineCap:        null,
+
+        /**
+         *
+         */
         lineJoin:       null,
+
+        /**
+         *
+         */
         miterLimit:     null,
 
         /**

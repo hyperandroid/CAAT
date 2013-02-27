@@ -1,4 +1,10 @@
 CAAT.Module({
+    /**
+     * @name Scale1Behavior
+     * @memberOf CAAT.Behavior
+     * @extends CAAT.Behavior.BaseBehavior
+     * @constructor
+     */
 
     defines:"CAAT.Behavior.Scale1Behavior",
     depends:[
@@ -7,6 +13,7 @@ CAAT.Module({
     ],
     aliases: ["CAAT.Scale1Behavior"],
     constants : {
+
         Axis : {
             X:  0,
             Y:  1
@@ -17,25 +24,56 @@ CAAT.Module({
 
         return {
 
+            /**
+             * @lends CAAT.Behavior.Scale1Behavior.prototype
+             */
+
             __init:function () {
                 this.__super();
                 this.anchor = CAAT.Foundation.Actor.ANCHOR_CENTER;
                 return this;
             },
 
+            /**
+             * Start scale value.
+             * @private
+             */
             startScale:1,
-            endScale:1,
-            anchorX:.50,
-            anchorY:.50,
-
-            sx:1,
-            sy:1,
-
-            applyOnX:true,
 
             /**
-             *
-             * @param axis {Axis}
+             * End scale value.
+             * @private
+             */
+            endScale:1,
+
+            /**
+             * Scale X anchor.
+             * @private
+             */
+            anchorX:.50,
+
+            /**
+             * Scale Y anchor.
+             * @private
+             */
+            anchorY:.50,
+
+            /**
+             * Apply on Axis X or Y ?
+             */
+            applyOnX:true,
+
+            parse : function( obj ) {
+                CAAT.Behavior.Scale1Behavior.superclass.parse.call(this,obj);
+                this.startScale= obj.start || 0;
+                this.endScale= obj.end || 0;
+                this.anchorX= (typeof obj.anchorX!=="undefined" ? parseInt(obj.anchorX) : 0.5);
+                this.anchorY= (typeof obj.anchorY!=="undefined" ? parseInt(obj.anchorY) : 0.5);
+                this.applyOnX= obj.axis ? obj.axis.toLowerCase()==="x" : true;
+            },
+
+            /**
+             * @param axis {CAAT.Behavior.Scale1Behavior.Axis}
              */
             applyOnAxis:function (axis) {
                 if (axis === CAAT.Behavior.Scale1Behavior.Axis.X) {
@@ -45,16 +83,15 @@ CAAT.Module({
                 }
             },
 
+            /**
+             * @inheritDoc
+             */
             getPropertyName:function () {
                 return "scale";
             },
 
             /**
-             * Applies corresponding scale values for a given time.
-             *
-             * @param time the time to apply the scale for.
-             * @param actor the target actor to Scale.
-             * @return {object} an object of the form <code>{ scaleX: {float}, scaleY: {float}�}</code>
+             * @inheritDoc
              */
             setForTime:function (time, actor) {
 
@@ -75,6 +112,7 @@ CAAT.Module({
 
                 return scale;
             },
+
             /**
              * Define this scale behaviors values.
              *
@@ -100,6 +138,7 @@ CAAT.Module({
 
                 return this;
             },
+
             /**
              * Set an exact position scale anchor. Use this method when it is hard to
              * set a thorough anchor position expressed in percentage.
@@ -114,6 +153,9 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFrameData:function (time) {
                 var scale;
 
@@ -123,6 +165,20 @@ CAAT.Module({
                 return this.applyOnX ? "scaleX(" + scale + ")" : "scaleY(" + scale + ")";
             },
 
+            /**
+             * @inheritDoc
+             */
+            getKeyFrameDataValues : function(time) {
+                time = this.interpolator.getPosition(time).y;
+                var obj= {};
+                obj[ this.applyOnX ? "scaleX" : "scaleY" ]= this.startScale + time * (this.endScale - this.startScale);
+
+                return obj;
+            },
+
+            /**
+             * @inheritDoc
+             */
             calculateKeyFramesData:function (prefix, name, keyframessize) {
 
                 if (typeof keyframessize === 'undefined') {
@@ -139,12 +195,13 @@ CAAT.Module({
                         (i / keyframessize * 100) + "%" + // percentage
                         "{" +
                         "-" + prefix + "-transform:" + this.calculateKeyFrameData(i / keyframessize) +
-                        "}";
+                        "; -" + prefix + "-transform-origin:" + (this.anchorX*100) + "% " + (this.anchorY*100) + "% " +
+                        "}\n";
 
                     kfd += kfr;
                 }
 
-                kfd += "}";
+                kfd += "}\n";
 
                 return kfd;
             }

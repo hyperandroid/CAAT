@@ -248,14 +248,15 @@ CAAT.DEBUG=1;
             var label= new CAAT.Foundation.UI.Label().
                     setStyle("default", {
                         fontSize : s,
-                        alignment: al
+                        alignment: al,
+                        tabSize : 100
                     }).
                     setStyle("link", {
                         fontSize : s+5,
                         fill:      "#00f",
                         italic : true
                     }).
-                    setText("Bacon ipsum dolor sit amet salami pork belly tail <style=link><a=#"+(textPanelIndex++)+">tongue</a></style> pancetta, pork loin tri-tip drumstick bresaola shankle. Bacon ham hock pork belly, sausage tri-tip tongue strip steak fatback. Tail t-bone salami bacon. Bresaola turkey ribeye hamburger meatball t-bone. Turkey pancetta ground round, pig sirloin tenderloin corned beef meatloaf venison sausage jerky pork loin shank bacon tail. Pancetta beef ham hock, jowl pork chop pork belly bacon venison rump shoulder shankle cow pastrami sausage. Beef ribs drumstick meatball, pancetta biltong swine bresaola ribeye jerky spare ribs ham chuck corned beef pork chop.").
+                    setText("<tab>ibon<tab>kwik<br>Bacon ipsum dolor sit amet salami pork belly tail <style=link><a=#"+(textPanelIndex++)+">tongue</a></style> pancetta, pork loin tri-tip drumstick bresaola shankle. Bacon ham hock pork belly, sausage tri-tip tongue strip steak fatback. Tail t-bone salami bacon. Bresaola turkey ribeye hamburger meatball t-bone. Turkey pancetta ground round, pig sirloin tenderloin corned beef meatloaf venison sausage jerky pork loin shank bacon tail. Pancetta beef ham hock, jowl pork chop pork belly bacon venison rump shoulder shankle cow pastrami sausage. Beef ribs drumstick meatball, pancetta biltong swine bresaola ribeye jerky spare ribs ham chuck corned beef pork chop.").
                     cacheAsBitmap().
                     setClickCallback( function(id) {
                         alert("Clicked: "+id);

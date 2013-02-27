@@ -1,4 +1,12 @@
 CAAT.Module({
+
+    /**
+     * @name RotateBehavior
+     * @memberOf CAAT.Behavior
+     * @extends CAAT.Behavior.BaseBehavior
+     * @constructor
+     */
+
     defines:"CAAT.Behavior.RotateBehavior",
     extendsClass: "CAAT.Behavior.BaseBehavior",
     depends:[
@@ -10,27 +18,65 @@ CAAT.Module({
 
         return {
 
+            /**
+             * @lends CAAT.Behavior.RotateBehavior.prototype
+             */
+
+
             __init:function () {
                 this.__super();
                 this.anchor = CAAT.Foundation.Actor.ANCHOR_CENTER;
                 return this;
             },
 
-            startAngle:0, // behavior start angle
-            endAngle:0, // behavior end angle
-            anchorX:.50, // rotation center x.
-            anchorY:.50, // rotation center y.
+            /**
+             * @inheritDoc
+             */
+            parse : function( obj ) {
+                CAAT.Behavior.RotateBehavior.superclass.parse.call(this,obj);
+                this.startAngle= obj.start || 0;
+                this.endAngle= obj.end || 0;
+                this.anchorX= (typeof obj.anchorX!=="undefined" ? parseInt(obj.anchorX) : 0.5);
+                this.anchorY= (typeof obj.anchorY!=="undefined" ? parseInt(obj.anchorY) : 0.5);
+            },
 
+            /**
+             * Start rotation angle.
+             * @type {number}
+             * @private
+             */
+            startAngle:0,
+
+            /**
+             * End rotation angle.
+             * @type {number}
+             * @private
+             */
+            endAngle:0,
+
+            /**
+             * Rotation X anchor.
+             * @type {number}
+             * @private
+             */
+            anchorX:.50,
+
+            /**
+             * Rotation Y anchor.
+             * @type {number}
+             * @private
+             */
+            anchorY:.50,
+
+            /**
+             * @inheritDoc
+             */
             getPropertyName:function () {
                 return "rotate";
             },
 
             /**
-             * Behavior application function.
-             * Do not call directly.
-             * @param time an integer indicating the application time.
-             * @param actor a CAAT.Actor the behavior will be applied to.
-             * @return the set angle.
+             * @inheritDoc
              */
             setForTime:function (time, actor) {
                 var angle = this.startAngle + time * (this.endAngle - this.startAngle);
@@ -42,6 +88,7 @@ CAAT.Module({
                 return angle;
 
             },
+
             /**
              * Set behavior bound values.
              * if no anchorx,anchory values are supplied, the behavior will assume
@@ -64,6 +111,7 @@ CAAT.Module({
                 }
                 return this;
             },
+
             /**
              * @deprecated
              * Use setValues instead
@@ -73,14 +121,15 @@ CAAT.Module({
             setAngles:function (start, end) {
                 return this.setValues(start, end);
             },
+
             /**
              * Set the behavior rotation anchor. Use this method when setting an exact percent
              * by calling setValues is complicated.
              * @see CAAT.Actor
-             * @param anchor any of CAAT.Actor.prototype.ANCHOR_* constants.
              *
              * These parameters are to set a custom rotation anchor point. if <code>anchor==CAAT.Actor.ANCHOR_CUSTOM
              * </code> the custom rotation point is set.
+             * @param actor
              * @param rx
              * @param ry
              *
@@ -91,17 +140,26 @@ CAAT.Module({
                 return this;
             },
 
-
+            /**
+             * @inheritDoc
+             */
             calculateKeyFrameData:function (time) {
                 time = this.interpolator.getPosition(time).y;
                 return "rotate(" + (this.startAngle + time * (this.endAngle - this.startAngle)) + "rad)";
             },
 
             /**
-             * @param prefix {string} browser vendor prefix
-             * @param name {string} keyframes animation name
-             * @param keyframessize {integer} number of keyframes to generate
-             * @override
+             * @inheritDoc
+             */
+            getKeyFrameDataValues : function(time) {
+                time = this.interpolator.getPosition(time).y;
+                return {
+                    angle : this.startAngle + time * (this.endAngle - this.startAngle)
+                };
+            },
+
+            /**
+             * @inheritDoc
              */
             calculateKeyFramesData:function (prefix, name, keyframessize) {
 
@@ -119,12 +177,13 @@ CAAT.Module({
                         (i / keyframessize * 100) + "%" + // percentage
                         "{" +
                         "-" + prefix + "-transform:" + this.calculateKeyFrameData(i / keyframessize) +
+                        "; -" + prefix + "-transform-origin:" + (this.anchorX*100) + "% " + (this.anchorY*100) + "% " +
                         "}\n";
 
                     kfd += kfr;
                 }
 
-                kfd += "}";
+                kfd += "}\n";
 
                 return kfd;
             }

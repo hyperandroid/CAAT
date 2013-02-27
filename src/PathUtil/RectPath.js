@@ -1,4 +1,12 @@
 CAAT.Module({
+
+    /**
+     * @name RectPath
+     * @memberOf CAAT.PathUtil
+     * @extends CAAT.PathUtil.PathSegment
+     * @constructor
+     */
+
     defines:"CAAT.PathUtil.RectPath",
     depends:[
         "CAAT.PathUtil.PathSegment",
@@ -10,6 +18,10 @@ CAAT.Module({
     extendsWith:function () {
 
         return {
+
+            /**
+             * @lends CAAT.PathUtil.RectPath.prototype
+             */
 
             __init:function () {
                 this.__super();
@@ -26,11 +38,21 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * A collection of Points.
+             * @type {Array.<CAAT.Math.Point>}
+             */
             points:null,
-            length:-1,
-            cw:true, // should be clock wise traversed ?
-            bbox:null,
-            newPosition:null, // spare point for calculations
+
+            /**
+             * Traverse this path clockwise or counterclockwise (false).
+             */
+            cw:true,
+
+            /**
+             * spare point for calculations
+             */
+            newPosition:null,
 
             applyAsPath:function (director) {
                 var ctx = director.ctx;

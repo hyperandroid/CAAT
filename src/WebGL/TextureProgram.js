@@ -1,4 +1,12 @@
 CAAT.Module( {
+
+    /**
+     * @name TextureProgram
+     * @memberOf CAAT.WebGL
+     * @extends CAAT.WebGL.Program
+     * @constructor
+     */
+
     defines : "CAAT.WebGL.TextureProgram",
     aliases : ["CAAT.TextureProgram"],
     extendsClass : "CAAT.WebGL.Program",
@@ -6,24 +14,74 @@ CAAT.Module( {
         "CAAT.WebGL.Program"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.WebGL.TextureProgram.prototype
+         */
+
         __init : function(gl) {
             this.__super(gl);
             return this;
         },
 
+        /**
+         * VertextBuffer GLBuffer
+         */
         vertexPositionBuffer:   null,
+
+        /**
+         * VertextBuffer Float32 Array
+         */
         vertexPositionArray:    null,
+
+        /**
+         * UVBuffer GLBuffer
+         */
         vertexUVBuffer:         null,
+
+        /**
+         * VertexBuffer Float32 Array
+         */
         vertexUVArray:          null,
+
+        /**
+         * VertexIndex GLBuffer.
+         */
         vertexIndexBuffer:      null,
 
+        /**
+         * Lines GLBuffer
+         */
         linesBuffer:            null,
 
+        /**
+         *
+         */
         prevAlpha:              -1,
+
+        /**
+         *
+         */
         prevR:                  -1,
+
+        /**
+         *
+         */
         prevG:                  -1,
+
+        /**
+         *
+         */
         prevB:                  -1,
+
+        /**
+         *
+         */
         prevA:                  -1,
+
+        /**
+         *
+         */
         prevTexture:            null,
 
         getFragmentShader : function() {

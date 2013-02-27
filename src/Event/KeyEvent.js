@@ -1,10 +1,27 @@
 CAAT.Module( {
+
+    /**
+     * @name Event
+     * @memberOf CAAT
+     * @namespace
+     */
+
+    /**
+     * @name KeyEvent
+     * @memberOf CAAT.Event
+     * @constructor
+     */
+
     defines : "CAAT.Event.KeyEvent",
     aliases : "CAAT.KeyEvent",
     extendsWith : {
+
+        /**
+         * @lends CAAT.Event.KeyEvent.prototype
+         */
+
         /**
          * Define a key event.
-         * @constructor
          * @param keyCode
          * @param up_or_down
          * @param modifiers
@@ -51,6 +68,14 @@ CAAT.Module( {
     },
     onCreate : function() {
 
+        /**
+         * @lends CAAT
+         */
+
+        /**
+         * Key codes
+         * @type {Object}
+         */
         CAAT.Keys = {
             ENTER:13,
             BACKSPACE:8,
@@ -150,9 +175,28 @@ CAAT.Module( {
             SINGLEQUOTE:222
         };
 
+        /**
+         * Shift key code
+         * @type {Number}
+         */
         CAAT.SHIFT_KEY=    16;
+
+        /**
+         * Control key code
+         * @type {Number}
+         */
         CAAT.CONTROL_KEY=  17;
+
+        /**
+         * Alt key code
+         * @type {Number}
+         */
         CAAT.ALT_KEY=      18;
+
+        /**
+         * Enter key code
+         * @type {Number}
+         */
         CAAT.ENTER_KEY=    13;
 
         /**

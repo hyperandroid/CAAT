@@ -1,10 +1,22 @@
 CAAT.Module({
+
+    /**
+     * @name CatmullRom
+     * @memberOf CAAT.Math
+     * @extends CAAT.Math.Curve
+     * @constructor
+     */
+
     defines:"CAAT.Math.CatmullRom",
     depends:["CAAT.Math.Curve"],
     extendsClass:"CAAT.Math.Curve",
     aliases:["CAAT.CatmullRom"],
     extendsWith:function () {
         return {
+
+            /**
+             * @lends CAAT.Math.CatmullRom.prototype
+             */
 
             /**
              * Set curve control points.

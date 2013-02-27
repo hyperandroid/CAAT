@@ -1,0 +1,121 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="NAME">CAAT.Module</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>  2</span> 
+<span class='line'>  3</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>  4</span>      * @name ColorProgram
+<span class='line'>  5</span>      * @memberOf CAAT.WebGL
+<span class='line'>  6</span>      * @extends CAAT.WebGL.Program
+<span class='line'>  7</span>      * @constructor
+<span class='line'>  8</span>      */</span><span class="WHIT">
+<span class='line'>  9</span> 
+<span class='line'> 10</span> </span><span class="WHIT">    </span><span class="NAME">defines</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"CAAT.WebGL.ColorProgram"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 11</span> </span><span class="WHIT">    </span><span class="NAME">aliases</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="STRN">"CAAT.ColorProgram"</span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 12</span> </span><span class="WHIT">    </span><span class="NAME">extendsClass</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"CAAT.WebGL.Program"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 13</span> </span><span class="WHIT">    </span><span class="NAME">depends</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="WHIT">
+<span class='line'> 14</span> </span><span class="WHIT">        </span><span class="STRN">"CAAT.WebGL.Program"</span><span class="WHIT">
+<span class='line'> 15</span> </span><span class="WHIT">    </span><span class="PUNC">]</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 16</span> </span><span class="WHIT">    </span><span class="NAME">extendsWith</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 17</span> 
+<span class='line'> 18</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 19</span>          * @lends CAAT.WebGL.ColorProgram.prototype
+<span class='line'> 20</span>          */</span><span class="WHIT">
+<span class='line'> 21</span> 
+<span class='line'> 22</span> 
+<span class='line'> 23</span> </span><span class="WHIT">        </span><span class="NAME">__init</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">gl</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 24</span> </span><span class="WHIT">            </span><span class="NAME">this.__super</span><span class="PUNC">(</span><span class="NAME">gl</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 25</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 26</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 27</span> 
+<span class='line'> 28</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 29</span>          * int32 Array for color Buffer
+<span class='line'> 30</span>          */</span><span class="WHIT">
+<span class='line'> 31</span> </span><span class="WHIT">        </span><span class="NAME">colorBuffer</span><span class="PUNC">:</span><span class="WHIT">    </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 32</span> 
+<span class='line'> 33</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 34</span>          * GLBuffer for vertex buffer.
+<span class='line'> 35</span>          */</span><span class="WHIT">
+<span class='line'> 36</span> </span><span class="WHIT">        </span><span class="NAME">vertexPositionBuffer</span><span class="PUNC">:</span><span class="WHIT">   </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 37</span> 
+<span class='line'> 38</span> </span><span class="WHIT">        </span><span class="COMM">/**
+<span class='line'> 39</span>          * Float32 Array for vertex buffer.
+<span class='line'> 40</span>          */</span><span class="WHIT">
+<span class='line'> 41</span> </span><span class="WHIT">        </span><span class="NAME">vertexPositionArray</span><span class="PUNC">:</span><span class="WHIT">    </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 42</span> 
+<span class='line'> 43</span> </span><span class="WHIT">        </span><span class="NAME">getFragmentShader</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 44</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.getShader</span><span class="PUNC">(</span><span class="NAME">this.gl</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"x-shader/x-fragment"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 45</span> </span><span class="WHIT">                    </span><span class="STRN">"#ifdef GL_ES \n"</span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 46</span> </span><span class="WHIT">                    </span><span class="STRN">"precision highp float; \n"</span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 47</span> </span><span class="WHIT">                    </span><span class="STRN">"#endif \n"</span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 48</span> 
+<span class='line'> 49</span> </span><span class="WHIT">                    </span><span class="STRN">"varying vec4 color; \n"</span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 50</span> </span><span class="WHIT">                            
+<span class='line'> 51</span>                     </span><span class="STRN">"void main(void) { \n"</span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 52</span> </span><span class="WHIT">                    </span><span class="STRN">"  gl_FragColor = color;\n"</span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 53</span> </span><span class="WHIT">                    </span><span class="STRN">"}\n"</span><span class="WHIT">
+<span class='line'> 54</span> </span><span class="WHIT">                    </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 55</span> 
+<span class='line'> 56</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 57</span> </span><span class="WHIT">        </span><span class="NAME">getVertexShader</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 58</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.getShader</span><span class="PUNC">(</span><span class="NAME">this.gl</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"x-shader/x-vertex"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 59</span> </span><span class="WHIT">                    </span><span class="STRN">"attribute vec3 aVertexPosition; \n"</span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 60</span> </span><span class="WHIT">                    </span><span class="STRN">"attribute vec4 aColor; \n"</span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 61</span> </span><span class="WHIT">                    </span><span class="STRN">"uniform mat4 uPMatrix; \n"</span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 62</span> </span><span class="WHIT">                    </span><span class="STRN">"varying vec4 color; \n"</span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 63</span> 
+<span class='line'> 64</span> </span><span class="WHIT">                    </span><span class="STRN">"void main(void) { \n"</span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 65</span> </span><span class="WHIT">                    </span><span class="STRN">"gl_Position = uPMatrix * vec4(aVertexPosition, 1.0); \n"</span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 66</span> </span><span class="WHIT">                    </span><span class="STRN">"color= aColor; \n"</span><span class="PUNC">+</span><span class="WHIT">
+<span class='line'> 67</span> </span><span class="WHIT">                    </span><span class="STRN">"}\n"</span><span class="WHIT">
+<span class='line'> 68</span> </span><span class="WHIT">                    </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 69</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 70</span> </span><span class="WHIT">        </span><span class="NAME">initialize</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 71</span> </span><span class="WHIT">            </span><span class="NAME">this.shaderProgram.vertexPositionAttribute</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='line'> 72</span> </span><span class="WHIT">                    </span><span class="NAME">this.gl.getAttribLocation</span><span class="PUNC">(</span><span class="NAME">this.shaderProgram</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"aVertexPosition"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 73</span> </span><span class="WHIT">            </span><span class="NAME">this.gl.enableVertexAttribArray</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'> 74</span> </span><span class="WHIT">                    </span><span class="NAME">this.shaderProgram.vertexPositionAttribute</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 75</span> 
+<span class='line'> 76</span> </span><span class="WHIT">            </span><span class="NAME">this.shaderProgram.vertexColorAttribute</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='line'> 77</span> </span><span class="WHIT">                    </span><span class="NAME">this.gl.getAttribLocation</span><span class="PUNC">(</span><span class="NAME">this.shaderProgram</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"aColor"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 78</span> </span><span class="WHIT">            </span><span class="NAME">this.gl.enableVertexAttribArray</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'> 79</span> </span><span class="WHIT">                    </span><span class="NAME">this.shaderProgram.vertexColorAttribute</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 80</span> 
+<span class='line'> 81</span> </span><span class="WHIT">            </span><span class="NAME">this.shaderProgram.pMatrixUniform</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='line'> 82</span> </span><span class="WHIT">                    </span><span class="NAME">this.gl.getUniformLocation</span><span class="PUNC">(</span><span class="NAME">this.shaderProgram</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">"uPMatrix"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 83</span> 
+<span class='line'> 84</span> </span><span class="WHIT">            </span><span class="NAME">this.useProgram</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 85</span> 
+<span class='line'> 86</span> </span><span class="WHIT">            </span><span class="NAME">this.colorBuffer</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.gl.createBuffer</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 87</span> </span><span class="WHIT">            </span><span class="NAME">this.setColor</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">,</span><span class="NUMB">1</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 88</span> 
+<span class='line'> 89</span> </span><span class="WHIT">            </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">maxTris</span><span class="PUNC">=</span><span class="NUMB">512</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 90</span> </span><span class="WHIT">            </span><span class="COMM">/// set vertex data</span><span class="WHIT">
+<span class='line'> 91</span> </span><span class="WHIT">            </span><span class="NAME">this.vertexPositionBuffer</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.gl.createBuffer</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 92</span> </span><span class="WHIT">            </span><span class="NAME">this.gl.bindBuffer</span><span class="PUNC">(</span><span class="NAME">this.gl.ARRAY_BUFFER</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.vertexPositionBuffer</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 93</span> </span><span class="WHIT">            </span><span class="NAME">this.vertexPositionArray</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Float32Array</span><span class="PUNC">(</span><span class="NAME">maxTris</span><span class="PUNC">*</span><span class="NUMB">12</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 94</span> </span><span class="WHIT">            </span><span class="NAME">this.gl.bufferData</span><span class="PUNC">(</span><span class="NAME">this.gl.ARRAY_BUFFER</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.vertexPositionArray</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.gl.DYNAMIC_DRAW</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 95</span> </span><span class="WHIT">            </span><span class="NAME">this.gl.vertexAttribPointer</span><span class="PUNC">(</span><span class="NAME">this.shaderProgram.vertexPositionAttribute</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">3</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.gl.FLOAT</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 96</span> 
+<span class='line'> 97</span> </span><span class="WHIT">            </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">CAAT.ColorProgram.superclass.initialize.call</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 98</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 99</span> </span><span class="WHIT">        </span><span class="NAME">setColor</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">colorArray</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>100</span> </span><span class="WHIT">            </span><span class="NAME">this.gl.bindBuffer</span><span class="PUNC">(</span><span class="NAME">this.gl.ARRAY_BUFFER</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.colorBuffer</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>101</span> </span><span class="WHIT">            </span><span class="NAME">this.gl.bufferData</span><span class="PUNC">(</span><span class="NAME">this.gl.ARRAY_BUFFER</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">Float32Array</span><span class="PUNC">(</span><span class="NAME">colorArray</span><span class="PUNC">)</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">this.gl.STATIC_DRAW</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>102</span> 
+<span class='line'>103</span> </span><span class="WHIT">            </span><span class="NAME">this.gl.vertexAttribPointer</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'>104</span> </span><span class="WHIT">                    </span><span class="NAME">this.shaderProgram.vertexColorAttribute</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>105</span> </span><span class="WHIT">                    </span><span class="NAME">this.colorBuffer</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>106</span> </span><span class="WHIT">                    </span><span class="NAME">this.gl.FLOAT</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>107</span> </span><span class="WHIT">                    </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>108</span> </span><span class="WHIT">                    </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>109</span> </span><span class="WHIT">                    </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>110</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>112</span> 
+<span class='line'>113</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>114</span> </span></pre></body></html>

@@ -1,7 +1,25 @@
 CAAT.Module( {
+
+    /**
+     * Define a drawable sub-image inside a bigger image as an independant drawable item.
+     *
+     * @name SpriteImageHelper
+     * @memberOf CAAT.Foundation
+     * @constructor
+     *
+     *
+     *
+     */
+
+
     defines : "CAAT.Foundation.SpriteImageHelper",
 
     extendsWith : {
+
+        /**
+         * @lends  CAAT.Foundation.SpriteImageHelper.prototype
+         */
+
         __init : function (x, y, w, h, iw, ih) {
             this.x = parseFloat(x);
             this.y = parseFloat(y);

@@ -21,15 +21,29 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.5 build: 47
+Version: 0.6 build: 2
 
 Created on:
-DATE: 2012-12-13
-TIME: 21:30:47
+DATE: 2013-02-27
+TIME: 08:57:20
 */
 
 
 CAAT.Module({
+
+    /**
+     * @name Box2D
+     * @memberOf CAAT.Foundation
+     * @namespace
+     */
+
+    /**
+     * @name B2DBodyActor
+     * @memberOf CAAT.Foundation.Box2D
+     * @extends CAAT.Foundation.Actor
+     * @constructor
+     */
+
     defines:"CAAT.Foundation.Box2D.B2DBodyActor",
     depends:[
         "CAAT.Foundation.Actor"
@@ -38,12 +52,25 @@ CAAT.Module({
     extendsClass:"CAAT.Foundation.Actor",
     extendsWith:function () {
 
-        CAAT.PMR = 64;
         /**
-         * As Eemeli Kelokorpi suggested,
-         * @param set
-         * @param director
-         * @param world
+         * @lends CAAT
+         */
+
+        /**
+         * Points to Meter ratio value.
+         * @type {Number}
+         */
+        CAAT.PMR = 64;
+
+        /**
+         * (As Eemeli Kelokorpi suggested)
+         *
+         * Enable Box2D debug renderer.
+         *
+         * @param set {boolean} enable or disable
+         * @param director {CAAT.Foundation.Director}
+         * @param world {object} box2d world
+         * @param scale {numner} a scale value.
          */
         CAAT.enableBox2DDebug = function (set, director, world, scale) {
 
@@ -69,6 +96,11 @@ CAAT.Module({
         };
 
         return {
+
+            /**
+             * @lends CAAT.Foundation.Box2D.B2DBodyActor.prototype
+             */
+
             /**
              * Body restitution.
              */
@@ -94,13 +126,24 @@ CAAT.Module({
              */
             worldBody:null,
 
+            /**
+             * Box2D world reference.
+             */
             world:null,
 
             /**
              * Box2d fixture
              */
             worldBodyFixture:null,
+
+            /**
+             * Box2D body definition.
+             */
             bodyDef:null,
+
+            /**
+             * Box2D fixture definition.
+             */
             fixtureDef:null,
 
             /**
@@ -108,7 +151,29 @@ CAAT.Module({
              */
             bodyData:null,
 
+            /**
+             * Recycle this actor when the body is not needed anymore ??
+             */
             recycle:false,
+
+            __init : function() {
+                this.__super();
+                this.setPositionAnchor(.5,.5);
+
+                return this;
+            },
+
+            setPositionAnchor : function( ax, ay ) {
+                this.tAnchorX= .5;
+                this.tAnchorY= .5;
+            },
+
+            setPositionAnchored : function(x,y,ax,ay) {
+                this.x= x;
+                this.y= y;
+                this.tAnchorX= .5;
+                this.tAnchorY= .5;
+            },
 
             /**
              * set this actor to recycle its body, that is, do not destroy it.
@@ -142,8 +207,8 @@ CAAT.Module({
             setLocation:function (x, y) {
                 this.worldBody.SetPosition(
                     new Box2D.Common.Math.b2Vec2(
-                        (x + this.width / 2) / CAAT.PMR,
-                        (y + this.height / 2) / CAAT.PMR));
+                        x / CAAT.PMR,
+                        y / CAAT.PMR));
                 return this;
             },
             /**
@@ -249,18 +314,10 @@ CAAT.Module({
 
                 var pos= this.worldBody.GetPosition();
 
-                if (this.bodyData.polygonType === CAAT.Foundation.Box2D.B2DPolygonBody.TYPE.EDGE) {
-                    CAAT.Foundation.Actor.prototype.setLocation.call(
-                            this,
-                            CAAT.PMR*pos.x,
-                            CAAT.PMR*pos.y );
-
-                } else {
-                    CAAT.Foundation.Actor.prototype.setLocation.call(
-                            this,
-                            CAAT.PMR*pos.x - this.width/2,
-                            CAAT.PMR*pos.y - this.height/2 );
-                }
+                CAAT.Foundation.Actor.prototype.setLocation.call(
+                        this,
+                        CAAT.PMR*pos.x,
+                        CAAT.PMR*pos.y);
 
                 this.setRotation( this.worldBody.GetAngle() );
 
@@ -270,6 +327,14 @@ CAAT.Module({
     }
 });
 CAAT.Module( {
+
+    /**
+     * @name B2DCircularBody
+     * @memberOf CAAT.Foundation.Box2D
+     * @extends CAAT.Foundation.Box2D.B2DBodyActor
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.Box2D.B2DCircularBody",
     depends : [
         "CAAT.Foundation.Box2D.B2DBodyActor"
@@ -277,6 +342,11 @@ CAAT.Module( {
     aliases : ["CAAT.B2DCircularBody"],
     extendsClass : "CAAT.Foundation.Box2D.B2DBodyActor",
     constants : {
+
+        /**
+         * @lends CAAT.Foundation.Box2D.B2DCircularBody
+         */
+
         createCircularBody : function(world, bodyData) {
             if ( bodyData.radius )  this.radius= bodyData.radius;
 
@@ -310,6 +380,11 @@ CAAT.Module( {
         }
     },
     extendsWith : {
+
+        /**
+         * @lends CAAT.Foundation.Box2D.B2DCircularBody.prototype
+         */
+
 
         /**
          * Default radius.
@@ -350,6 +425,14 @@ CAAT.Module( {
 
 });
 CAAT.Module( {
+
+    /**
+     * @name B2DPolygonBody
+     * @memberOf CAAT.Foundation.Box2D
+     * @extends CAAT.Foundation.Box2D.B2DBodyActor
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.Box2D.B2DPolygonBody",
     depends : [
         "CAAT.Foundation.Box2D.B2DBodyActor",
@@ -357,6 +440,11 @@ CAAT.Module( {
     ],
     aliases : ["CAAT.B2DPolygonBody"],
     constants: {
+
+        /**
+         * @lends CAAT.Foundation.Box2D.B2DPolygonBody
+         */
+
         TYPE: {
             EDGE:   'edge',
             BOX:    'box',
@@ -464,6 +552,10 @@ CAAT.Module( {
     },
     extendsClass : "CAAT.Foundation.Box2D.B2DBodyActor",
     extendsWith : {
+
+        /**
+         * @lends CAAT.Foundation.Box2D.B2DPolygonBody.prototype
+         */
 
         /**
          * Measured body's bounding box.

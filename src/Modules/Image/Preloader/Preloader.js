@@ -7,6 +7,14 @@
  **/
 
 CAAT.Module( {
+
+
+    /**
+     * @name Preloader
+     * @memberOf CAAT.Module.Preloader
+     * @constructor
+     */
+
     defines : "CAAT.Module.Preloader.Preloader",
     extendsWith : function() {
 
@@ -34,16 +42,45 @@ CAAT.Module( {
         };
 
         return {
+
+            /**
+             * @lends CAAT.Module.Preloader.Preloader.prototype
+             */
+
             __init : function()   {
                 this.elements= [];
                 return this;
             },
 
-            elements:       null,   // a list of elements to load
-            imageCounter:   0,      // elements counter.
+            /**
+             * a list of elements to load.
+             * @type {Array.<{ id, image }>}
+             */
+            elements:       null,
+
+            /**
+             * elements counter.
+             */
+            imageCounter:   0,
+
+            /**
+             * Callback finished loading.
+             */
             cfinished:      null,
+
+            /**
+             * Callback element loaded.
+             */
             cloaded:        null,
+
+            /**
+             * Callback error loading.
+             */
             cerrored:       null,
+
+            /**
+             * loaded elements count.
+             */
             loadedCount:    0,
 
             addElement : function( id, path ) {

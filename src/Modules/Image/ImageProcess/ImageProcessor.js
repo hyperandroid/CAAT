@@ -1,6 +1,30 @@
 CAAT.Module({
+
+    /**
+     * @name Image
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name ImageProcessor
+     * @memberOf CAAT.Module.Image
+     * @namespace
+     */
+
+    /**
+     * @name ImageProcessor
+     * @memberOf CAAT.Module.Image.ImageProcessor
+     * @constructor
+     */
+
+
     defines : "CAAT.Module.Image.ImageProcessor.ImageProcessor",
     extendsWith : {
+
+        /**
+         * @lends CAAT.Module.Image.ImageProcessor.ImageProcessor.prototype
+         */
 
         canvas:     null,
         ctx:        null,

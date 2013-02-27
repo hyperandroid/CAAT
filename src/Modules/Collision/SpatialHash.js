@@ -1,4 +1,13 @@
 CAAT.Module( {
+
+
+    /**
+     * @name SpatialHash
+     * @memberOf CAAT.Module.Collision
+     * @constructor
+     */
+
+
     defines : "CAAT.Module.Collision.SpatialHash",
     aliases : ["CAAT.SpatialHash"],
     depends : [
@@ -6,13 +15,33 @@ CAAT.Module( {
     ],
     extendsWith : {
 
+        /**
+         * @lends CAAT.Module.Collision.SpatialHash.prototype
+         */
 
+        /**
+         * A collection ob objects to test collision among them.
+         */
         elements    :   null,
 
+        /**
+         * Space width
+         */
         width       :   null,
+
+        /**
+         * Space height
+         */
         height      :   null,
 
+        /**
+         * Rows to partition the space.
+         */
         rows        :   null,
+
+        /**
+         * Columns to partition the space.
+         */
         columns     :   null,
 
         xcache      :   null,
@@ -20,7 +49,15 @@ CAAT.Module( {
         xycache     :   null,
 
         rectangle   :   null,
+
+        /**
+         * Spare rectangle to hold temporary calculations.
+         */
         r0          :   null,
+
+        /**
+         * Spare rectangle to hold temporary calculations.
+         */
         r1          :   null,
 
         initialize : function( w,h, rows,columns ) {

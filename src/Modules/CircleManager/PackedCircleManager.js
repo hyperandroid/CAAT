@@ -20,6 +20,15 @@
 */
 
 CAAT.Module( {
+
+
+    /**
+     * @name PackedCircleManager
+     * @memberOf CAAT.Module.CircleManager
+     * @constructor
+     */
+
+
     defines : "CAAT.Module.CircleManager.PackedCircleManager",
     depends : [
         "CAAT.Math.Point",
@@ -27,13 +36,33 @@ CAAT.Module( {
     ],
     extendsWith : {
 
+        /**
+         * @lends CAAT.Module.CircleManager.PackedCircleManager.prototype
+         * @private
+         */
+
         __init : function() {
             this.bounds= new CAAT.Math.Rectangle();
         },
 
+        /**
+         *
+         */
 		allCircles:					[],
+
+        /**
+         *
+         */
 		numberOfCollisionPasses:	1,
+
+        /**
+         *
+         */
 		numberOfTargetingPasses:	0,
+
+        /**
+         *
+         */
 		bounds:						null,
 
 		/**

@@ -1,9 +1,21 @@
 CAAT.Module({
+
+    /**
+     * @name TextureScanMap
+     * @memberOf CAAT.Module.TexturePacker
+     * @constructor
+     */
+
     defines : "CAAT.Module.TexturePacker.TextureScanMap",
     depends : [
         "CAAT.Module.TexturePacker.TextureScan"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Module.TexturePacker.TextureScanMap.prototype
+         */
+
         __init : function(w,h) {
             this.scanMapHeight= h;
             this.scanMapWidth= w;
@@ -16,8 +28,19 @@ CAAT.Module({
             return this;
         },
 
+        /**
+         *
+         */
         scanMap:        null,
+
+        /**
+         *
+         */
         scanMapWidth:   0,
+
+        /**
+         *
+         */
         scanMapHeight:  0,
 
         /**

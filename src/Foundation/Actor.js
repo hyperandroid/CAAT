@@ -4,6 +4,49 @@
  **/
 
 CAAT.Module({
+
+
+
+
+    /**
+     *
+     * CAAT.Foundation is the base namespace for all the core animation elements.
+     *
+     * @name Foundation
+     * @namespace
+     * @memberOf CAAT
+     *
+     */
+
+    /**
+     *
+     * CAAT.Foundation.Actor is the base animable element. It is the base object for Director, Scene and
+     * Container.
+     *    <p>CAAT.Actor is the simplest object instance CAAT manages. Every on-screen element is an Actor instance.
+     *        An Actor has entity, it has a size, position and can have input sent to it. Everything that has a
+     *        visual representation is an Actor, including Director and Scene objects.</p>
+     *    <p>This object has functionality for:</p>
+     *    <ol>
+     *        <li>Set location and size on screen. Actors are always rectangular shapes, but not needed to be AABB.</li>
+     *        <li>Set affine transforms (rotation, scale and translation).</li>
+     *        <li>Define life cycle.</li>
+     *        <li>Manage alpha transparency.</li>
+     *        <li>Manage and keep track of applied Behaviors. Behaviors apply transformations via key-framing.</li>
+     *        <li>Compose transformations. A container Actor will transform its children before they apply their own transformation.</li>
+     *        <li>Clipping capabilities. Either rectangular or arbitrary shapes.</li>
+     *        <li>The API is developed to allow method chaining when possible.</li>
+     *        <li>Handle input (either mouse events, touch, multitouch, keys and accelerometer).</li>
+     *        <li>Show an image.</li>
+     *        <li>Show some image animations.</li>
+     *        <li>etc.</li>
+     *    </ol>
+     *
+     * @name Actor
+     * @memberOf CAAT.Foundation
+     * @constructor
+     *
+     */
+
     defines:"CAAT.Foundation.Actor",
     aliases: [ "CAAT.Actor" ],
     depends: [
@@ -17,27 +60,36 @@ CAAT.Module({
         "CAAT.PathUtil.LinearPath",
         "CAAT.Event.AnimationLoop"
     ],
-    constants : {
-        ANCHOR_CENTER : 0,      // constant values to determine different affine transform
-        ANCHOR_TOP : 1,      // anchors.
-        ANCHOR_BOTTOM : 2,
-        ANCHOR_LEFT : 3,
-        ANCHOR_RIGHT : 4,
-        ANCHOR_TOP_LEFT : 5,
-        ANCHOR_TOP_RIGHT : 6,
-        ANCHOR_BOTTOM_LEFT : 7,
-        ANCHOR_BOTTOM_RIGHT : 8,
-        ANCHOR_CUSTOM : 9,
+    constants :  {
+        /**
+         * @lends  CAAT.Foundation.Actor
+         */
 
-        CACHE_NONE:     0,
-        CACHE_SIMPLE :  1,
-        CACHE_DEEP :    2
+        /** @const @type {number} */ ANCHOR_CENTER:0, // constant values to determine different affine transform
+        /** @const @type {number} */ ANCHOR_TOP:1, // anchors.
+        /** @const @type {number} */ ANCHOR_BOTTOM:2,
+        /** @const @type {number} */ ANCHOR_LEFT:3,
+        /** @const @type {number} */ ANCHOR_RIGHT:4,
+        /** @const @type {number} */ ANCHOR_TOP_LEFT:5,
+        /** @const @type {number} */ ANCHOR_TOP_RIGHT:6,
+        /** @const @type {number} */ ANCHOR_BOTTOM_LEFT:7,
+        /** @const @type {number} */ ANCHOR_BOTTOM_RIGHT:8,
+        /** @const @type {number} */ ANCHOR_CUSTOM:9,
+
+        /** @const @type {number} */ CACHE_NONE:0,
+        /** @const @type {number} */ CACHE_SIMPLE:1,
+        /** @const @type {number} */ CACHE_DEEP:2
     },
+
     extendsWith : function () {
 
         var __index = 0;
 
         return  {
+
+            /**
+             * @lends CAAT.Foundation.Actor.prototype
+             */
 
             __init:function () {
                 this.behaviorList = [];
@@ -64,83 +116,362 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @type {object}
+             */
             __super : null,
-            lifecycleListenerList:null, // Array of life cycle listener
 
-            behaviorList:null, // Array of behaviors to apply to the Actor
+            /**
+             * A collection of this Actors lifecycle observers.
+             * @type { Array.<{actorLifeCycleEvent : function( CAAT.Foundation.Actor, string, number ) }> }
+             */
+            lifecycleListenerList:null,
+
+            /**
+             * A collection of behaviors to modify this actor´s properties.
+             * @type { Array.<CAAT.Behavior.Behavior> }
+             */
+            behaviorList:null,
+
+            /**
+             * This actor's parent container.
+             * @type { CAAT.Foundation.ActorContainer }
+             */
             parent:null, // Parent of this Actor. May be Scene.
-            x:0, // x position on parent. In parent's local coord. system.
-            y:0, // y position on parent. In parent's local coord. system.
-            width:0, // Actor's width. In parent's local coord. system.
-            height:0, // Actor's height. In parent's local coord. system.
-            preferredSize:null, // actor's preferred size for layout. {CAAT.Math.Dimension}
-            minimumSize:null, // actor's minimum size for layout. {CAAT.Math.Dimension},
-            start_time:0, // Start time in Scene time.
-            duration:Number.MAX_VALUE, // Actor duration in Scene time
-            clip:false, // should clip the Actor's content against its contour.
+
+            /**
+             * x position on parent. In parent's local coord. system.
+             * @type {number}
+             */
+            x:0,
+            /**
+             * y position on parent. In parent's local coord. system.
+             * @type {number}
+             */
+            y:0,
+
+            /**
+             * Actor's width. In parent's local coord. system.
+             * @type {number}
+             */
+            width:0,
+
+            /**
+             * Actor's height. In parent's local coord. system.
+             * @type {number}
+             */
+            height:0,
+
+            /**
+             * actor´s layout preferred size.
+             * @type {CAAT.Math.Dimension}
+             */
+            preferredSize:null,
+
+            /**
+             * actor's layout minimum size.
+             * @type {CAAT.Math.Dimension}
+             */
+            minimumSize:null,
+
+            /**
+             * Marks since when this actor, relative to scene time, is going to be animated/drawn.
+             * @type {number}
+             */
+            start_time:0,
+
+            /**
+             * Marks from the time this actor is going to be animated, during how much time.
+             * Forever by default.
+             * @type {number}
+             */
+            duration:Number.MAX_VALUE,
+
+            /**
+             * Will this actor be clipped before being drawn on screen ?
+             * @type {boolean}
+             */
+            clip:false,
+
+            /**
+             * If this.clip and this.clipPath===null, a rectangle will be used as clip area. Otherwise,
+             * clipPath contains a reference to a CAAT.PathUtil.Path object.
+             * @type {CAAT.PathUtil.Path}
+             */
             clipPath:null,
 
+            /**
+             * Translation x anchor. 0..1
+             * @type {number}
+             */
             tAnchorX:0,
+
+            /**
+             * Translation y anchor. 0..1
+             * @type {number}
+             */
             tAnchorY:0,
 
+            /**
+             * ScaleX value.
+             * @type {number}
+             */
             scaleX:1, // transformation. width scale parameter
+
+            /**
+             * ScaleY value.
+             * @type {number}
+             */
             scaleY:1, // transformation. height scale parameter
+
+            /**
+             * Scale Anchor X. Value 0-1
+             * @type {number}
+             */
             scaleTX:.50, // transformation. scale anchor x position
+
+            /**
+             * Scale Anchor Y. Value 0-1
+             * @type {number}
+             */
             scaleTY:.50, // transformation. scale anchor y position
+
+            /**
+             * A value that corresponds to any CAAT.Foundation.Actor.ANCHOR_* value.
+             * @type {CAAT.Foundation.Actor.ANCHOR_*}
+             */
             scaleAnchor:0, // transformation. scale anchor
+
+            /**
+             * This actor´s rotation angle in radians.
+             * @type {number}
+             */
             rotationAngle:0, // transformation. rotation angle in radians
+
+            /**
+             * Rotation Anchor X. CAAT uses different Anchors for position, rotation and scale. Value 0-1.
+             * @type {number}
+             */
             rotationY:.50, // transformation. rotation center y
+
+            /**
+             * Rotation Anchor Y. CAAT uses different Anchors for position, rotation and scale. Value 0-1.
+             * @type {number}
+             */
             rotationX:.50, // transformation. rotation center x
+
+            /**
+             * Transparency value. 0 is totally transparent, 1 is totally opaque.
+             * @type {number}
+             */
             alpha:1, // alpha transparency value
+
+            /**
+             * true to make all children transparent, false, only this actor/container will be transparent.
+             * @type {boolean}
+             */
             isGlobalAlpha:false, // is this a global alpha
+
+            /**
+             * @type {number}
+             * @private
+             */
             frameAlpha:1, // hierarchically calculated alpha for this Actor.
-            expired:false, // set when the actor has been expired
+
+            /**
+             * Mark this actor as expired, or out of the scene time.
+             * @type {boolean}
+             */
+            expired:false,
+
+            /**
+             * Mark this actor as discardable. If an actor is expired and mark as discardable, if will be
+             * removed from its parent.
+             * @type {boolean}
+             */
             discardable:false, // set when you want this actor to be removed if expired
+
+            /**
+             * @type {boolean}
+             */
             pointed:false, // is the mouse pointer inside this actor
+
+            /**
+             * Enable or disable input on this actor. By default, all actors receive input.
+             * See also priority lists.
+             * see demo4 for an example of input and priority lists.
+             * @type {boolean}
+             */
             mouseEnabled:true, // events enabled ?
 
+            /**
+             * Make this actor visible or not.
+             * An invisible actor avoids making any calculation, applying any behavior on it.
+             * @type {boolean}
+             */
             visible:true,
 
-            fillStyle:null, // any canvas rendering valid fill style.
-            strokeStyle:null, // any canvas rendering valid stroke style.
+            /**
+             * any canvas rendering valid fill style.
+             * @type {string}
+             */
+            fillStyle:null,
+
+            /**
+             * any canvas rendering valid stroke style.
+             * @type {string}
+             */
+            strokeStyle:null,
+
+            /**
+             * This actor´s scene time.
+             * @type {number}
+             */
             time:0, // Cache Scene time.
-            AABB:null, // CAAT.Math.Rectangle
+
+            /**
+             * This rectangle keeps the axis aligned bounding box in screen coords of this actor.
+             * In can be used, among other uses, to realize whether two given actors collide regardless
+             * the affine transformation is being applied on them.
+             * @type {CAAT.Math.Rectangle}
+             */
+            AABB:null,
+
+            /**
+             * These 4 CAAT.Math.Point objects are the vertices of this actor´s non axis aligned bounding
+             * box. If the actor is not rotated, viewVertices and AABB define the same bounding box.
+             * @type {Array.<CAAT.Math.Point>}
+             */
             viewVertices:null, // model to view transformed vertices.
+
+            /**
+             * Is this actor processed in the last frame ?
+             * @type {boolean}
+             */
             inFrame:false, // boolean indicating whether this Actor was present on last frame.
 
+            /**
+             * Local matrix dirtyness flag.
+             * @type {boolean}
+             * @private
+             */
             dirty:true, // model view is dirty ?
+
+            /**
+             * Global matrix dirtyness flag.
+             * @type {boolean}
+             * @private
+             */
             wdirty:true, // world model view is dirty ?
+
+            /**
+             * @type {number}
+             * @private
+             */
             oldX:-1,
+
+            /**
+             * @type {number}
+             * @private
+             */
             oldY:-1,
 
+            /**
+             * This actor´s affine transformation matrix.
+             * @type {CAAT.Math.Matrix}
+             */
             modelViewMatrix:null, // model view matrix.
+
+            /**
+             * This actor´s world affine transformation matrix.
+             * @type {CAAT.Math.Matrix}
+             */
             worldModelViewMatrix:null, // world model view matrix.
+
+            /**
+             * @type {CAAT.Math.Matrix}
+             */
             modelViewMatrixI:null, // model view matrix.
+
+            /**
+             * @type {CAAT.Math.Matrix}
+             */
             worldModelViewMatrixI:null, // world model view matrix.
 
+            /**
+             * Is this actor enabled on WebGL ?
+             * @type {boolean}
+             */
             glEnabled:false,
 
+            /**
+             * Define this actor´s background image.
+             * See SpriteImage object.
+             * @type {CAAT.Foundation.SpriteImage}
+             */
             backgroundImage:null,
+
+            /**
+             * Set this actor´ id so that it can be later identified easily.
+             * @type {object}
+             */
             id:null,
 
+            /**
+             * debug info.
+             * @type {number}
+             */
             size_active:1, // number of animated children
+
+            /**
+             * debug info.
+             * @type {number}
+             */
             size_total:1,
 
             __d_ax:-1, // for drag-enabled actors.
             __d_ay:-1,
+
+            /**
+             * Is gesture recognition enabled on this actor ??
+             * @type {boolean}
+             */
             gestureEnabled:false,
 
+            /**
+             * If dirty rects are enabled, this flag indicates the rendering engine to invalidate this
+             * actor´s screen area.
+             * @type {boolean}
+             */
             invalid:true,
+
+            /**
+             * Caching as bitmap strategy. Suitable to cache very complex actors.
+             *
+             * 0 : no cache.
+             * CACHE_SIMPLE : if a container, only cache the container.
+             * CACHE_DEEP : if a container, cache the container and recursively all of its children.
+             *
+             * @type {number}
+             */
             cached:0, // 0 no, CACHE_SIMPLE | CACHE_DEEP
 
-            collides:false,
-            collidesAsRect:true,
-
+            /**
+             * Exclude this actor from automatic layout on its parent.
+             * @type {boolean}
+             */
             preventLayout : false,
 
-            isAA:true, // is this actor/container Axis aligned ? if so, much faster inverse matrices
-            // can be calculated.
+            /**
+             * is this actor/container Axis aligned ? if so, much faster inverse matrices can be calculated.
+             * @type {boolean}
+             * @private
+             */
+            isAA:true,
 
+            /**
+             * Make this actor not be laid out.
+             */
             setPreventLayout : function(b) {
                 this.preventLayout= b;
                 return this;
@@ -431,10 +762,7 @@ CAAT.Module({
             isVisible:function () {
                 return this.visible;
             },
-            setupCollission:function (collides, isCircular) {
-                this.collides = collides;
-                this.collidesAsRect = !isCircular;
-            },
+
             invalidate:function () {
                 this.invalid = true;
                 return this;

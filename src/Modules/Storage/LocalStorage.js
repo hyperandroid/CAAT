@@ -3,8 +3,25 @@
  *
  **/
 CAAT.Module({
+
+    /**
+     * @name Storage
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name LocalStorage
+     * @memberOf CAAT.Module.Storage
+     * @namespace
+     */
+
     defines : "CAAT.Module.Storage.LocalStorage",
     constants : {
+
+        /**
+         * @lends CAAT.Module.Storage.LocalStorage
+         */
 
         /**
          * Stores an object in local storage. The data will be saved as JSON.stringify.

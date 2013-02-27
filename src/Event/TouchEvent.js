@@ -1,27 +1,76 @@
 CAAT.Module( {
+
+    /**
+     * @name TouchEvent
+     * @memberOf CAAT.Event
+     * @constructor
+     */
+
+
     defines : "CAAT.Event.TouchEvent",
     aliases : ["CAAT.TouchEvent"],
     depends : [
         "CAAT.Event.TouchInfo"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Event.TouchEvent.prototype
+         */
+
+        /**
+         * Constructor delegate
+         * @private
+         */
         __init : function() {
             this.touches= [];
             this.changedTouches= [];
             return this;
         },
 
+        /**
+         * Time the touch event was triggered at.
+         */
 		time:			0,
+
+        /**
+         * Source Actor the event happened in.
+         */
 		source:			null,
+
+        /**
+         * Original touch event.
+         */
         sourceEvent:    null,
 
+        /**
+         * Was shift pressed ?
+         */
         shift:          false,
+
+        /**
+         * Was control pressed ?
+         */
         control:        false,
+
+        /**
+         * Was alt pressed ?
+         */
         alt:            false,
+
+        /**
+         * Was meta pressed ?
+         */
         meta:           false,
 
-
+        /**
+         * touches collection
+         */
         touches         : null,
+
+        /**
+         * changed touches collection
+         */
         changedTouches  : null,
 
 		init : function( sourceEvent,source,time ) {
