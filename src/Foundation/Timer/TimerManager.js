@@ -2,19 +2,47 @@
  * See LICENSE file.
  */
 CAAT.Module({
+
+    /**
+     * @name Timer
+     * @memberOf CAAT.Foundation
+     * @namespace
+     */
+
+    /**
+     * @name TimerManager
+     * @memberOf CAAT.Foundation.Timer
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.Timer.TimerManager",
     aliases : ["CAAT.TimerManager"],
     depends : [
         "CAAT.Foundation.Timer.TimerTask"
     ],
     extendsWith :   {
+
+        /**
+         * @lends CAAT.Foundation.Timer.TimerManager.prototype
+         */
+
         __init:function () {
             this.timerList = [];
             return this;
         },
 
-        timerList:null, // collection of CAAT.TimerTask objects.
-        timerSequence:0, // incremental CAAT.TimerTask id.
+        /**
+         * Collection of registered timers.
+         * @type {CAAT.Foundation.Timer.TimerManager}
+         * @private
+         */
+        timerList:null,
+
+        /**
+         * Index sequence to idenfity registered timers.
+         * @private
+         */
+        timerSequence:0,
 
         /**
          * Check and apply timers in frame time.

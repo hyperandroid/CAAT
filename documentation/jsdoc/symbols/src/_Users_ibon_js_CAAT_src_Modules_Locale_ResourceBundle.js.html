@@ -1,0 +1,242 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="NAME">CAAT.Module</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>  2</span> 
+<span class='line'>  3</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>  4</span>      * @name Locale
+<span class='line'>  5</span>      * @memberOf CAAT.Module
+<span class='line'>  6</span>      * @namespace
+<span class='line'>  7</span>      */</span><span class="WHIT">
+<span class='line'>  8</span> 
+<span class='line'>  9</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'> 10</span>      * @name ResourceBundle
+<span class='line'> 11</span>      * @memberOf CAAT.Module.Locale
+<span class='line'> 12</span>      * @constructor
+<span class='line'> 13</span>      */</span><span class="WHIT">
+<span class='line'> 14</span> 
+<span class='line'> 15</span> </span><span class="WHIT">    </span><span class="NAME">defines</span><span class="PUNC">:</span><span class="STRN">"CAAT.Module.Locale.ResourceBundle"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 16</span> </span><span class="WHIT">    </span><span class="NAME">extendsWith</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 17</span> 
+<span class='line'> 18</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 19</span> 
+<span class='line'> 20</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'> 21</span>              * @lends CAAT.Module.Locale.ResourceBundle.prototype
+<span class='line'> 22</span>              */</span><span class="WHIT">
+<span class='line'> 23</span> 
+<span class='line'> 24</span> 
+<span class='line'> 25</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'> 26</span>              * Is this bundle valid ?
+<span class='line'> 27</span>              */</span><span class="WHIT">
+<span class='line'> 28</span> </span><span class="WHIT">            </span><span class="NAME">valid</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 29</span> 
+<span class='line'> 30</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'> 31</span>              * Original file contents.
+<span class='line'> 32</span>              */</span><span class="WHIT">
+<span class='line'> 33</span> </span><span class="WHIT">            </span><span class="NAME">localeInfo</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">      </span><span class="COMM">// content from resourceFile</span><span class="WHIT">
+<span class='line'> 34</span> 
+<span class='line'> 35</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'> 36</span>              * Current set locale.
+<span class='line'> 37</span>              */</span><span class="WHIT">
+<span class='line'> 38</span> </span><span class="WHIT">            </span><span class="NAME">__currentLocale</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="COMM">// default locale data</span><span class="WHIT">
+<span class='line'> 39</span> 
+<span class='line'> 40</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'> 41</span>              * Default locale info.
+<span class='line'> 42</span>              */</span><span class="WHIT">
+<span class='line'> 43</span> </span><span class="WHIT">            </span><span class="NAME">__defaultLocale</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 44</span> 
+<span class='line'> 45</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'> 46</span>              * &lt;p>
+<span class='line'> 47</span>              * Load a bundle file.
+<span class='line'> 48</span>              * The expected file format is as follows:
+<span class='line'> 49</span>              *
+<span class='line'> 50</span>              * &lt;code>
+<span class='line'> 51</span>              * {
+<span class='line'> 52</span>              *  "defaultLocale" : "en-US",
+<span class='line'> 53</span>              *  "en-US" : {
+<span class='line'> 54</span>              *          "key1", "value1",
+<span class='line'> 55</span>              *          "key2", "value2",
+<span class='line'> 56</span>              *          ...
+<span class='line'> 57</span>              *      },
+<span class='line'> 58</span>              *  "en-UK" : {
+<span class='line'> 59</span>              *          "key1", "value1",
+<span class='line'> 60</span>              *          "key2", "value2",
+<span class='line'> 61</span>              *          ...
+<span class='line'> 62</span>              *      }
+<span class='line'> 63</span>              * }
+<span class='line'> 64</span>              * &lt;/code>
+<span class='line'> 65</span>              *
+<span class='line'> 66</span>              * &lt;p>
+<span class='line'> 67</span>              * defaultLocale is compulsory.
+<span class='line'> 68</span>              *
+<span class='line'> 69</span>              * &lt;p>
+<span class='line'> 70</span>              * The function getString solves as follows:
+<span class='line'> 71</span>              *
+<span class='line'> 72</span>              * &lt;li>a ResouceBundle object will honor browser/system locale by searching for these strings in
+<span class='line'> 73</span>              *   the navigator object to define the value of currentLocale:
+<span class='line'> 74</span>              *
+<span class='line'> 75</span>              *   &lt;ul>navigator.language
+<span class='line'> 76</span>              *   &lt;ul>navigator.browserLanguage
+<span class='line'> 77</span>              *   &lt;ul>navigator.systemLanguage
+<span class='line'> 78</span>              *   &lt;ul>navigator.userLanguage
+<span class='line'> 79</span>              *
+<span class='line'> 80</span>              * &lt;li>the ResouceBundle class will also get defaultLocale value, and set the corresponding key
+<span class='line'> 81</span>              *   as default Locale.
+<span class='line'> 82</span>              *
+<span class='line'> 83</span>              * &lt;li>a call to getString(id,defaultValue) will work as follows:
+<span class='line'> 84</span>              *
+<span class='line'> 85</span>              * &lt;pre>
+<span class='line'> 86</span>              *   1)     will get the value associated in currentLocale[id]
+<span class='line'> 87</span>              *   2)     if the value is set, it is returned.
+<span class='line'> 88</span>              *   2.1)       else if it is not set, will get the value from defaultLocale[id] (sort of fallback)
+<span class='line'> 89</span>              *   3)     if the value of defaultLocale is set, it is returned.
+<span class='line'> 90</span>              *   3.1)       else defaultValue is returned.
+<span class='line'> 91</span>              * &lt;/pre>
+<span class='line'> 92</span>              *
+<span class='line'> 93</span>              * @param resourceFile
+<span class='line'> 94</span>              * @param asynch
+<span class='line'> 95</span>              * @param onSuccess
+<span class='line'> 96</span>              * @param onError
+<span class='line'> 97</span>              * @return {*}
+<span class='line'> 98</span>              * @private
+<span class='line'> 99</span>              */</span><span class="WHIT">
+<span class='line'>100</span> </span><span class="WHIT">            </span><span class="NAME">__init</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">resourceFile</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">asynch</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">onSuccess</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">onError</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>101</span> 
+<span class='line'>102</span> </span><span class="WHIT">                </span><span class="NAME">this.loadDoc</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">resourceFile</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">asynch</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">onSuccess</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">onError</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>103</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.valid</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>104</span> </span><span class="WHIT">                    </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>105</span> </span><span class="WHIT">                        </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">locale</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">navigator.language</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">navigator.browserLanguage</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">navigator.systemLanguage</span><span class="WHIT">  </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">navigator.userLanguage</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>106</span> </span><span class="WHIT">                        </span><span class="NAME">this.__currentLocale</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.localeInfo</span><span class="PUNC">[</span><span class="NAME">locale</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>107</span> </span><span class="WHIT">                        </span><span class="NAME">this.__defaultLocale</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.localeInfo</span><span class="PUNC">[</span><span class="STRN">"defaultLocale"</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>108</span> 
+<span class='line'>109</span> </span><span class="WHIT">                        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">this.__currentLocale</span><span class="PUNC">===</span><span class="STRN">'undefined'</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>110</span> </span><span class="WHIT">                            </span><span class="NAME">this.__currentLocale</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.__defaultLocale</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>111</span> </span><span class="WHIT">                        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>112</span> 
+<span class='line'>113</span> </span><span class="WHIT">                        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">this.__currentLocale</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>114</span> </span><span class="WHIT">                            </span><span class="NAME">onError</span><span class="PUNC">(</span><span class="STRN">"No available default or system defined locale('"</span><span class="PUNC">+</span><span class="NAME">locale</span><span class="PUNC">+</span><span class="STRN">"'"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>115</span> </span><span class="WHIT">                        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>116</span> 
+<span class='line'>117</span> </span><span class="WHIT">                        </span><span class="NAME">this.valid</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>118</span> 
+<span class='line'>119</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>120</span> </span><span class="WHIT">                        </span><span class="NAME">onError</span><span class="PUNC">(</span><span class="STRN">"No default locale"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>121</span> </span><span class="WHIT">                        </span><span class="NAME">this.valid</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>122</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>123</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>124</span> 
+<span class='line'>125</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>126</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>127</span> 
+<span class='line'>128</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>129</span>              * A formated string is a regular string that has embedded holder for string values.
+<span class='line'>130</span>              * for example a string like:
+<span class='line'>131</span>              *
+<span class='line'>132</span>              * "hi this is a $2 $1"
+<span class='line'>133</span>              *
+<span class='line'>134</span>              * will be after calling __formatString( str, ["string","parameterized"] );
+<span class='line'>135</span>              *
+<span class='line'>136</span>              * "hi this is a parameterized string"
+<span class='line'>137</span>              *
+<span class='line'>138</span>              * IMPORTANT: Holder values start in 1.
+<span class='line'>139</span>              *
+<span class='line'>140</span>              * @param string {string} a parameterized string
+<span class='line'>141</span>              * @param args {object} object whose keys are used to find holders and replace them in string parameter
+<span class='line'>142</span>              * @return {string}
+<span class='line'>143</span>              * @private
+<span class='line'>144</span>              */</span><span class="WHIT">
+<span class='line'>145</span> </span><span class="WHIT">            </span><span class="NAME">__formatString</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">string</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">args</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>146</span> 
+<span class='line'>147</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">args</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>148</span> </span><span class="WHIT">                    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">string</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>149</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>150</span> 
+<span class='line'>151</span> </span><span class="WHIT">                </span><span class="KEYW">for</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">key</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">args</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>152</span> </span><span class="WHIT">                    </span><span class="NAME">string</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">string.replace</span><span class="PUNC">(</span><span class="STRN">"$"</span><span class="PUNC">+</span><span class="NAME">key</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">args</span><span class="PUNC">[</span><span class="NAME">key</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>153</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>154</span> 
+<span class='line'>155</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">string</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>156</span> 
+<span class='line'>157</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>158</span> 
+<span class='line'>159</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>160</span>              *
+<span class='line'>161</span>              * @param id {string} a key from the bundle file.
+<span class='line'>162</span>              * @param defaultValue {string} default value in case
+<span class='line'>163</span>              * @param args {Array.&lt;string>=} optional arguments array in case the returned string is a
+<span class='line'>164</span>              *          parameterized string.
+<span class='line'>165</span>              *
+<span class='line'>166</span>              * @return {string}
+<span class='line'>167</span>              */</span><span class="WHIT">
+<span class='line'>168</span> </span><span class="WHIT">            </span><span class="NAME">getString</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">id</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">defaultValue</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">args</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>169</span> 
+<span class='line'>170</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.valid</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>171</span> </span><span class="WHIT">                    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">str</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.__currentLocale</span><span class="PUNC">[</span><span class="NAME">id</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>172</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">str</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>173</span> </span><span class="WHIT">                        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.__formatString</span><span class="PUNC">(</span><span class="NAME">str</span><span class="PUNC">,</span><span class="NAME">args</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>174</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>175</span> 
+<span class='line'>176</span> </span><span class="WHIT">                        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">this.__currentLocale</span><span class="PUNC">!==</span><span class="NAME">this.__defaultLocale</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>177</span> </span><span class="WHIT">                            </span><span class="NAME">str</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.__defaultLocale</span><span class="PUNC">[</span><span class="NAME">id</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>178</span> </span><span class="WHIT">                            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">str</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>179</span> </span><span class="WHIT">                                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.__formatString</span><span class="PUNC">(</span><span class="NAME">str</span><span class="PUNC">,</span><span class="NAME">args</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>180</span> </span><span class="WHIT">                            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>181</span> </span><span class="WHIT">                        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>182</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>183</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>184</span> 
+<span class='line'>185</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.__formatString</span><span class="PUNC">(</span><span class="NAME">defaultValue</span><span class="PUNC">,</span><span class="NAME">args</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>186</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>187</span> 
+<span class='line'>188</span> </span><span class="WHIT">            </span><span class="NAME">loadDoc</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">resourceFile</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">asynch</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">onSuccess</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">onError</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>189</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">me</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>190</span> 
+<span class='line'>191</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">req</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>192</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">window.XMLHttpRequest</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="PUNC">(</span><span class="NAME">window.ActiveXObject</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>193</span> </span><span class="WHIT">                    </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>194</span> </span><span class="WHIT">                        </span><span class="NAME">req</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">XMLHttpRequest</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>195</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>196</span> </span><span class="WHIT">                        </span><span class="NAME">req</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>197</span> </span><span class="WHIT">                        </span><span class="NAME">onError</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>198</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>199</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">window.ActiveXObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>200</span> </span><span class="WHIT">                    </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>201</span> </span><span class="WHIT">                        </span><span class="NAME">req</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">ActiveXObject</span><span class="PUNC">(</span><span class="STRN">"Msxml2.XMLHTTP"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>202</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>203</span> </span><span class="WHIT">                        </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>204</span> </span><span class="WHIT">                            </span><span class="NAME">req</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">ActiveXObject</span><span class="PUNC">(</span><span class="STRN">"Microsoft.XMLHTTP"</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>205</span> </span><span class="WHIT">                        </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>206</span> </span><span class="WHIT">                            </span><span class="NAME">req</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>207</span> </span><span class="WHIT">                            </span><span class="NAME">onError</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>208</span> </span><span class="WHIT">                        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>209</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>210</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>211</span> 
+<span class='line'>212</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">req</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>213</span> </span><span class="WHIT">                    </span><span class="NAME">req.onreadystatechange</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>214</span> </span><span class="WHIT">                        </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">req.readyState</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NUMB">4</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>215</span> </span><span class="WHIT">                            </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">req.status</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NUMB">200</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>216</span> </span><span class="WHIT">                                </span><span class="KEYW">try</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>217</span> </span><span class="WHIT">                                    </span><span class="NAME">me.localeInfo</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">JSON.parse</span><span class="PUNC">(</span><span class="NAME">req.responseText</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>218</span> </span><span class="WHIT">                                    </span><span class="NAME">me.valid</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>219</span> </span><span class="WHIT">                                    </span><span class="NAME">onSuccess</span><span class="PUNC">(</span><span class="NAME">me.localeInfo</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>220</span> </span><span class="WHIT">                                </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">catch</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>221</span> </span><span class="WHIT">                                    </span><span class="NAME">onError</span><span class="PUNC">(</span><span class="NAME">e</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>222</span> </span><span class="WHIT">                                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>223</span> </span><span class="WHIT">                            </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>224</span> </span><span class="WHIT">                                </span><span class="NAME">onError</span><span class="PUNC">(</span><span class="STRN">"onReadyStateChange status="</span><span class="PUNC">+</span><span class="NAME">req.status</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>225</span> </span><span class="WHIT">                            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>226</span> </span><span class="WHIT">                        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>227</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>228</span> 
+<span class='line'>229</span> </span><span class="WHIT">                    </span><span class="NAME">req.open</span><span class="PUNC">(</span><span class="STRN">"GET"</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">resourceFile</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>230</span> </span><span class="WHIT">                    </span><span class="NAME">req.send</span><span class="PUNC">(</span><span class="STRN">""</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>231</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>232</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>233</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>234</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>235</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span></pre></body></html>

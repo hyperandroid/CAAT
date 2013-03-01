@@ -2,6 +2,13 @@
  * See LICENSE file.
  */
 CAAT.Module({
+
+    /**
+     * @name ImageUtil
+     * @memberOf CAAT.Module.Image
+     * @namespace
+     */
+
     defines:"CAAT.Module.Image.ImageUtil",
     depends : [
         "CAAT.Math.Matrix"
@@ -10,6 +17,11 @@ CAAT.Module({
 
     },
     constants:{
+
+        /**
+         * @lends CAAT.Module.Image.ImageUtil
+         */
+
         createAlphaSpriteSheet:function (maxAlpha, minAlpha, sheetSize, image, bg_fill_style) {
 
             if (maxAlpha < minAlpha) {

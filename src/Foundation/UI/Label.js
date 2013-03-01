@@ -1,4 +1,12 @@
 CAAT.Module( {
+
+    /**
+     * @name Label
+     * @memberOf CAAT.Foundation.UI
+     * @extends CAAT.Foundation.Actor
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.Label",
     depends : [
         "CAAT.Foundation.Actor",
@@ -15,10 +23,6 @@ CAAT.Module( {
         /**
          *
          * Current applied rendering context information.
-         *
-         * @constuctor
-         * @param ctx
-         * @return {*}
          */
         var renderContextStyle= function(ctx) {
             this.ctx= ctx;
@@ -248,8 +252,6 @@ CAAT.Module( {
 
         /**
          * This class keeps track of styles, images, and the current applied style.
-         * @constructor
-         * @return {*}
          */
         var renderContext= function() {
             this.text= "";
@@ -539,8 +541,6 @@ CAAT.Module( {
          * The document contains a collection of DocumentElementText and DocumentElementImage.
          * @param anchor
          * @param style
-         * @return {*}
-         * @constructor
          */
         var DocumentElement= function( anchor, style ) {
             this.link= anchor;
@@ -585,8 +585,6 @@ CAAT.Module( {
          * @param c
          * @param style
          * @param anchor
-         * @return {*}
-         * @constructor
          */
         var DocumentElementImage= function( x, image, r, c, style, anchor ) {
 
@@ -657,8 +655,6 @@ CAAT.Module( {
          * @param height
          * @param style
          * @param anchor
-         * @return {*}
-         * @constructor
          */
         var DocumentElementText= function( text,x,width,height,style, anchor) {
 
@@ -715,8 +711,6 @@ CAAT.Module( {
         /**
          * This class represents a document line.
          * It contains a collection of DocumentElement objects.
-         * @return {*}
-         * @constructor
          */
         var DocumentLine= function() {
             this.elements= [];
@@ -853,19 +847,12 @@ CAAT.Module( {
         };
 
         return {
+
             /**
-             * This object represents a label object.
-             * A label is a complex presentation object which is able to:
-             * <li>define comples styles
-             * <li>contains multiline text
-             * <li>keep track of per-line baseline regardless of fonts used.
-             * <li>Mix images and text.
-             * <li>Layout text and images in a fixed width or by parsing a free-flowing document
-             * <li>Add anchoring capabilities.
-             *
-             * @return {*}
-             * @constructor
+             * @lends CAAT.Foundation.UI.Label.prototype
              */
+
+
             __init : function() {
                 this.__super();
 
@@ -877,24 +864,86 @@ CAAT.Module( {
                 return this;
             },
 
+            /**
+             * This Label document´s horizontal alignment.
+             * @type {CAAT.Foundation.UI.Layout.LayoutManager}
+             * @private
+             */
             halignment  :   CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.LEFT,
+
+            /**
+             * This Label document´s vertical alignment.
+             * @type {CAAT.Foundation.UI.Layout.LayoutManager}
+             * @private
+             */
             valignment  :   CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.TOP,
+
+            /**
+             * This label text.
+             * @type {string}
+             * @private
+             */
             text        :   null,
+
+            /**
+             * This label document´s render context
+             * @type {RenderContext}
+             * @private
+             */
             rc          :   null,
 
+            /**
+             * Styles object.
+             * @private
+             */
             styles      :   null,
 
+            /**
+             * Calculated document width.
+             * @private
+             */
             documentWidth   : 0,
+
+            /**
+             * Calculated document Height.
+             * @private
+             */
             documentHeight  : 0,
+
+            /**
+             * Document x position.
+             * @private
+             */
             documentX       : 0,
+
+            /**
+             * Document y position.
+             * @private
+             */
             documentY       : 0,
 
+            /**
+             * Does this label document flow ?
+             * @private
+             */
             reflow      :   true,
 
+            /**
+             * Collection of text lines calculated for the label.
+             * @private
+             */
             lines       :   null,   // calculated elements lines...
 
+            /**
+             * Collection of image objects in this label´s document.
+             * @private
+             */
             images      :   null,
 
+            /**
+             * Registered callback to notify on anchor click event.
+             * @private
+             */
             clickCallback   : null,
 
             setStyle : function( name, styleData ) {

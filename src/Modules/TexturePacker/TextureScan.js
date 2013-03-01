@@ -1,15 +1,29 @@
 CAAT.Module({
+
+    /**
+     * @name TextureScan
+     * @memberOf CAAT.Module.TexturePacker
+     * @constructor
+     */
+
     defines : "CAAT.Module.TexturePacker.TextureScan",
     depends : [
         "CAAT.Module.TexturePacker.TextureElement"
     ],
     extendsWith : {
 
+        /**
+         * @lends CAAT.Module.TexturePacker.TextureScan.prototype
+         */
+
         __init : function(w) {
             this.freeChunks=[ {position:0, size:w||1024} ];
             return this;
         },
 
+        /**
+         *
+         */
         freeChunks: null,
 
         /**

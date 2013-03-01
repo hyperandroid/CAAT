@@ -12,10 +12,21 @@
  *
  **/
 
-/**
- * CAAT.PathSegment
- */
+
 CAAT.Module({
+
+    /**
+     * @name PathUtil
+     * @memberOf CAAT
+     * @namespace
+     */
+
+    /**
+     * @name PathSegment
+     * @memberOf CAAT.PathUtil
+     * @constructor
+     */
+
     defines:"CAAT.PathUtil.PathSegment",
     depends:[
         "CAAT.Math.Rectangle",
@@ -26,14 +37,34 @@ CAAT.Module({
     extendsWith:function () {
         return {
 
+            /**
+             * @lends CAAT.PathUtil.PathSegment.prototype
+             */
+
+
             __init:function () {
                 this.bbox = new CAAT.Math.Rectangle();
                 return this;
             },
 
+            /**
+             * Color to draw the segment.
+             */
             color:'#000',
+
+            /**
+             * Segment length.
+             */
             length:0,
+
+            /**
+             * Segment bounding box.
+             */
             bbox:null,
+
+            /**
+             * Path this segment belongs to.
+             */
             parent:null,
 
             /**

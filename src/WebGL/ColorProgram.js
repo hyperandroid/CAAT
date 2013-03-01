@@ -1,4 +1,12 @@
 CAAT.Module( {
+
+    /**
+     * @name ColorProgram
+     * @memberOf CAAT.WebGL
+     * @extends CAAT.WebGL.Program
+     * @constructor
+     */
+
     defines : "CAAT.WebGL.ColorProgram",
     aliases : ["CAAT.ColorProgram"],
     extendsClass : "CAAT.WebGL.Program",
@@ -6,13 +14,30 @@ CAAT.Module( {
         "CAAT.WebGL.Program"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.WebGL.ColorProgram.prototype
+         */
+
+
         __init : function(gl) {
             this.__super(gl);
             return this;
         },
 
+        /**
+         * int32 Array for color Buffer
+         */
         colorBuffer:    null,
+
+        /**
+         * GLBuffer for vertex buffer.
+         */
         vertexPositionBuffer:   null,
+
+        /**
+         * Float32 Array for vertex buffer.
+         */
         vertexPositionArray:    null,
 
         getFragmentShader : function() {

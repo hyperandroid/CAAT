@@ -1,4 +1,12 @@
 CAAT.Module({
+
+    /**
+     * @name ContainerBehavior
+     * @memberOf CAAT.Behavior
+     * @extends CAAT.Behavior.BaseBehavior
+     * @constructor
+     */
+
     defines:"CAAT.Behavior.ContainerBehavior",
     depends:["CAAT.Behavior.BaseBehavior", "CAAT.Behavior.GenericBehavior"],
     aliases: ["CAAT.ContainerBehavior"],
@@ -7,8 +15,32 @@ CAAT.Module({
 
         return {
 
+            /**
+             * @lends CAAT.Behavior.ContainerBehavior.prototype
+             */
+
+            /**
+             * @inheritDoc
+             */
+            parse : function( obj ) {
+                if ( obj.behaviors && obj.behaviors.length ) {
+                    for( var i=0; i<obj.behaviors.length; i+=1 ) {
+                        this.addBehavior( CAAT.Behavior.BaseBehavior.parse( obj.behaviors[i] ) );
+                    }
+                }
+                CAAT.Behavior.ContainerBehavior.superclass.parse.call(this,obj);
+            },
+
+            /**
+             * A collection of behaviors.
+             * @type {Array.<CAAT.Behavior.BaseBehavior>}
+             */
             behaviors:null, // contained behaviors array
 
+            /**
+             * @inheritDoc
+             * @private
+             */
             __init:function () {
                 this.__super();
                 this.behaviors = [];
@@ -33,6 +65,10 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * Get a behavior by mathing its id.
+             * @param id {object}
+             */
             getBehaviorById : function(id) {
                 for( var i=0; i<this.behaviors.length; i++ ) {
                     if ( this.behaviors[i].id===id ) {
@@ -44,16 +80,15 @@ CAAT.Module({
             },
 
             /**
-             * Adds a new behavior to the container.
-             * @param behavior
-             *
-             * @override
+             * Add a new behavior to the container.
+             * @param behavior {CAAT.Behavior.BaseBehavior}
              */
             addBehavior:function (behavior) {
                 this.behaviors.push(behavior);
                 behavior.addListener(this);
                 return this;
             },
+
             /**
              * Applies every contained Behaviors.
              * The application time the contained behaviors will receive will be ContainerBehavior related and not the
@@ -82,6 +117,7 @@ CAAT.Module({
                     }
                 }
             },
+
             /**
              * This method is the observer implementation for every contained behavior.
              * If a container is Cycle=true, won't allow its contained behaviors to be expired.
@@ -94,6 +130,7 @@ CAAT.Module({
                     behavior.setStatus(CAAT.Behavior.BaseBehavior.Status.STARTED);
                 }
             },
+
             /**
              * Implementation method of the behavior.
              * Just call implementation method for its contained behaviors.
@@ -109,9 +146,13 @@ CAAT.Module({
                 return null;
             },
 
+            /**
+             * Expire this behavior and the children applied at the parameter time.
+             * @param actor {CAAT.Foundation.Actor}
+             * @param time {number}
+             * @return {*}
+             */
             setExpired:function (actor, time) {
-
-                //CAAT.Behavior.ContainerBehavior.superclass.setExpired.call(this, actor, time);
 
                 var bh = this.behaviors;
                 // set for final interpolator value.
@@ -132,6 +173,9 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             setFrameTime:function (start, duration) {
                 CAAT.Behavior.ContainerBehavior.superclass.setFrameTime.call(this, start, duration);
 
@@ -142,6 +186,9 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             setDelayTime:function (start, duration) {
                 CAAT.Behavior.ContainerBehavior.superclass.setDelayTime.call(this, start, duration);
 
@@ -152,7 +199,50 @@ CAAT.Module({
                 return this;
             },
 
-            calculateKeyFrameData:function (referenceTime, prefix, prevValues) {
+            /**
+             * @inheritDoc
+             */
+            getKeyFrameDataValues : function(referenceTime) {
+
+                var i, bh, time;
+                var keyFrameData= {
+                    angle : 0,
+                    scaleX : 1,
+                    scaleY : 1,
+                    x : 0,
+                    y : 0
+                };
+
+                for (i = 0; i < this.behaviors.length; i++) {
+                    bh = this.behaviors[i];
+                    if (bh.status !== CAAT.Behavior.BaseBehavior.Status.EXPIRED && !(bh instanceof CAAT.Behavior.GenericBehavior)) {
+
+                        // ajustar tiempos:
+                        //  time es tiempo normalizado a duracion de comportamiento contenedor.
+                        //      1.- desnormalizar
+                        time = referenceTime * this.behaviorDuration;
+
+                        //      2.- calcular tiempo relativo de comportamiento respecto a contenedor
+                        if (bh.behaviorStartTime <= time && bh.behaviorStartTime + bh.behaviorDuration >= time) {
+                            //      3.- renormalizar tiempo reltivo a comportamiento.
+                            time = (time - bh.behaviorStartTime) / bh.behaviorDuration;
+
+                            //      4.- obtener valor de comportamiento para tiempo normalizado relativo a contenedor
+                            var obj= bh.getKeyFrameDataValues(time);
+                            for( var pr in obj ) {
+                                keyFrameData[pr]= obj[pr];
+                            }
+                        }
+                    }
+                }
+
+                return keyFrameData;
+            },
+
+            /**
+             * @inheritDoc
+             */
+            calculateKeyFrameData:function (referenceTime, prefix) {
 
                 var i;
                 var bh;
@@ -165,7 +255,7 @@ CAAT.Module({
 
                 for (i = 0; i < this.behaviors.length; i++) {
                     bh = this.behaviors[i];
-                    if (bh.status !== CAAT.Behavior.BehaviorConstants.Status.EXPIRED && !(bh instanceof CAAT.Behavior.GenericBehavior)) {
+                    if (bh.status !== CAAT.Behavior.BaseBehavior.Status.EXPIRED && !(bh instanceof CAAT.Behavior.GenericBehavior)) {
 
                         // ajustar tiempos:
                         //  time es tiempo normalizado a duracion de comportamiento contenedor.
@@ -208,7 +298,6 @@ CAAT.Module({
                             }
                         }
                     }
-
                 }
 
                 xx('translate');
@@ -227,6 +316,8 @@ CAAT.Module({
                     keyFrameRule += ' opacity: ' + tr + ';';
                 }
 
+                keyFrameRule+=" -webkit-transform-origin: 0% 0%";
+
                 return {
                     rules:keyFrameRule,
                     ret:retValue
@@ -235,15 +326,57 @@ CAAT.Module({
             },
 
             /**
-             *
-             * @param prefix
-             * @param name
-             * @param keyframessize
+             * @inheritDoc
              */
-            calculateKeyFramesData:function (prefix, name, keyframessize) {
+            calculateKeyFramesData:function (prefix, name, keyframessize, anchorX, anchorY) {
+
+                function toKeyFrame(obj, prevKF) {
+
+                    for( var i in prevKF ) {
+                        if ( !obj[i] ) {
+                            obj[i]= prevKF[i];
+                        }
+                    }
+
+                    var ret= "-" + prefix + "-transform:";
+
+                    if ( obj.x || obj.y ) {
+                        var x= obj.x || 0;
+                        var y= obj.y || 0;
+                        ret+= "translate("+x+"px,"+y+"px)";
+                    }
+
+                    if ( obj.angle ) {
+                        ret+= " rotate("+obj.angle+"rad)";
+                    }
+
+                    if ( obj.scaleX!==1 || obj.scaleY!==1 ) {
+                        ret+= " scale("+(obj.scaleX)+","+(obj.scaleY)+")";
+                    }
+
+                    ret+=";";
+
+                    if ( obj.alpha ) {
+                        ret+= " opacity: "+obj.alpha+";";
+                    }
+
+                    if ( anchorX!==.5 || anchorY!==.5) {
+                        ret+= " -" + prefix + "-transform-origin:"+ (anchorX*100) + "% " + (anchorY*100) + "%;";
+                    }
+
+                    return ret;
+                }
 
                 if (this.duration === Number.MAX_VALUE) {
                     return "";
+                }
+
+                if (typeof anchorX==="undefined") {
+                    anchorX= .5;
+                }
+
+                if (typeof anchorY==="undefined") {
+                    anchorY= .5;
                 }
 
                 if (typeof keyframessize === 'undefined') {
@@ -251,28 +384,27 @@ CAAT.Module({
                 }
 
                 var i;
-                var prevValues = null;
                 var kfd = "@-" + prefix + "-keyframes " + name + " {";
-                var ret;
                 var time;
-                var kfr;
+                var prevKF= {};
 
                 for (i = 0; i <= keyframessize; i++) {
                     time = this.interpolator.getPosition(i / keyframessize).y;
-                    ret = this.calculateKeyFrameData(time, prefix, prevValues);
-                    kfr = "" +
-                        (i / keyframessize * 100) + "%" + // percentage
-                        "{" + ret.rules + "}\n";
 
-                    prevValues = ret.ret;
-                    kfd += kfr;
+                    var obj = this.getKeyFrameDataValues(time);
+
+                    kfd += "" +
+                        (i / keyframessize * 100) + "%" + // percentage
+                        "{" + toKeyFrame(obj, prevKF) + "}\n";
+
+                    prevKF= obj;
+
                 }
 
-                kfd += "}";
+                kfd += "}\n";
 
                 return kfd;
             }
-
         }
     }
 });

@@ -1,17 +1,62 @@
 CAAT.Module( {
+
+    /**
+     * @name TimerTask
+     * @memberOf CAAT.Foundation.Timer
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.Timer.TimerTask",
     aliases : ["CAAT.TimerTask"],
     extendsWith : {
 
+        /**
+         * @lends CAAT.Foundation.Timer.TimerTask.prototype
+         */
+
+        /**
+         * Timer start time. Relative to Scene or Director time, depending who owns this TimerTask.
+         */
         startTime:          0,
+
+        /**
+         * Timer duration.
+         */
         duration:           0,
+
+        /**
+         * This callback will be called only once, when the timer expires.
+         */
         callback_timeout:   null,
+
+        /**
+         * This callback will be called whenever the timer is checked in time.
+         */
         callback_tick:      null,
+
+        /**
+         * This callback will be called when the timer is cancelled.
+         */
         callback_cancel:    null,
 
-        owner:              null,   // TimerManager instance
+        /**
+         * What TimerManager instance owns this task.
+         */
+        owner:              null,
+
+        /**
+         * Scene or director instance that owns this TimerTask owner.
+         */
         scene:              null,   // scene or director instance
+
+        /**
+         * An arbitrry id.
+         */
         taskId:             0,
+
+        /**
+         * Remove this timer task on expiration/cancellation ?
+         */
         remove:             false,
 
         /**

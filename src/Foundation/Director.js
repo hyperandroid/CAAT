@@ -4,6 +4,15 @@
  **/
 
 CAAT.Module({
+
+    /**
+     * @name Director
+     * @memberOf CAAT.Foundation
+     * @extends CAAT.Foundation.ActorContainer
+     *
+     * @constructor
+     */
+
     defines:"CAAT.Foundation.Director",
     aliases:["CAAT.Director"],
     extendsClass:"CAAT.Foundation.ActorContainer",
@@ -35,21 +44,30 @@ CAAT.Module({
         "CAAT.Module.TexturePacker.TexturePageManager"
     ],
     constants:{
-        RENDER_MODE_CONTINUOUS:1, // redraw every frame
-        RENDER_MODE_DIRTY:2, // suitable for evented CAAT.
+        /**
+         * @lends  CAAT.Foundation.Director
+         */
 
-        CLEAR_DIRTY_RECTS:1,
-        CLEAR_ALL:true,
-        CLEAR_NONE:false,
+        /** @const @type {number} */ RENDER_MODE_CONTINUOUS:1, // redraw every frame
+        /** @const @type {number} */ RENDER_MODE_DIRTY:2, // suitable for evented CAAT.
 
-        RESIZE_NONE:1,
-        RESIZE_WIDTH:2,
-        RESIZE_HEIGHT:4,
-        RESIZE_BOTH:8,
-        RESIZE_PROPORTIONAL:16
+        /** @const @type {number} */ CLEAR_DIRTY_RECTS:1,
+        /** @const @type {number} */ CLEAR_ALL:true,
+        /** @const @type {number} */ CLEAR_NONE:false,
+
+        /** @const @type {number} */ RESIZE_NONE:1,
+        /** @const @type {number} */ RESIZE_WIDTH:2,
+        /** @const @type {number} */ RESIZE_HEIGHT:4,
+        /** @const @type {number} */ RESIZE_BOTH:8,
+        /** @const @type {number} */ RESIZE_PROPORTIONAL:16
     },
     extendsWith:function () {
         return {
+
+            /**
+             * @lends  CAAT.Foundation.Director.prototype
+             */
+
             __init:function () {
                 this.__super();
 
@@ -65,7 +83,6 @@ CAAT.Module({
                 this.lastSelectedActor = null;
                 this.dragging = false;
 
-                this.cDirtyRects = [];
                 this.sDirtyRects = [];
                 this.dirtyRects = [];
                 for (var i = 0; i < 64; i++) {
@@ -80,54 +97,192 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * flag indicating debug mode. It will draw affedted screen areas.
+             * @type {boolean}
+             */
+            debug:false,
 
-            debug:false, // flag indicating debug mode. It will draw affedted screen areas.
-
+            /**
+             * Set CAAT render mode. Right now, this takes no effect.
+             */
             renderMode:CAAT.Foundation.Director.RENDER_MODE_CONTINUOUS,
 
-
+            /**
+             * This method will be called before rendering any director scene.
+             * Use this method to calculate your physics for example.
+             * @private
+             */
             onRenderStart:null,
+
+            /**
+             * This method will be called after rendering any director scene.
+             * Use this method to clean your physics forces for example.
+             * @private
+             */
             onRenderEnd:null,
 
             // input related attributes
-            mousePoint:null, // mouse coordinate related to canvas 0,0 coord.
-            prevMousePoint:null, // previous mouse position cache. Needed for drag events.
-            screenMousePoint:null, // screen mouse coordinates.
-            isMouseDown:false, // is the left mouse button pressed ?
-            lastSelectedActor:null, // director's last actor receiving input.
-            dragging:false, // is in drag mode ?
+            /**
+             * mouse coordinate related to canvas 0,0 coord.
+             * @private
+             */
+            mousePoint:null,
+
+            /**
+             * previous mouse position cache. Needed for drag events.
+             * @private
+             */
+            prevMousePoint:null,
+
+            /**
+             * screen mouse coordinates.
+             * @private
+             */
+            screenMousePoint:null,
+
+            /**
+             * is the left mouse button pressed ?.
+             * Needed to handle dragging.
+             */
+            isMouseDown:false,
+
+            /**
+             * director's last actor receiving input.
+             * Needed to set capture for dragging events.
+             */
+            lastSelectedActor:null,
+
+            /**
+             * is input in drag mode ?
+             */
+            dragging:false,
 
             // other attributes
 
-            scenes:null, // Scenes collection. An array.
-            currentScene:null, // The current Scene. This and only this will receive events.
-            canvas:null, // The canvas the Director draws on.
+            /**
+             * This director scene collection.
+             * @type {Array.<CAAT.Foundation.Scene>}
+             */
+            scenes:null,
 
-            ctx:null, // refactoring ct for a more convenient name
-            time:0, // virtual actor time.
-            timeline:0, // global director timeline.
-            imagesCache:null, // An array of JSON elements of the form { id:string, image:Image }
+            /**
+             * The current Scene. This and only this will receive events.
+             */
+            currentScene:null,
+
+            /**
+             * The canvas the Director draws on.
+             * @private
+             */
+            canvas:null,
+
+            /**
+             * This director´s canvas rendering context.
+             */
+            ctx:null,
+
+            /**
+             * director time.
+             * @private
+             */
+            time:0,
+
+            /**
+             * global director timeline.
+             * @private
+             */
+            timeline:0,
+
+            /**
+             * An array of JSON elements of the form { id:string, image:Image }
+             */
+            imagesCache:null,
+
+            /**
+             * this director´s audio manager.
+             * @private
+             */
             audioManager:null,
-            clear: CAAT.Foundation.Director.CLEAR_ALL, // clear background before drawing scenes ??
 
+            /**
+             * Clear screen strategy:
+             * CAAT.Foundation.Director.CLEAR_NONE : director won´t clear the background.
+             * CAAT.Foundation.Director.CLEAR_DIRTY_RECTS : clear only affected actors screen area.
+             * CAAT.Foundation.Director.CLEAR_ALL : clear the whole canvas object.
+             */
+            clear: CAAT.Foundation.Director.CLEAR_ALL,
+
+            /**
+             * if CAAT.CACHE_SCENE_ON_CHANGE is set, this scene will hold a cached copy of the exiting scene.
+             * @private
+             */
             transitionScene:null,
 
+            /**
+             * Some browser related information.
+             */
             browserInfo:null,
 
+            /**
+             * 3d context
+             * @private
+             */
             gl:null,
+
+            /**
+             * is WebGL enabled as renderer ?
+             * @private
+             */
             glEnabled:false,
+
+            /**
+             * if webGL is on, CAAT will texture pack all images transparently.
+             * @private
+             */
             glTextureManager:null,
+
+            /**
+             * The only GLSL program for webGL
+             * @private
+             */
             glTtextureProgram:null,
             glColorProgram:null,
 
+            /**
+             * webGL projection matrix
+             * @private
+             */
             pMatrix:null, // projection matrix
+
+            /**
+             * webGL vertex array
+             * @private
+             */
             coords:null, // Float32Array
+
+            /**
+             * webGL vertex indices.
+             * @private
+             */
             coordsIndex:0,
+
+            /**
+             * webGL uv texture indices
+             * @private
+             */
             uv:null,
             uvIndex:0,
 
+            /**
+             * draw tris front_to_back or back_to_front ?
+             * @private
+             */
             front_to_back:false,
 
+            /**
+             * statistics object
+             */
             statistics:{
                 size_total:0,
                 size_active:0,
@@ -136,36 +291,124 @@ CAAT.Module({
                 size_discarded_by_dirty_rects:0
             },
 
+            /**
+             * webGL current texture page. This minimizes webGL context changes.
+             * @private
+             */
             currentTexturePage:0,
+
+            /**
+             * webGL current shader opacity.
+             * BUGBUG: change this by vertex colors.
+             * @private
+             */
             currentOpacity:1,
 
+            /**
+             * if CAAT.NO_RAF is set (no request animation frame), this value is the setInterval returned
+             * id.
+             * @private
+             */
             intervalId:null,
 
+            /**
+             * Rendered frames counter.
+             */
             frameCounter:0,
 
+            /**
+             * Window resize strategy.
+             * see CAAT.Foundation.Director.RESIZE_* constants.
+             * @private
+             */
             resize:1,
+
+            /**
+             * Callback when the window is resized.
+             */
             onResizeCallback:null,
 
+            /**
+             * Calculated gesture event scale.
+             * @private
+             */
             __gestureScale:0,
+
+            /**
+             * Calculated gesture event rotation.
+             * @private
+             */
             __gestureRotation:0,
 
+            /**
+             * Dirty rects cache.
+             * An array of CAAT.Math.Rectangle object.
+             * @private
+             */
             dirtyRects:null, // dirty rects cache.
-            cDirtyRects:null, // current dirty rects.
+
+            /**
+             * Currently used dirty rects.
+             * @private
+             */
             sDirtyRects:null, // scheduled dirty rects.
+
+            /**
+             * Number of currently allocated dirty rects.
+             * @private
+             */
             dirtyRectsIndex:0,
+
+            /**
+             * Dirty rects enabled ??
+             * @private
+             */
             dirtyRectsEnabled:false,
+
+            /**
+             * Number of dirty rects.
+             * @private
+             */
             nDirtyRects:0,
+
+            /**
+             * Dirty rects count debug info.
+             * @private
+             */
             drDiscarded:0, // discarded by dirty rects.
 
+            /**
+             * Is this director stopped ?
+             */
             stopped:false, // is stopped, this director will do nothing.
 
-            needsRepaint:false, // for rendering mode = dirty, this flags means, paint another frame
+            /**
+             * currently unused.
+             * Intended to run caat in evented mode.
+             * @private
+             */
+            needsRepaint:false,
 
-            touches:null, // Touches information. Associate touch.id with an actor and original touch info.
+            /**
+             * Touches information. Associate touch.id with an actor and original touch info.
+             * @private
+             */
+            touches:null,
 
+            /**
+             * Director´s timer manager.
+             * Each scene has a timerManager as well.
+             * The difference is the scope. Director´s timers will always be checked whereas scene´ timers
+             * will only be scheduled/checked when the scene is director´ current scene.
+             * @private
+             */
             timerManager:null,
 
-            SCREEN_RATIO : 1,    // retina display deicePixels/backingStorePixels ratio
+            /**
+             * Retina display deicePixels/backingStorePixels ratio
+             * @private
+             */
+            SCREEN_RATIO : 1,
 
             __map : null,
 
@@ -181,7 +424,6 @@ CAAT.Module({
                 this.__gestureRotation = 0;
                 this.dirty = true;
                 this.dirtyRects = null;
-                this.cDirtyRects = null;
                 this.dirtyRectsIndex = 0;
                 this.dirtyRectsEnabled = false;
                 this.nDirtyRects = 0;
@@ -416,21 +658,23 @@ CAAT.Module({
                 this.timeline = new Date().getTime();
 
                 // transition scene
-                this.transitionScene = new CAAT.Foundation.Scene().setBounds(0, 0, width, height);
-                var transitionCanvas = document.createElement('canvas');
-                transitionCanvas.width = width;
-                transitionCanvas.height = height;
-                var transitionImageActor = new CAAT.Foundation.Actor().setBackgroundImage(transitionCanvas);
-                this.transitionScene.ctx = transitionCanvas.getContext('2d');
-                this.transitionScene.addChildImmediately(transitionImageActor);
-                this.transitionScene.setEaseListener(this);
+                if (CAAT.CACHE_SCENE_ON_CHANGE) {
+                    this.transitionScene = new CAAT.Foundation.Scene().setBounds(0, 0, width, height);
+                    var transitionCanvas = document.createElement('canvas');
+                    transitionCanvas.width = width;
+                    transitionCanvas.height = height;
+                    var transitionImageActor = new CAAT.Foundation.Actor().setBackgroundImage(transitionCanvas);
+                    this.transitionScene.ctx = transitionCanvas.getContext('2d');
+                    this.transitionScene.addChildImmediately(transitionImageActor);
+                    this.transitionScene.setEaseListener(this);
+                }
 
                 this.checkDebug();
 
                 return this;
             },
             glReset:function () {
-                this.pMatrix = makeOrtho(0, this.referenceWidth, this.referenceHeight, 0, -1, 1);
+                this.pMatrix = CAAT.WebGL.GLU.makeOrtho(0, this.referenceWidth, this.referenceHeight, 0, -1, 1);
                 this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
                 this.glColorProgram.setMatrixUniform(this.pMatrix);
                 this.glTextureProgram.setMatrixUniform(this.pMatrix);
@@ -885,7 +1129,6 @@ CAAT.Module({
                 this.dirty = false;
                 this.invalid = false;
                 this.dirtyRectsIndex = -1;
-                this.cDirtyRects = [];
 
                 var cl = this.childrenList;
                 var cli;
@@ -1141,7 +1384,7 @@ CAAT.Module({
                 var ssin = this.scenes[ inSceneIndex ];
                 var sout = this.scenes[ outSceneIndex ];
 
-                if (!CAAT.__CSS__ && !this.glEnabled) {
+                if (!CAAT.__CSS__ && CAAT.CACHE_SCENE_ON_CHANGE) {
                     this.renderToContext(this.transitionScene.ctx, sout);
                     sout = this.transitionScene;
                 }
@@ -2079,6 +2322,8 @@ CAAT.Module({
 
                 if (e.target === this.canvas) {
                     e.preventDefault();
+                    e.returnValue = false;
+
                     e = e.targetTouches[0];
 
                     var mp = this.mousePoint;
@@ -2097,6 +2342,8 @@ CAAT.Module({
 
                 if (this.touching) {
                     e.preventDefault();
+                    e.returnValue = false;
+
                     e = e.changedTouches[0];
                     var mp = this.mousePoint;
                     this.getCanvasCoord(mp, e);
@@ -2111,6 +2358,7 @@ CAAT.Module({
 
                 if (this.touching) {
                     e.preventDefault();
+                    e.returnValue = false;
 
                     if (this.gesturing) {
                         return;
@@ -2156,6 +2404,7 @@ CAAT.Module({
             __touchEndHandlerMT:function (e) {
 
                 e.preventDefault();
+                e.returnValue = false;
 
                 var i, j;
                 var recent = [];
@@ -2225,6 +2474,7 @@ CAAT.Module({
             __touchMoveHandlerMT:function (e) {
 
                 e.preventDefault();
+                e.returnValue = false;
 
                 var i;
                 var recent = [];
@@ -2300,7 +2550,7 @@ CAAT.Module({
 
             __touchStartHandlerMT:function (e) {
                 e.preventDefault();
-
+                e.returnValue = false;
 
                 var i;
                 var recent = [];
@@ -2537,18 +2787,21 @@ CAAT.Module({
                     canvas.addEventListener("gesturestart", function (e) {
                         if (e.target === canvas) {
                             e.preventDefault();
+                            e.returnValue = false;
                             me.__gestureStart(e.scale, e.rotation);
                         }
                     }, false);
                     canvas.addEventListener("gestureend", function (e) {
                         if (e.target === canvas) {
                             e.preventDefault();
+                            e.returnValue = false;
                             me.__gestureEnd(e.scale, e.rotation);
                         }
                     }, false);
                     canvas.addEventListener("gesturechange", function (e) {
                         if (e.target === canvas) {
                             e.preventDefault();
+                            e.returnValue = false;
                             me.__gestureChange(e.scale, e.rotation);
                         }
                     }, false);

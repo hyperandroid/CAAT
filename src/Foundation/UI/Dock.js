@@ -8,6 +8,20 @@
  */
 
 CAAT.Module( {
+
+    /**
+     * @name UI
+     * @memberOf CAAT.Foundation
+     * @namespace
+     */
+
+    /**
+     * @name Dock
+     * @memberOf CAAT.Foundation.UI
+     * @extends CAAT.Foundation.ActorContainer
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.Dock",
     aliases : ["CAAT.Dock"],
     extendsClass : "CAAT.Foundation.ActorContainer",
@@ -16,18 +30,62 @@ CAAT.Module( {
         "CAAT.Behavior.GenericBehavior"
     ],
     constants : {
+
+        /**
+         * @lends CAAT.Foundation.UI.Dock
+         */
+
+        /**
+         * @const
+         */
         OP_LAYOUT_BOTTOM:   0,
+        /**
+         * @const
+         */
         OP_LAYOUT_TOP:      1,
+        /**
+         * @const
+         */
         OP_LAYOUT_LEFT:     2,
+        /**
+         * @const
+         */
         OP_LAYOUT_RIGHT:    3
     },
     extendsWith : {
 
-        scene:              null,   // scene the actor is in.
-        ttask:              null,   // resetting dimension timer.
-        minSize:            0,      // min contained actor size
-        maxSize:            0,      // max contained actor size
-        range:              2,      // aproximated number of elements affected.
+        /**
+         * @lends CAAT.Foundation.UI.Dock.prototype
+         */
+
+        /**
+         * scene the actor is in.
+         */
+        scene:              null,
+
+        /**
+         * resetting dimension timer task.
+         */
+        ttask:              null,
+
+        /**
+         * min contained actor size.
+         */
+        minSize:            0,
+
+        /**
+         * max contained actor size
+         */
+        maxSize:            0,
+
+        /**
+         * aproximated number of elements affected.
+         */
+        range:              2,
+
+        /**
+         * Any value from CAAT.Foundation.Dock.UI.OP_LAYOUT_*
+         */
         layoutOp:           0,
 
         initialize : function(scene) {

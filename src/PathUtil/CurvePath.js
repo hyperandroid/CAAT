@@ -2,6 +2,14 @@
  * CAAT.CurvePath
  */
 CAAT.Module({
+
+    /**
+     * @name CurvePath
+     * @memberOf CAAT.PathUtil
+     * @extends CAAT.PathUtil.PathSegment
+     * @constructor
+     */
+
     defines:"CAAT.PathUtil.CurvePath",
     depends:[
         "CAAT.PathUtil.PathSegment",
@@ -12,14 +20,28 @@ CAAT.Module({
     extendsClass:"CAAT.PathUtil.PathSegment",
     extendsWith:function () {
         return {
+
+            /**
+             * @lends CAAT.PathUtil.CurvePath.prototype
+             */
+
+
             __init:function () {
                 this.__super();
                 this.newPosition = new CAAT.Math.Point(0, 0, 0);
                 return this;
             },
 
-            curve:null, // a CAAT.Bezier instance.
-            newPosition:null, // spare holder for getPosition coordinate return.
+            /**
+             * A CAAT.Math.Curve instance.
+             */
+            curve:null,
+
+            /**
+             * spare holder for getPosition coordinate return.
+             * @type {CAAT.Math.Point}
+             */
+            newPosition:null,
 
             applyAsPath:function (director) {
                 this.curve.applyAsPath(director);

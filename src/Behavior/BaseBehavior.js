@@ -16,20 +16,129 @@
  *
  **/
 
-/**
- * @class
- */
 CAAT.Module({
+
+    /**
+     *
+     * Namespace for all behavior-based actor properties instrumenter objects.
+     *
+     * @name Behavior
+     * @memberOf CAAT
+     * @namespace
+     */
+
+    /**
+     *
+     * The BaseBehavior is the base class of all Behavior modifiers:
+     *
+     * <li>AlphaBehabior
+     * <li>RotateBehavior
+     * <li>ScaleBehavior
+     * <li>Scale1Behavior
+     * <li>PathBehavior
+     * <li>GenericBehavior
+     * <li>ContainerBehavior
+     *
+     * Behavior base class.
+     *
+     * <p>
+     * A behavior is defined by a frame time (behavior duration) and a behavior application function called interpolator.
+     * In its default form, a behaviour is applied linearly, that is, the same amount of behavior is applied every same
+     * time interval.
+     * <p>
+     * A concrete Behavior, a rotateBehavior in example, will change a concrete Actor's rotationAngle during the specified
+     * period.
+     * <p>
+     * A behavior is guaranteed to notify (if any observer is registered) on behavior expiration.
+     * <p>
+     * A behavior can keep an unlimited observers. Observers are objects of the form:
+     * <p>
+     * <code>
+     * {
+     *      behaviorExpired : function( behavior, time, actor);
+     *      behaviorApplied : function( behavior, time, normalizedTime, actor, value);
+     * }
+     * </code>
+     * <p>
+     * <strong>behaviorExpired</strong>: function( behavior, time, actor). This method will be called for any registered observer when
+     * the scene time is greater than behavior's startTime+duration. This method will be called regardless of the time
+     * granurality.
+     * <p>
+     * <strong>behaviorApplied</strong> : function( behavior, time, normalizedTime, actor, value). This method will be called once per
+     * frame while the behavior is not expired and is in frame time (behavior startTime>=scene time). This method can be
+     * called multiple times.
+     * <p>
+     * Every behavior is applied to a concrete Actor.
+     * Every actor must at least define an start and end value. The behavior will set start-value at behaviorStartTime and
+     * is guaranteed to apply end-value when scene time= behaviorStartTime+behaviorDuration.
+     * <p>
+     * You can set behaviors to apply forever that is cyclically. When a behavior is cycle=true, won't notify
+     * behaviorExpired to its registered observers.
+     * <p>
+     * Other Behaviors simply must supply with the method <code>setForTime(time, actor)</code> overriden.
+     *
+     * @name BaseBehavior
+     * @memberOf CAAT.Behavior
+     * @constructor
+     *
+     */
+
+
+
+
     defines:        "CAAT.Behavior.BaseBehavior",
     constants:      {
 
         /**
-         * @enum
+         * @name Status
+         * @memberOf CAAT.Behavior.BaseBehavior
          */
         Status: {
-            NOT_STARTED: 0,
-            STARTED:    1,
-            EXPIRED:    2
+            /**
+             * @lends CAAT.Behavior.BaseBehavior.Status
+             */
+
+            /** @const @type {number}*/ NOT_STARTED: 0,
+            /** @const @type {number} */ STARTED:    1,
+            /** @const  @type {number}*/ EXPIRED:    2
+        },
+
+        /**
+         * @lends CAAT.Behavior.BaseBehavior
+         * @function
+         * @param obj a JSON object with a behavior definition.
+         */
+        parse : function( obj ) {
+
+            function findClass( qualifiedClassName ) {
+                var ns= qualifiedClassName.split(".");
+                var _global= window;
+                for( var i=0; i<ns.length; i++ ) {
+                    if ( !_global[ns[i]] ) {
+                        return null;
+                    }
+
+                    _global= _global[ns[i]];
+                }
+
+                return _global;
+            }
+
+            try {
+
+                var type= obj.type.toLowerCase();
+                type= "CAAT.Behavior."+type.substr(0,1).toUpperCase() + type.substr(1) + "Behavior";
+                var cl= new findClass(type);
+
+                var behavior= new cl();
+                behavior.parse(obj);
+                return behavior;
+
+            } catch(e) {
+                console.log("Error parsing behavior: "+e);
+            }
+
+            return null;
         }
     },
     depends:        ["CAAT.Behavior.Interpolator"],
@@ -42,45 +151,13 @@ CAAT.Module({
         return {
 
             /**
-             * Behavior base class.
-             *
-             * <p>
-             * A behavior is defined by a frame time (behavior duration) and a behavior application function called interpolator.
-             * In its default form, a behaviour is applied linearly, that is, the same amount of behavior is applied every same
-             * time interval.
-             * <p>
-             * A concrete Behavior, a rotateBehavior in example, will change a concrete Actor's rotationAngle during the specified
-             * period.
-             * <p>
-             * A behavior is guaranteed to notify (if any observer is registered) on behavior expiration.
-             * <p>
-             * A behavior can keep an unlimited observers. Observers are objects of the form:
-             * <p>
-             * <code>
-             * {
-             *      behaviorExpired : function( behavior, time, actor);
-             *      behaviorApplied : function( behavior, time, normalizedTime, actor, value);
-             * }
-             * </code>
-             * <p>
-             * <strong>behaviorExpired</strong>: function( behavior, time, actor). This method will be called for any registered observer when
-             * the scene time is greater than behavior's startTime+duration. This method will be called regardless of the time
-             * granurality.
-             * <p>
-             * <strong>behaviorApplied</strong> : function( behavior, time, normalizedTime, actor, value). This method will be called once per
-             * frame while the behavior is not expired and is in frame time (behavior startTime>=scene time). This method can be
-             * called multiple times.
-             * <p>
-             * Every behavior is applied to a concrete Actor.
-             * Every actor must at least define an start and end value. The behavior will set start-value at behaviorStartTime and
-             * is guaranteed to apply end-value when scene time= behaviorStartTime+behaviorDuration.
-             * <p>
-             * You can set behaviors to apply forever that is cyclically. When a behavior is cycle=true, won't notify
-             * behaviorExpired to its registered observers.
-             * <p>
-             * Other Behaviors simply must supply with the method <code>setForTime(time, actor)</code> overriden.
-             *
-             *
+             * @lends CAAT.Behavior.BaseBehavior.prototype
+             */
+
+            /**
+             * Constructor delegate function.
+             * @return {this}
+             * @private
              */
             __init:function () {
                 this.lifecycleListenerList = [];
@@ -88,36 +165,133 @@ CAAT.Module({
                 return this;
             },
 
-            lifecycleListenerList:null, // observer list.
-            behaviorStartTime:-1, // scene time to start applying the behavior
-            behaviorDuration:-1, // behavior duration in ms.
-            cycleBehavior:false, // apply forever ?
+            /**
+             * Behavior lifecycle observer list.
+             * @private
+             */
+            lifecycleListenerList:null,
 
+            /**
+             * Behavior application start time related to scene time.
+             * @private
+             */
+            behaviorStartTime:-1,
+
+            /**
+             * Behavior application duration time related to scene time.
+             * @private
+             */
+            behaviorDuration:-1,
+
+            /**
+             * Will this behavior apply for ever in a loop ?
+             * @private
+             */
+            cycleBehavior:false,
+
+            /**
+             * behavior status.
+             * @private
+             */
             status: CAAT.Behavior.BaseBehavior.Status.NOT_STARTED, // Status.NOT_STARTED
 
-            interpolator:null, // behavior application function. linear by default.
+            /**
+             * An interpolator object to apply behaviors using easing functions, etc.
+             * Unless otherwise specified, it will be linearly applied.
+             * @type {CAAT.Behavior.Interpolator}
+             * @private
+             */
+            interpolator:null,
+
+            /**
+             * The actor this behavior will be applied to.
+             * @type {CAAT.Foundation.Actor}
+             * @private
+             */
             actor:null, // actor the Behavior acts on.
+
+            /**
+             * An id to identify this behavior.
+             */
             id:0, // an integer id suitable to identify this behavior by number.
 
+            /**
+             * Initial offset to apply this behavior the first time.
+             * @type {number}
+             * @private
+             */
             timeOffset:0,
 
+            /**
+             * Apply the behavior, or just calculate the values ?
+             * @type {boolean}
+             */
             doValueApplication:true,
 
+            /**
+             * Is this behavior solved ? When called setDelayTime, this flag identifies whether the behavior
+             * is in time relative to the scene.
+             * @type {boolean}
+             * @private
+             */
             solved:true,
 
-            discardable:false, // is true, this behavior will be removed from the this.actor instance when it expires.
+            /**
+             * if true, this behavior will be removed from the this.actor instance when it expires.
+             * @type {boolean}
+             * @private
+             */
+            discardable:false,
 
-            /*  @memberOf CAAT.Behavior.BaseBehavior */
+            /**
+             * Parse a behavior of this type.
+             * @param obj {object} an object with a behavior definition.
+             */
+            parse : function( obj ) {
+                if ( obj.pingpong ) {
+                    this.setPingPong();
+                }
+                if ( obj.cycle ) {
+                    this.setCycle(true);
+                }
+                var delay= obj.delay || 0;
+                var duration= obj.duration || 1000;
+
+                this.setDelayTime( delay, duration );
+
+                if ( obj.interpolator ) {
+                    this.setInterpolator( CAAT.Behavior.Interpolator.parse(obj.interpolator) );
+                }
+            },
+
+            /**
+             * Set whether this behavior will apply behavior values to a reference Actor instance.
+             * @param apply {boolean}
+             * @return {*}
+             */
             setValueApplication:function (apply) {
                 this.doValueApplication = apply;
                 return this;
             },
 
+            /**
+             * Set this behavior offset time.
+             * This method is intended to make a behavior start applying (the first) time from a different
+             * start time.
+             * @param offset {number} between 0 and 1
+             * @return {*}
+             */
             setTimeOffset:function (offset) {
                 this.timeOffset = offset;
                 return this;
             },
 
+            /**
+             * Set this behavior status
+             * @param st {CAAT.Behavior.BaseBehavior.Status}
+             * @return {*}
+             * @private
+             */
             setStatus : function(st) {
                 this.status= st;
                 return this;
@@ -125,13 +299,14 @@ CAAT.Module({
 
             /**
              * Sets this behavior id.
-             * @param id an integer.
+             * @param id {object}
              *
              */
             setId:function (id) {
                 this.id = id;
                 return this;
             },
+
             /**
              * Sets the default interpolator to a linear ramp, that is, behavior will be applied linearly.
              * @return this
@@ -140,6 +315,7 @@ CAAT.Module({
                 this.interpolator = DefaultInterpolator;
                 return this;
             },
+
             /**
              * Sets default interpolator to be linear from 0..1 and from 1..0.
              * @return this
@@ -150,8 +326,7 @@ CAAT.Module({
             },
 
             /**
-             * Sets behavior start time and duration.
-             * Scene time will be the time of the scene the behavior actor is bound to.
+             * Sets behavior start time and duration. Start time is set absolutely relative to scene time.
              * @param startTime {number} an integer indicating behavior start time in scene time in ms..
              * @param duration {number} an integer indicating behavior duration in ms.
              */
@@ -162,9 +337,10 @@ CAAT.Module({
 
                 return this;
             },
+
             /**
-             * Sets behavior start time and duration but instead as setFrameTime which sets initial time as absolute time
-             * regarding scene's time, it uses a relative time offset from current scene time.
+             * Sets behavior start time and duration. Start time is relative to scene time.
+             *
              * a call to
              *   setFrameTime( scene.time, duration ) is equivalent to
              *   setDelayTime( 0, duration )
@@ -181,12 +357,18 @@ CAAT.Module({
                 return this;
 
             },
+
+            /**
+             * Make this behavior not applicable.
+             * @return {*}
+             */
             setOutOfFrameTime:function () {
                 this.status =CAAT.Behavior.BaseBehavior.Status.EXPIRED;
                 this.behaviorStartTime = Number.MAX_VALUE;
                 this.behaviorDuration = 0;
                 return this;
             },
+
             /**
              * Changes behavior default interpolator to another instance of CAAT.Interpolator.
              * If the behavior is not defined by CAAT.Interpolator factory methods, the interpolation function must return
@@ -197,6 +379,7 @@ CAAT.Module({
                 this.interpolator = interpolator;
                 return this;
             },
+
             /**
              * This method must no be called directly.
              * The director loop will call this method in orther to apply actor behaviors.
@@ -231,6 +414,7 @@ CAAT.Module({
                 this.cycleBehavior = bool;
                 return this;
             },
+
             /**
              * Adds an observer to this behavior.
              * @param behaviorListener an observer instance.
@@ -239,6 +423,7 @@ CAAT.Module({
                 this.lifecycleListenerList.push(behaviorListener);
                 return this;
             },
+
             /**
              * Remove all registered listeners to the behavior.
              */
@@ -246,12 +431,14 @@ CAAT.Module({
                 this.lifecycleListenerList = [];
                 return this;
             },
+
             /**
              * @return an integer indicating the behavior start time in ms..
              */
             getStartTime:function () {
                 return this.behaviorStartTime;
             },
+
             /**
              * @return an integer indicating the behavior duration time in ms.
              */
@@ -259,6 +446,7 @@ CAAT.Module({
                 return this.behaviorDuration;
 
             },
+
             /**
              * Chekcs whether the behaviour is in scene time.
              * In case it gets out of scene time, and has not been tagged as expired, the behavior is expired and observers
@@ -297,6 +485,12 @@ CAAT.Module({
                 return this.behaviorStartTime <= time; // && time<this.behaviorStartTime+this.behaviorDuration;
             },
 
+            /**
+             * Notify observers the first time the behavior is applied.
+             * @param actor
+             * @param time
+             * @private
+             */
             fireBehaviorStartedEvent:function (actor, time) {
                 for (var i = 0, l = this.lifecycleListenerList.length; i < l; i++) {
                     var b = this.lifecycleListenerList[i];
@@ -310,6 +504,7 @@ CAAT.Module({
              * Notify observers about expiration event.
              * @param actor a CAAT.Actor instance
              * @param time an integer with the scene time the behavior was expired at.
+             * @private
              */
             fireBehaviorExpiredEvent:function (actor, time) {
                 for (var i = 0, l = this.lifecycleListenerList.length; i < l; i++) {
@@ -319,6 +514,7 @@ CAAT.Module({
                     }
                 }
             },
+
             /**
              * Notify observers about behavior being applied.
              * @param actor a CAAT.Actor instance the behavior is being applied to.
@@ -326,6 +522,7 @@ CAAT.Module({
              * @param normalizedTime the normalized time (0..1) considering 0 behavior start time and 1
              * behaviorStartTime+behaviorDuration.
              * @param value the value being set for actor properties. each behavior will supply with its own value version.
+             * @private
              */
             fireBehaviorAppliedEvent:function (actor, time, normalizedTime, value) {
                 for (var i = 0, l = this.lifecycleListenerList.length; i < l; i++) {
@@ -335,11 +532,13 @@ CAAT.Module({
                     }
                 }
             },
+
             /**
              * Convert scene time into something more manageable for the behavior.
              * behaviorStartTime will be 0 and behaviorStartTime+behaviorDuration will be 1.
              * the time parameter will be proportional to those values.
              * @param time the scene time to be normalized. an integer.
+             * @private
              */
             normalizeTime:function (time) {
                 time = time - this.behaviorStartTime;
@@ -349,12 +548,12 @@ CAAT.Module({
 
                 return this.interpolator.getPosition(time / this.behaviorDuration).y;
             },
+
             /**
              * Sets the behavior as expired.
              * This method must not be called directly. It is an auxiliary method to isBehaviorInTime method.
              * @param actor {CAAT.Actor}
              * @param time {integer} the scene time.
-             *
              * @private
              */
             setExpired:function (actor, time) {
@@ -367,17 +566,18 @@ CAAT.Module({
                     this.actor.removeBehavior(this);
                 }
             },
+
             /**
              * This method must be overriden for every Behavior breed.
              * Must not be called directly.
              * @param actor {CAAT.Actor} a CAAT.Actor instance.
              * @param time {number} an integer with the scene time.
-             *
              * @private
              */
             setForTime:function (time, actor) {
 
             },
+
             /**
              * @param overrides
              */
@@ -391,9 +591,37 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * Get this behaviors CSS property name application.
+             * @return {String}
+             */
             getPropertyName:function () {
                 return "";
+            },
+
+            /**
+             * Calculate a CSS3 @key-frame for this behavior at the given time.
+             * @param time {number}
+             */
+            calculateKeyFrameData:function (time) {
+            },
+
+            /**
+             * Calculate a CSS3 @key-frame data values instead of building a CSS3 @key-frame value.
+             * @param time {number}
+             */
+            getKeyFrameDataValues : function(time) {
+            },
+
+            /**
+             * Calculate a complete CSS3 @key-frame set for this behavior.
+             * @param prefix {string} browser vendor prefix
+             * @param name {string} keyframes animation name
+             * @param keyframessize {number} number of keyframes to generate
+             */
+            calculateKeyFramesData:function (prefix, name, keyframessize) {
             }
+
         }
     }
 });

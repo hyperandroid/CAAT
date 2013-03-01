@@ -3,17 +3,33 @@
  */
 
 CAAT.Module({
+
+    /**
+     * @name TexturePageManager
+     * @memberOf CAAT.Module.TexturePacker
+     * @constructor
+     */
+
     defines : "CAAT.Module.TexturePacker.TexturePageManager",
     depends : [
         "CAAT.Module.TexturePacker.TexturePage"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Module.TexturePacker.TexturePageManager.prototype
+         */
+
         __init : function() {
             this.pages= [];
             return this;
         },
 
+        /**
+         *
+         */
         pages:  null,
+
         createPages:    function(gl,width,height,imagesCache) {
 
             var end= false;

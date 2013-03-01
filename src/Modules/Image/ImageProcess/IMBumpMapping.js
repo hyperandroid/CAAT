@@ -1,10 +1,24 @@
 CAAT.Module({
+
+
+    /**
+     * @name IMBumpMapping
+     * @memberOf CAAT.Module.Image.ImageProcessor
+     * @extends CAAT.Module.Image.ImageProcessor.ImageProcessor
+     * @constructor
+     */
+
+
     defines : "CAAT.Module.Image.ImageProcess.IMBumpMapping",
     depends : [
         "CAAT.Module.Image.ImageProcess.ImageProcessor"
     ],
     extendsClass : "CAAT.Module.Image.ImageProcess.ImageProcessor",
     extendsWith : {
+
+        /**
+         * @lends CAAT.Module.Image.ImageProcessor.IMBumpMapping.prototype
+         */
 
         // bump
         m_avgX:         null,
