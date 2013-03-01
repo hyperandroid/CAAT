@@ -83,6 +83,7 @@ CAAT.Module({
                 this.lastSelectedActor = null;
                 this.dragging = false;
 
+                this.cDirtyRects = [];
                 this.sDirtyRects = [];
                 this.dirtyRects = [];
                 for (var i = 0; i < 64; i++) {
