@@ -83,6 +83,7 @@ CAAT.Module({
                 this.lastSelectedActor = null;
                 this.dragging = false;
 
+                this.cDirtyRects = [];
                 this.sDirtyRects = [];
                 this.dirtyRects = [];
                 for (var i = 0; i < 64; i++) {
@@ -1129,6 +1130,7 @@ CAAT.Module({
                 this.dirty = false;
                 this.invalid = false;
                 this.dirtyRectsIndex = -1;
+                this.cDirtyRects = [];
 
                 var cl = this.childrenList;
                 var cli;
