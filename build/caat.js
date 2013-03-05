@@ -22297,6 +22297,7 @@ CAAT.Module({
                 this.dirty = false;
                 this.invalid = false;
                 this.dirtyRectsIndex = -1;
+                this.cDirtyRects = [];
 
                 var cl = this.childrenList;
                 var cli;
