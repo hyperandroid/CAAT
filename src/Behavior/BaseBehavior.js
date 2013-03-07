@@ -83,16 +83,20 @@ CAAT.Module({
      *
      */
 
-
+    /**
+     *
+     * Internal behavior status values. Do not assign directly.
+     *
+     * @name Status
+     * @memberOf CAAT.Behavior.BaseBehavior
+     * @namespace
+     * @enum {number}
+     */
 
 
     defines:        "CAAT.Behavior.BaseBehavior",
     constants:      {
 
-        /**
-         * @name Status
-         * @memberOf CAAT.Behavior.BaseBehavior
-         */
         Status: {
             /**
              * @lends CAAT.Behavior.BaseBehavior.Status

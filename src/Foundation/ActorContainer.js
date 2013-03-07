@@ -4,9 +4,20 @@ CAAT.Module({
      * @name ActorContainer
      * @memberOf CAAT.Foundation
      * @extends CAAT.Foundation.Actor
-     *
      * @constructor
-     *
+     */
+
+    /**
+     * @name ADDHINT
+     * @memberOf CAAT.Foundation.ActorContainer
+     * @namespace
+     */
+
+    /**
+     * @name AddHint
+     * @memberOf CAAT.Foundation.ActorContainer
+     * @namespace
+     * @deprecated
      */
 
     defines:"CAAT.Foundation.ActorContainer",
@@ -22,12 +33,21 @@ CAAT.Module({
          * @lends CAAT.Foundation.ActorContainer
          * */
 
-        /**
-         * @enum
-         */
-        AddHint:{
+        ADDHINT:{
 
-            CONFORM:1
+            /**
+             * @lends CAAT.Foundation.ActorContainer.ADDHINT
+             */
+
+            /** @const */ CONFORM:1
+        },
+
+        AddHint : {
+
+            /**
+             * @lends CAAT.Foundation.ActorContainer.AddHint
+             */
+            /** @const */ CONFORM:1
         }
     },
     extendsClass : "CAAT.Foundation.Actor",

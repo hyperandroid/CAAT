@@ -20,7 +20,7 @@ CAAT.Module({
     aliases:["CAAT.Interpolator"],
     constants : {
         /**
-         * @lends CAAt.Behavior.Interpolator
+         * @lends CAAT.Behavior.Interpolator
          */
 
         enumerateInterpolators: function () {

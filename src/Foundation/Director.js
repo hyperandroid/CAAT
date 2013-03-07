@@ -83,6 +83,7 @@ CAAT.Module({
                 this.lastSelectedActor = null;
                 this.dragging = false;
 
+                this.cDirtyRects = [];
                 this.sDirtyRects = [];
                 this.dirtyRects = [];
                 for (var i = 0; i < 64; i++) {
@@ -348,6 +349,12 @@ CAAT.Module({
             dirtyRects:null, // dirty rects cache.
 
             /**
+             * current dirty rects.
+             * @private
+             */
+            cDirtyRects:null, // dirty rects cache.
+
+            /**
              * Currently used dirty rects.
              * @private
              */
@@ -424,6 +431,7 @@ CAAT.Module({
                 this.__gestureRotation = 0;
                 this.dirty = true;
                 this.dirtyRects = null;
+                this.cDirtyRects = null;
                 this.dirtyRectsIndex = 0;
                 this.dirtyRectsEnabled = false;
                 this.nDirtyRects = 0;
@@ -1129,6 +1137,7 @@ CAAT.Module({
                 this.dirty = false;
                 this.invalid = false;
                 this.dirtyRectsIndex = -1;
+                this.cDirtyRects= [];
 
                 var cl = this.childrenList;
                 var cli;
