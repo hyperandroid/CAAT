@@ -94,7 +94,10 @@ CAAT.Module( {
         applyAsPath : function(director) {
             var ctx= director.ctx;
 
-            director.modelViewMatrix.transformRenderingContext( ctx );
+            if (this.parent) {
+                director.modelViewMatrix.transformRenderingContext( ctx );    
+            }
+            
             ctx.beginPath();
             ctx.globalCompositeOperation= 'source-out';
             var startPos = this.startCurvePosition();
