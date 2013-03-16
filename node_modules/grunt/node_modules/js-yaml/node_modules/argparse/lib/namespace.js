@@ -28,7 +28,7 @@ var Namespace = module.exports = function Namespace(options) {
  * Tells whenever `namespace` contains given `key` or not.
  **/
 Namespace.prototype.isset = function (key) {
-  return !!this[key];
+  return _.has(this, key);
 };
 
 /**
@@ -43,11 +43,7 @@ Namespace.prototype.set = function (key, value) {
   if (typeof (key) === 'object') {
     _.extend(this, key);
   } else {
-    if (value !== null) {
-      this[key] = value;
-    } else {
-      delete this[key];
-    }
+    this[key] = value;
   }
   return this;
 };

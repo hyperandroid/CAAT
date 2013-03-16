@@ -47,7 +47,8 @@ util.inherits(ActionAppend, Action);
  * Call the action. Save result in namespace object
  **/
 ActionAppend.prototype.call = function (parser, namespace, values) {
-  var items = [].concat(namespace[this.dest] || [], values);
+  var items = [].concat(namespace[this.dest] || []); // or _.clone
+  items.push(values);
   namespace.set(this.dest, items);
 };
 

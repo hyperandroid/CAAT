@@ -445,7 +445,8 @@ HelpFormatter.prototype._formatActionsUsage = function (actions, groups) {
     if (start >= 0) {
       end = start + group._groupActions.length;
 
-      if (actions.slice(start, end) === group._groupActions) {
+      //if (actions.slice(start, end) === group._groupActions) {
+      if (_.isEqual(actions.slice(start, end), group._groupActions)) {
         group._groupActions.forEach(function (action) {
           groupActions.push(action);
         });
@@ -530,12 +531,11 @@ HelpFormatter.prototype._formatActionsUsage = function (actions, groups) {
   });
 
   // insert things at the necessary indices
-  inserts.reverse().forEach(function (insert, insertIndex) {
-    parts = parts.slice(0, insertIndex).concat(
-        [insert],
-        parts.slice(insertIndex + 1, parts.length - 1)
-    );
-  });
+  for (var i = inserts.length - 1; i >= 0; --i) {
+    if (inserts[i] !== null) {
+      parts.splice(i, 0, inserts[i]);
+    }
+  }
 
   // join all the action items with spaces
   var text = parts.filter(function (part) {
@@ -543,12 +543,12 @@ HelpFormatter.prototype._formatActionsUsage = function (actions, groups) {
   }).join(' ');
 
   // clean up separators for mutually exclusive groups
-  var regexpOpen = '[\\[(]';
-  var regexpClose = '[\\])]';
-  text = text.replace('(' + regexpOpen + ') ', '\\1');
-  text = text.replace(' (' + regexpClose + ')', '\\1');
-  text = text.replace(regexpOpen + ' *' + regexpClose, '');
-  text = text.replace('\\(([^|]*)\\)', '\\1');
+  text = text.replace(/([\[(]) /g, '$1'); // remove spaces
+  text = text.replace(/ ([\])])/g, '$1');
+  text = text.replace(/\[ *\]/g, ''); // remove empty groups
+  text = text.replace(/\( *\)/g, '');
+  text = text.replace(/\(([^|]*)\)/g, '$1'); // remove () from single action groups
+
   text = _.str.strip(text);
 
   // return the text
@@ -701,11 +701,11 @@ HelpFormatter.prototype._formatArgs = function (action, metavarDefault) {
     break;
   case $$.ZERO_OR_MORE:
     metavars = buildMetavar(2);
-    result = '[' + metavars[0] + '[' + metavars[1] + ' ...]]';
+    result = '[' + metavars[0] + ' [' + metavars[1] + ' ...]]';
     break;
   case $$.ONE_OR_MORE:
     metavars = buildMetavar(2);
-    result = '' + metavars[0] + '[' + metavars[1] + ' ...]';
+    result = '' + metavars[0] + ' [' + metavars[1] + ' ...]';
     break;
   case $$.REMAINDER:
     result = '...';

@@ -1,5 +1,5 @@
 /** internal
- * class ArgumentGroup
+ * class MutuallyExclusiveGroup
  *
  * Group arguments.
  * By default, ArgumentParser groups command-line arguments
@@ -17,10 +17,11 @@ var util = require('util');
 var ArgumentGroup = require('./group');
 
 /**
- * new MutuallyExclusiveGroup(container, required)
+ * new MutuallyExclusiveGroup(container, options)
  * - container (object): main container
- * - options.required: true/false
- * (required could be an argument itself, but making it a property of
+ * - options (object): options.required -> true/false
+ *
+ * `required` could be an argument itself, but making it a property of
  * the options argument is more consistent with the JS adaptation of the Python)
  **/
 var MutuallyExclusiveGroup = module.exports = function MutuallyExclusiveGroup(container, options) {

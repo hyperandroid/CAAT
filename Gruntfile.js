@@ -212,8 +212,15 @@ module.exports = function(grunt) {
         },
         jsdoc: {
           dist: {
-            src: ['build/caat.js'],
-            dest: 'doc'
+            src: ['src/**/*.js'],
+            options: {
+                destination: 'doc',
+                recurse: true,
+                private: true,
+            },
+            tags: {
+                allowUnknownTags: true
+            }
           }
         },
         jshint: {
@@ -221,7 +228,7 @@ module.exports = function(grunt) {
               curly: true,
               eqeqeq: true,
               eqnull: true,
-              browser: true,
+              browser: true
             },
             all: ['src/**/*.js']
         }
@@ -230,7 +237,7 @@ module.exports = function(grunt) {
     // Default task.
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-uglify');
-    grunt.loadNpmTasks('grunt-contrib-jsdoc');
+    grunt.loadNpmTasks('grunt-jsdoc');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.registerTask('default', ['concat, uglify, jsdoc, jshint']);
 };
