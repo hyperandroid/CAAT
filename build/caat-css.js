@@ -1,3 +1,37 @@
+<<<<<<< HEAD
+=======
+/*
+The MIT License
+
+Copyright (c) 2010-2011-2012 Ibon Tolosana [@hyperandroid]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+Version: 0.6 build: 6
+
+Created on:
+DATE: 2013-03-07
+TIME: 13:16:55
+*/
+
+
+>>>>>>> upstream/master
 (function(global) {
 
     String.prototype.endsWith= function(suffix) {
@@ -3536,7 +3570,7 @@ CAAT.Module({
     aliases:["CAAT.Interpolator"],
     constants : {
         /**
-         * @lends CAAt.Behavior.Interpolator
+         * @lends CAAT.Behavior.Interpolator
          */
 
         enumerateInterpolators: function () {
@@ -4081,16 +4115,20 @@ CAAT.Module({
      *
      */
 
-
+    /**
+     *
+     * Internal behavior status values. Do not assign directly.
+     *
+     * @name Status
+     * @memberOf CAAT.Behavior.BaseBehavior
+     * @namespace
+     * @enum {number}
+     */
 
 
     defines:        "CAAT.Behavior.BaseBehavior",
     constants:      {
 
-        /**
-         * @name Status
-         * @memberOf CAAT.Behavior.BaseBehavior
-         */
         Status: {
             /**
              * @lends CAAT.Behavior.BaseBehavior.Status
@@ -5256,6 +5294,27 @@ CAAT.Module({
      * @constructor
      */
 
+    /**
+     *
+     * Internal PathBehavior rotation constants.
+     *
+     * @name AUTOROTATE
+     * @memberOf CAAT.Behavior.PathBehavior
+     * @namespace
+     * @enum {number}
+     */
+
+    /**
+     *
+     * Internal PathBehavior rotation constants.
+     *
+     * @name autorotate
+     * @memberOf CAAT.Behavior.PathBehavior
+     * @namespace
+     * @enum {number}
+     * @deprecated
+     */
+
     defines:"CAAT.Behavior.PathBehavior",
     aliases: ["CAAT.PathBehavior"],
     depends:[
@@ -5263,10 +5322,26 @@ CAAT.Module({
         "CAAT.Foundation.SpriteImage"
     ],
     constants : {
+
+        AUTOROTATE : {
+
+            /**
+             * @lends CAAT.Behavior.PathBehavior.AUTOROTATE
+             */
+
+            /** @const */ LEFT_TO_RIGHT:  0,
+            /** @const */ RIGHT_TO_LEFT:  1,
+            /** @const */ FREE:           2
+        },
+
         autorotate: {
-            LEFT_TO_RIGHT:  0,
-            RIGHT_TO_LEFT:  1,
-            FREE:           2
+            /**
+             * @lends CAAT.Behavior.PathBehavior.autorotate
+             */
+
+            /** @const */ LEFT_TO_RIGHT:  0,
+            /** @const */ RIGHT_TO_LEFT:  1,
+            /** @const */ FREE:           2
         }
     },
     extendsClass : "CAAT.Behavior.BaseBehavior",
@@ -5468,7 +5543,7 @@ CAAT.Module({
 
                     var angle = Math.atan2(ay, ax);
                     var si = CAAT.Foundation.SpriteImage;
-                    var pba = CAAT.Behavior.PathBehavior.autorotate;
+                    var pba = CAAT.Behavior.PathBehavior.AUTOROTATE;
 
                     // actor is heading left to right
                     if (this.autoRotateOp === pba.LEFT_TO_RIGHT) {
@@ -5734,6 +5809,22 @@ CAAT.Module({
      * @constructor
      */
 
+    /**
+     * @name AXIS
+     * @memberOf CAAT.Behavior.Scale1Behavior
+     * @enum {number}
+     * @namespace
+     */
+
+    /**
+     * @name Axis
+     * @memberOf CAAT.Behavior.Scale1Behavior
+     * @enum {number}
+     * @namespace
+     * @deprecated
+     */
+
+
     defines:"CAAT.Behavior.Scale1Behavior",
     depends:[
         "CAAT.Behavior.BaseBehavior",
@@ -5742,9 +5833,22 @@ CAAT.Module({
     aliases: ["CAAT.Scale1Behavior"],
     constants : {
 
+        AXIS : {
+            /**
+             * @lends CAAT.Behavior.Scale1Behavior.AXIS
+             */
+
+            /** @const */ X:  0,
+            /** @const */ Y:  1
+        },
+
         Axis : {
-            X:  0,
-            Y:  1
+            /**
+             * @lends CAAT.Behavior.Scale1Behavior.Axis
+             */
+
+            /** @const */ X:  0,
+            /** @const */ Y:  1
         }
     },
     extendsClass:"CAAT.Behavior.BaseBehavior",
@@ -5801,10 +5905,10 @@ CAAT.Module({
             },
 
             /**
-             * @param axis {CAAT.Behavior.Scale1Behavior.Axis}
+             * @param axis {CAAT.Behavior.Scale1Behavior.AXIS}
              */
             applyOnAxis:function (axis) {
-                if (axis === CAAT.Behavior.Scale1Behavior.Axis.X) {
+                if (axis === CAAT.Behavior.Scale1Behavior.AXIS.X) {
                     this.applyOnX = false;
                 } else {
                     this.applyOnX = true;
@@ -14435,6 +14539,18 @@ CAAT.Module( {
      * @constructor
      */
 
+    /**
+     * @name KEYS
+     * @memberOf CAAT
+     * @namespace
+     */
+
+    /**
+     * @name KEY_MODIFIERS
+     * @memberOf CAAT
+     * @namespace
+     */
+
     defines : "CAAT.Event.KeyEvent",
     aliases : "CAAT.KeyEvent",
     extendsWith : {
@@ -14497,106 +14613,113 @@ CAAT.Module( {
 
         /**
          * Key codes
+         * @type {enum}
+         */
+        CAAT.KEYS = {
+
+            /** @const */ ENTER:13,
+            /** @const */ BACKSPACE:8,
+            /** @const */ TAB:9,
+            /** @const */ SHIFT:16,
+            /** @const */ CTRL:17,
+            /** @const */ ALT:18,
+            /** @const */ PAUSE:19,
+            /** @const */ CAPSLOCK:20,
+            /** @const */ ESCAPE:27,
+            /** @const */ PAGEUP:33,
+            /** @const */ PAGEDOWN:34,
+            /** @const */ END:35,
+            /** @const */ HOME:36,
+            /** @const */ LEFT:37,
+            /** @const */ UP:38,
+            /** @const */ RIGHT:39,
+            /** @const */ DOWN:40,
+            /** @const */ INSERT:45,
+            /** @const */ DELETE:46,
+            /** @const */ 0:48,
+            /** @const */ 1:49,
+            /** @const */ 2:50,
+            /** @const */ 3:51,
+            /** @const */ 4:52,
+            /** @const */ 5:53,
+            /** @const */ 6:54,
+            /** @const */ 7:55,
+            /** @const */ 8:56,
+            /** @const */ 9:57,
+            /** @const */ a:65,
+            /** @const */ b:66,
+            /** @const */ c:67,
+            /** @const */ d:68,
+            /** @const */ e:69,
+            /** @const */ f:70,
+            /** @const */ g:71,
+            /** @const */ h:72,
+            /** @const */ i:73,
+            /** @const */ j:74,
+            /** @const */ k:75,
+            /** @const */ l:76,
+            /** @const */ m:77,
+            /** @const */ n:78,
+            /** @const */ o:79,
+            /** @const */ p:80,
+            /** @const */ q:81,
+            /** @const */ r:82,
+            /** @const */ s:83,
+            /** @const */ t:84,
+            /** @const */ u:85,
+            /** @const */ v:86,
+            /** @const */ w:87,
+            /** @const */ x:88,
+            /** @const */ y:89,
+            /** @const */ z:90,
+            /** @const */ SELECT:93,
+            /** @const */ NUMPAD0:96,
+            /** @const */ NUMPAD1:97,
+            /** @const */ NUMPAD2:98,
+            /** @const */ NUMPAD3:99,
+            /** @const */ NUMPAD4:100,
+            /** @const */ NUMPAD5:101,
+            /** @const */ NUMPAD6:102,
+            /** @const */ NUMPAD7:103,
+            /** @const */ NUMPAD8:104,
+            /** @const */ NUMPAD9:105,
+            /** @const */ MULTIPLY:106,
+            /** @const */ ADD:107,
+            /** @const */ SUBTRACT:109,
+            /** @const */ DECIMALPOINT:110,
+            /** @const */ DIVIDE:111,
+            /** @const */ F1:112,
+            /** @const */ F2:113,
+            /** @const */ F3:114,
+            /** @const */ F4:115,
+            /** @const */ F5:116,
+            /** @const */ F6:117,
+            /** @const */ F7:118,
+            /** @const */ F8:119,
+            /** @const */ F9:120,
+            /** @const */ F10:121,
+            /** @const */ F11:122,
+            /** @const */ F12:123,
+            /** @const */ NUMLOCK:144,
+            /** @const */ SCROLLLOCK:145,
+            /** @const */ SEMICOLON:186,
+            /** @const */ EQUALSIGN:187,
+            /** @const */ COMMA:188,
+            /** @const */ DASH:189,
+            /** @const */ PERIOD:190,
+            /** @const */ FORWARDSLASH:191,
+            /** @const */ GRAVEACCENT:192,
+            /** @const */ OPENBRACKET:219,
+            /** @const */ BACKSLASH:220,
+            /** @const */ CLOSEBRAKET:221,
+            /** @const */ SINGLEQUOTE:222
+        };
+
+        /**
+         * @deprecated
          * @type {Object}
          */
-        CAAT.Keys = {
-            ENTER:13,
-            BACKSPACE:8,
-            TAB:9,
-            SHIFT:16,
-            CTRL:17,
-            ALT:18,
-            PAUSE:19,
-            CAPSLOCK:20,
-            ESCAPE:27,
-            PAGEUP:33,
-            PAGEDOWN:34,
-            END:35,
-            HOME:36,
-            LEFT:37,
-            UP:38,
-            RIGHT:39,
-            DOWN:40,
-            INSERT:45,
-            DELETE:46,
-            0:48,
-            1:49,
-            2:50,
-            3:51,
-            4:52,
-            5:53,
-            6:54,
-            7:55,
-            8:56,
-            9:57,
-            a:65,
-            b:66,
-            c:67,
-            d:68,
-            e:69,
-            f:70,
-            g:71,
-            h:72,
-            i:73,
-            j:74,
-            k:75,
-            l:76,
-            m:77,
-            n:78,
-            o:79,
-            p:80,
-            q:81,
-            r:82,
-            s:83,
-            t:84,
-            u:85,
-            v:86,
-            w:87,
-            x:88,
-            y:89,
-            z:90,
-            SELECT:93,
-            NUMPAD0:96,
-            NUMPAD1:97,
-            NUMPAD2:98,
-            NUMPAD3:99,
-            NUMPAD4:100,
-            NUMPAD5:101,
-            NUMPAD6:102,
-            NUMPAD7:103,
-            NUMPAD8:104,
-            NUMPAD9:105,
-            MULTIPLY:106,
-            ADD:107,
-            SUBTRACT:109,
-            DECIMALPOINT:110,
-            DIVIDE:111,
-            F1:112,
-            F2:113,
-            F3:114,
-            F4:115,
-            F5:116,
-            F6:117,
-            F7:118,
-            F8:119,
-            F9:120,
-            F10:121,
-            F11:122,
-            F12:123,
-            NUMLOCK:144,
-            SCROLLLOCK:145,
-            SEMICOLON:186,
-            EQUALSIGN:187,
-            COMMA:188,
-            DASH:189,
-            PERIOD:190,
-            FORWARDSLASH:191,
-            GRAVEACCENT:192,
-            OPENBRACKET:219,
-            BACKSLASH:220,
-            CLOSEBRAKET:221,
-            SINGLEQUOTE:222
-        };
+        CAAT.Keys= CAAT.KEYS;
 
         /**
          * Shift key code
@@ -14624,11 +14747,13 @@ CAAT.Module( {
 
         /**
          * Event modifiers.
+         * @type enum
          */
         CAAT.KEY_MODIFIERS= {
-            alt:        false,
-            control:    false,
-            shift:      false
+
+            /** @const */ alt:        false,
+            /** @const */ control:    false,
+            /** @const */ shift:      false
         };
     }
 
@@ -20251,6 +20376,12 @@ CAAT.Module({
             dirtyRects:null, // dirty rects cache.
 
             /**
+             * current dirty rects.
+             * @private
+             */
+            cDirtyRects:null, // dirty rects cache.
+
+            /**
              * Currently used dirty rects.
              * @private
              */
@@ -20327,6 +20458,7 @@ CAAT.Module({
                 this.__gestureRotation = 0;
                 this.dirty = true;
                 this.dirtyRects = null;
+                this.cDirtyRects = null;
                 this.dirtyRectsIndex = 0;
                 this.dirtyRectsEnabled = false;
                 this.nDirtyRects = 0;
@@ -21032,7 +21164,11 @@ CAAT.Module({
                 this.dirty = false;
                 this.invalid = false;
                 this.dirtyRectsIndex = -1;
+<<<<<<< HEAD
                 this.cDirtyRects = [];
+=======
+                this.cDirtyRects= [];
+>>>>>>> upstream/master
 
                 var cl = this.childrenList;
                 var cli;
@@ -23674,7 +23810,8 @@ CAAT.Module( {
 
             __nextLine : function() {
                 this.x= 0;
-                this.currentLine= new DocumentLine();
+                this.currentLine= new DocumentLine(
+                    CAAT.Module.Font.Font.getFontMetrics( this.crcs.sfont)  );
                 this.lines.push( this.currentLine );
             },
 
@@ -24107,8 +24244,9 @@ CAAT.Module( {
          * This class represents a document line.
          * It contains a collection of DocumentElement objects.
          */
-        var DocumentLine= function() {
+        var DocumentLine= function( defaultFontMetrics ) {
             this.elements= [];
+            this.defaultFontMetrics= defaultFontMetrics;
             return this;
         };
 
@@ -24116,6 +24254,7 @@ CAAT.Module( {
             elements    : null,
             width       : 0,
             height      : 0,
+            defaultHeight : 0,  // default line height in case it is empty.
             y           : 0,
             x           : 0,
             alignment   : null,
@@ -24213,8 +24352,10 @@ CAAT.Module( {
                     }
                 }
 
-                this.baselinePos= Math.max( biggestFont ? biggestFont.ascent : 0, biggestImage ? biggestImage.getHeight() : 0 );
-                this.height= this.baselinePos + (biggestFont!=null ? biggestFont.descent : 0 );
+                this.baselinePos= Math.max(
+                    biggestFont ? biggestFont.ascent : this.defaultFontMetrics.ascent,
+                    biggestImage ? biggestImage.getHeight() : this.defaultFontMetrics.ascent );
+                this.height= this.baselinePos + (biggestFont!=null ? biggestFont.descent : this.defaultFontMetrics.descent );
 
                 for( i=0; i<this.elements.length; i++ ) {
                     this.elements[i].setYPosition( this.baselinePos );

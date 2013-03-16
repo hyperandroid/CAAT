@@ -7,6 +7,27 @@ CAAT.Module({
      * @constructor
      */
 
+    /**
+     *
+     * Internal PathBehavior rotation constants.
+     *
+     * @name AUTOROTATE
+     * @memberOf CAAT.Behavior.PathBehavior
+     * @namespace
+     * @enum {number}
+     */
+
+    /**
+     *
+     * Internal PathBehavior rotation constants.
+     *
+     * @name autorotate
+     * @memberOf CAAT.Behavior.PathBehavior
+     * @namespace
+     * @enum {number}
+     * @deprecated
+     */
+
     defines:"CAAT.Behavior.PathBehavior",
     aliases: ["CAAT.PathBehavior"],
     depends:[
@@ -14,10 +35,26 @@ CAAT.Module({
         "CAAT.Foundation.SpriteImage"
     ],
     constants : {
+
+        AUTOROTATE : {
+
+            /**
+             * @lends CAAT.Behavior.PathBehavior.AUTOROTATE
+             */
+
+            /** @const */ LEFT_TO_RIGHT:  0,
+            /** @const */ RIGHT_TO_LEFT:  1,
+            /** @const */ FREE:           2
+        },
+
         autorotate: {
-            LEFT_TO_RIGHT:  0,
-            RIGHT_TO_LEFT:  1,
-            FREE:           2
+            /**
+             * @lends CAAT.Behavior.PathBehavior.autorotate
+             */
+
+            /** @const */ LEFT_TO_RIGHT:  0,
+            /** @const */ RIGHT_TO_LEFT:  1,
+            /** @const */ FREE:           2
         }
     },
     extendsClass : "CAAT.Behavior.BaseBehavior",
@@ -219,7 +256,7 @@ CAAT.Module({
 
                     var angle = Math.atan2(ay, ax);
                     var si = CAAT.Foundation.SpriteImage;
-                    var pba = CAAT.Behavior.PathBehavior.autorotate;
+                    var pba = CAAT.Behavior.PathBehavior.AUTOROTATE;
 
                     // actor is heading left to right
                     if (this.autoRotateOp === pba.LEFT_TO_RIGHT) {

@@ -279,7 +279,8 @@ CAAT.Module( {
 
             __nextLine : function() {
                 this.x= 0;
-                this.currentLine= new DocumentLine();
+                this.currentLine= new DocumentLine(
+                    CAAT.Module.Font.Font.getFontMetrics( this.crcs.sfont)  );
                 this.lines.push( this.currentLine );
             },
 
@@ -712,8 +713,9 @@ CAAT.Module( {
          * This class represents a document line.
          * It contains a collection of DocumentElement objects.
          */
-        var DocumentLine= function() {
+        var DocumentLine= function( defaultFontMetrics ) {
             this.elements= [];
+            this.defaultFontMetrics= defaultFontMetrics;
             return this;
         };
 
@@ -721,6 +723,7 @@ CAAT.Module( {
             elements    : null,
             width       : 0,
             height      : 0,
+            defaultHeight : 0,  // default line height in case it is empty.
             y           : 0,
             x           : 0,
             alignment   : null,
@@ -818,8 +821,10 @@ CAAT.Module( {
                     }
                 }
 
-                this.baselinePos= Math.max( biggestFont ? biggestFont.ascent : 0, biggestImage ? biggestImage.getHeight() : 0 );
-                this.height= this.baselinePos + (biggestFont!=null ? biggestFont.descent : 0 );
+                this.baselinePos= Math.max(
+                    biggestFont ? biggestFont.ascent : this.defaultFontMetrics.ascent,
+                    biggestImage ? biggestImage.getHeight() : this.defaultFontMetrics.ascent );
+                this.height= this.baselinePos + (biggestFont!=null ? biggestFont.descent : this.defaultFontMetrics.descent );
 
                 for( i=0; i<this.elements.length; i++ ) {
                     this.elements[i].setYPosition( this.baselinePos );
