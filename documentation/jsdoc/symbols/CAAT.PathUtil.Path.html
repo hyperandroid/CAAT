@@ -199,6 +199,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Behavior.BaseBehavior.html">CAAT.Behavior.BaseBehavior</a></li>
 	
+	<li><a href="../symbols/CAAT.Behavior.BaseBehavior.Status.html">CAAT.Behavior.BaseBehavior.Status</a></li>
+	
 	<li><a href="../symbols/CAAT.Behavior.ContainerBehavior.html">CAAT.Behavior.ContainerBehavior</a></li>
 	
 	<li><a href="../symbols/CAAT.Behavior.GenericBehavior.html">CAAT.Behavior.GenericBehavior</a></li>
@@ -207,9 +209,17 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Behavior.PathBehavior.html">CAAT.Behavior.PathBehavior</a></li>
 	
+	<li><a href="../symbols/CAAT.Behavior.PathBehavior.AUTOROTATE.html">CAAT.Behavior.PathBehavior.AUTOROTATE</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.PathBehavior.autorotate.html">CAAT.Behavior.PathBehavior.autorotate</a></li>
+	
 	<li><a href="../symbols/CAAT.Behavior.RotateBehavior.html">CAAT.Behavior.RotateBehavior</a></li>
 	
 	<li><a href="../symbols/CAAT.Behavior.Scale1Behavior.html">CAAT.Behavior.Scale1Behavior</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.Scale1Behavior.AXIS.html">CAAT.Behavior.Scale1Behavior.AXIS</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.Scale1Behavior.Axis.html">CAAT.Behavior.Scale1Behavior.Axis</a></li>
 	
 	<li><a href="../symbols/CAAT.Behavior.ScaleBehavior.html">CAAT.Behavior.ScaleBehavior</a></li>
 	
@@ -230,6 +240,10 @@ ul.inheritsList
 	<li><a href="../symbols/CAAT.Foundation.Actor.html">CAAT.Foundation.Actor</a></li>
 	
 	<li><a href="../symbols/CAAT.Foundation.ActorContainer.html">CAAT.Foundation.ActorContainer</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.ActorContainer.AddHint.html">CAAT.Foundation.ActorContainer.AddHint</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.ActorContainer.ADDHINT.html">CAAT.Foundation.ActorContainer.ADDHINT</a></li>
 	
 	<li><a href="../symbols/CAAT.Foundation.Box2D.html">CAAT.Foundation.Box2D</a></li>
 	
@@ -282,6 +296,10 @@ ul.inheritsList
 	<li><a href="../symbols/CAAT.Foundation.UI.StarActor.html">CAAT.Foundation.UI.StarActor</a></li>
 	
 	<li><a href="../symbols/CAAT.Foundation.UI.TextActor.html">CAAT.Foundation.UI.TextActor</a></li>
+	
+	<li><a href="../symbols/CAAT.KEY_MODIFIERS.html">CAAT.KEY_MODIFIERS</a></li>
+	
+	<li><a href="../symbols/CAAT.KEYS.html">CAAT.KEYS</a></li>
 	
 	<li><a href="../symbols/CAAT.Math.html">CAAT.Math</a></li>
 	
@@ -775,6 +793,15 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;private&gt; &nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.PathUtil.Path.html#__getPositionImpl">__getPositionImpl</a></b>(time)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.PathUtil.Path.html#__init">__init</a></b>()
 								</div>
 								<div class="description"></div>
@@ -1001,9 +1028,9 @@ coordinate to startCurvePosition coordinate</del>.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.PathUtil.Path.html#getPosition">getPosition</a></b>(time)
+								<div class="fixedFont"><b><a href="../symbols/CAAT.PathUtil.Path.html#getPosition">getPosition</a></b>(time, open_contour, tangent_threshold)
 								</div>
-								<div class="description">This method, returns a CAAT.Point instance indicating a coordinate in the path.</div>
+								<div class="description">This method, returns a CAAT.Foundation.Point instance indicating a coordinate in the path.</div>
 							</td>
 						</tr>
 					
@@ -1954,6 +1981,42 @@ precomputed segment start time relative to segment legnth/path length and durati
 				<div class="sectionTitle">
 					Method Detail
 				</div>
+				
+					<a name="__getPositionImpl"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>__getPositionImpl</b>(time)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
 				
 					<a name="__init"> </a>
 					<div class="fixedFont">&lt;private&gt; 
@@ -3067,12 +3130,12 @@ method closePath) which calls this method as well.
 					<a name="getPosition"> </a>
 					<div class="fixedFont">
 					
-					<span class="light">{CAAT.Point}</span>
-					<b>getPosition</b>(time)
+					<span class="light">{CAAT.Foundation.Point}</span>
+					<b>getPosition</b>(time, open_contour, tangent_threshold)
 					
 					</div>
 					<div class="description">
-						This method, returns a CAAT.Point instance indicating a coordinate in the path.
+						This method, returns a CAAT.Foundation.Point instance indicating a coordinate in the path.
 The returned coordinate is the corresponding to normalizing the path's length to 1,
 and then finding what path segment and what coordinate in that path segment corresponds
 for the input time parameter.
@@ -3096,8 +3159,21 @@ This method is needed when traversing the path throughout a CAAT.Interpolator in
 									<b>time</b>
 									
 								</dt>
-								<dd>a value between 0 and 1 both inclusive. 0 will return path's starting coordinate.
+								<dd>{number} a value between 0 and 1 both inclusive. 0 will return path's starting coordinate.
 1 will return path's end coordinate.</dd>
+							
+								<dt>
+									<b>open_contour</b>
+									
+								</dt>
+								<dd>{boolean=} treat this path as an open contour. It is intended for
+open paths, and interpolators which give values above 1. see @link</dd>
+							
+								<dt>
+									<b>tangent_threshold</b>
+									
+								</dt>
+								<dd>{number=}</dd>
 							
 							</dl>
 						
@@ -3108,7 +3184,7 @@ This method is needed when traversing the path throughout a CAAT.Interpolator in
 							<dl class="detailList">
 							<dt class="heading">Returns:</dt>
 							
-								<dd><span class="light fixedFont">{CAAT.Point}</span> </dd>
+								<dd><span class="light fixedFont">{CAAT.Foundation.Point}</span> </dd>
 							
 							</dl>
 						
@@ -4423,7 +4499,7 @@ its internal data, ie: length and bbox.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Feb 27 2013 08:58:09 GMT-0800 (PST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Mar 18 2013 23:04:03 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

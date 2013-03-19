@@ -509,6 +509,11 @@ CAAT.Module({
              * @param id
              */
             findActorById:function (id) {
+
+                if ( CAAT.Foundation.ActorContainer.superclass.findActorById.call(this,id) ) {
+                    return this;
+                }
+
                 var cl = this.childrenList;
                 for (var i = 0, l = cl.length; i < l; i++) {
                     var ret= cl[i].findActorById(id);

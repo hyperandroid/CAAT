@@ -985,6 +985,11 @@ CAAT.Module({
                     // if dirty rects, add this actor
                     CAAT.currentDirector.scheduleDirtyRect(this.AABB);
                 }
+
+                if ( visible && !this.visible) {
+                    this.dirty= true;
+                }
+
                 this.visible = visible;
                 return this;
             },
@@ -1507,7 +1512,11 @@ CAAT.Module({
                     this.parent.removeChild(this);
                 }
 
+                this.backgroundImage= null;
+                this.emptyBehaviorList();
                 this.fireEvent('destroyed', time);
+                this.lifecycleListenerList= [];
+
             },
             /**
              * Transform a point or array of points in model space to view space.
