@@ -68,6 +68,8 @@
             }
         }
 
+        CAATClass["__CLASS"]= name;
+
         if ( aliases ) {
             if ( !isArray(aliases) ) {
                 aliases= [aliases];

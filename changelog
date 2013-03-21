@@ -1,3 +1,17 @@
+* 03/18/2013 0.6 Build 30 *
+---------------------------
+
+* Fixed. CAAT.Foundation.UI.Label. Empty lines now have correct height.
+* Fixed. Dirty Rectangles were broken !!!!.
+* Added. setOpenContour(bool) to PathBehavior which calculates path traversal beyond path length
+    as the path continuation out of its final path tangent values instead of wrapping the path.
+* Added BackOutInterpolator to the list of default interpolators. Always been there, but missed the
+    demos.
+* Added clean up code on Actor destroy.
+* Fix. Weird visibility change. Now on setVisible call, if from not visible to visible, the actor
+    is marked as dirty.
+* Fix. CAAT.Foundation.ActorContainer.getActorById function which could show wrong behavior.
+
 * 02/27/2013 0.6 Build 1 *
 ---------------------------
 

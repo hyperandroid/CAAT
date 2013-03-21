@@ -33,10 +33,7 @@ CAAT.DEBUG=true;
                                 setFillStyle('rgb(' + r + ',' + g + ',' + b + ')')
                 );
             }
-        }
-
-        ;
-
+        };
 
         /**
          * Startup it all up when the document is ready.
@@ -45,6 +42,7 @@ CAAT.DEBUG=true;
         window.addEventListener(
                 'load',
                 function () {
+
                     CAAT.Module.Initialization.TemplateWithSplash.init(
                             /* canvas will be 800x600 pixels */
                             900, 500,

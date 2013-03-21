@@ -107,6 +107,13 @@ CAAT.Module({
              */
             autoRotateOp: CAAT.Behavior.PathBehavior.autorotate.FREE,
 
+            isOpenContour : false,
+
+            setOpenContour : function(b) {
+                this.isOpenContour= b;
+                return this;
+            },
+
             /**
              * @inheritDoc
              */
@@ -237,7 +244,7 @@ CAAT.Module({
                     };
                 }
 
-                var point = this.path.getPosition(time);
+                var point = this.path.getPosition(time, this.isOpenContour,.001);
 
                 if (this.autoRotate) {
 
