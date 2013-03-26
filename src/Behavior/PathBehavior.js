@@ -109,6 +109,9 @@ CAAT.Module({
 
             isOpenContour : false,
 
+            relativeX : 0,
+            relativeY : 0,
+
             setOpenContour : function(b) {
                 this.isOpenContour= b;
                 return this;
@@ -120,6 +123,14 @@ CAAT.Module({
             getPropertyName:function () {
                 return "translate";
             },
+
+            setRelativeValues : function( x, y ) {
+                this.relativeX= x;
+                this.relativeY= y;
+                this.isRelative= true;
+                return this;
+            },
+
 
             /**
              * Sets an actor rotation to be heading from past to current path's point.
@@ -245,6 +256,10 @@ CAAT.Module({
                 }
 
                 var point = this.path.getPosition(time, this.isOpenContour,.001);
+                if (this.isRelative ) {
+                    point.x+= this.relativeX;
+                    point.y+= this.relativeY;
+                }
 
                 if (this.autoRotate) {
 

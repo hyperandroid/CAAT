@@ -346,7 +346,6 @@ CAAT.Module({
                     this.width= image.mapInfo[0].width;
                     this.height= image.mapInfo[0].height;
 
-
                 } else {
                     this.image = image;
                     this.width = image.width;
@@ -412,6 +411,12 @@ CAAT.Module({
                     }
                 }
 
+                return this;
+            },
+
+            copy : function( other ) {
+                this.initialize(other,1,1);
+                this.mapInfo= other.mapInfo;
                 return this;
             },
 

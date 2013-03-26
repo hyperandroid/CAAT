@@ -67,6 +67,7 @@ CAAT.Module( {
 
             __init : function()   {
                 this.elements= [];
+                this.baseURL= "";
                 return this;
             },
 
@@ -101,8 +102,10 @@ CAAT.Module( {
              */
             loadedCount:    0,
 
+            baseURL : null,
+
             addElement : function( id, path ) {
-                this.elements.push( new descriptor(id,path,this) );
+                this.elements.push( new descriptor(id,this.baseURL+path,this) );
                 return this;
             },
 
@@ -130,6 +133,11 @@ CAAT.Module( {
                 if ( this.cerrored ) {
                     this.cerrored(d.id);
                 }
+            },
+
+            setBaseURL : function( base ) {
+                this.baseURL= base;
+                return this;
             },
 
             load: function( onfinished, onload_one, onerror ) {

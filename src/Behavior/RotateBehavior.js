@@ -68,6 +68,14 @@ CAAT.Module({
              */
             anchorY:.50,
 
+            rotationRelative: 0,
+
+            setRelativeValues : function(r) {
+                this.rotationRelative= r;
+                this.isRelative= true;
+                return this;
+            },
+
             /**
              * @inheritDoc
              */
@@ -80,6 +88,16 @@ CAAT.Module({
              */
             setForTime:function (time, actor) {
                 var angle = this.startAngle + time * (this.endAngle - this.startAngle);
+
+                if ( this.isRelative ) {
+                    angle+= this.rotationRelative;
+                    if (angle>=Math.PI) {
+                        angle= (angle-2*Math.PI)
+                    }
+                    if ( angle<-2*Math.PI) {
+                        angle= (angle+2*Math.PI);
+                    }
+                }
 
                 if (this.doValueApplication) {
                     actor.setRotationAnchored(angle, this.anchorX, this.anchorY);

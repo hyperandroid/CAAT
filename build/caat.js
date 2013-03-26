@@ -4004,6 +4004,27 @@ CAAT.Module({
             discardable:false,
 
             /**
+             * does this behavior apply relative values ??
+             */
+            isRelative : false,
+
+            /**
+             * Set this behavior as relative value application to some other measures.
+             * Each Behavior will define its own.
+             * @param bool
+             * @returns {*}
+             */
+            setRelative : function( bool ) {
+                this.isRelative= bool;
+                return this;
+            },
+
+            setRelativeValues : function() {
+                this.isRelative= true;
+                return this;
+            },
+
+            /**
              * Parse a behavior of this type.
              * @param obj {object} an object with a behavior definition.
              */
@@ -4559,13 +4580,19 @@ CAAT.Module({
              */
             behaviors:null, // contained behaviors array
 
+            conforming : false,
+
             /**
+             * @param conforming {bool=} conform this behavior duration to that of its children.
              * @inheritDoc
              * @private
              */
-            __init:function () {
+            __init:function ( conforming ) {
                 this.__super();
                 this.behaviors = [];
+                if ( conforming ) {
+                    this.conforming= true;
+                }
                 return this;
             },
 
@@ -4608,6 +4635,15 @@ CAAT.Module({
             addBehavior:function (behavior) {
                 this.behaviors.push(behavior);
                 behavior.addListener(this);
+
+                if ( this.conforming ) {
+                    var len= behavior.behaviorDuration + behavior.behaviorStartTime;
+                    if ( this.behaviorDuration < len ) {
+                        this.behaviorDuration= len;
+                        this.behaviorStartTime= 0;
+                    }
+                }
+
                 return this;
             },
 
@@ -4628,9 +4664,9 @@ CAAT.Module({
                 time += this.timeOffset * this.behaviorDuration;
 
                 if (this.isBehaviorInTime(time, actor)) {
-                    time -= this.getStartTime();
+                    time -= this.behaviorStartTime;
                     if (this.cycleBehavior) {
-                        time %= this.getDuration();
+                        time %= this.behaviorDuration;
                     }
 
                     var bh = this.behaviors;
@@ -4653,6 +4689,10 @@ CAAT.Module({
                 }
             },
 
+            behaviorApplied : function(behavior, scenetime, time, actor, value ) {
+                this.fireBehaviorAppliedEvent(actor, scenetime, time, value);
+            },
+
             /**
              * Implementation method of the behavior.
              * Just call implementation method for its contained behaviors.
@@ -4660,12 +4700,13 @@ CAAT.Module({
              * @param actor{CAAT.Foundation.Actor} an actor the behavior is being applied to.
              */
             setForTime:function (time, actor) {
+                var retValue= null;
                 var bh = this.behaviors;
                 for (var i = 0; i < bh.length; i++) {
-                    bh[i].setForTime(time, actor);
+                    retValue= bh[i].setForTime(time, actor);
                 }
 
-                return null;
+                return retValue;
             },
 
             /**
@@ -5120,6 +5161,9 @@ CAAT.Module({
 
             isOpenContour : false,
 
+            relativeX : 0,
+            relativeY : 0,
+
             setOpenContour : function(b) {
                 this.isOpenContour= b;
                 return this;
@@ -5131,6 +5175,14 @@ CAAT.Module({
             getPropertyName:function () {
                 return "translate";
             },
+
+            setRelativeValues : function( x, y ) {
+                this.relativeX= x;
+                this.relativeY= y;
+                this.isRelative= true;
+                return this;
+            },
+
 
             /**
              * Sets an actor rotation to be heading from past to current path's point.
@@ -5256,6 +5308,10 @@ CAAT.Module({
                 }
 
                 var point = this.path.getPosition(time, this.isOpenContour,.001);
+                if (this.isRelative ) {
+                    point.x+= this.relativeX;
+                    point.y+= this.relativeY;
+                }
 
                 if (this.autoRotate) {
 
@@ -5408,6 +5464,14 @@ CAAT.Module({
              */
             anchorY:.50,
 
+            rotationRelative: 0,
+
+            setRelativeValues : function(r) {
+                this.rotationRelative= r;
+                this.isRelative= true;
+                return this;
+            },
+
             /**
              * @inheritDoc
              */
@@ -5420,6 +5484,16 @@ CAAT.Module({
              */
             setForTime:function (time, actor) {
                 var angle = this.startAngle + time * (this.endAngle - this.startAngle);
+
+                if ( this.isRelative ) {
+                    angle+= this.rotationRelative;
+                    if (angle>=Math.PI) {
+                        angle= (angle-2*Math.PI)
+                    }
+                    if ( angle<-2*Math.PI) {
+                        angle= (angle+2*Math.PI);
+                    }
+                }
 
                 if (this.doValueApplication) {
                     actor.setRotationAnchored(angle, this.anchorX, this.anchorY);
@@ -8551,6 +8625,7 @@ CAAT.Module( {
 
             __init : function()   {
                 this.elements= [];
+                this.baseURL= "";
                 return this;
             },
 
@@ -8585,8 +8660,10 @@ CAAT.Module( {
              */
             loadedCount:    0,
 
+            baseURL : null,
+
             addElement : function( id, path ) {
-                this.elements.push( new descriptor(id,path,this) );
+                this.elements.push( new descriptor(id,this.baseURL+path,this) );
                 return this;
             },
 
@@ -8614,6 +8691,11 @@ CAAT.Module( {
                 if ( this.cerrored ) {
                     this.cerrored(d.id);
                 }
+            },
+
+            setBaseURL : function( base ) {
+                this.baseURL= base;
+                return this;
             },
 
             load: function( onfinished, onload_one, onerror ) {
@@ -10304,183 +10386,6 @@ CAAT.Module({
 
     }
 });;/**
- * See LICENSE file.
- *
- * This object manages CSS3 transitions reflecting applying behaviors.
- *
- **/
-
-(function() {
-
-    /**
-     * @name CSS
-     * @memberOf CAAT
-     * @namespace
-     */
-
-    CAAT.CSS= {};
-
-    /**
-     * @lends CAAT.CSS
-     */
-
-
-    /**
-     * Guess a browser custom prefix.
-     * @type {*}
-     */
-    CAAT.CSS.PREFIX= (function() {
-
-        var prefix = "";
-        var prefixes = ['WebKit', 'Moz', 'O'];
-        var keyframes= "";
-
-        // guess this browser vendor prefix.
-        for (var i = 0; i < prefixes.length; i++) {
-            if (window[prefixes[i] + 'CSSKeyframeRule']) {
-                prefix = prefixes[i].toLowerCase();
-                break;
-            }
-        }
-
-        CAAT.CSS.PROP_ANIMATION= '-'+prefix+'-animation';
-
-        return prefix;
-    })();
-
-    /**
-     * Apply a given @key-frames animation to a DOM element.
-     * @param domElement {DOMElement}
-     * @param name {string} animation name
-     * @param duration_millis {number}
-     * @param delay_millis {number}
-     * @param forever {boolean}
-     */
-    CAAT.CSS.applyKeyframe= function( domElement, name, duration_millis, delay_millis, forever ) {
-        domElement.style[CAAT.CSS.PROP_ANIMATION]= name+' '+(duration_millis/1000)+'s '+(delay_millis/1000)+'s linear both '+(forever ? 'infinite' : '') ;
-    };
-
-    /**
-     * Remove a @key-frames animation from the stylesheet.
-     * @param name
-     */
-    CAAT.CSS.unregisterKeyframes= function( name ) {
-        var index= CAAT.CSS.getCSSKeyframesIndex(name);
-        if ( null!==index ) {
-            document.styleSheets[ index.sheetIndex ].deleteRule( index.index );
-        }
-    };
-
-    /**
-     *
-     * @param kfDescriptor {object}
-     *      {
-     *          name{string},
-     *          behavior{CAAT.Behavior},
-     *          size{!number},
-     *          overwrite{boolean}
-     *      }
-     *  }
-     */
-    CAAT.CSS.registerKeyframes= function( kfDescriptor ) {
-
-        var name=       kfDescriptor.name;
-        var behavior=   kfDescriptor.behavior;
-        var size=       kfDescriptor.size;
-        var overwrite=  kfDescriptor.overwrite;
-
-        if ( typeof name==='undefined' || typeof behavior==='undefined' ) {
-            throw 'Keyframes must be defined by a name and a CAAT.Behavior instance.';
-        }
-
-        if ( typeof size==='undefined' ) {
-            size= 100;
-        }
-        if ( typeof overwrite==='undefined' ) {
-            overwrite= false;
-        }
-
-        // find if keyframes has already a name set.
-        var cssRulesIndex= CAAT.CSS.getCSSKeyframesIndex(name);
-        if (null!==cssRulesIndex && !overwrite) {
-            return;
-        }
-
-        var keyframesRule= behavior.calculateKeyFramesData(CAAT.CSS.PREFIX, name, size, kfDescriptor.anchorX, kfDescriptor.anchorY );
-
-        if (document.styleSheets) {
-            if ( !document.styleSheets.length) {
-                var s = document.createElement('style');
-                s.type="text/css";
-
-                document.getElementsByTagName('head')[ 0 ].appendChild(s);
-            }
-
-            if ( null!==cssRulesIndex ) {
-                document.styleSheets[ cssRulesIndex.sheetIndex ].deleteRule( cssRulesIndex.index );
-            }
-
-            var index= cssRulesIndex ? cssRulesIndex.sheetIndex : 0;
-            document.styleSheets[ index ].insertRule( keyframesRule, 0 );
-        }
-
-        return keyframesRule;
-    };
-
-    CAAT.CSS.getCSSKeyframesIndex= function(name) {
-        var ss = document.styleSheets;
-        for (var i = ss.length - 1; i >= 0; i--) {
-            try {
-                var s = ss[i],
-                    rs = s.cssRules ? s.cssRules :
-                         s.rules ? s.rules :
-                         [];
-
-                for (var j = rs.length - 1; j >= 0; j--) {
-                    if ( ( rs[j].type === window.CSSRule.WEBKIT_KEYFRAMES_RULE ||
-                           rs[j].type === window.CSSRule.MOZ_KEYFRAMES_RULE ) && rs[j].name === name) {
-
-                        return {
-                            sheetIndex : i,
-                            index: j
-                        };
-                    }
-                }
-            } catch(e) {
-            }
-        }
-
-        return null;
-    };
-
-    CAAT.CSS.getCSSKeyframes= function(name) {
-
-        var ss = document.styleSheets;
-        for (var i = ss.length - 1; i >= 0; i--) {
-            try {
-                var s = ss[i],
-                    rs = s.cssRules ? s.cssRules :
-                         s.rules ? s.rules :
-                         [];
-
-                for (var j = rs.length - 1; j >= 0; j--) {
-                    if ( ( rs[j].type === window.CSSRule.WEBKIT_KEYFRAMES_RULE ||
-                           rs[j].type === window.CSSRule.MOZ_KEYFRAMES_RULE ) && rs[j].name === name) {
-
-                        return rs[j];
-                    }
-                }
-            }
-            catch(e) {
-            }
-        }
-        return null;
-    };
-
-
-
-})();
-;/**
  * See LICENSE file.
  *
  * These classes encapsulate different kinds of paths.
@@ -16495,7 +16400,6 @@ CAAT.Module({
                     this.width= image.mapInfo[0].width;
                     this.height= image.mapInfo[0].height;
 
-
                 } else {
                     this.image = image;
                     this.width = image.width;
@@ -16561,6 +16465,12 @@ CAAT.Module({
                     }
                 }
 
+                return this;
+            },
+
+            copy : function( other ) {
+                this.initialize(other,1,1);
+                this.mapInfo= other.mapInfo;
                 return this;
             },
 
@@ -21183,6 +21093,7 @@ CAAT.Module({
                 this.browserInfo = CAAT.Module.Runtime.BrowserInfo;
                 this.audioManager = new CAAT.Module.Audio.AudioManager().initialize(8);
                 this.scenes = [];
+                this.imagesCache= [];
 
                 // input related variables initialization
                 this.mousePoint = new CAAT.Math.Point(0, 0, 0);
@@ -21879,6 +21790,10 @@ CAAT.Module({
             },
             setImagesCache:function (imagesCache, tpW, tpH) {
 
+                if (!imagesCache || !imagesCache.length ) {
+                    return this;
+                }
+
                 var i;
 
                 if (null !== this.glTextureManager) {
@@ -21942,7 +21857,8 @@ CAAT.Module({
              */
             addImage:function (id, image, noUpdateGL) {
                 if (this.getImage(id)) {
-                    for (var i = 0; i < this.imagesCache.length; i++) {
+//                    for (var i = 0; i < this.imagesCache.length; i++) {
+                    for( var i in this.imagesCache ) {
                         if (this.imagesCache[i].id === id) {
                             this.imagesCache[i].image = image;
                             break;
@@ -22850,7 +22766,8 @@ CAAT.Module({
                     return ret;
                 }
 
-                for (var i = 0; i < this.imagesCache.length; i++) {
+                //for (var i = 0; i < this.imagesCache.length; i++) {
+                for( var i in this.imagesCache ) {
                     if (this.imagesCache[i].id === sId) {
                         return this.imagesCache[i].image;
                     }

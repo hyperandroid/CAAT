@@ -49,7 +49,6 @@ module.exports = function(grunt) {
                     'src/Modules/LayoutUtils/RowLayout.js',
                     'src/Modules/Initialization/Template.js',
                     'src/Modules/Initialization/TemplateWithSplash.js',
-                    'src/Modules/CSS/csskeyframehelper.js',
                     'src/PathUtil/PathSegment.js',
                     'src/PathUtil/ArcPath.js',
                     'src/PathUtil/CurvePath.js',
