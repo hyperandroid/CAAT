@@ -1451,13 +1451,26 @@ CAAT.Module({
              */
             removeBehaviour:function (behavior) {
                 var c = this.behaviorList;
-                var n = c.length - 1;
-                while (n) {
+                for (var n = 0; n < c.length; n++) {
                     if (c[n] === behavior) {
                         c.splice(n, 1);
                         return this;
                     }
                 }
+                return this;
+            },
+
+            /**
+             * Remove all Behaviors from the Actor.
+             *
+             * @return this
+             */
+            removeAllBehaviors: function() {
+                var bl = this.behaviorList; 
+                for (var pos = bl.length - 1; pos >= 0; pos--) {
+                    this.removeBehaviour(bl[pos]);
+                }
+                // console.log(this.behaviorList);
                 return this;
             },
             /**
