@@ -63,7 +63,7 @@
 
                 var lerps= CAAT.Behavior.Interpolator.enumerateInterpolators();
 
-                var cols= 20;
+                var cols= 21;
                 var j=0, i=0;
                 var rows= lerps.length/2/cols;
                 var min= 25;
@@ -220,6 +220,7 @@
                     var pb= new CAAT.Behavior.PathBehavior().
                             setValues( path ).
                             setFrameTime( 0,10000 ).
+                            setOpenContour(true).
                             setTranslation(shape.width/2, shape.height/2 ).
                             setCycle( true );
 

@@ -1,4 +1,12 @@
 CAAT.Module({
+
+    /**
+     * @name ShapeActor
+     * @memberOf CAAT.Foundation.UI
+     * @extends CAAT.Foundation.ActorContainer
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.ShapeActor",
     aliases : ["CAAT.ShapeActor"],
     extendsClass : "CAAT.Foundation.ActorContainer",
@@ -6,10 +14,20 @@ CAAT.Module({
         "CAAT.Foundation.ActorContainer"
     ],
     constants : {
-        SHAPE_CIRCLE:   0,      // Constants to describe different shapes.
-        SHAPE_RECTANGLE:1
+
+        /**
+         * @lends CAAT.Foundation.UI.ShapeActor
+         */
+
+        /** @const */ SHAPE_CIRCLE:   0,      // Constants to describe different shapes.
+        /** @const */ SHAPE_RECTANGLE:1
     },
     extendsWith : {
+
+        /**
+         * @lends CAAT.Foundation.UI.ShapeActor.prototype
+         */
+
         __init : function() {
             this.__super();
             this.compositeOp= 'source-over';
@@ -22,11 +40,34 @@ CAAT.Module({
             return this;
         },
 
+        /**
+         * Define this actor shape: rectangle or circle
+         */
         shape:          0,      // shape type. One of the constant SHAPE_* values
+
+        /**
+         * Set this shape composite operation when drawing it.
+         */
         compositeOp:    null,   // a valid canvas rendering context string describing compositeOps.
+
+        /**
+         * Stroke the shape with this line width.
+         */
         lineWidth:      1,
+
+        /**
+         * Stroke the shape with this line cap.
+         */
         lineCap:        null,
+
+        /**
+         * Stroke the shape with this line Join.
+         */
         lineJoin:       null,
+
+        /**
+         * Stroke the shape with this line mitter limit.
+         */
         miterLimit:     null,
 
         /**

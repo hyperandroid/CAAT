@@ -7,9 +7,26 @@
  *
  */
 CAAT.Module({
+
+    /**
+     * @name Runtime
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name BrowserInfo
+     * @memberOf CAAT.Module.Runtime
+     * @namespace
+     */
+
     defines:"CAAT.Module.Runtime.BrowserInfo",
 
     constants: function() {
+
+        /**
+         * @lends CAAT.Module.Runtime.BrowserInfo
+         */
 
         function searchString(data) {
             for (var i = 0; i < data.length; i++) {

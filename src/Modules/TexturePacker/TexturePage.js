@@ -1,9 +1,22 @@
 CAAT.Module( {
+
+    /**
+     * @name TexturePage
+     * @memberOf CAAT.Module.TexturePacker
+     * @constructor
+     */
+
+
     defines : "CAAT.Module.TexturePacker.TexturePage",
     depends : [
         "CAAT.Module.TexturePacker.TextureScanMap"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Module.TexturePacker.TexturePage.prototype
+         */
+
         __init : function(w,h) {
             this.width=         w || 1024;
             this.height=        h || 1024;
@@ -12,14 +25,49 @@ CAAT.Module( {
             return this;
         },
 
+        /**
+         *
+         */
         width:                  1024,
+
+        /**
+         *
+         */
         height:                 1024,
+
+        /**
+         *
+         */
         gl:                     null,
+
+        /**
+         *
+         */
         texture:                null,
+
+        /**
+         *
+         */
         allowImagesInvertion:   false,
+
+        /**
+         *
+         */
         padding:                4,
+
+        /**
+         *
+         */
         scan:                   null,
+
+        /**
+         *
+         */
         images:                 null,
+
+        /**
+         *
+         */
         criteria:               'area',
 
         initialize : function(gl) {

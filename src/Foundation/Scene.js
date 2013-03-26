@@ -4,6 +4,16 @@
  */
 
 CAAT.Module({
+
+    /**
+     * @name Scene
+     * @memberOf CAAT.Foundation
+     * @extends CAAT.Foundation.ActorContainer
+     *
+     * @constructor
+     *
+     */
+
     defines:"CAAT.Foundation.Scene",
     depends: [
         "CAAT.Math.Point",
@@ -21,13 +31,20 @@ CAAT.Module({
     aliases:["CAAT.Scene"],
     extendsClass:"CAAT.Foundation.ActorContainer",
     constants:{
-        EASE_ROTATION:1, // Constant values to identify the type of Scene transition
-        EASE_SCALE:2, // to perform on Scene switching by the Director.
-        EASE_TRANSLATE:3
+        /**
+         * @lends  CAAT.Foundation.Scene
+         */
+
+        /** @const @type {number} */ EASE_ROTATION:1, // Constant values to identify the type of Scene transition
+        /** @const @type {number} */ EASE_SCALE:2, // to perform on Scene switching by the Director.
+        /** @const @type {number} */ EASE_TRANSLATE:3
     },
     extendsWith:function () {
         return {
 
+            /**
+             * @lends  CAAT.Foundation.Scene.prototype
+             */
 
             __init:function () {
                 this.__super();
@@ -37,13 +54,39 @@ CAAT.Module({
                 return this;
             },
 
-            easeContainerBehaviour:null, // Behavior container used uniquely for Scene switching.
-            easeContainerBehaviourListener:null, // who to notify about container behaviour events. Array.
-            easeIn:false, // When Scene switching, this boolean identifies whether the
-            // Scene is being brought in, or taken away.
+            /**
+             * Behavior container used uniquely for Scene switching.
+             * @type {CAAT.Behavior.ContainerBehavior}
+             * @private
+             */
+            easeContainerBehaviour:null,
 
+            /**
+             * Array of container behaviour events observer.
+             * @private
+             */
+            easeContainerBehaviourListener:null,
+
+            /**
+             * When Scene switching, this boolean identifies whether the Scene is being brought in, or taken away.
+             * @type {boolean}
+             * @private
+             */
+            easeIn:false,
+
+
+            /**
+             * is this scene paused ?
+             * @type {boolean}
+             * @private
+             */
             paused:false,
 
+            /**
+             * This scene´s timer manager.
+             * @type {CAAT.Foundation.Timer.TimerManager}
+             * @private
+             */
             timerManager:null,
 
             isPaused:function () {
@@ -62,17 +105,6 @@ CAAT.Module({
                 return this.timerManager.createTimer(this.time, duration, callback_timeout, callback_tick, callback_cancel, this);
             },
 
-            /**
-             * Scene animation method.
-             * It extendsClass Container's base behavior by adding timer control.
-             * @param director {CAAT.Foundation.Director}
-             * @param time {number} scene time the animation is being performed at.
-             */
-//            animate:function (director, time) {
-//                this.timerManager.checkTimers(time);
-//                CAAT.Foundation.Scene.superclass.animate.call(this, director, time);
-//                this.timerManager.removeExpiredTimers();
-//            },
             /**
              * Helper method to manage alpha transparency fading on Scene switch by the Director.
              * @param time {number} time in milliseconds then fading will taableIne.

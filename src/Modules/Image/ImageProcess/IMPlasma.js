@@ -1,4 +1,13 @@
 CAAT.Module({
+
+    /**
+     * @name IMPlasma
+     * @memberOf CAAT.Module.Image.ImageProcessor
+     * @extends CAAT.Module.Image.ImageProcessor.ImageProcessor
+     * @constructor
+     */
+
+
     defines : "CAAT.Module.Image.ImageProcess.IMPlasma",
     depends : [
         "CAAT.Module.Image.ImageProcess.ImageProcessor",
@@ -6,6 +15,10 @@ CAAT.Module({
     ],
     extendsClass : "CAAT.Module.Image.ImageProcess.ImageProcessor",
     extendsWith : {
+
+        /**
+         * @lends CAAT.Module.Image.ImageProcessor.IMPlasma.prototype
+         */
 
         wavetable: null,
         m_colorMap: null,

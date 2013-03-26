@@ -1,4 +1,12 @@
 CAAT.Module( {
+
+    /**
+     * @name B2DCircularBody
+     * @memberOf CAAT.Foundation.Box2D
+     * @extends CAAT.Foundation.Box2D.B2DBodyActor
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.Box2D.B2DCircularBody",
     depends : [
         "CAAT.Foundation.Box2D.B2DBodyActor"
@@ -6,6 +14,11 @@ CAAT.Module( {
     aliases : ["CAAT.B2DCircularBody"],
     extendsClass : "CAAT.Foundation.Box2D.B2DBodyActor",
     constants : {
+
+        /**
+         * @lends CAAT.Foundation.Box2D.B2DCircularBody
+         */
+
         createCircularBody : function(world, bodyData) {
             if ( bodyData.radius )  this.radius= bodyData.radius;
 
@@ -39,6 +52,11 @@ CAAT.Module( {
         }
     },
     extendsWith : {
+
+        /**
+         * @lends CAAT.Foundation.Box2D.B2DCircularBody.prototype
+         */
+
 
         /**
          * Default radius.

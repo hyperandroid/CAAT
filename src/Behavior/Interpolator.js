@@ -8,17 +8,28 @@
  **/
 
 CAAT.Module({
+
+    /**
+     * @name Interpolator
+     * @memberOf CAAT.Behavior
+     * @constructor
+     */
+
     defines:"CAAT.Behavior.Interpolator",
     depends:["CAAT.Math.Point"],
     aliases:["CAAT.Interpolator"],
     constants : {
         /**
-         *
+         * @lends CAAT.Behavior.Interpolator
          */
+
         enumerateInterpolators: function () {
             return [
                 new CAAT.Behavior.Interpolator().createLinearInterpolator(false, false), 'Linear pingpong=false, inverse=false',
                 new CAAT.Behavior.Interpolator().createLinearInterpolator(true, false), 'Linear pingpong=true, inverse=false',
+
+                new CAAT.Behavior.Interpolator().createBackOutInterpolator(false), 'BackOut pingpong=true, inverse=false',
+                new CAAT.Behavior.Interpolator().createBackOutInterpolator(true), 'BackOut pingpong=true, inverse=true',
 
                 new CAAT.Behavior.Interpolator().createLinearInterpolator(false, true), 'Linear pingpong=false, inverse=true',
                 new CAAT.Behavior.Interpolator().createLinearInterpolator(true, true), 'Linear pingpong=true, inverse=true',
@@ -65,11 +76,28 @@ CAAT.Module({
                 new CAAT.Behavior.Interpolator().createElasticOutInterpolator(1.0, 0.2, true), 'ElasticOut pingpong=true, amp=1.0, d=.2',
                 new CAAT.Behavior.Interpolator().createElasticInOutInterpolator(1.0, 0.2, true), 'ElasticInOut pingpong=true, amp=1.0, d=.2'
             ];
-        }        
+        },
+
+        parse : function( obj ) {
+            var name= "create"+obj.type+"Interpolator";
+            var interpolator= new CAAT.Behavior.Interpolator();
+            try {
+                interpolator[name].apply( interpolator, obj.params||[] );
+            } catch(e) {
+                interpolator.createLinearInterpolator(false, false);
+            }
+
+            return interpolator;
+        }
+
     },
     extendsWith:function () {
 
         return {
+
+            /**
+             * @lends CAAT.Behavior.Interpolator.prototype
+             */
 
             interpolated:null, // a coordinate holder for not building a new CAAT.Point for each interpolation call.
             paintScale:90, // the size of the interpolation draw on screen in pixels.
@@ -111,6 +139,7 @@ CAAT.Module({
 
                 return this;
             },
+
             createBackOutInterpolator:function (bPingPong) {
                 this.getPosition = function getPosition(time) {
                     var orgTime = time;
@@ -416,6 +445,7 @@ CAAT.Module({
 
                 return this;
             },
+
             /**
              * Paints an interpolator on screen.
              * @param ctx {CanvasRenderingContext}
@@ -435,11 +465,12 @@ CAAT.Module({
                 ctx.stroke();
                 ctx.restore();
             },
+
             /**
              * Gets an array of coordinates which define the polyline of the intepolator's curve contour.
              * Values for both coordinates range from 0 to 1.
              * @param iSize {number} an integer indicating the number of contour segments.
-             * @return array{CAAT.Point} of object of the form {x:float, y:float}.
+             * @return Array.<CAAT.Math.Point> of object of the form {x:float, y:float}.
              */
             getContour:function (iSize) {
                 var contour = [];

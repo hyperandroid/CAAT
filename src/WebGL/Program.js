@@ -3,15 +3,41 @@
  */
 
 CAAT.Module( {
+
+
+    /**
+     * @name WebGL
+     * @memberOf CAAT
+     * @namespace
+     */
+
+    /**
+     * @name Program
+     * @memberOf CAAT.WebGL
+     * @constructor
+     */
+
+
     defines : "CAAT.WebGL.Program",
     extendsWith : {
+
+        /**
+         * @lends CAAT.WebGL.Program.prototype
+         */
 
         __init : function(gl) {
             this.gl= gl;
             return this;
         },
 
+        /**
+         *
+         */
         shaderProgram:  null,
+
+        /**
+         * Canvas 3D context.
+         */
         gl:             null,
 
         /**

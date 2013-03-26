@@ -1,10 +1,22 @@
 CAAT.Module({
+
+    /**
+     * @name IMRotoZoom
+     * @memberOf CAAT.Module.Image.ImageProcessor
+     * @extends CAAT.Module.Image.ImageProcessor.ImageProcessor
+     * @constructor
+     */
+
     defines : "CAAT.Module.Image.ImageProcess.IMRotoZoom",
     depends : [
         "CAAT.Module.Image.ImageProcess.ImageProcessor"
     ],
     extendsClass : "CAAT.Module.Image.ImageProcess.ImageProcessor",
     extendsWith : {
+
+        /**
+         * @lends CAAT.Module.Image.ImageProcessor.IMRotoZoom.prototype
+         */
 
         m_alignv:       1,
         m_alignh:       1,

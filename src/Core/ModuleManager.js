@@ -68,6 +68,8 @@
             }
         }
 
+        CAATClass["__CLASS"]= name;
+
         if ( aliases ) {
             if ( !isArray(aliases) ) {
                 aliases= [aliases];
@@ -679,11 +681,22 @@
     var mm= new ModuleManager();
     var DEBUG= false;
 
+
+    /**
+     * CAAT is the namespace for all CAAT gaming engine object classes.
+     *
+     * @name CAAT
+     * @namespace
+     */
+
     global.CAAT= global.CAAT || {};
 
     /**
      *
-     * @param obj {
+     * This function defines CAAT modules, and creates Constructor Class objects.
+     *
+     * obj parameter has the following structure:
+     * {
      *   defines{string},             // class name
      *   depends{Array<string>=},   // dependencies class names
      *   extendsClass{string},            // class to extend from
@@ -692,6 +705,9 @@
      *   onCreation{function=}        // optional callback to call after class creation.
      *   onPreCreation{function=}        // optional callback to call after namespace class creation.
      * }
+     *
+     * @param obj {object}
+     * @private
      */
     CAAT.Module= function loadModule(obj) {
 
@@ -706,8 +722,18 @@
 
     };
 
+    /**
+     * @name ModuleManager
+     * @memberOf CAAT
+     * @namespace
+     */
     CAAT.ModuleManager= {};
 
+    /**
+     * Define global base position for modules structure.
+     * @param baseURL {string}
+     * @return {*}
+     */
     CAAT.ModuleManager.baseURL= function(baseURL) {
 
         if ( !baseURL ) {
@@ -722,6 +748,11 @@
         return CAAT.ModuleManager;
     };
 
+    /**
+     * Define a module path. Multiple module paths can be specified.
+     * @param module {string}
+     * @param path {string}
+     */
     CAAT.ModuleManager.setModulePath= function( module, path ) {
 
         if ( !path.endsWith("/") ) {
@@ -746,6 +777,12 @@
         return CAAT.ModuleManager;
     };
 
+    /**
+     * Define a symbol, or file to be loaded and checked dependencies against.
+     * @param symbol {string}
+     * @param path {string}
+     * @return {*}
+     */
     CAAT.ModuleManager.symbol= function( symbol, path ) {
 
         if ( !ModuleManager.symbol[symbol] ) {
@@ -755,6 +792,11 @@
         return CAAT.ModuleManager;
     };
 
+    /**
+     * Bring the given object, and if no present, start solving and loading dependencies.
+     * @param file {string}
+     * @return {*}
+     */
     CAAT.ModuleManager.bring= function( file ) {
 
         if ( !isArray(file) ) {
@@ -768,15 +810,30 @@
         return CAAT.ModuleManager;
     };
 
+    /**
+     * Get CAAT´s module manager status.
+     */
     CAAT.ModuleManager.status= function() {
         mm.status();
     }
 
+    /**
+     * Add an observer for a given module load event.
+     * @param modulename {string}
+     * @param callback {function()}
+     * @return {*}
+     */
     CAAT.ModuleManager.addModuleSolvedListener= function(modulename,callback) {
         mm.addSolveListener( modulename, callback );
         return CAAT.ModuleManager;
     }
 
+    /**
+     * Load a javascript file.
+     * @param file {string}
+     * @param onload {function()}
+     * @param onerror {function()}
+     */
     CAAT.ModuleManager.load= function(file, onload, onerror) {
         var node= document.createElement("script");
         node.type = 'text/javascript';
@@ -801,22 +858,42 @@
 
     }
 
+    /**
+     * Dump solved modules and get them sorted in the order they were resolved.
+     */
     CAAT.ModuleManager.solvedInOrder= function() {
         mm.solvedInOrder();
     }
 
+    /**
+     * This method will be called everytime all the specified to-be-brought dependencies have been solved.
+     * @param f
+     * @return {*}
+     */
     CAAT.ModuleManager.onReady= function(f) {
         mm.onReady(f);
         return CAAT.ModuleManager;
     }
 
+    /**
+     * Solve all elements specified in the module loaded.
+     * It is useful when minimizing a file.
+     */
     CAAT.ModuleManager.solveAll= function() {
         mm.solveAll();
     }
 
+    /**
+     * Enable debug capabilities for the loaded modules.
+     * Otherwise, the modules will have cache invalidation features.
+     * @param d {boolean}
+     * @return {*}
+     */
     CAAT.ModuleManager.debug= function(d) {
         DEBUG= d;
         return CAAT.ModuleManager;
     }
+
+    CAAT.Class= Class;
 
 })(this);

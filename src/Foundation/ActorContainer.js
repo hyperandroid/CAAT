@@ -1,4 +1,25 @@
 CAAT.Module({
+
+    /**
+     * @name ActorContainer
+     * @memberOf CAAT.Foundation
+     * @extends CAAT.Foundation.Actor
+     * @constructor
+     */
+
+    /**
+     * @name ADDHINT
+     * @memberOf CAAT.Foundation.ActorContainer
+     * @namespace
+     */
+
+    /**
+     * @name AddHint
+     * @memberOf CAAT.Foundation.ActorContainer
+     * @namespace
+     * @deprecated
+     */
+
     defines:"CAAT.Foundation.ActorContainer",
     aliases:["CAAT.ActorContainer"],
     depends:[
@@ -6,13 +27,33 @@ CAAT.Module({
         "CAAT.Math.Point",
         "CAAT.Math.Rectangle"
     ],
-    constants:{
-        AddHint:{
-            CONFORM:1
+    constants :  {
+
+        /**
+         * @lends CAAT.Foundation.ActorContainer
+         * */
+
+        ADDHINT:{
+
+            /**
+             * @lends CAAT.Foundation.ActorContainer.ADDHINT
+             */
+
+            /** @const */ CONFORM:1
+        },
+
+        AddHint : {
+
+            /**
+             * @lends CAAT.Foundation.ActorContainer.AddHint
+             */
+            /** @const */ CONFORM:1
         }
     },
     extendsClass : "CAAT.Foundation.Actor",
-    extendsWith:function () {
+    extendsWith : function () {
+
+
 
         var __CD =                      CAAT.Foundation.Actor.CACHE_DEEP;
 
@@ -25,6 +66,18 @@ CAAT.Module({
         var sc_destroy =                sc.destroy;
 
         return {
+
+            /**
+             *
+             * @lends CAAT.Foundation.ActorContainer.prototype
+             */
+
+            /**
+             * Constructor delegate
+             * @param hint {CAAT.Foundation.ActorContainer.AddHint}
+             * @return {*}
+             * @private
+             */
             __init:function (hint) {
 
                 this.__super();
@@ -39,14 +92,60 @@ CAAT.Module({
                 return this;
             },
 
-            childrenList:null, // the list of children contained.
+            /**
+             * This container children.
+             * @type {Array.<CAAT.Foundation.Actor>}
+             */
+            childrenList:null,
+
+            /**
+             * This container active children.
+             * @type {Array.<CAAT.Foundation.Actor>}
+             * @private
+             */
             activeChildren:null,
+
+            /**
+             * This container pending to be added children.
+             * @type {Array.<CAAT.Foundation.Actor>}
+             * @private
+             */
             pendingChildrenList:null,
+
+            /**
+             * Container redimension policy when adding children:
+             *  0 : no resize.
+             *  CAAT.Foundation.ActorContainer.AddHint.CONFORM : resize container to a bounding box.
+             *
+             * @type {number}
+             * @private
+             */
             addHint:0,
+
+            /**
+             * If container redimension on children add, use this rectangle as bounding box store.
+             * @type {CAAT.Math.Rectangle}
+             * @private
+             */
             boundingBox:null,
+
+            /**
+             * Spare rectangle to avoid new allocations when adding children to this container.
+             * @type {CAAT.Math.Rectangle}
+             * @private
+             */
             runion:new CAAT.Math.Rectangle(), // Watch out. one for every container.
 
+            /**
+             * Define a layout manager for this container that enforces children position and/or sizes.
+             * @see demo26 for an example of layouts.
+             * @type {CAAT.Foundation.UI.Layout.LayoutManager}
+             */
             layoutManager:null, // a layout manager instance.
+
+            /**
+             * @type {boolean}
+             */
             layoutInvalidated:true,
 
             setLayout:function (layout) {
@@ -410,6 +509,11 @@ CAAT.Module({
              * @param id
              */
             findActorById:function (id) {
+
+                if ( CAAT.Foundation.ActorContainer.superclass.findActorById.call(this,id) ) {
+                    return this;
+                }
+
                 var cl = this.childrenList;
                 for (var i = 0, l = cl.length; i < l; i++) {
                     var ret= cl[i].findActorById(id);
@@ -604,5 +708,6 @@ CAAT.Module({
                 }
             }
         }
+
     }
 });

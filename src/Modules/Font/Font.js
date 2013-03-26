@@ -4,12 +4,29 @@
  **/
 
 CAAT.Module({
+
+    /**
+     * @name Font
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name Font
+     * @memberOf CAAT.Module.Font
+     * @constructor
+     */
+
     defines : "CAAT.Module.Font.Font",
     aliases : "CAAT.Font",
     depends : [
         "CAAT.Foundation.SpriteImage"
     ],
     constants: {
+
+        /**
+         * @lends CAAT.Module.Font.Font
+         */
 
         getFontMetrics:function (font) {
             var ret;
@@ -129,6 +146,10 @@ CAAT.Module({
         var UNKNOWN_CHAR_WIDTH = 10;
 
         return {
+
+            /**
+             * @lends CAAT.Module.Font.Font.prototype
+             */
 
             fontSize:10,
             fontSizeUnit:"px",
@@ -323,13 +344,14 @@ CAAT.Module({
                     charInfo = this.charMap[ str.charAt(i) ];
                     if (charInfo) {
                         w = charInfo.width;
-                        ctx.drawImage(
-                            this.image,
-                            charInfo.x, 0,
-                            w, height,
-                            x, y,
-                            w, height);
-
+                        if ( w>0 && charInfo.height>0 ) {
+                            ctx.drawImage(
+                                this.image,
+                                charInfo.x, 0,
+                                w, height,
+                                x, y,
+                                w, height);
+                        }
                         x += w;
                     } else {
                         ctx.strokeStyle = '#f00';

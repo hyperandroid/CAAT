@@ -2,11 +2,25 @@
  * See LICENSE file.
  *
  * This file contains the definition for objects QuadTree and HashMap.
- * Quadtree offers an exact list of collisioning areas, while HashMap offers a list of potentially colliding elements.
+ * Quadtree offers an exact list of collisioning areas, while HashMap offers a list of potentially colliding
+ * elements.
+ * Specially suited for static content.
  *
  **/
 
 CAAT.Module({
+
+    /**
+     * @name Collision
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name QuadTree
+     * @memberOf CAAT.Module.Collision
+     * @constructor
+     */
 
     defines:"CAAT.Module.Collision.QuadTree",
     depends:[
@@ -20,8 +34,18 @@ CAAT.Module({
 
         return {
 
+            /**
+             * @lends CAAT.Module.Collision.QuadTree.prototype
+             */
+
+            /**
+             * For each quadtree level this keeps the list of overlapping elements.
+             */
             bgActors:null,
 
+            /**
+             * For each quadtree, this quadData keeps another 4 quadtrees up to the  maximum recursion level.
+             */
             quadData:null,
 
             create:function (l, t, r, b, backgroundElements, minWidth, maxElements) {
@@ -69,6 +93,11 @@ CAAT.Module({
                 return tmpList;
             },
 
+            /**
+             * Call this method to thet the list of colliding elements with the parameter rectangle.
+             * @param rectangle
+             * @return {Array}
+             */
             getOverlappingActors:function (rectangle) {
                 var i, j, l;
                 var overlappingActors = [];

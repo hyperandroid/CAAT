@@ -1,4 +1,12 @@
 CAAT.Module( {
+
+    /**
+     * @name Path
+     * @memberOf CAAT.PathUtil
+     * @extends CAAT.PathUtil.PathSegment
+     * @constructor
+     */
+
     defines : "CAAT.PathUtil.Path",
     aliases : ["CAAT.Path"],
     depends : [
@@ -14,6 +22,12 @@ CAAT.Module( {
     ],
     extendsClass : "CAAT.PathUtil.PathSegment",
     extendsWith : {
+
+        /**
+         * @lends CAAT.PathUtil.Path.prototype
+         */
+
+
         __init : function()	{
                 this.__super();
 
@@ -27,18 +41,42 @@ CAAT.Module( {
                 return this;
         },
 
+        /**
+         * A collection of PathSegments.
+         * @type {Array.<CAAT.PathUtil.PathSegment>}
+         */
 		pathSegments:	            null,   // a collection of CAAT.PathSegment instances.
-		pathSegmentDurationTime:	null,   // precomputed segment duration relative to segment legnth/path length
-		pathSegmentStartTime:		null,   // precomputed segment start time relative to segment legnth/path length and duration.
 
-		newPosition:	            null,   // spare CAAT.Point.
-		
-		pathLength:		            -1,     // path length (sum of every segment length)
+        /**
+         * For each path segment in this path, the normalized calculated duration.
+         * precomputed segment duration relative to segment legnth/path length
+         */
+		pathSegmentDurationTime:	null,
 
-        /*
-            starting path position
+        /**
+         * For each path segment in this path, the normalized calculated start time.
+         * precomputed segment start time relative to segment legnth/path length and duration.
+         */
+		pathSegmentStartTime:		null,
+
+        /**
+         * spare CAAT.Math.Point to return calculated values in the path.
+         */
+		newPosition:	            null,
+
+        /**
+         * path length (sum of every segment length)
+         */
+		pathLength:		            -1,
+
+        /**
+         * starting path x position
          */
 		beginPathX:		            -1,
+
+        /**
+         * starting path y position
+         */
 		beginPathY:                 -1,
         beginPoint:                 null,
 
@@ -55,42 +93,126 @@ CAAT.Module( {
 		ay:                         -1,
 		point:                      [],
 
+        /**
+         * Is this path interactive ?. If so, controls points can be moved with a CAAT.Foundation.UI.PathActor.
+         */
         interactive:                true,
 
+        /**
+         * A list of behaviors to apply to this path.
+         * A path can be affine transformed to create a different path.
+         */
         behaviorList:               null,
 
-        /** rotation behavior info **/
+        /* rotation behavior info **/
+
+        /**
+         * Path rotation angle.
+         */
         rb_angle:                   0,
+
+        /**
+         * Path rotation x anchor.
+         */
         rb_rotateAnchorX:           .5,
+
+        /**
+         * Path rotation x anchor.
+         */
         rb_rotateAnchorY:           .5,
 
-        /** scale behavior info **/
+        /* scale behavior info **/
+
+        /**
+         * Path X scale.
+         */
         sb_scaleX:                  1,
+
+        /**
+         * Path Y scale.
+         */
         sb_scaleY:                  1,
+
+        /**
+         * Path scale X anchor.
+         */
         sb_scaleAnchorX:            .5,
+
+        /**
+         * Path scale Y anchor.
+         */
         sb_scaleAnchorY:            .5,
 
+        /**
+         * Path translation anchor X.
+         */
         tAnchorX:                   0,
+
+        /**
+         * Path translation anchor Y.
+         */
         tAnchorY:                   0,
 
-        /** translate behavior info **/
+        /* translate behavior info **/
+
+        /**
+         * Path translation X.
+         */
         tb_x:                       0,
+
+        /**
+         * Path translation Y.
+         */
         tb_y:                       0,
 
-        /** behavior affine transformation matrix **/
+        /* behavior affine transformation matrix **/
+
+        /**
+         * Path behaviors matrix.
+         */
         matrix:                     null,
+
+        /**
+         * Spare calculation matrix.
+         */
         tmpMatrix:                  null,
 
-        /** if behaviors are to be applied, save original path points **/
+        /**
+         * Original Path´s path segments points.
+         */
         pathPoints:                 null,
 
-        /** path width and height **/
+        /**
+         * Path bounding box width.
+         */
         width:                      0,
+
+        /**
+         * Path bounding box height.
+         */
         height:                     0,
 
+        /**
+         * Path bounding box X position.
+         */
         clipOffsetX             :   0,
+
+        /**
+         * Path bounding box Y position.
+         */
         clipOffsetY             :   0,
 
+        /**
+         * Is this path closed ?
+         */
+        closed                  :   false,
+
+        /**
+         * Apply this path as a Canvas context path.
+         * You must explicitly call context.beginPath
+         * @param director
+         * @return {*}
+         */
         applyAsPath : function(director) {
             var ctx= director.ctx;
 
@@ -438,6 +560,8 @@ CAAT.Module( {
 			this.trackPathX= this.beginPathX;
 			this.trackPathY= this.beginPathY;
 
+            this.closed= true;
+
 			this.endPath();
             return this;
 		},
@@ -462,7 +586,7 @@ CAAT.Module( {
             return this;
 		},
         /**
-         * This method, returns a CAAT.Point instance indicating a coordinate in the path.
+         * This method, returns a CAAT.Foundation.Point instance indicating a coordinate in the path.
          * The returned coordinate is the corresponding to normalizing the path's length to 1,
          * and then finding what path segment and what coordinate in that path segment corresponds
          * for the input time parameter.
@@ -473,12 +597,53 @@ CAAT.Module( {
          * <p>
          * This method is needed when traversing the path throughout a CAAT.Interpolator instance.
          *
-         * @param time a value between 0 and 1 both inclusive. 0 will return path's starting coordinate.
-         * 1 will return path's end coordinate.
          *
-         * @return {CAAT.Point}
+         * @param time {number} a value between 0 and 1 both inclusive. 0 will return path's starting coordinate.
+         * 1 will return path's end coordinate.
+         * @param open_contour {boolean=} treat this path as an open contour. It is intended for
+         * open paths, and interpolators which give values above 1. see tutorial 7.1.
+         * @link{../../documentation/tutorials/t7-1.html}
+         *
+         * @return {CAAT.Foundation.Point}
          */
-		getPosition : function(time) {
+		getPosition : function(time, open_contour) {
+
+            if (open_contour && (time>=1 || time<=0) ) {
+
+                var p0,p1,ratio, angle;
+
+                if ( time>=1 ) {
+                    // these values could be cached.
+                    p0= this.__getPositionImpl( .999 );
+                    p1= this.endCurvePosition();
+
+                    angle= Math.atan2( p1.y - p0.y, p1.x - p0.x );
+                    ratio= time%1;
+
+
+                } else {
+                    // these values could be cached.
+                    p0= this.__getPositionImpl( .001 );
+                    p1= this.startCurvePosition();
+
+                    angle= Math.atan2( p1.y - p0.y, p1.x - p0.x );
+                    ratio= -time;
+                }
+
+                var np= this.newPosition;
+                var length= this.getLength();
+
+                np.x = p1.x + (ratio * length)*Math.cos(angle);
+                np.y = p1.y + (ratio * length)*Math.sin(angle);
+
+
+                return np;
+            }
+
+            return this.__getPositionImpl(time);
+        },
+
+        __getPositionImpl : function(time) {
 
             if ( time>1 || time<0 ) {
                 time%=1;
@@ -486,25 +651,6 @@ CAAT.Module( {
             if ( time<0 ) {
                 time= 1+time;
             }
-
-            /*
-            var found= false;
-            for( var i=0; i<this.pathSegments.length; i++ ) {
-                if (this.pathSegmentStartTime[i]<=time && time<=this.pathSegmentStartTime[i]+this.pathSegmentDurationTime[i]) {
-                    time= this.pathSegmentDurationTime[i] ?
-                            (time-this.pathSegmentStartTime[i])/this.pathSegmentDurationTime[i] :
-                            0;
-                    var pointInPath= this.pathSegments[i].getPosition(time);
-                    this.newPosition.x= pointInPath.x;
-                    this.newPosition.y= pointInPath.y;
-                    found= true;
-                    break;
-                }
-            }
-
-			return found ? this.newPosition : this.endCurvePosition();
-			*/
-
 
             var ps= this.pathSegments;
             var psst= this.pathSegmentStartTime;
@@ -595,6 +741,9 @@ CAAT.Module( {
 			this.ax= -1;
 			this.ay= -1;
 		},
+        isEmpty : function() {
+            return !this.pathSegments.length;
+        },
         /**
          * Returns an integer with the number of path segments that conform this path.
          * @return {number}

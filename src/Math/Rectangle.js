@@ -5,21 +5,56 @@
 
 
 CAAT.Module( {
+
+    /**
+     * @name Rectangle
+     * @memberOf CAAT.Math
+     * @constructor
+     */
+
+
     defines:        "CAAT.Math.Rectangle",
     aliases:        ["CAAT.Rectangle"],
     extendsWith:    function() {
         return {
+
+            /**
+             * @lends CAAT.Math.Rectangle.prototype
+             */
 
             __init : function( x,y,w,h ) {
                 this.setLocation(x,y);
                 this.setDimension(w,h);
             },
 
+            /**
+             * Rectangle x position.
+             */
             x:		0,
+
+            /**
+             * Rectangle y position.
+             */
             y:		0,
+
+            /**
+             * Rectangle x1 position.
+             */
             x1:		0,
+
+            /**
+             * Rectangle y1 position.
+             */
             y1:		0,
+
+            /**
+             * Rectangle width.
+             */
             width:	-1,
+
+            /**
+             * Rectangle height.
+             */
             height:	-1,
 
             setEmpty : function() {
