@@ -14558,7 +14558,7 @@ CAAT.Module( {
          * @param cursor
          */
         CAAT.setCursor= function(cursor) {
-            if ( navigator.browser!=='iOS' ) {
+            if ( !navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ) {
                 document.body.style.cursor= cursor;
             }
         };
@@ -22056,6 +22056,7 @@ CAAT.Module({
                 }
 
                 this.time += time;
+                var i, tt, c, l;
 
                 for (i = 0, l = this.childrenList.length; i < l; i++) {
                     var c = this.childrenList[i];
@@ -22077,7 +22078,6 @@ CAAT.Module({
                  * draw director active scenes.
                  */
                 var ne = this.childrenList.length;
-                var i, tt, c;
                 var ctx = this.ctx;
 
                 if (this.glEnabled) {
@@ -23033,7 +23033,7 @@ CAAT.Module({
                 var top = prop + 'Top';
                 var x = 0, y = 0, style;
 
-                while (navigator.browser !== 'iOS' && node && node.style) {
+                while (!navigator.userAgent.match(/(iPad|iPhone|iPod)/g) && node && node.style) {
                     if (node.currentStyle) {
                         style = node.currentStyle['position'];
                     } else {
