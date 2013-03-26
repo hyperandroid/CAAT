@@ -74,6 +74,7 @@ CAAT.Module({
                 this.browserInfo = CAAT.Module.Runtime.BrowserInfo;
                 this.audioManager = new CAAT.Module.Audio.AudioManager().initialize(8);
                 this.scenes = [];
+                this.imagesCache= [];
 
                 // input related variables initialization
                 this.mousePoint = new CAAT.Math.Point(0, 0, 0);
@@ -770,6 +771,10 @@ CAAT.Module({
             },
             setImagesCache:function (imagesCache, tpW, tpH) {
 
+                if (!imagesCache || !imagesCache.length ) {
+                    return this;
+                }
+
                 var i;
 
                 if (null !== this.glTextureManager) {
@@ -833,7 +838,8 @@ CAAT.Module({
              */
             addImage:function (id, image, noUpdateGL) {
                 if (this.getImage(id)) {
-                    for (var i = 0; i < this.imagesCache.length; i++) {
+//                    for (var i = 0; i < this.imagesCache.length; i++) {
+                    for( var i in this.imagesCache ) {
                         if (this.imagesCache[i].id === id) {
                             this.imagesCache[i].image = image;
                             break;
@@ -1741,7 +1747,8 @@ CAAT.Module({
                     return ret;
                 }
 
-                for (var i = 0; i < this.imagesCache.length; i++) {
+                //for (var i = 0; i < this.imagesCache.length; i++) {
+                for( var i in this.imagesCache ) {
                     if (this.imagesCache[i].id === sId) {
                         return this.imagesCache[i].image;
                     }

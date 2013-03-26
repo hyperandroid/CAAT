@@ -248,6 +248,27 @@ CAAT.Module({
             discardable:false,
 
             /**
+             * does this behavior apply relative values ??
+             */
+            isRelative : false,
+
+            /**
+             * Set this behavior as relative value application to some other measures.
+             * Each Behavior will define its own.
+             * @param bool
+             * @returns {*}
+             */
+            setRelative : function( bool ) {
+                this.isRelative= bool;
+                return this;
+            },
+
+            setRelativeValues : function() {
+                this.isRelative= true;
+                return this;
+            },
+
+            /**
              * Parse a behavior of this type.
              * @param obj {object} an object with a behavior definition.
              */
