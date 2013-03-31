@@ -7,8 +7,23 @@
 
 (function() {
 
+    /**
+     * @name CSS
+     * @memberOf CAAT
+     * @namespace
+     */
+
     CAAT.CSS= {};
 
+    /**
+     * @lends CAAT.CSS
+     */
+
+
+    /**
+     * Guess a browser custom prefix.
+     * @type {*}
+     */
     CAAT.CSS.PREFIX= (function() {
 
         var prefix = "";
@@ -28,21 +43,33 @@
         return prefix;
     })();
 
-    CAAT.CSS.applyKeyframe= function( domElement, name, secs, forever ) {
-        domElement.style[CAAT.CSS.PROP_ANIMATION]= name+' '+(secs/1000)+'s linear both '+(forever ? 'infinite' : '') ;
+    /**
+     * Apply a given @key-frames animation to a DOM element.
+     * @param domElement {DOMElement}
+     * @param name {string} animation name
+     * @param duration_millis {number}
+     * @param delay_millis {number}
+     * @param forever {boolean}
+     */
+    CAAT.CSS.applyKeyframe= function( domElement, name, duration_millis, delay_millis, forever ) {
+        domElement.style[CAAT.CSS.PROP_ANIMATION]= name+' '+(duration_millis/1000)+'s '+(delay_millis/1000)+'s linear both '+(forever ? 'infinite' : '') ;
     };
 
+    /**
+     * Remove a @key-frames animation from the stylesheet.
+     * @param name
+     */
     CAAT.CSS.unregisterKeyframes= function( name ) {
         var index= CAAT.CSS.getCSSKeyframesIndex(name);
-        if ( -1!==index ) {
-            document.styleSheets[0].deleteRule( index );
+        if ( null!==index ) {
+            document.styleSheets[ index.sheetIndex ].deleteRule( index.index );
         }
     };
 
     /**
      *
-     * @param kfDescriptor {
-     *      object{
+     * @param kfDescriptor {object}
+     *      {
      *          name{string},
      *          behavior{CAAT.Behavior},
      *          size{!number},
@@ -70,11 +97,11 @@
 
         // find if keyframes has already a name set.
         var cssRulesIndex= CAAT.CSS.getCSSKeyframesIndex(name);
-        if (-1!==cssRulesIndex && !overwrite) {
+        if (null!==cssRulesIndex && !overwrite) {
             return;
         }
 
-        var keyframesRule= behavior.calculateKeyframesData(CAAT.CSS.PREFIX, name, size );
+        var keyframesRule= behavior.calculateKeyFramesData(CAAT.CSS.PREFIX, name, size, kfDescriptor.anchorX, kfDescriptor.anchorY );
 
         if (document.styleSheets) {
             if ( !document.styleSheets.length) {
@@ -84,13 +111,15 @@
                 document.getElementsByTagName('head')[ 0 ].appendChild(s);
             }
 
-            if ( -1!==cssRulesIndex ) {
-                document.styleSheets[0].deleteRule( cssRulesIndex );
+            if ( null!==cssRulesIndex ) {
+                document.styleSheets[ cssRulesIndex.sheetIndex ].deleteRule( cssRulesIndex.index );
             }
 
-            document.styleSheets[0].insertRule( keyframesRule, 0 );
+            var index= cssRulesIndex ? cssRulesIndex.sheetIndex : 0;
+            document.styleSheets[ index ].insertRule( keyframesRule, 0 );
         }
 
+        return keyframesRule;
     };
 
     CAAT.CSS.getCSSKeyframesIndex= function(name) {
@@ -106,14 +135,17 @@
                     if ( ( rs[j].type === window.CSSRule.WEBKIT_KEYFRAMES_RULE ||
                            rs[j].type === window.CSSRule.MOZ_KEYFRAMES_RULE ) && rs[j].name === name) {
 
-                        return j;
+                        return {
+                            sheetIndex : i,
+                            index: j
+                        };
                     }
                 }
             } catch(e) {
             }
         }
 
-        return -1;
+        return null;
     };
 
     CAAT.CSS.getCSSKeyframes= function(name) {

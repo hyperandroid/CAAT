@@ -5,6 +5,14 @@
  *
  **/
 CAAT.Module( {
+
+    /**
+     * @name PathActor
+     * @memberOf CAAT.Foundation.UI
+     * @extends CAAT.Foundation.Actor
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.PathActor",
     aliases : ["CAAT.PathActor"],
     depends : [
@@ -13,13 +21,41 @@ CAAT.Module( {
     extendsClass : "CAAT.Foundation.Actor",
     extendsWith : {
 
+        /**
+         * @lends CAAT.Foundation.UI.PathActor.prototype
+         */
+
+        /**
+         * Path to draw.
+         * @type {CAAT.PathUtil.Path}
+         */
 		path                    : null,
+
+        /**
+         * Calculated path´s bounding box.
+         */
 		pathBoundingRectangle   : null,
+
+        /**
+         * draw the bounding rectangle too ?
+         */
 		bOutline                : false,
+
+        /**
+         * Outline the path in this color.
+         */
         outlineColor            : 'black',
+
+        /**
+         * If the path is interactive, some handlers are shown to modify the path.
+         * This callback function will be called when the path is interactively changed.
+         */
         onUpdateCallback        : null,
+
+        /**
+         * Set this path as interactive.
+         */
         interactive             : false,
-        showBBox                : false,
 
         /**
          * Return the contained path.
@@ -69,12 +105,6 @@ CAAT.Module( {
                     this.pathBoundingRectangle.height
                 );
             }
-/*
-			if ( this.bOutline ) {
-				ctx.strokeStyle= this.outlineColor;
-				ctx.strokeRect(0,0,this.width,this.height);
-			}
-*/
 		},
         /**
          * Enables/disables drawing of the contained path's bounding box.

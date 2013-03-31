@@ -1,4 +1,12 @@
 CAAT.Module( {
+
+    /**
+     * @name B2DPolygonBody
+     * @memberOf CAAT.Foundation.Box2D
+     * @extends CAAT.Foundation.Box2D.B2DBodyActor
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.Box2D.B2DPolygonBody",
     depends : [
         "CAAT.Foundation.Box2D.B2DBodyActor",
@@ -6,6 +14,11 @@ CAAT.Module( {
     ],
     aliases : ["CAAT.B2DPolygonBody"],
     constants: {
+
+        /**
+         * @lends CAAT.Foundation.Box2D.B2DPolygonBody
+         */
+
         TYPE: {
             EDGE:   'edge',
             BOX:    'box',
@@ -113,6 +126,10 @@ CAAT.Module( {
     },
     extendsClass : "CAAT.Foundation.Box2D.B2DBodyActor",
     extendsWith : {
+
+        /**
+         * @lends CAAT.Foundation.Box2D.B2DPolygonBody.prototype
+         */
 
         /**
          * Measured body's bounding box.

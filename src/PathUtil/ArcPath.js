@@ -1,4 +1,12 @@
 CAAT.Module({
+
+    /**
+     * @name ArcPath
+     * @memberOf CAAT.PathUtil
+     * @extends CAAT.PathUtil.PathSegment
+     * @constructor
+     */
+
     defines:"CAAT.PathUtil.ArcPath",
     depends:[
         "CAAT.PathUtil.PathSegment",
@@ -10,6 +18,11 @@ CAAT.Module({
     extendsWith:function () {
 
         return {
+
+            /**
+             * @lends CAAT.PathUtil.ArcPath.prototype
+             */
+
             __init:function () {
                 this.__super();
 
@@ -22,14 +35,39 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * A collection of CAAT.Math.Point objects which defines the arc (center, start, end)
+             */
             points:null,
-            length:-1,
-            cw:true, // should be clock wise traversed ?
-            bbox:null,
-            newPosition:null, // spare point for calculations
+
+            /**
+             * Defined clockwise or counterclockwise ?
+             */
+            cw:true,
+
+            /**
+             * spare point for calculations
+             */
+            newPosition:null,
+
+            /**
+             * Arc radius.
+             */
             radius:0,
+
+            /**
+             * Arc start angle.
+             */
             startAngle:0,
+
+            /**
+             * Arc end angle.
+             */
             angle:2 * Math.PI,
+
+            /**
+             * is a relative or absolute arc ?
+             */
             arcTo:false,
 
             setRadius:function (r) {

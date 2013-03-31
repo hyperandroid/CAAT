@@ -1,4 +1,18 @@
 CAAT.Module({
+
+    /**
+     * @name Box2D
+     * @memberOf CAAT.Foundation
+     * @namespace
+     */
+
+    /**
+     * @name B2DBodyActor
+     * @memberOf CAAT.Foundation.Box2D
+     * @extends CAAT.Foundation.Actor
+     * @constructor
+     */
+
     defines:"CAAT.Foundation.Box2D.B2DBodyActor",
     depends:[
         "CAAT.Foundation.Actor"
@@ -7,13 +21,25 @@ CAAT.Module({
     extendsClass:"CAAT.Foundation.Actor",
     extendsWith:function () {
 
+        /**
+         * @lends CAAT
+         */
+
+        /**
+         * Points to Meter ratio value.
+         * @type {Number}
+         */
         CAAT.PMR = 64;
 
         /**
-         * As Eemeli Kelokorpi suggested,
-         * @param set
-         * @param director
-         * @param world
+         * (As Eemeli Kelokorpi suggested)
+         *
+         * Enable Box2D debug renderer.
+         *
+         * @param set {boolean} enable or disable
+         * @param director {CAAT.Foundation.Director}
+         * @param world {object} box2d world
+         * @param scale {numner} a scale value.
          */
         CAAT.enableBox2DDebug = function (set, director, world, scale) {
 
@@ -39,6 +65,11 @@ CAAT.Module({
         };
 
         return {
+
+            /**
+             * @lends CAAT.Foundation.Box2D.B2DBodyActor.prototype
+             */
+
             /**
              * Body restitution.
              */
@@ -64,13 +95,24 @@ CAAT.Module({
              */
             worldBody:null,
 
+            /**
+             * Box2D world reference.
+             */
             world:null,
 
             /**
              * Box2d fixture
              */
             worldBodyFixture:null,
+
+            /**
+             * Box2D body definition.
+             */
             bodyDef:null,
+
+            /**
+             * Box2D fixture definition.
+             */
             fixtureDef:null,
 
             /**
@@ -78,6 +120,9 @@ CAAT.Module({
              */
             bodyData:null,
 
+            /**
+             * Recycle this actor when the body is not needed anymore ??
+             */
             recycle:false,
 
             __init : function() {

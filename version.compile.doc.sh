@@ -26,13 +26,19 @@ SOURCE_DIR=/Users/ibon/js/CAAT/src
 "${SOURCE_DIR}"/Modules/Audio/AudioManager.js \
 "${SOURCE_DIR}"/Modules/Storage/LocalStorage.js \
 "${SOURCE_DIR}"/Modules/ColorUtil/Color.js \
+"${SOURCE_DIR}"/Modules/CSS/csskeyframehelper.js \
 "${SOURCE_DIR}"/Modules/Debug/Debug.js \
 "${SOURCE_DIR}"/Modules/Font/Font.js \
 "${SOURCE_DIR}"/Modules/CircleManager/PackedCircle.js \
 "${SOURCE_DIR}"/Modules/CircleManager/PackedCircleManager.js \
+"${SOURCE_DIR}"/Modules/Image/ImageProcess/ImageProcessor.js \
+"${SOURCE_DIR}"/Modules/Image/ImageProcess/IMBumpMapping.js \
+"${SOURCE_DIR}"/Modules/Image/ImageProcess/IMPlasma.js \
+"${SOURCE_DIR}"/Modules/Image/ImageProcess/IMRotoZoom.js \
 "${SOURCE_DIR}"/Modules/Image/Preloader/Preloader.js \
 "${SOURCE_DIR}"/Modules/Image/Preloader/ImagePreloader.js \
 "${SOURCE_DIR}"/Modules/Image/Util/ImageUtil.js \
+"${SOURCE_DIR}"/Modules/Locale/ResourceBundle.js \
 "${SOURCE_DIR}"/Modules/Collision/Quadtree.js \
 "${SOURCE_DIR}"/Modules/Collision/SpatialHash.js \
 "${SOURCE_DIR}"/Modules/TexturePacker/TextureElement.js \
@@ -49,6 +55,7 @@ SOURCE_DIR=/Users/ibon/js/CAAT/src
 "${SOURCE_DIR}"/PathUtil/LinearPath.js \
 "${SOURCE_DIR}"/PathUtil/RectPath.js \
 "${SOURCE_DIR}"/PathUtil/Path.js \
+"${SOURCE_DIR}"/PathUtil/SVGPath.js \
 "${SOURCE_DIR}"/WebGL/GLU.js \
 "${SOURCE_DIR}"/WebGL/Program.js \
 "${SOURCE_DIR}"/WebGL/ColorProgram.js \
@@ -66,6 +73,7 @@ SOURCE_DIR=/Users/ibon/js/CAAT/src
 "${SOURCE_DIR}"/Foundation/UI/Layout/BorderLayout.js \
 "${SOURCE_DIR}"/Foundation/UI/Layout/GridLayout.js \
 "${SOURCE_DIR}"/Foundation/SpriteImageHelper.js \
+"${SOURCE_DIR}"/Foundation/SpriteImageAnimationHelper.js \
 "${SOURCE_DIR}"/Foundation/SpriteImage.js \
 "${SOURCE_DIR}"/Foundation/Actor.js \
 "${SOURCE_DIR}"/Foundation/ActorContainer.js \
@@ -75,6 +83,7 @@ SOURCE_DIR=/Users/ibon/js/CAAT/src
 "${SOURCE_DIR}"/Foundation/Box2D/B2DCircularBody.js \
 "${SOURCE_DIR}"/Foundation/Box2D/B2DPolygonBody.js \
 "${SOURCE_DIR}"/Foundation/UI/Dock.js \
+"${SOURCE_DIR}"/Foundation/UI/IMActor.js \
 "${SOURCE_DIR}"/Foundation/UI/InterpolatorActor.js \
 "${SOURCE_DIR}"/Foundation/UI/Label.js \
 "${SOURCE_DIR}"/Foundation/UI/PathActor.js \

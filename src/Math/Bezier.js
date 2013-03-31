@@ -4,13 +4,34 @@
  **/
 
 CAAT.Module( {
+
+    /**
+     * @name Math
+     * @memberOf CAAT
+     * @namespace
+     */
+
+    /**
+     * @name Bezier
+     * @memberOf CAAT.Math
+     * @extends CAAT.Math.Curve
+     * @constructor
+     */
+
     defines:    "CAAT.Math.Bezier",
     depends:    ["CAAT.Math.Curve"],
     extendsClass:    "CAAT.Math.Curve",
     aliases:    ["CAAT.Bezier"],
     extendsWith:    function() {
-            return {
+        return {
 
+            /**
+             * @lends CAAT.Math.Bezier.prototype
+             */
+
+            /**
+             * This curbe is cubic or quadratic bezier ?
+             */
             cubic:		false,
 
             applyAsPath : function( director ) {

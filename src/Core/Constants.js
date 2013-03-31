@@ -4,9 +4,24 @@
  **/
 
 CAAT.Module( {
+
     defines: "CAAT.Core.Constants",
+    depends : [
+        "CAAT.Math.Matrix"
+    ],
 
     extendsWith: function() {
+
+        /**
+         * @lends CAAT
+         */
+
+        /**
+         * // do not clamp coordinates. speeds things up in older browsers.
+         * @type {Boolean}
+         * @private
+         */
+        CAAT.CLAMP= false;
 
         /**
          * This function makes the system obey decimal point calculations for actor's position, size, etc.
@@ -20,17 +35,8 @@ CAAT.Module( {
          * @param clamp {boolean}
          */
         CAAT.setCoordinateClamping= function( clamp ) {
-            if ( clamp ) {
-                CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
-                CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
-                CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
-                CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
-            } else {
-                CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
-                CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
-                CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
-                CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
-            }
+            CAAT.CLAMP= clamp;
+            CAAT.Math.Matrix.setCoordinateClamping(clamp);
         };
 
         /**
@@ -52,19 +58,46 @@ CAAT.Module( {
          */
         CAAT.CSS_TEXT_METRICS=      0;
 
+        /**
+         * is GLRendering enabled.
+         * @type {Boolean}
+         */
         CAAT.GLRENDER= false;
 
         /**
-         * DEBUGGING CONSTANTS
+         * set this variable before building CAAT.Director intances to enable debug panel.
          */
-        CAAT.DEBUG= false;              // set this variable before building CAAT.Director intances to
-                                    // enable debug panel.
-        CAAT.DEBUGBB= false;            // show Bounding Boxes
-        CAAT.DEBUGBBBCOLOR = '#00f';      // Bounding Boxes color.
-        CAAT.DEBUGAABB = false;         // debug axis aligned bounding boxes.
+        CAAT.DEBUG= false;
+
+        /**
+         * show Bounding Boxes
+         * @type {Boolean}
+         */
+        CAAT.DEBUGBB= false;
+
+        /**
+         * Bounding Boxes color.
+         * @type {String}
+         */
+        CAAT.DEBUGBBBCOLOR = '#00f';
+
+        /**
+         * debug axis aligned bounding boxes.
+         * @type {Boolean}
+         */
+        CAAT.DEBUGAABB = false;
+
+        /**
+         * Bounding boxes color.
+         * @type {String}
+         */
         CAAT.DEBUGAABBCOLOR = '#f00';
-        CAAT.DEBUG_DIRTYRECTS= false;    // if CAAT.Director.setClear uses CLEAR_DIRTY_RECTS, this will show them
-                                    // on screen.
+
+        /**
+         * if CAAT.Director.setClear uses CLEAR_DIRTY_RECTS, this will show them on screen.
+         * @type {Boolean}
+         */
+        CAAT.DEBUG_DIRTYRECTS= false;
 
         /**
          * Do not consider mouse drag gesture at least until you have dragged
@@ -73,6 +106,12 @@ CAAT.Module( {
          */
         CAAT.DRAG_THRESHOLD_X=      5;
         CAAT.DRAG_THRESHOLD_Y=      5;
+
+        /**
+         * When switching scenes, cache exiting scene or not. Set before building director instance.
+         * @type {Boolean}
+         */
+        CAAT.CACHE_SCENE_ON_CHANGE= true;
 
         return {
         }

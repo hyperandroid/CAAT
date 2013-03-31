@@ -1,4 +1,33 @@
 CAAT.Module({
+
+    /**
+     * @name PathBehavior
+     * @memberOf CAAT.Behavior
+     * @extends CAAT.Behavior.BaseBehavior
+     * @constructor
+     */
+
+    /**
+     *
+     * Internal PathBehavior rotation constants.
+     *
+     * @name AUTOROTATE
+     * @memberOf CAAT.Behavior.PathBehavior
+     * @namespace
+     * @enum {number}
+     */
+
+    /**
+     *
+     * Internal PathBehavior rotation constants.
+     *
+     * @name autorotate
+     * @memberOf CAAT.Behavior.PathBehavior
+     * @namespace
+     * @enum {number}
+     * @deprecated
+     */
+
     defines:"CAAT.Behavior.PathBehavior",
     aliases: ["CAAT.PathBehavior"],
     depends:[
@@ -6,10 +35,26 @@ CAAT.Module({
         "CAAT.Foundation.SpriteImage"
     ],
     constants : {
+
+        AUTOROTATE : {
+
+            /**
+             * @lends CAAT.Behavior.PathBehavior.AUTOROTATE
+             */
+
+            /** @const */ LEFT_TO_RIGHT:  0,
+            /** @const */ RIGHT_TO_LEFT:  1,
+            /** @const */ FREE:           2
+        },
+
         autorotate: {
-            LEFT_TO_RIGHT:  0,
-            RIGHT_TO_LEFT:  1,
-            FREE:           2
+            /**
+             * @lends CAAT.Behavior.PathBehavior.autorotate
+             */
+
+            /** @const */ LEFT_TO_RIGHT:  0,
+            /** @const */ RIGHT_TO_LEFT:  1,
+            /** @const */ FREE:           2
         }
     },
     extendsClass : "CAAT.Behavior.BaseBehavior",
@@ -17,16 +62,75 @@ CAAT.Module({
 
         return {
 
-            path:null, // the path to traverse
-            autoRotate:false, // set whether the actor must be rotated tangentially to the path.
+            /**
+             * @lends CAAT.Behavior.PathBehavior.prototype
+             * @param obj
+             */
+
+            /**
+             * @inheritDoc
+             */
+            parse : function( obj ) {
+                CAAT.Behavior.PathBehavior.superclass.parse.call(this,obj);
+
+                if ( obj.SVG ) {
+                    var parser= new CAAT.PathUtil.SVGPath();
+                    var path=parser.parsePath( obj.SVG );
+                    this.setValues(path);
+                }
+
+                if ( obj.autoRotate ) {
+                    this.autoRotate= obj.autoRotate;
+                }
+            },
+
+            /**
+             * A path to traverse.
+             * @type {CAAT.PathUtil.Path}
+             * @private
+             */
+            path:null,
+
+            /**
+             * Whether to set rotation angle while traversing the path.
+             * @private
+             */
+            autoRotate:false,
+
             prevX:-1, // private, do not use.
             prevY:-1, // private, do not use.
 
+            /**
+             * Autorotation hint.
+             * @type {CAAT.Behavior.PathBehavior.autorotate}
+             * @private
+             */
             autoRotateOp: CAAT.Behavior.PathBehavior.autorotate.FREE,
 
+            isOpenContour : false,
+
+            relativeX : 0,
+            relativeY : 0,
+
+            setOpenContour : function(b) {
+                this.isOpenContour= b;
+                return this;
+            },
+
+            /**
+             * @inheritDoc
+             */
             getPropertyName:function () {
                 return "translate";
             },
+
+            setRelativeValues : function( x, y ) {
+                this.relativeX= x;
+                this.relativeY= y;
+                this.isRelative= true;
+                return this;
+            },
+
 
             /**
              * Sets an actor rotation to be heading from past to current path's point.
@@ -43,6 +147,7 @@ CAAT.Module({
                 }
                 return this;
             },
+
             /**
              * Set the behavior path.
              * The path can be any length, and will take behaviorDuration time to be traversed.
@@ -75,12 +180,42 @@ CAAT.Module({
                 return this;
             },
 
+            /**
+             * @inheritDoc
+             */
             calculateKeyFrameData:function (time) {
                 time = this.interpolator.getPosition(time).y;
                 var point = this.path.getPosition(time);
                 return "translateX(" + point.x + "px) translateY(" + point.y + "px)";
             },
 
+            /**
+             * @inheritDoc
+             */
+            getKeyFrameDataValues : function(time) {
+                time = this.interpolator.getPosition(time).y;
+                var point = this.path.getPosition(time);
+                var obj= {
+                    x : point.x,
+                    y : point.y
+                };
+
+                if ( this.autoRotate ) {
+
+                    var point2= time===0 ? point : this.path.getPosition(time -.001);
+                    var ax = point.x - point2.x;
+                    var ay = point.y - point2.y;
+                    var angle = Math.atan2(ay, ax);
+
+                    obj.angle= angle;
+                }
+
+                return obj;
+            },
+
+            /**
+             * @inheritDoc
+             */
             calculateKeyFramesData:function (prefix, name, keyframessize) {
 
                 if (typeof keyframessize === 'undefined') {
@@ -109,11 +244,7 @@ CAAT.Module({
             },
 
             /**
-             * Translates the Actor to the corresponding time path position.
-             * If autoRotate=true, the actor is rotated as well. The rotation anchor will (if set) always be ANCHOR_CENTER.
-             * @param time an integer indicating the time the behavior is being applied at.
-             * @param actor a CAAT.Actor instance to be translated.
-             * @return {object} an object of the form <code>{ x: {float}, y: {float}�}</code>.
+             * @inheritDoc
              */
             setForTime:function (time, actor) {
 
@@ -124,7 +255,11 @@ CAAT.Module({
                     };
                 }
 
-                var point = this.path.getPosition(time);
+                var point = this.path.getPosition(time, this.isOpenContour,.001);
+                if (this.isRelative ) {
+                    point.x+= this.relativeX;
+                    point.y+= this.relativeY;
+                }
 
                 if (this.autoRotate) {
 
@@ -143,7 +278,7 @@ CAAT.Module({
 
                     var angle = Math.atan2(ay, ax);
                     var si = CAAT.Foundation.SpriteImage;
-                    var pba = CAAT.Behavior.PathBehavior.autorotate;
+                    var pba = CAAT.Behavior.PathBehavior.AUTOROTATE;
 
                     // actor is heading left to right
                     if (this.autoRotateOp === pba.LEFT_TO_RIGHT) {
@@ -186,6 +321,7 @@ CAAT.Module({
 
 
             },
+
             /**
              * Get a point on the path.
              * If the time to get the point at is in behaviors frame time, a point on the path will be returned, otherwise

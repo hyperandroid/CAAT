@@ -4,16 +4,46 @@
  **/
 
 CAAT.Module({
+
+    /**
+     * @name Curve
+     * @memberOf CAAT.Math
+     * @constructor
+     */
+
     defines:"CAAT.Math.Curve",
     depends:["CAAT.Math.Point"],
     extendsWith:function () {
 
         return {
+
+            /**
+             * @lends CAAT.Math.Curve.prototype
+             */
+
+            /**
+             * A collection of CAAT.Math.Point objects.
+             */
             coordlist:null,
+
+            /**
+             * Minimun solver step.
+             */
             k:0.05,
+
+            /**
+             * Curve length.
+             */
             length:-1,
-            interpolator:false,
+
+            /**
+             * If this segments belongs to an interactive path, the handlers will be this size.
+             */
             HANDLE_SIZE:20,
+
+            /**
+             * Draw interactive handlers ?
+             */
             drawHandles:true,
 
             /**

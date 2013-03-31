@@ -5,25 +5,85 @@
  */
 
 CAAT.Module({
+
+    /**
+     * @name Module
+     * @memberOf CAAT
+     * @namespace
+     */
+
+    /**
+     * @name Audio
+     * @memberOf CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name AudioManager
+     * @memberOf CAAT.Module.Audio
+     * @constructor
+     */
+
     defines:"CAAT.Module.Audio.AudioManager",
     depends:[
         "CAAT.Module.Runtime.BrowserInfo"
     ],
     extendsWith:function () {
         return {
+
+            /**
+             * @lends CAAT.Module.Audio.AudioManager.prototype
+             */
+
             __init:function () {
                 this.browserInfo = CAAT.Module.Runtime.BrowserInfo;
                 return this;
             },
 
+            /**
+             * The only background music audio channel.
+             */
             musicChannel: null,
+
+            /**
+             * Some browser info needed to know whether we´re in FF so we can fix the loop bug.
+             */
             browserInfo:null,
+
+            /**
+             * Is music enabled ?
+             */
             musicEnabled:true,
+
+            /**
+             * Are FX sounds enabled ?
+             */
             fxEnabled:true,
-            audioCache:null, // audio elements.
-            channels:null, // available playing channels.
-            workingChannels:null, // currently playing channels.
+
+            /**
+             * A collection of Audio objects.
+             */
+            audioCache:null,
+
+            /**
+             * A cache of empty Audio objects.
+             */
+            channels:null,
+
+            /**
+             * Currently used Audio objects.
+             */
+            workingChannels:null,
+
+            /**
+             * Currently looping Audio objects.
+             */
             loopingChannels:[],
+
+            /**
+             * Audio formats.
+             * @dict
+             */
             audioTypes:{               // supported audio formats. Don't remember where i took them from :S
                 'mp3':'audio/mpeg;',
                 'ogg':'audio/ogg; codecs="vorbis"',

@@ -67,6 +67,7 @@ more ./src/Modules/TexturePacker/TexturePageManager.js >> "${FILE_CAAT}"
 more ./src/Modules/LayoutUtils/RowLayout.js >> "${FILE_CAAT}"
 more ./src/Modules/Initialization/Template.js >> "${FILE_CAAT}"
 more ./src/Modules/Initialization/TemplateWithSplash.js >> "${FILE_CAAT}"
+more ./src/Modules/CSS/csskeyframehelper.js >> "${FILE_CAAT}"
 
 
 more ./src/PathUtil/PathSegment.js >> "${FILE_CAAT}"
@@ -75,6 +76,7 @@ more ./src/PathUtil/CurvePath.js >> "${FILE_CAAT}"
 more ./src/PathUtil/LinearPath.js >> "${FILE_CAAT}"
 more ./src/PathUtil/RectPath.js >> "${FILE_CAAT}"
 more ./src/PathUtil/Path.js >> "${FILE_CAAT}"
+more ./src/PathUtil/SVGPath.js >> "${FILE_CAAT}"
 
 more ./src/WebGL/GLU.js >> "${FILE_CAAT}"
 more ./src/WebGL/Program.js >> "${FILE_CAAT}"
@@ -185,6 +187,8 @@ more ./src/Modules/TexturePacker/TexturePageManager.js >> "${FILE_CAAT_CSS}"
 more ./src/Modules/LayoutUtils/RowLayout.js >> "${FILE_CAAT_CSS}"
 more ./src/Modules/Initialization/Template.js >> "${FILE_CAAT_CSS}"
 more ./src/Modules/Initialization/TemplateWithSplash.js >> "${FILE_CAAT_CSS}"
+more ./src/Modules/CSS/csskeyframehelper.js >> "${FILE_CAAT}"
+
 
 more ./src/PathUtil/PathSegment.js >> "${FILE_CAAT_CSS}"
 more ./src/PathUtil/ArcPath.js >> "${FILE_CAAT_CSS}"
@@ -192,6 +196,7 @@ more ./src/PathUtil/CurvePath.js >> "${FILE_CAAT_CSS}"
 more ./src/PathUtil/LinearPath.js >> "${FILE_CAAT_CSS}"
 more ./src/PathUtil/RectPath.js >> "${FILE_CAAT_CSS}"
 more ./src/PathUtil/Path.js >> "${FILE_CAAT_CSS}"
+more ./src/PathUtil/SVGPath.js >> "${FILE_CAAT_CSS}"
 
 more ./src/WebGL/GLU.js >> "${FILE_CAAT_CSS}"
 more ./src/WebGL/Program.js >> "${FILE_CAAT_CSS}"

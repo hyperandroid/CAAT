@@ -5,6 +5,14 @@
 
 
 CAAT.Module({
+
+    /**
+     * @name Matrix
+     * @memberOf CAAT.Math
+     * @constructor
+     */
+
+
     defines:"CAAT.Math.Matrix",
     depends:["CAAT.Math.Point"],
     aliases:["CAAT.Matrix"],
@@ -12,8 +20,36 @@ CAAT.Module({
         CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Math.Matrix.prototype.transformRenderingContext_NoClamp;
         CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Math.Matrix.prototype.transformRenderingContextSet_NoClamp;
     },
+    constants : {
+
+        /**
+         * @lends CAAT.Math.Matrix.prototype
+         */
+
+        setCoordinateClamping : function( clamp ) {
+            if ( clamp ) {
+                CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
+                CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
+                CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_Clamp;
+                CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_Clamp;
+            } else {
+                CAAT.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
+                CAAT.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
+                CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
+                CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
+            }
+        }
+    },
     extendsWith:function () {
         return {
+
+            /**
+             * @lends CAAT.Math.Matrix.prototype
+             */
+
+            /**
+             * An array of 9 numbers.
+             */
             matrix:null,
 
             __init:function () {
@@ -339,6 +375,45 @@ CAAT.Module({
                 var m = this.matrix;
                 ctx.transform(m[0], m[3], m[1], m[4], m[2] >> 0, m[5] >> 0);
                 return this;
+            },
+
+            setModelViewMatrix:function ( x, y, sx, sy, r  ) {
+                var c, s, _m00, _m01, _m10, _m11;
+                var mm0, mm1, mm2, mm3, mm4, mm5;
+                var mm;
+
+                mm = this.matrix;
+
+                mm0 = 1;
+                mm1 = 0;
+                mm3 = 0;
+                mm4 = 1;
+
+                mm2 = x;
+                mm5 = y;
+
+                c = Math.cos(r);
+                s = Math.sin(r);
+                _m00 = mm0;
+                _m01 = mm1;
+                _m10 = mm3;
+                _m11 = mm4;
+                mm0 = _m00 * c + _m01 * s;
+                mm1 = -_m00 * s + _m01 * c;
+                mm3 = _m10 * c + _m11 * s;
+                mm4 = -_m10 * s + _m11 * c;
+
+                mm0 = mm0 * this.scaleX;
+                mm1 = mm1 * this.scaleY;
+                mm3 = mm3 * this.scaleX;
+                mm4 = mm4 * this.scaleY;
+
+                mm[0] = mm0;
+                mm[1] = mm1;
+                mm[2] = mm2;
+                mm[3] = mm3;
+                mm[4] = mm4;
+                mm[5] = mm5;
             }
         }
     }

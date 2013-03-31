@@ -1,4 +1,12 @@
 CAAT.Module( {
+
+    /**
+     * @name BorderLayout
+     * @memberOf CAAT.Foundation.UI.Layout
+     * @extends CAAT.Foundation.UI.Layout.LayoutManager
+     * @constructor
+     */
+
     defines : "CAAT.Foundation.UI.Layout.BorderLayout",
     aliases : ["CAAT.UI.BorderLayout"],
     depends : [
@@ -8,15 +16,39 @@ CAAT.Module( {
     extendsClass : "CAAT.Foundation.UI.Layout.LayoutManager",
     extendsWith : {
 
+        /**
+         * @lends CAAT.Foundation.UI.Layout.BorderLayout.prototype
+         */
+
+
         __init : function() {
             this.__super();
             return this;
         },
 
+        /**
+         * An actor to position left.
+         */
         left    : null,
+
+        /**
+         * An actor to position right.
+         */
         right   : null,
+
+        /**
+         * An actor to position top.
+         */
         top     : null,
+
+        /**
+         * An actor to position botton.
+         */
         bottom  : null,
+
+        /**
+         * An actor to position center.
+         */
         center  : null,
 
         addChild : function( child, constraint ) {

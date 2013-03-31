@@ -1,3 +1,32 @@
+* 03/18/2013 0.6 Build 30 *
+---------------------------
+
+* Fixed. CAAT.Foundation.UI.Label. Empty lines now have correct height.
+* Fixed. Dirty Rectangles were broken !!!!.
+* Added. setOpenContour(bool) to PathBehavior which calculates path traversal beyond path length
+    as the path continuation out of its final path tangent values instead of wrapping the path.
+* Added BackOutInterpolator to the list of default interpolators. Always been there, but missed the
+    demos.
+* Added clean up code on Actor destroy.
+* Fix. Weird visibility change. Now on setVisible call, if from not visible to visible, the actor
+    is marked as dirty.
+* Fix. CAAT.Foundation.ActorContainer.getActorById function which could show wrong behavior.
+
+* 02/27/2013 0.6 Build 1 *
+---------------------------
+
+* Added CAAT.CACHE_SCENE_ON_CHANGE which controls caching of entering/exiting scene. Set it before building director.
+* Added CAAT.PathUtil.SVGPath which parses an SVG path and creates a Path object.
+* Added demo32: CAAT.PathUtil.SVGPath sample.
+* Added parsing capabilities to CAAT.Behavior.*Behavior and CAAT.Behavior.Interpolator objects.
+* Added demo33: on-the-fly CSS3 key-frame info generation from Behavior objects.
+* Added closed attribute to path objects.
+* Added thorough keyframing capabilities to CAAT.Behavior.Behavior classes.
+* Added functionality to CAAT.CSS object.
+* Added JSDoc pages.
+* Fixed Debug info.
+
+
 * 01/22/2013 0.5 Build 65 *
 ---------------------------
 
