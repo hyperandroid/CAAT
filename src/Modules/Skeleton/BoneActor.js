@@ -8,10 +8,15 @@ CAAT.Module({
         return {
             bone    : null,
             skinInfo : null,
+            skinInfoByName : null,
+            currentSkinInfo : null,
+            skinDataKeyframes : null,
 
             __init : function() {
                 this.__super();
                 this.skinInfo= [];
+                this.skinInfoByName= {};
+                this.skinDataKeyframes= [];
                 this.setSize(1,1);
             },
 
@@ -21,15 +26,51 @@ CAAT.Module({
             },
 
             addSkinInfo : function( si ) {
+                if (null===this.currentSkinInfo) {
+                    this.currentSkinInfo= si;
+                }
                 this.skinInfo.push( si );
+                this.skinInfoByName[ si.name ]= si;
                 return this;
+            },
+
+            setDefaultSkinInfoByName : function( name ) {
+                var v= this.skinInfoByName[name];
+                if (v) {
+                    this.currentSkinInfo= v;
+                }
+
+                return this;
+            },
+
+            addSkinDataKeyframe : function( name, start, duration ) {
+                this.skinDataKeyframes.push( {
+                    name : name,
+                    start : start,
+                    duration : duration
+                });
+            },
+
+            __getCurrentSkinInfo : function(time) {
+                if ( this.skinDataKeyframes.length ) {
+                    time=(time%1000)/1000;
+
+                    for( var i=0, l=this.skinDataKeyframes.length; i<l; i+=1 ) {
+                        var sdkf= this.skinDataKeyframes[i];
+                        if ( time>=sdkf.start && time<=sdkf.start+sdkf.duration ) {
+                            this.currentSkinInfo= this.skinInfoByName[ sdkf.name ];
+                            break;
+                        }
+                    }
+                }
+
+                return this.currentSkinInfo;
             },
 
             paint : function( director, time ) {
                 var ctx= director.ctx;
 
-                for( var i= 0, l=this.skinInfo.length; i<l; i+=1 ) {
-                    var skinInfo= this.skinInfo[i];
+                    var skinInfo= this.__getCurrentSkinInfo(time);
 
                     if (!skinInfo.image) {
                         return;
@@ -47,7 +88,7 @@ CAAT.Module({
 
                         ctx.drawImage( skinInfo.image, 0, 0, skinInfo.image.width, skinInfo.image.height );
                     ctx.restore();
-                }
+
 
             },
 

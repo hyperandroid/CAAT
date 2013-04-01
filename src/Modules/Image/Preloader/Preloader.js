@@ -71,6 +71,8 @@ CAAT.Module( {
                 return this;
             },
 
+            currentGroup : null,
+
             /**
              * a list of elements to load.
              * @type {Array.<{ id, image }>}

@@ -24,6 +24,18 @@ CAAT.Module({
         var cscale;
         var cpoint;
 
+        function fntr(behavior, orgtime, time, actor, value) {
+            cpoint= value;
+        }
+
+        function fnsc(behavior, orgtime, time, actor, value) {
+            cscale= value;
+        }
+
+        function fnrt(behavior, orgtime, time, actor, value) {
+            cangle= value;
+        }
+
         return {
             id : null,
 
@@ -103,9 +115,18 @@ CAAT.Module({
             keyframesRotate : null,
 
             /**
+             * @type object
+             */
+            keyframesByAnimation : null,
+
+            currentAnimation : null,
+
+            /**
              * @type Array.<CAAT.Skeleton.Bone>
              */
             children : null,
+
+            behaviorApplicationTime : -1,
 
             __init : function(id) {
                 this.id= id;
@@ -113,27 +134,45 @@ CAAT.Module({
                 this.wmatrix= new CAAT.Math.Matrix();
                 this.parent= null;
                 this.children= [];
-                this.keyframesTranslate= new CAAT.Behavior.ContainerBehavior(true).setCycle(true).setId("keyframes_tr");
-                this.keyframesScale= new CAAT.Behavior.ContainerBehavior(true).setCycle(true).setId("keyframes_sc");
-                this.keyframesRotate= new CAAT.Behavior.ContainerBehavior(true).setCycle(true).setId("keyframes_rt");
 
-                function fntr(behavior, orgtime, time, actor, value) {
-                    cpoint= value;
-                }
-
-                function fnsc(behavior, orgtime, time, actor, value) {
-                    cscale= value;
-                }
-
-                function fnrt(behavior, orgtime, time, actor, value) {
-                    cangle= value;
-                }
-
-                this.keyframesTranslate.addListener( { behaviorApplied : fntr });
-                this.keyframesScale.addListener( { behaviorApplied : fnsc });
-                this.keyframesRotate.addListener( { behaviorApplied : fnrt });
+                this.keyframesByAnimation = {};
 
                 return this;
+            },
+
+            setBehaviorApplicationTime : function(t) {
+                this.behaviorApplicationTime= t;
+                return this;
+            },
+
+            __createAnimation : function(name) {
+
+                var keyframesTranslate= new CAAT.Behavior.ContainerBehavior(true).setCycle(true).setId("keyframes_tr");
+                var keyframesScale= new CAAT.Behavior.ContainerBehavior(true).setCycle(true).setId("keyframes_sc");
+                var keyframesRotate= new CAAT.Behavior.ContainerBehavior(true).setCycle(true).setId("keyframes_rt");
+
+                keyframesTranslate.addListener( { behaviorApplied : fntr });
+                keyframesScale.addListener( { behaviorApplied : fnsc });
+                keyframesRotate.addListener( { behaviorApplied : fnrt });
+
+                var animData= {
+                    keyframesTranslate  : keyframesTranslate,
+                    keyframesScale      : keyframesScale,
+                    keyframesRotate     : keyframesRotate
+                };
+
+                this.keyframesByAnimation[name]= animData;
+
+                return animData;
+            },
+
+            __getAnimation : function(name) {
+                var animation= this.keyframesByAnimation[ name ];
+                if (!animation) {
+                    animation= this.__createAnimation(name);
+                }
+
+                return animation;
             },
 
             /**
@@ -159,17 +198,6 @@ CAAT.Module({
                 }
             },
 
-            /**
-             *
-             * @param keyframes {CAAT.Behavior.ContainerBehavior}
-             * @returns {*}
-             */
-            setTranslationKeyframes : function( keyframes ) {
-                this.keyframesTranslate= keyframes;
-                this.__noValue( keyframes );
-                return this;
-            },
-
             __setInterpolator : function(behavior, curve) {
                 if (curve && curve!=="stepped") {
                     behavior.setInterpolator(
@@ -184,6 +212,7 @@ CAAT.Module({
 
             /**
              *
+             * @param name {string} keyframe animation name
              * @param angleStart {number} rotation start angle
              * @param angleEnd {number} rotation end angle
              * @param timeStart {number} keyframe start time
@@ -191,10 +220,12 @@ CAAT.Module({
              * @param curve {Array.<number>=} 4 numbers definint a quadric bezier info. two first points
              *  assumed to be 0,0.
              */
-            addRotationKeyframe : function( angleStart, angleEnd, timeStart, timeEnd, curve ) {
+            addRotationKeyframe : function( name, angleStart, angleEnd, timeStart, timeEnd, curve ) {
 
                 var as= 2*Math.PI*angleStart/360;
                 var ae= 2*Math.PI*angleEnd/360;
+
+                // minimum distant between two angles.
 
                 if ( as<-Math.PI ) {
                     if (Math.abs(as+this.rotationAngle)>2*Math.PI) {
@@ -202,6 +233,8 @@ CAAT.Module({
                     } else {
                         as= (as+Math.PI);
                     }
+                } else if (as > Math.PI) {
+                    as -= 2 * Math.PI;
                 }
 
                 if ( ae<-Math.PI ) {
@@ -211,10 +244,16 @@ CAAT.Module({
                     } else {
                         ae= (ae+Math.PI);
                     }
+                } else if ( ae>Math.PI ) {
+                    ae-=2*Math.PI;
                 }
 
                 angleStart= -as;
                 angleEnd= -ae;
+
+
+//                angleStart= 2*Math.PI*angleStart/360;
+
 
 
                 var behavior= new CAAT.Behavior.RotateBehavior().
@@ -224,14 +263,15 @@ CAAT.Module({
 
                 this.__setInterpolator( behavior, curve );
 
-                this.keyframesRotate.addBehavior(behavior);
+                var animation= this.__getAnimation(name);
+                animation.keyframesRotate.addBehavior(behavior);
             },
 
-            endRotationKeyframes : function() {
+            endRotationKeyframes : function(name) {
 
             },
 
-            addTranslationKeyframe : function( startX, startY, endX, endY, timeStart, timeEnd, curve ) {
+            addTranslationKeyframe : function( name, startX, startY, endX, endY, timeStart, timeEnd, curve ) {
                 var behavior= new CAAT.Behavior.PathBehavior().
                     setFrameTime( timeStart, timeEnd-timeStart+1).
                     setValues( new CAAT.PathUtil.Path().
@@ -241,10 +281,23 @@ CAAT.Module({
 
                 this.__setInterpolator( behavior, curve );
 
-                this.keyframesTranslate.addBehavior( behavior );
+                var animation= this.__getAnimation(name);
+                animation.keyframesTranslate.addBehavior( behavior );
             },
 
-            endTranslationKeyframes : function() {
+            addScaleKeyframe : function( name, scaleX, endScaleX, scaleY, endScaleY, timeStart, timeEnd, curve ) {
+                var behavior= new CAAT.Behavior.ScaleBehavior().
+                    setFrameTime( timeStart, timeEnd-timeStart+1).
+                    setValues( scaleX, endScaleX, scaleY, endScaleY ).
+                    setValueApplication(false);
+
+                this.__setInterpolator( behavior, curve );
+
+                var animation= this.__getAnimation(name);
+                animation.keyframesScale.addBehavior( behavior );
+            },
+
+            endTranslationKeyframes : function(name) {
 
             },
 
@@ -253,30 +306,8 @@ CAAT.Module({
                 this.height= 0;
             },
 
-            endScaleKeyframes : function() {
+            endScaleKeyframes : function(name) {
 
-            },
-
-            /**
-             *
-             * @param keyframes {CAAT.Behavior.ContainerBehavior}
-             * @returns {*}
-             */
-            setRotationKeyframes : function( keyframes ) {
-                this.keyframesRotate= keyframes;
-                this.__noValue( keyframes );
-                return this;
-            },
-
-            /**
-             *
-             * @param keyframes {CAAT.Behavior.ContainerBehavior}
-             * @returns {*}
-             */
-            setScaleKeyframes : function( keyframes ) {
-                this.keyframesScale= keyframes;
-                this.__noValue( keyframes );
-                return this;
             },
 
             setPosition : function( x, y ) {
@@ -331,7 +362,7 @@ CAAT.Module({
                 mm2 = this.wx - this.positionAnchorX * this.width;
                 mm5 = this.wy - this.positionAnchorY * this.height;
 
-                if (this.rotationAngle) {
+                if (this.wrotationAngle) {
 
                     var rx = this.rotationAnchorX * this.width;
                     var ry = this.rotationAnchorY * this.height;
@@ -385,6 +416,19 @@ CAAT.Module({
                 }
             },
 
+            setAnimation : function(name) {
+                var animation= this.keyframesByAnimation[name];
+                if (animation) {
+                    this.keyframesRotate= animation.keyframesRotate;
+                    this.keyframesScale= animation.keyframesScale;
+                    this.keyframesTranslate= animation.keyframesTranslate;
+                }
+
+                for( var i= 0, l=this.children.length; i<l; i+=1 ) {
+                    this.children[i].setAnimation(name);
+                }
+            },
+
             /**
              * @param time {number}
              */
@@ -394,9 +438,17 @@ CAAT.Module({
                 cangle= defAngle;
                 cscale= defScale;
 
-                this.keyframesTranslate.apply(time);
-                this.keyframesRotate.apply(time);
-                this.keyframesScale.apply(time);
+                if (this.keyframesTranslate) {
+                    this.keyframesTranslate.apply(time);
+                }
+
+                if ( this.keyframesRotate ) {
+                    this.keyframesRotate.apply(time);
+                }
+
+                if ( this.keyframesScale ) {
+                    this.keyframesScale.apply(time);
+                }
 
                 this.wx= cpoint.x + this.x;
                 this.wy= cpoint.y + this.y;
@@ -420,7 +472,6 @@ CAAT.Module({
 
             paint : function( actorMatrix, ctx ) {
                 ctx.save();
-                    //actorMatrix.transformRenderingContextSet(ctx);
                     this.transformContext(ctx);
 
                     ctx.strokeStyle= 'red';
