@@ -12,8 +12,7 @@ CAAT.Module( {
         skeleton : null,
         slotInfo : null,
         slotInfoArray : null,
-        boneActorHash : null,
-
+        skinByName : null,
 
         __init : function( director, skeleton ) {
             this.__super();
@@ -21,44 +20,33 @@ CAAT.Module( {
             this.skeleton= skeleton;
             this.slotInfo= {};
             this.slotInfoArray= [];
-            this.boneActorHash= {};
+            this.skinByName= {};
 
-            // create an actor for each bone in the skeleton.
-            for( var i=0, l=skeleton.getNumBones(); i<l; i++ ) {
+            this.__setSkinInfo( skeleton.getSkeletonDataFromFile(), director );
 
-                var boneActor= new CAAT.Skeleton.BoneActor();
-                var bone= skeleton.getBoneByIndex( i );
-
-                boneActor.id= bone.id;
-                boneActor.setBone( bone );
-
-                this.boneActorHash[ bone.id ]= boneActor;
-                this.addChild( boneActor );
-            }
+            this.setAnimation("default");
 
             return this;
         },
 
         animate : function( director, time ) {
-            this.skeleton.calculate(time);
+            this.skeleton.calculate(time, this.childrenList);
             return CAAT.Module.Skeleton.SkeletonActor.superclass.animate.call(this, director, time);
         },
-
+/*
         paint : function( director, time ) {
             if (!this.skeleton) {
                 return;
             }
 
             this.skeleton.paint(this.worldModelViewMatrix, director.ctx);
-
-//            CAAT.Foundation.ActorContainer.superclass.paint.call( this, director, time );
         },
-
-        setSkinInfo : function( skeleton, director ) {
+*/
+        __setSkinInfo : function( skeletonData, director ) {
 
             // slots info
-            for( var slot=0; slot<skeleton.slots.length; slot++ ) {
-                var slotInfo= skeleton.slots[slot];
+            for( var slot=0; slot<skeletonData.slots.length; slot++ ) {
+                var slotInfo= skeletonData.slots[slot];
                 var bone= this.skeleton.getBoneById(slotInfo.bone);
                 if (bone) {
                     var slotInfoData= {
@@ -71,34 +59,57 @@ CAAT.Module( {
                     this.slotInfo[ bone.id ]= slotInfoData;
                     this.slotInfoArray.push( slotInfoData );
 
-                    var skinData= skeleton.skins["default"][slotInfo.name];
+                    var skinData= skeletonData.skins["default"][slotInfo.name];
                     if (skinData){
+
+                        //create an actor for each slot data found.
+                        var boneActorSkin= new CAAT.Skeleton.BoneActor();
+                        var bone= this.skeleton.getBoneById( slotInfo.bone );
+
+                        boneActorSkin.id= slotInfo.name;
+                        boneActorSkin.setBone( bone );
+
+                        this.addChild( boneActorSkin );
+                        this.skinByName[slotInfo.name]= boneActorSkin;
+
+                        // add skining info for each slot data.
                         for( var skinDef in skinData ) {
-                            var boneActor= this.boneActorHash[ slotInfo.bone ];
                             var skinInfo= skinData[skinDef];
-                            boneActor.addSkinInfo( {
+                            boneActorSkin.addSkinInfo( {
                                 angle   : -(skinInfo.rotation||0)*2*Math.PI/360,
                                 x       : skinInfo.x,
                                 y       :  -skinInfo.y,
                                 width   : skinInfo.width,
                                 height  : skinInfo.height,
-                                image   : director.getImage(skinDef)
+                                image   : director.getImage(skinDef),
+                                name    : skinDef
                             } );
                         }
+
+                        boneActorSkin.setDefaultSkinInfoByName( slotInfo.attachment );
                     }
                 }
             }
 
+            return this;
+        },
 
-            // set actors order.
-            for( var i=0; i<this.slotInfoArray.length; i++ ) {
-                var boneActor= this.findActorById( this.slotInfoArray[i].bone );
-                this.removeChild(boneActor);
-                boneActor.parent= null;
-                this.addChildAt(boneActor, Number.MAX_VALUE );
+        setAnimation : function(name) {
+            var animationInfo= this.skeleton.getAnimationDataByName(name);
+            if (!animationInfo) {
+                return;
             }
 
-            return this;
+            var animationSlots= animationInfo.slots;
+            for( var animationSlot in animationSlots ) {
+                var attachments= animationSlots[animationSlot].attachment;
+                var boneActor= this.skinByName[ animationSlot ];
+                for( var i=0, l=attachments.length-1; i<l; i+=1 ) {
+                    var start= attachments[i].time;
+                    var len=   attachments[i+1].time-attachments[i].time;
+                    boneActor.addSkinDataKeyframe( attachments[i].name, start, len );
+                }
+            }
         }
 
     }
