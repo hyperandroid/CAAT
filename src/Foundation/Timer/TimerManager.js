@@ -128,6 +128,16 @@ CAAT.Module({
                     tl.splice(i, 1);
                 }
             }
+        },
+        /**
+         * Removes all timers. 
+         */
+        removeAllTimers:function () {
+            var i;
+            var tl = this.timerList;
+            for (i = tl.length-1; i >= 0; i--) {
+                    tl.splice(i, 1);
+            }
         }
     }
 });

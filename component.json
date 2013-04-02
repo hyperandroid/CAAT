@@ -1,0 +1,14 @@
+{
+  "name": "CAAT",
+  "version": "0.6.30",
+  "main": "build/caat-min.js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components",
+    "src",
+    "build/caat.js",
+    "build/caat-box2d.js",
+    "build/caat-css.js"
+  ]
+}
