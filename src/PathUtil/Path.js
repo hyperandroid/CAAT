@@ -78,6 +78,7 @@ CAAT.Module( {
          * starting path y position
          */
 		beginPathY:                 -1,
+        beginPoint:                 null,
 
         /*
             last path coordinates position (using when building the path).
@@ -215,11 +216,16 @@ CAAT.Module( {
         applyAsPath : function(director) {
             var ctx= director.ctx;
 
-            director.modelViewMatrix.transformRenderingContext( ctx );
+            if (this.parent) {
+                director.modelViewMatrix.transformRenderingContext( ctx );    
+            }
+            
+            ctx.beginPath();
             ctx.globalCompositeOperation= 'source-out';
+            var startPos = this.startCurvePosition();
             ctx.moveTo(
-                this.getFirstPathSegment().startCurvePosition().x,
-                this.getFirstPathSegment().startCurvePosition().y
+                startPos.x,
+                startPos.y
             );
             for( var i=0; i<this.pathSegments.length; i++ ) {
                 this.pathSegments[i].applyAsPath(director);
@@ -261,7 +267,7 @@ CAAT.Module( {
          * @return {CAAT.Point}
          */
         startCurvePosition : function() {
-            return this.pathSegments[ 0 ].startCurvePosition();
+            return this.beginPoint || this.pathSegments[ 0 ].startCurvePosition();
         },
         /**
          * Return the last path segment added to this path.
@@ -525,6 +531,11 @@ CAAT.Module( {
 			this.trackPathY= py0;
 			this.beginPathX= px0;
 			this.beginPathY= py0;
+
+            if (px0 !== undefined && py0 !== undefined) {
+                this.beginPoint = new CAAT.Math.Point(px0, py0);
+            }
+
             return this;
 		},
         /**

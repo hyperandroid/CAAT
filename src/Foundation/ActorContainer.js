@@ -525,8 +525,8 @@ CAAT.Module({
                 return null;
             },
             /**
-             * Private
              * Gets a contained Actor z-index on this ActorContainer.
+             * Private
              *
              * @param child a CAAT.Foundation.Actor object instance.
              *
@@ -543,6 +543,18 @@ CAAT.Module({
                     }
                 }
                 return -1;
+            },
+            /**
+             * Removed all Actors from this ActorContainer.
+             *
+             * @return array of former children
+             */
+            removeAllChildren: function() {
+                var cl = this.childrenList.slice(); // Make a shalow copy
+                for (var pos = cl.length-1;pos>=0;pos--) {
+                    this.removeChildAt(pos);
+                }
+                return cl;
             },
             removeChildAt:function (pos) {
                 var cl = this.childrenList;
@@ -561,7 +573,7 @@ CAAT.Module({
                 return null;
             },
             /**
-             * Removed an Actor form this ActorContainer.
+             * Removed an Actor from this ActorContainer.
              * If the Actor is not contained into this Container, nothing happends.
              *
              * @param child a CAAT.Foundation.Actor object instance.
@@ -601,9 +613,9 @@ CAAT.Module({
                 return null;
             },
             /**
-             * @private
-             *
              * Gets the Actor inside this ActorContainer at a given Screen coordinate.
+             *
+             * @private
              *
              * @param point an object of the form { x: float, y: float }
              *

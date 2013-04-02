@@ -16,7 +16,7 @@ CAAT.Module( {
          * @param cursor
          */
         CAAT.setCursor= function(cursor) {
-            if ( navigator.browser!=='iOS' ) {
+            if ( !navigator.userAgent.match(/(iPad|iPhone|iPod)/g) ) {
                 document.body.style.cursor= cursor;
             }
         };
