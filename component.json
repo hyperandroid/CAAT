@@ -6,6 +6,9 @@
     "**/.*",
     "node_modules",
     "components",
-    "src"
+    "src",
+    "build/caat.js",
+    "build/caat-box2d.js",
+    "build/caat-css.js"
   ]
 }
