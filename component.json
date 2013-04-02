@@ -5,6 +5,7 @@
   "ignore": [
     "**/.*",
     "node_modules",
-    "components"
+    "components",
+    "src"
   ]
 }
