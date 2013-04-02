@@ -180,7 +180,7 @@ CAAT.Module({
             canvas:null,
 
             /**
-             * This director��s canvas rendering context.
+             * This director´s canvas rendering context.
              */
             ctx:null,
 
@@ -202,14 +202,14 @@ CAAT.Module({
             imagesCache:null,
 
             /**
-             * this director��s audio manager.
+             * this director´s audio manager.
              * @private
              */
             audioManager:null,
 
             /**
              * Clear screen strategy:
-             * CAAT.Foundation.Director.CLEAR_NONE : director won��t clear the background.
+             * CAAT.Foundation.Director.CLEAR_NONE : director won´t clear the background.
              * CAAT.Foundation.Director.CLEAR_DIRTY_RECTS : clear only affected actors screen area.
              * CAAT.Foundation.Director.CLEAR_ALL : clear the whole canvas object.
              */
@@ -404,10 +404,10 @@ CAAT.Module({
             touches:null,
 
             /**
-             * Director��s timer manager.
+             * Director´s timer manager.
              * Each scene has a timerManager as well.
-             * The difference is the scope. Director��s timers will always be checked whereas scene�� timers
-             * will only be scheduled/checked when the scene is director�� current scene.
+             * The difference is the scope. Director´s timers will always be checked whereas scene´ timers
+             * will only be scheduled/checked when the scene is director´ current scene.
              * @private
              */
             timerManager:null,
