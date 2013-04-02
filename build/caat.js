@@ -11727,6 +11727,7 @@ CAAT.Module({
          * starting path y position
          */
 		beginPathY:                 -1,
+        beginPoint:                 null,
 
         /*
             last path coordinates position (using when building the path).
@@ -11864,11 +11865,16 @@ CAAT.Module({
         applyAsPath : function(director) {
             var ctx= director.ctx;
 
-            director.modelViewMatrix.transformRenderingContext( ctx );
+            if (this.parent) {
+                director.modelViewMatrix.transformRenderingContext( ctx );    
+            }
+            
+            ctx.beginPath();
             ctx.globalCompositeOperation= 'source-out';
+            var startPos = this.startCurvePosition();
             ctx.moveTo(
-                this.getFirstPathSegment().startCurvePosition().x,
-                this.getFirstPathSegment().startCurvePosition().y
+                startPos.x,
+                startPos.y
             );
             for( var i=0; i<this.pathSegments.length; i++ ) {
                 this.pathSegments[i].applyAsPath(director);
@@ -11910,7 +11916,7 @@ CAAT.Module({
          * @return {CAAT.Point}
          */
         startCurvePosition : function() {
-            return this.pathSegments[ 0 ].startCurvePosition();
+            return this.beginPoint || this.pathSegments[ 0 ].startCurvePosition();
         },
         /**
          * Return the last path segment added to this path.
@@ -12174,6 +12180,11 @@ CAAT.Module({
 			this.trackPathY= py0;
 			this.beginPathX= px0;
 			this.beginPathY= py0;
+
+            if (px0 !== undefined && py0 !== undefined) {
+                this.beginPoint = new CAAT.Math.Point(px0, py0);
+            }
+
             return this;
 		},
         /**
@@ -15131,6 +15142,16 @@ CAAT.Module({
                     tl.splice(i, 1);
                 }
             }
+        },
+        /**
+         * Removes all timers. 
+         */
+        removeAllTimers:function () {
+            var i;
+            var tl = this.timerList;
+            for (i = tl.length-1; i >= 0; i--) {
+                    tl.splice(i, 1);
+            }
         }
     }
 });
@@ -17244,6 +17265,7 @@ CAAT.Module({
             __init:function () {
                 this.behaviorList = [];
                 this.lifecycleListenerList = [];
+                this.eventListeners = {};
                 this.AABB = new CAAT.Math.Rectangle();
                 this.viewVertices = [
                     new CAAT.Math.Point(0, 0, 0),
@@ -18600,13 +18622,26 @@ CAAT.Module({
              */
             removeBehaviour:function (behavior) {
                 var c = this.behaviorList;
-                var n = c.length - 1;
-                while (n) {
+                for (var n = 0; n < c.length; n++) {
                     if (c[n] === behavior) {
                         c.splice(n, 1);
                         return this;
                     }
                 }
+                return this;
+            },
+
+            /**
+             * Remove all Behaviors from the Actor.
+             *
+             * @return this
+             */
+            removeAllBehaviors: function() {
+                var bl = this.behaviorList; 
+                for (var pos = bl.length - 1; pos >= 0; pos--) {
+                    this.removeBehaviour(bl[pos]);
+                }
+                // console.log(this.behaviorList);
                 return this;
             },
             /**
@@ -19714,6 +19749,84 @@ CAAT.Module({
 
             findActorById : function(id) {
                 return this.id===id ? this : null;
+            },
+
+
+            /**
+             * Add multiple event listeners to this Actor
+             *
+             * @param event listeners in the form { 'eventname': callbackFunction, 'othereventName': otherCallback }
+             */
+            
+            addEventListeners: function(object) {
+                var event;
+                
+                for (event in object) {
+                    if (!this.eventListeners[event]) {
+                        this.eventListeners[event] = [];
+                    }
+                    this.eventListeners[event].push(object[event]);
+                }
+                return this;
+            },
+
+            /**
+             * Remove a single event listener from this Actor
+             *
+             * @param event name 
+             * @param specified callback to be removed, a single event name can have multiple callbacks
+             */
+            removeEventListener: function(event, callback) {
+                for (var i=0;i< this.eventListeners[event].length;i++) {
+                    if(this.eventListeners[event][i] == callback) {
+                        this.eventListeners[event].splice(i, 1);
+                        return this;
+                    }
+                }
+                return this;
+            },
+
+            /**
+             * Remove all event listeners from this Actor
+             * Can either remove all listeners on a single event name, or everything
+             *
+             * @param event name, if not specified, will remove every single event listener
+             */
+            removeAllEventListeners: function(event) {
+                if (event) {
+                    if (this.eventListeners[event]) {
+                        this.eventListeners[event] = [];
+                    }
+                } else {
+                    this.eventListeners = {}; // remove everything
+                }
+            },
+
+            /**
+             * Shorthand method for adding a single event listener
+             *
+             * @param event name
+             * @param callback function
+             */
+            on: function(event, callback, options) { // TODO: allow single: true in options to remove after first fire
+                var args = {};
+                args[event] = callback;
+                return this.addEventListeners(args);
+            },
+
+            /**
+             * Fire an event on this object, calling all registered event listeners in turn
+             *
+             * @param event name 
+             * @param callback functions will be called with this object as a single argument
+             */
+            emit: function(event, params) {
+                if (!this.eventListeners || !this.eventListeners[event]) return this;
+
+                for (var i=0;i< this.eventListeners[event].length;i++) {
+                    this.eventListeners[event][i].call(null, params);
+                }
+                return this;
             }
         }
     }
@@ -20264,6 +20377,18 @@ CAAT.Module({
                 }
                 return -1;
             },
+            /**
+             * Removed all Actors from this ActorContainer.
+             *
+             * @return array of former children
+             */
+            removeAllChildren: function() {
+                var cl = this.childrenList.slice(); // Make a shalow copy
+                for (var pos = cl.length-1;pos>=0;pos--) {
+                    this.removeChildAt(pos);
+                }
+                return cl;
+            },
             removeChildAt:function (pos) {
                 var cl = this.childrenList;
                 var rm;
@@ -20281,7 +20406,7 @@ CAAT.Module({
                 return null;
             },
             /**
-             * Removed an Actor form this ActorContainer.
+             * Removed an Actor from this ActorContainer.
              * If the Actor is not contained into this Container, nothing happends.
              *
              * @param child a CAAT.Foundation.Actor object instance.
@@ -25504,6 +25629,7 @@ CAAT.Module( {
                 if ( null===_text ) {
                    return;
                 }
+                width = width || this.width;
 
                 var cached= this.cached;
                 if ( cached ) {
