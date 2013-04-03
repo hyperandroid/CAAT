@@ -2111,7 +2111,7 @@ CAAT.Module({
 
                     // check for mouse move threshold.
                     if (!this.dragging) {
-                        if (Math.abs(this.prevMousePoint.x - pos.x) < CAAT.DRAG_THRESHOLD_X ||
+                        if (Math.abs(this.prevMousePoint.x - pos.x) < CAAT.DRAG_THRESHOLD_X &&
                             Math.abs(this.prevMousePoint.y - pos.y) < CAAT.DRAG_THRESHOLD_Y) {
                             return;
                         }
