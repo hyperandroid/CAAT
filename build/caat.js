@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.6 build: 30
+Version: 0.6 build: 33
 
 Created on:
-DATE: 2013-03-18
-TIME: 23:03:05
+DATE: 2013-04-02
+TIME: 23:55:19
 */
 
 
@@ -4035,6 +4035,27 @@ CAAT.Module({
             discardable:false,
 
             /**
+             * does this behavior apply relative values ??
+             */
+            isRelative : false,
+
+            /**
+             * Set this behavior as relative value application to some other measures.
+             * Each Behavior will define its own.
+             * @param bool
+             * @returns {*}
+             */
+            setRelative : function( bool ) {
+                this.isRelative= bool;
+                return this;
+            },
+
+            setRelativeValues : function() {
+                this.isRelative= true;
+                return this;
+            },
+
+            /**
              * Parse a behavior of this type.
              * @param obj {object} an object with a behavior definition.
              */
@@ -4590,13 +4611,19 @@ CAAT.Module({
              */
             behaviors:null, // contained behaviors array
 
+            conforming : false,
+
             /**
+             * @param conforming {bool=} conform this behavior duration to that of its children.
              * @inheritDoc
              * @private
              */
-            __init:function () {
+            __init:function ( conforming ) {
                 this.__super();
                 this.behaviors = [];
+                if ( conforming ) {
+                    this.conforming= true;
+                }
                 return this;
             },
 
@@ -4639,6 +4666,15 @@ CAAT.Module({
             addBehavior:function (behavior) {
                 this.behaviors.push(behavior);
                 behavior.addListener(this);
+
+                if ( this.conforming ) {
+                    var len= behavior.behaviorDuration + behavior.behaviorStartTime;
+                    if ( this.behaviorDuration < len ) {
+                        this.behaviorDuration= len;
+                        this.behaviorStartTime= 0;
+                    }
+                }
+
                 return this;
             },
 
@@ -4659,9 +4695,9 @@ CAAT.Module({
                 time += this.timeOffset * this.behaviorDuration;
 
                 if (this.isBehaviorInTime(time, actor)) {
-                    time -= this.getStartTime();
+                    time -= this.behaviorStartTime;
                     if (this.cycleBehavior) {
-                        time %= this.getDuration();
+                        time %= this.behaviorDuration;
                     }
 
                     var bh = this.behaviors;
@@ -4684,6 +4720,10 @@ CAAT.Module({
                 }
             },
 
+            behaviorApplied : function(behavior, scenetime, time, actor, value ) {
+                this.fireBehaviorAppliedEvent(actor, scenetime, time, value);
+            },
+
             /**
              * Implementation method of the behavior.
              * Just call implementation method for its contained behaviors.
@@ -4691,12 +4731,13 @@ CAAT.Module({
              * @param actor{CAAT.Foundation.Actor} an actor the behavior is being applied to.
              */
             setForTime:function (time, actor) {
+                var retValue= null;
                 var bh = this.behaviors;
                 for (var i = 0; i < bh.length; i++) {
-                    bh[i].setForTime(time, actor);
+                    retValue= bh[i].setForTime(time, actor);
                 }
 
-                return null;
+                return retValue;
             },
 
             /**
@@ -5151,6 +5192,9 @@ CAAT.Module({
 
             isOpenContour : false,
 
+            relativeX : 0,
+            relativeY : 0,
+
             setOpenContour : function(b) {
                 this.isOpenContour= b;
                 return this;
@@ -5162,6 +5206,14 @@ CAAT.Module({
             getPropertyName:function () {
                 return "translate";
             },
+
+            setRelativeValues : function( x, y ) {
+                this.relativeX= x;
+                this.relativeY= y;
+                this.isRelative= true;
+                return this;
+            },
+
 
             /**
              * Sets an actor rotation to be heading from past to current path's point.
@@ -5287,6 +5339,10 @@ CAAT.Module({
                 }
 
                 var point = this.path.getPosition(time, this.isOpenContour,.001);
+                if (this.isRelative ) {
+                    point.x+= this.relativeX;
+                    point.y+= this.relativeY;
+                }
 
                 if (this.autoRotate) {
 
@@ -5439,6 +5495,14 @@ CAAT.Module({
              */
             anchorY:.50,
 
+            rotationRelative: 0,
+
+            setRelativeValues : function(r) {
+                this.rotationRelative= r;
+                this.isRelative= true;
+                return this;
+            },
+
             /**
              * @inheritDoc
              */
@@ -5451,6 +5515,16 @@ CAAT.Module({
              */
             setForTime:function (time, actor) {
                 var angle = this.startAngle + time * (this.endAngle - this.startAngle);
+
+                if ( this.isRelative ) {
+                    angle+= this.rotationRelative;
+                    if (angle>=Math.PI) {
+                        angle= (angle-2*Math.PI)
+                    }
+                    if ( angle<-2*Math.PI) {
+                        angle= (angle+2*Math.PI);
+                    }
+                }
 
                 if (this.doValueApplication) {
                     actor.setRotationAnchored(angle, this.anchorX, this.anchorY);
@@ -8582,8 +8656,11 @@ CAAT.Module( {
 
             __init : function()   {
                 this.elements= [];
+                this.baseURL= "";
                 return this;
             },
+
+            currentGroup : null,
 
             /**
              * a list of elements to load.
@@ -8616,8 +8693,10 @@ CAAT.Module( {
              */
             loadedCount:    0,
 
+            baseURL : null,
+
             addElement : function( id, path ) {
-                this.elements.push( new descriptor(id,path,this) );
+                this.elements.push( new descriptor(id,this.baseURL+path,this) );
                 return this;
             },
 
@@ -8645,6 +8724,11 @@ CAAT.Module( {
                 if ( this.cerrored ) {
                     this.cerrored(d.id);
                 }
+            },
+
+            setBaseURL : function( base ) {
+                this.baseURL= base;
+                return this;
             },
 
             load: function( onfinished, onload_one, onerror ) {
@@ -12365,8 +12449,8 @@ CAAT.Module( {
          * @param time {number} a value between 0 and 1 both inclusive. 0 will return path's starting coordinate.
          * 1 will return path's end coordinate.
          * @param open_contour {boolean=} treat this path as an open contour. It is intended for
-         * open paths, and interpolators which give values above 1. see @link
-         * @param tangent_threshold {number=}
+         * open paths, and interpolators which give values above 1. see tutorial 7.1.
+         * @link{../../documentation/tutorials/t7-1.html}
          *
          * @return {CAAT.Foundation.Point}
          */
@@ -16526,7 +16610,6 @@ CAAT.Module({
                     this.width= image.mapInfo[0].width;
                     this.height= image.mapInfo[0].height;
 
-
                 } else {
                     this.image = image;
                     this.width = image.width;
@@ -16592,6 +16675,12 @@ CAAT.Module({
                     }
                 }
 
+                return this;
+            },
+
+            copy : function( other ) {
+                this.initialize(other,1,1);
+                this.mapInfo= other.mapInfo;
                 return this;
             },
 
@@ -20104,6 +20193,10 @@ CAAT.Module({
                     }
                 }
 
+                if (this.postPaint) {
+                    this.postPaint( director, time );
+                }
+
                 ctx.restore();
 
                 return true;
@@ -21214,6 +21307,7 @@ CAAT.Module({
                 this.browserInfo = CAAT.Module.Runtime.BrowserInfo;
                 this.audioManager = new CAAT.Module.Audio.AudioManager().initialize(8);
                 this.scenes = [];
+                this.imagesCache= [];
 
                 // input related variables initialization
                 this.mousePoint = new CAAT.Math.Point(0, 0, 0);
@@ -21910,6 +22004,10 @@ CAAT.Module({
             },
             setImagesCache:function (imagesCache, tpW, tpH) {
 
+                if (!imagesCache || !imagesCache.length ) {
+                    return this;
+                }
+
                 var i;
 
                 if (null !== this.glTextureManager) {
@@ -21973,7 +22071,8 @@ CAAT.Module({
              */
             addImage:function (id, image, noUpdateGL) {
                 if (this.getImage(id)) {
-                    for (var i = 0; i < this.imagesCache.length; i++) {
+//                    for (var i = 0; i < this.imagesCache.length; i++) {
+                    for( var i in this.imagesCache ) {
                         if (this.imagesCache[i].id === id) {
                             this.imagesCache[i].image = image;
                             break;
@@ -22881,7 +22980,8 @@ CAAT.Module({
                     return ret;
                 }
 
-                for (var i = 0; i < this.imagesCache.length; i++) {
+                //for (var i = 0; i < this.imagesCache.length; i++) {
+                for( var i in this.imagesCache ) {
                     if (this.imagesCache[i].id === sId) {
                         return this.imagesCache[i].image;
                     }
@@ -23244,7 +23344,7 @@ CAAT.Module({
 
                     // check for mouse move threshold.
                     if (!this.dragging) {
-                        if (Math.abs(this.prevMousePoint.x - pos.x) < CAAT.DRAG_THRESHOLD_X ||
+                        if (Math.abs(this.prevMousePoint.x - pos.x) < CAAT.DRAG_THRESHOLD_X &&
                             Math.abs(this.prevMousePoint.y - pos.y) < CAAT.DRAG_THRESHOLD_Y) {
                             return;
                         }
