@@ -263,6 +263,10 @@ CAAT.Module({
                     }
                 }
 
+                if (this.postPaint) {
+                    this.postPaint( director, time );
+                }
+
                 ctx.restore();
 
                 return true;

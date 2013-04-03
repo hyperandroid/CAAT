@@ -71,91 +71,130 @@
                 // this function will be firer every time all dependencies have been solved.
                 // if you call again bring, this function could be fired again.
                     onReady( function() {
-                            new CAAT.Module.Preloader.XHR().load(
-                                    function( result, content ) {
-                                        if (result==="ok" ) {
-
-                                            new CAAT.Module.Preloader.XHR().load(
-                                                    function( result, content2 ) {
-                                                        ffl( JSON.parse(content), JSON.parse(content2) );
-                                                    },
-                                                    "spineboy/animation.json",
-//                                                    "pawly/skeleton-Running.json",
-                                                    true,
-                                                    "GET");
-
-                                        } else {
-                                            alert("Error loading library");
-                                        }
-                                    },
-                                    "spineboy/skeleton.json",
-//                                    "pawly/skeleton-skeleton.json",
-                                    true,
-                                    "GET"
-                            );
+                        ffl();
                     } );
 
 
         }
 
-        function ffl(skeleton, animation) {
+        function ffl() {
 
             new CAAT.Module.Preloader.Preloader().
                     setBaseURL("spineboy/").
-                    addElement( "eyes", "eyes.png").
-                    addElement( "eyes-closed", "eyes-closed.png").
-                    addElement( "head", "head.png").
-                    addElement( "left-ankle", "left-ankle.png").
-                    addElement( "left-arm", "left-arm.png").
-                    addElement( "left-foot", "left-foot.png").
-                    addElement( "left-hand", "left-hand.png").
-                    addElement( "left-lower-leg", "left-lower-leg.png").
-                    addElement( "left-pant-bottom", "left-pant-bottom.png").
-                    addElement( "left-shoulder", "left-shoulder.png").
-                    addElement( "left-upper-leg", "left-upper-leg.png").
-                    addElement( "neck", "neck.png").
-                    addElement( "pelvis", "pelvis.png").
-                    addElement( "right-ankle", "right-ankle.png").
-                    addElement( "right-arm", "right-arm.png").
-                    addElement( "right-foot", "right-foot.png").
-                    addElement( "right-hand", "right-hand.png").
-                    addElement( "right-lower-leg", "right-lower-leg.png").
-                    addElement( "right-pant-bottom", "right-pant-bottom.png").
-                    addElement( "right-shoulder", "right-shoulder.png").
-                    addElement( "right-upper-leg", "right-upper-leg.png").
-                    addElement( "torso", "torso.png").
-                    load( function(images) {
-                        ff( skeleton, animation, images );
-                    });
+                        addElement( "eyes",         "eyes.png").
+                        addElement( "eyes-closed",  "eyes-closed.png").
+                        addElement( "headboy",         "head.png").
+                        addElement( "left-ankle",   "left-ankle.png").
+                        addElement( "left-arm",     "left-arm.png").
+                        addElement( "left-foot",    "left-foot.png").
+                        addElement( "left-hand",    "left-hand.png").
+                        addElement( "left-lower-leg", "left-lower-leg.png").
+                        addElement( "left-pant-bottom", "left-pant-bottom.png").
+                        addElement( "left-shoulder", "left-shoulder.png").
+                        addElement( "left-upper-leg", "left-upper-leg.png").
+                        addElement( "neck", "neck.png").
+                        addElement( "pelvis", "pelvis.png").
+                        addElement( "right-ankle", "right-ankle.png").
+                        addElement( "right-arm", "right-arm.png").
+                        addElement( "right-foot", "right-foot.png").
+                        addElement( "right-hand", "right-hand.png").
+                        addElement( "right-lower-leg", "right-lower-leg.png").
+                        addElement( "right-pant-bottom", "right-pant-bottom.png").
+                        addElement( "right-shoulder", "right-shoulder.png").
+                        addElement( "right-upper-leg", "right-upper-leg.png").
+                        addElement( "torso", "torso.png").
 
+                    setBaseURL("goblins/").
+                        addElement( "dagger",                   "dagger.png").
+                        addElement( "spear",                    "spear.png").
 
-            /*
-            new CAAT.Module.Preloader.Preloader().
-                    setBaseURL("pawly/pawly/").
-                    addElement( "pawly/gun", "gun.png").
-                    addElement( "pawly/head", "head.png").
-                    addElement( "pawly/larm", "larm.png").
-                    addElement( "pawly/larm-hi", "larm-hi.png").
-                    addElement( "pawly/larm-lo", "larm-lo.png").
-                    addElement( "pawly/lhand", "lhand.png").
-                    addElement( "pawly/lleg-hi", "lleg-hi.png").
-                    addElement( "pawly/lleg-lo", "lleg-lo.png").
-                    addElement( "pawly/lshoe", "lshoe.png").
-                    addElement( "pawly/pelvis", "pelvis.png").
-                    addElement( "pawly/rarm-hi", "rarm-hi.png").
-                    addElement( "pawly/rarm-lo", "rarm-lo.png").
-                    addElement( "pawly/rhand", "rhand.png").
-                    addElement( "pawly/rleg-hi", "rleg-hi.png").
-                    addElement( "pawly/rleg-lo", "rleg-lo.png").
-                    addElement( "pawly/rshoe", "rshoe.png").
-                    addElement( "pawly/torso", "torso.png").
+                        addElement( "goblin/eyes-closed",       "goblin/eyes-closed.png").
+                        addElement( "goblin/head",              "goblin/head.png").
+                        addElement( "goblin/left-arm",          "goblin/left-arm.png").
+                        addElement( "goblin/left-foot",         "goblin/left-foot.png").
+                        addElement( "goblin/left-hand",         "goblin/left-hand.png").
+                        addElement( "goblin/left-lower-leg",    "goblin/left-lower-leg.png").
+                        addElement( "goblin/left-shoulder",     "goblin/left-shoulder.png").
+                        addElement( "goblin/left-upper-leg",    "goblin/left-upper-leg.png").
+                        addElement( "goblin/right-arm",         "goblin/right-arm.png").
+                        addElement( "goblin/right-foot",        "goblin/right-foot.png").
+                        addElement( "goblin/right-hand",        "goblin/right-hand.png").
+                        addElement( "goblin/right-lower-leg",   "goblin/right-lower-leg.png").
+                        addElement( "goblin/right-shoulder",    "goblin/right-shoulder.png").
+                        addElement( "goblin/right-upper-leg",   "goblin/right-upper-leg.png").
+                        addElement( "goblin/neck",              "goblin/neck.png").
+                        addElement( "goblin/pelvis",            "goblin/pelvis.png").
+                        addElement( "goblin/torso",             "goblin/torso.png").
+                        addElement( "goblin/undie-straps",      "goblin/undie-straps.png").
+                        addElement( "goblin/undies",            "goblin/undies.png").
+
+                        addElement( "goblingirl/eyes-closed",       "goblingirl/eyes-closed.png").
+                        addElement( "goblingirl/head",              "goblingirl/head.png").
+                        addElement( "goblingirl/left-arm",          "goblingirl/left-arm.png").
+                        addElement( "goblingirl/left-foot",         "goblingirl/left-foot.png").
+                        addElement( "goblingirl/left-hand",         "goblingirl/left-hand.png").
+                        addElement( "goblingirl/left-lower-leg",    "goblingirl/left-lower-leg.png").
+                        addElement( "goblingirl/left-shoulder",     "goblingirl/left-shoulder.png").
+                        addElement( "goblingirl/left-upper-leg",    "goblingirl/left-upper-leg.png").
+                        addElement( "goblingirl/right-arm",         "goblingirl/right-arm.png").
+                        addElement( "goblingirl/right-foot",        "goblingirl/right-foot.png").
+                        addElement( "goblingirl/right-hand",        "goblingirl/right-hand.png").
+                        addElement( "goblingirl/right-lower-leg",   "goblingirl/right-lower-leg.png").
+                        addElement( "goblingirl/right-shoulder",    "goblingirl/right-shoulder.png").
+                        addElement( "goblingirl/right-upper-leg",   "goblingirl/right-upper-leg.png").
+                        addElement( "goblingirl/neck",              "goblingirl/neck.png").
+                        addElement( "goblingirl/pelvis",            "goblingirl/pelvis.png").
+                        addElement( "goblingirl/torso",             "goblingirl/torso.png").
+                        addElement( "goblingirl/undie-straps",      "goblingirl/undie-straps.png").
+                        addElement( "goblingirl/undies",            "goblingirl/undies.png").
+
+                    setBaseURL("dragon/").
+                        addElement( "back", "back.png").
+                        addElement( "chest", "chest.png").
+                        addElement( "chin", "chin.png").
+                        addElement( "front_toeA", "front_toeA.png").
+                        addElement( "front_toeB", "front_toeB.png").
+                        addElement( "head", "head.png").
+                        addElement( "L_front_leg", "L_front_leg.png").
+                        addElement( "L_front_thigh", "L_front_thigh.png").
+                        addElement( "L_rear_leg", "L_rear_leg.png").
+                        addElement( "L_rear_thigh", "L_rear_thigh.png").
+                        addElement( "L_wing01", "L_wing01.png").
+                        addElement( "L_wing02", "L_wing02.png").
+                        addElement( "L_wing03", "L_wing03.png").
+                        addElement( "L_wing04", "L_wing04.png").
+                        addElement( "L_wing05", "L_wing05.png").
+                        addElement( "L_wing06", "L_wing06.png").
+                        addElement( "L_wing07", "L_wing07.png").
+                        addElement( "L_wing08", "L_wing08.png").
+                        addElement( "L_wing09", "L_wing09.png").
+                        addElement( "R_front_leg",  "R_front_leg.png").
+                        addElement( "R_front_thigh","R_front_thigh.png").
+                        addElement( "R_rear_leg",   "R_rear_leg.png").
+                        addElement( "R_rear_thigh", "R_rear_thigh.png").
+                        addElement( "R_wing01",     "R_wing01.png").
+                        addElement( "R_wing02",     "R_wing02.png").
+                        addElement( "R_wing03",     "R_wing03.png").
+                        addElement( "R_wing04",     "R_wing04.png").
+                        addElement( "R_wing05",     "R_wing05.png").
+                        addElement( "R_wing06",     "R_wing06.png").
+                        addElement( "R_wing07",     "R_wing07.png").
+                        addElement( "R_wing08",     "R_wing08.png").
+                        addElement( "R_wing09",     "R_wing09.png").
+                        addElement( "rear-toe",     "rear-toe.png").
+                        addElement( "tail01",     "tail01.png").
+                        addElement( "tail02",     "tail02.png").
+                        addElement( "tail03",     "tail03.png").
+                        addElement( "tail04",     "tail04.png").
+                        addElement( "tail05",     "tail05.png").
+                        addElement( "tail06",     "tail06.png").
+
                     load( function(images) {
-                        ff( skeleton, animation, images );
+                        ff( images );
                     });
-*/
         }
 
-        function ff( skeleton, animation, images ) {
+        function ff( images ) {
 
             CAAT.DEBUG=1;
 
@@ -164,37 +203,42 @@
             var scene=     director.createScene();
 
 
-            var _skeleton= new CAAT.Module.Skeleton.Skeleton(skeleton, animation);
+            var _skeleton1= new CAAT.Module.Skeleton.Skeleton().
+                    setSkeletonFromFile("dragon/dragon-skeleton.json").
+                    addAnimationFromFile( "default", "dragon/dragon-flying.json" );
 
+            var skeletonActordragon = new CAAT.Module.Skeleton.SkeletonActor(director, _skeleton1).
+                    setLocation( 500, 400).
+                    setScale(.7,.7);
+            scene.addChild(skeletonActordragon);
 
-            for( var i=0; i<5; i+=1) {
+            var _skeletonBoy= new CAAT.Module.Skeleton.Skeleton().
+                    setSkeletonFromFile("spineboy/skeleton.json").
+                    addAnimationFromFile( "default", "spineboy/animation.json" );
+            var skeletonActorBoy = new CAAT.Module.Skeleton.SkeletonActor(director, _skeletonBoy).
+                    setLocation( 600, 500).
+                    setScale(.7,.7);
+            scene.addChild(skeletonActorBoy);
 
-                var scale= .25+Math.random()*.5;
-                var x0=100;
-                var y0=200+Math.random()*(director.height-200);
-                var x1=director.width-200;
-                var y1=200+Math.random()*(director.height-200);
+            var _skeleton= new CAAT.Module.Skeleton.Skeleton().
+                    setSkeletonFromFile("goblins/goblins-skeleton.json").
+                    addAnimationFromFile( "default", "goblins/goblins-walk.json" );
 
-                var skeletonActor = new CAAT.Module.Skeleton.SkeletonActor(director, _skeleton).
-                        setScale( scale, scale).
-                        setSkinInfo(skeleton, director).
-                        addBehavior(
-                                new CAAT.Behavior.PathBehavior().
-                                        setDelayTime(0,10000+Math.random()*10000).
-                                        setValues( new CAAT.PathUtil.Path().setLinear(x0,y0,x1,y1)).
-                                        setCycle(true).
-                                        setInterpolator(
-                                                new CAAT.Behavior.Interpolator().createLinearInterpolator(
-                                                        true, Math.random() <.5
-                                                        )).
-                                        setAutoRotate( 0 )
-                        );
+            var skeletonActor = new CAAT.Module.Skeleton.SkeletonActor(director, _skeleton).
+                    setLocation( 200, 500).
+                    setScale(.7,.7).
+                    setSkin("goblin").
+                    setAnimation("default");
 
-                scene.addChild(skeletonActor);
-            }
+            scene.addChild(skeletonActor);
 
+            var skeletonActorgirl = new CAAT.Module.Skeleton.SkeletonActor(director, _skeleton).
+                    setLocation( 400, 500).
+                    setScale(.7,.7).
+                    setSkin("goblingirl").
+                    setAnimation("default");
 
-
+            scene.addChild(skeletonActorgirl);
 
             director.loop(1);
         }

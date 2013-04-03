@@ -205,9 +205,9 @@
             "attachment": "neck"
         },
         {
-            "name": "head",
+            "name": "headboy",
             "bone": "head",
-            "attachment": "head"
+            "attachment": "headboy"
         },
         {
             "name": "eyes",
@@ -346,8 +346,8 @@
                     "height": 28
                 }
             },
-            "head": {
-                "head": {
+            "headboy": {
+                "headboy": {
                     "x": 53.94,
                     "y": -5.75,
                     "rotation": -86.9,
