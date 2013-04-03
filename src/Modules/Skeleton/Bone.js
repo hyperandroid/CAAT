@@ -251,11 +251,6 @@ CAAT.Module({
                 angleStart= -as;
                 angleEnd= -ae;
 
-
-//                angleStart= 2*Math.PI*angleStart/360;
-
-
-
                 var behavior= new CAAT.Behavior.RotateBehavior().
                         setFrameTime( timeStart, timeEnd-timeStart+1).
                         setValues( angleStart, angleEnd, 0, .5).
@@ -474,10 +469,12 @@ CAAT.Module({
                 ctx.save();
                     this.transformContext(ctx);
 
-                    ctx.strokeStyle= 'red';
+                    ctx.strokeStyle= 'blue';
                     ctx.beginPath();
-                    ctx.moveTo(0,0);
+                    ctx.moveTo(0,-2);
                     ctx.lineTo(this.width,this.height);
+                    ctx.lineTo(0,2);
+                    ctx.lineTo(0,-2);
                     ctx.stroke();
                 ctx.restore();
 

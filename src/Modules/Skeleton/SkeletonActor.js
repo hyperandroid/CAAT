@@ -13,16 +13,18 @@ CAAT.Module( {
         slotInfo : null,
         slotInfoArray : null,
         skinByName : null,
+        director : null,
 
         __init : function( director, skeleton ) {
             this.__super();
 
+            this.director= director;
             this.skeleton= skeleton;
             this.slotInfo= {};
             this.slotInfoArray= [];
             this.skinByName= {};
 
-            this.__setSkinInfo( skeleton.getSkeletonDataFromFile(), director );
+            this.setSkin( );
 
             this.setAnimation("default");
 
@@ -33,16 +35,23 @@ CAAT.Module( {
             this.skeleton.calculate(time, this.childrenList);
             return CAAT.Module.Skeleton.SkeletonActor.superclass.animate.call(this, director, time);
         },
-/*
-        paint : function( director, time ) {
+
+        postPaint : function( director, time ) {
+
             if (!this.skeleton) {
                 return;
             }
 
             this.skeleton.paint(this.worldModelViewMatrix, director.ctx);
         },
-*/
-        __setSkinInfo : function( skeletonData, director ) {
+
+        setSkin : function( skin ) {
+
+            this.emptyChildren();
+            this.slotInfoArray= [];
+            this.slotInfo= {};
+
+            var skeletonData= this.skeleton.getSkeletonDataFromFile();
 
             // slots info
             for( var slot=0; slot<skeletonData.slots.length; slot++ ) {
@@ -59,13 +68,18 @@ CAAT.Module( {
                     this.slotInfo[ bone.id ]= slotInfoData;
                     this.slotInfoArray.push( slotInfoData );
 
-                    var skinData= skeletonData.skins["default"][slotInfo.name];
+
+                    var skinData= null;
+                    if (skin) {
+                        skinData= skeletonData.skins[skin][slotInfo.name];
+                    }
+                    if (!skinData) {
+                        skinData= skeletonData.skins["default"][slotInfo.name];
+                    }
                     if (skinData){
 
                         //create an actor for each slot data found.
                         var boneActorSkin= new CAAT.Skeleton.BoneActor();
-                        var bone= this.skeleton.getBoneById( slotInfo.bone );
-
                         boneActorSkin.id= slotInfo.name;
                         boneActorSkin.setBone( bone );
 
@@ -81,13 +95,15 @@ CAAT.Module( {
                                 y       :  -skinInfo.y,
                                 width   : skinInfo.width,
                                 height  : skinInfo.height,
-                                image   : director.getImage(skinDef),
+                                image   : this.director.getImage(skinData[skinDef].name ? skinData[skinDef].name : skinDef),
                                 name    : skinDef
                             } );
                         }
 
                         boneActorSkin.setDefaultSkinInfoByName( slotInfo.attachment );
                     }
+                } else {
+                    console.log("Unknown bone to apply skin: "+slotInfo.bone);
                 }
             }
 
@@ -104,12 +120,19 @@ CAAT.Module( {
             for( var animationSlot in animationSlots ) {
                 var attachments= animationSlots[animationSlot].attachment;
                 var boneActor= this.skinByName[ animationSlot ];
-                for( var i=0, l=attachments.length-1; i<l; i+=1 ) {
-                    var start= attachments[i].time;
-                    var len=   attachments[i+1].time-attachments[i].time;
-                    boneActor.addSkinDataKeyframe( attachments[i].name, start, len );
+                if (boneActor) {
+                    boneActor.emptySkinDataKeyframe();
+                    for( var i=0, l=attachments.length-1; i<l; i+=1 ) {
+                        var start= attachments[i].time;
+                        var len=   attachments[i+1].time-attachments[i].time;
+                        boneActor.addSkinDataKeyframe( attachments[i].name, start, len );
+                    }
+                } else {
+                    console.log("Adding skinDataKeyframe to unkown boneActor: "+animationSlot);
                 }
             }
+
+            return this;
         }
 
     }

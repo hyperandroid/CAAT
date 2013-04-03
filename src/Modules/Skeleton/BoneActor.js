@@ -43,6 +43,10 @@ CAAT.Module({
                 return this;
             },
 
+            emptySkinDataKeyframe : function() {
+                this.skinDataKeyframes= [];
+            },
+
             addSkinDataKeyframe : function( name, start, duration ) {
                 this.skinDataKeyframes.push( {
                     name : name,
@@ -58,10 +62,11 @@ CAAT.Module({
                     for( var i=0, l=this.skinDataKeyframes.length; i<l; i+=1 ) {
                         var sdkf= this.skinDataKeyframes[i];
                         if ( time>=sdkf.start && time<=sdkf.start+sdkf.duration ) {
-                            this.currentSkinInfo= this.skinInfoByName[ sdkf.name ];
-                            break;
+                            return this.currentSkinInfo= this.skinInfoByName[ sdkf.name ];
                         }
                     }
+
+                    return null;
                 }
 
                 return this.currentSkinInfo;
@@ -72,7 +77,7 @@ CAAT.Module({
 
                     var skinInfo= this.__getCurrentSkinInfo(time);
 
-                    if (!skinInfo.image) {
+                    if (!skinInfo || !skinInfo.image) {
                         return;
                     }
 
