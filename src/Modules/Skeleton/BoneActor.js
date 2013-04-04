@@ -1,4 +1,12 @@
 CAAT.Module({
+
+
+    /**
+     * @name BoneActor
+     * @memberof CAAT.Module.Skeleton
+     * @constructor
+     */
+
     defines : "CAAT.Skeleton.BoneActor",
     depends : [
         "CAAT.Foundation.Actor"
@@ -6,6 +14,11 @@ CAAT.Module({
     extendsClass : "CAAT.Foundation.Actor",
     extendsWith : function() {
         return {
+
+            /**
+             * @lends CAAT.Module.Skeleton.BoneActor.prototype
+             */
+
             bone    : null,
             skinInfo : null,
             skinInfoByName : null,

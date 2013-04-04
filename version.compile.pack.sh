@@ -6,7 +6,7 @@
 VERSION=`cat version.nfo`
 echo "New generated version: ${VERSION}"
 
-CAAT_DST="CAAT"
+CAAT_DST="/tmp/caat"
 
 DST_FILE_NAME="${CAAT_DST}";
 

@@ -1,7 +1,7 @@
-if [ "${CAAT_DST}" == "" ]; then
-  echo CAAT_DST is not defined.
-  exit -1;
-fi
+
+./version.compile.pack.sh
+
+CAAT_DST="/tmp/caat"
 
 echo -e "\n\nCompilation process\n\n"
 
@@ -118,7 +118,6 @@ while read LINE; do
   cp ${FILE_CAAT_BOX2D} ${LINE} 
 done < version.distribution
 
-./version.compile.pack.sh
 
 #
 # Generating JSDoc.

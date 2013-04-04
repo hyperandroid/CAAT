@@ -49,6 +49,10 @@ SOURCE_DIR=/Users/ibon/js/CAAT/src
 "${SOURCE_DIR}"/Modules/LayoutUtils/RowLayout.js \
 "${SOURCE_DIR}"/Modules/Initialization/Template.js \
 "${SOURCE_DIR}"/Modules/Initialization/TemplateWithSplash.js \
+"${SOURCE_DIR}"/Modules/Skeleton/Bone.js \
+"${SOURCE_DIR}"/Modules/Skeleton/BoneActor.js \
+"${SOURCE_DIR}"/Modules/Skeleton/Skeleton.js \
+"${SOURCE_DIR}"/Modules/Skeleton/SkeletonActor.js \
 "${SOURCE_DIR}"/PathUtil/PathSegment.js \
 "${SOURCE_DIR}"/PathUtil/ArcPath.js \
 "${SOURCE_DIR}"/PathUtil/CurvePath.js \
