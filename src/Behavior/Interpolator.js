@@ -20,13 +20,16 @@ CAAT.Module({
     aliases:["CAAT.Interpolator"],
     constants : {
         /**
-         * @lends CAAt.Behavior.Interpolator
+         * @lends CAAT.Behavior.Interpolator
          */
 
         enumerateInterpolators: function () {
             return [
                 new CAAT.Behavior.Interpolator().createLinearInterpolator(false, false), 'Linear pingpong=false, inverse=false',
                 new CAAT.Behavior.Interpolator().createLinearInterpolator(true, false), 'Linear pingpong=true, inverse=false',
+
+                new CAAT.Behavior.Interpolator().createBackOutInterpolator(false), 'BackOut pingpong=true, inverse=false',
+                new CAAT.Behavior.Interpolator().createBackOutInterpolator(true), 'BackOut pingpong=true, inverse=true',
 
                 new CAAT.Behavior.Interpolator().createLinearInterpolator(false, true), 'Linear pingpong=false, inverse=true',
                 new CAAT.Behavior.Interpolator().createLinearInterpolator(true, true), 'Linear pingpong=true, inverse=true',

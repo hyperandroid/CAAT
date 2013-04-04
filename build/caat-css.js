@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.6 build: 2
+Version: 0.6 build: 49
 
 Created on:
-DATE: 2013-02-27
-TIME: 08:57:20
+DATE: 2013-04-03
+TIME: 21:50:58
 */
 
 
@@ -98,6 +98,8 @@ TIME: 08:57:20
                 }
             }
         }
+
+        CAATClass["__CLASS"]= name;
 
         if ( aliases ) {
             if ( !isArray(aliases) ) {
@@ -1138,271 +1140,98 @@ extendWith = function (base, subclass, with_object) {
     }
 };
 
-/**
- * Dynamic Proxy for an object or wrap/decorate a function.
- *
- * @param object
- * @param preMethod
- * @param postMethod
- * @param errorMethod
- */
-proxy = function (object, preMethod, postMethod, errorMethod) {
 
-    // proxy a function
-    if (typeof object === 'function') {
 
-        if (object.__isProxy) {
-            return object;
+function proxyFunction(object, method, preMethod, postMethod, errorMethod) {
+
+    return function () {
+
+        var args = Array.prototype.slice.call(arguments);
+
+        // call pre-method hook if present.
+        if (preMethod) {
+            preMethod({
+                object: object,
+                method: method,
+                arguments: args });
         }
 
-        return (function (fn) {
+        var retValue = null;
 
-            var proxyfn = function () {
-                if (preMethod) {
-                    preMethod({
-                        fn:fn,
-                        arguments:Array.prototype.slice.call(arguments)});
-                }
-                var retValue = null;
-                try {
-                    // apply original function call with itself as context
-                    retValue = fn.apply(fn, Array.prototype.slice.call(arguments));
-                    // everything went right on function call, then call
-                    // post-method hook if present
-                    if (postMethod) {
-                        retValue = postMethod({
-                            fn:fn,
-                            arguments:Array.prototype.slice.call(arguments)});
-                    }
-                } catch (e) {
-                    // an exeception was thrown, call exception-method hook if
-                    // present and return its result as execution result.
-                    if (errorMethod) {
-                        retValue = errorMethod({
-                            fn:fn,
-                            arguments:Array.prototype.slice.call(arguments),
-                            exception:e});
-                    } else {
-                        // since there's no error hook, just throw the exception
-                        throw e;
-                    }
-                }
+        try {
+            // apply original object call with proxied object as
+            // function context.
+            retValue = object[method].apply(object, args);
 
-                // return original returned value to the caller.
-                return retValue;
-            };
-            proxyfn.__isProxy = true;
+            // everything went right on function call, the call
+            // post-method hook if present
+            if (postMethod) {
+                /*var rr= */
+                var ret2 = postMethod({
+                    object: object,
+                    method: method,
+                    arguments: args });
 
-            for (var method in fn) {
-                if (fn.hasOwnProperty(method) && typeof fn[method] !== "function") {
-                    if (method !== "__object" && method !== "__isProxy") {
-                        (function (proxyfn, fn, method) {
-                            proxyfn.__defineGetter__(method, function () {
-                                return fn[method];
-                            });
-                            proxyfn.__defineSetter__(method, function (vale) {
-                                fn[method] = vale;
-                            });
-                        })(proxyfn, fn, method);
-                    }
+                if (ret2) {
+                    retValue = ret2;
                 }
             }
+        } catch (e) {
+            // an exeception was thrown, call exception-method hook if
+            // present and return its result as execution result.
+            if (errorMethod) {
+                retValue = errorMethod({
+                    object: object,
+                    method: method,
+                    arguments: args,
+                    exception: e});
+            } else {
+                // since there's no error hook, just throw the exception
+                throw e;
+            }
+        }
 
-
-            return proxyfn;
-
-        })(object);
-    }
-
-    /**
-     * If not a function then only non privitive objects can be proxied.
-     * If it is a previously created proxy, return the proxy itself.
-     */
-    if (typeof object !== 'object' ||
-        isArray(object) ||
-        isString(object) ||
-        object.__isProxy) {
-
-        return object;
-    }
-
-    // Our proxy object class.
-    var cproxy = function () {
+        // return original returned value to the caller.
+        return retValue;
     };
-    // A new proxy instance.
-    var proxy = new cproxy();
-    // hold the proxied object as member. Needed to assign proper
-    // context on proxy method call.
-    proxy.__object = object;
-    proxy.__isProxy = true;
 
-    // For every element in the object to be proxied
-    for (var method in object) {
+}
 
-        // only function members
-        if (object.hasOwnProperty(method) && typeof object[method] === 'function') {
-            // add to the proxy object a method of equal signature to the
-            // method present at the object to be proxied.
-            // cache references of object, function and function name.
-            proxy[method] = (function (proxy, fn, method) {
-                return function () {
-                    // call pre-method hook if present.
-                    if (preMethod) {
-                        preMethod({
-                            object:proxy.__object,
-                            method:method,
-                            arguments:Array.prototype.slice.call(arguments)});
-                    }
-                    var retValue = null;
-                    try {
-                        // apply original object call with proxied object as
-                        // function context.
-                        retValue = fn.apply(proxy.__object, arguments);
-                        // everything went right on function call, the call
-                        // post-method hook if present
-                        if (postMethod) {
-                            postMethod({
-                                object:proxy.__object,
-                                method:method,
-                                arguments:Array.prototype.slice.call(arguments)});
-                        }
-                    } catch (e) {
-                        // an exeception was thrown, call exception-method hook if
-                        // present and return its result as execution result.
-                        if (errorMethod) {
-                            retValue = errorMethod({
-                                object:proxy.__object,
-                                method:method,
-                                arguments:Array.prototype.slice.call(arguments),
-                                exception:e});
-                        } else {
-                            // since there's no error hook, just throw the exception
-                            throw e;
-                        }
-                    }
+function proxyAttribute( proxy, object, attribute, getter, setter) {
 
-                    // return original returned value to the caller.
-                    return retValue;
-                };
-            })(proxy, object[method], method);
-        } else {
-            if (method !== "__object" && method !== "__isProxy") {
-                (function (proxy, method) {
-                    proxy.__defineGetter__(method, function () {
-                        return proxy.__object[method];
-                    });
-                    proxy.__defineSetter__(method, function (vale) {
-                        proxy.__object[method] = vale;
-                    });
-                })(proxy, method);
-            }
+    proxy.__defineGetter__(attribute, function () {
+        if (getter) {
+            getter(object, attribute);
         }
-    }
-
-    // return our newly created and populated of functions proxy object.
-    return proxy;
-};
-
-/** proxy sample usage
-
- var c0= new Meetup.C1(5);
-
- var cp1= proxy(
- c1,
- function() {
-        console.log('pre method on object: ',
-                arguments[0].object.toString(),
-                arguments[0].method,
-                arguments[0].arguments );
-    },
- function() {
-        console.log('post method on object: ',
-                arguments[0].object.toString(),
-                arguments[0].method,
-                arguments[0].arguments );
-
-    },
- function() {
-        console.log('exception on object: ',
-                arguments[0].object.toString(),
-                arguments[0].method,
-                arguments[0].arguments,
-                arguments[0].exception);
-
-        return -1;
+        return object[attribute];
     });
- **/
-
-proxify = function (ns, preMethod, postMethod, errorMethod, getter, setter) {
-
-    var nns = "__" + ns + "__";
-
-    var obj = window;
-    var path = ns.split(".");
-    while (path.length > 1) {
-        obj = obj[ path.shift() ];
-    }
-
-    window[nns] = obj[path];
-
-    (function (root, obj, path, nns, ns) {
-        var newC = function () {
-            console.log("Creating object of type proxy[" + ns + "]");
-            var obj = new root[nns](Array.prototype.slice.call(arguments));
-
-            obj.____name = ns;
-            return proxyObject(obj, preMethod, postMethod, errorMethod, getter, setter);
-
-        };
-
-        // set new constructor function prototype as previous one.
-        newC.prototype = root[nns].prototype;
-
-        for (var method in obj[path]) {
-            if (obj[path].hasOwnProperty(method) && typeof obj[path][method] !== "function") {
-                if (method !== "__object" && method !== "__isProxy") {
-                    (function (prevConstructor, method, newC) {
-                        newC.__defineGetter__(method, function () {
-                            return prevConstructor[method];
-                        });
-                        newC.__defineSetter__(method, function (vale) {
-                            prevConstructor[method] = vale;
-                        });
-                    })(obj[path], method, newC);
-                }
-            }
+    proxy.__defineSetter__(attribute, function (value) {
+        object[attribute] = value;
+        if (setter) {
+            setter(object, attribute, value);
         }
+    });
+}
 
-        obj[path] = newC;
-
-    })(window, obj, path, nns, ns);
-
-};
-
-proxyObject = function (object, preMethod, postMethod, errorMethod, getter, setter) {
+function proxyObject(object, preMethod, postMethod, errorMethod, getter, setter) {
 
     /**
      * If not a function then only non privitive objects can be proxied.
      * If it is a previously created proxy, return the proxy itself.
      */
-    if (typeof object !== 'object' ||
-        isArray(object) ||
-        isString(object) ||
-        object.__isProxy) {
-
+    if (typeof object !== 'object' || isArray(object) || isString(object) || object.$proxy) {
         return object;
     }
 
+    var proxy = {};
+
     // hold the proxied object as member. Needed to assign proper
     // context on proxy method call.
-    object.$proxy__isProxy = true;
+    proxy.$proxy = true;
+    proxy.$proxy_delegate = object;
 
     // For every element in the object to be proxied
     for (var method in object) {
-
-        if (!object.hasOwnProperty(method)) {
-            continue;
-        }
 
         if (method === "constructor") {
             continue;
@@ -1410,89 +1239,16 @@ proxyObject = function (object, preMethod, postMethod, errorMethod, getter, sett
 
         // only function members
         if (typeof object[method] === 'function') {
-
-            var fn = object[method];
-            object["$proxy__" + method] = fn;
-
-            object[method] = (function (object, fn, fnname) {
-                return function () {
-
-                    var args = Array.prototype.slice.call(arguments);
-
-                    // call pre-method hook if present.
-                    if (preMethod) {
-                        preMethod({
-                            object:object,
-                            objectName:object.____name,
-                            method:fnname,
-                            arguments:args });
-                    }
-                    var retValue = null;
-                    try {
-                        // apply original object call with proxied object as
-                        // function context.
-                        retValue = fn.apply(object, args);
-                        // everything went right on function call, the call
-                        // post-method hook if present
-                        if (postMethod) {
-                            /*var rr= */
-                            postMethod({
-                                object:object,
-                                objectName:object.____name,
-                                method:fnname,
-                                arguments:args });
-                            /*
-                             if ( typeof rr!=="undefined" ) {
-                             //retValue= rr;
-                             }
-                             */
-                        }
-                    } catch (e) {
-                        // an exeception was thrown, call exception-method hook if
-                        // present and return its result as execution result.
-                        if (errorMethod) {
-                            retValue = errorMethod({
-                                object:object,
-                                objectName:object.____name,
-                                method:fnname,
-                                arguments:args,
-                                exception:e});
-                        } else {
-                            // since there's no error hook, just throw the exception
-                            throw e;
-                        }
-                    }
-
-                    // return original returned value to the caller.
-                    return retValue;
-                };
-            })(object, fn, method);
+            proxy[method] = proxyFunction(object, method, preMethod, postMethod, errorMethod );
         } else {
-            if (method !== "____name") {
-                (function (object, attribute, getter, setter) {
-
-                    object["$proxy__" + attribute] = object[attribute];
-
-                    object.__defineGetter__(attribute, function () {
-                        if (getter) {
-                            getter(object.____name, attribute);
-                        }
-                        return object["$proxy__" + attribute];
-                    });
-                    object.__defineSetter__(attribute, function (value) {
-                        object["$proxy__" + attribute] = value;
-                        if (setter) {
-                            setter(object.____name, attribute, value);
-                        }
-                    });
-                })(object, method, getter, setter);
-            }
+            proxyAttribute(proxy, object, method, getter, setter);
         }
     }
 
     // return our newly created and populated with functions proxied object.
-    return object;
+    return proxy;
 }
+
 
 CAAT.Module({
     defines : "CAAT.Core.Class",
@@ -3567,13 +3323,16 @@ CAAT.Module({
     aliases:["CAAT.Interpolator"],
     constants : {
         /**
-         * @lends CAAt.Behavior.Interpolator
+         * @lends CAAT.Behavior.Interpolator
          */
 
         enumerateInterpolators: function () {
             return [
                 new CAAT.Behavior.Interpolator().createLinearInterpolator(false, false), 'Linear pingpong=false, inverse=false',
                 new CAAT.Behavior.Interpolator().createLinearInterpolator(true, false), 'Linear pingpong=true, inverse=false',
+
+                new CAAT.Behavior.Interpolator().createBackOutInterpolator(false), 'BackOut pingpong=true, inverse=false',
+                new CAAT.Behavior.Interpolator().createBackOutInterpolator(true), 'BackOut pingpong=true, inverse=true',
 
                 new CAAT.Behavior.Interpolator().createLinearInterpolator(false, true), 'Linear pingpong=false, inverse=true',
                 new CAAT.Behavior.Interpolator().createLinearInterpolator(true, true), 'Linear pingpong=true, inverse=true',
@@ -4112,16 +3871,20 @@ CAAT.Module({
      *
      */
 
-
+    /**
+     *
+     * Internal behavior status values. Do not assign directly.
+     *
+     * @name Status
+     * @memberOf CAAT.Behavior.BaseBehavior
+     * @namespace
+     * @enum {number}
+     */
 
 
     defines:        "CAAT.Behavior.BaseBehavior",
     constants:      {
 
-        /**
-         * @name Status
-         * @memberOf CAAT.Behavior.BaseBehavior
-         */
         Status: {
             /**
              * @lends CAAT.Behavior.BaseBehavior.Status
@@ -4271,6 +4034,27 @@ CAAT.Module({
              * @private
              */
             discardable:false,
+
+            /**
+             * does this behavior apply relative values ??
+             */
+            isRelative : false,
+
+            /**
+             * Set this behavior as relative value application to some other measures.
+             * Each Behavior will define its own.
+             * @param bool
+             * @returns {*}
+             */
+            setRelative : function( bool ) {
+                this.isRelative= bool;
+                return this;
+            },
+
+            setRelativeValues : function() {
+                this.isRelative= true;
+                return this;
+            },
 
             /**
              * Parse a behavior of this type.
@@ -4828,13 +4612,19 @@ CAAT.Module({
              */
             behaviors:null, // contained behaviors array
 
+            conforming : false,
+
             /**
+             * @param conforming {bool=} conform this behavior duration to that of its children.
              * @inheritDoc
              * @private
              */
-            __init:function () {
+            __init:function ( conforming ) {
                 this.__super();
                 this.behaviors = [];
+                if ( conforming ) {
+                    this.conforming= true;
+                }
                 return this;
             },
 
@@ -4877,6 +4667,15 @@ CAAT.Module({
             addBehavior:function (behavior) {
                 this.behaviors.push(behavior);
                 behavior.addListener(this);
+
+                if ( this.conforming ) {
+                    var len= behavior.behaviorDuration + behavior.behaviorStartTime;
+                    if ( this.behaviorDuration < len ) {
+                        this.behaviorDuration= len;
+                        this.behaviorStartTime= 0;
+                    }
+                }
+
                 return this;
             },
 
@@ -4897,9 +4696,9 @@ CAAT.Module({
                 time += this.timeOffset * this.behaviorDuration;
 
                 if (this.isBehaviorInTime(time, actor)) {
-                    time -= this.getStartTime();
+                    time -= this.behaviorStartTime;
                     if (this.cycleBehavior) {
-                        time %= this.getDuration();
+                        time %= this.behaviorDuration;
                     }
 
                     var bh = this.behaviors;
@@ -4922,6 +4721,10 @@ CAAT.Module({
                 }
             },
 
+            behaviorApplied : function(behavior, scenetime, time, actor, value ) {
+                this.fireBehaviorAppliedEvent(actor, scenetime, time, value);
+            },
+
             /**
              * Implementation method of the behavior.
              * Just call implementation method for its contained behaviors.
@@ -4929,12 +4732,13 @@ CAAT.Module({
              * @param actor{CAAT.Foundation.Actor} an actor the behavior is being applied to.
              */
             setForTime:function (time, actor) {
+                var retValue= null;
                 var bh = this.behaviors;
                 for (var i = 0; i < bh.length; i++) {
-                    bh[i].setForTime(time, actor);
+                    retValue= bh[i].setForTime(time, actor);
                 }
 
-                return null;
+                return retValue;
             },
 
             /**
@@ -5287,6 +5091,27 @@ CAAT.Module({
      * @constructor
      */
 
+    /**
+     *
+     * Internal PathBehavior rotation constants.
+     *
+     * @name AUTOROTATE
+     * @memberOf CAAT.Behavior.PathBehavior
+     * @namespace
+     * @enum {number}
+     */
+
+    /**
+     *
+     * Internal PathBehavior rotation constants.
+     *
+     * @name autorotate
+     * @memberOf CAAT.Behavior.PathBehavior
+     * @namespace
+     * @enum {number}
+     * @deprecated
+     */
+
     defines:"CAAT.Behavior.PathBehavior",
     aliases: ["CAAT.PathBehavior"],
     depends:[
@@ -5294,10 +5119,26 @@ CAAT.Module({
         "CAAT.Foundation.SpriteImage"
     ],
     constants : {
+
+        AUTOROTATE : {
+
+            /**
+             * @lends CAAT.Behavior.PathBehavior.AUTOROTATE
+             */
+
+            /** @const */ LEFT_TO_RIGHT:  0,
+            /** @const */ RIGHT_TO_LEFT:  1,
+            /** @const */ FREE:           2
+        },
+
         autorotate: {
-            LEFT_TO_RIGHT:  0,
-            RIGHT_TO_LEFT:  1,
-            FREE:           2
+            /**
+             * @lends CAAT.Behavior.PathBehavior.autorotate
+             */
+
+            /** @const */ LEFT_TO_RIGHT:  0,
+            /** @const */ RIGHT_TO_LEFT:  1,
+            /** @const */ FREE:           2
         }
     },
     extendsClass : "CAAT.Behavior.BaseBehavior",
@@ -5350,12 +5191,30 @@ CAAT.Module({
              */
             autoRotateOp: CAAT.Behavior.PathBehavior.autorotate.FREE,
 
+            isOpenContour : false,
+
+            relativeX : 0,
+            relativeY : 0,
+
+            setOpenContour : function(b) {
+                this.isOpenContour= b;
+                return this;
+            },
+
             /**
              * @inheritDoc
              */
             getPropertyName:function () {
                 return "translate";
             },
+
+            setRelativeValues : function( x, y ) {
+                this.relativeX= x;
+                this.relativeY= y;
+                this.isRelative= true;
+                return this;
+            },
+
 
             /**
              * Sets an actor rotation to be heading from past to current path's point.
@@ -5480,7 +5339,11 @@ CAAT.Module({
                     };
                 }
 
-                var point = this.path.getPosition(time);
+                var point = this.path.getPosition(time, this.isOpenContour,.001);
+                if (this.isRelative ) {
+                    point.x+= this.relativeX;
+                    point.y+= this.relativeY;
+                }
 
                 if (this.autoRotate) {
 
@@ -5499,7 +5362,7 @@ CAAT.Module({
 
                     var angle = Math.atan2(ay, ax);
                     var si = CAAT.Foundation.SpriteImage;
-                    var pba = CAAT.Behavior.PathBehavior.autorotate;
+                    var pba = CAAT.Behavior.PathBehavior.AUTOROTATE;
 
                     // actor is heading left to right
                     if (this.autoRotateOp === pba.LEFT_TO_RIGHT) {
@@ -5633,6 +5496,14 @@ CAAT.Module({
              */
             anchorY:.50,
 
+            rotationRelative: 0,
+
+            setRelativeValues : function(r) {
+                this.rotationRelative= r;
+                this.isRelative= true;
+                return this;
+            },
+
             /**
              * @inheritDoc
              */
@@ -5645,6 +5516,16 @@ CAAT.Module({
              */
             setForTime:function (time, actor) {
                 var angle = this.startAngle + time * (this.endAngle - this.startAngle);
+
+                if ( this.isRelative ) {
+                    angle+= this.rotationRelative;
+                    if (angle>=Math.PI) {
+                        angle= (angle-2*Math.PI)
+                    }
+                    if ( angle<-2*Math.PI) {
+                        angle= (angle+2*Math.PI);
+                    }
+                }
 
                 if (this.doValueApplication) {
                     actor.setRotationAnchored(angle, this.anchorX, this.anchorY);
@@ -5765,6 +5646,22 @@ CAAT.Module({
      * @constructor
      */
 
+    /**
+     * @name AXIS
+     * @memberOf CAAT.Behavior.Scale1Behavior
+     * @enum {number}
+     * @namespace
+     */
+
+    /**
+     * @name Axis
+     * @memberOf CAAT.Behavior.Scale1Behavior
+     * @enum {number}
+     * @namespace
+     * @deprecated
+     */
+
+
     defines:"CAAT.Behavior.Scale1Behavior",
     depends:[
         "CAAT.Behavior.BaseBehavior",
@@ -5773,9 +5670,22 @@ CAAT.Module({
     aliases: ["CAAT.Scale1Behavior"],
     constants : {
 
+        AXIS : {
+            /**
+             * @lends CAAT.Behavior.Scale1Behavior.AXIS
+             */
+
+            /** @const */ X:  0,
+            /** @const */ Y:  1
+        },
+
         Axis : {
-            X:  0,
-            Y:  1
+            /**
+             * @lends CAAT.Behavior.Scale1Behavior.Axis
+             */
+
+            /** @const */ X:  0,
+            /** @const */ Y:  1
         }
     },
     extendsClass:"CAAT.Behavior.BaseBehavior",
@@ -5832,10 +5742,10 @@ CAAT.Module({
             },
 
             /**
-             * @param axis {CAAT.Behavior.Scale1Behavior.Axis}
+             * @param axis {CAAT.Behavior.Scale1Behavior.AXIS}
              */
             applyOnAxis:function (axis) {
-                if (axis === CAAT.Behavior.Scale1Behavior.Axis.X) {
+                if (axis === CAAT.Behavior.Scale1Behavior.AXIS.X) {
                     this.applyOnX = false;
                 } else {
                     this.applyOnX = true;
@@ -8705,20 +8615,38 @@ CAAT.Module( {
             this.id=    id;
             this.path=  path;
             this.image= new Image();
+            this.loader= loader;
 
-            this.image.onload = function() {
-                loader.__onload(me);
-            };
-
-            this.image.onerror= function(e) {
-                loader.__onerror(me);
-            } ;
-
-            this.load= function() {
-                me.image.src= me.path;
-            };
+            this.image.onload= this.onload.bind(this);
+            this.image.onerror= this.onerror.bind(this);
 
             return this;
+        };
+
+        descriptor.prototype= {
+            id : null,
+            path : null,
+            image : null,
+            loader : null,
+
+            onload : function(e) {
+                this.loader.__onload(this);
+                this.image.onload= null;
+                this.image.onerror= null;
+            },
+
+            onerror : function(e) {
+                this.loader.__onerror(this);
+            },
+
+            load : function() {
+                this.image.src= this.path;
+            },
+
+            clear : function() {
+                this.loader= null;
+
+            }
         };
 
         return {
@@ -8729,8 +8657,11 @@ CAAT.Module( {
 
             __init : function()   {
                 this.elements= [];
+                this.baseURL= "";
                 return this;
             },
+
+            currentGroup : null,
 
             /**
              * a list of elements to load.
@@ -8763,9 +8694,18 @@ CAAT.Module( {
              */
             loadedCount:    0,
 
+            baseURL : null,
+
             addElement : function( id, path ) {
-                this.elements.push( new descriptor(id,path,this) );
+                this.elements.push( new descriptor(id,this.baseURL+path,this) );
                 return this;
+            },
+
+            clear : function() {
+                for( var i=0; i<this.elements.length; i++ ) {
+                    this.elements[i].clear();
+                }
+                this.elements= null;
             },
 
             __onload : function( d ) {
@@ -8785,6 +8725,11 @@ CAAT.Module( {
                 if ( this.cerrored ) {
                     this.cerrored(d.id);
                 }
+            },
+
+            setBaseURL : function( base ) {
+                this.baseURL= base;
+                return this;
             },
 
             load: function( onfinished, onload_one, onerror ) {
@@ -12313,7 +12258,7 @@ CAAT.Module( {
             return this;
 		},
         /**
-         * This method, returns a CAAT.Point instance indicating a coordinate in the path.
+         * This method, returns a CAAT.Foundation.Point instance indicating a coordinate in the path.
          * The returned coordinate is the corresponding to normalizing the path's length to 1,
          * and then finding what path segment and what coordinate in that path segment corresponds
          * for the input time parameter.
@@ -12324,12 +12269,53 @@ CAAT.Module( {
          * <p>
          * This method is needed when traversing the path throughout a CAAT.Interpolator instance.
          *
-         * @param time a value between 0 and 1 both inclusive. 0 will return path's starting coordinate.
-         * 1 will return path's end coordinate.
          *
-         * @return {CAAT.Point}
+         * @param time {number} a value between 0 and 1 both inclusive. 0 will return path's starting coordinate.
+         * 1 will return path's end coordinate.
+         * @param open_contour {boolean=} treat this path as an open contour. It is intended for
+         * open paths, and interpolators which give values above 1. see tutorial 7.1.
+         * @link{../../documentation/tutorials/t7-1.html}
+         *
+         * @return {CAAT.Foundation.Point}
          */
-		getPosition : function(time) {
+		getPosition : function(time, open_contour) {
+
+            if (open_contour && (time>=1 || time<=0) ) {
+
+                var p0,p1,ratio, angle;
+
+                if ( time>=1 ) {
+                    // these values could be cached.
+                    p0= this.__getPositionImpl( .999 );
+                    p1= this.endCurvePosition();
+
+                    angle= Math.atan2( p1.y - p0.y, p1.x - p0.x );
+                    ratio= time%1;
+
+
+                } else {
+                    // these values could be cached.
+                    p0= this.__getPositionImpl( .001 );
+                    p1= this.startCurvePosition();
+
+                    angle= Math.atan2( p1.y - p0.y, p1.x - p0.x );
+                    ratio= -time;
+                }
+
+                var np= this.newPosition;
+                var length= this.getLength();
+
+                np.x = p1.x + (ratio * length)*Math.cos(angle);
+                np.y = p1.y + (ratio * length)*Math.sin(angle);
+
+
+                return np;
+            }
+
+            return this.__getPositionImpl(time);
+        },
+
+        __getPositionImpl : function(time) {
 
             if ( time>1 || time<0 ) {
                 time%=1;
@@ -12337,25 +12323,6 @@ CAAT.Module( {
             if ( time<0 ) {
                 time= 1+time;
             }
-
-            /*
-            var found= false;
-            for( var i=0; i<this.pathSegments.length; i++ ) {
-                if (this.pathSegmentStartTime[i]<=time && time<=this.pathSegmentStartTime[i]+this.pathSegmentDurationTime[i]) {
-                    time= this.pathSegmentDurationTime[i] ?
-                            (time-this.pathSegmentStartTime[i])/this.pathSegmentDurationTime[i] :
-                            0;
-                    var pointInPath= this.pathSegments[i].getPosition(time);
-                    this.newPosition.x= pointInPath.x;
-                    this.newPosition.y= pointInPath.y;
-                    found= true;
-                    break;
-                }
-            }
-
-			return found ? this.newPosition : this.endCurvePosition();
-			*/
-
 
             var ps= this.pathSegments;
             var psst= this.pathSegmentStartTime;
@@ -14293,6 +14260,18 @@ CAAT.Module( {
      * @constructor
      */
 
+    /**
+     * @name KEYS
+     * @memberOf CAAT
+     * @namespace
+     */
+
+    /**
+     * @name KEY_MODIFIERS
+     * @memberOf CAAT
+     * @namespace
+     */
+
     defines : "CAAT.Event.KeyEvent",
     aliases : "CAAT.KeyEvent",
     extendsWith : {
@@ -14355,106 +14334,113 @@ CAAT.Module( {
 
         /**
          * Key codes
+         * @type {enum}
+         */
+        CAAT.KEYS = {
+
+            /** @const */ ENTER:13,
+            /** @const */ BACKSPACE:8,
+            /** @const */ TAB:9,
+            /** @const */ SHIFT:16,
+            /** @const */ CTRL:17,
+            /** @const */ ALT:18,
+            /** @const */ PAUSE:19,
+            /** @const */ CAPSLOCK:20,
+            /** @const */ ESCAPE:27,
+            /** @const */ PAGEUP:33,
+            /** @const */ PAGEDOWN:34,
+            /** @const */ END:35,
+            /** @const */ HOME:36,
+            /** @const */ LEFT:37,
+            /** @const */ UP:38,
+            /** @const */ RIGHT:39,
+            /** @const */ DOWN:40,
+            /** @const */ INSERT:45,
+            /** @const */ DELETE:46,
+            /** @const */ 0:48,
+            /** @const */ 1:49,
+            /** @const */ 2:50,
+            /** @const */ 3:51,
+            /** @const */ 4:52,
+            /** @const */ 5:53,
+            /** @const */ 6:54,
+            /** @const */ 7:55,
+            /** @const */ 8:56,
+            /** @const */ 9:57,
+            /** @const */ a:65,
+            /** @const */ b:66,
+            /** @const */ c:67,
+            /** @const */ d:68,
+            /** @const */ e:69,
+            /** @const */ f:70,
+            /** @const */ g:71,
+            /** @const */ h:72,
+            /** @const */ i:73,
+            /** @const */ j:74,
+            /** @const */ k:75,
+            /** @const */ l:76,
+            /** @const */ m:77,
+            /** @const */ n:78,
+            /** @const */ o:79,
+            /** @const */ p:80,
+            /** @const */ q:81,
+            /** @const */ r:82,
+            /** @const */ s:83,
+            /** @const */ t:84,
+            /** @const */ u:85,
+            /** @const */ v:86,
+            /** @const */ w:87,
+            /** @const */ x:88,
+            /** @const */ y:89,
+            /** @const */ z:90,
+            /** @const */ SELECT:93,
+            /** @const */ NUMPAD0:96,
+            /** @const */ NUMPAD1:97,
+            /** @const */ NUMPAD2:98,
+            /** @const */ NUMPAD3:99,
+            /** @const */ NUMPAD4:100,
+            /** @const */ NUMPAD5:101,
+            /** @const */ NUMPAD6:102,
+            /** @const */ NUMPAD7:103,
+            /** @const */ NUMPAD8:104,
+            /** @const */ NUMPAD9:105,
+            /** @const */ MULTIPLY:106,
+            /** @const */ ADD:107,
+            /** @const */ SUBTRACT:109,
+            /** @const */ DECIMALPOINT:110,
+            /** @const */ DIVIDE:111,
+            /** @const */ F1:112,
+            /** @const */ F2:113,
+            /** @const */ F3:114,
+            /** @const */ F4:115,
+            /** @const */ F5:116,
+            /** @const */ F6:117,
+            /** @const */ F7:118,
+            /** @const */ F8:119,
+            /** @const */ F9:120,
+            /** @const */ F10:121,
+            /** @const */ F11:122,
+            /** @const */ F12:123,
+            /** @const */ NUMLOCK:144,
+            /** @const */ SCROLLLOCK:145,
+            /** @const */ SEMICOLON:186,
+            /** @const */ EQUALSIGN:187,
+            /** @const */ COMMA:188,
+            /** @const */ DASH:189,
+            /** @const */ PERIOD:190,
+            /** @const */ FORWARDSLASH:191,
+            /** @const */ GRAVEACCENT:192,
+            /** @const */ OPENBRACKET:219,
+            /** @const */ BACKSLASH:220,
+            /** @const */ CLOSEBRAKET:221,
+            /** @const */ SINGLEQUOTE:222
+        };
+
+        /**
+         * @deprecated
          * @type {Object}
          */
-        CAAT.Keys = {
-            ENTER:13,
-            BACKSPACE:8,
-            TAB:9,
-            SHIFT:16,
-            CTRL:17,
-            ALT:18,
-            PAUSE:19,
-            CAPSLOCK:20,
-            ESCAPE:27,
-            PAGEUP:33,
-            PAGEDOWN:34,
-            END:35,
-            HOME:36,
-            LEFT:37,
-            UP:38,
-            RIGHT:39,
-            DOWN:40,
-            INSERT:45,
-            DELETE:46,
-            0:48,
-            1:49,
-            2:50,
-            3:51,
-            4:52,
-            5:53,
-            6:54,
-            7:55,
-            8:56,
-            9:57,
-            a:65,
-            b:66,
-            c:67,
-            d:68,
-            e:69,
-            f:70,
-            g:71,
-            h:72,
-            i:73,
-            j:74,
-            k:75,
-            l:76,
-            m:77,
-            n:78,
-            o:79,
-            p:80,
-            q:81,
-            r:82,
-            s:83,
-            t:84,
-            u:85,
-            v:86,
-            w:87,
-            x:88,
-            y:89,
-            z:90,
-            SELECT:93,
-            NUMPAD0:96,
-            NUMPAD1:97,
-            NUMPAD2:98,
-            NUMPAD3:99,
-            NUMPAD4:100,
-            NUMPAD5:101,
-            NUMPAD6:102,
-            NUMPAD7:103,
-            NUMPAD8:104,
-            NUMPAD9:105,
-            MULTIPLY:106,
-            ADD:107,
-            SUBTRACT:109,
-            DECIMALPOINT:110,
-            DIVIDE:111,
-            F1:112,
-            F2:113,
-            F3:114,
-            F4:115,
-            F5:116,
-            F6:117,
-            F7:118,
-            F8:119,
-            F9:120,
-            F10:121,
-            F11:122,
-            F12:123,
-            NUMLOCK:144,
-            SCROLLLOCK:145,
-            SEMICOLON:186,
-            EQUALSIGN:187,
-            COMMA:188,
-            DASH:189,
-            PERIOD:190,
-            FORWARDSLASH:191,
-            GRAVEACCENT:192,
-            OPENBRACKET:219,
-            BACKSLASH:220,
-            CLOSEBRAKET:221,
-            SINGLEQUOTE:222
-        };
+        CAAT.Keys= CAAT.KEYS;
 
         /**
          * Shift key code
@@ -14482,11 +14468,13 @@ CAAT.Module( {
 
         /**
          * Event modifiers.
+         * @type enum
          */
         CAAT.KEY_MODIFIERS= {
-            alt:        false,
-            control:    false,
-            shift:      false
+
+            /** @const */ alt:        false,
+            /** @const */ control:    false,
+            /** @const */ shift:      false
         };
     }
 
@@ -16446,7 +16434,6 @@ CAAT.Module({
                     this.width= image.mapInfo[0].width;
                     this.height= image.mapInfo[0].height;
 
-
                 } else {
                     this.image = image;
                     this.width = image.width;
@@ -16512,6 +16499,12 @@ CAAT.Module({
                     }
                 }
 
+                return this;
+            },
+
+            copy : function( other ) {
+                this.initialize(other,1,1);
+                this.mapInfo= other.mapInfo;
                 return this;
             },
 
@@ -20356,6 +20349,7 @@ CAAT.Module({
                 this.browserInfo = CAAT.Module.Runtime.BrowserInfo;
                 this.audioManager = new CAAT.Module.Audio.AudioManager().initialize(8);
                 this.scenes = [];
+                this.imagesCache= [];
 
                 // input related variables initialization
                 this.mousePoint = new CAAT.Math.Point(0, 0, 0);
@@ -20365,6 +20359,7 @@ CAAT.Module({
                 this.lastSelectedActor = null;
                 this.dragging = false;
 
+                this.cDirtyRects = [];
                 this.sDirtyRects = [];
                 this.dirtyRects = [];
                 for (var i = 0; i < 64; i++) {
@@ -20630,6 +20625,12 @@ CAAT.Module({
             dirtyRects:null, // dirty rects cache.
 
             /**
+             * current dirty rects.
+             * @private
+             */
+            cDirtyRects:null, // dirty rects cache.
+
+            /**
              * Currently used dirty rects.
              * @private
              */
@@ -20706,6 +20707,7 @@ CAAT.Module({
                 this.__gestureRotation = 0;
                 this.dirty = true;
                 this.dirtyRects = null;
+                this.cDirtyRects = null;
                 this.dirtyRectsIndex = 0;
                 this.dirtyRectsEnabled = false;
                 this.nDirtyRects = 0;
@@ -21044,6 +21046,10 @@ CAAT.Module({
             },
             setImagesCache:function (imagesCache, tpW, tpH) {
 
+                if (!imagesCache || !imagesCache.length ) {
+                    return this;
+                }
+
                 var i;
 
                 if (null !== this.glTextureManager) {
@@ -21107,7 +21113,8 @@ CAAT.Module({
              */
             addImage:function (id, image, noUpdateGL) {
                 if (this.getImage(id)) {
-                    for (var i = 0; i < this.imagesCache.length; i++) {
+//                    for (var i = 0; i < this.imagesCache.length; i++) {
+                    for( var i in this.imagesCache ) {
                         if (this.imagesCache[i].id === id) {
                             this.imagesCache[i].image = image;
                             break;
@@ -21411,6 +21418,7 @@ CAAT.Module({
                 this.dirty = false;
                 this.invalid = false;
                 this.dirtyRectsIndex = -1;
+                this.cDirtyRects= [];
 
                 var cl = this.childrenList;
                 var cli;
@@ -22014,7 +22022,8 @@ CAAT.Module({
                     return ret;
                 }
 
-                for (var i = 0; i < this.imagesCache.length; i++) {
+                //for (var i = 0; i < this.imagesCache.length; i++) {
+                for( var i in this.imagesCache ) {
                     if (this.imagesCache[i].id === sId) {
                         return this.imagesCache[i].image;
                     }
@@ -22377,7 +22386,7 @@ CAAT.Module({
 
                     // check for mouse move threshold.
                     if (!this.dragging) {
-                        if (Math.abs(this.prevMousePoint.x - pos.x) < CAAT.DRAG_THRESHOLD_X ||
+                        if (Math.abs(this.prevMousePoint.x - pos.x) < CAAT.DRAG_THRESHOLD_X &&
                             Math.abs(this.prevMousePoint.y - pos.y) < CAAT.DRAG_THRESHOLD_Y) {
                             return;
                         }
@@ -24052,7 +24061,8 @@ CAAT.Module( {
 
             __nextLine : function() {
                 this.x= 0;
-                this.currentLine= new DocumentLine();
+                this.currentLine= new DocumentLine(
+                    CAAT.Module.Font.Font.getFontMetrics( this.crcs.sfont)  );
                 this.lines.push( this.currentLine );
             },
 
@@ -24485,8 +24495,9 @@ CAAT.Module( {
          * This class represents a document line.
          * It contains a collection of DocumentElement objects.
          */
-        var DocumentLine= function() {
+        var DocumentLine= function( defaultFontMetrics ) {
             this.elements= [];
+            this.defaultFontMetrics= defaultFontMetrics;
             return this;
         };
 
@@ -24494,6 +24505,7 @@ CAAT.Module( {
             elements    : null,
             width       : 0,
             height      : 0,
+            defaultHeight : 0,  // default line height in case it is empty.
             y           : 0,
             x           : 0,
             alignment   : null,
@@ -24591,8 +24603,10 @@ CAAT.Module( {
                     }
                 }
 
-                this.baselinePos= Math.max( biggestFont ? biggestFont.ascent : 0, biggestImage ? biggestImage.getHeight() : 0 );
-                this.height= this.baselinePos + (biggestFont!=null ? biggestFont.descent : 0 );
+                this.baselinePos= Math.max(
+                    biggestFont ? biggestFont.ascent : this.defaultFontMetrics.ascent,
+                    biggestImage ? biggestImage.getHeight() : this.defaultFontMetrics.ascent );
+                this.height= this.baselinePos + (biggestFont!=null ? biggestFont.descent : this.defaultFontMetrics.descent );
 
                 for( i=0; i<this.elements.length; i++ ) {
                     this.elements[i].setYPosition( this.baselinePos );

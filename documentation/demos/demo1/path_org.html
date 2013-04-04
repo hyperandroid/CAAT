@@ -100,6 +100,8 @@
 
         function load() {
             CAAT.ModuleManager.
+                    debug(true).
+
                     baseURL("../../../src/").
                     setModulePath("CAAT.Core",              "Core").
                     setModulePath("CAAT.Math",              "Math").
@@ -163,7 +165,7 @@
              * Lay interpolators out on 20 rows, and construct as much Dock
              * elements to hold the whole collection of interpolators.
              */
-            var cols = 20;
+            var cols = 21;
             var j = 0, i = 0;
             var rows = lerps.length / 2 / cols;
             var min = 20;

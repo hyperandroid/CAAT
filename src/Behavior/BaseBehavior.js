@@ -83,16 +83,20 @@ CAAT.Module({
      *
      */
 
-
+    /**
+     *
+     * Internal behavior status values. Do not assign directly.
+     *
+     * @name Status
+     * @memberOf CAAT.Behavior.BaseBehavior
+     * @namespace
+     * @enum {number}
+     */
 
 
     defines:        "CAAT.Behavior.BaseBehavior",
     constants:      {
 
-        /**
-         * @name Status
-         * @memberOf CAAT.Behavior.BaseBehavior
-         */
         Status: {
             /**
              * @lends CAAT.Behavior.BaseBehavior.Status
@@ -242,6 +246,27 @@ CAAT.Module({
              * @private
              */
             discardable:false,
+
+            /**
+             * does this behavior apply relative values ??
+             */
+            isRelative : false,
+
+            /**
+             * Set this behavior as relative value application to some other measures.
+             * Each Behavior will define its own.
+             * @param bool
+             * @returns {*}
+             */
+            setRelative : function( bool ) {
+                this.isRelative= bool;
+                return this;
+            },
+
+            setRelativeValues : function() {
+                this.isRelative= true;
+                return this;
+            },
 
             /**
              * Parse a behavior of this type.

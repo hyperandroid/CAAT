@@ -12,7 +12,7 @@
 body
 {
 	font: 12px "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
-	width: 980px;
+	width: 940px;
 }
 
 .header
@@ -48,7 +48,7 @@ pre.code
 {
 	margin-top: 24px;
 	float: left;
-	width: 340px;
+	width: 300px;
 	position: absolute;
 	left: 8px;
 	background-color: #F3F3F3;
@@ -57,8 +57,8 @@ pre.code
 
 #content
 {
-	margin-left: 370px;
-	width: 700px;
+	margin-left: 340px;
+	width: 600px;
 }
 
 .classList
@@ -199,6 +199,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Behavior.BaseBehavior.html">CAAT.Behavior.BaseBehavior</a></li>
 	
+	<li><a href="../symbols/CAAT.Behavior.BaseBehavior.Status.html">CAAT.Behavior.BaseBehavior.Status</a></li>
+	
 	<li><a href="../symbols/CAAT.Behavior.ContainerBehavior.html">CAAT.Behavior.ContainerBehavior</a></li>
 	
 	<li><a href="../symbols/CAAT.Behavior.GenericBehavior.html">CAAT.Behavior.GenericBehavior</a></li>
@@ -207,9 +209,17 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Behavior.PathBehavior.html">CAAT.Behavior.PathBehavior</a></li>
 	
+	<li><a href="../symbols/CAAT.Behavior.PathBehavior.autorotate.html">CAAT.Behavior.PathBehavior.autorotate</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.PathBehavior.AUTOROTATE.html">CAAT.Behavior.PathBehavior.AUTOROTATE</a></li>
+	
 	<li><a href="../symbols/CAAT.Behavior.RotateBehavior.html">CAAT.Behavior.RotateBehavior</a></li>
 	
 	<li><a href="../symbols/CAAT.Behavior.Scale1Behavior.html">CAAT.Behavior.Scale1Behavior</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.Scale1Behavior.Axis.html">CAAT.Behavior.Scale1Behavior.Axis</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.Scale1Behavior.AXIS.html">CAAT.Behavior.Scale1Behavior.AXIS</a></li>
 	
 	<li><a href="../symbols/CAAT.Behavior.ScaleBehavior.html">CAAT.Behavior.ScaleBehavior</a></li>
 	
@@ -230,6 +240,10 @@ ul.inheritsList
 	<li><a href="../symbols/CAAT.Foundation.Actor.html">CAAT.Foundation.Actor</a></li>
 	
 	<li><a href="../symbols/CAAT.Foundation.ActorContainer.html">CAAT.Foundation.ActorContainer</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.ActorContainer.ADDHINT.html">CAAT.Foundation.ActorContainer.ADDHINT</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.ActorContainer.AddHint.html">CAAT.Foundation.ActorContainer.AddHint</a></li>
 	
 	<li><a href="../symbols/CAAT.Foundation.Box2D.html">CAAT.Foundation.Box2D</a></li>
 	
@@ -282,6 +296,10 @@ ul.inheritsList
 	<li><a href="../symbols/CAAT.Foundation.UI.StarActor.html">CAAT.Foundation.UI.StarActor</a></li>
 	
 	<li><a href="../symbols/CAAT.Foundation.UI.TextActor.html">CAAT.Foundation.UI.TextActor</a></li>
+	
+	<li><a href="../symbols/CAAT.KEY_MODIFIERS.html">CAAT.KEY_MODIFIERS</a></li>
+	
+	<li><a href="../symbols/CAAT.KEYS.html">CAAT.KEYS</a></li>
 	
 	<li><a href="../symbols/CAAT.Math.html">CAAT.Math</a></li>
 	
@@ -356,6 +374,16 @@ ul.inheritsList
 	<li><a href="../symbols/CAAT.Module.Runtime.html">CAAT.Module.Runtime</a></li>
 	
 	<li><a href="../symbols/CAAT.Module.Runtime.BrowserInfo.html">CAAT.Module.Runtime.BrowserInfo</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Skeleton.html">CAAT.Module.Skeleton</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Skeleton%23SkeletonActor.html">CAAT.Module.Skeleton#SkeletonActor</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Skeleton.Bone.html">CAAT.Module.Skeleton.Bone</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Skeleton.BoneActor.html">CAAT.Module.Skeleton.BoneActor</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Skeleton.Skeleton.html">CAAT.Module.Skeleton.Skeleton</a></li>
 	
 	<li><a href="../symbols/CAAT.Module.Storage.html">CAAT.Module.Storage</a></li>
 	
@@ -556,6 +584,16 @@ Behavior base class.</div>
 						</tr>
 					
 						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#isRelative">isRelative</a></b>
+								</div>
+								<div class="description">does this behavior apply relative values ??</div>
+							</td>
+						</tr>
+					
+						<tr>
 							<td class="attributes">&lt;private&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
@@ -583,16 +621,6 @@ is in time relative to the scene.</div>
 								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#status">status</a></b>
 								</div>
 								<div class="description">behavior status.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">
-								CAAT.Behavior.BaseBehavior.<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#.Status">Status</a></b>
-								</div>
-								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -772,20 +800,20 @@ is in time relative to the scene.</div>
 						</tr>
 					
 						<tr>
-							<td class="attributes">&nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#parse">parse</a></b>(obj)
-								</div>
-								<div class="description">Parse a behavior of this type.</div>
-							</td>
-						</tr>
-					
-						<tr>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">CAAT.Behavior.BaseBehavior.<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#.parse">parse</a></b>(obj)
 								</div>
 								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#parse">parse</a></b>(obj)
+								</div>
+								<div class="description">Parse a behavior of this type.</div>
 							</td>
 						</tr>
 					
@@ -876,6 +904,24 @@ is in time relative to the scene.</div>
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setPingPong">setPingPong</a></b>()
 								</div>
 								<div class="description">Sets default interpolator to be linear from 0.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setRelative">setRelative</a></b>(bool)
+								</div>
+								<div class="description">Set this behavior as relative value application to some other measures.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setRelativeValues">setRelativeValues</a></b>()
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -1174,6 +1220,28 @@ Unless otherwise specified, it will be linearly applied.
 
 					<hr />
 				
+					<a name="isRelative"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>isRelative</b>
+					
+					</div>
+					<div class="description">
+						does this behavior apply relative values ??
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="lifecycleListenerList"> </a>
 					<div class="fixedFont">&lt;private&gt; 
 					
@@ -1228,28 +1296,6 @@ is in time relative to the scene.
 					</div>
 					<div class="description">
 						behavior status.
-						
-						
-					</div>
-					
-					
-
-						
-						
-						
-						
-
-					<hr />
-				
-					<a name=".Status"> </a>
-					<div class="fixedFont">&lt;static&gt; 
-					
-					
-					<span class="light">CAAT.Behavior.BaseBehavior.</span><b>Status</b>
-					
-					</div>
-					<div class="description">
-						
 						
 						
 					</div>
@@ -1909,42 +1955,6 @@ the time parameter will be proportional to those values.
 
 					<hr />
 				
-					<a name="parse"> </a>
-					<div class="fixedFont">
-					
-					
-					<b>parse</b>(obj)
-					
-					</div>
-					<div class="description">
-						Parse a behavior of this type.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>obj</b>
-									
-								</dt>
-								<dd>{object} an object with a behavior definition.</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name=".parse"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -1969,6 +1979,42 @@ the time parameter will be proportional to those values.
 									
 								</dt>
 								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="parse"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>parse</b>(obj)
+					
+					</div>
+					<div class="description">
+						Parse a behavior of this type.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>obj</b>
+									
+								</dt>
+								<dd>{object} an object with a behavior definition.</dd>
 							
 							</dl>
 						
@@ -2361,6 +2407,75 @@ its values in the range 0..1. The behavior will only apply for such value range.
 
 					<hr />
 				
+					<a name="setRelative"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{*}</span>
+					<b>setRelative</b>(bool)
+					
+					</div>
+					<div class="description">
+						Set this behavior as relative value application to some other measures.
+Each Behavior will define its own.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>bool</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setRelativeValues"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setRelativeValues</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="setStatus"> </a>
 					<div class="fixedFont">&lt;private&gt; 
 					
@@ -2504,7 +2619,7 @@ start time.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Feb 27 2013 08:58:00 GMT-0800 (PST)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Wed Apr 03 2013 21:55:28 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

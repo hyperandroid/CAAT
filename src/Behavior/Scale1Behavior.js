@@ -6,6 +6,22 @@ CAAT.Module({
      * @constructor
      */
 
+    /**
+     * @name AXIS
+     * @memberOf CAAT.Behavior.Scale1Behavior
+     * @enum {number}
+     * @namespace
+     */
+
+    /**
+     * @name Axis
+     * @memberOf CAAT.Behavior.Scale1Behavior
+     * @enum {number}
+     * @namespace
+     * @deprecated
+     */
+
+
     defines:"CAAT.Behavior.Scale1Behavior",
     depends:[
         "CAAT.Behavior.BaseBehavior",
@@ -14,9 +30,22 @@ CAAT.Module({
     aliases: ["CAAT.Scale1Behavior"],
     constants : {
 
+        AXIS : {
+            /**
+             * @lends CAAT.Behavior.Scale1Behavior.AXIS
+             */
+
+            /** @const */ X:  0,
+            /** @const */ Y:  1
+        },
+
         Axis : {
-            X:  0,
-            Y:  1
+            /**
+             * @lends CAAT.Behavior.Scale1Behavior.Axis
+             */
+
+            /** @const */ X:  0,
+            /** @const */ Y:  1
         }
     },
     extendsClass:"CAAT.Behavior.BaseBehavior",
@@ -73,10 +102,10 @@ CAAT.Module({
             },
 
             /**
-             * @param axis {CAAT.Behavior.Scale1Behavior.Axis}
+             * @param axis {CAAT.Behavior.Scale1Behavior.AXIS}
              */
             applyOnAxis:function (axis) {
-                if (axis === CAAT.Behavior.Scale1Behavior.Axis.X) {
+                if (axis === CAAT.Behavior.Scale1Behavior.AXIS.X) {
                     this.applyOnX = false;
                 } else {
                     this.applyOnX = true;
