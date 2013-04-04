@@ -6,6 +6,19 @@
  * To change this template use File | Settings | File Templates.
  */
 CAAT.Module({
+
+    /**
+     * @name Skeleton
+     * @memberof CAAT.Module
+     * @namespace
+     */
+
+    /**
+     * @name Bone
+     * @memberof CAAT.Module.Skeleton
+     * @constructor
+     */
+
     defines : "CAAT.Module.Skeleton.Bone",
     depends : [
         "CAAT.Behavior.Interpolator",
@@ -15,6 +28,11 @@ CAAT.Module({
         "CAAT.Behavior.ContainerBehavior"
     ],
     extendsWith : function() {
+
+
+        /**
+         * @lends CAAT.Module.Skeleton.Bone.prototype
+         */
 
         var defPoint = { x: 0, y: 0 };
         var defScale = { scaleX: 1, scaleY: 1 };
@@ -427,7 +445,7 @@ CAAT.Module({
             /**
              * @param time {number}
              */
-            apply : function( time ) {
+            apply : function( time, animationTime ) {
 
                 cpoint= defPoint;
                 cangle= defAngle;

@@ -255,388 +255,409 @@
 <span class='line'>248</span> </span><span class="WHIT">            </span><span class="NAME">discardable</span><span class="PUNC">:</span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>249</span> 
 <span class='line'>250</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>251</span>              * Parse a behavior of this type.
-<span class='line'>252</span>              * @param obj {object} an object with a behavior definition.
-<span class='line'>253</span>              */</span><span class="WHIT">
-<span class='line'>254</span> </span><span class="WHIT">            </span><span class="NAME">parse</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">obj</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>255</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">obj.pingpong</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>256</span> </span><span class="WHIT">                    </span><span class="NAME">this.setPingPong</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>257</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>258</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">obj.cycle</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>259</span> </span><span class="WHIT">                    </span><span class="NAME">this.setCycle</span><span class="PUNC">(</span><span class="KEYW">true</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>260</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>261</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">delay</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">obj.delay</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>262</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">obj.duration</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">1000</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>263</span> 
-<span class='line'>264</span> </span><span class="WHIT">                </span><span class="NAME">this.setDelayTime</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">delay</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>251</span>              * does this behavior apply relative values ??
+<span class='line'>252</span>              */</span><span class="WHIT">
+<span class='line'>253</span> </span><span class="WHIT">            </span><span class="NAME">isRelative</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>254</span> 
+<span class='line'>255</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>256</span>              * Set this behavior as relative value application to some other measures.
+<span class='line'>257</span>              * Each Behavior will define its own.
+<span class='line'>258</span>              * @param bool
+<span class='line'>259</span>              * @returns {*}
+<span class='line'>260</span>              */</span><span class="WHIT">
+<span class='line'>261</span> </span><span class="WHIT">            </span><span class="NAME">setRelative</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">bool</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>262</span> </span><span class="WHIT">                </span><span class="NAME">this.isRelative</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bool</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>263</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>264</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>265</span> 
-<span class='line'>266</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">obj.interpolator</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>267</span> </span><span class="WHIT">                    </span><span class="NAME">this.setInterpolator</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior.Interpolator.parse</span><span class="PUNC">(</span><span class="NAME">obj.interpolator</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>268</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>266</span> </span><span class="WHIT">            </span><span class="NAME">setRelativeValues</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>267</span> </span><span class="WHIT">                </span><span class="NAME">this.isRelative</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>268</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>269</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>270</span> 
 <span class='line'>271</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>272</span>              * Set whether this behavior will apply behavior values to a reference Actor instance.
-<span class='line'>273</span>              * @param apply {boolean}
-<span class='line'>274</span>              * @return {*}
-<span class='line'>275</span>              */</span><span class="WHIT">
-<span class='line'>276</span> </span><span class="WHIT">            </span><span class="NAME">setValueApplication</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">apply</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>277</span> </span><span class="WHIT">                </span><span class="NAME">this.doValueApplication</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">apply</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>278</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>279</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>280</span> 
-<span class='line'>281</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>282</span>              * Set this behavior offset time.
-<span class='line'>283</span>              * This method is intended to make a behavior start applying (the first) time from a different
-<span class='line'>284</span>              * start time.
-<span class='line'>285</span>              * @param offset {number} between 0 and 1
-<span class='line'>286</span>              * @return {*}
-<span class='line'>287</span>              */</span><span class="WHIT">
-<span class='line'>288</span> </span><span class="WHIT">            </span><span class="NAME">setTimeOffset</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">offset</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>289</span> </span><span class="WHIT">                </span><span class="NAME">this.timeOffset</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">offset</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>290</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>291</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>292</span> 
-<span class='line'>293</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>294</span>              * Set this behavior status
-<span class='line'>295</span>              * @param st {CAAT.Behavior.BaseBehavior.Status}
-<span class='line'>296</span>              * @return {*}
-<span class='line'>297</span>              * @private
-<span class='line'>298</span>              */</span><span class="WHIT">
-<span class='line'>299</span> </span><span class="WHIT">            </span><span class="NAME">setStatus</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">st</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>300</span> </span><span class="WHIT">                </span><span class="NAME">this.status</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">st</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>301</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>302</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>303</span> 
-<span class='line'>304</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>305</span>              * Sets this behavior id.
-<span class='line'>306</span>              * @param id {object}
-<span class='line'>307</span>              *
+<span class='line'>272</span>              * Parse a behavior of this type.
+<span class='line'>273</span>              * @param obj {object} an object with a behavior definition.
+<span class='line'>274</span>              */</span><span class="WHIT">
+<span class='line'>275</span> </span><span class="WHIT">            </span><span class="NAME">parse</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">obj</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>276</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">obj.pingpong</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>277</span> </span><span class="WHIT">                    </span><span class="NAME">this.setPingPong</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>278</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>279</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">obj.cycle</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>280</span> </span><span class="WHIT">                    </span><span class="NAME">this.setCycle</span><span class="PUNC">(</span><span class="KEYW">true</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>281</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>282</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">delay</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">obj.delay</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>283</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">obj.duration</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NUMB">1000</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>284</span> 
+<span class='line'>285</span> </span><span class="WHIT">                </span><span class="NAME">this.setDelayTime</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">delay</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>286</span> 
+<span class='line'>287</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">obj.interpolator</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>288</span> </span><span class="WHIT">                    </span><span class="NAME">this.setInterpolator</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior.Interpolator.parse</span><span class="PUNC">(</span><span class="NAME">obj.interpolator</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>289</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>290</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>291</span> 
+<span class='line'>292</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>293</span>              * Set whether this behavior will apply behavior values to a reference Actor instance.
+<span class='line'>294</span>              * @param apply {boolean}
+<span class='line'>295</span>              * @return {*}
+<span class='line'>296</span>              */</span><span class="WHIT">
+<span class='line'>297</span> </span><span class="WHIT">            </span><span class="NAME">setValueApplication</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">apply</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>298</span> </span><span class="WHIT">                </span><span class="NAME">this.doValueApplication</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">apply</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>299</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>300</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>301</span> 
+<span class='line'>302</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>303</span>              * Set this behavior offset time.
+<span class='line'>304</span>              * This method is intended to make a behavior start applying (the first) time from a different
+<span class='line'>305</span>              * start time.
+<span class='line'>306</span>              * @param offset {number} between 0 and 1
+<span class='line'>307</span>              * @return {*}
 <span class='line'>308</span>              */</span><span class="WHIT">
-<span class='line'>309</span> </span><span class="WHIT">            </span><span class="NAME">setId</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">id</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>310</span> </span><span class="WHIT">                </span><span class="NAME">this.id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">id</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>309</span> </span><span class="WHIT">            </span><span class="NAME">setTimeOffset</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">offset</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>310</span> </span><span class="WHIT">                </span><span class="NAME">this.timeOffset</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">offset</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>311</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>312</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>313</span> 
 <span class='line'>314</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>315</span>              * Sets the default interpolator to a linear ramp, that is, behavior will be applied linearly.
-<span class='line'>316</span>              * @return this
-<span class='line'>317</span>              */</span><span class="WHIT">
-<span class='line'>318</span> </span><span class="WHIT">            </span><span class="NAME">setDefaultInterpolator</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>319</span> </span><span class="WHIT">                </span><span class="NAME">this.interpolator</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">DefaultInterpolator</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>320</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>321</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>322</span> 
-<span class='line'>323</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>324</span>              * Sets default interpolator to be linear from 0..1 and from 1..0.
-<span class='line'>325</span>              * @return this
-<span class='line'>326</span>              */</span><span class="WHIT">
-<span class='line'>327</span> </span><span class="WHIT">            </span><span class="NAME">setPingPong</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>328</span> </span><span class="WHIT">                </span><span class="NAME">this.interpolator</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">DefaultInterpolatorPP</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>329</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>330</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>331</span> 
-<span class='line'>332</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>333</span>              * Sets behavior start time and duration. Start time is set absolutely relative to scene time.
-<span class='line'>334</span>              * @param startTime {number} an integer indicating behavior start time in scene time in ms..
-<span class='line'>335</span>              * @param duration {number} an integer indicating behavior duration in ms.
-<span class='line'>336</span>              */</span><span class="WHIT">
-<span class='line'>337</span> </span><span class="WHIT">            </span><span class="NAME">setFrameTime</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">startTime</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>338</span> </span><span class="WHIT">                </span><span class="NAME">this.behaviorStartTime</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">startTime</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>339</span> </span><span class="WHIT">                </span><span class="NAME">this.behaviorDuration</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>340</span> </span><span class="WHIT">                </span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="NAME">CAAT.Behavior.BaseBehavior.Status.NOT_STARTED</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>341</span> 
-<span class='line'>342</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>343</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>344</span> 
-<span class='line'>345</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>346</span>              * Sets behavior start time and duration. Start time is relative to scene time.
-<span class='line'>347</span>              *
-<span class='line'>348</span>              * a call to
-<span class='line'>349</span>              *   setFrameTime( scene.time, duration ) is equivalent to
-<span class='line'>350</span>              *   setDelayTime( 0, duration )
-<span class='line'>351</span>              * @param delay {number}
-<span class='line'>352</span>              * @param duration {number}
-<span class='line'>353</span>              */</span><span class="WHIT">
-<span class='line'>354</span> </span><span class="WHIT">            </span><span class="NAME">setDelayTime</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">delay</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>355</span> </span><span class="WHIT">                </span><span class="NAME">this.behaviorStartTime</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">delay</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>356</span> </span><span class="WHIT">                </span><span class="NAME">this.behaviorDuration</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>357</span> </span><span class="WHIT">                </span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="NAME">CAAT.Behavior.BaseBehavior.Status.NOT_STARTED</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>358</span> </span><span class="WHIT">                </span><span class="NAME">this.solved</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>359</span> </span><span class="WHIT">                </span><span class="NAME">this.expired</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>360</span> 
-<span class='line'>361</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>315</span>              * Set this behavior status
+<span class='line'>316</span>              * @param st {CAAT.Behavior.BaseBehavior.Status}
+<span class='line'>317</span>              * @return {*}
+<span class='line'>318</span>              * @private
+<span class='line'>319</span>              */</span><span class="WHIT">
+<span class='line'>320</span> </span><span class="WHIT">            </span><span class="NAME">setStatus</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">st</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>321</span> </span><span class="WHIT">                </span><span class="NAME">this.status</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">st</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>322</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>323</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>324</span> 
+<span class='line'>325</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>326</span>              * Sets this behavior id.
+<span class='line'>327</span>              * @param id {object}
+<span class='line'>328</span>              *
+<span class='line'>329</span>              */</span><span class="WHIT">
+<span class='line'>330</span> </span><span class="WHIT">            </span><span class="NAME">setId</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">id</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>331</span> </span><span class="WHIT">                </span><span class="NAME">this.id</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">id</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>332</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>333</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>334</span> 
+<span class='line'>335</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>336</span>              * Sets the default interpolator to a linear ramp, that is, behavior will be applied linearly.
+<span class='line'>337</span>              * @return this
+<span class='line'>338</span>              */</span><span class="WHIT">
+<span class='line'>339</span> </span><span class="WHIT">            </span><span class="NAME">setDefaultInterpolator</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>340</span> </span><span class="WHIT">                </span><span class="NAME">this.interpolator</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">DefaultInterpolator</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>341</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>342</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>343</span> 
+<span class='line'>344</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>345</span>              * Sets default interpolator to be linear from 0..1 and from 1..0.
+<span class='line'>346</span>              * @return this
+<span class='line'>347</span>              */</span><span class="WHIT">
+<span class='line'>348</span> </span><span class="WHIT">            </span><span class="NAME">setPingPong</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>349</span> </span><span class="WHIT">                </span><span class="NAME">this.interpolator</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">DefaultInterpolatorPP</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>350</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>351</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>352</span> 
+<span class='line'>353</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>354</span>              * Sets behavior start time and duration. Start time is set absolutely relative to scene time.
+<span class='line'>355</span>              * @param startTime {number} an integer indicating behavior start time in scene time in ms..
+<span class='line'>356</span>              * @param duration {number} an integer indicating behavior duration in ms.
+<span class='line'>357</span>              */</span><span class="WHIT">
+<span class='line'>358</span> </span><span class="WHIT">            </span><span class="NAME">setFrameTime</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">startTime</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>359</span> </span><span class="WHIT">                </span><span class="NAME">this.behaviorStartTime</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">startTime</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>360</span> </span><span class="WHIT">                </span><span class="NAME">this.behaviorDuration</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>361</span> </span><span class="WHIT">                </span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="NAME">CAAT.Behavior.BaseBehavior.Status.NOT_STARTED</span><span class="PUNC">;</span><span class="WHIT">
 <span class='line'>362</span> 
-<span class='line'>363</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>364</span> 
-<span class='line'>365</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>366</span>              * Make this behavior not applicable.
-<span class='line'>367</span>              * @return {*}
-<span class='line'>368</span>              */</span><span class="WHIT">
-<span class='line'>369</span> </span><span class="WHIT">            </span><span class="NAME">setOutOfFrameTime</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>370</span> </span><span class="WHIT">                </span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="NAME">CAAT.Behavior.BaseBehavior.Status.EXPIRED</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>371</span> </span><span class="WHIT">                </span><span class="NAME">this.behaviorStartTime</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Number.MAX_VALUE</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>372</span> </span><span class="WHIT">                </span><span class="NAME">this.behaviorDuration</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>373</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>374</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>375</span> 
-<span class='line'>376</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>377</span>              * Changes behavior default interpolator to another instance of CAAT.Interpolator.
-<span class='line'>378</span>              * If the behavior is not defined by CAAT.Interpolator factory methods, the interpolation function must return
-<span class='line'>379</span>              * its values in the range 0..1. The behavior will only apply for such value range.
-<span class='line'>380</span>              * @param interpolator a CAAT.Interpolator instance.
-<span class='line'>381</span>              */</span><span class="WHIT">
-<span class='line'>382</span> </span><span class="WHIT">            </span><span class="NAME">setInterpolator</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">interpolator</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>383</span> </span><span class="WHIT">                </span><span class="NAME">this.interpolator</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">interpolator</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>384</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>385</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>386</span> 
-<span class='line'>387</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>388</span>              * This method must no be called directly.
-<span class='line'>389</span>              * The director loop will call this method in orther to apply actor behaviors.
-<span class='line'>390</span>              * @param time the scene time the behaviro is being applied at.
-<span class='line'>391</span>              * @param actor a CAAT.Actor instance the behavior is being applied to.
-<span class='line'>392</span>              */</span><span class="WHIT">
-<span class='line'>393</span> </span><span class="WHIT">            </span><span class="NAME">apply</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>394</span> 
-<span class='line'>395</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this.solved</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>396</span> </span><span class="WHIT">                    </span><span class="NAME">this.behaviorStartTime</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>397</span> </span><span class="WHIT">                    </span><span class="NAME">this.solved</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>398</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>399</span> 
-<span class='line'>400</span> </span><span class="WHIT">                </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.timeOffset</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">this.behaviorDuration</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>401</span> 
-<span class='line'>402</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">orgTime</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>403</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.isBehaviorInTime</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>404</span> </span><span class="WHIT">                    </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.normalizeTime</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>405</span> </span><span class="WHIT">                    </span><span class="NAME">this.fireBehaviorAppliedEvent</span><span class="PUNC">(</span><span class="WHIT">
-<span class='line'>406</span> </span><span class="WHIT">                        </span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>407</span> </span><span class="WHIT">                        </span><span class="NAME">orgTime</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>408</span> </span><span class="WHIT">                        </span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>409</span> </span><span class="WHIT">                        </span><span class="NAME">this.setForTime</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>410</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>411</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>412</span> 
-<span class='line'>413</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>414</span>              * Sets the behavior to cycle, ie apply forever.
-<span class='line'>415</span>              * @param bool a boolean indicating whether the behavior is cycle.
-<span class='line'>416</span>              */</span><span class="WHIT">
-<span class='line'>417</span> </span><span class="WHIT">            </span><span class="NAME">setCycle</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">bool</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>418</span> </span><span class="WHIT">                </span><span class="NAME">this.cycleBehavior</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bool</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>419</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>420</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>421</span> 
-<span class='line'>422</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>423</span>              * Adds an observer to this behavior.
-<span class='line'>424</span>              * @param behaviorListener an observer instance.
-<span class='line'>425</span>              */</span><span class="WHIT">
-<span class='line'>426</span> </span><span class="WHIT">            </span><span class="NAME">addListener</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">behaviorListener</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>427</span> </span><span class="WHIT">                </span><span class="NAME">this.lifecycleListenerList.push</span><span class="PUNC">(</span><span class="NAME">behaviorListener</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>428</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>429</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>430</span> 
-<span class='line'>431</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>432</span>              * Remove all registered listeners to the behavior.
-<span class='line'>433</span>              */</span><span class="WHIT">
-<span class='line'>434</span> </span><span class="WHIT">            </span><span class="NAME">emptyListenerList</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>435</span> </span><span class="WHIT">                </span><span class="NAME">this.lifecycleListenerList</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>436</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>437</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>438</span> 
-<span class='line'>439</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>440</span>              * @return an integer indicating the behavior start time in ms..
-<span class='line'>441</span>              */</span><span class="WHIT">
-<span class='line'>442</span> </span><span class="WHIT">            </span><span class="NAME">getStartTime</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>443</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>444</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>445</span> 
-<span class='line'>446</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>447</span>              * @return an integer indicating the behavior duration time in ms.
-<span class='line'>448</span>              */</span><span class="WHIT">
-<span class='line'>449</span> </span><span class="WHIT">            </span><span class="NAME">getDuration</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>450</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.behaviorDuration</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>363</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>364</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>365</span> 
+<span class='line'>366</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>367</span>              * Sets behavior start time and duration. Start time is relative to scene time.
+<span class='line'>368</span>              *
+<span class='line'>369</span>              * a call to
+<span class='line'>370</span>              *   setFrameTime( scene.time, duration ) is equivalent to
+<span class='line'>371</span>              *   setDelayTime( 0, duration )
+<span class='line'>372</span>              * @param delay {number}
+<span class='line'>373</span>              * @param duration {number}
+<span class='line'>374</span>              */</span><span class="WHIT">
+<span class='line'>375</span> </span><span class="WHIT">            </span><span class="NAME">setDelayTime</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">delay</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>376</span> </span><span class="WHIT">                </span><span class="NAME">this.behaviorStartTime</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">delay</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>377</span> </span><span class="WHIT">                </span><span class="NAME">this.behaviorDuration</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">duration</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>378</span> </span><span class="WHIT">                </span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="NAME">CAAT.Behavior.BaseBehavior.Status.NOT_STARTED</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>379</span> </span><span class="WHIT">                </span><span class="NAME">this.solved</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>380</span> </span><span class="WHIT">                </span><span class="NAME">this.expired</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>381</span> 
+<span class='line'>382</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>383</span> 
+<span class='line'>384</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>385</span> 
+<span class='line'>386</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>387</span>              * Make this behavior not applicable.
+<span class='line'>388</span>              * @return {*}
+<span class='line'>389</span>              */</span><span class="WHIT">
+<span class='line'>390</span> </span><span class="WHIT">            </span><span class="NAME">setOutOfFrameTime</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>391</span> </span><span class="WHIT">                </span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="NAME">CAAT.Behavior.BaseBehavior.Status.EXPIRED</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>392</span> </span><span class="WHIT">                </span><span class="NAME">this.behaviorStartTime</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">Number.MAX_VALUE</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>393</span> </span><span class="WHIT">                </span><span class="NAME">this.behaviorDuration</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>394</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>395</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>396</span> 
+<span class='line'>397</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>398</span>              * Changes behavior default interpolator to another instance of CAAT.Interpolator.
+<span class='line'>399</span>              * If the behavior is not defined by CAAT.Interpolator factory methods, the interpolation function must return
+<span class='line'>400</span>              * its values in the range 0..1. The behavior will only apply for such value range.
+<span class='line'>401</span>              * @param interpolator a CAAT.Interpolator instance.
+<span class='line'>402</span>              */</span><span class="WHIT">
+<span class='line'>403</span> </span><span class="WHIT">            </span><span class="NAME">setInterpolator</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">interpolator</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>404</span> </span><span class="WHIT">                </span><span class="NAME">this.interpolator</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">interpolator</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>405</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>406</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>407</span> 
+<span class='line'>408</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>409</span>              * This method must no be called directly.
+<span class='line'>410</span>              * The director loop will call this method in orther to apply actor behaviors.
+<span class='line'>411</span>              * @param time the scene time the behaviro is being applied at.
+<span class='line'>412</span>              * @param actor a CAAT.Actor instance the behavior is being applied to.
+<span class='line'>413</span>              */</span><span class="WHIT">
+<span class='line'>414</span> </span><span class="WHIT">            </span><span class="NAME">apply</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>415</span> 
+<span class='line'>416</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">this.solved</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>417</span> </span><span class="WHIT">                    </span><span class="NAME">this.behaviorStartTime</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>418</span> </span><span class="WHIT">                    </span><span class="NAME">this.solved</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>419</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>420</span> 
+<span class='line'>421</span> </span><span class="WHIT">                </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.timeOffset</span><span class="WHIT"> </span><span class="PUNC">*</span><span class="WHIT"> </span><span class="NAME">this.behaviorDuration</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>422</span> 
+<span class='line'>423</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">orgTime</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>424</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.isBehaviorInTime</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>425</span> </span><span class="WHIT">                    </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.normalizeTime</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>426</span> </span><span class="WHIT">                    </span><span class="NAME">this.fireBehaviorAppliedEvent</span><span class="PUNC">(</span><span class="WHIT">
+<span class='line'>427</span> </span><span class="WHIT">                        </span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>428</span> </span><span class="WHIT">                        </span><span class="NAME">orgTime</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>429</span> </span><span class="WHIT">                        </span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>430</span> </span><span class="WHIT">                        </span><span class="NAME">this.setForTime</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>431</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>432</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>433</span> 
+<span class='line'>434</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>435</span>              * Sets the behavior to cycle, ie apply forever.
+<span class='line'>436</span>              * @param bool a boolean indicating whether the behavior is cycle.
+<span class='line'>437</span>              */</span><span class="WHIT">
+<span class='line'>438</span> </span><span class="WHIT">            </span><span class="NAME">setCycle</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">bool</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>439</span> </span><span class="WHIT">                </span><span class="NAME">this.cycleBehavior</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bool</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>440</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>441</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>442</span> 
+<span class='line'>443</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>444</span>              * Adds an observer to this behavior.
+<span class='line'>445</span>              * @param behaviorListener an observer instance.
+<span class='line'>446</span>              */</span><span class="WHIT">
+<span class='line'>447</span> </span><span class="WHIT">            </span><span class="NAME">addListener</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">behaviorListener</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>448</span> </span><span class="WHIT">                </span><span class="NAME">this.lifecycleListenerList.push</span><span class="PUNC">(</span><span class="NAME">behaviorListener</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>449</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>450</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>451</span> 
-<span class='line'>452</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>453</span> 
-<span class='line'>454</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>455</span>              * Chekcs whether the behaviour is in scene time.
-<span class='line'>456</span>              * In case it gets out of scene time, and has not been tagged as expired, the behavior is expired and observers
-<span class='line'>457</span>              * are notified about that fact.
-<span class='line'>458</span>              * @param time the scene time to check the behavior against.
-<span class='line'>459</span>              * @param actor the actor the behavior is being applied to.
-<span class='line'>460</span>              * @return a boolean indicating whether the behavior is in scene time.
-<span class='line'>461</span>              */</span><span class="WHIT">
-<span class='line'>462</span> </span><span class="WHIT">            </span><span class="NAME">isBehaviorInTime</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>463</span> 
-<span class='line'>464</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">st</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior.BaseBehavior.Status</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>465</span> 
-<span class='line'>466</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">st.EXPIRED</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>467</span> </span><span class="WHIT">                    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>468</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>469</span> 
-<span class='line'>470</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.cycleBehavior</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>471</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">>=</span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>472</span> </span><span class="WHIT">                        </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">%</span><span class="WHIT"> </span><span class="NAME">this.behaviorDuration</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>473</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>474</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>475</span> 
-<span class='line'>476</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.behaviorDuration</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>477</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="NAME">st.EXPIRED</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>478</span> </span><span class="WHIT">                        </span><span class="NAME">this.setExpired</span><span class="PUNC">(</span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>479</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>480</span> 
-<span class='line'>481</span> </span><span class="WHIT">                    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>482</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>483</span> 
-<span class='line'>484</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">st.NOT_STARTED</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>485</span> </span><span class="WHIT">                    </span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">st.STARTED</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>486</span> </span><span class="WHIT">                    </span><span class="NAME">this.fireBehaviorStartedEvent</span><span class="PUNC">(</span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>487</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>488</span> 
-<span class='line'>489</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="WHIT"> </span><span class="PUNC">&lt;=</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// && time&lt;this.behaviorStartTime+this.behaviorDuration;</span><span class="WHIT">
-<span class='line'>490</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>491</span> 
-<span class='line'>492</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>493</span>              * Notify observers the first time the behavior is applied.
-<span class='line'>494</span>              * @param actor
-<span class='line'>495</span>              * @param time
-<span class='line'>496</span>              * @private
-<span class='line'>497</span>              */</span><span class="WHIT">
-<span class='line'>498</span> </span><span class="WHIT">            </span><span class="NAME">fireBehaviorStartedEvent</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>499</span> </span><span class="WHIT">                </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">l</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.lifecycleListenerList.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">l</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>500</span> </span><span class="WHIT">                    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">b</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.lifecycleListenerList</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>501</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">b.behaviorStarted</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>502</span> </span><span class="WHIT">                        </span><span class="NAME">b.behaviorStarted</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>503</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>504</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>505</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>506</span> 
-<span class='line'>507</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>508</span>              * Notify observers about expiration event.
-<span class='line'>509</span>              * @param actor a CAAT.Actor instance
-<span class='line'>510</span>              * @param time an integer with the scene time the behavior was expired at.
-<span class='line'>511</span>              * @private
-<span class='line'>512</span>              */</span><span class="WHIT">
-<span class='line'>513</span> </span><span class="WHIT">            </span><span class="NAME">fireBehaviorExpiredEvent</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>514</span> </span><span class="WHIT">                </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">l</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.lifecycleListenerList.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">l</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>515</span> </span><span class="WHIT">                    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">b</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.lifecycleListenerList</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>516</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">b.behaviorExpired</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>517</span> </span><span class="WHIT">                        </span><span class="NAME">b.behaviorExpired</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>518</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>519</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>520</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>521</span> 
-<span class='line'>522</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>523</span>              * Notify observers about behavior being applied.
-<span class='line'>524</span>              * @param actor a CAAT.Actor instance the behavior is being applied to.
-<span class='line'>525</span>              * @param time the scene time of behavior application.
-<span class='line'>526</span>              * @param normalizedTime the normalized time (0..1) considering 0 behavior start time and 1
-<span class='line'>527</span>              * behaviorStartTime+behaviorDuration.
-<span class='line'>528</span>              * @param value the value being set for actor properties. each behavior will supply with its own value version.
-<span class='line'>529</span>              * @private
-<span class='line'>530</span>              */</span><span class="WHIT">
-<span class='line'>531</span> </span><span class="WHIT">            </span><span class="NAME">fireBehaviorAppliedEvent</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">normalizedTime</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>532</span> </span><span class="WHIT">                </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">l</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.lifecycleListenerList.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">l</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>533</span> </span><span class="WHIT">                    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">b</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.lifecycleListenerList</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>534</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">b.behaviorApplied</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>535</span> </span><span class="WHIT">                        </span><span class="NAME">b.behaviorApplied</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">normalizedTime</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>536</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>537</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>538</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>539</span> 
-<span class='line'>540</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>541</span>              * Convert scene time into something more manageable for the behavior.
-<span class='line'>542</span>              * behaviorStartTime will be 0 and behaviorStartTime+behaviorDuration will be 1.
-<span class='line'>543</span>              * the time parameter will be proportional to those values.
-<span class='line'>544</span>              * @param time the scene time to be normalized. an integer.
-<span class='line'>545</span>              * @private
-<span class='line'>546</span>              */</span><span class="WHIT">
-<span class='line'>547</span> </span><span class="WHIT">            </span><span class="NAME">normalizeTime</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>548</span> </span><span class="WHIT">                </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>549</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.cycleBehavior</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>550</span> </span><span class="WHIT">                    </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">%</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.behaviorDuration</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>551</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>552</span> 
-<span class='line'>553</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.interpolator.getPosition</span><span class="PUNC">(</span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NAME">this.behaviorDuration</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">y</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>554</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>555</span> 
-<span class='line'>556</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>557</span>              * Sets the behavior as expired.
-<span class='line'>558</span>              * This method must not be called directly. It is an auxiliary method to isBehaviorInTime method.
-<span class='line'>559</span>              * @param actor {CAAT.Actor}
-<span class='line'>560</span>              * @param time {integer} the scene time.
-<span class='line'>561</span>              * @private
-<span class='line'>562</span>              */</span><span class="WHIT">
-<span class='line'>563</span> </span><span class="WHIT">            </span><span class="NAME">setExpired</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>564</span> </span><span class="WHIT">                </span><span class="COMM">// set for final interpolator value.</span><span class="WHIT">
-<span class='line'>565</span> </span><span class="WHIT">                </span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior.BaseBehavior.Status.EXPIRED</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>566</span> </span><span class="WHIT">                </span><span class="NAME">this.setForTime</span><span class="PUNC">(</span><span class="NAME">this.interpolator.getPosition</span><span class="PUNC">(</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">y</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>567</span> </span><span class="WHIT">                </span><span class="NAME">this.fireBehaviorExpiredEvent</span><span class="PUNC">(</span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>568</span> 
-<span class='line'>569</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.discardable</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>570</span> </span><span class="WHIT">                    </span><span class="NAME">this.actor.removeBehavior</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>571</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>572</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>452</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>453</span>              * Remove all registered listeners to the behavior.
+<span class='line'>454</span>              */</span><span class="WHIT">
+<span class='line'>455</span> </span><span class="WHIT">            </span><span class="NAME">emptyListenerList</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>456</span> </span><span class="WHIT">                </span><span class="NAME">this.lifecycleListenerList</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">[</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>457</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>458</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>459</span> 
+<span class='line'>460</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>461</span>              * @return an integer indicating the behavior start time in ms..
+<span class='line'>462</span>              */</span><span class="WHIT">
+<span class='line'>463</span> </span><span class="WHIT">            </span><span class="NAME">getStartTime</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>464</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>465</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>466</span> 
+<span class='line'>467</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>468</span>              * @return an integer indicating the behavior duration time in ms.
+<span class='line'>469</span>              */</span><span class="WHIT">
+<span class='line'>470</span> </span><span class="WHIT">            </span><span class="NAME">getDuration</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>471</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.behaviorDuration</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>472</span> 
+<span class='line'>473</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>474</span> 
+<span class='line'>475</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>476</span>              * Chekcs whether the behaviour is in scene time.
+<span class='line'>477</span>              * In case it gets out of scene time, and has not been tagged as expired, the behavior is expired and observers
+<span class='line'>478</span>              * are notified about that fact.
+<span class='line'>479</span>              * @param time the scene time to check the behavior against.
+<span class='line'>480</span>              * @param actor the actor the behavior is being applied to.
+<span class='line'>481</span>              * @return a boolean indicating whether the behavior is in scene time.
+<span class='line'>482</span>              */</span><span class="WHIT">
+<span class='line'>483</span> </span><span class="WHIT">            </span><span class="NAME">isBehaviorInTime</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>484</span> 
+<span class='line'>485</span> </span><span class="WHIT">                </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">st</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior.BaseBehavior.Status</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>486</span> 
+<span class='line'>487</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">st.EXPIRED</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>488</span> </span><span class="WHIT">                    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>489</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>490</span> 
+<span class='line'>491</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.cycleBehavior</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>492</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">>=</span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>493</span> </span><span class="WHIT">                        </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">%</span><span class="WHIT"> </span><span class="NAME">this.behaviorDuration</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>494</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>495</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>496</span> 
+<span class='line'>497</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">></span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">this.behaviorDuration</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>498</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">!==</span><span class="WHIT"> </span><span class="NAME">st.EXPIRED</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>499</span> </span><span class="WHIT">                        </span><span class="NAME">this.setExpired</span><span class="PUNC">(</span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>500</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>501</span> 
+<span class='line'>502</span> </span><span class="WHIT">                    </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>503</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>504</span> 
+<span class='line'>505</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">===</span><span class="WHIT"> </span><span class="NAME">st.NOT_STARTED</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>506</span> </span><span class="WHIT">                    </span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">st.STARTED</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>507</span> </span><span class="WHIT">                    </span><span class="NAME">this.fireBehaviorStartedEvent</span><span class="PUNC">(</span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>508</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>509</span> 
+<span class='line'>510</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="WHIT"> </span><span class="PUNC">&lt;=</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="COMM">// && time&lt;this.behaviorStartTime+this.behaviorDuration;</span><span class="WHIT">
+<span class='line'>511</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>512</span> 
+<span class='line'>513</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>514</span>              * Notify observers the first time the behavior is applied.
+<span class='line'>515</span>              * @param actor
+<span class='line'>516</span>              * @param time
+<span class='line'>517</span>              * @private
+<span class='line'>518</span>              */</span><span class="WHIT">
+<span class='line'>519</span> </span><span class="WHIT">            </span><span class="NAME">fireBehaviorStartedEvent</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>520</span> </span><span class="WHIT">                </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">l</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.lifecycleListenerList.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">l</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>521</span> </span><span class="WHIT">                    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">b</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.lifecycleListenerList</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>522</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">b.behaviorStarted</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>523</span> </span><span class="WHIT">                        </span><span class="NAME">b.behaviorStarted</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>524</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>525</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>526</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>527</span> 
+<span class='line'>528</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>529</span>              * Notify observers about expiration event.
+<span class='line'>530</span>              * @param actor a CAAT.Actor instance
+<span class='line'>531</span>              * @param time an integer with the scene time the behavior was expired at.
+<span class='line'>532</span>              * @private
+<span class='line'>533</span>              */</span><span class="WHIT">
+<span class='line'>534</span> </span><span class="WHIT">            </span><span class="NAME">fireBehaviorExpiredEvent</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>535</span> </span><span class="WHIT">                </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">l</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.lifecycleListenerList.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">l</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>536</span> </span><span class="WHIT">                    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">b</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.lifecycleListenerList</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>537</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">b.behaviorExpired</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>538</span> </span><span class="WHIT">                        </span><span class="NAME">b.behaviorExpired</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>539</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>540</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>541</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>542</span> 
+<span class='line'>543</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>544</span>              * Notify observers about behavior being applied.
+<span class='line'>545</span>              * @param actor a CAAT.Actor instance the behavior is being applied to.
+<span class='line'>546</span>              * @param time the scene time of behavior application.
+<span class='line'>547</span>              * @param normalizedTime the normalized time (0..1) considering 0 behavior start time and 1
+<span class='line'>548</span>              * behaviorStartTime+behaviorDuration.
+<span class='line'>549</span>              * @param value the value being set for actor properties. each behavior will supply with its own value version.
+<span class='line'>550</span>              * @private
+<span class='line'>551</span>              */</span><span class="WHIT">
+<span class='line'>552</span> </span><span class="WHIT">            </span><span class="NAME">fireBehaviorAppliedEvent</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">normalizedTime</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>553</span> </span><span class="WHIT">                </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">l</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.lifecycleListenerList.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">l</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="PUNC">++</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>554</span> </span><span class="WHIT">                    </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">b</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.lifecycleListenerList</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>555</span> </span><span class="WHIT">                    </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">b.behaviorApplied</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>556</span> </span><span class="WHIT">                        </span><span class="NAME">b.behaviorApplied</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">normalizedTime</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">value</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>557</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>558</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>559</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>560</span> 
+<span class='line'>561</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>562</span>              * Convert scene time into something more manageable for the behavior.
+<span class='line'>563</span>              * behaviorStartTime will be 0 and behaviorStartTime+behaviorDuration will be 1.
+<span class='line'>564</span>              * the time parameter will be proportional to those values.
+<span class='line'>565</span>              * @param time the scene time to be normalized. an integer.
+<span class='line'>566</span>              * @private
+<span class='line'>567</span>              */</span><span class="WHIT">
+<span class='line'>568</span> </span><span class="WHIT">            </span><span class="NAME">normalizeTime</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>569</span> </span><span class="WHIT">                </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">-</span><span class="WHIT"> </span><span class="NAME">this.behaviorStartTime</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>570</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.cycleBehavior</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>571</span> </span><span class="WHIT">                    </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">%</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">this.behaviorDuration</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>572</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
 <span class='line'>573</span> 
-<span class='line'>574</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>575</span>              * This method must be overriden for every Behavior breed.
-<span class='line'>576</span>              * Must not be called directly.
-<span class='line'>577</span>              * @param actor {CAAT.Actor} a CAAT.Actor instance.
-<span class='line'>578</span>              * @param time {number} an integer with the scene time.
-<span class='line'>579</span>              * @private
-<span class='line'>580</span>              */</span><span class="WHIT">
-<span class='line'>581</span> </span><span class="WHIT">            </span><span class="NAME">setForTime</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>582</span> 
-<span class='line'>583</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>584</span> 
-<span class='line'>585</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>586</span>              * @param overrides
-<span class='line'>587</span>              */</span><span class="WHIT">
-<span class='line'>588</span> </span><span class="WHIT">            </span><span class="NAME">initialize</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">overrides</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>589</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">overrides</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>590</span> </span><span class="WHIT">                    </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">overrides</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>591</span> </span><span class="WHIT">                        </span><span class="KEYW">this</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">overrides</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>592</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>593</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>574</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.interpolator.getPosition</span><span class="PUNC">(</span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">/</span><span class="WHIT"> </span><span class="NAME">this.behaviorDuration</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">y</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>575</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>576</span> 
+<span class='line'>577</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>578</span>              * Sets the behavior as expired.
+<span class='line'>579</span>              * This method must not be called directly. It is an auxiliary method to isBehaviorInTime method.
+<span class='line'>580</span>              * @param actor {CAAT.Actor}
+<span class='line'>581</span>              * @param time {integer} the scene time.
+<span class='line'>582</span>              * @private
+<span class='line'>583</span>              */</span><span class="WHIT">
+<span class='line'>584</span> </span><span class="WHIT">            </span><span class="NAME">setExpired</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>585</span> </span><span class="WHIT">                </span><span class="COMM">// set for final interpolator value.</span><span class="WHIT">
+<span class='line'>586</span> </span><span class="WHIT">                </span><span class="NAME">this.status</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">CAAT.Behavior.BaseBehavior.Status.EXPIRED</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>587</span> </span><span class="WHIT">                </span><span class="NAME">this.setForTime</span><span class="PUNC">(</span><span class="NAME">this.interpolator.getPosition</span><span class="PUNC">(</span><span class="NUMB">1</span><span class="PUNC">)</span><span class="PUNC">.</span><span class="NAME">y</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>588</span> </span><span class="WHIT">                </span><span class="NAME">this.fireBehaviorExpiredEvent</span><span class="PUNC">(</span><span class="NAME">actor</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>589</span> 
+<span class='line'>590</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.discardable</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>591</span> </span><span class="WHIT">                    </span><span class="NAME">this.actor.removeBehavior</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>592</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>593</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>594</span> 
-<span class='line'>595</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>596</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>597</span> 
-<span class='line'>598</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>599</span>              * Get this behaviors CSS property name application.
-<span class='line'>600</span>              * @return {String}
+<span class='line'>595</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>596</span>              * This method must be overriden for every Behavior breed.
+<span class='line'>597</span>              * Must not be called directly.
+<span class='line'>598</span>              * @param actor {CAAT.Actor} a CAAT.Actor instance.
+<span class='line'>599</span>              * @param time {number} an integer with the scene time.
+<span class='line'>600</span>              * @private
 <span class='line'>601</span>              */</span><span class="WHIT">
-<span class='line'>602</span> </span><span class="WHIT">            </span><span class="NAME">getPropertyName</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>603</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="STRN">""</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>602</span> </span><span class="WHIT">            </span><span class="NAME">setForTime</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">actor</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>603</span> 
 <span class='line'>604</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>605</span> 
 <span class='line'>606</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>607</span>              * Calculate a CSS3 @key-frame for this behavior at the given time.
-<span class='line'>608</span>              * @param time {number}
-<span class='line'>609</span>              */</span><span class="WHIT">
-<span class='line'>610</span> </span><span class="WHIT">            </span><span class="NAME">calculateKeyFrameData</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>611</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>612</span> 
-<span class='line'>613</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>614</span>              * Calculate a CSS3 @key-frame data values instead of building a CSS3 @key-frame value.
-<span class='line'>615</span>              * @param time {number}
-<span class='line'>616</span>              */</span><span class="WHIT">
-<span class='line'>617</span> </span><span class="WHIT">            </span><span class="NAME">getKeyFrameDataValues</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>618</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
-<span class='line'>619</span> 
-<span class='line'>620</span> </span><span class="WHIT">            </span><span class="COMM">/**
-<span class='line'>621</span>              * Calculate a complete CSS3 @key-frame set for this behavior.
-<span class='line'>622</span>              * @param prefix {string} browser vendor prefix
-<span class='line'>623</span>              * @param name {string} keyframes animation name
-<span class='line'>624</span>              * @param keyframessize {number} number of keyframes to generate
-<span class='line'>625</span>              */</span><span class="WHIT">
-<span class='line'>626</span> </span><span class="WHIT">            </span><span class="NAME">calculateKeyFramesData</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">prefix</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">keyframessize</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
-<span class='line'>627</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>628</span> 
-<span class='line'>629</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>630</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
-<span class='line'>631</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
-<span class='line'>632</span> 
+<span class='line'>607</span>              * @param overrides
+<span class='line'>608</span>              */</span><span class="WHIT">
+<span class='line'>609</span> </span><span class="WHIT">            </span><span class="NAME">initialize</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">overrides</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>610</span> </span><span class="WHIT">                </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">overrides</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>611</span> </span><span class="WHIT">                    </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">overrides</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>612</span> </span><span class="WHIT">                        </span><span class="KEYW">this</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">overrides</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>613</span> </span><span class="WHIT">                    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>614</span> </span><span class="WHIT">                </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>615</span> 
+<span class='line'>616</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>617</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>618</span> 
+<span class='line'>619</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>620</span>              * Get this behaviors CSS property name application.
+<span class='line'>621</span>              * @return {String}
+<span class='line'>622</span>              */</span><span class="WHIT">
+<span class='line'>623</span> </span><span class="WHIT">            </span><span class="NAME">getPropertyName</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>624</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="STRN">""</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>625</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>626</span> 
+<span class='line'>627</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>628</span>              * Calculate a CSS3 @key-frame for this behavior at the given time.
+<span class='line'>629</span>              * @param time {number}
+<span class='line'>630</span>              */</span><span class="WHIT">
+<span class='line'>631</span> </span><span class="WHIT">            </span><span class="NAME">calculateKeyFrameData</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>632</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
 <span class='line'>633</span> 
-<span class='line'>634</span> 
-<span class='line'>635</span> </span></pre></body></html>
+<span class='line'>634</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>635</span>              * Calculate a CSS3 @key-frame data values instead of building a CSS3 @key-frame value.
+<span class='line'>636</span>              * @param time {number}
+<span class='line'>637</span>              */</span><span class="WHIT">
+<span class='line'>638</span> </span><span class="WHIT">            </span><span class="NAME">getKeyFrameDataValues</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">time</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>639</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'>640</span> 
+<span class='line'>641</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'>642</span>              * Calculate a complete CSS3 @key-frame set for this behavior.
+<span class='line'>643</span>              * @param prefix {string} browser vendor prefix
+<span class='line'>644</span>              * @param name {string} keyframes animation name
+<span class='line'>645</span>              * @param keyframessize {number} number of keyframes to generate
+<span class='line'>646</span>              */</span><span class="WHIT">
+<span class='line'>647</span> </span><span class="WHIT">            </span><span class="NAME">calculateKeyFramesData</span><span class="PUNC">:</span><span class="KEYW">function</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">prefix</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">name</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">keyframessize</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>648</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>649</span> 
+<span class='line'>650</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>651</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'>652</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'>653</span> 
+<span class='line'>654</span> 
+<span class='line'>655</span> 
+<span class='line'>656</span> </span></pre></body></html>

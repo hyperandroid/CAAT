@@ -1,9 +1,20 @@
 CAAT.Module( {
+
+    /**
+     * @name Skeleton
+     * @memberof CAAT.Module.Skeleton
+     * @constructor
+     */
+
     defines : "CAAT.Module.Skeleton.Skeleton",
     depends : [
         "CAAT.Module.Skeleton.Bone"
     ],
     extendsWith : {
+
+        /**
+         * @lends CAAT.Module.Skeleton.Skeleton.prototype
+         */
 
         bones : null,
         bonesArray : null,
@@ -160,9 +171,8 @@ CAAT.Module( {
             return this.root;
         },
 
-        calculate : function(time, animation) {
-            this.root.apply(time);
-
+        calculate : function(time, animationTime) {
+            this.root.apply(time, animationTime);
         },
 
         getBoneById : function(id) {
