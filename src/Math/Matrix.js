@@ -38,6 +38,52 @@ CAAT.Module({
                 CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
                 CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
             }
+        },
+        /**
+         * Create a scale matrix.
+         * @param scalex {number} x scale magnitude.
+         * @param scaley {number} y scale magnitude.
+         *
+         * @return {CAAT.Matrix} a matrix object.
+         *
+         * @static
+         */
+        scale:function (scalex, scaley) {
+            var m = new CAAT.Math.Matrix();
+
+            m.matrix[0] = scalex;
+            m.matrix[4] = scaley;
+
+            return m;
+        },
+        /**
+         * Create a new rotation matrix and set it up for the specified angle in radians.
+         * @param angle {number}
+         * @return {CAAT.Matrix} a matrix object.
+         *
+         * @static
+         */
+        rotate:function (angle) {
+            var m = new CAAT.Math.Matrix();
+            m.setRotation(angle);
+            return m;
+        },
+        /**
+         * Create a translation matrix.
+         * @param x {number} x translation magnitude.
+         * @param y {number} y translation magnitude.
+         *
+         * @return {CAAT.Matrix} a matrix object.
+         * @static
+         *
+         */
+        translate:function (x, y) {
+            var m = new CAAT.Math.Matrix();
+
+            m.matrix[2] = x;
+            m.matrix[5] = y;
+
+            return m;
         }
     },
     extendsWith:function () {
@@ -80,18 +126,7 @@ CAAT.Module({
 
                 return point;
             },
-            /**
-             * Create a new rotation matrix and set it up for the specified angle in radians.
-             * @param angle {number}
-             * @return {CAAT.Matrix} a matrix object.
-             *
-             * @static
-             */
-            rotate:function (angle) {
-                var m = new CAAT.Math.Matrix();
-                m.setRotation(angle);
-                return m;
-            },
+
             setRotation:function (angle) {
 
                 this.identity();
@@ -106,23 +141,7 @@ CAAT.Module({
 
                 return this;
             },
-            /**
-             * Create a scale matrix.
-             * @param scalex {number} x scale magnitude.
-             * @param scaley {number} y scale magnitude.
-             *
-             * @return {CAAT.Matrix} a matrix object.
-             *
-             * @static
-             */
-            scale:function (scalex, scaley) {
-                var m = new CAAT.Math.Matrix();
 
-                m.matrix[0] = scalex;
-                m.matrix[4] = scaley;
-
-                return m;
-            },
             setScale:function (scalex, scaley) {
                 this.identity();
 
@@ -131,23 +150,7 @@ CAAT.Module({
 
                 return this;
             },
-            /**
-             * Create a translation matrix.
-             * @param x {number} x translation magnitude.
-             * @param y {number} y translation magnitude.
-             *
-             * @return {CAAT.Matrix} a matrix object.
-             * @static
-             *
-             */
-            translate:function (x, y) {
-                var m = new CAAT.Math.Matrix();
 
-                m.matrix[2] = x;
-                m.matrix[5] = y;
-
-                return m;
-            },
             /**
              * Sets this matrix as a translation matrix.
              * @param x

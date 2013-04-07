@@ -23,8 +23,12 @@ CAAT.Module( {
              */
 
             __init : function( x,y,w,h ) {
-                this.setLocation(x,y);
-                this.setDimension(w,h);
+                if ( arguments.length!==4 ) {
+                    this.setEmpty();
+                } else {
+                    this.setLocation(x,y);
+                    this.setDimension(w,h);
+                }
             },
 
             /**

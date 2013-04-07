@@ -11,7 +11,8 @@ CAAT.Module( {
     depends : [
         "CAAT.Foundation.Actor",
         "CAAT.Foundation.SpriteImage",
-        "CAAT.Module.Font.Font"
+        "CAAT.Module.Font.Font",
+        "CAAT.Foundation.UI.Layout.LayoutManager"
     ],
     aliases : ["CAAT.UI.Label"],
     extendsClass : "CAAT.Foundation.Actor",

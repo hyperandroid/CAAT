@@ -1,3 +1,13 @@
+* 04/07/2013 0.6 Build 52 *
+---------------------------
+
+* Changed. Some functions from Matrix objects to Matrix class.
+* Added. Modification to CAAT.Math.Rectangle . if no parameters in constructor is set to empty.
+* Fixed. CAAT.Foundation.UI.Label dependencies.
+* Fixed. CAAT.Foundation.Actor dependencies.
+* Added. Capture skeletal animation on-the-fly to an spriteSheet.
+
+
 * 04/02/2013 0.6 Build 49 *
 ---------------------------
 
