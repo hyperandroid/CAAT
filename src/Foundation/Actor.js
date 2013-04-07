@@ -50,6 +50,7 @@ CAAT.Module({
     defines:"CAAT.Foundation.Actor",
     aliases: [ "CAAT.Actor" ],
     depends: [
+        "CAAT.Math.Dimension",
         "CAAT.Event.AnimationLoop",
         "CAAT.Foundation.SpriteImage",
         "CAAT.Core.Constants",
@@ -2173,8 +2174,8 @@ CAAT.Module({
                 this.frameAlpha = this.parent ? this.parent.frameAlpha * this.alpha : 1;
                 ctx.globalAlpha = this.frameAlpha;
 
-                director.modelViewMatrix.transformRenderingContextSet(ctx);
-                this.worldModelViewMatrix.transformRenderingContext(ctx);
+//                director.modelViewMatrix.transformRenderingContextSet(ctx);
+                this.worldModelViewMatrix.transformRenderingContextSet(ctx);
 
                 if (this.clip) {
                     ctx.beginPath();

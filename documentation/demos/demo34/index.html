@@ -96,13 +96,11 @@
                 // get modules, and solve their dependencies.
                     bring(
                     [
-                        "CAAT.PathUtil.Path",
                         "CAAT.Foundation.Director",
                         "CAAT.Foundation.Scene",
                         "CAAT.Foundation.UI.PathActor",
                         "CAAT.Foundation.UI.InterpolatorActor",
-                        "CAAT.Foundation.UI.TextActor",
-                        "CAAT.Foundation.UI.Dock",
+                        "CAAT.Foundation.UI.Label",
                         "CAAT.Module.Preloader.Preloader",
                         "CAAT.Module.Preloader.XHR",
                         "CAAT.Module.Skeleton.Skeleton",
@@ -281,6 +279,23 @@
 
             scene.addChild(skeletonActorgirl);
 
+            // capture as offscreen one skeleton.
+            // 16 sprites in a sheet.
+            // use captured canvas at your best convenience.
+            var capturedCanvas= skeletonActor.buildSheet(16,1,1);
+            var actor= new CAAT.Foundation.Actor().
+                    setBackgroundImage( new CAAT.Foundation.SpriteImage(capturedCanvas,1,16)).
+                    addAnimation("default", [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], 1000/16).
+                    playAnimation("default").
+                    //setLocation( 110, 217 );
+                    setLocation( 0, 0 );
+            scene.addChild(actor);
+            var label= new CAAT.Foundation.UI.Label().
+                    setSize( actor.width, 100).
+                    setText("On-the-fly captured animation.", actor.width).
+                    cacheAsBitmap();
+            scene.addChild(label);
+
             director.loop(1);
 
             window.showBones= function(show) {
@@ -290,6 +305,7 @@
                 skeletonActordragon.showBones(show);
 
             }
+
         }
 
     })();

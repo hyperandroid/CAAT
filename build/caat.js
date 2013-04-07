@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.6 build: 49
+Version: 0.6 build: 51
 
 Created on:
-DATE: 2013-04-03
-TIME: 21:50:58
+DATE: 2013-04-07
+TIME: 11:05:50
 */
 
 
@@ -1926,6 +1926,52 @@ CAAT.Module({
                 CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
                 CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
             }
+        },
+        /**
+         * Create a scale matrix.
+         * @param scalex {number} x scale magnitude.
+         * @param scaley {number} y scale magnitude.
+         *
+         * @return {CAAT.Matrix} a matrix object.
+         *
+         * @static
+         */
+        scale:function (scalex, scaley) {
+            var m = new CAAT.Math.Matrix();
+
+            m.matrix[0] = scalex;
+            m.matrix[4] = scaley;
+
+            return m;
+        },
+        /**
+         * Create a new rotation matrix and set it up for the specified angle in radians.
+         * @param angle {number}
+         * @return {CAAT.Matrix} a matrix object.
+         *
+         * @static
+         */
+        rotate:function (angle) {
+            var m = new CAAT.Math.Matrix();
+            m.setRotation(angle);
+            return m;
+        },
+        /**
+         * Create a translation matrix.
+         * @param x {number} x translation magnitude.
+         * @param y {number} y translation magnitude.
+         *
+         * @return {CAAT.Matrix} a matrix object.
+         * @static
+         *
+         */
+        translate:function (x, y) {
+            var m = new CAAT.Math.Matrix();
+
+            m.matrix[2] = x;
+            m.matrix[5] = y;
+
+            return m;
         }
     },
     extendsWith:function () {
@@ -1968,18 +2014,7 @@ CAAT.Module({
 
                 return point;
             },
-            /**
-             * Create a new rotation matrix and set it up for the specified angle in radians.
-             * @param angle {number}
-             * @return {CAAT.Matrix} a matrix object.
-             *
-             * @static
-             */
-            rotate:function (angle) {
-                var m = new CAAT.Math.Matrix();
-                m.setRotation(angle);
-                return m;
-            },
+
             setRotation:function (angle) {
 
                 this.identity();
@@ -1994,23 +2029,7 @@ CAAT.Module({
 
                 return this;
             },
-            /**
-             * Create a scale matrix.
-             * @param scalex {number} x scale magnitude.
-             * @param scaley {number} y scale magnitude.
-             *
-             * @return {CAAT.Matrix} a matrix object.
-             *
-             * @static
-             */
-            scale:function (scalex, scaley) {
-                var m = new CAAT.Math.Matrix();
 
-                m.matrix[0] = scalex;
-                m.matrix[4] = scaley;
-
-                return m;
-            },
             setScale:function (scalex, scaley) {
                 this.identity();
 
@@ -2019,23 +2038,7 @@ CAAT.Module({
 
                 return this;
             },
-            /**
-             * Create a translation matrix.
-             * @param x {number} x translation magnitude.
-             * @param y {number} y translation magnitude.
-             *
-             * @return {CAAT.Matrix} a matrix object.
-             * @static
-             *
-             */
-            translate:function (x, y) {
-                var m = new CAAT.Math.Matrix();
 
-                m.matrix[2] = x;
-                m.matrix[5] = y;
-
-                return m;
-            },
             /**
              * Sets this matrix as a translation matrix.
              * @param x
@@ -3111,8 +3114,12 @@ CAAT.Module( {
              */
 
             __init : function( x,y,w,h ) {
-                this.setLocation(x,y);
-                this.setDimension(w,h);
+                if ( arguments.length!==4 ) {
+                    this.setEmpty();
+                } else {
+                    this.setLocation(x,y);
+                    this.setDimension(w,h);
+                }
             },
 
             /**
@@ -17410,6 +17417,7 @@ CAAT.Module({
     defines:"CAAT.Foundation.Actor",
     aliases: [ "CAAT.Actor" ],
     depends: [
+        "CAAT.Math.Dimension",
         "CAAT.Event.AnimationLoop",
         "CAAT.Foundation.SpriteImage",
         "CAAT.Core.Constants",
@@ -19519,8 +19527,8 @@ CAAT.Module({
                 this.frameAlpha = this.parent ? this.parent.frameAlpha * this.alpha : 1;
                 ctx.globalAlpha = this.frameAlpha;
 
-                director.modelViewMatrix.transformRenderingContextSet(ctx);
-                this.worldModelViewMatrix.transformRenderingContext(ctx);
+//                director.modelViewMatrix.transformRenderingContextSet(ctx);
+                this.worldModelViewMatrix.transformRenderingContextSet(ctx);
 
                 if (this.clip) {
                     ctx.beginPath();
@@ -24751,7 +24759,8 @@ CAAT.Module( {
     depends : [
         "CAAT.Foundation.Actor",
         "CAAT.Foundation.SpriteImage",
-        "CAAT.Module.Font.Font"
+        "CAAT.Module.Font.Font",
+        "CAAT.Foundation.UI.Layout.LayoutManager"
     ],
     aliases : ["CAAT.UI.Label"],
     extendsClass : "CAAT.Foundation.Actor",
