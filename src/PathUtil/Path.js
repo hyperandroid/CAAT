@@ -338,10 +338,15 @@ CAAT.Module( {
         },
         setCatmullRom : function( points, closed ) {
             if ( closed ) {
-                points = points.slice(0)
-                points.unshift(points[points.length-1])
-                points.push(points[1])
-                points.push(points[2])
+                points = points.slice(0);
+                points.unshift(points[points.length-1]);
+                points.push(points[1]);
+                points.push(points[2]);
+            }
+
+            if (points.length < 4) {
+                points.unshift(points[0]);
+                points.push(points[points.length-1]);
             }
 
             for( var i=1; i<points.length-2; i++ ) {
