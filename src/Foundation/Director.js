@@ -1340,6 +1340,46 @@ CAAT.Module({
                     this.setScene(0);
                 }
             },
+
+            /**
+             * Private
+             * Gets a contained Scene index on this Director.
+             *
+             * @param scene a CAAT.Foundation.Scene object instance.
+             *
+             * @return {number}
+             */
+            findScene:function (scene) {
+                var sl = this.scenes;
+                var i;
+                var len = sl.length;
+
+                for (i = 0; i < len; i++) {
+                    if (sl[i] === scene) {
+                        return i;
+                    }
+                }
+                return -1;
+            },
+
+            /**
+             * Private
+             * Removes a scene from this director.
+             *
+             * @param scene a CAAT.Foundation.Scene object instance or scene index.
+             *
+             * @return {number}
+             */
+            removeScene: function(scene) {
+                if (typeof scene == 'number') {
+                    this.scenes.splice(scene, 1);
+                } else {
+                    var idx = this.findScene(scene);
+                    if (idx > 0) {
+                        this.scenes.splice(idx, 1);
+                    }
+                }
+            },
             /**
              * Get the number of scenes contained in the Director.
              * @return {number} the number of scenes contained in the Director.
@@ -1558,10 +1598,11 @@ CAAT.Module({
             /**
              * Changes (or sets) the current Director scene to the index
              * parameter. There will be no transition on scene change.
-             * @param sceneIndex {number} an integer indicating the index of the target Scene
+             * @param scene {number or scene object} an integer indicating the index of the target Scene or the target Scene itself
              * to be shown.
              */
-            setScene:function (sceneIndex) {
+            setScene:function (scene) {
+                var sceneIndex = (typeof scene == 'number') ? scene : this.findScene(scene);
                 var sin = this.scenes[ sceneIndex ];
                 this.childrenList = [];
                 this.addChild(sin);
