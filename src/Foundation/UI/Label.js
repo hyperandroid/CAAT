@@ -979,6 +979,7 @@ CAAT.Module( {
                 if ( null===_text ) {
                    return;
                 }
+                width = width || this.width;
 
                 var cached= this.cached;
                 if ( cached ) {

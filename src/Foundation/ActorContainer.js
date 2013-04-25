@@ -548,6 +548,18 @@ CAAT.Module({
                 }
                 return -1;
             },
+            /**
+             * Removed all Actors from this ActorContainer.
+             *
+             * @return array of former children
+             */
+            removeAllChildren: function() {
+                var cl = this.childrenList.slice(); // Make a shalow copy
+                for (var pos = cl.length-1;pos>=0;pos--) {
+                    this.removeChildAt(pos);
+                }
+                return cl;
+            },
             removeChildAt:function (pos) {
                 var cl = this.childrenList;
                 var rm;
@@ -565,7 +577,7 @@ CAAT.Module({
                 return null;
             },
             /**
-             * Removed an Actor form this ActorContainer.
+             * Removed an Actor from this ActorContainer.
              * If the Actor is not contained into this Container, nothing happends.
              *
              * @param child a CAAT.Foundation.Actor object instance.

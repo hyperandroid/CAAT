@@ -95,6 +95,7 @@ CAAT.Module({
             __init:function () {
                 this.behaviorList = [];
                 this.lifecycleListenerList = [];
+                this.eventListeners = {};
                 this.AABB = new CAAT.Math.Rectangle();
                 this.viewVertices = [
                     new CAAT.Math.Point(0, 0, 0),
@@ -1451,13 +1452,26 @@ CAAT.Module({
              */
             removeBehaviour:function (behavior) {
                 var c = this.behaviorList;
-                var n = c.length - 1;
-                while (n) {
+                for (var n = 0; n < c.length; n++) {
                     if (c[n] === behavior) {
                         c.splice(n, 1);
                         return this;
                     }
                 }
+                return this;
+            },
+
+            /**
+             * Remove all Behaviors from the Actor.
+             *
+             * @return this
+             */
+            removeAllBehaviors: function() {
+                var bl = this.behaviorList; 
+                for (var pos = bl.length - 1; pos >= 0; pos--) {
+                    this.removeBehaviour(bl[pos]);
+                }
+                // console.log(this.behaviorList);
                 return this;
             },
             /**
@@ -2565,6 +2579,84 @@ CAAT.Module({
 
             findActorById : function(id) {
                 return this.id===id ? this : null;
+            },
+
+
+            /**
+             * Add multiple event listeners to this Actor
+             *
+             * @param event listeners in the form { 'eventname': callbackFunction, 'othereventName': otherCallback }
+             */
+            
+            addEventListeners: function(object) {
+                var event;
+                
+                for (event in object) {
+                    if (!this.eventListeners[event]) {
+                        this.eventListeners[event] = [];
+                    }
+                    this.eventListeners[event].push(object[event]);
+                }
+                return this;
+            },
+
+            /**
+             * Remove a single event listener from this Actor
+             *
+             * @param event name 
+             * @param specified callback to be removed, a single event name can have multiple callbacks
+             */
+            removeEventListener: function(event, callback) {
+                for (var i=0;i< this.eventListeners[event].length;i++) {
+                    if(this.eventListeners[event][i] == callback) {
+                        this.eventListeners[event].splice(i, 1);
+                        return this;
+                    }
+                }
+                return this;
+            },
+
+            /**
+             * Remove all event listeners from this Actor
+             * Can either remove all listeners on a single event name, or everything
+             *
+             * @param event name, if not specified, will remove every single event listener
+             */
+            removeAllEventListeners: function(event) {
+                if (event) {
+                    if (this.eventListeners[event]) {
+                        this.eventListeners[event] = [];
+                    }
+                } else {
+                    this.eventListeners = {}; // remove everything
+                }
+            },
+
+            /**
+             * Shorthand method for adding a single event listener
+             *
+             * @param event name
+             * @param callback function
+             */
+            on: function(event, callback, options) { // TODO: allow single: true in options to remove after first fire
+                var args = {};
+                args[event] = callback;
+                return this.addEventListeners(args);
+            },
+
+            /**
+             * Fire an event on this object, calling all registered event listeners in turn
+             *
+             * @param event name 
+             * @param callback functions will be called with this object as a single argument
+             */
+            emit: function(event, params) {
+                if (!this.eventListeners || !this.eventListeners[event]) return this;
+
+                for (var i=0;i< this.eventListeners[event].length;i++) {
+                    this.eventListeners[event][i].call(null, params);
+                }
+                return this;
             }
         }
     }
