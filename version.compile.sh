@@ -90,14 +90,14 @@ echo "*/\n\n" >> "${FILE_CAAT_BOX2D}"
 #
 echo "\nCreating CAAT canvas/webGL"
 /usr/bin/java -jar ${CAAT_CLOSURE_PATH}/compiler.jar --compilation_level "${COMPILATION_LEVEL}" \
---js build/caat.js \
+--js ${CAAT_BUILD_DIR}/caat.js \
  >> "${FILE_CAAT}"
 
 #
 # Compile box2d
 #
 echo "Creating CAAT Box2d"
- /usr/bin/java -jar ${CAAT_CLOSURE_PATH}/compiler.jar --compilation_level "${COMPILATION_LEVEL}" --js build/caat-box2d.js >> "${FILE_CAAT_BOX2D}"
+ /usr/bin/java -jar ${CAAT_CLOSURE_PATH}/compiler.jar --compilation_level "${COMPILATION_LEVEL}" --js ${CAAT_BUILD_DIR}/caat-box2d.js >> "${FILE_CAAT_BOX2D}"
 
 #
 # Compile css
@@ -105,7 +105,7 @@ echo "Creating CAAT Box2d"
 echo "Creating CAAT CSS"
 echo "CAAT.__CSS__=1;" >> /tmp/__css.js
 java -jar ${CAAT_CLOSURE_PATH}/compiler.jar --compilation_level "${COMPILATION_LEVEL}" \
- --js build/caat-css.js >> "${FILE_CAAT_CSS}"
+ --js ${CAAT_BUILD_DIR}/caat-css.js >> "${FILE_CAAT_CSS}"
 
 #
 # Distribute resulting compiled files
