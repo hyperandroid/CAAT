@@ -448,8 +448,8 @@ CAAT.Module({
                     yoff = yoff - h;
                 }
 
-                var nw = (((r.width - xoff) / w) >> 0) + 1;
-                var nh = (((r.height - yoff) / h) >> 0) + 1;
+                var nw = (((r.width - xoff) / w)) + 1;
+                var nh = (((r.height - yoff) / h)) + 1;
                 var i, j;
                 var ctx = director.ctx;
 
@@ -459,7 +459,7 @@ CAAT.Module({
                             this.image,
                             el.x, el.y,
                             el.width, el.height,
-                            (r.x - this.ownerActor.x + xoff + j * el.width) >> 0, (r.y - this.ownerActor.y + yoff + i * el.height) >> 0,
+                            (r.x - this.ownerActor.x + xoff + j * el.width), (r.y - this.ownerActor.y + yoff + i * el.height),
                             el.width, el.height);
                     }
                 }
@@ -489,7 +489,7 @@ CAAT.Module({
                     this.image,
                     el.x, el.y,
                     el.width, el.height,
-                    this.offsetX >> 0, this.offsetY >> 0,
+                    this.offsetX, this.offsetY,
                     el.width, el.height);
 
                 ctx.restore();
@@ -519,7 +519,7 @@ CAAT.Module({
                     this.image,
                     el.x, el.y,
                     el.width, el.height,
-                    this.offsetX >> 0, this.offsetY >> 0,
+                    this.offsetX, this.offsetY,
                     el.width, el.height);
 
                 ctx.restore();
@@ -551,7 +551,7 @@ CAAT.Module({
                     this.image,
                     el.x, el.y,
                     el.width, el.height,
-                    this.offsetX >> 0, this.offsetY >> 0,
+                    this.offsetX, this.offsetY,
                     el.width, el.height);
 
                 ctx.restore();
@@ -575,7 +575,7 @@ CAAT.Module({
                     this.image,
                     el.x, el.y,
                     el.width, el.height,
-                    (this.offsetX + x) >> 0, (this.offsetY + y) >> 0,
+                    (this.offsetX + x), (this.offsetY + y),
                     el.width, el.height);
 
                 return this;
@@ -588,7 +588,7 @@ CAAT.Module({
                     this.image,
                     el.x, el.y,
                     el.width, el.height,
-                    (this.offsetX + x) >> 0, (this.offsetY + y) >> 0,
+                    (this.offsetX + x), (this.offsetY + y),
                     w, h);
 
                 return this;
@@ -610,7 +610,7 @@ CAAT.Module({
                     this.image,
                     el.x, el.y,
                     el.width, el.height,
-                    (this.offsetX + x) >> 0, (this.offsetY + y) >> 0,
+                    (this.offsetX + x), (this.offsetY + y),
                     this.ownerActor.width, el.height);
 
                 return this;
@@ -624,7 +624,7 @@ CAAT.Module({
                     this.image,
                     el.x, el.y,
                     el.width, el.height,
-                    (this.offsetX + x) >> 0, (this.offsetY + y) >> 0,
+                    (this.offsetX + x), (this.offsetY + y),
                     el.width, el.height);
 
                 return this;
@@ -646,7 +646,7 @@ CAAT.Module({
                     this.image,
                     el.x, el.y,
                     el.width, el.height,
-                    (this.offsetX + x) >> 0, (this.offsetY + y) >> 0,
+                    (this.offsetX + x), (this.offsetY + y),
                     this.ownerActor.width, this.ownerActor.height);
 
                 return this;
