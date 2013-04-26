@@ -456,7 +456,6 @@ CAAT.Module({
 
             getValueForKey : function( key ) {
                 return this.__map[key];
-                return this;
             },
 
             createTimer:function (startTime, duration, callback_timeout, callback_tick, callback_cancel) {
