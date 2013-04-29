@@ -1603,7 +1603,7 @@ CAAT.Module({
                 if (this.dirty) {
                     this.setModelViewMatrix();
                 }
-                this.worldModelViewMatrixI = this.worldModelViewMatrix.getInverse(this.worldModelViewMatrixI);
+                this.worldModelViewMatrix.getInverse(this.worldModelViewMatrixI);
                 this.worldModelViewMatrixI.transformCoord(point);
                 return point;
             },
@@ -1623,7 +1623,7 @@ CAAT.Module({
                     return null;
                 }
 
-                this.modelViewMatrixI = this.modelViewMatrix.getInverse(this.modelViewMatrixI);
+                this.modelViewMatrix.getInverse(this.modelViewMatrixI);
                 this.modelViewMatrixI.transformCoord(point);
                 return this.contains(point.x, point.y) ? this : null;
             },
