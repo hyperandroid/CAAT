@@ -1136,7 +1136,7 @@ CAAT.Module({
                 this.timerManager.checkTimers(time);
 
                 this.setModelViewMatrix(this);
-                this.modelViewMatrixI = this.modelViewMatrix.getInverse();
+                this.modelViewMatrixI = this.modelViewMatrix.getInverse(this.modelViewMatrixI);
                 this.setScreenBounds();
 
                 this.dirty = false;
@@ -2045,7 +2045,7 @@ CAAT.Module({
                 pt.x = posx;
                 pt.y = posy;
                 if (!this.modelViewMatrixI) {
-                    this.modelViewMatrixI = this.modelViewMatrix.getInverse();
+                    this.modelViewMatrixI = this.modelViewMatrix.getInverse(this.modelViewMatrixI);
                 }
                 this.modelViewMatrixI.transformCoord(pt);
                 posx = pt.x;
