@@ -280,6 +280,17 @@ CAAT.Module({
 			// sets a path along which particles are emitted
 			setPath: function(path) {
 				this.emitterPath = path;
+				this.emitPoints = [];
+				var emitPoint;
+
+				if (path) {
+					var length = path.getLength();
+					for (var i=0;i<length;i++) {
+						emitPoint = path.getPositionFromLength(i);
+						this.emitPoints.push([emitPoint.x, emitPoint.y]);
+					}
+				}console.log(this.emitPoints.length);
+
 				return this;
 			},
 
@@ -366,26 +377,26 @@ CAAT.Module({
 				// particle.rotation = 0;//this.rotation;
 
 				if (this.emitterPath) {
-					var length = Math.random()*this.emitterPath.length;
-					emitPoint = this.emitterPath.getPositionFromLength(length);
-					particle.startPos.x = emitPoint.x;
-					particle.startPos.y = emitPoint.y;
+					var emitIndex = (Math.random()*(this.emitPoints.length-1)+1)|0;
+					emitPoint = this.emitPoints[emitIndex];
+					particle.startPos.x = emitPoint[0];
+					particle.startPos.y = emitPoint[1];
 
 					if (this.angleFromPath) {
-						var x = emitPoint.x, y=emitPoint.y;
-						var prevPoint = this.emitterPath.getPositionFromLength(length-1);
-						var pathAngle = Math.atan2(prevPoint.y - y, x - prevPoint.x); // y = positive down
+						var x = emitPoint[0], y=emitPoint[1];
+						var prevPoint = this.emitPoints[emitIndex-1];
+						var pathAngle = Math.atan2(prevPoint[1] - y, x - prevPoint[0]); // y = positive down
 						particle.startAngle = pathAngle;
 						// particle.rotation = pathAngle;
 						angle += pathAngle;
 					}
 
 				} else {
-					emitPoint = {x:0,y:0};
+					emitPoint = [0,0];
 				}
 
-				particle.pos.x = emitPoint.x + this.posVar.x * random11();
-				particle.pos.y = emitPoint.y + this.posVar.y * random11();
+				particle.pos.x = emitPoint[0] + this.posVar.x * random11();
+				particle.pos.y = emitPoint[1] + this.posVar.y * random11();
 
 				var speed = this.speed + this.speedVar * random11();
 
@@ -485,7 +496,7 @@ CAAT.Module({
 					p.color = this.colors[(p.deltaLife * this.colors.length) | 0];
 					// console.log(p.deltaLife, this.colors.length,p.deltaLife, (p.deltaLife * this.colors.length) | 0,p.color);
 
-					p.scale += p.deltaScale * delta;
+					// p.scale += p.deltaScale * delta;
 
 					// if (p.color) {
 					// 	p.color[0] += p.deltaColor[0] * delta;
@@ -498,12 +509,12 @@ CAAT.Module({
 				} else {
 					// the particle has died, time to return it to the particle pool
 					// take the particle at the current index
-					this.temp = this._particlePool[i];
+					var temp = this._particlePool[i];
 
 					// and move it to the end of the active particles, keeping all alive particles pushed
 					// up to the front of the pool
 					this._particlePool[i] = this._particlePool[this._particleCount - 1];
-					this._particlePool[this._particleCount - 1] = this.temp;
+					this._particlePool[this._particleCount - 1] = temp;
 
 					// decrease the count to indicate that one less particle in the pool is active.
 					--this._particleCount;
