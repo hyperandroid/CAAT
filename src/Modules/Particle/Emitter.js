@@ -1,13 +1,14 @@
-/* Ported from http://buildnewgames.com/particle-systems/ */
-// TODO: add start/stop/events
-//  TODO: add particle rotation
 CAAT.Module({
 
 	/**
 	 * @name Emitter
 	 * @memberof CAAT.Module.Particle
 	 * @constructor
+	 * Ported from http://buildnewgames.com/particle-systems/
 	 */
+
+	// TODO: add start/stop/events
+	// TODO: add particle rotation
 
 	defines: "CAAT.Module.Particle.Emitter",
 	extendsClass: "CAAT.Foundation.Actor",
@@ -17,6 +18,7 @@ CAAT.Module({
 	],
 	extendsWith: function () {
 
+		/* internal utility functions */
 		function isNumber(i) {
 			return typeof i === 'number';
 		}
@@ -72,93 +74,61 @@ CAAT.Module({
 		}
 
 		return {
-
-			newY: 0, // reuseable var
-			temp: null,
 			deltaColor: 0, // change per piece of a second delta
 			colors: null, // reusable array of intermediate colors
+			particleWidth: 0,
+			particleHeight: 0,
+			active: false,
+			started: false,
 
 			configure: function(system) {
 				this.system = system || {};
 
-				this.totalParticles = 10;
-				this.emissionRate = 1;
+				var texture = this.texture || null,
+					emitterPath = this.emitterPath || null;
 
-				this.active = false;
-				this.totalDuration = 0;
+				// Setup defaults
+				merge(this, {
+					totalParticles: 10,				// Total particles in life
+					emissionRate: 10/2,				// Amount of particles to emit per second
+					gravity: {						// Gravity force in x and y direction
+						x: 0,
+						y: 0
+					},
+					posVar: {						// Variance in emit point position, whether on path or single point
+						x: 0,
+						y: 0
+					},
+					angle: 0.5*Math.PI,				// angle at which an emitted particle is fired
+					angleVar: 0,					// variance in radians at which a particle is emitted
+					emitterPath: this.emitterPath || null,	// it's possible to use a path along which a particle is randomly emitted.
+					angleFromPath: false,			// if true, calculate the emit angle from the path, 0 rad = direction of path
+					speed: 25,						// initial speed of emitted particle
+					speedVar: 0,					// variance in speed of emitted particles
+					life: 2,						// total life time per particle in seconds
+					lifeVar: 0.1,					// variance of life per particle in seconds
+					radialAccel: 0,					// accelleration in direction of movement of particle in pixels per second^2
+					radialAccelVar: 0,				// variance in radial acceleration per particle in pixels per second^2
+					tangentialAccel: 0,				// accelleration perpendicular to movement of particle in pixels per second^2
+					tangentialAccelVar: 0,			// variance in tangential acceleration per particle in pixels per second^2
+					texture: this.texture || null,	// sprite image for particles, all coordinates are centered on the particle
+					radius: 5,						// if texture is not available, a round particle with radial gradient will be created
+					textureAdditive: false,			// true to set blending mode to 'lighter', adding colors written at same location
+					startScale: 1,					// initial scale of emitted particle
+					endScale: 1,					// final scale of particle at end of life
+					startColor: [255, 208, 0, 1],	// [R,B,G,A] array of initial color of emitted particle
+					endColor: [255, 0, 0, 0],		// [R,B,G,A] array of final color of emitted particle at end of life
+					colorSteps: 20,					// the sprite image is tinted from the startcolor to end color in colorSteps steps
+					totalDuration: Infinity			// total duration of particle emitter, emission needs to be restarted after
+				});
 
-				this.pos = this.pos || {};
-				this.pos.x = 0;
-				this.pos.y = 0;
-
-				this.posVar = this.posVar || {};
-				this.posVar.x = 0;
-				this.posVar.y = 0;
-
-				this.speed = 0;
-				this.speedVar = 0;
-
-				this.angle = 0;
-				this.angleVar = 0;
-
-				this.rotation = 0; // particle rotation
-
-				this.life = 2;
-				this.lifeVar = 0;
-
-				this.radius = 0;
-				this.radiusVar = 0;
-
-				this.texture = null;
-				this.textureEnabled = true;
-				this.textureAdditive = true;
-
-				this.startScale = 0;
-				this.startScaleVar = 0;
-				this.endScale = 0;
-				this.endScaleVar = 0;
-
-				this.startColor = this.startColor || [];
-				this.startColor[0] = 0;
-				this.startColor[1] = 0;
-				this.startColor[2] = 0;
-				this.startColor[3] = 0;
-
-				this.startColorVar = this.startColorVar || [];
-				this.startColorVar[0] = 0;
-				this.startColorVar[1] = 0;
-				this.startColorVar[2] = 0;
-				this.startColorVar[3] = 0;
-
-				this.endColor = this.endColor || [];
-				this.endColor[0] = 0;
-				this.endColor[1] = 0;
-				this.endColor[2] = 0;
-				this.endColor[3] = 0;
-
-				this.endColorVar = this.endColorVar || [];
-				this.endColorVar[0] = 0;
-				this.endColorVar[1] = 0;
-				this.endColorVar[2] = 0;
-				this.endColorVar[3] = 0;
-
-				this.gravity = this.gravity || {};
-				this.gravity.x = 0;
-				this.gravity.y = 0;
-
-				this.radialAccel = 0; // in pixels per second
-				this.radialAccelVar = 0;
-				this.tangentialAccel = 0;
-				this.tangentialAccelVar = 0;
-
-				this.startTime = 0;
-				this.lastTime = 0;
-
-				this.angleFromPath = false; // If we specify a path with setPath, calculate the angle starting from the 
-
+				// Now merge the entered configuration on top of the defaults
 				merge(this, system);
 
+				// Particle size defaults
 				this.particleWidth = 2* this.radius;
+				this.particleHeight = 2* this.radius;
+				this.started = false;
 
 				return this;
 			},
@@ -178,18 +148,18 @@ CAAT.Module({
 				this.texture.width = this.particleWidth;
 				this.texture.height = this.particleHeight;
 				var ctx = this.texture.getContext('2d');
+				var grd;
 
-				// CocoonJS createRadialGradient does not work correct on cocoonjs
+				// CocoonJS createRadialGradient does not work correct
 				if (navigator.isCocoonJS) {
-					var grd = GAME.director.ctx.createRadialGradient(this.radius, this.radius, 0.8*this.radius, this.radius, this.radius, this.radius);
+					grd = GAME.director.ctx.createRadialGradient(this.radius, this.radius, 0.8*this.radius, this.radius, this.radius, this.radius);
 					grd.addColorStop(0, 'rgba(255, 255, 255, 1)');
 					grd.addColorStop(1, 'rgba(255, 255, 255, 0.5)');
 				} else {
-					var grd = GAME.director.ctx.createRadialGradient(this.radius, this.radius, 0.1*this.radius, this.radius, this.radius, this.radius);
+					grd = GAME.director.ctx.createRadialGradient(this.radius, this.radius, 0.1*this.radius, this.radius, this.radius, this.radius);
 					grd.addColorStop(0, 'rgba(255, 255, 255, 1)');
 					grd.addColorStop(1, 'rgba(255, 255, 255, 0)');
 				}
-				// var grd = 'rgba(255, 255, 255, 1)';
 
 				ctx.fillStyle = grd;
 				ctx.beginPath();
@@ -207,40 +177,29 @@ CAAT.Module({
 				return this;
 			},
 
-			// TODO: add alpha somewhere else
-
-			// Create a re-usable array of colors or color sprites to use
-			// TODO: make array of canvasses when we use textures
 			buildColors: function() {
-				var nrColors = 50; // TODO: make configurable
 				this.colors = [];
 
 				this.setTexture(this.texture);
 
-				if (this.startColor) {
-					var startColor = [
-					this.startColor[0] + this.startColorVar[0] * random11(), this.startColor[1] + this.startColorVar[1] * random11(), this.startColor[2] + this.startColorVar[2] * random11(), this.startColor[3] + this.startColorVar[3] * random11()];
+				var startColor = this.startColor;
 
-					// if there is no endColor, then the particle will end up staying at startColor the whole time
-					var endColor = startColor;
-					if (this.endColor) {
-						endColor = [
-						this.endColor[0] + this.endColorVar[0] * random11(), this.endColor[1] + this.endColorVar[1] * random11(), this.endColor[2] + this.endColorVar[2] * random11(), this.endColor[3] + this.endColorVar[3] * random11()];
-					}
-
-					// particle.color = startColor;
-					this.deltaColor = [(endColor[0] - startColor[0]) / this.life, (endColor[1] - startColor[1]) / this.life, (endColor[2] - startColor[2]) / this.life, (endColor[3] - startColor[3]) / this.life];
+				// if there is no endColor, then the particle will end up staying at startColor the whole time
+				var endColor = startColor;
+				if (this.endColor) {
+					endColor = this.endColor;
 				}
 
-				for (var i=0;i<=nrColors;i++) {
+				this.deltaColor = [(endColor[0] - startColor[0]) / this.life, (endColor[1] - startColor[1]) / this.life, (endColor[2] - startColor[2]) / this.life, (endColor[3] - startColor[3]) / this.life];
+
+				for (var i=0;i<=this.colorSteps;i++) {
 					var color = startColor.slice();
 					var alpha = startColor[3];
-					var scale = this.startScale + (i/nrColors)*(this.endScale - this.startScale);
-					color[0] += this.deltaColor[0] * (i/nrColors) * this.life;
-					color[1] += this.deltaColor[1] * (i/nrColors) * this.life;
-					color[2] += this.deltaColor[2] * (i/nrColors) * this.life;
-					alpha += this.deltaColor[3] * (i/nrColors) * this.life;
-					// this.colors.push(colorArrayToString(color));
+					var scale = this.startScale + (i/this.colorSteps)*(this.endScale - this.startScale);
+					color[0] += this.deltaColor[0] * (i/this.colorSteps) * this.life;
+					color[1] += this.deltaColor[1] * (i/this.colorSteps) * this.life;
+					color[2] += this.deltaColor[2] * (i/this.colorSteps) * this.life;
+					alpha += this.deltaColor[3] * (i/this.colorSteps) * this.life; // Use the color alpha as global alpha for the sprite image
 
 					var colorCanvas = document.createElement('canvas');
 					colorCanvas.width = this.particleWidth;
@@ -252,18 +211,15 @@ CAAT.Module({
 					ctx.translate(1-scale,scale);
 					ctx.scale(scale,scale);
 					
-					// ctx.clearRect(0, 0, particle.buffer.width, particle.buffer.height);
 					ctx.drawImage(this.texture, 0, 0);
 
-					// now use source-atop to "tint" the white texture, here we want the particle's pure color,
-					// not including alpha. As we already used the particle's alpha to render the texture above -- RB: wel dus
+					// now use source-atop to "tint" the texture
 					ctx.globalCompositeOperation = "source-atop";
 					ctx.fillStyle = colorArrayToString(color);
 					ctx.fillRect(0, 0, colorCanvas.width, colorCanvas.height);
 
 					this.colors.push(colorCanvas);
 				}
-				// console.log('COLORS:', this.colors);
 			},
 
 			__init: function (director, defaultTexture) {
@@ -284,50 +240,19 @@ CAAT.Module({
 				var emitPoint;
 
 				if (path) {
+					path.updatePath();
 					var length = path.getLength();
 					for (var i=0;i<length;i++) {
 						emitPoint = path.getPositionFromLength(i);
 						this.emitPoints.push([emitPoint.x, emitPoint.y]);
 					}
-				}console.log(this.emitPoints.length);
+				}
 
 				return this;
 			},
 
 			start: function() {
 				this._particlePool = [];
-
-				if (!this.system) {
-					this.configure({
-						totalParticles: 100,
-						emissionRate: 100/2,
-						gravity: {
-							x: 0,//- 200,
-							y: 0
-						},
-						angle: 0.5*Math.PI,
-						angleVar: 0,
-						speed: 25,
-						speedVar: 0,
-						life: 2, // in seconds
-						lifeVar: 0.1,
-						radialAccel: 0,
-						radialAccelVar: 0,
-						tangentialAccel: 0,
-						tangentialAccelVar: 0,
-						textureAdditive: false,
-						radius: 5,
-						radiusVar: 0.5,
-						startScale: 1,
-						endScale: 1,
-						startColor: [255, 208, 0, 1],
-						startColorVar: [0, 0, 0, 0],
-						endColor: [255, 0, 0, 0],
-						active: true,
-						totalDuration: Infinity,
-						angleFromPath: false
-					});
-				}
 
 				this.buildColors();
 
@@ -339,6 +264,8 @@ CAAT.Module({
 				this._particleIndex = 0;
 				this._elapsed = 0;
 				this._emitCounter = 0;
+
+				this.started = true;
 
 				return this;
 			},
@@ -374,7 +301,6 @@ CAAT.Module({
 				var emitPoint;
 
 				var angle = this.angle + this.angleVar * random11(); // default angle
-				// particle.rotation = 0;//this.rotation;
 
 				if (this.emitterPath) {
 					var emitIndex = (Math.random()*(this.emitPoints.length-1)+1)|0;
@@ -387,7 +313,6 @@ CAAT.Module({
 						var prevPoint = this.emitPoints[emitIndex-1];
 						var pathAngle = Math.atan2(prevPoint[1] - y, x - prevPoint[0]); // y = positive down
 						particle.startAngle = pathAngle;
-						// particle.rotation = pathAngle;
 						angle += pathAngle;
 					}
 
@@ -412,19 +337,13 @@ CAAT.Module({
 				var life = this.life + this.lifeVar * random11() || 0;
 				particle.life = Math.max(0, life);
 
-				particle.scale = isNumber(this.startScale) ? this.startScale: 1;
-				particle.deltaScale = isNumber(this.endScale) ? (this.endScale - this.startScale) : 0;
+				particle.scale = this.startScale || 1;
+				particle.deltaScale = typeof this.endScale != 'undefined' ? (this.endScale - this.startScale) : 0;
 				particle.deltaScale /= particle.life;
 
-				particle.radius = isNumber(this.radius) ? this.radius + (this.radiusVar || 0) * random11() : 0;
+				particle.radius = typeof this.radius != 'undefined' ? this.radius + (this.radiusVar || 0) * random11() : 0;
 
-				// color
-				// note that colors are stored as arrays => [r,g,b,a],
-				// this makes it easier to tweak the color every frame in _updateParticle
-				// The renderer will take this array and turn it into a css rgba string
-				if (this.startColor) {
-					particle.color = this.colors[0];
-				}
+				particle.color = this.colors[0];
 			},
 
 			/*
@@ -438,17 +357,10 @@ CAAT.Module({
 
 					// these vectors are stored on the particle so we can reuse them, avoids
 					// generating lots of unnecessary objects each frame
-					p.forces = p.forces || {
-						x: 0,
-						y: 0
-					};
+
 					p.forces.x = 0;
 					p.forces.y = 0;
 
-					p.radial = p.radial || {
-						x: 0,
-						y: 0
-					};
 					p.radial.x = 0;
 					p.radial.y = 0;
 
@@ -460,10 +372,6 @@ CAAT.Module({
 						normalize(p.radial);
 					}
 
-					p.tangential = p.tangential || {
-						x: 0,
-						y: 0
-					};
 					p.tangential.x = p.radial.x;
 					p.tangential.y = p.radial.y;
 
@@ -490,20 +398,10 @@ CAAT.Module({
 					p.pos.y += p.vel.y * delta;
 
 					p.life -= delta;
-					p.deltaLife = 1 - (p.life/this.life); // Math.max is EXPENSIVE
-					// p.deltaLife = Math.max(1 - (p.life/this.life),0);
-					if (p.deltaLife < 0)  {p.deltaLife = 0;}
+					p.deltaLife = 1 - (p.life/this.life); 
+
+					if (p.deltaLife < 0)  {p.deltaLife = 0;} // Math.max is EXPENSIVE
 					p.color = this.colors[(p.deltaLife * this.colors.length) | 0];
-					// console.log(p.deltaLife, this.colors.length,p.deltaLife, (p.deltaLife * this.colors.length) | 0,p.color);
-
-					// p.scale += p.deltaScale * delta;
-
-					// if (p.color) {
-					// 	p.color[0] += p.deltaColor[0] * delta;
-					// 	p.color[1] += p.deltaColor[1] * delta;
-					// 	p.color[2] += p.deltaColor[2] * delta;
-					// 	p.color[3] += p.deltaColor[3] * delta;
-					// }
 
 					++this._particleIndex;
 				} else {
@@ -524,9 +422,11 @@ CAAT.Module({
 			animate: function (director, time) {
 				var i,l;
 
-				CAAT.Module.Particle.Emitter.superclass.animate.call( this, director, time );
-// return this;
-				if (this.startTime === 0) {
+				if (!this.started) {
+					return this;
+				}
+
+				if (!this.startTime) {
 					// Do nothing in the first frame, only set the start time
 					this.startTime = this.lastTime = time;
 					return this;
@@ -540,6 +440,8 @@ CAAT.Module({
 				if (!this.active) {
 					return this;
 				}
+
+				CAAT.Module.Particle.Emitter.superclass.animate.call( this, director, time );
 
 				if (this.emissionRate) {
 					// emit new particles based on how much time has passed and the emission rate
@@ -566,43 +468,27 @@ CAAT.Module({
 				CAAT.Module.Particle.Emitter.superclass.paint.call(this,director,time);
 
 				var ctx = director.ctx;
-				// var bufferContext = this.texture.getContext('2d');//particle.buffer.getContext('2d');
 
 				if(this.textureAdditive) {
 					ctx.globalCompositeOperation = 'lighter';
 				} else {
 					ctx.globalCompositeOperation = 'source-over';
 				}
-				// var ctx = director.canvas.getContext("2d", {antialias : true }); // Maakt niets uit voor performance
 
 				var w, h;
 				for(var i = 0; i < this._particlePool.length; ++i) {
 					var p = this._particlePool[i];
 					if (p.life > 0) {
-						w = this.particleWidth*p.scale;//p.texture.width;// * p.scale;
-						h = this.particleWidth*p.scale;//p.texture.height;// * p.scale;
+						w = this.particleWidth*p.scale;
+						h = this.particleHeight*p.scale;
 
 						// figure out the x and y locations to render at, to center the texture in the buffer
 						var x = p.pos.x - w / 2;
 						var y = p.pos.y - h / 2;
-						// ctx.save();
-						// if (p.rotation) {
-						// 	ctx.rotate(p.rotation);
-						// }
 						ctx.drawImage(p.color, x, y);
-						// ctx.restore();
 					}
 				}
-				// ctx.globalCompositeOperation = 'source-over';
-
-				// if (this._showBones && this.skeleton) {
-				//     this.worldModelViewMatrix.transformRenderingContextSet(director.ctx);
-				//     this.skeleton.paint(this.worldModelViewMatrix, director.ctx);
-				// }
 			}
-
-
-
 		};
 	}
 });
