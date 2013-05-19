@@ -1,10 +1,25 @@
 CAAT.Module({
 
 	/**
+	 *
+	 * CAAT.Module.Particle.Emitter is a particle emitter for CAAT. 
+	 * Because of the amount of particles that possibly need to be emitted, 
+	 * the Emitter is responsible for calculating the positions of particles 
+	 * and painting them on the canvas. Delegating that to the particle objects 
+	 * is too expensive. 
+	 *
+	 * The Emitter is a port from https://github.com/city41/particle.js
+	 * The port has been altered to make it more performant, allow it to be integrated
+	 * into a CAAT based application, and allow it to emit particles along a custom CAAT.Path
+	 * emitter Path. 
+	 *
+	 * The Emitter is configured with a system config object (see configure method)
+	 * 
 	 * @name Emitter
 	 * @memberof CAAT.Module.Particle
 	 * @constructor
-	 * Ported from http://buildnewgames.com/particle-systems/
+	 * @author Rob Boerman
+	 * 
 	 */
 
 	// TODO: add start/stop/events
@@ -74,12 +89,21 @@ CAAT.Module({
 		}
 
 		return {
-			deltaColor: 0, // change per piece of a second delta
+			deltaColor: null, // rgba change per piece of a second delta
 			colors: null, // reusable array of intermediate colors
 			particleWidth: 0,
 			particleHeight: 0,
 			active: false,
 			started: false,
+
+			__init: function (director) {
+				this.__super();
+
+				this.director = director;
+				this._particlePool = [];
+
+				return this;
+			},
 
 			configure: function(system) {
 				this.system = system || {};
@@ -123,7 +147,7 @@ CAAT.Module({
 				});
 
 				// Now merge the entered configuration on top of the defaults
-				merge(this, system);
+				merge(this, this.system);
 
 				// Particle size defaults
 				this.particleWidth = 2* this.radius;
@@ -220,17 +244,6 @@ CAAT.Module({
 
 					this.colors.push(colorCanvas);
 				}
-			},
-
-			__init: function (director, defaultTexture) {
-				this.__super();
-
-				this.director = director;
-				this._particlePool = [];
-
-				this._defaultTexture = defaultTexture;
-
-				return this;
 			},
 
 			// sets a path along which particles are emitted
