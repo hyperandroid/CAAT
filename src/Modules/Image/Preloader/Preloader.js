@@ -146,7 +146,7 @@ CAAT.Module( {
 
                 this.cfinished= onfinished;
                 this.cloaded= onload_one;
-                this.cerroed= onerror;
+                this.cerrored= onerror;
 
                 var i;
 
