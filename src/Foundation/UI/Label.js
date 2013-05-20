@@ -32,44 +32,50 @@ CAAT.Module( {
 
         renderContextStyle.prototype= {
 
-            ctx         : null,
+            ctx          : null,
 
-            defaultFS   : null,
-            font        : null,
-            fontSize    : null,
-            fill        : null,
-            stroke      : null,
-            filled      : null,
-            stroked     : null,
-            strokeSize  : null,
-            italic      : null,
-            bold        : null,
-            alignment   : null,
-            tabSize     : null,
-            shadow      : null,
-            shadowBlur  : null,
-            shadowColor : null,
+            defaultFS    : null,
+            font         : null,
+            fontSize     : null,
+            fill         : null,
+            stroke       : null,
+            filled       : null,
+            stroked      : null,
+            strokeSize   : null,
+            italic       : null,
+            bold         : null,
+            alignment    : null,
+            tabSize      : null,
+            shadow       : null,
+            shadowBlur   : null,
+            shadowColor  : null,
+            shadowOffsetX: null,
+            shadowOffsetY: null,
 
-            sfont       : null,
 
-            chain       : null,
+            sfont        : null,
+
+            chain        : null,
 
             setDefault : function( defaultStyles ) {
-                this.defaultFS  =   24;
-                this.font       =   "Arial";
-                this.fontSize   =   this.defaultFS;
-                this.fill       =   '#000';
-                this.stroke     =   '#f00';
-                this.filled     =   true;
-                this.stroked    =   false;
-                this.strokeSize =   1;
-                this.italic     =   false;
-                this.bold       =   false;
-                this.alignment  =   "left";
-                this.tabSize    =   75;
-                this.shadow     =   false;
-                this.shadowBlur =   0;
-                this.shadowColor=   "#000";
+                this.defaultFS    =   24;
+                this.font         =   "Arial";
+                this.fontSize     =   this.defaultFS;
+                this.fill         =   '#000';
+                this.stroke       =   '#f00';
+                this.filled       =   true;
+                this.stroked      =   false;
+                this.strokeSize   =   1;
+                this.italic       =   false;
+                this.bold         =   false;
+                this.alignment    =   "left";
+                this.tabSize      =   75;
+                this.shadow       =   false;
+                this.shadowBlur   =   0;
+                this.shadowColor  =   "#000";
+                this.shadowOffsetX=   0;
+                this.shadowOffsetY=   0;
+
 
                 for( var style in defaultStyles ) {
                     if ( defaultStyles.hasOwnProperty(style) ) {
@@ -169,8 +175,10 @@ CAAT.Module( {
 
             __setShadow : function( ctx ) {
                 if ( this.__getProperty("shadow" ) ) {
-                    ctx.shadowBlur= this.__getProperty("shadowBlur");
-                    ctx.shadowColor= this.__getProperty("shadowColor");
+                    ctx.shadowBlur   = this.__getProperty("shadowBlur");
+                    ctx.shadowColor  = this.__getProperty("shadowColor");
+                    ctx.shadowOffsetX= this.__getProperty("shadowOffsetX");
+                    ctx.shadowOffsetY= this.__getProperty("shadowOffsetY");
                 }
             },
 
