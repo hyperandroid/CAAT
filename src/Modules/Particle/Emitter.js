@@ -28,8 +28,8 @@ CAAT.Module({
 	defines: "CAAT.Module.Particle.Emitter",
 	extendsClass: "CAAT.Foundation.Actor",
 	depends: [
-		"CAAT.Foundation.Actor",
-		"CAAT.Module.Particle.Particle"
+		"CAAT.Foundation.Actor"
+		// "CAAT.Module.Particle.Particle"
 	],
 	extendsWith: function () {
 
@@ -88,6 +88,31 @@ CAAT.Module({
 			return 'rgba(' + r + ', ' + g + ', ' + b + ', ' + a + ')';
 		}
 
+		// Lookup variables for particle arrays
+		var PARTICLE_VARS = 0;
+		var PARTICLE_POS_X = PARTICLE_VARS++,
+			PARTICLE_POS_Y = PARTICLE_VARS++,
+			PARTICLE_STARTPOS_X = PARTICLE_VARS++,
+			PARTICLE_STARTPOS_Y = PARTICLE_VARS++,
+			PARTICLE_TANGENTIAL_X = PARTICLE_VARS++,
+			PARTICLE_TANGENTIAL_Y = PARTICLE_VARS++,
+			PARTICLE_FORCES_X = PARTICLE_VARS++,
+			PARTICLE_FORCES_Y = PARTICLE_VARS++,
+			PARTICLE_RADIAL_X = PARTICLE_VARS++,
+			PARTICLE_RADIAL_Y = PARTICLE_VARS++,
+			PARTICLE_VELOCITY_X = PARTICLE_VARS++,
+			PARTICLE_VELOCITY_Y = PARTICLE_VARS++,
+			PARTICLE_STARTANGLE = PARTICLE_VARS++,
+			PARTICLE_RADIAL_ACCEL = PARTICLE_VARS++,
+			PARTICLE_TANGENTIAL_ACCEL = PARTICLE_VARS++,
+			PARTICLE_SCALE = PARTICLE_VARS++,
+			PARTICLE_DELTASCALE = PARTICLE_VARS++,
+			PARTICLE_RADIUS = PARTICLE_VARS++,
+			PARTICLE_COLOR = PARTICLE_VARS++,
+			PARTICLE_LIFE = PARTICLE_VARS++,
+			PARTICLE_DELTALIFE = PARTICLE_VARS++;
+
+
 		return {
 			deltaColor: null, // rgba change per piece of a second delta
 			colors: null, // reusable array of intermediate colors
@@ -95,6 +120,8 @@ CAAT.Module({
 			particleHeight: 0,
 			active: false,
 			started: false,
+			canvas: null, // Possible to specify a render canvas, otherwise it will take the director canvas
+			ctx: null, // specific render canvas 2d context
 
 			__init: function (director) {
 				this.__super();
@@ -176,11 +203,11 @@ CAAT.Module({
 
 				// CocoonJS createRadialGradient does not work correct
 				if (navigator.isCocoonJS) {
-					grd = GAME.director.ctx.createRadialGradient(this.radius, this.radius, 0.8*this.radius, this.radius, this.radius, this.radius);
+					grd = ctx.createRadialGradient(this.radius, this.radius, 0.8*this.radius, this.radius, this.radius, this.radius);
 					grd.addColorStop(0, 'rgba(255, 255, 255, 1)');
 					grd.addColorStop(1, 'rgba(255, 255, 255, 0.5)');
 				} else {
-					grd = GAME.director.ctx.createRadialGradient(this.radius, this.radius, 0.1*this.radius, this.radius, this.radius, this.radius);
+					grd = ctx.createRadialGradient(this.radius, this.radius, 0.1*this.radius, this.radius, this.radius, this.radius);
 					grd.addColorStop(0, 'rgba(255, 255, 255, 1)');
 					grd.addColorStop(1, 'rgba(255, 255, 255, 0)');
 				}
@@ -195,7 +222,7 @@ CAAT.Module({
 					2 * Math.PI,
 					false
 				);
-				
+
 				ctx.fill();
 
 				return this;
@@ -234,7 +261,7 @@ CAAT.Module({
 					var centerY = (1-scale)*0.5*this.particleHeight;
 					ctx.translate(1-scale,scale);
 					ctx.scale(scale,scale);
-					
+
 					ctx.drawImage(this.texture, 0, 0);
 
 					// now use source-atop to "tint" the texture
@@ -244,6 +271,12 @@ CAAT.Module({
 
 					this.colors.push(colorCanvas);
 				}
+			},
+
+			setCanvas: function(canvas) {
+				this.canvas = canvas;
+				this.ctx = canvas.getContext('2d');
+				return this;
 			},
 
 			// sets a path along which particles are emitted
@@ -270,7 +303,12 @@ CAAT.Module({
 				this.buildColors();
 
 				for (var i = 0; i < this.totalParticles; ++i) {
-					this._particlePool.push(new CAAT.Module.Particle.Particle());
+					// this._particlePool.push(new CAAT.Module.Particle.Particle());
+					var p = (typeof Float32Array !== 'undefined') ? new Float32Array() : [];
+					for (var j=0;j<PARTICLE_VARS;j++) {
+						p[j] = 0;
+					}
+					this._particlePool.push(p);
 				}
 
 				this._particleCount = 0;
@@ -280,6 +318,11 @@ CAAT.Module({
 
 				this.started = true;
 
+				return this;
+			},
+
+			stop: function() {
+				this.started = false;
 				return this;
 			},
 
@@ -300,7 +343,7 @@ CAAT.Module({
 				}
 
 				var p = this._particlePool[this._particleCount];
-				this._initParticle(p); 
+				this._initParticle(p);
 				++this._particleCount;
 
 				return true;
@@ -318,14 +361,14 @@ CAAT.Module({
 				if (this.emitterPath) {
 					var emitIndex = (Math.random()*(this.emitPoints.length-1)+1)|0;
 					emitPoint = this.emitPoints[emitIndex];
-					particle.startPos.x = emitPoint[0];
-					particle.startPos.y = emitPoint[1];
+					particle[PARTICLE_STARTPOS_X] = emitPoint[0];
+					particle[PARTICLE_STARTPOS_Y] = emitPoint[1];
 
 					if (this.angleFromPath) {
 						var x = emitPoint[0], y=emitPoint[1];
 						var prevPoint = this.emitPoints[emitIndex-1];
 						var pathAngle = Math.atan2(prevPoint[1] - y, x - prevPoint[0]); // y = positive down
-						particle.startAngle = pathAngle;
+						particle[PARTICLE_STARTANGLE] = pathAngle;
 						angle += pathAngle;
 					}
 
@@ -333,8 +376,8 @@ CAAT.Module({
 					emitPoint = [0,0];
 				}
 
-				particle.pos.x = emitPoint[0] + this.posVar.x * random11();
-				particle.pos.y = emitPoint[1] + this.posVar.y * random11();
+				particle[PARTICLE_POS_X] = emitPoint[0] + this.posVar.x * random11();
+				particle[PARTICLE_POS_Y] = emitPoint[1] + this.posVar.y * random11();
 
 				var speed = this.speed + this.speedVar * random11();
 
@@ -342,21 +385,22 @@ CAAT.Module({
 				// but once the particle is active and being updated, it's easier
 				// to use a vector to indicate speed and angle. So particle.setVelocity
 				// converts the angle and speed values to a velocity vector
-				particle.setVelocity(angle, speed);
+				particle[PARTICLE_VELOCITY_X] = Math.cos(angle) * speed;
+				particle[PARTICLE_VELOCITY_Y] = -Math.sin(angle) * speed;
 
-				particle.radialAccel = this.radialAccel + this.radialAccelVar * random11() || 0;
-				particle.tangentialAccel = this.tangentialAccel + this.tangentialAccelVar * random11() || 0;
+				particle[PARTICLE_RADIAL_ACCEL] = this.radialAccel + this.radialAccelVar * random11() || 0;
+				particle[PARTICLE_TANGENTIAL_ACCEL] = this.tangentialAccel + this.tangentialAccelVar * random11() || 0;
 
 				var life = this.life + this.lifeVar * random11() || 0;
-				particle.life = Math.max(0, life);
+				particle[PARTICLE_LIFE] = (life > 0) ? life : 0;
 
-				particle.scale = this.startScale || 1;
-				particle.deltaScale = typeof this.endScale != 'undefined' ? (this.endScale - this.startScale) : 0;
-				particle.deltaScale /= particle.life;
+				particle[PARTICLE_SCALE] = this.startScale || 1;
+				particle[PARTICLE_DELTASCALE] = typeof this.endScale != 'undefined' ? (this.endScale - this.startScale) : 0;
+				particle[PARTICLE_DELTASCALE] /= particle[PARTICLE_LIFE];
 
-				particle.radius = typeof this.radius != 'undefined' ? this.radius + (this.radiusVar || 0) * random11() : 0;
+				particle[PARTICLE_RADIUS] = typeof this.radius != 'undefined' ? this.radius + (this.radiusVar || 0) * random11() : 0;
 
-				particle.color = this.colors[0];
+				particle[PARTICLE_COLOR] = 0;
 			},
 
 			/*
@@ -366,55 +410,58 @@ CAAT.Module({
 			 * particle like its size, color, etc
 			 */
 			_updateParticle: function(p, delta, i) {
-				if (p.life > 0) {
+				if (p[PARTICLE_LIFE] > 0) {
 
 					// these vectors are stored on the particle so we can reuse them, avoids
 					// generating lots of unnecessary objects each frame
 
-					p.forces.x = 0;
-					p.forces.y = 0;
+					p[PARTICLE_FORCES_X] = 0;
+					p[PARTICLE_FORCES_Y] = 0;
 
-					p.radial.x = 0;
-					p.radial.y = 0;
+					p[PARTICLE_RADIAL_X] = 0;
+					p[PARTICLE_RADIAL_Y] = 0;
 
 					// dont apply radial forces until moved away from the emitter
-					if ((p.pos.x !== p.startPos.x || p.pos.y !== p.startPos.y) && (p.radialAccel || p.tangentialAccel)) {
-						p.radial.x = p.pos.x - p.startPos.x;
-						p.radial.y = p.pos.y - p.startPos.y;
+					if ((p[PARTICLE_POS_X] !== p[PARTICLE_STARTPOS_X] || p[PARTICLE_POS_Y] !== p[PARTICLE_STARTPOS_Y]) && (p[PARTICLE_RADIAL_ACCEL] || p[PARTICLE_TANGENTIAL_ACCEL])) {
+						p[PARTICLE_RADIAL_X] = p[PARTICLE_POS_X] - p[PARTICLE_STARTPOS_X];
+						p[PARTICLE_RADIAL_Y] = p[PARTICLE_POS_Y] - p[PARTICLE_STARTPOS_Y];
 
-						normalize(p.radial);
+						// normalize
+						var length = Math.sqrt(p[PARTICLE_RADIAL_X] * p[PARTICLE_RADIAL_X] + p[PARTICLE_RADIAL_Y] * p[PARTICLE_RADIAL_Y]);
+						p[PARTICLE_RADIAL_X] /= length;
+						p[PARTICLE_RADIAL_Y] /= length;
 					}
 
-					p.tangential.x = p.radial.x;
-					p.tangential.y = p.radial.y;
+					p[PARTICLE_TANGENTIAL_X] = p[PARTICLE_RADIAL_X];
+					p[PARTICLE_TANGENTIAL_Y] = p[PARTICLE_RADIAL_Y];
 
-					p.radial.x *= p.radialAccel;
-					p.radial.y *= p.radialAccel;
+					p[PARTICLE_RADIAL_X] *= p[PARTICLE_RADIAL_ACCEL];
+					p[PARTICLE_RADIAL_Y] *= p[PARTICLE_RADIAL_ACCEL];
 
-					this.newy = p.tangential.x;
-					p.tangential.x = - p.tangential.y;
-					p.tangential.y = this.newy;
+					var newy = p[PARTICLE_TANGENTIAL_X];
+					p[PARTICLE_TANGENTIAL_X] = - p[PARTICLE_TANGENTIAL_Y];
+					p[PARTICLE_TANGENTIAL_Y] = newy;
 
-					p.tangential.x *= p.tangentialAccel;
-					p.tangential.y *= p.tangentialAccel;
+					p[PARTICLE_TANGENTIAL_X] *= p[PARTICLE_TANGENTIAL_ACCEL];
+					p[PARTICLE_TANGENTIAL_Y] *= p[PARTICLE_TANGENTIAL_ACCEL];
 
-					p.forces.x = p.radial.x + p.tangential.x + this.gravity.x;
-					p.forces.y = p.radial.y + p.tangential.y + this.gravity.y;
+					p[PARTICLE_FORCES_X] = p[PARTICLE_RADIAL_X] + p[PARTICLE_TANGENTIAL_X] + this.gravity.x;
+					p[PARTICLE_FORCES_Y] = p[PARTICLE_RADIAL_Y] + p[PARTICLE_TANGENTIAL_Y] + this.gravity.y;
 
-					p.forces.x *= delta;
-					p.forces.y *= delta;
+					p[PARTICLE_FORCES_X] *= delta;
+					p[PARTICLE_FORCES_Y] *= delta;
 
-					p.vel.x += p.forces.x;
-					p.vel.y += p.forces.y;
+					p[PARTICLE_VELOCITY_X] += p[PARTICLE_FORCES_X];
+					p[PARTICLE_VELOCITY_Y] += p[PARTICLE_FORCES_Y];
 
-					p.pos.x += p.vel.x * delta;
-					p.pos.y += p.vel.y * delta;
+					p[PARTICLE_POS_X] += p[PARTICLE_VELOCITY_X] * delta;
+					p[PARTICLE_POS_Y] += p[PARTICLE_VELOCITY_Y] * delta;
 
-					p.life -= delta;
-					p.deltaLife = 1 - (p.life/this.life); 
+					p[PARTICLE_LIFE] -= delta;
+					p[PARTICLE_DELTALIFE] = 1 - (p[PARTICLE_LIFE]/this.life);
 
-					if (p.deltaLife < 0)  {p.deltaLife = 0;} // Math.max is EXPENSIVE
-					p.color = this.colors[(p.deltaLife * this.colors.length) | 0];
+					if (p[PARTICLE_DELTALIFE] < 0)  {p[PARTICLE_DELTALIFE] = 0;} // Math.max is EXPENSIVE
+					p[PARTICLE_COLOR] = (p[PARTICLE_DELTALIFE] * this.colors.length) | 0;
 
 					++this._particleIndex;
 				} else {
@@ -480,7 +527,7 @@ CAAT.Module({
 			paint : function( director, time ) {
 				CAAT.Module.Particle.Emitter.superclass.paint.call(this,director,time);
 
-				var ctx = director.ctx;
+				var ctx = this.ctx || director.ctx;
 
 				if(this.textureAdditive) {
 					ctx.globalCompositeOperation = 'lighter';
@@ -491,14 +538,14 @@ CAAT.Module({
 				var w, h;
 				for(var i = 0; i < this._particlePool.length; ++i) {
 					var p = this._particlePool[i];
-					if (p.life > 0) {
-						w = this.particleWidth*p.scale;
-						h = this.particleHeight*p.scale;
+					if (p[PARTICLE_LIFE] > 0) {
+						w = this.particleWidth*p[PARTICLE_SCALE];
+						h = this.particleHeight*p[PARTICLE_SCALE];
 
 						// figure out the x and y locations to render at, to center the texture in the buffer
-						var x = p.pos.x - w / 2;
-						var y = p.pos.y - h / 2;
-						ctx.drawImage(p.color, x, y);
+						var x = p[PARTICLE_POS_X] - w / 2;
+						var y = p[PARTICLE_POS_Y] - h / 2;
+						ctx.drawImage(this.colors[p[PARTICLE_COLOR]], x, y);
 					}
 				}
 			}
