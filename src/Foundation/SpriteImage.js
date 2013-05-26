@@ -283,6 +283,8 @@ CAAT.Module({
 
                 ret.scaleFont= this.scaleFont;
 
+                ret.spriteIndex= this.spriteIndex;
+
                 return ret;
             },
             /**
