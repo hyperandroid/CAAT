@@ -456,7 +456,6 @@ CAAT.Module({
 
             getValueForKey : function( key ) {
                 return this.__map[key];
-                return this;
             },
 
             createTimer:function (startTime, duration, callback_timeout, callback_tick, callback_cancel) {
@@ -1137,7 +1136,7 @@ CAAT.Module({
                 this.timerManager.checkTimers(time);
 
                 this.setModelViewMatrix(this);
-                this.modelViewMatrixI = this.modelViewMatrix.getInverse();
+                this.modelViewMatrix.getInverse(this.modelViewMatrixI);
                 this.setScreenBounds();
 
                 this.dirty = false;
@@ -1338,6 +1337,46 @@ CAAT.Module({
                 scene.setEaseListener(this);
                 if (null === this.currentScene) {
                     this.setScene(0);
+                }
+            },
+
+            /**
+             * Private
+             * Gets a contained Scene index on this Director.
+             *
+             * @param scene a CAAT.Foundation.Scene object instance.
+             *
+             * @return {number}
+             */
+            findScene:function (scene) {
+                var sl = this.scenes;
+                var i;
+                var len = sl.length;
+
+                for (i = 0; i < len; i++) {
+                    if (sl[i] === scene) {
+                        return i;
+                    }
+                }
+                return -1;
+            },
+
+            /**
+             * Private
+             * Removes a scene from this director.
+             *
+             * @param scene a CAAT.Foundation.Scene object instance or scene index.
+             *
+             * @return {number}
+             */
+            removeScene: function(scene) {
+                if (typeof scene == 'number') {
+                    this.scenes.splice(scene, 1);
+                } else {
+                    var idx = this.findScene(scene);
+                    if (idx > 0) {
+                        this.scenes.splice(idx, 1);
+                    }
                 }
             },
             /**
@@ -1558,10 +1597,11 @@ CAAT.Module({
             /**
              * Changes (or sets) the current Director scene to the index
              * parameter. There will be no transition on scene change.
-             * @param sceneIndex {number} an integer indicating the index of the target Scene
+             * @param scene {number or scene object} an integer indicating the index of the target Scene or the target Scene itself
              * to be shown.
              */
-            setScene:function (sceneIndex) {
+            setScene:function (scene) {
+                var sceneIndex = (typeof scene == 'number') ? scene : this.findScene(scene);
                 var sin = this.scenes[ sceneIndex ];
                 this.childrenList = [];
                 this.addChild(sin);
@@ -2005,7 +2045,7 @@ CAAT.Module({
                 pt.x = posx;
                 pt.y = posy;
                 if (!this.modelViewMatrixI) {
-                    this.modelViewMatrixI = this.modelViewMatrix.getInverse();
+                    this.modelViewMatrix.getInverse(this.modelViewMatrixI);
                 }
                 this.modelViewMatrixI.transformCoord(pt);
                 posx = pt.x;
@@ -2111,7 +2151,7 @@ CAAT.Module({
 
                     // check for mouse move threshold.
                     if (!this.dragging) {
-                        if (Math.abs(this.prevMousePoint.x - pos.x) < CAAT.DRAG_THRESHOLD_X ||
+                        if (Math.abs(this.prevMousePoint.x - pos.x) < CAAT.DRAG_THRESHOLD_X &&
                             Math.abs(this.prevMousePoint.y - pos.y) < CAAT.DRAG_THRESHOLD_Y) {
                             return;
                         }

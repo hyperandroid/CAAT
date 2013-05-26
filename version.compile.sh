@@ -1,13 +1,9 @@
-CAAT_DST="./build/caat"
-SOURCE_DIR="./src"
-COMPILER="../../closure-compiler/compiler.jar"
+source ./version.compile.variables.sh
+./version.compile.pack.sh
 
-if [ "${CAAT_DST}" == "" ]; then
-  echo CAAT_DST is not defined.
-  exit -1;
-fi
+CAAT_DST="/tmp/caat"
 
-echo -e "\n\nCompilation process\n\n"
+echo "\n\nCompilation process\n\n"
 
 #
 # define CAAT products files.
@@ -28,6 +24,8 @@ FILE_CAAT_BOX2D="${DST_FILE_NAME}-box2d-min.js"
 echo "" > "${FILE_CAAT}"
 echo "" > "${FILE_CAAT_CSS}"
 echo "" > "${FILE_CAAT_BOX2D}"
+
+SOURCE_DIR=${CAAT_SOURCE_DIR}
 
 #
 # set compilation level
@@ -65,65 +63,62 @@ echo "From files at: ${SOURCE_DIR}"
 #
 # create stub files for all CAAT products.
 #
-echo -e "/*" >> "${FILE_CAAT}"
+echo "/*" >> "${FILE_CAAT}"
 cat LICENSE >> "${FILE_CAAT}"
-echo -e "\nVersion: ${VERSION}\n" >> "${FILE_CAAT}"
-echo -e "Created on:" >> "${FILE_CAAT}"
+echo "\nVersion: ${VERSION}\n" >> "${FILE_CAAT}"
+echo "Created on:" >> "${FILE_CAAT}"
 date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S" >> "${FILE_CAAT}"
-echo -e "*/\n\n" >> "${FILE_CAAT}"
+echo "*/\n\n" >> "${FILE_CAAT}"
 
-echo -e "/*" >> "${FILE_CAAT_CSS}"
+echo "/*" >> "${FILE_CAAT_CSS}"
 cat LICENSE >> "${FILE_CAAT_CSS}"
-echo -e "\nVersion: ${VERSION}\n" >> "${FILE_CAAT_CSS}"
-echo -e "Created on:" >> "${FILE_CAAT_CSS}"
+echo "\nVersion: ${VERSION}\n" >> "${FILE_CAAT_CSS}"
+echo "Created on:" >> "${FILE_CAAT_CSS}"
 date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S" >> "${FILE_CAAT_CSS}"
-echo -e "*/\n\n" >> "${FILE_CAAT_CSS}"
+echo "*/\n\n" >> "${FILE_CAAT_CSS}"
 
-echo -e "/*" >> "${FILE_CAAT_BOX2D}"
+echo "/*" >> "${FILE_CAAT_BOX2D}"
 cat LICENSE >> "${FILE_CAAT_BOX2D}"
-echo -e "\nVersion: ${VERSION}\n" >> "${FILE_CAAT_BOX2D}"
-echo -e "Created on:" >> "${FILE_CAAT_BOX2D}"
+echo "\nVersion: ${VERSION}\n" >> "${FILE_CAAT_BOX2D}"
+echo "Created on:" >> "${FILE_CAAT_BOX2D}"
 date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S" >> "${FILE_CAAT_BOX2D}"
-echo -e "*/\n\n" >> "${FILE_CAAT_BOX2D}"
+echo "*/\n\n" >> "${FILE_CAAT_BOX2D}"
 
 
 #
 # Compile canvas/GL
 #
-echo -e "\nCreating CAAT canvas/webGL"
-/usr/bin/java -jar ${COMPILER_JAR} --compilation_level "${COMPILATION_LEVEL}" \
---js build/caat.js \
+echo "\nCreating CAAT canvas/webGL"
+/usr/bin/java -jar ${CAAT_CLOSURE_PATH}/compiler.jar --compilation_level "${COMPILATION_LEVEL}" \
+--js ${CAAT_BUILD_DIR}/caat.js \
  >> "${FILE_CAAT}"
 
 #
 # Compile box2d
 #
 echo "Creating CAAT Box2d"
- /usr/bin/java -jar ${COMPILER_JAR} --compilation_level "${COMPILATION_LEVEL}" --js build/caat-box2d.js >> "${FILE_CAAT_BOX2D}"
+ /usr/bin/java -jar ${CAAT_CLOSURE_PATH}/compiler.jar --compilation_level "${COMPILATION_LEVEL}" --js ${CAAT_BUILD_DIR}/caat-box2d.js >> "${FILE_CAAT_BOX2D}"
 
 #
 # Compile css
 #
 echo "Creating CAAT CSS"
-echo -e "CAAT.__CSS__=1;" >> /tmp/__css.js
-java -jar ${COMPILER_JAR} --compilation_level "${COMPILATION_LEVEL}" \
- --js build/caat-css.js >> "${FILE_CAAT_CSS}"
+echo "CAAT.__CSS__=1;" >> /tmp/__css.js
+java -jar ${CAAT_CLOSURE_PATH}/compiler.jar --compilation_level "${COMPILATION_LEVEL}" \
+ --js ${CAAT_BUILD_DIR}/caat-css.js >> "${FILE_CAAT_CSS}"
 
 #
 # Distribute resulting compiled files
 #
-echo -e "\nCopying:"
-while read LINE; do
-  echo -e "\tCopying results to ${LINE}"
-  cp ${FILE_CAAT} ${LINE} 
-  cp ${FILE_CAAT_CSS} ${LINE} 
-  cp ${FILE_CAAT_BOX2D} ${LINE} 
-done < version.distribution
+echo "\nCopying:"
+echo "\tCopying results to ${CAAT_BUILD_DIR}"
+cp ${FILE_CAAT} ${CAAT_BUILD_DIR} 
+cp ${FILE_CAAT_CSS} ${CAAT_BUILD_DIR} 
+cp ${FILE_CAAT_BOX2D} ${CAAT_BUILD_DIR} 
 
-./version.compile.pack.sh
 
 #
 # Generating JSDoc.
 #
-#echo -e "\nGenerating JSDoc"
-#./version.compile.doc.sh
+echo "\nGenerating JSDoc"
+./version.compile.doc.sh
