@@ -52,9 +52,7 @@ CAAT.Module({
             var tl = this.timerList;
             var i = tl.length - 1;
             while (i >= 0) {
-                if (!tl[i].remove) {
-                    tl[i].checkTask(time);
-                }
+                tl[i].checkTask(time);
                 i--;
             }
         },
@@ -121,12 +119,13 @@ CAAT.Module({
          * Removes expired timers. This method must not be called directly.
          */
         removeExpiredTimers:function () {
-            var i;
             var tl = this.timerList;
-            for (i = 0; i < tl.length; i++) {
+            var i = tl.length - 1;
+            while (i >= 0) {
                 if (tl[i].remove) {
-                    tl.splice(i, 1);
+                  tl.splice(i,1);
                 }
+                i--;
             }
         }
     }
