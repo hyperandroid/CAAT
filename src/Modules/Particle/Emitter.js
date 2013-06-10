@@ -111,6 +111,7 @@ CAAT.Module({
 			PARTICLE_COLOR = PARTICLE_VARS++,
 			PARTICLE_LIFE = PARTICLE_VARS++,
 			PARTICLE_DELTALIFE = PARTICLE_VARS++;
+			PARTICLE_SPAWNCOUNT = PARTICLE_VARS++;
 
 
 		return {
@@ -157,6 +158,7 @@ CAAT.Module({
 					speed: 25,						// initial speed of emitted particle
 					speedVar: 0,					// variance in speed of emitted particles
 					life: 2,						// total life time per particle in seconds
+					lives: Infinity,				// amount of respawns a particle gets
 					lifeVar: 0.1,					// variance of life per particle in seconds
 					radialAccel: 0,					// accelleration in direction of movement of particle in pixels per second^2
 					radialAccelVar: 0,				// variance in radial acceleration per particle in pixels per second^2
@@ -299,6 +301,8 @@ CAAT.Module({
 
 			start: function() {
 				this._particlePool = [];
+				this.totalParticles = this.system.totalParticles; // reset the partcle count
+				this.startTime = null;
 
 				this.buildColors();
 
@@ -357,6 +361,7 @@ CAAT.Module({
 				var emitPoint;
 
 				var angle = this.angle + this.angleVar * random11(); // default angle
+				particle[PARTICLE_SPAWNCOUNT]++;
 
 				if (this.emitterPath) {
 					var emitIndex = (Math.random()*(this.emitPoints.length-1)+1)|0;
@@ -472,7 +477,13 @@ CAAT.Module({
 					// and move it to the end of the active particles, keeping all alive particles pushed
 					// up to the front of the pool
 					this._particlePool[i] = this._particlePool[this._particleCount - 1];
-					this._particlePool[this._particleCount - 1] = temp;
+					
+					if (temp[PARTICLE_SPAWNCOUNT] >= this.lives) {
+						this._particlePool.splice(this.__particleCount-1,1);
+						this.totalParticles--;
+					} else {
+						this._particlePool[this._particleCount - 1] = temp;
+					}
 
 					// decrease the count to indicate that one less particle in the pool is active.
 					--this._particleCount;
@@ -525,6 +536,10 @@ CAAT.Module({
 			},
 
 			paint : function( director, time ) {
+				if (!this.active) {
+					return this;
+				}
+
 				CAAT.Module.Particle.Emitter.superclass.paint.call(this,director,time);
 
 				var ctx = this.ctx || director.ctx;
