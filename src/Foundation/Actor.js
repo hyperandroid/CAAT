@@ -1688,6 +1688,8 @@ CAAT.Module({
                  * @ignore
                  */
                 this.mouseUp = function (mouseEvent) {
+					this.emit('mouseUp', mouseEvent); // TODO: make preventable, if 1 listener returns false, cancel the mouseDrag
+
                     this.__d_ax = -1;
                     this.__d_ay = -1;
                 };
@@ -1699,6 +1701,8 @@ CAAT.Module({
                  * @ignore
                  */
                 this.mouseDrag = function (mouseEvent) {
+
+                	this.emit('mouseDrag', mouseEvent); // TODO: make preventable, if 1 listener returns false, cancel the mouseDrag
 
                     var pt;
 
@@ -1798,6 +1802,7 @@ CAAT.Module({
              * @param mouseEvent {CAAT.Event.MouseEvent}
              */
             mouseDown:function (mouseEvent) {
+            	this.emit('mouseDown', mouseEvent); // TODO: make preventable, if 1 listener returns false, cancel the mouseDrag
             },
             /**
              * default mouse release in Actor handler.
