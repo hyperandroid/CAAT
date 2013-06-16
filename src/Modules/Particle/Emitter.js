@@ -103,6 +103,8 @@ CAAT.Module({
 			PARTICLE_VELOCITY_X = PARTICLE_VARS++,
 			PARTICLE_VELOCITY_Y = PARTICLE_VARS++,
 			PARTICLE_STARTANGLE = PARTICLE_VARS++,
+			PARTICLE_ROTATION = PARTICLE_VARS++,
+			PARTICLE_ROTATION_SPEED = PARTICLE_VARS++,
 			PARTICLE_RADIAL_ACCEL = PARTICLE_VARS++,
 			PARTICLE_TANGENTIAL_ACCEL = PARTICLE_VARS++,
 			PARTICLE_SCALE = PARTICLE_VARS++,
@@ -157,6 +159,8 @@ CAAT.Module({
 					angleFromPath: false,			// if true, calculate the emit angle from the path, 0 rad = direction of path
 					speed: 25,						// initial speed of emitted particle
 					speedVar: 0,					// variance in speed of emitted particles
+					rotationSpeed: 0,					// initial rotation speed in radians per second
+					rotationSpeedVar: 0,					// variance in rotation speed
 					life: 2,						// total life time per particle in seconds
 					lives: Infinity,				// amount of respawns a particle gets
 					lifeVar: 0.1,					// variance of life per particle in seconds
@@ -378,7 +382,7 @@ CAAT.Module({
 					}
 
 				} else {
-					emitPoint = [0,0];
+					emitPoint = [this.x, this.y];
 				}
 
 				particle[PARTICLE_POS_X] = emitPoint[0] + this.posVar.x * random11();
@@ -395,6 +399,8 @@ CAAT.Module({
 
 				particle[PARTICLE_RADIAL_ACCEL] = this.radialAccel + this.radialAccelVar * random11() || 0;
 				particle[PARTICLE_TANGENTIAL_ACCEL] = this.tangentialAccel + this.tangentialAccelVar * random11() || 0;
+
+				particle[PARTICLE_ROTATION_SPEED] = this.rotationSpeed + this.rotationSpeedVar * random11() || 0;
 
 				var life = this.life + this.lifeVar * random11() || 0;
 				particle[PARTICLE_LIFE] = (life > 0) ? life : 0;
@@ -461,6 +467,8 @@ CAAT.Module({
 
 					p[PARTICLE_POS_X] += p[PARTICLE_VELOCITY_X] * delta;
 					p[PARTICLE_POS_Y] += p[PARTICLE_VELOCITY_Y] * delta;
+
+					p[PARTICLE_ROTATION] += p[PARTICLE_ROTATION_SPEED] * delta;
 
 					p[PARTICLE_LIFE] -= delta;
 					p[PARTICLE_DELTALIFE] = 1 - (p[PARTICLE_LIFE]/this.life);
@@ -554,13 +562,17 @@ CAAT.Module({
 				for(var i = 0; i < this._particlePool.length; ++i) {
 					var p = this._particlePool[i];
 					if (p[PARTICLE_LIFE] > 0) {
+						ctx.save();
 						w = this.particleWidth*p[PARTICLE_SCALE];
 						h = this.particleHeight*p[PARTICLE_SCALE];
 
 						// figure out the x and y locations to render at, to center the texture in the buffer
 						var x = p[PARTICLE_POS_X] - w / 2;
 						var y = p[PARTICLE_POS_Y] - h / 2;
-						ctx.drawImage(this.colors[p[PARTICLE_COLOR]], x, y);
+						ctx.translate(x, y);
+						ctx.rotate(p[PARTICLE_ROTATION]);
+						ctx.drawImage(this.colors[p[PARTICLE_COLOR]], 0, 0);
+						ctx.restore();	
 					}
 				}
 			}
