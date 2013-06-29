@@ -165,9 +165,9 @@ CAAT.Module({
 
             __createAnimation : function(name) {
 
-                var keyframesTranslate= new CAAT.Behavior.ContainerBehavior(true).setCycle(true).setId("keyframes_tr");
-                var keyframesScale= new CAAT.Behavior.ContainerBehavior(true).setCycle(true).setId("keyframes_sc");
-                var keyframesRotate= new CAAT.Behavior.ContainerBehavior(true).setCycle(true).setId("keyframes_rt");
+                var keyframesTranslate= new CAAT.Behavior.ContainerBehavior(true).setCycle(true, true).setId("keyframes_tr");
+                var keyframesScale= new CAAT.Behavior.ContainerBehavior(true).setCycle(true, true).setId("keyframes_sc");
+                var keyframesRotate= new CAAT.Behavior.ContainerBehavior(true).setCycle(true, true).setId("keyframes_rt");
 
                 keyframesTranslate.addListener( { behaviorApplied : fntr });
                 keyframesScale.addListener( { behaviorApplied : fnsc });

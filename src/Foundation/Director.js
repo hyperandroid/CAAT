@@ -449,6 +449,11 @@ CAAT.Module({
                 return this.audioManager.cancelPlayByChannel(audioObject);
             },
 
+            setAudioFormatExtensions : function( extensions ) {
+                this.audioManager.setAudioFormatExtensions(extensions);
+                return this;
+            },
+
             setValueForKey : function( key, value ) {
                 this.__map[key]= value;
                 return this;

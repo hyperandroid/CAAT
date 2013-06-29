@@ -440,6 +440,10 @@ CAAT.Module({
                 return this;
             },
 
+            isCycle : function() {
+                return this.cycleBehavior;
+            },
+
             /**
              * Adds an observer to this behavior.
              * @param behaviorListener an observer instance.
