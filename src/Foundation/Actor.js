@@ -471,6 +471,17 @@ CAAT.Module({
             isAA:true,
 
             /**
+             * if this actor is cached, when destroy is called, it does not call 'clean' method, which clears some
+             * internal properties.
+             */
+            isCachedActor : false,
+
+            setCachedActor : function(cached) {
+                this.isCachedActor= cached;
+                return this;
+            },
+
+            /**
              * Make this actor not be laid out.
              */
             setPreventLayout : function(b) {
@@ -1513,12 +1524,19 @@ CAAT.Module({
                     this.parent.removeChild(this);
                 }
 
-                this.backgroundImage= null;
-                this.emptyBehaviorList();
                 this.fireEvent('destroyed', time);
-                this.lifecycleListenerList= [];
+                if ( !this.isCachedActor ) {
+                    this.clean();
+                }
 
             },
+
+            clean : function() {
+                this.backgroundImage= null;
+                this.emptyBehaviorList();
+                this.lifecycleListenerList= [];
+            },
+
             /**
              * Transform a point or array of points in model space to view space.
              *
@@ -2160,8 +2178,8 @@ CAAT.Module({
                 this.frameAlpha = this.parent ? this.parent.frameAlpha * this.alpha : 1;
                 ctx.globalAlpha = this.frameAlpha;
 
-//                director.modelViewMatrix.transformRenderingContextSet(ctx);
-                this.worldModelViewMatrix.transformRenderingContextSet(ctx);
+                director.modelViewMatrix.transformRenderingContextSet(ctx);
+                this.worldModelViewMatrix.transformRenderingContext(ctx);
 
                 if (this.clip) {
                     ctx.beginPath();

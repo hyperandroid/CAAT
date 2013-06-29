@@ -25,9 +25,6 @@ CAAT.Module({
      */
 
     defines:"CAAT.Module.Audio.AudioManager",
-    depends:[
-        "CAAT.Module.Runtime.BrowserInfo"
-    ],
     extendsWith:function () {
         return {
 
@@ -36,19 +33,16 @@ CAAT.Module({
              */
 
             __init:function () {
-                this.browserInfo = CAAT.Module.Runtime.BrowserInfo;
+                this.isFirefox= navigator.userAgent.match(/Firefox/g)!==null;
                 return this;
             },
+
+            isFirefox : false,
 
             /**
              * The only background music audio channel.
              */
             musicChannel: null,
-
-            /**
-             * Some browser info needed to know whether we´re in FF so we can fix the loop bug.
-             */
-            browserInfo:null,
 
             /**
              * Is music enabled ?
@@ -81,14 +75,28 @@ CAAT.Module({
             loopingChannels:[],
 
             /**
+             * available formats for audio elements.
+             * the system will load audio files with the extensions in this preferred order.
+             */
+            audioFormatExtensions : [
+                'ogg',
+                'wav',
+                'x-wav',
+                'mp3'
+            ],
+
+            currentAudioFormatExtension : 'ogg',
+
+            /**
              * Audio formats.
              * @dict
              */
             audioTypes:{               // supported audio formats. Don't remember where i took them from :S
-                'mp3':'audio/mpeg;',
-                'ogg':'audio/ogg; codecs="vorbis"',
-                'wav':'audio/wav; codecs="1"',
-                'mp4':'audio/mp4; codecs="mp4a.40.2"'
+                'ogg':  'audio/ogg',
+                'mp3':  'audio/mpeg;',
+                'wav':  'audio/wav',
+                'x-wav':'audio/x-wav',
+                'mp4':  'audio/mp4"'
             },
 
             /**
@@ -100,7 +108,9 @@ CAAT.Module({
              *
              * @return this.
              */
-            initialize:function (numChannels) {
+            initialize:function (numChannels ) {
+
+                this.setAudioFormatExtensions( this.audioFormatExtensions );
 
                 this.audioCache = [];
                 this.channels = [];
@@ -144,6 +154,45 @@ CAAT.Module({
 
                 return this;
             },
+
+            setAudioFormatExtensions : function( formats ) {
+                this.audioFormatExtensions= formats;
+                this.__setCurrentAudioFormatExtension();
+                return this;
+            },
+
+            __setCurrentAudioFormatExtension : function( ) {
+
+                var audio= new Audio();
+
+                for( var i= 0, l=this.audioFormatExtensions.length; i<l; i+=1 ) {
+                    var res= audio.canPlayType( this.audioTypes[this.audioFormatExtensions[i]]).toLowerCase();
+                    if ( res!=="no" && res!=="" ) {
+                        this.currentAudioFormatExtension= this.audioFormatExtensions[i];
+                        console.log("Audio type set to: "+this.currentAudioFormatExtension);
+                        return;
+                    }
+                }
+
+                this.currentAudioFormatExtension= null;
+            },
+
+            __getAudioUrl : function( url ) {
+
+                if ( this.currentAudioFormatExtension===null ) {
+                    return url;
+                }
+
+                var lio= url.lastIndexOf( "." );
+                if ( lio<0 ) {
+                    console.log("Audio w/o extension: "+url);
+                    lio= url.length()-1;
+                }
+
+                var uri= url.substring( 0, lio+1 ) + this.currentAudioFormatExtension;
+                return uri;
+            },
+
             /**
              * Tries to add an audio tag to the available list of valid audios. The audio is described by a url.
              * @param id {object} an object to associate the audio element (if suitable to be played).
@@ -155,30 +204,21 @@ CAAT.Module({
              * @private
              */
             addAudioFromURL:function (id, url, endplaying_callback) {
-                var extension = null;
                 var audio = document.createElement('audio');
 
                 if (null !== audio) {
 
-                    if (!audio.canPlayType) {
-                        return false;
+                    audio.src = this.__getAudioUrl(url);
+                    console.log("Loading audio: "+audio.src);
+                    audio.preload = "auto";
+                    audio.load();
+                    if (endplaying_callback) {
+                        audio.caat_callback = endplaying_callback;
+                        audio.caat_id = id;
                     }
+                    this.audioCache.push({ id:id, audio:audio });
 
-                    extension = url.substr(url.lastIndexOf('.') + 1);
-                    var canplay = audio.canPlayType(this.audioTypes[extension]);
-
-                    if (canplay !== "" && canplay !== "no") {
-                        audio.src = url;
-                        audio.preload = "auto";
-                        audio.load();
-                        if (endplaying_callback) {
-                            audio.caat_callback = endplaying_callback;
-                            audio.caat_id = id;
-                        }
-                        this.audioCache.push({ id:id, audio:audio });
-
-                        return true;
-                    }
+                    return true;
                 }
 
                 return false;
@@ -321,7 +361,7 @@ CAAT.Module({
                         audio.src = audio_in_cache.src;
                         audio.preload = "auto";
 
-                        if (this.browserInfo.browser === 'Firefox') {
+                        if (this.isFirefox) {
                             audio.addEventListener(
                                 'ended',
                                 // on sound end, restart music.
@@ -380,6 +420,8 @@ CAAT.Module({
                     channel.volume = audio.volume;
                     channel.play();
                     this.workingChannels.push(channel);
+                } else {
+                    console.log("Can't play audio: "+id);
                 }
 
                 return audio;
@@ -447,7 +489,7 @@ CAAT.Module({
                         audio.src = audio_in_cache.src;
                         audio.preload = "auto";
 
-                        if (this.browserInfo.browser === 'Firefox') {
+                        if (this.isFirefox) {
                             audio.addEventListener(
                                 'ended',
                                 // on sound end, set channel to available channels list.

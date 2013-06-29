@@ -1,4 +1,4 @@
-(function(global) {
+(function(global, __obj_namespace) {
 
     String.prototype.endsWith= function(suffix) {
         return this.indexOf(suffix, this.length - suffix.length) !== -1;
@@ -30,6 +30,8 @@
     // The base Class implementation (does nothing)
     var Class = function () {
     };
+
+    Class['__CLASS']='Class';
 
     // Create a new Class that inherits from this class
     Class.extend = function (extendingProt, constants, name, aliases, flags) {
@@ -631,12 +633,16 @@
     function ensureNamespace( qualifiedClassName ) {
         var ns= qualifiedClassName.split(".");
         var _global= global;
+        var ret= null;
         for( var i=0; i<ns.length-1; i++ ) {
             if ( !_global[ns[i]] ) {
                 _global[ns[i]]= {};
             }
             _global= _global[ns[i]];
+            ret= _global;
         }
+
+        return ret;
     }
 
     /**
@@ -689,7 +695,13 @@
      * @namespace
      */
 
-    global.CAAT= global.CAAT || {};
+    if ( typeof(__obj_namespace)==="undefined" ) {
+        __obj_namespace= (window.CAAT = window.CAAT || {} );
+    }
+
+    NS= __obj_namespace;
+
+//    global.CAAT= global.CAAT || {};
 
     /**
      *
@@ -697,19 +709,20 @@
      *
      * obj parameter has the following structure:
      * {
-     *   defines{string},             // class name
+     *   defines{string},           // class name
      *   depends{Array<string>=},   // dependencies class names
-     *   extendsClass{string},            // class to extend from
-     *   extensdWith{object},        // actual prototype to extend
-     *   aliases{Array<string>},    // other class names
-     *   onCreation{function=}        // optional callback to call after class creation.
-     *   onPreCreation{function=}        // optional callback to call after namespace class creation.
+     *   extendsClass{string},      // class to extend from
+     *   extensdWith{object},       // actual prototype to extend
+     *   aliases{Array<string>}     // other class names
      * }
      *
+     * @name Module
+     * @memberof CAAT
+     * @static
+     *
      * @param obj {object}
-     * @private
      */
-    CAAT.Module= function loadModule(obj) {
+    NS.Module= function loadModule(obj) {
 
         if (!obj.defines) {
             console.error("Bad module definition: "+obj);
@@ -727,17 +740,17 @@
      * @memberOf CAAT
      * @namespace
      */
-    CAAT.ModuleManager= {};
+    NS.ModuleManager= {};
 
     /**
      * Define global base position for modules structure.
      * @param baseURL {string}
      * @return {*}
      */
-    CAAT.ModuleManager.baseURL= function(baseURL) {
+    NS.ModuleManager.baseURL= function(baseURL) {
 
         if ( !baseURL ) {
-            return CAAT.Module;
+            return NS.Module;
         }
 
         if (!baseURL.endsWith("/") ) {
@@ -745,7 +758,7 @@
         }
 
         ModuleManager.baseURL= baseURL;
-        return CAAT.ModuleManager;
+        return NS.ModuleManager;
     };
 
     /**
@@ -753,7 +766,7 @@
      * @param module {string}
      * @param path {string}
      */
-    CAAT.ModuleManager.setModulePath= function( module, path ) {
+    NS.ModuleManager.setModulePath= function( module, path ) {
 
         if ( !path.endsWith("/") ) {
             path= path + "/";
@@ -774,7 +787,7 @@
                 return a<b ? 1 : -1;
             } );
         }
-        return CAAT.ModuleManager;
+        return NS.ModuleManager;
     };
 
     /**
@@ -783,13 +796,13 @@
      * @param path {string}
      * @return {*}
      */
-    CAAT.ModuleManager.symbol= function( symbol, path ) {
+    NS.ModuleManager.symbol= function( symbol, path ) {
 
         if ( !ModuleManager.symbol[symbol] ) {
             ModuleManager.symbol[symbol]= path;
         }
 
-        return CAAT.ModuleManager;
+        return NS.ModuleManager;
     };
 
     /**
@@ -797,7 +810,7 @@
      * @param file {string}
      * @return {*}
      */
-    CAAT.ModuleManager.bring= function( file ) {
+    NS.ModuleManager.bring= function( file ) {
 
         if ( !isArray(file) ) {
             file= [file];
@@ -807,13 +820,13 @@
             mm.loadFile( file[i] );
         }
 
-        return CAAT.ModuleManager;
+        return NS.ModuleManager;
     };
 
     /**
      * Get CAAT´s module manager status.
      */
-    CAAT.ModuleManager.status= function() {
+    NS.ModuleManager.status= function() {
         mm.status();
     }
 
@@ -823,9 +836,9 @@
      * @param callback {function()}
      * @return {*}
      */
-    CAAT.ModuleManager.addModuleSolvedListener= function(modulename,callback) {
+    NS.ModuleManager.addModuleSolvedListener= function(modulename,callback) {
         mm.addSolveListener( modulename, callback );
-        return CAAT.ModuleManager;
+        return NS.ModuleManager;
     }
 
     /**
@@ -834,7 +847,7 @@
      * @param onload {function()}
      * @param onerror {function()}
      */
-    CAAT.ModuleManager.load= function(file, onload, onerror) {
+    NS.ModuleManager.load= function(file, onload, onerror) {
         var node= document.createElement("script");
         node.type = 'text/javascript';
         node.charset = 'utf-8';
@@ -861,7 +874,7 @@
     /**
      * Dump solved modules and get them sorted in the order they were resolved.
      */
-    CAAT.ModuleManager.solvedInOrder= function() {
+    NS.ModuleManager.solvedInOrder= function() {
         mm.solvedInOrder();
     }
 
@@ -870,16 +883,16 @@
      * @param f
      * @return {*}
      */
-    CAAT.ModuleManager.onReady= function(f) {
+    NS.ModuleManager.onReady= function(f) {
         mm.onReady(f);
-        return CAAT.ModuleManager;
+        return NS.ModuleManager;
     }
 
     /**
      * Solve all elements specified in the module loaded.
      * It is useful when minimizing a file.
      */
-    CAAT.ModuleManager.solveAll= function() {
+    NS.ModuleManager.solveAll= function() {
         mm.solveAll();
     }
 
@@ -889,11 +902,16 @@
      * @param d {boolean}
      * @return {*}
      */
-    CAAT.ModuleManager.debug= function(d) {
+    NS.ModuleManager.debug= function(d) {
         DEBUG= d;
-        return CAAT.ModuleManager;
+        return NS.ModuleManager;
     }
 
-    CAAT.Class= Class;
+    /**
+     * @name Class
+     * @memberOf CAAT
+     * @constructor
+     */
+    NS.Class= Class;
 
-})(this);
+})(this, undefined);

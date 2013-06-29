@@ -7,8 +7,12 @@ CAAT.Module({
      * @constructor
      */
 
-    defines : "CAAT.Skeleton.BoneActor",
+    defines : "CAAT.Module.Skeleton.BoneActor",
+    depends : [
+        "CAAT.Module.Skeleton.BoneActorAttachment"
+    ],
     extendsWith : function() {
+
         return {
 
             /**
@@ -22,15 +26,32 @@ CAAT.Module({
             skinDataKeyframes : null,
             parent : null,
             worldModelViewMatrix : null,
-
+            skinMatrix : null,  // compositon of bone + skin info
             AABB : null,
+
+            /**
+             * @type {object}
+             * @map {string}, { x:{number}, y: {number} }
+             */
+            attachments : null,
 
             __init : function() {
                 this.skinInfo= [];
                 this.worldModelViewMatrix= new CAAT.Math.Matrix();
+                this.skinMatrix= new CAAT.Math.Matrix();
                 this.skinInfoByName= {};
                 this.skinDataKeyframes= [];
+                this.attachments= [];
                 this.AABB= new CAAT.Math.Rectangle();
+            },
+
+            addAttachment : function( id, normalized_x, normalized_y, callback ) {
+
+                this.attachments.push( new CAAT.Module.Skeleton.BoneActorAttachment(id, normalized_x, normalized_y, callback) );
+            },
+
+            addAttachmentListener : function( al ) {
+
             },
 
             setBone : function(bone) {
@@ -112,6 +133,7 @@ CAAT.Module({
             setupAnimation : function(time) {
                 this.setModelViewMatrix();
                 this.prepareAABB(time);
+                this.__setupAttachments();
             },
 
             prepareAABB : function(time) {
@@ -135,14 +157,16 @@ CAAT.Module({
                 var AABB= this.AABB;
                 var vvv;
 
-                var m= new CAAT.Math.Matrix();
-                m.copy( this.worldModelViewMatrix );
-                m.multiply( this.currentSkinInfo.matrix );
+                /**
+                 * cache the bone+skin matrix for later usage in attachment calculations.
+                 */
+                var amatrix= this.skinMatrix;
+                amatrix.copy( this.worldModelViewMatrix );
+                amatrix.multiply( this.currentSkinInfo.matrix );
 
                 for( var i=0; i<vv.length; i++ ) {
-                    vv[i]= m.transformCoord(vv[i]);
+                    vv[i]= amatrix.transformCoord(vv[i]);
                 }
-
 
                 var xmin = Number.MAX_VALUE, xmax = -Number.MAX_VALUE;
                 var ymin = Number.MAX_VALUE, ymax = -Number.MAX_VALUE;
@@ -217,7 +241,17 @@ CAAT.Module({
                 } else {
                     this.worldModelViewMatrix.identity();
                 }
+            },
 
+            __setupAttachments : function( ) {
+                for( var i= 0, l=this.attachments.length; i<l; i+=1 ) {
+                    var attachment= this.attachments[ i ];
+                    attachment.transform( this.skinMatrix, this.currentSkinInfo.width, this.currentSkinInfo.height );
+                }
+            },
+
+            getAttachment : function( id ) {
+                return this.attachments[id];
             }
         }
     }
