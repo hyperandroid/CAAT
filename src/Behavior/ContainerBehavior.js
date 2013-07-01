@@ -36,7 +36,7 @@ CAAT.Module({
              * @type {Array.<CAAT.Behavior.BaseBehavior>}
              */
             behaviors:null, // contained behaviors array
-
+            recursiveCycleBehavior : false,
             conforming : false,
 
             /**
@@ -85,6 +85,20 @@ CAAT.Module({
                 return null;
             },
 
+            setCycle : function( cycle, recurse ) {
+                CAAT.Behavior.ContainerBehavior.superclass.setCycle.call(this,cycle);
+
+                if ( recurse ) {
+                    for( var i=0; i<this.behaviors.length; i++ ) {
+                        this.behaviors[i].setCycle(cycle);
+                    }
+                }
+
+                this.recursiveCycleBehavior= recurse;
+
+                return this;
+            },
+
             /**
              * Add a new behavior to the container.
              * @param behavior {CAAT.Behavior.BaseBehavior}
@@ -99,6 +113,10 @@ CAAT.Module({
                         this.behaviorDuration= len;
                         this.behaviorStartTime= 0;
                     }
+                }
+
+                if ( this.recursiveCycleBehavior ) {
+                    behavior.setCycle( this.isCycle() );
                 }
 
                 return this;

@@ -50,6 +50,7 @@ CAAT.Module({
     defines:"CAAT.Foundation.Actor",
     aliases: [ "CAAT.Actor" ],
     depends: [
+        "CAAT.Math.Dimension",
         "CAAT.Event.AnimationLoop",
         "CAAT.Foundation.SpriteImage",
         "CAAT.Core.Constants",
@@ -105,7 +106,9 @@ CAAT.Module({
                 this.scaleAnchor = CAAT.Foundation.Actor.ANCHOR_CENTER;
 
                 this.modelViewMatrix = new CAAT.Math.Matrix();
+                this.modelViewMatrixI = new CAAT.Math.Matrix();
                 this.worldModelViewMatrix = new CAAT.Math.Matrix();
+                this.worldModelViewMatrixI = new CAAT.Math.Matrix();
 
                 this.resetTransform();
                 this.setScale(1, 1);
@@ -468,6 +471,17 @@ CAAT.Module({
              * @private
              */
             isAA:true,
+
+            /**
+             * if this actor is cached, when destroy is called, it does not call 'clean' method, which clears some
+             * internal properties.
+             */
+            isCachedActor : false,
+
+            setCachedActor : function(cached) {
+                this.isCachedActor= cached;
+                return this;
+            },
 
             /**
              * Make this actor not be laid out.
@@ -1512,12 +1526,19 @@ CAAT.Module({
                     this.parent.removeChild(this);
                 }
 
-                this.backgroundImage= null;
-                this.emptyBehaviorList();
                 this.fireEvent('destroyed', time);
-                this.lifecycleListenerList= [];
+                if ( !this.isCachedActor ) {
+                    this.clean();
+                }
 
             },
+
+            clean : function() {
+                this.backgroundImage= null;
+                this.emptyBehaviorList();
+                this.lifecycleListenerList= [];
+            },
+
             /**
              * Transform a point or array of points in model space to view space.
              *
@@ -1586,7 +1607,7 @@ CAAT.Module({
                 if (this.dirty) {
                     this.setModelViewMatrix();
                 }
-                this.worldModelViewMatrixI = this.worldModelViewMatrix.getInverse();
+                this.worldModelViewMatrix.getInverse(this.worldModelViewMatrixI);
                 this.worldModelViewMatrixI.transformCoord(point);
                 return point;
             },
@@ -1606,7 +1627,7 @@ CAAT.Module({
                     return null;
                 }
 
-                this.modelViewMatrixI = this.modelViewMatrix.getInverse();
+                this.modelViewMatrix.getInverse(this.modelViewMatrixI);
                 this.modelViewMatrixI.transformCoord(point);
                 return this.contains(point.x, point.y) ? this : null;
             },

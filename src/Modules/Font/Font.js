@@ -44,7 +44,7 @@ CAAT.Module({
 
         getFontMetricsNoCSS:function (font) {
 
-            var re = /(\d+)p[x|t]/i;
+            var re = /(\d+)p[x|t]\s*/i;
             var res = re.exec(font);
 
             var height;
@@ -267,7 +267,8 @@ CAAT.Module({
                     }
                     this.charMap[cchar] = {
                         x:x + padding,
-                        width:charWidth[i] - 2 * padding
+                        width:charWidth[i] - 2 * padding,
+                        height: this.height
                     };
                     x += charWidth[i];
                 }

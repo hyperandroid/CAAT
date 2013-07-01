@@ -38,6 +38,52 @@ CAAT.Module({
                 CAAT.Math.Matrix.prototype.transformRenderingContext= CAAT.Matrix.prototype.transformRenderingContext_NoClamp;
                 CAAT.Math.Matrix.prototype.transformRenderingContextSet= CAAT.Matrix.prototype.transformRenderingContextSet_NoClamp;
             }
+        },
+        /**
+         * Create a scale matrix.
+         * @param scalex {number} x scale magnitude.
+         * @param scaley {number} y scale magnitude.
+         *
+         * @return {CAAT.Matrix} a matrix object.
+         *
+         * @static
+         */
+        scale:function (scalex, scaley) {
+            var m = new CAAT.Math.Matrix();
+
+            m.matrix[0] = scalex;
+            m.matrix[4] = scaley;
+
+            return m;
+        },
+        /**
+         * Create a new rotation matrix and set it up for the specified angle in radians.
+         * @param angle {number}
+         * @return {CAAT.Matrix} a matrix object.
+         *
+         * @static
+         */
+        rotate:function (angle) {
+            var m = new CAAT.Math.Matrix();
+            m.setRotation(angle);
+            return m;
+        },
+        /**
+         * Create a translation matrix.
+         * @param x {number} x translation magnitude.
+         * @param y {number} y translation magnitude.
+         *
+         * @return {CAAT.Matrix} a matrix object.
+         * @static
+         *
+         */
+        translate:function (x, y) {
+            var m = new CAAT.Math.Matrix();
+
+            m.matrix[2] = x;
+            m.matrix[5] = y;
+
+            return m;
         }
     },
     extendsWith:function () {
@@ -55,7 +101,8 @@ CAAT.Module({
             __init:function () {
                 this.matrix = [
                     1.0, 0.0, 0.0,
-                    0.0, 1.0, 0.0, 0.0, 0.0, 1.0 ];
+                    0.0, 1.0, 0.0, 
+                    0.0, 0.0, 1.0 ];
 
                 if (typeof Float32Array !== "undefined") {
                     this.matrix = new Float32Array(this.matrix);
@@ -80,18 +127,7 @@ CAAT.Module({
 
                 return point;
             },
-            /**
-             * Create a new rotation matrix and set it up for the specified angle in radians.
-             * @param angle {number}
-             * @return {CAAT.Matrix} a matrix object.
-             *
-             * @static
-             */
-            rotate:function (angle) {
-                var m = new CAAT.Math.Matrix();
-                m.setRotation(angle);
-                return m;
-            },
+
             setRotation:function (angle) {
 
                 this.identity();
@@ -106,23 +142,7 @@ CAAT.Module({
 
                 return this;
             },
-            /**
-             * Create a scale matrix.
-             * @param scalex {number} x scale magnitude.
-             * @param scaley {number} y scale magnitude.
-             *
-             * @return {CAAT.Matrix} a matrix object.
-             *
-             * @static
-             */
-            scale:function (scalex, scaley) {
-                var m = new CAAT.Math.Matrix();
 
-                m.matrix[0] = scalex;
-                m.matrix[4] = scaley;
-
-                return m;
-            },
             setScale:function (scalex, scaley) {
                 this.identity();
 
@@ -131,23 +151,7 @@ CAAT.Module({
 
                 return this;
             },
-            /**
-             * Create a translation matrix.
-             * @param x {number} x translation magnitude.
-             * @param y {number} y translation magnitude.
-             *
-             * @return {CAAT.Matrix} a matrix object.
-             * @static
-             *
-             */
-            translate:function (x, y) {
-                var m = new CAAT.Math.Matrix();
 
-                m.matrix[2] = x;
-                m.matrix[5] = y;
-
-                return m;
-            },
             /**
              * Sets this matrix as a translation matrix.
              * @param x
@@ -283,7 +287,7 @@ CAAT.Module({
              * Creates a new inverse matrix from this matrix.
              * @return {CAAT.Matrix} an inverse matrix.
              */
-            getInverse:function () {
+            getInverse:function (out) {
                 var tm = this.matrix;
 
                 var m00 = tm[0];
@@ -296,7 +300,7 @@ CAAT.Module({
                 var m21 = tm[7];
                 var m22 = tm[8];
 
-                var newMatrix = new CAAT.Math.Matrix();
+                var newMatrix = out || new CAAT.Math.Matrix();
 
                 var determinant = m00 * (m11 * m22 - m21 * m12) - m10 * (m01 * m22 - m21 * m02) + m20 * (m01 * m12 - m11 * m02);
                 if (determinant === 0) {

@@ -11,7 +11,8 @@ CAAT.Module( {
     depends : [
         "CAAT.Foundation.Actor",
         "CAAT.Foundation.SpriteImage",
-        "CAAT.Module.Font.Font"
+        "CAAT.Module.Font.Font",
+        "CAAT.Foundation.UI.Layout.LayoutManager"
     ],
     aliases : ["CAAT.UI.Label"],
     extendsClass : "CAAT.Foundation.Actor",
@@ -296,10 +297,10 @@ CAAT.Module( {
 
                 var image_width;
 
-                if ( r && c ) {
+                if ( typeof r!=="undefined" && typeof c!=="undefined" ) {
                     image_width= image.getWidth();
                 } else {
-                    image_width= image.getWrappedImageWidth();
+                    image_width= ( image instanceof CAAT.Foundation.SpriteImage ) ? image.getWidth() : image.getWrappedImageWidth();
                 }
 
                 // la imagen cabe en este sitio.
@@ -528,6 +529,8 @@ CAAT.Module( {
                                 c= pairs[2]|0;
                             }
                             this.__image( this.images[image], r, c );
+                        } else if (CAAT.currentDirector.getImage(image) ) {
+                            this.__image( CAAT.currentDirector.getImage(image) );
                         }
                     } else if ( tag.indexOf("a=")===0 ) {
                         pairs= tag.split("=");
@@ -599,7 +602,12 @@ CAAT.Module( {
             this.height= image.getHeight();
 
             if ( this.image instanceof CAAT.SpriteImage || this.image instanceof CAAT.Foundation.SpriteImage ) {
-                this.spriteIndex= r*image.columns+c;
+
+                if ( typeof r==="undefined" || typeof c==="undefined" ) {
+                    this.spriteIndex= 0;
+                } else {
+                    this.spriteIndex= r*image.columns+c;
+                }
                 this.paint= this.paintSI;
             }
 
@@ -630,7 +638,7 @@ CAAT.Module( {
             },
 
             getHeight : function() {
-                return this.image instanceof CAAT.Foundation.SpriteImage ? this.image.singleHeight : this.image.height;
+                return this.image instanceof CAAT.Foundation.SpriteImage ? this.image.getHeight() : this.image.height;
             },
 
             getFontMetrics : function() {
@@ -951,6 +959,20 @@ CAAT.Module( {
              */
             clickCallback   : null,
 
+            matchTextSize : true,
+
+            /**
+             * Make the label actor the size the label document has been calculated for.
+             * @param match {boolean}
+             */
+            setMatchTextSize : function( match ) {
+                this.matchTextSize= match;
+                if ( match ) {
+                    this.width= this.preferredSize.width;
+                    this.height= this.preferredSize.height;
+                }
+            },
+
             setStyle : function( name, styleData ) {
                 this.styles[ name ]= styleData;
                 return this;
@@ -1047,6 +1069,11 @@ CAAT.Module( {
                     this.cacheAsBitmap(0,cached);
                 }
 
+                if ( this.matchTextSize ) {
+                    this.width= this.preferredSize.width;
+                    this.height= this.preferredSize.height;
+                }
+
                 return this;
             },
 
@@ -1062,7 +1089,15 @@ CAAT.Module( {
                 return this;
             },
 
-            setDocumentPosition : function() {
+            setDocumentPosition : function( halign, valign ) {
+
+                if ( typeof halign!=="undefined" ) {
+                    this.setHorizontalAlignment(halign);
+                }
+                if ( typeof valign!=="undefined" ) {
+                    this.setVerticalAlignment(valign);
+                }
+
                 var xo=0, yo=0;
 
                 if ( this.valignment===CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER ) {
