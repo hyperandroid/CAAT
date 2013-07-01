@@ -61,8 +61,10 @@ CAAT.Module({
                 this.setScale(1, 1);
                 this.setRotation(0);
 
-                this.modelViewMatrix = new CAAT.Matrix();
-                this.worldModelViewMatrix = new CAAT.Matrix();
+                this.modelViewMatrix = new CAAT.Math.Matrix();
+                this.modelViewMatrixI = new CAAT.Math.Matrix();
+                this.worldModelViewMatrix = new CAAT.Math.Matrix();
+                this.worldModelViewMatrixI = new CAAT.Math.Matrix();
 
                 return this;
             },
@@ -1436,7 +1438,7 @@ CAAT.Module({
              *
              */
             viewToModel:function (point) {
-                this.worldModelViewMatrixI = this.worldModelViewMatrix.getInverse();
+                this.worldModelViewMatrix.getInverse(this.worldModelViewMatrixI);
                 this.worldModelViewMatrixI.transformCoord(point);
                 return point;
             },
@@ -1468,7 +1470,7 @@ CAAT.Module({
                 }
 
                 this.setModelViewMatrix();
-                this.modelViewMatrixI = this.modelViewMatrix.getInverse();
+                this.modelViewMatrix.getInverse(this.modelViewMatrixI);
                 this.modelViewMatrixI.transformCoord(point);
                 return this.contains(point.x, point.y) ? this : null;
             },
