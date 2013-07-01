@@ -1984,10 +1984,11 @@ CAAT.Module({
                         style = style ? style.getPropertyValue('position') : null;
                     }
 
-//                if (!/^(relative|absolute|fixed)$/.test(style)) {
+                    // Accumulate offsets...
+                    x += node[left];
+                    y += node[top];
+
                     if (!/^(fixed)$/.test(style)) {
-                        x += node[left];
-                        y += node[top];
                         node = node[parent];
                     } else {
                         break;
