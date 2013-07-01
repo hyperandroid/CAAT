@@ -408,6 +408,15 @@ CAAT.Module({
             addChildImmediately:function (child, constraint) {
                 return this.addChild(child, constraint);
             },
+
+            addActorImmediately: function(child,constraint) {
+                return this.addChildImmediately(child,constraint);
+            },
+
+            addActor : function( child, constraint ) {
+                return this.addChild(child,constraint);
+            },
+
             /**
              * Adds an Actor to this ActorContainer.
              * The Actor will be added to the container AFTER frame animation, and not on method call time.

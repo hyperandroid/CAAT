@@ -23,7 +23,7 @@
         </div>
         <div id="experiment">
             <div style="text-align:center">
-                <h1>Label</h1>
+                <h1>Label - Reload for new layouts</h1>
             </div>
             <div id="experiment-holder">
                 <canvas id="experiment-canvas"></canvas>
@@ -164,7 +164,15 @@
                         italic : true
                     }).
                     addImage( "img", new CAAT.Foundation.SpriteImage(CAAT.currentDirector.getImage("text"),1,15)).
-                    setText("<style=center>Multiline text</style><br>Bacon ipsum <image=text11> dolor sit amet salami pork belly tail <style=link><a=#"+(textPanelIndex++)+">tongue</a></style> pancetta, pork <image=img,0,2> loin tri-tip drumstick bresaola shankle. Bacon ham hock pork belly, sausage tri-tip tongue strip steak fatback. <a=abcd><image=img,0,7></a> Tail t-bone salami bacon. Bresaola turkey ribeye hamburger meatball t-bone. Turkey pancetta ground round, pig sirloin tenderloin corned beef meatloaf venison sausage jerky pork loin shank bacon tail. Pancetta beef ham hock, jowl pork chop pork belly bacon venison rump shoulder shankle cow pastrami sausage. Beef ribs drumstick meatball, pancetta biltong swine bresaola ribeye<image=img,0,5>jerky spare ribs ham chuck corned beef pork chop.", 300).
+                    setText("<style=center>Multiline text</style><br>Bacon ipsum <image=text11> dolor sit amet salami pork " +
+                            "belly tail <style=link><a=#"+(textPanelIndex++)+">tongue</a></style> pancetta, pork <image=img,0,2> " +
+                            "loin tri-tip drumstick bresaola shankle. Bacon ham hock pork belly, sausage tri-tip tongue strip " +
+                            "steak fatback. <a=abcd><image=img,0,7></a> Tail t-bone salami bacon. Bresaola turkey ribeye " +
+                            "hamburger meatball t-bone. Turkey pancetta ground round, pig sirloin tenderloin corned beef " +
+                            "meatloaf venison sausage jerky pork loin shank bacon tail. Pancetta beef ham hock, jowl pork " +
+                            "chop pork belly bacon venison rump shoulder shankle cow pastrami sausage. Beef ribs drumstick " +
+                            "meatball, pancetta biltong swine bresaola ribeye<image=img,0,5>jerky spare ribs ham chuck corned " +
+                            "beef pork chop.", 300).
                     cacheAsBitmap().
                     setClickCallback( function(id) {
                         alert("Clicked: "+id);
