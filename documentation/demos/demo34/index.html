@@ -241,15 +241,16 @@
             director.setImagesCache(images);
             var scene=     director.createScene();
 
-
             var _skeleton1= new CAAT.Module.Skeleton.Skeleton().
                     setSkeletonFromFile("dragon/dragon-skeleton.json").
                     addAnimationFromFile( "default", "dragon/dragon-flying.json" );
+
 
             var skeletonActordragon = new CAAT.Module.Skeleton.SkeletonActor(director, _skeleton1).
                     setLocation( 500, 350).
                     setScale(.7,.7);
             scene.addChild(skeletonActordragon);
+
 
             var _skeletonBoy= new CAAT.Module.Skeleton.Skeleton().
                     setSkeletonFromFile("spineboy/skeleton.json").
@@ -276,6 +277,57 @@
                     setScale(.7,.7).
                     setSkin("goblingirl").
                     setAnimation("default");
+
+            /**
+             * For Rob with love.
+             */
+            var actorRef= new CAAT.Foundation.Actor().
+                    setSize(100,10).
+                    setFillStyle("red");
+            scene.addChild( actorRef );
+            var actorRef2= new CAAT.Foundation.Actor().
+                    setSize(100,10).
+                    setFillStyle("green");
+            scene.addChild( actorRef2 );
+            var actorRef3= new CAAT.Foundation.Actor().
+                    setSize(100,10).
+                    setFillStyle("blue");
+            scene.addChild( actorRef3 );
+
+            skeletonActor.addAttachment("left hand item", .5, 0, function(attachment) {
+                /**
+                 * md= {
+                 *   translation {
+                 *       x:
+                 *       y:
+                 *     },
+                 *     angle: ,
+                 *     scale: {
+                 *       x:,
+                 *       y:
+                 *     }
+                 *   }
+                 *
+                 * @type {*}
+                 */
+                var md= attachment.getMatrixData();
+                actorRef.setRotationAnchored(md.angle,1,0).
+                    setLocation( attachment.x-actorRef.width, attachment.y);
+            });
+            skeletonActor.addAttachment("left hand item", .5, 1, function(attachment) {
+                var md= attachment.getMatrixData();
+                actorRef2.setRotationAnchored(md.angle,0,0).
+                    setLocation( attachment.x, attachment.y);
+            });
+            skeletonActor.addAttachment("right hand item", 0,1, function(attachment) {
+                var md= attachment.getMatrixData();
+                actorRef3.setLocation(  attachment.x-actorRef3.width, attachment.y).
+                    setRotationAnchored( Math.PI/2 + md.angle,1,1);
+            });
+            /**
+             * end love
+             */
+
 
             scene.addChild(skeletonActorgirl);
 

@@ -192,6 +192,15 @@ CAAT.Module({
              */
             endAnimate:function (director, time) {
             },
+
+            addActorImmediately: function(child,constraint) {
+                return this.addChildImmediately(child,constraint);
+            },
+
+            addActor : function( child, constraint ) {
+                return this.addChild(child,constraint);
+            },
+
             /**
              * Adds an Actor to this Container.
              * The Actor will be added ON METHOD CALL, despite the rendering pipeline stage being executed at

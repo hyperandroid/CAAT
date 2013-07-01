@@ -48,7 +48,9 @@ CAAT.Module({
                 this.mapInfo = {};
                 this.animationsMap= {};
 
-                if ( arguments.length===3 ) {
+                if ( arguments.length===1 ) {
+                    this.initialize.call(this, arguments[0], 1, 1);
+                } else if ( arguments.length===3 ) {
                     this.initialize.apply(this, arguments);
                 }
                 return this;
@@ -412,6 +414,21 @@ CAAT.Module({
                 }
 
                 return this;
+            },
+
+            /**
+             * Create elements as director.getImage values.
+             * Create as much as elements defined in this sprite image.
+             * The elements will be named prefix+<the map info element name>
+             * @param prefix
+             */
+            addElementsAsImages : function( prefix ) {
+                for( var i in this.mapInfo ) {
+                    var si= new CAAT.Foundation.SpriteImage().initialize( this.image, 1, 1 );
+                    si.addElement(0, this.mapInfo[i]);
+                    si.setSpriteIndex(0);
+                    CAAT.currentDirector.addImage( prefix+i, si );
+                }
             },
 
             copy : function( other ) {
@@ -846,6 +863,39 @@ CAAT.Module({
                 return this.mapInfo[ index ];
             },
 
+            initializeFromGlyphDesigner : function( text ) {
+                for (var i = 0; i < text.length; i++) {
+                    if (0 === text[i].indexOf("char ")) {
+                        var str = text[i].substring(5);
+                        var pairs = str.split(' ');
+                        var obj = {
+                            x: 0,
+                            y: 0,
+                            width: 0,
+                            height: 0,
+                            xadvance: 0,
+                            xoffset: 0,
+                            yoffset: 0
+                        };
+
+                        for (var j = 0; j < pairs.length; j++) {
+                            var pair = pairs[j];
+                            var pairData = pair.split("=");
+                            var key = pairData[0];
+                            var value = pairData[1];
+                            if (value.charAt(0) === '"' && value.charAt(value.length - 1) === '"') {
+                                value.substring(1, value.length - 1);
+                            }
+                            obj[ key ] = value;
+                        }
+
+                        this.addElement(String.fromCharCode(obj.id), obj);
+                    }
+                }
+
+                return this;
+            },
+
             /**
              * This method takes the output generated from the tool at http://labs.hyperandroid.com/static/texture/spriter.html
              * and creates a map into that image.
@@ -882,6 +932,25 @@ CAAT.Module({
                 }
 
                 return this;
+            },
+
+            initializeFromTexturePackerJSON : function( image, obj ) {
+
+                for( var img in obj.frames ) {
+                    var imgData= obj.frames[img];
+
+                    var si_obj= {
+                        x: imgData.frame.x,
+                        y: imgData.frame.y,
+                        width: imgData.spriteSourceSize.w,
+                        height: imgData.spriteSourceSize.h,
+                        id: '0'
+                    };
+
+                    var si= new CAAT.Foundation.SpriteImage().initialize( image, 1, 1 );
+                    si.addElement(0,si_obj);
+                    CAAT.currentDirector.addImage( img.substring(0,img.indexOf('.')), si );
+                }
             },
 
             /**
