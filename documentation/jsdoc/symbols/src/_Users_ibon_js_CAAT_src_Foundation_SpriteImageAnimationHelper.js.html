@@ -1,0 +1,54 @@
+<html><head><meta http-equiv="content-type" content="text/html; charset=utf-8"> <style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.line {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='line'>  1</span> <span class="NAME">CAAT.Module</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'>  2</span> 
+<span class='line'>  3</span> </span><span class="WHIT">    </span><span class="COMM">/**
+<span class='line'>  4</span>      *
+<span class='line'>  5</span>      * Define an animation frame sequence, name it and supply with a callback which be called when the
+<span class='line'>  6</span>      * sequence ends playing.
+<span class='line'>  7</span>      *
+<span class='line'>  8</span>      * @name SpriteImageAnimationHelper
+<span class='line'>  9</span>      * @memberOf CAAT.Foundation
+<span class='line'> 10</span>      * @constructor
+<span class='line'> 11</span>      */</span><span class="WHIT">
+<span class='line'> 12</span> 
+<span class='line'> 13</span> </span><span class="WHIT">    </span><span class="NAME">defines</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="STRN">"CAAT.Foundation.SpriteImageAnimationHelper"</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 14</span> </span><span class="WHIT">    </span><span class="NAME">extendsWith</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 15</span> </span><span class="WHIT">        </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 16</span> 
+<span class='line'> 17</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'> 18</span>              * @lends  CAAT.Foundation.SpriteImageAnimationHelper.prototype
+<span class='line'> 19</span>              */</span><span class="WHIT">
+<span class='line'> 20</span> 
+<span class='line'> 21</span> </span><span class="WHIT">            </span><span class="NAME">__init</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT"> </span><span class="NAME">animation</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">onEndPlayCallback</span><span class="WHIT"> </span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='line'> 22</span> </span><span class="WHIT">                </span><span class="NAME">this.animation</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">animation</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 23</span> </span><span class="WHIT">                </span><span class="NAME">this.time</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">time</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 24</span> </span><span class="WHIT">                </span><span class="NAME">this.onEndPlayCallback</span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">onEndPlayCallback</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 25</span> </span><span class="WHIT">                </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">this</span><span class="PUNC">;</span><span class="WHIT">
+<span class='line'> 26</span> </span><span class="WHIT">            </span><span class="PUNC">}</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 27</span> 
+<span class='line'> 28</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'> 29</span>              * A sequence of integer values defining a frame animation.
+<span class='line'> 30</span>              * For example [1,2,3,4,3,2,3,4,3,2]
+<span class='line'> 31</span>              * Array.&lt;number>
+<span class='line'> 32</span>              */</span><span class="WHIT">
+<span class='line'> 33</span> </span><span class="WHIT">            </span><span class="NAME">animation</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT">         </span><span class="KEYW">null</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 34</span> 
+<span class='line'> 35</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'> 36</span>              * Time between any two animation frames.
+<span class='line'> 37</span>              */</span><span class="WHIT">
+<span class='line'> 38</span> </span><span class="WHIT">            </span><span class="NAME">time</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT">              </span><span class="NUMB">0</span><span class="PUNC">,</span><span class="WHIT">
+<span class='line'> 39</span> 
+<span class='line'> 40</span> </span><span class="WHIT">            </span><span class="COMM">/**
+<span class='line'> 41</span>              * Call this callback function when the sequence ends.
+<span class='line'> 42</span>              */</span><span class="WHIT">
+<span class='line'> 43</span> </span><span class="WHIT">            </span><span class="NAME">onEndPlayCallback</span><span class="WHIT"> </span><span class="PUNC">:</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="WHIT">
+<span class='line'> 44</span> 
+<span class='line'> 45</span> </span><span class="WHIT">        </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 46</span> </span><span class="WHIT">    </span><span class="PUNC">}</span><span class="WHIT">
+<span class='line'> 47</span> </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span></pre></body></html>

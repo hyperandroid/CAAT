@@ -1,0 +1,2661 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="generator" content="JsDoc Toolkit" />
+		
+		<title>JsDoc Reference - CAAT.Behavior.BaseBehavior</title>
+
+		<style type="text/css">
+			/* default.css */
+body
+{
+	font: 12px "Lucida Grande", Tahoma, Arial, Helvetica, sans-serif;
+	width: 940px;
+}
+
+.header
+{
+	clear: both;
+	background-color: #ccc;
+	padding: 8px;
+}
+
+h1
+{
+	font-size: 150%;
+	font-weight: bold;
+	padding: 0;
+	margin: 1em 0 0 .3em;
+}
+
+hr
+{
+	border: none 0;
+	border-top: 1px solid #7F8FB1;
+	height: 1px;
+}
+
+pre.code
+{
+	display: block;
+	padding: 8px;
+	border: 1px dashed #ccc;
+}
+
+#index
+{
+	margin-top: 24px;
+	float: left;
+	width: 300px;
+	position: absolute;
+	left: 8px;
+	background-color: #F3F3F3;
+	padding: 8px;
+}
+
+#content
+{
+	margin-left: 340px;
+	width: 600px;
+}
+
+.classList
+{
+	list-style-type: none;
+	padding: 0;
+	margin: 0 0 0 8px;
+	font-family: arial, sans-serif;
+	font-size: 1em;
+	overflow: auto;
+}
+
+.classList li
+{
+	padding: 0;
+	margin: 0 0 8px 0;
+}
+
+.summaryTable { width: 100%; }
+
+h1.classTitle
+{
+	font-size:170%;
+	line-height:130%;
+}
+
+h2 { font-size: 110%; }
+caption, div.sectionTitle
+{
+	background-color: #7F8FB1;
+	color: #fff;
+	font-size:130%;
+	text-align: left;
+	padding: 2px 6px 2px 6px;
+	border: 1px #7F8FB1 solid;
+}
+
+div.sectionTitle { margin-bottom: 8px; }
+.summaryTable thead { display: none; }
+
+.summaryTable td
+{
+	vertical-align: top;
+	padding: 4px;
+	border-bottom: 1px #7F8FB1 solid;
+	border-right: 1px #7F8FB1 solid;
+}
+
+/*col#summaryAttributes {}*/
+.summaryTable td.attributes
+{
+	border-left: 1px #7F8FB1 solid;
+	width: 140px;
+	text-align: right;
+}
+
+td.attributes, .fixedFont
+{
+	line-height: 15px;
+	color: #002EBE;
+	font-family: "Courier New",Courier,monospace;
+	font-size: 13px;
+}
+
+.summaryTable td.nameDescription
+{
+	text-align: left;
+	font-size: 13px;
+	line-height: 15px;
+}
+
+.summaryTable td.nameDescription, .description
+{
+	line-height: 15px;
+	padding: 4px;
+	padding-left: 4px;
+}
+
+.summaryTable { margin-bottom: 8px; }
+
+ul.inheritsList
+{
+	list-style: square;
+	margin-left: 20px;
+	padding-left: 0;
+}
+
+.detailList {
+	margin-left: 20px; 
+	line-height: 15px;
+}
+.detailList dt { margin-left: 20px; }
+
+.detailList .heading
+{
+	font-weight: bold;
+	padding-bottom: 6px;
+	margin-left: 0;
+}
+
+.light, td.attributes, .light a:link, .light a:visited
+{
+	color: #777;
+	font-style: italic;
+}
+
+.fineprint
+{
+	text-align: right;
+	font-size: 10px;
+}
+		</style>
+	</head>
+
+	<body>
+<!-- ============================== header ================================= -->	
+		<!-- begin static/header.html -->
+		<div id="header">
+</div>
+		<!-- end static/header.html -->
+
+<!-- ============================== classes index ============================ -->
+		<div id="index">
+			<!-- begin publish.classesIndex -->
+			<div align="center"><a href="../index.html">Class Index</a>
+| <a href="../files.html">File Index</a></div>
+<hr />
+<h2>Classes</h2>
+<ul class="classList">
+	
+	<li><i><a href="../symbols/_global_.html">_global_</a></i></li>
+	
+	<li><a href="../symbols/CAAT.html">CAAT</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.html">CAAT.Behavior</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.AlphaBehavior.html">CAAT.Behavior.AlphaBehavior</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.BaseBehavior.html">CAAT.Behavior.BaseBehavior</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.BaseBehavior.Status.html">CAAT.Behavior.BaseBehavior.Status</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.ContainerBehavior.html">CAAT.Behavior.ContainerBehavior</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.GenericBehavior.html">CAAT.Behavior.GenericBehavior</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.Interpolator.html">CAAT.Behavior.Interpolator</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.PathBehavior.html">CAAT.Behavior.PathBehavior</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.PathBehavior.autorotate.html">CAAT.Behavior.PathBehavior.autorotate</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.PathBehavior.AUTOROTATE.html">CAAT.Behavior.PathBehavior.AUTOROTATE</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.RotateBehavior.html">CAAT.Behavior.RotateBehavior</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.Scale1Behavior.html">CAAT.Behavior.Scale1Behavior</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.Scale1Behavior.Axis.html">CAAT.Behavior.Scale1Behavior.Axis</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.Scale1Behavior.AXIS.html">CAAT.Behavior.Scale1Behavior.AXIS</a></li>
+	
+	<li><a href="../symbols/CAAT.Behavior.ScaleBehavior.html">CAAT.Behavior.ScaleBehavior</a></li>
+	
+	<li><a href="../symbols/CAAT.Class.html">CAAT.Class</a></li>
+	
+	<li><a href="../symbols/CAAT.CSS.html">CAAT.CSS</a></li>
+	
+	<li><a href="../symbols/CAAT.Event.html">CAAT.Event</a></li>
+	
+	<li><a href="../symbols/CAAT.Event.KeyEvent.html">CAAT.Event.KeyEvent</a></li>
+	
+	<li><a href="../symbols/CAAT.Event.MouseEvent.html">CAAT.Event.MouseEvent</a></li>
+	
+	<li><a href="../symbols/CAAT.Event.TouchEvent.html">CAAT.Event.TouchEvent</a></li>
+	
+	<li><a href="../symbols/CAAT.Event.TouchInfo.html">CAAT.Event.TouchInfo</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.html">CAAT.Foundation</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.Actor.html">CAAT.Foundation.Actor</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.ActorContainer.html">CAAT.Foundation.ActorContainer</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.ActorContainer.AddHint.html">CAAT.Foundation.ActorContainer.AddHint</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.ActorContainer.ADDHINT.html">CAAT.Foundation.ActorContainer.ADDHINT</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.Box2D.html">CAAT.Foundation.Box2D</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.Box2D.B2DBodyActor.html">CAAT.Foundation.Box2D.B2DBodyActor</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.Box2D.B2DCircularBody.html">CAAT.Foundation.Box2D.B2DCircularBody</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.Box2D.B2DPolygonBody.html">CAAT.Foundation.Box2D.B2DPolygonBody</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.Director.html">CAAT.Foundation.Director</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.Scene.html">CAAT.Foundation.Scene</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.SpriteImage.html">CAAT.Foundation.SpriteImage</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.SpriteImageAnimationHelper.html">CAAT.Foundation.SpriteImageAnimationHelper</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.SpriteImageHelper.html">CAAT.Foundation.SpriteImageHelper</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.Timer.html">CAAT.Foundation.Timer</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.Timer.TimerManager.html">CAAT.Foundation.Timer.TimerManager</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.Timer.TimerTask.html">CAAT.Foundation.Timer.TimerTask</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.UI.html">CAAT.Foundation.UI</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.UI.Dock.html">CAAT.Foundation.UI.Dock</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.UI.IMActor.html">CAAT.Foundation.UI.IMActor</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.UI.InterpolatorActor.html">CAAT.Foundation.UI.InterpolatorActor</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.UI.Label.html">CAAT.Foundation.UI.Label</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.UI.Layout.html">CAAT.Foundation.UI.Layout</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.UI.Layout.BorderLayout.html">CAAT.Foundation.UI.Layout.BorderLayout</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.UI.Layout.BoxLayout.html">CAAT.Foundation.UI.Layout.BoxLayout</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.UI.Layout.GridLayout.html">CAAT.Foundation.UI.Layout.GridLayout</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.UI.Layout.LayoutManager.html">CAAT.Foundation.UI.Layout.LayoutManager</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.UI.PathActor.html">CAAT.Foundation.UI.PathActor</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.UI.ShapeActor.html">CAAT.Foundation.UI.ShapeActor</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.UI.StarActor.html">CAAT.Foundation.UI.StarActor</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.UI.TextActor.html">CAAT.Foundation.UI.TextActor</a></li>
+	
+	<li><a href="../symbols/CAAT.KEY_MODIFIERS.html">CAAT.KEY_MODIFIERS</a></li>
+	
+	<li><a href="../symbols/CAAT.KEYS.html">CAAT.KEYS</a></li>
+	
+	<li><a href="../symbols/CAAT.Math.html">CAAT.Math</a></li>
+	
+	<li><a href="../symbols/CAAT.Math.Bezier.html">CAAT.Math.Bezier</a></li>
+	
+	<li><a href="../symbols/CAAT.Math.CatmullRom.html">CAAT.Math.CatmullRom</a></li>
+	
+	<li><a href="../symbols/CAAT.Math.Curve.html">CAAT.Math.Curve</a></li>
+	
+	<li><a href="../symbols/CAAT.Math.Dimension.html">CAAT.Math.Dimension</a></li>
+	
+	<li><a href="../symbols/CAAT.Math.Matrix.html">CAAT.Math.Matrix</a></li>
+	
+	<li><a href="../symbols/CAAT.Math.Matrix3.html">CAAT.Math.Matrix3</a></li>
+	
+	<li><a href="../symbols/CAAT.Math.Point.html">CAAT.Math.Point</a></li>
+	
+	<li><a href="../symbols/CAAT.Math.Rectangle.html">CAAT.Math.Rectangle</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Audio.html">CAAT.Module.Audio</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Audio.AudioManager.html">CAAT.Module.Audio.AudioManager</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.CircleManager.html">CAAT.Module.CircleManager</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.CircleManager.PackedCircle.html">CAAT.Module.CircleManager.PackedCircle</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.CircleManager.PackedCircleManager.html">CAAT.Module.CircleManager.PackedCircleManager</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Collision.html">CAAT.Module.Collision</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Collision.QuadTree.html">CAAT.Module.Collision.QuadTree</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Collision.SpatialHash.html">CAAT.Module.Collision.SpatialHash</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.ColorUtil.html">CAAT.Module.ColorUtil</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.ColorUtil.Color.html">CAAT.Module.ColorUtil.Color</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Debug.html">CAAT.Module.Debug</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Debug.Debug.html">CAAT.Module.Debug.Debug</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Font.html">CAAT.Module.Font</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Font.Font.html">CAAT.Module.Font.Font</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Image.html">CAAT.Module.Image</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Image.ImageProcessor.html">CAAT.Module.Image.ImageProcessor</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Image.ImageProcessor.ImageProcessor.html">CAAT.Module.Image.ImageProcessor.ImageProcessor</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Image.ImageProcessor.IMBumpMapping.html">CAAT.Module.Image.ImageProcessor.IMBumpMapping</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Image.ImageProcessor.IMPlasma.html">CAAT.Module.Image.ImageProcessor.IMPlasma</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Image.ImageProcessor.IMRotoZoom.html">CAAT.Module.Image.ImageProcessor.IMRotoZoom</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Image.ImageUtil.html">CAAT.Module.Image.ImageUtil</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Locale.html">CAAT.Module.Locale</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Locale.ResourceBundle.html">CAAT.Module.Locale.ResourceBundle</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Preloader.html">CAAT.Module.Preloader</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Preloader.ImagePreloader.html">CAAT.Module.Preloader.ImagePreloader</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Preloader.Preloader.html">CAAT.Module.Preloader.Preloader</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Runtime.html">CAAT.Module.Runtime</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Runtime.BrowserInfo.html">CAAT.Module.Runtime.BrowserInfo</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Skeleton.html">CAAT.Module.Skeleton</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Skeleton%23SkeletonActor.html">CAAT.Module.Skeleton#SkeletonActor</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Skeleton.Bone.html">CAAT.Module.Skeleton.Bone</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Skeleton.BoneActor.html">CAAT.Module.Skeleton.BoneActor</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Skeleton.Skeleton.html">CAAT.Module.Skeleton.Skeleton</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Storage.html">CAAT.Module.Storage</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.Storage.LocalStorage.html">CAAT.Module.Storage.LocalStorage</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.TexturePacker.html">CAAT.Module.TexturePacker</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.TexturePacker.TextureElement.html">CAAT.Module.TexturePacker.TextureElement</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.TexturePacker.TexturePage.html">CAAT.Module.TexturePacker.TexturePage</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.TexturePacker.TexturePageManager.html">CAAT.Module.TexturePacker.TexturePageManager</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.TexturePacker.TextureScan.html">CAAT.Module.TexturePacker.TextureScan</a></li>
+	
+	<li><a href="../symbols/CAAT.Module.TexturePacker.TextureScanMap.html">CAAT.Module.TexturePacker.TextureScanMap</a></li>
+	
+	<li><a href="../symbols/CAAT.ModuleManager.html">CAAT.ModuleManager</a></li>
+	
+	<li><a href="../symbols/CAAT.PathUtil.html">CAAT.PathUtil</a></li>
+	
+	<li><a href="../symbols/CAAT.PathUtil.ArcPath.html">CAAT.PathUtil.ArcPath</a></li>
+	
+	<li><a href="../symbols/CAAT.PathUtil.CurvePath.html">CAAT.PathUtil.CurvePath</a></li>
+	
+	<li><a href="../symbols/CAAT.PathUtil.LinearPath.html">CAAT.PathUtil.LinearPath</a></li>
+	
+	<li><a href="../symbols/CAAT.PathUtil.Path.html">CAAT.PathUtil.Path</a></li>
+	
+	<li><a href="../symbols/CAAT.PathUtil.PathSegment.html">CAAT.PathUtil.PathSegment</a></li>
+	
+	<li><a href="../symbols/CAAT.PathUtil.RectPath.html">CAAT.PathUtil.RectPath</a></li>
+	
+	<li><a href="../symbols/CAAT.PathUtil.SVGPath.html">CAAT.PathUtil.SVGPath</a></li>
+	
+	<li><a href="../symbols/CAAT.WebGL.html">CAAT.WebGL</a></li>
+	
+	<li><a href="../symbols/CAAT.WebGL.ColorProgram.html">CAAT.WebGL.ColorProgram</a></li>
+	
+	<li><a href="../symbols/CAAT.WebGL.GLU.html">CAAT.WebGL.GLU</a></li>
+	
+	<li><a href="../symbols/CAAT.WebGL.Program.html">CAAT.WebGL.Program</a></li>
+	
+	<li><a href="../symbols/CAAT.WebGL.TextureProgram.html">CAAT.WebGL.TextureProgram</a></li>
+	
+	<li><a href="../symbols/String.html">String</a></li>
+	
+</ul>
+<hr />
+			<!-- end publish.classesIndex -->
+		</div>
+		
+		<div id="content">
+<!-- ============================== class title ============================ -->
+			<h1 class="classTitle">
+				
+				Class CAAT.Behavior.BaseBehavior
+			</h1>
+
+<!-- ============================== class summary ========================== -->			
+			<p class="description">
+				
+				
+			
+				
+				
+				
+					<br /><i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_Behavior_BaseBehavior.js.html">BaseBehavior.js</a>.
+				
+			</p>
+
+<!-- ============================== constructor summary ==================== -->			
+			
+			<table class="summaryTable" cellspacing="0" summary="A summary of the constructor documented in the class CAAT.Behavior.BaseBehavior.">
+				<caption>Class Summary</caption>
+				<thead>
+					<tr>
+						<th scope="col">Constructor Attributes</th>
+						<th scope="col">Constructor Name and Description</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="attributes">&nbsp;</td>
+						<td class="nameDescription" >
+							<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#constructor">CAAT.Behavior.BaseBehavior</a></b>()
+							</div>
+							<div class="description">The BaseBehavior is the base class of all Behavior modifiers:
+
+<li>AlphaBehabior
+<li>RotateBehavior
+<li>ScaleBehavior
+<li>Scale1Behavior
+<li>PathBehavior
+<li>GenericBehavior
+<li>ContainerBehavior
+
+Behavior base class.</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+
+<!-- ============================== properties summary ===================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the fields documented in the class CAAT.Behavior.BaseBehavior.">
+					<caption>Field Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Field Attributes</th>
+							<th scope="col">Field Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#actor">actor</a></b>
+								</div>
+								<div class="description">The actor this behavior will be applied to.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#behaviorDuration">behaviorDuration</a></b>
+								</div>
+								<div class="description">Behavior application duration time related to scene time.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#behaviorStartTime">behaviorStartTime</a></b>
+								</div>
+								<div class="description">Behavior application start time related to scene time.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#cycleBehavior">cycleBehavior</a></b>
+								</div>
+								<div class="description">Will this behavior apply for ever in a loop ?</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#discardable">discardable</a></b>
+								</div>
+								<div class="description">if true, this behavior will be removed from the this.actor instance when it expires.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#doValueApplication">doValueApplication</a></b>
+								</div>
+								<div class="description">Apply the behavior, or just calculate the values ?</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#id">id</a></b>
+								</div>
+								<div class="description">An id to identify this behavior.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#interpolator">interpolator</a></b>
+								</div>
+								<div class="description">An interpolator object to apply behaviors using easing functions, etc.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#isRelative">isRelative</a></b>
+								</div>
+								<div class="description">does this behavior apply relative values ??</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#lifecycleListenerList">lifecycleListenerList</a></b>
+								</div>
+								<div class="description">Behavior lifecycle observer list.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#solved">solved</a></b>
+								</div>
+								<div class="description">Is this behavior solved ? When called setDelayTime, this flag identifies whether the behavior
+is in time relative to the scene.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#status">status</a></b>
+								</div>
+								<div class="description">behavior status.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#timeOffset">timeOffset</a></b>
+								</div>
+								<div class="description">Initial offset to apply this behavior the first time.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+
+<!-- ============================== methods summary ======================== -->
+			
+				
+				
+				<table class="summaryTable" cellspacing="0" summary="A summary of the methods documented in the class CAAT.Behavior.BaseBehavior.">
+					<caption>Method Summary</caption>
+					<thead>
+						<tr>
+							<th scope="col">Method Attributes</th>
+							<th scope="col">Method Name and Description</th>
+						</tr>
+					</thead>
+					<tbody>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#__init">__init</a></b>()
+								</div>
+								<div class="description">Constructor delegate function.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#addListener">addListener</a></b>(behaviorListener)
+								</div>
+								<div class="description">Adds an observer to this behavior.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#apply">apply</a></b>(time, actor)
+								</div>
+								<div class="description">This method must no be called directly.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#calculateKeyFrameData">calculateKeyFrameData</a></b>(time)
+								</div>
+								<div class="description">Calculate a CSS3 @key-frame for this behavior at the given time.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#calculateKeyFramesData">calculateKeyFramesData</a></b>(prefix, name, keyframessize)
+								</div>
+								<div class="description">Calculate a complete CSS3 @key-frame set for this behavior.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#emptyListenerList">emptyListenerList</a></b>()
+								</div>
+								<div class="description">Remove all registered listeners to the behavior.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#fireBehaviorAppliedEvent">fireBehaviorAppliedEvent</a></b>(actor, time, normalizedTime, value)
+								</div>
+								<div class="description">Notify observers about behavior being applied.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#fireBehaviorExpiredEvent">fireBehaviorExpiredEvent</a></b>(actor, time)
+								</div>
+								<div class="description">Notify observers about expiration event.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#fireBehaviorStartedEvent">fireBehaviorStartedEvent</a></b>(actor, time)
+								</div>
+								<div class="description">Notify observers the first time the behavior is applied.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#getDuration">getDuration</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#getKeyFrameDataValues">getKeyFrameDataValues</a></b>(time)
+								</div>
+								<div class="description">Calculate a CSS3 @key-frame data values instead of building a CSS3 @key-frame value.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#getPropertyName">getPropertyName</a></b>()
+								</div>
+								<div class="description">Get this behaviors CSS property name application.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#getStartTime">getStartTime</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#initialize">initialize</a></b>(overrides)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#isBehaviorInTime">isBehaviorInTime</a></b>(time, actor)
+								</div>
+								<div class="description">Chekcs whether the behaviour is in scene time.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#isCycle">isCycle</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#normalizeTime">normalizeTime</a></b>(time)
+								</div>
+								<div class="description">Convert scene time into something more manageable for the behavior.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">CAAT.Behavior.BaseBehavior.<b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#.parse">parse</a></b>(obj)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#parse">parse</a></b>(obj)
+								</div>
+								<div class="description">Parse a behavior of this type.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setCycle">setCycle</a></b>(bool)
+								</div>
+								<div class="description">Sets the behavior to cycle, ie apply forever.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setDefaultInterpolator">setDefaultInterpolator</a></b>()
+								</div>
+								<div class="description">Sets the default interpolator to a linear ramp, that is, behavior will be applied linearly.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setDelayTime">setDelayTime</a></b>(delay, duration)
+								</div>
+								<div class="description">Sets behavior start time and duration.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setExpired">setExpired</a></b>(actor, time)
+								</div>
+								<div class="description">Sets the behavior as expired.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setForTime">setForTime</a></b>(actor, time)
+								</div>
+								<div class="description">This method must be overriden for every Behavior breed.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setFrameTime">setFrameTime</a></b>(startTime, duration)
+								</div>
+								<div class="description">Sets behavior start time and duration.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setId">setId</a></b>(id)
+								</div>
+								<div class="description">Sets this behavior id.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setInterpolator">setInterpolator</a></b>(interpolator)
+								</div>
+								<div class="description">Changes behavior default interpolator to another instance of CAAT.Interpolator.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setOutOfFrameTime">setOutOfFrameTime</a></b>()
+								</div>
+								<div class="description">Make this behavior not applicable.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setPingPong">setPingPong</a></b>()
+								</div>
+								<div class="description">Sets default interpolator to be linear from 0.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setRelative">setRelative</a></b>(bool)
+								</div>
+								<div class="description">Set this behavior as relative value application to some other measures.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setRelativeValues">setRelativeValues</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setStatus">setStatus</a></b>(st)
+								</div>
+								<div class="description">Set this behavior status</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setTimeOffset">setTimeOffset</a></b>(offset)
+								</div>
+								<div class="description">Set this behavior offset time.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Behavior.BaseBehavior.html#setValueApplication">setValueApplication</a></b>(apply)
+								</div>
+								<div class="description">Set whether this behavior will apply behavior values to a reference Actor instance.</div>
+							</td>
+						</tr>
+					
+					</tbody>
+				</table>
+				
+				
+				
+			
+<!-- ============================== events summary ======================== -->
+			
+
+<!-- ============================== constructor details ==================== -->		
+			
+			<div class="details"><a name="constructor"> </a>
+				<div class="sectionTitle">
+					Class Detail
+				</div>
+				
+				<div class="fixedFont">
+						<b>CAAT.Behavior.BaseBehavior</b>()
+				</div>
+				
+				<div class="description">
+					The BaseBehavior is the base class of all Behavior modifiers:
+
+<li>AlphaBehabior
+<li>RotateBehavior
+<li>ScaleBehavior
+<li>Scale1Behavior
+<li>PathBehavior
+<li>GenericBehavior
+<li>ContainerBehavior
+
+Behavior base class.
+
+<p>
+A behavior is defined by a frame time (behavior duration) and a behavior application function called interpolator.
+In its default form, a behaviour is applied linearly, that is, the same amount of behavior is applied every same
+time interval.
+<p>
+A concrete Behavior, a rotateBehavior in example, will change a concrete Actor's rotationAngle during the specified
+period.
+<p>
+A behavior is guaranteed to notify (if any observer is registered) on behavior expiration.
+<p>
+A behavior can keep an unlimited observers. Observers are objects of the form:
+<p>
+<code>
+{
+     behaviorExpired : function( behavior, time, actor);
+     behaviorApplied : function( behavior, time, normalizedTime, actor, value);
+}
+</code>
+<p>
+<strong>behaviorExpired</strong>: function( behavior, time, actor). This method will be called for any registered observer when
+the scene time is greater than behavior's startTime+duration. This method will be called regardless of the time
+granurality.
+<p>
+<strong>behaviorApplied</strong> : function( behavior, time, normalizedTime, actor, value). This method will be called once per
+frame while the behavior is not expired and is in frame time (behavior startTime>=scene time). This method can be
+called multiple times.
+<p>
+Every behavior is applied to a concrete Actor.
+Every actor must at least define an start and end value. The behavior will set start-value at behaviorStartTime and
+is guaranteed to apply end-value when scene time= behaviorStartTime+behaviorDuration.
+<p>
+You can set behaviors to apply forever that is cyclically. When a behavior is cycle=true, won't notify
+behaviorExpired to its registered observers.
+<p>
+Other Behaviors simply must supply with the method <code>setForTime(time, actor)</code> overriden.
+					
+				</div>
+				
+				
+				
+				
+					
+					
+					
+					
+					
+					
+					
+
+			</div>
+			
+
+<!-- ============================== field details ========================== -->		
+			
+				<div class="sectionTitle">
+					Field Detail
+				</div>
+				
+					<a name="actor"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>actor</b>
+					
+					</div>
+					<div class="description">
+						The actor this behavior will be applied to.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="behaviorDuration"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>behaviorDuration</b>
+					
+					</div>
+					<div class="description">
+						Behavior application duration time related to scene time.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="behaviorStartTime"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>behaviorStartTime</b>
+					
+					</div>
+					<div class="description">
+						Behavior application start time related to scene time.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="cycleBehavior"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>cycleBehavior</b>
+					
+					</div>
+					<div class="description">
+						Will this behavior apply for ever in a loop ?
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="discardable"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>discardable</b>
+					
+					</div>
+					<div class="description">
+						if true, this behavior will be removed from the this.actor instance when it expires.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="doValueApplication"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>doValueApplication</b>
+					
+					</div>
+					<div class="description">
+						Apply the behavior, or just calculate the values ?
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="id"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>id</b>
+					
+					</div>
+					<div class="description">
+						An id to identify this behavior.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="interpolator"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>interpolator</b>
+					
+					</div>
+					<div class="description">
+						An interpolator object to apply behaviors using easing functions, etc.
+Unless otherwise specified, it will be linearly applied.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="isRelative"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>isRelative</b>
+					
+					</div>
+					<div class="description">
+						does this behavior apply relative values ??
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="lifecycleListenerList"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>lifecycleListenerList</b>
+					
+					</div>
+					<div class="description">
+						Behavior lifecycle observer list.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="solved"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>solved</b>
+					
+					</div>
+					<div class="description">
+						Is this behavior solved ? When called setDelayTime, this flag identifies whether the behavior
+is in time relative to the scene.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="status"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>status</b>
+					
+					</div>
+					<div class="description">
+						behavior status.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="timeOffset"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>timeOffset</b>
+					
+					</div>
+					<div class="description">
+						Initial offset to apply this behavior the first time.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					
+				
+			
+
+<!-- ============================== method details ========================= -->		
+			
+				<div class="sectionTitle">
+					Method Detail
+				</div>
+				
+					<a name="__init"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					<span class="light">{this}</span>
+					<b>__init</b>()
+					
+					</div>
+					<div class="description">
+						Constructor delegate function.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{this}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="addListener"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>addListener</b>(behaviorListener)
+					
+					</div>
+					<div class="description">
+						Adds an observer to this behavior.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>behaviorListener</b>
+									
+								</dt>
+								<dd>an observer instance.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="apply"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>apply</b>(time, actor)
+					
+					</div>
+					<div class="description">
+						This method must no be called directly.
+The director loop will call this method in orther to apply actor behaviors.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>the scene time the behaviro is being applied at.</dd>
+							
+								<dt>
+									<b>actor</b>
+									
+								</dt>
+								<dd>a CAAT.Actor instance the behavior is being applied to.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="calculateKeyFrameData"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>calculateKeyFrameData</b>(time)
+					
+					</div>
+					<div class="description">
+						Calculate a CSS3 @key-frame for this behavior at the given time.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="calculateKeyFramesData"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>calculateKeyFramesData</b>(prefix, name, keyframessize)
+					
+					</div>
+					<div class="description">
+						Calculate a complete CSS3 @key-frame set for this behavior.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>prefix</b>
+									
+								</dt>
+								<dd>{string} browser vendor prefix</dd>
+							
+								<dt>
+									<b>name</b>
+									
+								</dt>
+								<dd>{string} keyframes animation name</dd>
+							
+								<dt>
+									<b>keyframessize</b>
+									
+								</dt>
+								<dd>{number} number of keyframes to generate</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="emptyListenerList"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>emptyListenerList</b>()
+					
+					</div>
+					<div class="description">
+						Remove all registered listeners to the behavior.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="fireBehaviorAppliedEvent"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>fireBehaviorAppliedEvent</b>(actor, time, normalizedTime, value)
+					
+					</div>
+					<div class="description">
+						Notify observers about behavior being applied.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>actor</b>
+									
+								</dt>
+								<dd>a CAAT.Actor instance the behavior is being applied to.</dd>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>the scene time of behavior application.</dd>
+							
+								<dt>
+									<b>normalizedTime</b>
+									
+								</dt>
+								<dd>the normalized time (0..1) considering 0 behavior start time and 1
+behaviorStartTime+behaviorDuration.</dd>
+							
+								<dt>
+									<b>value</b>
+									
+								</dt>
+								<dd>the value being set for actor properties. each behavior will supply with its own value version.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="fireBehaviorExpiredEvent"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>fireBehaviorExpiredEvent</b>(actor, time)
+					
+					</div>
+					<div class="description">
+						Notify observers about expiration event.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>actor</b>
+									
+								</dt>
+								<dd>a CAAT.Actor instance</dd>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>an integer with the scene time the behavior was expired at.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="fireBehaviorStartedEvent"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>fireBehaviorStartedEvent</b>(actor, time)
+					
+					</div>
+					<div class="description">
+						Notify observers the first time the behavior is applied.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>actor</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getDuration"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getDuration</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>an integer indicating the behavior duration time in ms.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="getKeyFrameDataValues"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getKeyFrameDataValues</b>(time)
+					
+					</div>
+					<div class="description">
+						Calculate a CSS3 @key-frame data values instead of building a CSS3 @key-frame value.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="getPropertyName"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{<a href="../symbols/String.html">String</a>}</span>
+					<b>getPropertyName</b>()
+					
+					</div>
+					<div class="description">
+						Get this behaviors CSS property name application.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{<a href="../symbols/String.html">String</a>}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="getStartTime"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>getStartTime</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>an integer indicating the behavior start time in ms..</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="initialize"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>initialize</b>(overrides)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>overrides</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="isBehaviorInTime"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>isBehaviorInTime</b>(time, actor)
+					
+					</div>
+					<div class="description">
+						Chekcs whether the behaviour is in scene time.
+In case it gets out of scene time, and has not been tagged as expired, the behavior is expired and observers
+are notified about that fact.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>the scene time to check the behavior against.</dd>
+							
+								<dt>
+									<b>actor</b>
+									
+								</dt>
+								<dd>the actor the behavior is being applied to.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>a boolean indicating whether the behavior is in scene time.</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="isCycle"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>isCycle</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="normalizeTime"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>normalizeTime</b>(time)
+					
+					</div>
+					<div class="description">
+						Convert scene time into something more manageable for the behavior.
+behaviorStartTime will be 0 and behaviorStartTime+behaviorDuration will be 1.
+the time parameter will be proportional to those values.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>the scene time to be normalized. an integer.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name=".parse"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">CAAT.Behavior.BaseBehavior.</span><b>parse</b>(obj)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>obj</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="parse"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>parse</b>(obj)
+					
+					</div>
+					<div class="description">
+						Parse a behavior of this type.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>obj</b>
+									
+								</dt>
+								<dd>{object} an object with a behavior definition.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setCycle"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setCycle</b>(bool)
+					
+					</div>
+					<div class="description">
+						Sets the behavior to cycle, ie apply forever.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>bool</b>
+									
+								</dt>
+								<dd>a boolean indicating whether the behavior is cycle.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setDefaultInterpolator"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setDefaultInterpolator</b>()
+					
+					</div>
+					<div class="description">
+						Sets the default interpolator to a linear ramp, that is, behavior will be applied linearly.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setDelayTime"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setDelayTime</b>(delay, duration)
+					
+					</div>
+					<div class="description">
+						Sets behavior start time and duration. Start time is relative to scene time.
+
+a call to
+  setFrameTime( scene.time, duration ) is equivalent to
+  setDelayTime( 0, duration )
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>delay</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+								<dt>
+									<b>duration</b>
+									
+								</dt>
+								<dd>{number}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setExpired"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>setExpired</b>(actor, time)
+					
+					</div>
+					<div class="description">
+						Sets the behavior as expired.
+This method must not be called directly. It is an auxiliary method to isBehaviorInTime method.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>actor</b>
+									
+								</dt>
+								<dd>{CAAT.Actor}</dd>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>{integer} the scene time.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setForTime"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>setForTime</b>(actor, time)
+					
+					</div>
+					<div class="description">
+						This method must be overriden for every Behavior breed.
+Must not be called directly.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>actor</b>
+									
+								</dt>
+								<dd>{CAAT.Actor} a CAAT.Actor instance.</dd>
+							
+								<dt>
+									<b>time</b>
+									
+								</dt>
+								<dd>{number} an integer with the scene time.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setFrameTime"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setFrameTime</b>(startTime, duration)
+					
+					</div>
+					<div class="description">
+						Sets behavior start time and duration. Start time is set absolutely relative to scene time.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>startTime</b>
+									
+								</dt>
+								<dd>{number} an integer indicating behavior start time in scene time in ms..</dd>
+							
+								<dt>
+									<b>duration</b>
+									
+								</dt>
+								<dd>{number} an integer indicating behavior duration in ms.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setId"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setId</b>(id)
+					
+					</div>
+					<div class="description">
+						Sets this behavior id.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>id</b>
+									
+								</dt>
+								<dd>{object}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setInterpolator"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setInterpolator</b>(interpolator)
+					
+					</div>
+					<div class="description">
+						Changes behavior default interpolator to another instance of CAAT.Interpolator.
+If the behavior is not defined by CAAT.Interpolator factory methods, the interpolation function must return
+its values in the range 0..1. The behavior will only apply for such value range.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>interpolator</b>
+									
+								</dt>
+								<dd>a CAAT.Interpolator instance.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setOutOfFrameTime"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{*}</span>
+					<b>setOutOfFrameTime</b>()
+					
+					</div>
+					<div class="description">
+						Make this behavior not applicable.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setPingPong"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setPingPong</b>()
+					
+					</div>
+					<div class="description">
+						Sets default interpolator to be linear from 0..1 and from 1..0.
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd>this</dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setRelative"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{*}</span>
+					<b>setRelative</b>(bool)
+					
+					</div>
+					<div class="description">
+						Set this behavior as relative value application to some other measures.
+Each Behavior will define its own.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>bool</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setRelativeValues"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setRelativeValues</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="setStatus"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					<span class="light">{*}</span>
+					<b>setStatus</b>(st)
+					
+					</div>
+					<div class="description">
+						Set this behavior status
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>st</b>
+									
+								</dt>
+								<dd>{CAAT.Behavior.BaseBehavior.Status}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setTimeOffset"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{*}</span>
+					<b>setTimeOffset</b>(offset)
+					
+					</div>
+					<div class="description">
+						Set this behavior offset time.
+This method is intended to make a behavior start applying (the first) time from a different
+start time.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>offset</b>
+									
+								</dt>
+								<dd>{number} between 0 and 1</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="setValueApplication"> </a>
+					<div class="fixedFont">
+					
+					<span class="light">{*}</span>
+					<b>setValueApplication</b>(apply)
+					
+					</div>
+					<div class="description">
+						Set whether this behavior will apply behavior values to a reference Actor instance.
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>apply</b>
+									
+								</dt>
+								<dd>{boolean}</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+							<dl class="detailList">
+							<dt class="heading">Returns:</dt>
+							
+								<dd><span class="light fixedFont">{*}</span> </dd>
+							
+							</dl>
+						
+						
+						
+
+					
+				
+			
+			
+<!-- ============================== event details ========================= -->		
+			
+			
+			<hr />
+		</div>
+
+		
+<!-- ============================== footer ================================= -->
+		<div class="fineprint" style="clear:both">
+			
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Jul 01 2013 04:59:15 GMT-0700 (PDT)
+		</div>
+	</body>
+</html>

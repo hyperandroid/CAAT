@@ -1,6 +1,6 @@
 
 
-* 07/01/2013 0.7 Build  3 *
+* 07/01/2013 0.7 Build  6 *
 ---------------------------
 
 * Added functionality to AudioManager. The method director.setAudioFormatExtensions which proxies to audioManager.setAudioFormatExtensions
