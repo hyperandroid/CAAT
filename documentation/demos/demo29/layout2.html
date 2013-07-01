@@ -172,6 +172,7 @@ CAAT.DEBUG=1;
 
         function load() {
             CAAT.ModuleManager.
+                    debug(true).
                     baseURL("../../../src/").
                     setModulePath("CAAT.Core",              "Core").
                     setModulePath("CAAT.Math",              "Math").
@@ -261,6 +262,7 @@ CAAT.DEBUG=1;
                     setClickCallback( function(id) {
                         alert("Clicked: "+id);
                     }).
+                    setPreferredSize( pw, ph).
                     setClip(true);
 
             return label;

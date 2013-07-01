@@ -35,9 +35,6 @@
                     <p>
                         First attemp at support Spine from @EsotericSoft format.
                     </p>
-                    <p>
-                        All models, animations and skeleton definition (c) Esoteric Software (@EsotericSoft).
-                    </p>
                 </div>
                 <div>
                     <input type="checkbox" id="showBones" onchange="showBones(this.checked)">Show bones
@@ -50,7 +47,6 @@
 
 <script type="text/javascript" src="../menu/menu.js"></script>
 <script src="../../../src/Core/ModuleManager.js"></script>
-
 <script type="text/javascript">
     /**
      * @license
@@ -100,13 +96,11 @@
                 // get modules, and solve their dependencies.
                     bring(
                     [
-                        "CAAT.PathUtil.Path",
                         "CAAT.Foundation.Director",
                         "CAAT.Foundation.Scene",
                         "CAAT.Foundation.UI.PathActor",
                         "CAAT.Foundation.UI.InterpolatorActor",
-                        "CAAT.Foundation.UI.TextActor",
-                        "CAAT.Foundation.UI.Dock",
+                        "CAAT.Foundation.UI.Label",
                         "CAAT.Module.Preloader.Preloader",
                         "CAAT.Module.Preloader.XHR",
                         "CAAT.Module.Skeleton.Skeleton",
@@ -247,15 +241,16 @@
             director.setImagesCache(images);
             var scene=     director.createScene();
 
-
             var _skeleton1= new CAAT.Module.Skeleton.Skeleton().
                     setSkeletonFromFile("dragon/dragon-skeleton.json").
                     addAnimationFromFile( "default", "dragon/dragon-flying.json" );
+
 
             var skeletonActordragon = new CAAT.Module.Skeleton.SkeletonActor(director, _skeleton1).
                     setLocation( 500, 350).
                     setScale(.7,.7);
             scene.addChild(skeletonActordragon);
+
 
             var _skeletonBoy= new CAAT.Module.Skeleton.Skeleton().
                     setSkeletonFromFile("spineboy/skeleton.json").
@@ -283,7 +278,75 @@
                     setSkin("goblingirl").
                     setAnimation("default");
 
+            /**
+             * For Rob with love.
+             */
+            var actorRef= new CAAT.Foundation.Actor().
+                    setSize(100,10).
+                    setFillStyle("red");
+            scene.addChild( actorRef );
+            var actorRef2= new CAAT.Foundation.Actor().
+                    setSize(100,10).
+                    setFillStyle("green");
+            scene.addChild( actorRef2 );
+            var actorRef3= new CAAT.Foundation.Actor().
+                    setSize(100,10).
+                    setFillStyle("blue");
+            scene.addChild( actorRef3 );
+
+            skeletonActor.addAttachment("left hand item", .5, 0, function(attachment) {
+                /**
+                 * md= {
+                 *   translation {
+                 *       x:
+                 *       y:
+                 *     },
+                 *     angle: ,
+                 *     scale: {
+                 *       x:,
+                 *       y:
+                 *     }
+                 *   }
+                 *
+                 * @type {*}
+                 */
+                var md= attachment.getMatrixData();
+                actorRef.setRotationAnchored(md.angle,1,0).
+                    setLocation( attachment.x-actorRef.width, attachment.y);
+            });
+            skeletonActor.addAttachment("left hand item", .5, 1, function(attachment) {
+                var md= attachment.getMatrixData();
+                actorRef2.setRotationAnchored(md.angle,0,0).
+                    setLocation( attachment.x, attachment.y);
+            });
+            skeletonActor.addAttachment("right hand item", 0,1, function(attachment) {
+                var md= attachment.getMatrixData();
+                actorRef3.setLocation(  attachment.x-actorRef3.width, attachment.y).
+                    setRotationAnchored( Math.PI/2 + md.angle,1,1);
+            });
+            /**
+             * end love
+             */
+
+
             scene.addChild(skeletonActorgirl);
+
+            // capture as offscreen one skeleton.
+            // 16 sprites in a sheet.
+            // use captured canvas at your best convenience.
+            var capturedCanvas= skeletonActor.buildSheet(16,1,1);
+            var actor= new CAAT.Foundation.Actor().
+                    setBackgroundImage( new CAAT.Foundation.SpriteImage(capturedCanvas,1,16)).
+                    addAnimation("default", [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15], 1000/16).
+                    playAnimation("default").
+                    //setLocation( 110, 217 );
+                    setLocation( 0, 0 );
+            scene.addChild(actor);
+            var label= new CAAT.Foundation.UI.Label().
+                    setSize( actor.width, 100).
+                    setText("On-the-fly captured animation.", actor.width).
+                    cacheAsBitmap();
+            scene.addChild(label);
 
             director.loop(1);
 
@@ -294,6 +357,7 @@
                 skeletonActordragon.showBones(show);
 
             }
+
         }
 
     })();
