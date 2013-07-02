@@ -11,11 +11,11 @@ Follow the official twitter account <a href="http://twitter.com/caatjs" class="t
 Visit <a href="http://hyperandroid.github.com/CAAT">CAAT's github pages</a>, including:
 
 * <a href="http://hyperandroid.github.com/CAAT/documentation/demos">Demos</a>
-* <a href="http://hyperandroid.github.com/CAAT/documentation/tutorials/t0.html">Tutorials</a>
+* <a href="http://hyperandroid.github.com/CAAT/documentation/tutorials/index.html">Tutorials</a>
 * <a href="http://hyperandroid.github.com/CAAT/documentation/jsdoc">API</a>
 
 ## HOW TO ##
-<a href="http://hyperandroid.github.com/CAAT/documentation/tutorials/t0.html">Tutorials can be found here.</a>
+<a href="http://hyperandroid.github.com/CAAT/documentation/tutorials/index.html">Tutorials can be found here.</a>
 
 ## Examples and sample code ##
 
