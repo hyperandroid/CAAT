@@ -408,6 +408,15 @@ CAAT.Module({
             addChildImmediately:function (child, constraint) {
                 return this.addChild(child, constraint);
             },
+
+            addActorImmediately: function(child,constraint) {
+                return this.addChildImmediately(child,constraint);
+            },
+
+            addActor : function( child, constraint ) {
+                return this.addChild(child,constraint);
+            },
+
             /**
              * Adds an Actor to this ActorContainer.
              * The Actor will be added to the container AFTER frame animation, and not on method call time.
@@ -548,6 +557,18 @@ CAAT.Module({
                 }
                 return -1;
             },
+            /**
+             * Removed all Actors from this ActorContainer.
+             *
+             * @return array of former children
+             */
+            removeAllChildren: function() {
+                var cl = this.childrenList.slice(); // Make a shalow copy
+                for (var pos = cl.length-1;pos>=0;pos--) {
+                    this.removeChildAt(pos);
+                }
+                return cl;
+            },
             removeChildAt:function (pos) {
                 var cl = this.childrenList;
                 var rm;
@@ -565,7 +586,7 @@ CAAT.Module({
                 return null;
             },
             /**
-             * Removed an Actor form this ActorContainer.
+             * Removed an Actor from this ActorContainer.
              * If the Actor is not contained into this Container, nothing happends.
              *
              * @param child a CAAT.Foundation.Actor object instance.

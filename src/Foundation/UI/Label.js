@@ -32,44 +32,50 @@ CAAT.Module( {
 
         renderContextStyle.prototype= {
 
-            ctx         : null,
+            ctx          : null,
 
-            defaultFS   : null,
-            font        : null,
-            fontSize    : null,
-            fill        : null,
-            stroke      : null,
-            filled      : null,
-            stroked     : null,
-            strokeSize  : null,
-            italic      : null,
-            bold        : null,
-            alignment   : null,
-            tabSize     : null,
-            shadow      : null,
-            shadowBlur  : null,
-            shadowColor : null,
+            defaultFS    : null,
+            font         : null,
+            fontSize     : null,
+            fill         : null,
+            stroke       : null,
+            filled       : null,
+            stroked      : null,
+            strokeSize   : null,
+            italic       : null,
+            bold         : null,
+            alignment    : null,
+            tabSize      : null,
+            shadow       : null,
+            shadowBlur   : null,
+            shadowColor  : null,
+            shadowOffsetX: null,
+            shadowOffsetY: null,
 
-            sfont       : null,
 
-            chain       : null,
+            sfont        : null,
+
+            chain        : null,
 
             setDefault : function( defaultStyles ) {
-                this.defaultFS  =   24;
-                this.font       =   "Arial";
-                this.fontSize   =   this.defaultFS;
-                this.fill       =   '#000';
-                this.stroke     =   '#f00';
-                this.filled     =   true;
-                this.stroked    =   false;
-                this.strokeSize =   1;
-                this.italic     =   false;
-                this.bold       =   false;
-                this.alignment  =   "left";
-                this.tabSize    =   75;
-                this.shadow     =   false;
-                this.shadowBlur =   0;
-                this.shadowColor=   "#000";
+                this.defaultFS    =   24;
+                this.font         =   "Arial";
+                this.fontSize     =   this.defaultFS;
+                this.fill         =   '#000';
+                this.stroke       =   '#f00';
+                this.filled       =   true;
+                this.stroked      =   false;
+                this.strokeSize   =   1;
+                this.italic       =   false;
+                this.bold         =   false;
+                this.alignment    =   "left";
+                this.tabSize      =   75;
+                this.shadow       =   false;
+                this.shadowBlur   =   0;
+                this.shadowColor  =   "#000";
+                this.shadowOffsetX=   0;
+                this.shadowOffsetY=   0;
+
 
                 for( var style in defaultStyles ) {
                     if ( defaultStyles.hasOwnProperty(style) ) {
@@ -169,8 +175,10 @@ CAAT.Module( {
 
             __setShadow : function( ctx ) {
                 if ( this.__getProperty("shadow" ) ) {
-                    ctx.shadowBlur= this.__getProperty("shadowBlur");
-                    ctx.shadowColor= this.__getProperty("shadowColor");
+                    ctx.shadowBlur   = this.__getProperty("shadowBlur");
+                    ctx.shadowColor  = this.__getProperty("shadowColor");
+                    ctx.shadowOffsetX= this.__getProperty("shadowOffsetX");
+                    ctx.shadowOffsetY= this.__getProperty("shadowOffsetY");
                 }
             },
 
@@ -297,10 +305,10 @@ CAAT.Module( {
 
                 var image_width;
 
-                if ( r && c ) {
+                if ( typeof r!=="undefined" && typeof c!=="undefined" ) {
                     image_width= image.getWidth();
                 } else {
-                    image_width= image.getWrappedImageWidth();
+                    image_width= ( image instanceof CAAT.Foundation.SpriteImage ) ? image.getWidth() : image.getWrappedImageWidth();
                 }
 
                 // la imagen cabe en este sitio.
@@ -529,6 +537,8 @@ CAAT.Module( {
                                 c= pairs[2]|0;
                             }
                             this.__image( this.images[image], r, c );
+                        } else if (CAAT.currentDirector.getImage(image) ) {
+                            this.__image( CAAT.currentDirector.getImage(image) );
                         }
                     } else if ( tag.indexOf("a=")===0 ) {
                         pairs= tag.split("=");
@@ -600,7 +610,12 @@ CAAT.Module( {
             this.height= image.getHeight();
 
             if ( this.image instanceof CAAT.SpriteImage || this.image instanceof CAAT.Foundation.SpriteImage ) {
-                this.spriteIndex= r*image.columns+c;
+
+                if ( typeof r==="undefined" || typeof c==="undefined" ) {
+                    this.spriteIndex= 0;
+                } else {
+                    this.spriteIndex= r*image.columns+c;
+                }
                 this.paint= this.paintSI;
             }
 
@@ -631,7 +646,7 @@ CAAT.Module( {
             },
 
             getHeight : function() {
-                return this.image instanceof CAAT.Foundation.SpriteImage ? this.image.singleHeight : this.image.height;
+                return this.image instanceof CAAT.Foundation.SpriteImage ? this.image.getHeight() : this.image.height;
             },
 
             getFontMetrics : function() {
@@ -952,6 +967,20 @@ CAAT.Module( {
              */
             clickCallback   : null,
 
+            matchTextSize : true,
+
+            /**
+             * Make the label actor the size the label document has been calculated for.
+             * @param match {boolean}
+             */
+            setMatchTextSize : function( match ) {
+                this.matchTextSize= match;
+                if ( match ) {
+                    this.width= this.preferredSize.width;
+                    this.height= this.preferredSize.height;
+                }
+            },
+
             setStyle : function( name, styleData ) {
                 this.styles[ name ]= styleData;
                 return this;
@@ -1048,6 +1077,11 @@ CAAT.Module( {
                     this.cacheAsBitmap(0,cached);
                 }
 
+                if ( this.matchTextSize ) {
+                    this.width= this.preferredSize.width;
+                    this.height= this.preferredSize.height;
+                }
+
                 return this;
             },
 
@@ -1063,7 +1097,15 @@ CAAT.Module( {
                 return this;
             },
 
-            setDocumentPosition : function() {
+            setDocumentPosition : function( halign, valign ) {
+
+                if ( typeof halign!=="undefined" ) {
+                    this.setHorizontalAlignment(halign);
+                }
+                if ( typeof valign!=="undefined" ) {
+                    this.setVerticalAlignment(valign);
+                }
+
                 var xo=0, yo=0;
 
                 if ( this.valignment===CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER ) {

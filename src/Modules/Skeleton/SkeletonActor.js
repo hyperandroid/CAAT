@@ -216,13 +216,13 @@ CAAT.Module({
             animate: function (director, time) {
                 var i,l;
 
+                var ret= CAAT.Module.Skeleton.SkeletonActor.superclass.animate.call( this, director, time );
+
                 this.skeleton.calculate( time, this.animationDuration );
 
                 for( i= 0, l= this.bonesActor.length; i<l; i+=1 ) {
                     this.bonesActor[i].setupAnimation(time);
                 }
-
-                var ret= CAAT.Module.Skeleton.SkeletonActor.superclass.animate.call( this, director, time );
 
                 this.AABB.setEmpty();
                 for( i= 0, l= this.bonesActor.length; i<l; i+=1 ) {
@@ -284,7 +284,7 @@ CAAT.Module({
                         if (skinData) {
 
                             //create an actor for each slot data found.
-                            var boneActorSkin = new CAAT.Skeleton.BoneActor();
+                            var boneActorSkin = new CAAT.Module.Skeleton.BoneActor();
                             boneActorSkin.id = slotInfo.name;
                             boneActorSkin.setBone(bone);
 
@@ -365,8 +365,18 @@ CAAT.Module({
                 }
 
                 return this;
-            }
+            },
 
+            getBoneActorById : function( id ) {
+                return this.skinByName[id];
+            },
+
+            addAttachment : function( slotId, normalized_x, normalized_y, callback ) {
+                var slotBoneActor= this.getBoneActorById(slotId);
+                if ( slotBoneActor ) {
+                    slotBoneActor.addAttachment(slotId,normalized_x,normalized_y,callback);
+                }
+            }
         }
     }
 });

@@ -11,14 +11,18 @@ Follow the official twitter account <a href="http://twitter.com/caatjs" class="t
 Visit <a href="http://hyperandroid.github.com/CAAT">CAAT's github pages</a>, including:
 
 * <a href="http://hyperandroid.github.com/CAAT/documentation/demos">Demos</a>
-* <a href="http://hyperandroid.github.com/CAAT/documentation/tutorials/t0.html">Tutorials</a>
+* <a href="http://hyperandroid.github.com/CAAT/documentation/tutorials/index.html">Tutorials</a>
 * <a href="http://hyperandroid.github.com/CAAT/documentation/jsdoc">API</a>
 
 ## HOW TO ##
-<a href="http://hyperandroid.github.com/CAAT/documentation/tutorials/t0.html">Tutorials can be found here.</a>
+<a href="http://hyperandroid.github.com/CAAT/documentation/tutorials/index.html">Tutorials can be found here.</a>
 
 ## Examples and sample code ##
 
+<a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo34/index.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo34.png" alt="Skeletal animation"></a>
+<a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo31/dude.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo31.png" alt="Sprite Animations"></a>
+<a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo35/label.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo35.png" alt="Multiline text"></a>
+<a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo36/spritemap.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo36.png" alt="Bitmap Atlas"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo1/path_org.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo1.png" alt="Path management"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo2/fishpond_org.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo2.png" alt="Procedural fishpond"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo3/sprites_org.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo3.png" alt="Sprites traversing a random path"></a>
@@ -49,7 +53,6 @@ Visit <a href="http://hyperandroid.github.com/CAAT">CAAT's github pages</a>, inc
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo28/paint.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo28.png" alt="Minimal Paint"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo29/layout2.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo29.png" alt="Auto Layout"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo30/fonts.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo30.png" alt="Fonts"></a>
-<a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo31/dude.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo31.png" alt="Sprite Animations"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo32/svgpath.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo32.png" alt="SVG Path"></a>
 <a href="http://hyperandroid.github.com/CAAT/documentation/demos/demo33/keyframing.html"><img class="image_h" src="http://hyperandroid.github.com/CAAT/thumbs/demo33.png" alt="CSS3 Keyframes"></a>
 

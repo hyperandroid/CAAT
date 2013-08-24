@@ -1,3 +1,24 @@
+
+
+* 07/01/2013 0.7 Build  6 *
+---------------------------
+
+* Added functionality to AudioManager. The method director.setAudioFormatExtensions which proxies to audioManager.setAudioFormatExtensions
+  sets a default audio object extension set. By default is [ 'ogg', 'mp3', 'wav', 'x-wav', 'mp4' ]. This means CAAT by default
+  will try to find ogg files, then mp3, etc. It is not important whether the audio files add to director.addAudio have extension
+  or not. CAAT will add the first suitable extension to be played from the supplied or default audioFormatExtension array.
+* Added __CLASS attribute to Class function. Now all objects are identified.
+* Fixed Director dynamic scale behavior.
+* Enhanced Skeletal animation support (Spine).
+* Fixed. Font error which prevented fonts to draw on screen.
+* Added. Method SpriteImage.addElementsAsImages which turns all subelements, either a grid defined by rows and columns or a JSON map
+  into available images for director.getImage calls.
+* Fixed. Label object made <image> tags to be incorrectly set in the document.
+* Fixed. Label now accepts images set by calling Label.setImage or images with names matching director.getImage calls.
+* Added demo35: Label usage.
+* Added demo36: Sprite maps.
+* Added. Method SpriteImage.initializeFromTexturePackerJSON which adds map sub-images as valid director.getImage values.
+
 * 04/07/2013 0.6 Build 52 *
 ---------------------------
 

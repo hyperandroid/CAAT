@@ -223,6 +223,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Behavior.ScaleBehavior.html">CAAT.Behavior.ScaleBehavior</a></li>
 	
+	<li><a href="../symbols/CAAT.Class.html">CAAT.Class</a></li>
+	
 	<li><a href="../symbols/CAAT.CSS.html">CAAT.CSS</a></li>
 	
 	<li><a href="../symbols/CAAT.Event.html">CAAT.Event</a></li>
@@ -241,9 +243,9 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Foundation.ActorContainer.html">CAAT.Foundation.ActorContainer</a></li>
 	
-	<li><a href="../symbols/CAAT.Foundation.ActorContainer.ADDHINT.html">CAAT.Foundation.ActorContainer.ADDHINT</a></li>
-	
 	<li><a href="../symbols/CAAT.Foundation.ActorContainer.AddHint.html">CAAT.Foundation.ActorContainer.AddHint</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.ActorContainer.ADDHINT.html">CAAT.Foundation.ActorContainer.ADDHINT</a></li>
 	
 	<li><a href="../symbols/CAAT.Foundation.Box2D.html">CAAT.Foundation.Box2D</a></li>
 	
@@ -838,6 +840,17 @@ actor´s screen area.</div>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
+								<b><a href="../symbols/CAAT.Foundation.Actor.html#isCachedActor">isCachedActor</a></b>
+								</div>
+								<div class="description">if this actor is cached, when destroy is called, it does not call 'clean' method, which clears some
+internal properties.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
 								<b><a href="../symbols/CAAT.Foundation.Actor.html#isGlobalAlpha">isGlobalAlpha</a></b>
 								</div>
 								<div class="description">true to make all children transparent, false, only this actor/container will be transparent.</div>
@@ -1303,6 +1316,15 @@ This method is called by the Director instance.</div>
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Foundation.Actor.html#centerOn">centerOn</a></b>(x, y)
 								</div>
 								<div class="description">Center this actor at position (x,y).</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Foundation.Actor.html#clean">clean</a></b>()
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -1901,6 +1923,15 @@ another point in otherActor's coordinate system.</div>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Foundation.Actor.html#setButtonImageIndex">setButtonImageIndex</a></b>(_normal, _over, _press, _disabled)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Foundation.Actor.html#setCachedActor">setCachedActor</a></b>(cached)
 								</div>
 								<div class="description"></div>
 							</td>
@@ -3076,6 +3107,29 @@ actor´s screen area.
 					</div>
 					<div class="description">
 						is this actor/container Axis aligned ? if so, much faster inverse matrices can be calculated.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="isCachedActor"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>isCachedActor</b>
+					
+					</div>
+					<div class="description">
+						if this actor is cached, when destroy is called, it does not call 'clean' method, which clears some
+internal properties.
 						
 						
 					</div>
@@ -4364,6 +4418,31 @@ It applies the list of behaviors the Actor has registered.
 								<dd>this</dd>
 							
 							</dl>
+						
+						
+						
+
+					<hr />
+				
+					<a name="clean"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>clean</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
 						
 						
 						
@@ -7086,6 +7165,42 @@ image does not start at (0,0) but at the desired position.
 
 					<hr />
 				
+					<a name="setCachedActor"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setCachedActor</b>(cached)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>cached</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="setChangeFPS"> </a>
 					<div class="fixedFont">
 					
@@ -8810,7 +8925,7 @@ actor's world model view matrix.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Apr 07 2013 11:06:41 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Jul 01 2013 04:59:16 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

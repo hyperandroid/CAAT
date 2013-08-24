@@ -223,6 +223,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Behavior.ScaleBehavior.html">CAAT.Behavior.ScaleBehavior</a></li>
 	
+	<li><a href="../symbols/CAAT.Class.html">CAAT.Class</a></li>
+	
 	<li><a href="../symbols/CAAT.CSS.html">CAAT.CSS</a></li>
 	
 	<li><a href="../symbols/CAAT.Event.html">CAAT.Event</a></li>
@@ -241,9 +243,9 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Foundation.ActorContainer.html">CAAT.Foundation.ActorContainer</a></li>
 	
-	<li><a href="../symbols/CAAT.Foundation.ActorContainer.ADDHINT.html">CAAT.Foundation.ActorContainer.ADDHINT</a></li>
-	
 	<li><a href="../symbols/CAAT.Foundation.ActorContainer.AddHint.html">CAAT.Foundation.ActorContainer.AddHint</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.ActorContainer.ADDHINT.html">CAAT.Foundation.ActorContainer.ADDHINT</a></li>
 	
 	<li><a href="../symbols/CAAT.Foundation.Box2D.html">CAAT.Foundation.Box2D</a></li>
 	
@@ -507,9 +509,9 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/CAAT.Module.Audio.AudioManager.html#audioTypes">audioTypes</a></b>
+								<b><a href="../symbols/CAAT.Module.Audio.AudioManager.html#audioFormatExtensions">audioFormatExtensions</a></b>
 								</div>
-								<div class="description">Audio formats.</div>
+								<div class="description">available formats for audio elements.</div>
 							</td>
 						</tr>
 					
@@ -517,9 +519,9 @@ ul.inheritsList
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
-								<b><a href="../symbols/CAAT.Module.Audio.AudioManager.html#browserInfo">browserInfo</a></b>
+								<b><a href="../symbols/CAAT.Module.Audio.AudioManager.html#audioTypes">audioTypes</a></b>
 								</div>
-								<div class="description">Some browser info needed to know whether we´re in FF so we can fix the loop bug.</div>
+								<div class="description">Audio formats.</div>
 							</td>
 						</tr>
 					
@@ -607,7 +609,25 @@ ul.inheritsList
 						<tr>
 							<td class="attributes">&lt;private&gt; &nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Module.Audio.AudioManager.html#__getAudioUrl">__getAudioUrl</a></b>(url)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Module.Audio.AudioManager.html#__init">__init</a></b>()
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;private&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Module.Audio.AudioManager.html#__setCurrentAudioFormatExtension">__setCurrentAudioFormatExtension</a></b>()
 								</div>
 								<div class="description"></div>
 							</td>
@@ -743,6 +763,15 @@ Get back the playing channels to available channel list.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Module.Audio.AudioManager.html#setAudioFormatExtensions">setAudioFormatExtensions</a></b>(formats)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Module.Audio.AudioManager.html#setMusicEnabled">setMusicEnabled</a></b>(enable)
 								</div>
 								<div class="description"></div>
@@ -843,15 +872,16 @@ Get back the playing channels to available channel list.</div>
 
 					<hr />
 				
-					<a name="audioTypes"> </a>
+					<a name="audioFormatExtensions"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>audioTypes</b>
+					<b>audioFormatExtensions</b>
 					
 					</div>
 					<div class="description">
-						Audio formats.
+						available formats for audio elements.
+the system will load audio files with the extensions in this preferred order.
 						
 						
 					</div>
@@ -865,15 +895,15 @@ Get back the playing channels to available channel list.</div>
 
 					<hr />
 				
-					<a name="browserInfo"> </a>
+					<a name="audioTypes"> </a>
 					<div class="fixedFont">
 					
 					
-					<b>browserInfo</b>
+					<b>audioTypes</b>
 					
 					</div>
 					<div class="description">
-						Some browser info needed to know whether we´re in FF so we can fix the loop bug.
+						Audio formats.
 						
 						
 					</div>
@@ -1027,11 +1057,72 @@ Get back the playing channels to available channel list.</div>
 					Method Detail
 				</div>
 				
+					<a name="__getAudioUrl"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>__getAudioUrl</b>(url)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>url</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="__init"> </a>
 					<div class="fixedFont">&lt;private&gt; 
 					
 					
 					<b>__init</b>()
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="__setCurrentAudioFormatExtension"> </a>
+					<div class="fixedFont">&lt;private&gt; 
+					
+					
+					<b>__setCurrentAudioFormatExtension</b>()
 					
 					</div>
 					<div class="description">
@@ -1693,6 +1784,42 @@ the channel free for any other sound to be played in.
 
 					<hr />
 				
+					<a name="setAudioFormatExtensions"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>setAudioFormatExtensions</b>(formats)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>formats</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="setMusicEnabled"> </a>
 					<div class="fixedFont">
 					
@@ -1851,7 +1978,7 @@ the channel free for any other sound to be played in.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Apr 07 2013 11:06:44 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Jul 01 2013 04:59:19 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

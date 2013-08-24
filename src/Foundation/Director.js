@@ -449,6 +449,11 @@ CAAT.Module({
                 return this.audioManager.cancelPlayByChannel(audioObject);
             },
 
+            setAudioFormatExtensions : function( extensions ) {
+                this.audioManager.setAudioFormatExtensions(extensions);
+                return this;
+            },
+
             setValueForKey : function( key, value ) {
                 this.__map[key]= value;
                 return this;
@@ -1979,10 +1984,11 @@ CAAT.Module({
                         style = style ? style.getPropertyValue('position') : null;
                     }
 
-//                if (!/^(relative|absolute|fixed)$/.test(style)) {
+                    // Accumulate offsets...
+                    x += node[left];
+                    y += node[top];
+
                     if (!/^(fixed)$/.test(style)) {
-                        x += node[left];
-                        y += node[top];
                         node = node[parent];
                     } else {
                         break;

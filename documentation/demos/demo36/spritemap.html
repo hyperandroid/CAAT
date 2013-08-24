@@ -1,0 +1,261 @@
+<!DOCTYPE HTML5>
+<html>
+<head>
+<!--    <script src="../../track.js" type="text/javascript"></script>-->
+    <title>CAAT example: Atlas Bitmaps</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+
+</head>
+<body style="margin:0; padding:0;">
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Atlas Bitmaps</h1>
+            </div>
+            <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>Controls:</p>
+                    <ul>
+                        <li>None.</li>
+                    </ul>
+                </div>
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>Create SpriteImage objects</li>
+                        <li>Use Atlas bitmaps</li>
+                        <li>Create fonts from sub-images contained in Atlas bitmaps</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+    (function() {
+
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener('load',load,false);
+
+        function load() {
+            CAAT.ModuleManager.
+                    debug(true).
+                    baseURL("../../../src/").
+                    setModulePath("CAAT.Core",              "Core").
+                    setModulePath("CAAT.Math",              "Math").
+                    setModulePath("CAAT.Behavior",          "Behavior").
+                    setModulePath("CAAT.Foundation",        "Foundation").
+                    setModulePath("CAAT.Event",             "Event").
+                    setModulePath("CAAT.PathUtil",          "PathUtil").
+                    setModulePath("CAAT.Module",            "Modules").
+                    setModulePath("CAAT.Module.Preloader",  "Modules/Image/Preloader").
+                    setModulePath("CAAT.WebGL",             "WebGL").
+
+                // get modules, and solve their dependencies.
+                    bring(
+                    [
+                        "CAAT.Foundation.Director",
+                        "CAAT.Foundation.Actor",
+                        "CAAT.Foundation.ActorContainer",
+                        "CAAT.Foundation.SpriteImage",
+                        "CAAT.Foundation.UI.Label",
+                        "CAAT.Foundation.UI.TextActor",
+                        "CAAT.Foundation.UI.Layout.BorderLayout",
+                        "CAAT.Foundation.UI.Layout.BoxLayout",
+                        "CAAT.Foundation.UI.Layout.GridLayout",
+                        "CAAT.Module.ColorUtil.Color",
+                        "CAAT.Module.Preloader.Preloader",
+                        "CAAT.Module.Preloader.XHR"
+                    ]).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                    onReady( function() {
+                        new CAAT.Module.Preloader.Preloader().
+                            addElement("text", "../demo-resources/img/numerospuntos.png").
+                            addElement("numbers", "../demo-resources/img/numbers.png").
+                            addElement("map", "../demo-resources/img/map.png").
+                            load( function(images) {
+                                paint(images);
+                            });
+                    } );
+        }
+
+        function paint(images) {
+
+            CAAT.DEBUG=1;
+
+            var director= new CAAT.Foundation.Director().initialize( 800,500,'experiment-canvas' );
+            director.setImagesCache( images );
+            var scene = director.createScene();
+
+            var layout= new CAAT.Foundation.UI.Layout.BoxLayout().
+                    setAxis( CAAT.Foundation.UI.Layout.LayoutManager.AXIS.X).
+                    setHGap( 20 ).
+                    setVGap( 20 ).
+                    setAllPadding( 50 ).
+                    setVerticalAlignment( CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER ).
+                    setHorizontalAlignment( CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER )
+            var layout2= new CAAT.Foundation.UI.Layout.BoxLayout().
+                    setAxis( CAAT.Foundation.UI.Layout.LayoutManager.AXIS.X).
+                    setHGap( 20 ).
+                    setVGap( 20 ).
+                    setAllPadding( 50 ).
+                    setVerticalAlignment( CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER ).
+                    setHorizontalAlignment( CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER )
+
+
+            var container= new CAAT.Foundation.ActorContainer();
+            container.setBounds(0,0,director.width,director.height/2);
+            container.setLayout(layout);
+            scene.addActor( container );
+            var container2= new CAAT.Foundation.ActorContainer();
+            container2.setBounds(0,director.height/2,director.width,director.height/2);
+            container2.setLayout(layout2);
+            scene.addActor( container2 );
+
+            /**
+             * Use images from a single image.
+             * Turn it into an array or rows and columns
+             */
+
+                // build an SpriteImage of 1 row by 15 columns
+                var si_array= new CAAT.Foundation.SpriteImage( director.getImage("text"), 1, 15 );
+
+                // build an actor an assign as image the element at row 0, column 5.
+                var a1= new CAAT.Foundation.Actor().setBackgroundImage( si_array ).setSpriteIndex(5);
+                container.addActor( a1 );
+
+                // build an SpriteImage of 1 row by 15 columns
+                var si_array_rc= new CAAT.Foundation.SpriteImage( director.getImage("numbers"), 9, 9 );
+
+                // build an actor an assign as image the element at row 6, column 2.
+                var a2= new CAAT.Foundation.Actor().setBackgroundImage( si_array_rc ).setSpriteIndex( 5*9 + 2 );
+                container.addActor( a2 );
+
+            /**
+             * make sprite image individual elements to be available as director.getImage values.
+             */
+
+                // this call will make available image0, image1, ... image<rows * columns> elements as images from
+                // a call to director.getImage
+                si_array.addElementsAsImages( "image" );
+
+            var a3= new CAAT.Foundation.Actor().setBackgroundImage( "image2" );
+            container.addActor(a3);
+
+            /**
+             * use a JSON from SpritePacker tool.
+             */
+
+            new CAAT.Module.Preloader.XHR().load( function(res, font) {
+
+                if ( res==="ok" ) {
+                    new CAAT.Module.Preloader.XHR().load( function(result, text) {
+
+                        if (result==="ok") {
+
+                            // sub-images names will be the same as in the map.json file without the extension.
+                            new CAAT.Foundation.SpriteImage().initializeFromTexturePackerJSON(
+                                    director.getImage("map"),
+                                    JSON.parse(text) );
+
+                            var a4= new CAAT.Foundation.Actor().setBackgroundImage("nube1");
+                            container.addActor(a4);
+
+                            /**
+                             * build a compound sprite image out of the result of loading a map.
+                             */
+
+                            var si_compound= new CAAT.Foundation.SpriteImage( director.getImage("madewith"),1,3 );
+                            var a5= new CAAT.Foundation.Actor().setAsButton(si_compound,0,1,2,0,function() {
+                                alert("click");
+                            });
+                            container.addActor(a5);
+
+
+                            /**
+                             * create a sprite font from the map and the previously loaded font def.
+                             * the font definition comes from glyph designer
+                             */
+                            var si_font= new CAAT.Foundation.SpriteImage( director.getImage("font") ).
+                                    initializeFromGlyphDesigner( font.split("\n") );
+
+                            var textActor= new CAAT.Foundation.UI.TextActor().
+                                    setFont( si_font ).
+                                    setText("Atlas font embedded in an Atlas Bitmap").
+                                    setScale(.5,.5);
+                            container2.addActor(textActor);
+
+                        } else {
+                            alert("Can't load image definition map");
+                        }
+
+                    }, "../demo-resources/img/map.json", true, "GET" );
+                } else {
+                    alert("Can't load font definition");
+                }
+            }, "../demo-resources/img/font.txt", true, "GET" );
+
+            director.loop(60);
+        }
+
+
+    })();
+
+</script>
+</html>

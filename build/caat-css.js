@@ -21,15 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.6 build: 51
+Version: 0.6 build: 5
 
 Created on:
-DATE: 2013-04-07
-TIME: 11:05:50
+DATE: 2013-07-01
+TIME: 04:58:33
 */
 
 
-(function(global) {
+(function(global, __obj_namespace) {
 
     String.prototype.endsWith= function(suffix) {
         return this.indexOf(suffix, this.length - suffix.length) !== -1;
@@ -61,6 +61,8 @@ TIME: 11:05:50
     // The base Class implementation (does nothing)
     var Class = function () {
     };
+
+    Class['__CLASS']='Class';
 
     // Create a new Class that inherits from this class
     Class.extend = function (extendingProt, constants, name, aliases, flags) {
@@ -662,12 +664,16 @@ TIME: 11:05:50
     function ensureNamespace( qualifiedClassName ) {
         var ns= qualifiedClassName.split(".");
         var _global= global;
+        var ret= null;
         for( var i=0; i<ns.length-1; i++ ) {
             if ( !_global[ns[i]] ) {
                 _global[ns[i]]= {};
             }
             _global= _global[ns[i]];
+            ret= _global;
         }
+
+        return ret;
     }
 
     /**
@@ -720,7 +726,13 @@ TIME: 11:05:50
      * @namespace
      */
 
-    global.CAAT= global.CAAT || {};
+    if ( typeof(__obj_namespace)==="undefined" ) {
+        __obj_namespace= (window.CAAT = window.CAAT || {} );
+    }
+
+    NS= __obj_namespace;
+
+//    global.CAAT= global.CAAT || {};
 
     /**
      *
@@ -728,19 +740,20 @@ TIME: 11:05:50
      *
      * obj parameter has the following structure:
      * {
-     *   defines{string},             // class name
+     *   defines{string},           // class name
      *   depends{Array<string>=},   // dependencies class names
-     *   extendsClass{string},            // class to extend from
-     *   extensdWith{object},        // actual prototype to extend
-     *   aliases{Array<string>},    // other class names
-     *   onCreation{function=}        // optional callback to call after class creation.
-     *   onPreCreation{function=}        // optional callback to call after namespace class creation.
+     *   extendsClass{string},      // class to extend from
+     *   extensdWith{object},       // actual prototype to extend
+     *   aliases{Array<string>}     // other class names
      * }
      *
+     * @name Module
+     * @memberof CAAT
+     * @static
+     *
      * @param obj {object}
-     * @private
      */
-    CAAT.Module= function loadModule(obj) {
+    NS.Module= function loadModule(obj) {
 
         if (!obj.defines) {
             console.error("Bad module definition: "+obj);
@@ -758,17 +771,17 @@ TIME: 11:05:50
      * @memberOf CAAT
      * @namespace
      */
-    CAAT.ModuleManager= {};
+    NS.ModuleManager= {};
 
     /**
      * Define global base position for modules structure.
      * @param baseURL {string}
      * @return {*}
      */
-    CAAT.ModuleManager.baseURL= function(baseURL) {
+    NS.ModuleManager.baseURL= function(baseURL) {
 
         if ( !baseURL ) {
-            return CAAT.Module;
+            return NS.Module;
         }
 
         if (!baseURL.endsWith("/") ) {
@@ -776,7 +789,7 @@ TIME: 11:05:50
         }
 
         ModuleManager.baseURL= baseURL;
-        return CAAT.ModuleManager;
+        return NS.ModuleManager;
     };
 
     /**
@@ -784,7 +797,7 @@ TIME: 11:05:50
      * @param module {string}
      * @param path {string}
      */
-    CAAT.ModuleManager.setModulePath= function( module, path ) {
+    NS.ModuleManager.setModulePath= function( module, path ) {
 
         if ( !path.endsWith("/") ) {
             path= path + "/";
@@ -805,7 +818,7 @@ TIME: 11:05:50
                 return a<b ? 1 : -1;
             } );
         }
-        return CAAT.ModuleManager;
+        return NS.ModuleManager;
     };
 
     /**
@@ -814,13 +827,13 @@ TIME: 11:05:50
      * @param path {string}
      * @return {*}
      */
-    CAAT.ModuleManager.symbol= function( symbol, path ) {
+    NS.ModuleManager.symbol= function( symbol, path ) {
 
         if ( !ModuleManager.symbol[symbol] ) {
             ModuleManager.symbol[symbol]= path;
         }
 
-        return CAAT.ModuleManager;
+        return NS.ModuleManager;
     };
 
     /**
@@ -828,7 +841,7 @@ TIME: 11:05:50
      * @param file {string}
      * @return {*}
      */
-    CAAT.ModuleManager.bring= function( file ) {
+    NS.ModuleManager.bring= function( file ) {
 
         if ( !isArray(file) ) {
             file= [file];
@@ -838,13 +851,13 @@ TIME: 11:05:50
             mm.loadFile( file[i] );
         }
 
-        return CAAT.ModuleManager;
+        return NS.ModuleManager;
     };
 
     /**
      * Get CAAT´s module manager status.
      */
-    CAAT.ModuleManager.status= function() {
+    NS.ModuleManager.status= function() {
         mm.status();
     }
 
@@ -854,9 +867,9 @@ TIME: 11:05:50
      * @param callback {function()}
      * @return {*}
      */
-    CAAT.ModuleManager.addModuleSolvedListener= function(modulename,callback) {
+    NS.ModuleManager.addModuleSolvedListener= function(modulename,callback) {
         mm.addSolveListener( modulename, callback );
-        return CAAT.ModuleManager;
+        return NS.ModuleManager;
     }
 
     /**
@@ -865,7 +878,7 @@ TIME: 11:05:50
      * @param onload {function()}
      * @param onerror {function()}
      */
-    CAAT.ModuleManager.load= function(file, onload, onerror) {
+    NS.ModuleManager.load= function(file, onload, onerror) {
         var node= document.createElement("script");
         node.type = 'text/javascript';
         node.charset = 'utf-8';
@@ -892,7 +905,7 @@ TIME: 11:05:50
     /**
      * Dump solved modules and get them sorted in the order they were resolved.
      */
-    CAAT.ModuleManager.solvedInOrder= function() {
+    NS.ModuleManager.solvedInOrder= function() {
         mm.solvedInOrder();
     }
 
@@ -901,16 +914,16 @@ TIME: 11:05:50
      * @param f
      * @return {*}
      */
-    CAAT.ModuleManager.onReady= function(f) {
+    NS.ModuleManager.onReady= function(f) {
         mm.onReady(f);
-        return CAAT.ModuleManager;
+        return NS.ModuleManager;
     }
 
     /**
      * Solve all elements specified in the module loaded.
      * It is useful when minimizing a file.
      */
-    CAAT.ModuleManager.solveAll= function() {
+    NS.ModuleManager.solveAll= function() {
         mm.solveAll();
     }
 
@@ -920,14 +933,19 @@ TIME: 11:05:50
      * @param d {boolean}
      * @return {*}
      */
-    CAAT.ModuleManager.debug= function(d) {
+    NS.ModuleManager.debug= function(d) {
         DEBUG= d;
-        return CAAT.ModuleManager;
+        return NS.ModuleManager;
     }
 
-    CAAT.Class= Class;
+    /**
+     * @name Class
+     * @memberOf CAAT
+     * @constructor
+     */
+    NS.Class= Class;
 
-})(this);
+})(this, undefined);
 CAAT.__CSS__=1;
 /**
  * See LICENSE file.
@@ -4235,6 +4253,10 @@ CAAT.Module({
                 return this;
             },
 
+            isCycle : function() {
+                return this.cycleBehavior;
+            },
+
             /**
              * Adds an observer to this behavior.
              * @param behaviorListener an observer instance.
@@ -4618,7 +4640,7 @@ CAAT.Module({
              * @type {Array.<CAAT.Behavior.BaseBehavior>}
              */
             behaviors:null, // contained behaviors array
-
+            recursiveCycleBehavior : false,
             conforming : false,
 
             /**
@@ -4667,6 +4689,20 @@ CAAT.Module({
                 return null;
             },
 
+            setCycle : function( cycle, recurse ) {
+                CAAT.Behavior.ContainerBehavior.superclass.setCycle.call(this,cycle);
+
+                if ( recurse ) {
+                    for( var i=0; i<this.behaviors.length; i++ ) {
+                        this.behaviors[i].setCycle(cycle);
+                    }
+                }
+
+                this.recursiveCycleBehavior= recurse;
+
+                return this;
+            },
+
             /**
              * Add a new behavior to the container.
              * @param behavior {CAAT.Behavior.BaseBehavior}
@@ -4681,6 +4717,10 @@ CAAT.Module({
                         this.behaviorDuration= len;
                         this.behaviorStartTime= 0;
                     }
+                }
+
+                if ( this.recursiveCycleBehavior ) {
+                    behavior.setCycle( this.isCycle() );
                 }
 
                 return this;
@@ -6293,9 +6333,6 @@ CAAT.Module({
      */
 
     defines:"CAAT.Module.Audio.AudioManager",
-    depends:[
-        "CAAT.Module.Runtime.BrowserInfo"
-    ],
     extendsWith:function () {
         return {
 
@@ -6304,19 +6341,16 @@ CAAT.Module({
              */
 
             __init:function () {
-                this.browserInfo = CAAT.Module.Runtime.BrowserInfo;
+                this.isFirefox= navigator.userAgent.match(/Firefox/g)!==null;
                 return this;
             },
+
+            isFirefox : false,
 
             /**
              * The only background music audio channel.
              */
             musicChannel: null,
-
-            /**
-             * Some browser info needed to know whether we´re in FF so we can fix the loop bug.
-             */
-            browserInfo:null,
 
             /**
              * Is music enabled ?
@@ -6349,14 +6383,28 @@ CAAT.Module({
             loopingChannels:[],
 
             /**
+             * available formats for audio elements.
+             * the system will load audio files with the extensions in this preferred order.
+             */
+            audioFormatExtensions : [
+                'ogg',
+                'wav',
+                'x-wav',
+                'mp3'
+            ],
+
+            currentAudioFormatExtension : 'ogg',
+
+            /**
              * Audio formats.
              * @dict
              */
             audioTypes:{               // supported audio formats. Don't remember where i took them from :S
-                'mp3':'audio/mpeg;',
-                'ogg':'audio/ogg; codecs="vorbis"',
-                'wav':'audio/wav; codecs="1"',
-                'mp4':'audio/mp4; codecs="mp4a.40.2"'
+                'ogg':  'audio/ogg',
+                'mp3':  'audio/mpeg;',
+                'wav':  'audio/wav',
+                'x-wav':'audio/x-wav',
+                'mp4':  'audio/mp4"'
             },
 
             /**
@@ -6368,7 +6416,9 @@ CAAT.Module({
              *
              * @return this.
              */
-            initialize:function (numChannels) {
+            initialize:function (numChannels ) {
+
+                this.setAudioFormatExtensions( this.audioFormatExtensions );
 
                 this.audioCache = [];
                 this.channels = [];
@@ -6412,6 +6462,45 @@ CAAT.Module({
 
                 return this;
             },
+
+            setAudioFormatExtensions : function( formats ) {
+                this.audioFormatExtensions= formats;
+                this.__setCurrentAudioFormatExtension();
+                return this;
+            },
+
+            __setCurrentAudioFormatExtension : function( ) {
+
+                var audio= new Audio();
+
+                for( var i= 0, l=this.audioFormatExtensions.length; i<l; i+=1 ) {
+                    var res= audio.canPlayType( this.audioTypes[this.audioFormatExtensions[i]]).toLowerCase();
+                    if ( res!=="no" && res!=="" ) {
+                        this.currentAudioFormatExtension= this.audioFormatExtensions[i];
+                        console.log("Audio type set to: "+this.currentAudioFormatExtension);
+                        return;
+                    }
+                }
+
+                this.currentAudioFormatExtension= null;
+            },
+
+            __getAudioUrl : function( url ) {
+
+                if ( this.currentAudioFormatExtension===null ) {
+                    return url;
+                }
+
+                var lio= url.lastIndexOf( "." );
+                if ( lio<0 ) {
+                    console.log("Audio w/o extension: "+url);
+                    lio= url.length()-1;
+                }
+
+                var uri= url.substring( 0, lio+1 ) + this.currentAudioFormatExtension;
+                return uri;
+            },
+
             /**
              * Tries to add an audio tag to the available list of valid audios. The audio is described by a url.
              * @param id {object} an object to associate the audio element (if suitable to be played).
@@ -6423,30 +6512,21 @@ CAAT.Module({
              * @private
              */
             addAudioFromURL:function (id, url, endplaying_callback) {
-                var extension = null;
                 var audio = document.createElement('audio');
 
                 if (null !== audio) {
 
-                    if (!audio.canPlayType) {
-                        return false;
+                    audio.src = this.__getAudioUrl(url);
+                    console.log("Loading audio: "+audio.src);
+                    audio.preload = "auto";
+                    audio.load();
+                    if (endplaying_callback) {
+                        audio.caat_callback = endplaying_callback;
+                        audio.caat_id = id;
                     }
+                    this.audioCache.push({ id:id, audio:audio });
 
-                    extension = url.substr(url.lastIndexOf('.') + 1);
-                    var canplay = audio.canPlayType(this.audioTypes[extension]);
-
-                    if (canplay !== "" && canplay !== "no") {
-                        audio.src = url;
-                        audio.preload = "auto";
-                        audio.load();
-                        if (endplaying_callback) {
-                            audio.caat_callback = endplaying_callback;
-                            audio.caat_id = id;
-                        }
-                        this.audioCache.push({ id:id, audio:audio });
-
-                        return true;
-                    }
+                    return true;
                 }
 
                 return false;
@@ -6589,7 +6669,7 @@ CAAT.Module({
                         audio.src = audio_in_cache.src;
                         audio.preload = "auto";
 
-                        if (this.browserInfo.browser === 'Firefox') {
+                        if (this.isFirefox) {
                             audio.addEventListener(
                                 'ended',
                                 // on sound end, restart music.
@@ -6648,6 +6728,8 @@ CAAT.Module({
                     channel.volume = audio.volume;
                     channel.play();
                     this.workingChannels.push(channel);
+                } else {
+                    console.log("Can't play audio: "+id);
                 }
 
                 return audio;
@@ -6715,7 +6797,7 @@ CAAT.Module({
                         audio.src = audio_in_cache.src;
                         audio.preload = "auto";
 
-                        if (this.browserInfo.browser === 'Firefox') {
+                        if (this.isFirefox) {
                             audio.addEventListener(
                                 'ended',
                                 // on sound end, set channel to available channels list.
@@ -7669,7 +7751,7 @@ CAAT.Module({
 
         getFontMetricsNoCSS:function (font) {
 
-            var re = /(\d+)p[x|t]/i;
+            var re = /(\d+)p[x|t]\s*/i;
             var res = re.exec(font);
 
             var height;
@@ -7892,7 +7974,8 @@ CAAT.Module({
                     }
                     this.charMap[cchar] = {
                         x:x + padding,
-                        width:charWidth[i] - 2 * padding
+                        width:charWidth[i] - 2 * padding,
+                        height: this.height
                     };
                     x += charWidth[i];
                 }
@@ -8856,7 +8939,61 @@ CAAT.Module( {
 
     }
 });
-/**
+CAAT.Module({
+
+    defines : "CAAT.Module.Preloader.XHR",
+    extendsWith : {
+
+        /**
+         *
+         * @param callback function({string},{object}) a callback function. string will be "ok" or "error"
+         * @param url {string} a url
+         * @param asynch {bool}  load synchronous or asynchronously
+         * @param method {string} GET or POST
+         */
+        load : function( callback, url, asynch, method ) {
+
+            if (typeof asynch==="undefined") {
+                asynch= true;
+            }
+            if (typeof method==="undefined") {
+                method= "GET";;
+            }
+
+            var req = false;
+            if(window.XMLHttpRequest && !(window.ActiveXObject)) {
+                try {
+                    req = new XMLHttpRequest();
+                } catch(e) {
+                    req = false;
+                }
+            } else if(window.ActiveXObject) {
+                try {
+                    req = new ActiveXObject("Msxml2.XMLHTTP");
+                } catch(e) {
+                    try {
+                        req = new ActiveXObject("Microsoft.XMLHTTP");
+                    } catch(e) {
+                        req = false;
+                    }
+                }
+            }
+
+            if(req) {
+                req.open(method, url, false);
+                req.onreadystatechange =  function(e) {
+                    if( req.status != 200 )
+                        return callback("error");
+
+                    var text= e.currentTarget ? e.currentTarget.responseText : e.target.responseText;
+                    callback("ok", text);
+                } ;
+                req.send();
+            }
+        }
+    }
+
+});/**
  * See LICENSE file.
  */
 CAAT.Module({
@@ -16143,7 +16280,9 @@ CAAT.Module({
                 this.mapInfo = {};
                 this.animationsMap= {};
 
-                if ( arguments.length===3 ) {
+                if ( arguments.length===1 ) {
+                    this.initialize.call(this, arguments[0], 1, 1);
+                } else if ( arguments.length===3 ) {
                     this.initialize.apply(this, arguments);
                 }
                 return this;
@@ -16507,6 +16646,21 @@ CAAT.Module({
                 }
 
                 return this;
+            },
+
+            /**
+             * Create elements as director.getImage values.
+             * Create as much as elements defined in this sprite image.
+             * The elements will be named prefix+<the map info element name>
+             * @param prefix
+             */
+            addElementsAsImages : function( prefix ) {
+                for( var i in this.mapInfo ) {
+                    var si= new CAAT.Foundation.SpriteImage().initialize( this.image, 1, 1 );
+                    si.addElement(0, this.mapInfo[i]);
+                    si.setSpriteIndex(0);
+                    CAAT.currentDirector.addImage( prefix+i, si );
+                }
             },
 
             copy : function( other ) {
@@ -16941,6 +17095,39 @@ CAAT.Module({
                 return this.mapInfo[ index ];
             },
 
+            initializeFromGlyphDesigner : function( text ) {
+                for (var i = 0; i < text.length; i++) {
+                    if (0 === text[i].indexOf("char ")) {
+                        var str = text[i].substring(5);
+                        var pairs = str.split(' ');
+                        var obj = {
+                            x: 0,
+                            y: 0,
+                            width: 0,
+                            height: 0,
+                            xadvance: 0,
+                            xoffset: 0,
+                            yoffset: 0
+                        };
+
+                        for (var j = 0; j < pairs.length; j++) {
+                            var pair = pairs[j];
+                            var pairData = pair.split("=");
+                            var key = pairData[0];
+                            var value = pairData[1];
+                            if (value.charAt(0) === '"' && value.charAt(value.length - 1) === '"') {
+                                value.substring(1, value.length - 1);
+                            }
+                            obj[ key ] = value;
+                        }
+
+                        this.addElement(String.fromCharCode(obj.id), obj);
+                    }
+                }
+
+                return this;
+            },
+
             /**
              * This method takes the output generated from the tool at http://labs.hyperandroid.com/static/texture/spriter.html
              * and creates a map into that image.
@@ -16977,6 +17164,25 @@ CAAT.Module({
                 }
 
                 return this;
+            },
+
+            initializeFromTexturePackerJSON : function( image, obj ) {
+
+                for( var img in obj.frames ) {
+                    var imgData= obj.frames[img];
+
+                    var si_obj= {
+                        x: imgData.frame.x,
+                        y: imgData.frame.y,
+                        width: imgData.spriteSourceSize.w,
+                        height: imgData.spriteSourceSize.h,
+                        id: '0'
+                    };
+
+                    var si= new CAAT.Foundation.SpriteImage().initialize( image, 1, 1 );
+                    si.addElement(0,si_obj);
+                    CAAT.currentDirector.addImage( img.substring(0,img.indexOf('.')), si );
+                }
             },
 
             /**
@@ -19473,6 +19679,15 @@ CAAT.Module({
              */
             endAnimate:function (director, time) {
             },
+
+            addActorImmediately: function(child,constraint) {
+                return this.addChildImmediately(child,constraint);
+            },
+
+            addActor : function( child, constraint ) {
+                return this.addChild(child,constraint);
+            },
+
             /**
              * Adds an Actor to this Container.
              * The Actor will be added ON METHOD CALL, despite the rendering pipeline stage being executed at
@@ -20729,6 +20944,11 @@ CAAT.Module({
 
             cancelPlayByChannel : function(audioObject) {
                 return this.audioManager.cancelPlayByChannel(audioObject);
+            },
+
+            setAudioFormatExtensions : function( extensions ) {
+                this.audioManager.setAudioFormatExtensions(extensions);
+                return this;
             },
 
             setValueForKey : function( key, value ) {
@@ -24086,10 +24306,10 @@ CAAT.Module( {
 
                 var image_width;
 
-                if ( r && c ) {
+                if ( typeof r!=="undefined" && typeof c!=="undefined" ) {
                     image_width= image.getWidth();
                 } else {
-                    image_width= image.getWrappedImageWidth();
+                    image_width= ( image instanceof CAAT.Foundation.SpriteImage ) ? image.getWidth() : image.getWrappedImageWidth();
                 }
 
                 // la imagen cabe en este sitio.
@@ -24318,6 +24538,8 @@ CAAT.Module( {
                                 c= pairs[2]|0;
                             }
                             this.__image( this.images[image], r, c );
+                        } else if (CAAT.currentDirector.getImage(image) ) {
+                            this.__image( CAAT.currentDirector.getImage(image) );
                         }
                     } else if ( tag.indexOf("a=")===0 ) {
                         pairs= tag.split("=");
@@ -24389,7 +24611,12 @@ CAAT.Module( {
             this.height= image.getHeight();
 
             if ( this.image instanceof CAAT.SpriteImage || this.image instanceof CAAT.Foundation.SpriteImage ) {
-                this.spriteIndex= r*image.columns+c;
+
+                if ( typeof r==="undefined" || typeof c==="undefined" ) {
+                    this.spriteIndex= 0;
+                } else {
+                    this.spriteIndex= r*image.columns+c;
+                }
                 this.paint= this.paintSI;
             }
 
@@ -24420,7 +24647,7 @@ CAAT.Module( {
             },
 
             getHeight : function() {
-                return this.image instanceof CAAT.Foundation.SpriteImage ? this.image.singleHeight : this.image.height;
+                return this.image instanceof CAAT.Foundation.SpriteImage ? this.image.getHeight() : this.image.height;
             },
 
             getFontMetrics : function() {
@@ -24741,6 +24968,20 @@ CAAT.Module( {
              */
             clickCallback   : null,
 
+            matchTextSize : true,
+
+            /**
+             * Make the label actor the size the label document has been calculated for.
+             * @param match {boolean}
+             */
+            setMatchTextSize : function( match ) {
+                this.matchTextSize= match;
+                if ( match ) {
+                    this.width= this.preferredSize.width;
+                    this.height= this.preferredSize.height;
+                }
+            },
+
             setStyle : function( name, styleData ) {
                 this.styles[ name ]= styleData;
                 return this;
@@ -24837,6 +25078,11 @@ CAAT.Module( {
                     this.cacheAsBitmap(0,cached);
                 }
 
+                if ( this.matchTextSize ) {
+                    this.width= this.preferredSize.width;
+                    this.height= this.preferredSize.height;
+                }
+
                 return this;
             },
 
@@ -24852,7 +25098,15 @@ CAAT.Module( {
                 return this;
             },
 
-            setDocumentPosition : function() {
+            setDocumentPosition : function( halign, valign ) {
+
+                if ( typeof halign!=="undefined" ) {
+                    this.setHorizontalAlignment(halign);
+                }
+                if ( typeof valign!=="undefined" ) {
+                    this.setVerticalAlignment(valign);
+                }
+
                 var xo=0, yo=0;
 
                 if ( this.valignment===CAAT.Foundation.UI.Layout.LayoutManager.ALIGNMENT.CENTER ) {

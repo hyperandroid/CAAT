@@ -223,6 +223,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Behavior.ScaleBehavior.html">CAAT.Behavior.ScaleBehavior</a></li>
 	
+	<li><a href="../symbols/CAAT.Class.html">CAAT.Class</a></li>
+	
 	<li><a href="../symbols/CAAT.CSS.html">CAAT.CSS</a></li>
 	
 	<li><a href="../symbols/CAAT.Event.html">CAAT.Event</a></li>
@@ -241,9 +243,9 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Foundation.ActorContainer.html">CAAT.Foundation.ActorContainer</a></li>
 	
-	<li><a href="../symbols/CAAT.Foundation.ActorContainer.ADDHINT.html">CAAT.Foundation.ActorContainer.ADDHINT</a></li>
-	
 	<li><a href="../symbols/CAAT.Foundation.ActorContainer.AddHint.html">CAAT.Foundation.ActorContainer.AddHint</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.ActorContainer.ADDHINT.html">CAAT.Foundation.ActorContainer.ADDHINT</a></li>
 	
 	<li><a href="../symbols/CAAT.Foundation.Box2D.html">CAAT.Foundation.Box2D</a></li>
 	
@@ -738,6 +740,16 @@ DRAG_THRESHOLD_X and DRAG_THRESHOLD_Y pixels.</div>
 							<td class="attributes">&lt;static&gt; &nbsp;</td>
 							<td class="nameDescription">
 								<div class="fixedFont">
+								CAAT.<b><a href="../symbols/CAAT.html#.Module">Module</a></b>
+								</div>
+								<div class="description">This function defines CAAT modules, and creates Constructor Class objects.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&lt;static&gt; &nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont">
 								CAAT.<b><a href="../symbols/CAAT.html#.NO_RAF">NO_RAF</a></b>
 								</div>
 								<div class="description">Use RAF shim instead of setInterval.</div>
@@ -937,15 +949,6 @@ Enable Box2D debug renderer.</div>
 								<div class="fixedFont">CAAT.<b><a href="../symbols/CAAT.html#.loop">loop</a></b>(fps)
 								</div>
 								<div class="description">Main animation loop entry point.</div>
-							</td>
-						</tr>
-					
-						<tr>
-							<td class="attributes">&lt;private&gt; &lt;static&gt; &nbsp;</td>
-							<td class="nameDescription">
-								<div class="fixedFont">CAAT.<b><a href="../symbols/CAAT.html#.Module">Module</a></b>(obj)
-								</div>
-								<div class="description">This function defines CAAT modules, and creates Constructor Class objects.</div>
 							</td>
 						</tr>
 					
@@ -1662,6 +1665,40 @@ This is suitable for tablets, where just by touching, drag events are delivered.
 
 					<hr />
 				
+					<a name=".Module"> </a>
+					<div class="fixedFont">&lt;static&gt; 
+					
+					
+					<span class="light">CAAT.</span><b>Module</b>
+					
+					</div>
+					<div class="description">
+						This function defines CAAT modules, and creates Constructor Class objects.
+
+obj parameter has the following structure:
+{
+  defines{string},           // class name
+  depends{Array<string>=},   // dependencies class names
+  extendsClass{string},      // class to extend from
+  extensdWith{object},       // actual prototype to extend
+  aliases{Array<string>}     // other class names
+}
+						
+							<br />
+							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_Core_ModuleManager.js.html">ModuleManager.js</a>.
+						
+						
+					</div>
+					
+					
+
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name=".NO_RAF"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -2227,56 +2264,6 @@ switch from RequestAnimationFrame to setInterval for animation loop.</dd>
 
 					<hr />
 				
-					<a name=".Module"> </a>
-					<div class="fixedFont">&lt;private&gt; &lt;static&gt; 
-					
-					
-					<span class="light">CAAT.</span><b>Module</b>(obj)
-					
-					</div>
-					<div class="description">
-						This function defines CAAT modules, and creates Constructor Class objects.
-
-obj parameter has the following structure:
-{
-  defines{string},             // class name
-  depends{Array<string>=},   // dependencies class names
-  extendsClass{string},            // class to extend from
-  extensdWith{object},        // actual prototype to extend
-  aliases{Array<string>},    // other class names
-  onCreation{function=}        // optional callback to call after class creation.
-  onPreCreation{function=}        // optional callback to call after namespace class creation.
-}
-						
-							<br />
-							<i>Defined in: </i> <a href="../symbols/src/_Users_ibon_js_CAAT_src_Core_ModuleManager.js.html">ModuleManager.js</a>.
-						
-						
-					</div>
-					
-					
-					
-						
-							<dl class="detailList">
-							<dt class="heading">Parameters:</dt>
-							
-								<dt>
-									<b>obj</b>
-									
-								</dt>
-								<dd>{object}</dd>
-							
-							</dl>
-						
-						
-						
-						
-						
-						
-						
-
-					<hr />
-				
 					<a name=".RegisterDirector"> </a>
 					<div class="fixedFont">&lt;static&gt; 
 					
@@ -2568,7 +2555,7 @@ Default CAAT.Matrix try to speed things up.
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Apr 07 2013 11:06:40 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Jul 01 2013 04:59:15 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

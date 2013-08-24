@@ -223,6 +223,8 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Behavior.ScaleBehavior.html">CAAT.Behavior.ScaleBehavior</a></li>
 	
+	<li><a href="../symbols/CAAT.Class.html">CAAT.Class</a></li>
+	
 	<li><a href="../symbols/CAAT.CSS.html">CAAT.CSS</a></li>
 	
 	<li><a href="../symbols/CAAT.Event.html">CAAT.Event</a></li>
@@ -241,9 +243,9 @@ ul.inheritsList
 	
 	<li><a href="../symbols/CAAT.Foundation.ActorContainer.html">CAAT.Foundation.ActorContainer</a></li>
 	
-	<li><a href="../symbols/CAAT.Foundation.ActorContainer.ADDHINT.html">CAAT.Foundation.ActorContainer.ADDHINT</a></li>
-	
 	<li><a href="../symbols/CAAT.Foundation.ActorContainer.AddHint.html">CAAT.Foundation.ActorContainer.AddHint</a></li>
+	
+	<li><a href="../symbols/CAAT.Foundation.ActorContainer.ADDHINT.html">CAAT.Foundation.ActorContainer.ADDHINT</a></li>
 	
 	<li><a href="../symbols/CAAT.Foundation.Box2D.html">CAAT.Foundation.Box2D</a></li>
 	
@@ -856,6 +858,15 @@ the subimages calculated definition map.</div>
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Foundation.SpriteImage.html#addElementsAsImages">addElementsAsImages</a></b>(prefix)
+								</div>
+								<div class="description">Create elements as director.getImage values.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Foundation.SpriteImage.html#copy">copy</a></b>(other)
 								</div>
 								<div class="description"></div>
@@ -1025,10 +1036,28 @@ var font =   new CAAT.SpriteImage().initializeAsMonoTypeFontMap(
 						<tr>
 							<td class="attributes">&nbsp;</td>
 							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Foundation.SpriteImage.html#initializeFromGlyphDesigner">initializeFromGlyphDesigner</a></b>(text)
+								</div>
+								<div class="description"></div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
 								<div class="fixedFont"><b><a href="../symbols/CAAT.Foundation.SpriteImage.html#initializeFromMap">initializeFromMap</a></b>(image, map)
 								</div>
 								<div class="description">This method takes the output generated from the tool at http://labs.hyperandroid.com/static/texture/spriter.html
 and creates a map into that image.</div>
+							</td>
+						</tr>
+					
+						<tr>
+							<td class="attributes">&nbsp;</td>
+							<td class="nameDescription">
+								<div class="fixedFont"><b><a href="../symbols/CAAT.Foundation.SpriteImage.html#initializeFromTexturePackerJSON">initializeFromTexturePackerJSON</a></b>(image, obj)
+								</div>
+								<div class="description"></div>
 							</td>
 						</tr>
 					
@@ -2136,6 +2165,44 @@ An animation is defines by an array of pretend-to-be-played sprite sequence.
 
 					<hr />
 				
+					<a name="addElementsAsImages"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>addElementsAsImages</b>(prefix)
+					
+					</div>
+					<div class="description">
+						Create elements as director.getImage values.
+Create as much as elements defined in this sprite image.
+The elements will be named prefix+<the map info element name>
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>prefix</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="copy"> </a>
 					<div class="fixedFont">
 					
@@ -2743,6 +2810,42 @@ var font =   new CAAT.SpriteImage().initializeAsMonoTypeFontMap(
 
 					<hr />
 				
+					<a name="initializeFromGlyphDesigner"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>initializeFromGlyphDesigner</b>(text)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>text</b>
+									
+								</dt>
+								<dd></dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
 					<a name="initializeFromMap"> </a>
 					<div class="fixedFont">
 					
@@ -2774,6 +2877,48 @@ and creates a map into that image.
 									
 								</dt>
 								<dd>{object} the map into the image to define subimages.</dd>
+							
+							</dl>
+						
+						
+						
+						
+						
+						
+						
+
+					<hr />
+				
+					<a name="initializeFromTexturePackerJSON"> </a>
+					<div class="fixedFont">
+					
+					
+					<b>initializeFromTexturePackerJSON</b>(image, obj)
+					
+					</div>
+					<div class="description">
+						
+						
+						
+					</div>
+					
+					
+					
+						
+							<dl class="detailList">
+							<dt class="heading">Parameters:</dt>
+							
+								<dt>
+									<b>image</b>
+									
+								</dt>
+								<dd></dd>
+							
+								<dt>
+									<b>obj</b>
+									
+								</dt>
+								<dd></dd>
 							
 							</dl>
 						
@@ -3983,7 +4128,7 @@ Any value of
 <!-- ============================== footer ================================= -->
 		<div class="fineprint" style="clear:both">
 			
-			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Sun Apr 07 2013 11:06:43 GMT-0700 (PDT)
+			Documentation generated by <a href="http://code.google.com/p/jsdoc-toolkit/" target="_blank">JsDoc Toolkit</a> 2.4.0 on Mon Jul 01 2013 04:59:18 GMT-0700 (PDT)
 		</div>
 	</body>
 </html>

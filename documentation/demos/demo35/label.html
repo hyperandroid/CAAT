@@ -1,0 +1,208 @@
+<!DOCTYPE HTML5>
+<html>
+<head>
+    <script src="../../track.js" type="text/javascript"></script>
+    <title>CAAT example: UI.Label</title>
+
+    <link rel="stylesheet" href="../style/demo.css">
+
+
+</head>
+<body style="margin:0; padding:0;">
+
+<div id="page">
+    <div id="header">
+        <div style="text-align: center;">
+
+        </div>
+    </div>
+
+    <div id="content">
+        <div id="menu">
+
+        </div>
+        <div id="experiment">
+            <div style="text-align:center">
+                <h1>Label - Reload for new layouts</h1>
+            </div>
+            <div id="experiment-holder">
+                <canvas id="experiment-canvas"></canvas>
+            </div>
+            <div id="experiment-description">
+                <div>
+                    <p>Controls:</p>
+                    <ul>
+                        <li>None.</li>
+                    </ul>
+                </div>
+                <div>
+                    <p>
+                        This demo features the following elements:
+                    </p>
+                    <ul>
+                        <li>UI.Label object</li>
+                        <li>Defining styles</li>
+                        <li>Adding anchors</li>
+                        <li>Mixing images and text</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+
+
+<script type="text/javascript" src="../menu/menu.js"></script>
+<script src="../../../src/Core/ModuleManager.js"></script>
+
+<script type="text/javascript">
+    /**
+     * @license
+     *
+     * The MIT License
+     * Copyright (c) 2010-2011 Ibon Tolosana, Hyperandroid || http://labs.hyperandroid.com/
+
+     * Permission is hereby granted, free of charge, to any person obtaining a copy
+     * of this software and associated documentation files (the "Software"), to deal
+     * in the Software without restriction, including without limitation the rights
+     * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+     * copies of the Software, and to permit persons to whom the Software is
+     * furnished to do so, subject to the following conditions:
+
+     * The above copyright notice and this permission notice shall be included in
+     * all copies or substantial portions of the Software.
+
+     * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+     * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+     * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+     * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+     * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+     * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+     * THE SOFTWARE.
+     *
+     */
+    (function() {
+
+        /**
+         * Startup it all up when the document is ready.
+         * Change for your favorite frameworks initialization code.
+         */
+        window.addEventListener('load',load,false);
+
+        function load() {
+            CAAT.ModuleManager.
+                    debug(true).
+                    baseURL("../../../src/").
+                    setModulePath("CAAT.Core",              "Core").
+                    setModulePath("CAAT.Math",              "Math").
+                    setModulePath("CAAT.Behavior",          "Behavior").
+                    setModulePath("CAAT.Foundation",        "Foundation").
+                    setModulePath("CAAT.Event",             "Event").
+                    setModulePath("CAAT.PathUtil",          "PathUtil").
+                    setModulePath("CAAT.Module",            "Modules").
+                    setModulePath("CAAT.Module.Preloader",  "Modules/Image/Preloader").
+                    setModulePath("CAAT.WebGL",             "WebGL").
+
+                // get modules, and solve their dependencies.
+                    bring(
+                    [
+                        "CAAT.Foundation.Director",
+                        "CAAT.Foundation.Actor",
+                        "CAAT.Foundation.ActorContainer",
+                        "CAAT.Foundation.SpriteImage",
+                        "CAAT.Foundation.UI.Label",
+                        "CAAT.Module.ColorUtil.Color",
+                        "CAAT.Module.Preloader.Preloader"
+                    ]).
+
+                // this function will be firer every time all dependencies have been solved.
+                // if you call again bring, this function could be fired again.
+                    onReady( function() {
+                        new CAAT.Module.Preloader.Preloader().
+                            addElement("text", "../demo-resources/img/numerospuntos.png").
+                            load( function(images) {
+                                paint(images);
+                            });
+                    } );
+        }
+
+
+        var textPanelIndex=0;
+        function createTextPanel( w ) {
+            var s= 10+ (Math.random()*10)|0;
+            var r= Math.random();
+            var al;
+            if ( r<.25 ) {
+                al="left";
+            } else if ( r<.5 ) {
+                al="center";
+            } else if (r<.75 ) {
+                al="right";
+            } else {
+                al= "justify"
+            }
+            var label= new CAAT.Foundation.UI.Label().
+                    setStyle("default", {
+                        fontSize : s,
+                        alignment: al,
+                        tabSize : 100
+                    }).
+                    setStyle("center", {
+                        fontSize : s+10,
+                        fill:      "#f0f",
+                        alignment : "center",
+                        shadow : true,
+                        shadowBlur : 5,
+                        shadowColor : "#0ff"
+                    }).
+                    setStyle("link", {
+                        fontSize : s+5,
+                        fill:      "#00f",
+                        italic : true
+                    }).
+                    addImage( "img", new CAAT.Foundation.SpriteImage(CAAT.currentDirector.getImage("text"),1,15)).
+                    setText("<style=center>Multiline text</style><br>Bacon ipsum <image=text11> dolor sit amet salami pork " +
+                            "belly tail <style=link><a=#"+(textPanelIndex++)+">tongue</a></style> pancetta, pork <image=img,0,2> " +
+                            "loin tri-tip drumstick bresaola shankle. Bacon ham hock pork belly, sausage tri-tip tongue strip " +
+                            "steak fatback. <a=abcd><image=img,0,7></a> Tail t-bone salami bacon. Bresaola turkey ribeye " +
+                            "hamburger meatball t-bone. Turkey pancetta ground round, pig sirloin tenderloin corned beef " +
+                            "meatloaf venison sausage jerky pork loin shank bacon tail. Pancetta beef ham hock, jowl pork " +
+                            "chop pork belly bacon venison rump shoulder shankle cow pastrami sausage. Beef ribs drumstick " +
+                            "meatball, pancetta biltong swine bresaola ribeye<image=img,0,5>jerky spare ribs ham chuck corned " +
+                            "beef pork chop.", 300).
+                    cacheAsBitmap().
+                    setClickCallback( function(id) {
+                        alert("Clicked: "+id);
+                    });
+
+            return label;
+        }
+
+        function paint(images) {
+
+            CAAT.DEBUG=1;
+
+            var director= new CAAT.Foundation.Director().initialize( 800,500,'experiment-canvas' );
+            director.setImagesCache( images );
+            var scene = director.createScene();
+
+
+            var t1= createTextPanel( director.width/2 );
+            var t2= createTextPanel( director.height/2 );
+
+            t2.setLocation( director.width/2, 0 );
+
+            scene.addChild( t1 );
+            scene.addChild( t2 );
+
+            director.loop(60);
+        }
+
+
+    })();
+
+</script>
+</html>
