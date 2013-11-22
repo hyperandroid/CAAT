@@ -325,7 +325,7 @@ CAAT.Module({
             initialize:function (image, rows, columns) {
 
                 if (!image) {
-                    console.log("Null image for SpriteImage.");
+                    CAAT.log("Error: got null instead of image object.");
                 }
 
                 if ( isString(image) ) {

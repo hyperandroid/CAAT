@@ -284,8 +284,8 @@ CAAT.Module( {
                 img.__h= newHeight;
 
                 this.scan.substract(where.x,where.y,w,h);
-            } else {
-                CAAT.log('Imagen ',img.src,' de tamano ',img.width,img.height,' no cabe.');
+//            } else {
+//                CAAT.log('Image ',img.src,' of size ',img.width,img.height,' does not fit into texture page.');
             }
         },
         changeHeuristic : function(criteria) {
