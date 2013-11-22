@@ -122,6 +122,7 @@ CAAT.Module( {
             return this;
         },
         setMatrixUniform : function( caatMatrix4 ) {
+            this.gl.useProgram(this.shaderProgram);
             this.gl.uniformMatrix4fv(
                     this.shaderProgram.pMatrixUniform,
                     false,

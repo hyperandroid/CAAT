@@ -102,7 +102,7 @@ CAAT.Module( {
 
             this.gl.vertexAttribPointer(
                     this.shaderProgram.vertexColorAttribute,
-                    this.colorBuffer,
+                    4,
                     this.gl.FLOAT,
                     false,
                     0,
