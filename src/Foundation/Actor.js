@@ -1461,15 +1461,26 @@ CAAT.Module({
              * If the Behavior is not present at the actor behavior collection nothing happends.
              *
              * @param behavior {CAAT.Behavior.BaseBehavior}
+             * @deprecated
              */
             removeBehaviour:function (behavior) {
+              this.removeBehavior(behavior);
+            },
+            /**
+             * Remove a Behavior from the Actor.
+             * If the Behavior is not present at the actor behavior collection nothing happends.
+             *
+             * @param behavior {CAAT.Behavior.BaseBehavior}
+             */
+            removeBehavior:function (behavior) {
                 var c = this.behaviorList;
                 var n = c.length - 1;
-                while (n) {
+                while (n >= 0) {
                     if (c[n] === behavior) {
                         c.splice(n, 1);
                         return this;
                     }
+                    n = n - 1;
                 }
                 return this;
             },
@@ -2317,7 +2328,7 @@ CAAT.Module({
             glSetShader:function (director) {
 
                 var tp = this.getTextureGLPage();
-                if (tp !== director.currentTexturePage) {
+                if (tp && tp !== director.currentTexturePage) {
                     director.setGLTexturePage(tp);
                 }
 

@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.6 build: 5
+Version: 0.6 build: 6
 
 Created on:
-DATE: 2013-07-01
-TIME: 04:58:32
+DATE: 2013-08-25
+TIME: 14:03:50
 */
 
 
@@ -2007,7 +2007,8 @@ CAAT.Module({
             __init:function () {
                 this.matrix = [
                     1.0, 0.0, 0.0,
-                    0.0, 1.0, 0.0, 0.0, 0.0, 1.0 ];
+                    0.0, 1.0, 0.0, 
+                    0.0, 0.0, 1.0 ];
 
                 if (typeof Float32Array !== "undefined") {
                     this.matrix = new Float32Array(this.matrix);
@@ -2192,7 +2193,7 @@ CAAT.Module({
              * Creates a new inverse matrix from this matrix.
              * @return {CAAT.Matrix} an inverse matrix.
              */
-            getInverse:function () {
+            getInverse:function (out) {
                 var tm = this.matrix;
 
                 var m00 = tm[0];
@@ -2205,7 +2206,7 @@ CAAT.Module({
                 var m21 = tm[7];
                 var m22 = tm[8];
 
-                var newMatrix = new CAAT.Math.Matrix();
+                var newMatrix = out || new CAAT.Math.Matrix();
 
                 var determinant = m00 * (m11 * m22 - m21 * m12) - m10 * (m01 * m22 - m21 * m02) + m20 * (m01 * m12 - m11 * m02);
                 if (determinant === 0) {
@@ -8825,7 +8826,7 @@ CAAT.Module( {
 
                 this.cfinished= onfinished;
                 this.cloaded= onload_one;
-                this.cerroed= onerror;
+                this.cerrored= onerror;
 
                 var i;
 
@@ -12334,11 +12335,14 @@ CAAT.Module( {
             return this;
         },
         setCatmullRom : function( points, closed ) {
+            points = points.slice(0);
             if ( closed ) {
-                points = points.slice(0)
-                points.unshift(points[points.length-1])
-                points.push(points[1])
-                points.push(points[2])
+                points.unshift(points[points.length-1]);
+                points.push(points[1]);
+                points.push(points[2]);
+            } else {
+                points.unshift(points[0]);
+                points.push(points[points.length-1]);
             }
 
             for( var i=1; i<points.length-2; i++ ) {
@@ -16652,6 +16656,11 @@ CAAT.Module({
 
             getWidth:function () {
                 var el = this.mapInfo[this.spriteIndex];
+               if (el === null || typeof el === "undefined") {
+                  console.log(this.mapInfo);
+                  console.log(this.spriteIndex);
+               }
+
                 return el.width;
             },
 
@@ -16692,6 +16701,8 @@ CAAT.Module({
                 ret.parentOffsetY= this.parentOffsetY;
 
                 ret.scaleFont= this.scaleFont;
+
+                ret.spriteIndex= this.spriteIndex;
 
                 return ret;
             },
@@ -17679,7 +17690,9 @@ CAAT.Module({
                 this.scaleAnchor = CAAT.Foundation.Actor.ANCHOR_CENTER;
 
                 this.modelViewMatrix = new CAAT.Math.Matrix();
+                this.modelViewMatrixI = new CAAT.Math.Matrix();
                 this.worldModelViewMatrix = new CAAT.Math.Matrix();
+                this.worldModelViewMatrixI = new CAAT.Math.Matrix();
 
                 this.resetTransform();
                 this.setScale(1, 1);
@@ -19032,15 +19045,26 @@ CAAT.Module({
              * If the Behavior is not present at the actor behavior collection nothing happends.
              *
              * @param behavior {CAAT.Behavior.BaseBehavior}
+             * @deprecated
              */
             removeBehaviour:function (behavior) {
+              this.removeBehavior(behavior);
+            },
+            /**
+             * Remove a Behavior from the Actor.
+             * If the Behavior is not present at the actor behavior collection nothing happends.
+             *
+             * @param behavior {CAAT.Behavior.BaseBehavior}
+             */
+            removeBehavior:function (behavior) {
                 var c = this.behaviorList;
                 var n = c.length - 1;
-                while (n) {
+                while (n >= 0) {
                     if (c[n] === behavior) {
                         c.splice(n, 1);
                         return this;
                     }
+                    n = n - 1;
                 }
                 return this;
             },
@@ -19178,7 +19202,7 @@ CAAT.Module({
                 if (this.dirty) {
                     this.setModelViewMatrix();
                 }
-                this.worldModelViewMatrixI = this.worldModelViewMatrix.getInverse();
+                this.worldModelViewMatrix.getInverse(this.worldModelViewMatrixI);
                 this.worldModelViewMatrixI.transformCoord(point);
                 return point;
             },
@@ -19198,7 +19222,7 @@ CAAT.Module({
                     return null;
                 }
 
-                this.modelViewMatrixI = this.modelViewMatrix.getInverse();
+                this.modelViewMatrix.getInverse(this.modelViewMatrixI);
                 this.modelViewMatrixI.transformCoord(point);
                 return this.contains(point.x, point.y) ? this : null;
             },
@@ -20719,6 +20743,18 @@ CAAT.Module({
                 }
                 return -1;
             },
+            /**
+             * Removed all Actors from this ActorContainer.
+             *
+             * @return array of former children
+             */
+            removeAllChildren: function() {
+                var cl = this.childrenList.slice(); // Make a shalow copy
+                for (var pos = cl.length-1;pos>=0;pos--) {
+                    this.removeChildAt(pos);
+                }
+                return cl;
+            },
             removeChildAt:function (pos) {
                 var cl = this.childrenList;
                 var rm;
@@ -20736,7 +20772,7 @@ CAAT.Module({
                 return null;
             },
             /**
-             * Removed an Actor form this ActorContainer.
+             * Removed an Actor from this ActorContainer.
              * If the Actor is not contained into this Container, nothing happends.
              *
              * @param child a CAAT.Foundation.Actor object instance.
@@ -21935,7 +21971,6 @@ CAAT.Module({
 
             getValueForKey : function( key ) {
                 return this.__map[key];
-                return this;
             },
 
             createTimer:function (startTime, duration, callback_timeout, callback_tick, callback_cancel) {
@@ -22616,7 +22651,7 @@ CAAT.Module({
                 this.timerManager.checkTimers(time);
 
                 this.setModelViewMatrix(this);
-                this.modelViewMatrixI = this.modelViewMatrix.getInverse();
+                this.modelViewMatrix.getInverse(this.modelViewMatrixI);
                 this.setScreenBounds();
 
                 this.dirty = false;
@@ -22817,6 +22852,46 @@ CAAT.Module({
                 scene.setEaseListener(this);
                 if (null === this.currentScene) {
                     this.setScene(0);
+                }
+            },
+
+            /**
+             * Private
+             * Gets a contained Scene index on this Director.
+             *
+             * @param scene a CAAT.Foundation.Scene object instance.
+             *
+             * @return {number}
+             */
+            findScene:function (scene) {
+                var sl = this.scenes;
+                var i;
+                var len = sl.length;
+
+                for (i = 0; i < len; i++) {
+                    if (sl[i] === scene) {
+                        return i;
+                    }
+                }
+                return -1;
+            },
+
+            /**
+             * Private
+             * Removes a scene from this director.
+             *
+             * @param scene a CAAT.Foundation.Scene object instance or scene index.
+             *
+             * @return {number}
+             */
+            removeScene: function(scene) {
+                if (typeof scene == 'number') {
+                    this.scenes.splice(scene, 1);
+                } else {
+                    var idx = this.findScene(scene);
+                    if (idx > 0) {
+                        this.scenes.splice(idx, 1);
+                    }
                 }
             },
             /**
@@ -23037,10 +23112,11 @@ CAAT.Module({
             /**
              * Changes (or sets) the current Director scene to the index
              * parameter. There will be no transition on scene change.
-             * @param sceneIndex {number} an integer indicating the index of the target Scene
+             * @param scene {number or scene object} an integer indicating the index of the target Scene or the target Scene itself
              * to be shown.
              */
-            setScene:function (sceneIndex) {
+            setScene:function (scene) {
+                var sceneIndex = (typeof scene == 'number') ? scene : this.findScene(scene);
                 var sin = this.scenes[ sceneIndex ];
                 this.childrenList = [];
                 this.addChild(sin);
@@ -23418,10 +23494,11 @@ CAAT.Module({
                         style = style ? style.getPropertyValue('position') : null;
                     }
 
-//                if (!/^(relative|absolute|fixed)$/.test(style)) {
+                    // Accumulate offsets...
+                    x += node[left];
+                    y += node[top];
+
                     if (!/^(fixed)$/.test(style)) {
-                        x += node[left];
-                        y += node[top];
                         node = node[parent];
                     } else {
                         break;
@@ -23484,7 +23561,7 @@ CAAT.Module({
                 pt.x = posx;
                 pt.y = posy;
                 if (!this.modelViewMatrixI) {
-                    this.modelViewMatrixI = this.modelViewMatrix.getInverse();
+                    this.modelViewMatrix.getInverse(this.modelViewMatrixI);
                 }
                 this.modelViewMatrixI.transformCoord(pt);
                 posx = pt.x;
@@ -25018,44 +25095,50 @@ CAAT.Module( {
 
         renderContextStyle.prototype= {
 
-            ctx         : null,
+            ctx          : null,
 
-            defaultFS   : null,
-            font        : null,
-            fontSize    : null,
-            fill        : null,
-            stroke      : null,
-            filled      : null,
-            stroked     : null,
-            strokeSize  : null,
-            italic      : null,
-            bold        : null,
-            alignment   : null,
-            tabSize     : null,
-            shadow      : null,
-            shadowBlur  : null,
-            shadowColor : null,
+            defaultFS    : null,
+            font         : null,
+            fontSize     : null,
+            fill         : null,
+            stroke       : null,
+            filled       : null,
+            stroked      : null,
+            strokeSize   : null,
+            italic       : null,
+            bold         : null,
+            alignment    : null,
+            tabSize      : null,
+            shadow       : null,
+            shadowBlur   : null,
+            shadowColor  : null,
+            shadowOffsetX: null,
+            shadowOffsetY: null,
 
-            sfont       : null,
 
-            chain       : null,
+            sfont        : null,
+
+            chain        : null,
 
             setDefault : function( defaultStyles ) {
-                this.defaultFS  =   24;
-                this.font       =   "Arial";
-                this.fontSize   =   this.defaultFS;
-                this.fill       =   '#000';
-                this.stroke     =   '#f00';
-                this.filled     =   true;
-                this.stroked    =   false;
-                this.strokeSize =   1;
-                this.italic     =   false;
-                this.bold       =   false;
-                this.alignment  =   "left";
-                this.tabSize    =   75;
-                this.shadow     =   false;
-                this.shadowBlur =   0;
-                this.shadowColor=   "#000";
+                this.defaultFS    =   24;
+                this.font         =   "Arial";
+                this.fontSize     =   this.defaultFS;
+                this.fill         =   '#000';
+                this.stroke       =   '#f00';
+                this.filled       =   true;
+                this.stroked      =   false;
+                this.strokeSize   =   1;
+                this.italic       =   false;
+                this.bold         =   false;
+                this.alignment    =   "left";
+                this.tabSize      =   75;
+                this.shadow       =   false;
+                this.shadowBlur   =   0;
+                this.shadowColor  =   "#000";
+                this.shadowOffsetX=   0;
+                this.shadowOffsetY=   0;
+
 
                 for( var style in defaultStyles ) {
                     if ( defaultStyles.hasOwnProperty(style) ) {
@@ -25155,8 +25238,10 @@ CAAT.Module( {
 
             __setShadow : function( ctx ) {
                 if ( this.__getProperty("shadow" ) ) {
-                    ctx.shadowBlur= this.__getProperty("shadowBlur");
-                    ctx.shadowColor= this.__getProperty("shadowColor");
+                    ctx.shadowBlur   = this.__getProperty("shadowBlur");
+                    ctx.shadowColor  = this.__getProperty("shadowColor");
+                    ctx.shadowOffsetX= this.__getProperty("shadowOffsetX");
+                    ctx.shadowOffsetY= this.__getProperty("shadowOffsetY");
                 }
             },
 

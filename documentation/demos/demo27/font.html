@@ -19,8 +19,8 @@
 
 <div id="page">
     <div id="header">
-        <div style="text-align: center;">
-
+        <div style="text-align: center; font-size: 20px">
+            Select renderer: <a href="font.html?renderer=canvas">Canvas</a> <a href="font.html?renderer=webgl">WebGL</a> <a href="font.html?renderer=css">CSS</a> 
         </div>
     </div>
 
@@ -33,7 +33,6 @@
                 <h1>CAAT.Font</h1>
             </div>
             <div id="experiment-holder">
-                <canvas id="experiment-canvas"></canvas>
             </div>
             <div id="experiment-description">
                 <div>
@@ -90,6 +89,47 @@
      */
 
     (function() {
+
+        function getRequestParameter(name) {
+            if (name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+                return decodeURIComponent(name[1]);
+        }
+        var renderer = getRequestParameter('renderer');
+        var modulesToLoad;
+        if (renderer === "css") {
+            modulesToLoad = [
+                    "CAAT.PathUtil.Path",
+                    "CAAT.Foundation.Director",
+                    "CAAT.Foundation.ActorCSS",
+                    "CAAT.Foundation.ActorContainerCSS",
+                    "CAAT.Foundation.SpriteImage",
+                    "CAAT.Foundation.UI.TextActor",
+                    "CAAT.Math.Point",
+                    "CAAT.Behavior.PathBehavior",
+                    "CAAT.Behavior.RotateBehavior",
+                    "CAAT.Behavior.Interpolator",
+                    "CAAT.Module.Font.Font",
+                    "CAAT.Module.ColorUtil.Color"
+            ];
+            CAAT.__CSS__=1;
+        }
+        else {
+            modulesToLoad = [
+                    "CAAT.PathUtil.Path",
+                    "CAAT.Foundation.Director",
+                    "CAAT.Foundation.Actor",
+                    "CAAT.Foundation.ActorContainer",
+                    "CAAT.Foundation.SpriteImage",
+                    "CAAT.Foundation.UI.TextActor",
+                    "CAAT.Math.Point",
+                    "CAAT.Behavior.PathBehavior",
+                    "CAAT.Behavior.RotateBehavior",
+                    "CAAT.Behavior.Interpolator",
+                    "CAAT.Module.Font.Font",
+                    "CAAT.Module.ColorUtil.Color"
+            ];
+        }
+
         /**
          * Startup it all up when the document is ready.
          * Change for your favorite frameworks initialization code.
@@ -110,20 +150,7 @@
                 setModulePath("CAAT.WebGL", "WebGL").
 
                 // get modules, and solve their dependencies.
-                bring([
-                    "CAAT.PathUtil.Path",
-                    "CAAT.Foundation.Director",
-                    "CAAT.Foundation.Actor",
-                    "CAAT.Foundation.ActorContainer",
-                    "CAAT.Foundation.SpriteImage",
-                    "CAAT.Foundation.UI.TextActor",
-                    "CAAT.Math.Point",
-                    "CAAT.Behavior.PathBehavior",
-                    "CAAT.Behavior.RotateBehavior",
-                    "CAAT.Behavior.Interpolator",
-                    "CAAT.Module.Font.Font",
-                    "CAAT.Module.ColorUtil.Color"
-                ]).
+                bring(modulesToLoad).
 
                 // this function will be fired every time all dependencies have been solved.
                 // if you call again bring, this function could be fired again.
@@ -132,14 +159,35 @@
 
         function textOnPath(director) {
 
-            var director= new CAAT.Foundation.Director().initialize(800,500,'experiment-canvas');
+            var container = document.getElementById("experiment-holder");
+            var director;
+            var container;
+            if (renderer === 'css') {
+                console.log("Using css renderer");
+                canvas = document.createElement("div");
+                container.appendChild(canvas);
+                director= new CAAT.Foundation.Director().initialize(800,500,canvas);
+            }
+            else if (renderer === 'webgl') {
+                console.log("Using WebGL renderer");
+                canvas = document.createElement("canvas");
+                container.appendChild(canvas);
+                director= new CAAT.Foundation.Director().initializeGL(800,500,canvas);
+            }
+            else {
+                console.log("Using canvas renderer");
+                canvas = document.createElement("canvas");
+                container.appendChild(canvas);
+                director= new CAAT.Foundation.Director().initialize(800,500,canvas);
+            }
             var scene = director.createScene();
 
-            var gradient = director.ctx.createLinearGradient(0, -30, 0, 100);
+/*            var gradient = director.ctx.createLinearGradient(0, -30, 0, 100);
             gradient.addColorStop(0, '#ff0');
             gradient.addColorStop(0.5, '#f00');
             gradient.addColorStop(1, 'blue');
-
+*/
+    gradient = 'blue';
             var font_baumans= new CAAT.Module.Font.Font().
                 setFont('"Baumans"').
                 setFontSize(100,"px").

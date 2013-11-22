@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.6 build: 5
+Version: 0.6 build: 6
 
 Created on:
-DATE: 2013-07-01
-TIME: 04:58:33
+DATE: 2013-08-25
+TIME: 14:03:51
 */
 
 
@@ -163,18 +163,6 @@ CAAT.Module({
                 return this;
             },
 
-            setPositionAnchor : function( ax, ay ) {
-                this.tAnchorX= .5;
-                this.tAnchorY= .5;
-            },
-
-            setPositionAnchored : function(x,y,ax,ay) {
-                this.x= x;
-                this.y= y;
-                this.tAnchorX= .5;
-                this.tAnchorY= .5;
-            },
-
             /**
              * set this actor to recycle its body, that is, do not destroy it.
              */
@@ -204,13 +192,47 @@ CAAT.Module({
                 this.worldBody.SetSleepingAllowed(bool);
                 return this;
             },
+            /**
+             * This method sets the position of an Actor inside its parent.
+             *
+             * @param x{number} a float indicating Actor's x position
+             * @param y{number} a float indicating Actor's y position
+             * @return this
+             *
+             * @deprecated
+             */
             setLocation:function (x, y) {
+                this.x = x;
+                this.y = y;
+                this.oldX = x;
+                this.oldY = y;
+
+                this.dirty = true;
                 this.worldBody.SetPosition(
                     new Box2D.Common.Math.b2Vec2(
                         x / CAAT.PMR,
                         y / CAAT.PMR));
+
                 return this;
             },
+
+            setPosition:function (x, y) {
+                return this.setLocation(x, y);
+            },
+
+            setPositionAnchor:function (pax, pay) {
+                this.tAnchorX = pax;
+                this.tAnchorY = pay;
+                return this;
+            },
+
+            setPositionAnchored:function (x, y, pax, pay) {
+                this.setLocation(x, y);
+                this.tAnchorX = pax;
+                this.tAnchorY = pay;
+                return this;
+            },
+
             /**
              * Set this body's
              * density.
