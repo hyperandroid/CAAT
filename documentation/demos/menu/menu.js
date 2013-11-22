@@ -29,7 +29,8 @@
 
     function processReqChange() {
         if (req.readyState == 4) {
-            if (req.status == 200) {
+            // status is 0 for local resources accessed via file://
+            if (!req.status && req.response || req.status >= 200 && req.status < 300 || req.status === 304 ? req : null) {
                 var menu= document.getElementById('menu');
                 menu.innerHTML= req.responseText;
             } else {
