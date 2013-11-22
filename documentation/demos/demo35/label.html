@@ -12,8 +12,8 @@
 
 <div id="page">
     <div id="header">
-        <div style="text-align: center;">
-
+        <div style="text-align: center; font-size: 20px">
+            Select renderer: <a href="label.html?renderer=canvas">Canvas</a> <a href="label.html?renderer=webgl">WebGL</a> <a href="label.html?renderer=css">CSS</a> 
         </div>
     </div>
 
@@ -26,7 +26,6 @@
                 <h1>Label - Reload for new layouts</h1>
             </div>
             <div id="experiment-holder">
-                <canvas id="experiment-canvas"></canvas>
             </div>
             <div id="experiment-description">
                 <div>
@@ -86,6 +85,36 @@
      */
     (function() {
 
+        function getRequestParameter(name) {
+            if (name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
+                return decodeURIComponent(name[1]);
+        }
+        var renderer = getRequestParameter('renderer');
+        var modulesToLoad;
+        if (renderer === "css") {
+            modulesToLoad = [
+                        "CAAT.Foundation.Director",
+                        "CAAT.Foundation.ActorCSS",
+                        "CAAT.Foundation.ActorContainerCSS",
+                        "CAAT.Foundation.SpriteImage",
+                        "CAAT.Foundation.UI.Label",
+                        "CAAT.Module.ColorUtil.Color",
+                        "CAAT.Module.Preloader.Preloader"
+            ];
+            CAAT.__CSS__=1;
+        }
+        else {
+            modulesToLoad = [
+                        "CAAT.Foundation.Director",
+                        "CAAT.Foundation.Actor",
+                        "CAAT.Foundation.ActorContainer",
+                        "CAAT.Foundation.SpriteImage",
+                        "CAAT.Foundation.UI.Label",
+                        "CAAT.Module.ColorUtil.Color",
+                        "CAAT.Module.Preloader.Preloader"
+            ];
+        }
+
         /**
          * Startup it all up when the document is ready.
          * Change for your favorite frameworks initialization code.
@@ -107,16 +136,7 @@
                     setModulePath("CAAT.WebGL",             "WebGL").
 
                 // get modules, and solve their dependencies.
-                    bring(
-                    [
-                        "CAAT.Foundation.Director",
-                        "CAAT.Foundation.Actor",
-                        "CAAT.Foundation.ActorContainer",
-                        "CAAT.Foundation.SpriteImage",
-                        "CAAT.Foundation.UI.Label",
-                        "CAAT.Module.ColorUtil.Color",
-                        "CAAT.Module.Preloader.Preloader"
-                    ]).
+                    bring(modulesToLoad).
 
                 // this function will be firer every time all dependencies have been solved.
                 // if you call again bring, this function could be fired again.
@@ -185,7 +205,27 @@
 
             CAAT.DEBUG=1;
 
-            var director= new CAAT.Foundation.Director().initialize( 800,500,'experiment-canvas' );
+            var container = document.getElementById("experiment-holder");
+            var director;
+            var container;
+            if (renderer === 'css') {
+                console.log("Using css renderer");
+                canvas = document.createElement("div");
+                container.appendChild(canvas);
+                director= new CAAT.Foundation.Director().initialize(800,500,canvas);
+            }
+            else if (renderer === 'webgl') {
+                console.log("Using WebGL renderer");
+                canvas = document.createElement("canvas");
+                container.appendChild(canvas);
+                director= new CAAT.Foundation.Director().initializeGL(800,500,canvas);
+            }
+            else {
+                console.log("Using canvas renderer");
+                canvas = document.createElement("canvas");
+                container.appendChild(canvas);
+                director= new CAAT.Foundation.Director().initialize(800,500,canvas);
+            }
             director.setImagesCache( images );
             var scene = director.createScene();
 
