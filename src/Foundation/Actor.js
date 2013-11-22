@@ -2317,7 +2317,7 @@ CAAT.Module({
             glSetShader:function (director) {
 
                 var tp = this.getTextureGLPage();
-                if (tp !== director.currentTexturePage) {
+                if (tp && tp !== director.currentTexturePage) {
                     director.setGLTexturePage(tp);
                 }
 

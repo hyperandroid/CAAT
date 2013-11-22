@@ -516,7 +516,12 @@ CAAT.Module({
 
                 this.canvas.width = this.referenceWidth * factor;
                 this.canvas.height = this.referenceHeight * factor;
-                this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d');
+                if (this.glEnabled) {
+                    this.ctx = this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl');
+                }
+                else {
+                    this.ctx = this.canvas.getContext('2d');
+                }
 
                 this.__setupRetina();
 
@@ -620,7 +625,12 @@ CAAT.Module({
                     this.canvas.height = h;
                 }
 
-                this.ctx = this.canvas.getContext(this.glEnabled ? 'experimental-webgl' : '2d');
+                if (this.gl) {
+                    this.ctx = this.canvas.getContext('webgl') || this.canvas.getContext('experimental-webgl');
+                }
+                else {
+                    this.ctx = this.canvas.getContext('2d');
+                }
 
                 this.__setupRetina();
 
@@ -718,7 +728,7 @@ CAAT.Module({
                 var i;
 
                 try {
-                    this.gl = canvas.getContext("experimental-webgl"/*, {antialias: false}*/);
+                    this.gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
                     this.gl.viewportWidth = width;
                     this.gl.viewportHeight = height;
                     CAAT.GLRENDER = true;
@@ -759,6 +769,7 @@ CAAT.Module({
                     this.checkDebug();
                 } else {
                     // fallback to non gl enabled canvas.
+                    CAAT.log("WebGL not supported, falling back to 2D canvas.")
                     return this.initialize(width, height, canvas);
                 }
 
@@ -1443,7 +1454,7 @@ CAAT.Module({
                 var ssin = this.scenes[ inSceneIndex ];
                 var sout = this.scenes[ outSceneIndex ];
 
-                if (!CAAT.__CSS__ && CAAT.CACHE_SCENE_ON_CHANGE) {
+                if (!CAAT.__CSS__ && !this.glEnabled && CAAT.CACHE_SCENE_ON_CHANGE) {
                     this.renderToContext(this.transitionScene.ctx, sout);
                     sout = this.transitionScene;
                 }
