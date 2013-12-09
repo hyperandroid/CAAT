@@ -1604,6 +1604,13 @@ CAAT.Module({
             mouseDblClick:function (mouseEvent) {
             },
             /**
+             * Default mouse wheel handler
+             *
+             * @param mouseEvent a CAAT.MouseEvent object instance.
+             */
+            mouseWheel:function (mouseEvent) {
+            },
+            /**
              * Default mouse enter on Actor handler.
              * @param mouseEvent a CAAT.MouseEvent object instance.
              */

@@ -2375,6 +2375,25 @@ CAAT.Module({
                 }
             },
 
+            __mouseWheelHandler:function (e) {
+
+                this.getCanvasCoord(this.mousePoint, e);
+                if (null !== this.lastSelectedActor) {
+                    /*
+                     var pos = this.lastSelectedActor.viewToModel(
+                     new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
+                     */
+                    this.lastSelectedActor.mouseWheel(
+                        new CAAT.Event.MouseEvent().init(
+                            this.mousePoint.x,
+                            this.mousePoint.y,
+                            e,
+                            this.lastSelectedActor,
+                            this.screenMousePoint,
+                            this.currentScene.time));
+                }
+            },
+
             /**
              * Same as mouseDown but not preventing event.
              * Will only take care of first touch.
@@ -2841,6 +2860,24 @@ CAAT.Module({
                         me.__mouseDBLClickHandler(e);
                     }
                 }, false);
+
+                var mouseWheelHandler = function (e) {
+                    e.preventDefault();
+                    e.cancelBubble = true;
+                    if (e.stopPropagation) e.stopPropagation();
+                    //Cross browser wheel delta
+                    e.wheelDelta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+                    var mp = me.mousePoint;
+                    me.getCanvasCoord(mp, e);
+                    if ( mp.x < 0 || mp.y < 0 || mp.x >= me.width || mp.y >= me.height ) {
+                        return;
+                    }
+                    me.__mouseWheelHandler(e);
+                };
+                //IE9, Chrome, Safari, Opera
+                window.addEventListener('mousewheel', mouseWheelHandler, false);
+                //Firefox
+                window.addEventListener('DOMMouseWheel', mouseWheelHandler, false);
 
                 if (CAAT.TOUCH_BEHAVIOR === CAAT.TOUCH_AS_MOUSE) {
                     canvas.addEventListener("touchstart", this.__touchStartHandler.bind(this), false);
