@@ -2055,7 +2055,7 @@ CAAT.Module({
                 }
                 this.modelViewMatrixI.transformCoord(pt);
                 posx = pt.x;
-                posy = pt.y
+                posy = pt.y;
 
                 point.set(posx, posy);
                 this.screenMousePoint.set(posx, posy);
@@ -2108,7 +2108,7 @@ CAAT.Module({
                     pos = lactor.viewToModel(
                         new CAAT.Math.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
                     if (lactor.actionPerformed && lactor.contains(pos.x, pos.y)) {
-                        lactor.actionPerformed(e)
+                        lactor.actionPerformed(e);
                     }
 
                     lactor.mouseUp(
@@ -2358,7 +2358,6 @@ CAAT.Module({
 
             __mouseDBLClickHandler:function (e) {
 
-                this.getCanvasCoord(this.mousePoint, e);
                 if (null !== this.lastSelectedActor) {
                     /*
                      var pos = this.lastSelectedActor.viewToModel(
@@ -2366,8 +2365,8 @@ CAAT.Module({
                      */
                     this.lastSelectedActor.mouseDblClick(
                         new CAAT.Event.MouseEvent().init(
-                            this.mousePoint.x,
-                            this.mousePoint.y,
+                            this.prevMousePoint.x,
+                            this.prevMousePoint.y,
                             e,
                             this.lastSelectedActor,
                             this.screenMousePoint,
@@ -2377,16 +2376,11 @@ CAAT.Module({
 
             __mouseWheelHandler:function (e) {
 
-                this.getCanvasCoord(this.mousePoint, e);
                 if (null !== this.lastSelectedActor) {
-                    /*
-                     var pos = this.lastSelectedActor.viewToModel(
-                     new CAAT.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
-                     */
                     this.lastSelectedActor.mouseWheel(
                         new CAAT.Event.MouseEvent().init(
-                            this.mousePoint.x,
-                            this.mousePoint.y,
+                            this.prevMousePoint.x,
+                            this.prevMousePoint.y,
                             e,
                             this.lastSelectedActor,
                             this.screenMousePoint,
@@ -2862,22 +2856,25 @@ CAAT.Module({
                 }, false);
 
                 var mouseWheelHandler = function (e) {
-                    e.preventDefault();
-                    e.cancelBubble = true;
-                    if (e.stopPropagation) e.stopPropagation();
-                    //Cross browser wheel delta
-                    e.wheelDelta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
-                    var mp = me.mousePoint;
-                    me.getCanvasCoord(mp, e);
-                    if ( mp.x < 0 || mp.y < 0 || mp.x >= me.width || mp.y >= me.height ) {
-                        return;
+                    if (e.target === canvas) {
+                        e.preventDefault();
+                        e.cancelBubble = true;
+                        if (e.stopPropagation) e.stopPropagation();
+                        var mp = me.mousePoint;
+                        me.getCanvasCoord(mp, e);
+                        if (mp.x < 0 || mp.y < 0 || mp.x >= me.width || mp.y >= me.height) {
+                            return;
+                        }
+
+                        //Cross browser wheel delta
+                        e.wheelDelta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+                        me.__mouseWheelHandler(e);
                     }
-                    me.__mouseWheelHandler(e);
                 };
                 //IE9, Chrome, Safari, Opera
                 window.addEventListener('mousewheel', mouseWheelHandler, false);
                 //Firefox
-                window.addEventListener('DOMMouseWheel', mouseWheelHandler, false);
+                window.addEventListener('DOMMouseScroll', mouseWheelHandler, false);
 
                 if (CAAT.TOUCH_BEHAVIOR === CAAT.TOUCH_AS_MOUSE) {
                     canvas.addEventListener("touchstart", this.__touchStartHandler.bind(this), false);

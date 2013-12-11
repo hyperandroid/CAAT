@@ -1592,7 +1592,7 @@ CAAT.Module({
                 return otherActor.viewToModel(this.modelToView(point));
             },
             /**
-             * Transform a point from model to view space.
+             * Transform a point from view to model space.
              * <p>
              * WARNING: every call to this method calculates
              * actor's world model view matrix.

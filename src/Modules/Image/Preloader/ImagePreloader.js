@@ -55,8 +55,9 @@ CAAT.Module( {
          * and is responsibility of the caller to count the number of loaded images to see if it fits his
          * needs.
          * 
-         * @param aImages {{ id:{url}, id2:{url}, ...} an object with id/url pairs.
-         * @param callback_loaded_one_image {function( imageloader {CAAT.ImagePreloader}, counter {number}, images {{ id:{string}, image: {Image}}} )}
+         * @param aImages {[{ id:{string}, url:{string}}, ...]} an array of object with two fields id and url.
+         * @param callback_loaded_one_image {function( counter {number}, images {{ id:{string}, image: {Image}}} )}
+         * @param callback_error {function (error, index)}
          * function to call on every image load.
          */
         loadImages: function( aImages, callback_loaded_one_image, callback_error ) {
@@ -85,7 +86,7 @@ CAAT.Module( {
                             if ( callback_error ) {
                                 callback_error( e, index );
                             }
-                        }
+                        };
                     })(i);
 
                 this.images[i].image.src= aImages[i].url;
