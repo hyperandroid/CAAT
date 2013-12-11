@@ -21,11 +21,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
-Version: 0.6 build: 5
+Version: 0.6 build: 66
 
 Created on:
-DATE: 2013-07-01
-TIME: 04:58:33
+DATE: 2013-12-11
+TIME: 17:13:06
 */
 
 
@@ -2008,7 +2008,8 @@ CAAT.Module({
             __init:function () {
                 this.matrix = [
                     1.0, 0.0, 0.0,
-                    0.0, 1.0, 0.0, 0.0, 0.0, 1.0 ];
+                    0.0, 1.0, 0.0, 
+                    0.0, 0.0, 1.0 ];
 
                 if (typeof Float32Array !== "undefined") {
                     this.matrix = new Float32Array(this.matrix);
@@ -2193,7 +2194,7 @@ CAAT.Module({
              * Creates a new inverse matrix from this matrix.
              * @return {CAAT.Matrix} an inverse matrix.
              */
-            getInverse:function () {
+            getInverse:function (out) {
                 var tm = this.matrix;
 
                 var m00 = tm[0];
@@ -2206,7 +2207,7 @@ CAAT.Module({
                 var m21 = tm[7];
                 var m22 = tm[8];
 
-                var newMatrix = new CAAT.Math.Matrix();
+                var newMatrix = out || new CAAT.Math.Matrix();
 
                 var determinant = m00 * (m11 * m22 - m21 * m12) - m10 * (m01 * m22 - m21 * m02) + m20 * (m01 * m12 - m11 * m02);
                 if (determinant === 0) {
@@ -8826,7 +8827,7 @@ CAAT.Module( {
 
                 this.cfinished= onfinished;
                 this.cloaded= onload_one;
-                this.cerroed= onerror;
+                this.cerrored= onerror;
 
                 var i;
 
@@ -8896,8 +8897,9 @@ CAAT.Module( {
          * and is responsibility of the caller to count the number of loaded images to see if it fits his
          * needs.
          * 
-         * @param aImages {{ id:{url}, id2:{url}, ...} an object with id/url pairs.
-         * @param callback_loaded_one_image {function( imageloader {CAAT.ImagePreloader}, counter {number}, images {{ id:{string}, image: {Image}}} )}
+         * @param aImages {[{ id:{string}, url:{string}}, ...]} an array of object with two fields id and url.
+         * @param callback_loaded_one_image {function( counter {number}, images {{ id:{string}, image: {Image}}} )}
+         * @param callback_error {function (error, index)}
          * function to call on every image load.
          */
         loadImages: function( aImages, callback_loaded_one_image, callback_error ) {
@@ -8926,7 +8928,7 @@ CAAT.Module( {
                             if ( callback_error ) {
                                 callback_error( e, index );
                             }
-                        }
+                        };
                     })(i);
 
                 this.images[i].image.src= aImages[i].url;
@@ -12158,11 +12160,14 @@ CAAT.Module( {
             return this;
         },
         setCatmullRom : function( points, closed ) {
+            points = points.slice(0);
             if ( closed ) {
-                points = points.slice(0)
-                points.unshift(points[points.length-1])
-                points.push(points[1])
-                points.push(points[2])
+                points.unshift(points[points.length-1]);
+                points.push(points[1]);
+                points.push(points[2]);
+            } else {
+                points.unshift(points[0]);
+                points.push(points[points.length-1]);
             }
 
             for( var i=1; i<points.length-2; i++ ) {
@@ -14352,6 +14357,11 @@ CAAT.Module( {
          */
         meta:           false,
 
+		/**
+		 * Wheel delta, negative value for scrolling up, positive for scrolling down
+		 */
+		wheelDelta:     0,
+
         /**
          * Original mouse/touch event
          */
@@ -14361,16 +14371,17 @@ CAAT.Module( {
 
 		init : function( x,y,sourceEvent,source,screenPoint,time ) {
 			this.point.set(x,y);
-			this.source=        source;
-			this.screenPoint=   screenPoint;
+			this.source =       source;
+			this.screenPoint =  screenPoint;
             this.alt =          sourceEvent.altKey;
             this.control =      sourceEvent.ctrlKey;
             this.shift =        sourceEvent.shiftKey;
             this.meta =         sourceEvent.metaKey;
-            this.sourceEvent=   sourceEvent;
-            this.x=             x;
-            this.y=             y;
-            this.time=          time;
+            this.wheelDelta =   sourceEvent.wheelDelta;
+            this.sourceEvent =  sourceEvent;
+            this.x =            x;
+            this.y =            y;
+            this.time =         time;
 			return this;
 		},
 		isAltDown : function() {
@@ -17458,8 +17469,10 @@ CAAT.Module({
                 this.setScale(1, 1);
                 this.setRotation(0);
 
-                this.modelViewMatrix = new CAAT.Matrix();
-                this.worldModelViewMatrix = new CAAT.Matrix();
+                this.modelViewMatrix = new CAAT.Math.Matrix();
+                this.modelViewMatrixI = new CAAT.Math.Matrix();
+                this.worldModelViewMatrix = new CAAT.Math.Matrix();
+                this.worldModelViewMatrixI = new CAAT.Math.Matrix();
 
                 return this;
             },
@@ -18833,7 +18846,7 @@ CAAT.Module({
              *
              */
             viewToModel:function (point) {
-                this.worldModelViewMatrixI = this.worldModelViewMatrix.getInverse();
+                this.worldModelViewMatrix.getInverse(this.worldModelViewMatrixI);
                 this.worldModelViewMatrixI.transformCoord(point);
                 return point;
             },
@@ -18865,7 +18878,7 @@ CAAT.Module({
                 }
 
                 this.setModelViewMatrix();
-                this.modelViewMatrixI = this.modelViewMatrix.getInverse();
+                this.modelViewMatrix.getInverse(this.modelViewMatrixI);
                 this.modelViewMatrixI.transformCoord(point);
                 return this.contains(point.x, point.y) ? this : null;
             },
@@ -18997,6 +19010,13 @@ CAAT.Module({
              * @param mouseEvent a CAAT.MouseEvent object instance.
              */
             mouseDblClick:function (mouseEvent) {
+            },
+            /**
+             * Default mouse wheel handler
+             *
+             * @param mouseEvent a CAAT.MouseEvent object instance.
+             */
+            mouseWheel:function (mouseEvent) {
             },
             /**
              * Default mouse enter on Actor handler.
@@ -20958,7 +20978,6 @@ CAAT.Module({
 
             getValueForKey : function( key ) {
                 return this.__map[key];
-                return this;
             },
 
             createTimer:function (startTime, duration, callback_timeout, callback_tick, callback_cancel) {
@@ -21639,7 +21658,7 @@ CAAT.Module({
                 this.timerManager.checkTimers(time);
 
                 this.setModelViewMatrix(this);
-                this.modelViewMatrixI = this.modelViewMatrix.getInverse();
+                this.modelViewMatrix.getInverse(this.modelViewMatrixI);
                 this.setScreenBounds();
 
                 this.dirty = false;
@@ -21840,6 +21859,46 @@ CAAT.Module({
                 scene.setEaseListener(this);
                 if (null === this.currentScene) {
                     this.setScene(0);
+                }
+            },
+
+            /**
+             * Private
+             * Gets a contained Scene index on this Director.
+             *
+             * @param scene a CAAT.Foundation.Scene object instance.
+             *
+             * @return {number}
+             */
+            findScene:function (scene) {
+                var sl = this.scenes;
+                var i;
+                var len = sl.length;
+
+                for (i = 0; i < len; i++) {
+                    if (sl[i] === scene) {
+                        return i;
+                    }
+                }
+                return -1;
+            },
+
+            /**
+             * Private
+             * Removes a scene from this director.
+             *
+             * @param scene a CAAT.Foundation.Scene object instance or scene index.
+             *
+             * @return {number}
+             */
+            removeScene: function(scene) {
+                if (typeof scene == 'number') {
+                    this.scenes.splice(scene, 1);
+                } else {
+                    var idx = this.findScene(scene);
+                    if (idx > 0) {
+                        this.scenes.splice(idx, 1);
+                    }
                 }
             },
             /**
@@ -22060,10 +22119,11 @@ CAAT.Module({
             /**
              * Changes (or sets) the current Director scene to the index
              * parameter. There will be no transition on scene change.
-             * @param sceneIndex {number} an integer indicating the index of the target Scene
+             * @param scene {number or scene object} an integer indicating the index of the target Scene or the target Scene itself
              * to be shown.
              */
-            setScene:function (sceneIndex) {
+            setScene:function (scene) {
+                var sceneIndex = (typeof scene == 'number') ? scene : this.findScene(scene);
                 var sin = this.scenes[ sceneIndex ];
                 this.childrenList = [];
                 this.addChild(sin);
@@ -22441,10 +22501,11 @@ CAAT.Module({
                         style = style ? style.getPropertyValue('position') : null;
                     }
 
-//                if (!/^(relative|absolute|fixed)$/.test(style)) {
+                    // Accumulate offsets...
+                    x += node[left];
+                    y += node[top];
+
                     if (!/^(fixed)$/.test(style)) {
-                        x += node[left];
-                        y += node[top];
                         node = node[parent];
                     } else {
                         break;
@@ -22507,11 +22568,11 @@ CAAT.Module({
                 pt.x = posx;
                 pt.y = posy;
                 if (!this.modelViewMatrixI) {
-                    this.modelViewMatrixI = this.modelViewMatrix.getInverse();
+                    this.modelViewMatrix.getInverse(this.modelViewMatrixI);
                 }
                 this.modelViewMatrixI.transformCoord(pt);
                 posx = pt.x;
-                posy = pt.y
+                posy = pt.y;
 
                 point.set(posx, posy);
                 this.screenMousePoint.set(posx, posy);
@@ -22564,7 +22625,7 @@ CAAT.Module({
                     pos = lactor.viewToModel(
                         new CAAT.Math.Point(this.screenMousePoint.x, this.screenMousePoint.y, 0));
                     if (lactor.actionPerformed && lactor.contains(pos.x, pos.y)) {
-                        lactor.actionPerformed(e)
+                        lactor.actionPerformed(e);
                     }
 
                     lactor.mouseUp(
@@ -22814,7 +22875,6 @@ CAAT.Module({
 
             __mouseDBLClickHandler:function (e) {
 
-                this.getCanvasCoord(this.mousePoint, e);
                 if (null !== this.lastSelectedActor) {
                     /*
                      var pos = this.lastSelectedActor.viewToModel(
@@ -22822,8 +22882,22 @@ CAAT.Module({
                      */
                     this.lastSelectedActor.mouseDblClick(
                         new CAAT.Event.MouseEvent().init(
-                            this.mousePoint.x,
-                            this.mousePoint.y,
+                            this.prevMousePoint.x,
+                            this.prevMousePoint.y,
+                            e,
+                            this.lastSelectedActor,
+                            this.screenMousePoint,
+                            this.currentScene.time));
+                }
+            },
+
+            __mouseWheelHandler:function (e) {
+
+                if (null !== this.lastSelectedActor) {
+                    this.lastSelectedActor.mouseWheel(
+                        new CAAT.Event.MouseEvent().init(
+                            this.prevMousePoint.x,
+                            this.prevMousePoint.y,
                             e,
                             this.lastSelectedActor,
                             this.screenMousePoint,
@@ -23297,6 +23371,27 @@ CAAT.Module({
                         me.__mouseDBLClickHandler(e);
                     }
                 }, false);
+
+                var mouseWheelHandler = function (e) {
+                    if (e.target === canvas) {
+                        e.preventDefault();
+                        e.cancelBubble = true;
+                        if (e.stopPropagation) e.stopPropagation();
+                        var mp = me.mousePoint;
+                        me.getCanvasCoord(mp, e);
+                        if (mp.x < 0 || mp.y < 0 || mp.x >= me.width || mp.y >= me.height) {
+                            return;
+                        }
+
+                        //Cross browser wheel delta
+                        e.wheelDelta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+                        me.__mouseWheelHandler(e);
+                    }
+                };
+                //IE9, Chrome, Safari, Opera
+                window.addEventListener('mousewheel', mouseWheelHandler, false);
+                //Firefox
+                window.addEventListener('DOMMouseScroll', mouseWheelHandler, false);
 
                 if (CAAT.TOUCH_BEHAVIOR === CAAT.TOUCH_AS_MOUSE) {
                     canvas.addEventListener("touchstart", this.__touchStartHandler.bind(this), false);
@@ -24041,44 +24136,50 @@ CAAT.Module( {
 
         renderContextStyle.prototype= {
 
-            ctx         : null,
+            ctx          : null,
 
-            defaultFS   : null,
-            font        : null,
-            fontSize    : null,
-            fill        : null,
-            stroke      : null,
-            filled      : null,
-            stroked     : null,
-            strokeSize  : null,
-            italic      : null,
-            bold        : null,
-            alignment   : null,
-            tabSize     : null,
-            shadow      : null,
-            shadowBlur  : null,
-            shadowColor : null,
+            defaultFS    : null,
+            font         : null,
+            fontSize     : null,
+            fill         : null,
+            stroke       : null,
+            filled       : null,
+            stroked      : null,
+            strokeSize   : null,
+            italic       : null,
+            bold         : null,
+            alignment    : null,
+            tabSize      : null,
+            shadow       : null,
+            shadowBlur   : null,
+            shadowColor  : null,
+            shadowOffsetX: null,
+            shadowOffsetY: null,
 
-            sfont       : null,
 
-            chain       : null,
+            sfont        : null,
+
+            chain        : null,
 
             setDefault : function( defaultStyles ) {
-                this.defaultFS  =   24;
-                this.font       =   "Arial";
-                this.fontSize   =   this.defaultFS;
-                this.fill       =   '#000';
-                this.stroke     =   '#f00';
-                this.filled     =   true;
-                this.stroked    =   false;
-                this.strokeSize =   1;
-                this.italic     =   false;
-                this.bold       =   false;
-                this.alignment  =   "left";
-                this.tabSize    =   75;
-                this.shadow     =   false;
-                this.shadowBlur =   0;
-                this.shadowColor=   "#000";
+                this.defaultFS    =   24;
+                this.font         =   "Arial";
+                this.fontSize     =   this.defaultFS;
+                this.fill         =   '#000';
+                this.stroke       =   '#f00';
+                this.filled       =   true;
+                this.stroked      =   false;
+                this.strokeSize   =   1;
+                this.italic       =   false;
+                this.bold         =   false;
+                this.alignment    =   "left";
+                this.tabSize      =   75;
+                this.shadow       =   false;
+                this.shadowBlur   =   0;
+                this.shadowColor  =   "#000";
+                this.shadowOffsetX=   0;
+                this.shadowOffsetY=   0;
+
 
                 for( var style in defaultStyles ) {
                     if ( defaultStyles.hasOwnProperty(style) ) {
@@ -24178,8 +24279,10 @@ CAAT.Module( {
 
             __setShadow : function( ctx ) {
                 if ( this.__getProperty("shadow" ) ) {
-                    ctx.shadowBlur= this.__getProperty("shadowBlur");
-                    ctx.shadowColor= this.__getProperty("shadowColor");
+                    ctx.shadowBlur   = this.__getProperty("shadowBlur");
+                    ctx.shadowColor  = this.__getProperty("shadowColor");
+                    ctx.shadowOffsetX= this.__getProperty("shadowOffsetX");
+                    ctx.shadowOffsetY= this.__getProperty("shadowOffsetY");
                 }
             },
 
