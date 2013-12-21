@@ -72,6 +72,9 @@ more ./src/Modules/Initialization/Template.js >> "${FILE_CAAT}"
 more ./src/Modules/Initialization/TemplateWithSplash.js >> "${FILE_CAAT}"
 more ./src/Modules/CSS/csskeyframehelper.js >> "${FILE_CAAT}"
 
+# more ./src/Modules/Particle/Particle.js >> "${FILE_CAAT}"
+more ./src/Modules/Particle/Emitter.js >> "${FILE_CAAT}"
+
 
 more ./src/PathUtil/PathSegment.js >> "${FILE_CAAT}"
 more ./src/PathUtil/ArcPath.js >> "${FILE_CAAT}"
@@ -190,6 +193,9 @@ more ./src/Modules/LayoutUtils/RowLayout.js >> "${FILE_CAAT_CSS}"
 more ./src/Modules/Initialization/Template.js >> "${FILE_CAAT_CSS}"
 more ./src/Modules/Initialization/TemplateWithSplash.js >> "${FILE_CAAT_CSS}"
 more ./src/Modules/CSS/csskeyframehelper.js >> "${FILE_CAAT}"
+
+# more ./src/Modules/Particle/Particle.js >> "${FILE_CAAT_CSS}"
+# more ./src/Modules/Particle/Emitter.js >> "${FILE_CAAT_CSS}"
 
 
 more ./src/PathUtil/PathSegment.js >> "${FILE_CAAT_CSS}"
