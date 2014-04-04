@@ -13,10 +13,10 @@ CAAT.Module({
         CAAT.ENDRAF=false;
 
         /**
-         * if setInterval, this value holds CAAT.setInterval return value.
+         * This value holds setInterval ID or RAF handler ID required to stop the CAAT loop
          * @type {null}
          */
-        CAAT.INTERVAL_ID=null;
+        CAAT.LOOP_ID=null;
 
         /**
          * Boolean flag to determine if CAAT.loop has already been called.
@@ -110,11 +110,14 @@ CAAT.Module({
          */
         CAAT.endLoop=function () {
             if (CAAT.NO_RAF) {
-                if (CAAT.INTERVAL_ID !== null) {
-                    clearInterval(CAAT.INTERVAL_ID);
+                if (CAAT.LOOP_ID !== null) {
+                    clearInterval(CAAT.LOOP_ID);
                 }
             } else {
                 CAAT.ENDRAF = true;
+                if (CAAT.LOOP_ID !== null) {
+                    window.cancelRequestAnimFrame(CAAT.LOOP_ID);
+                }
             }
 
             CAAT.renderEnabled = false;
@@ -139,7 +142,7 @@ CAAT.Module({
             CAAT.FPS = fps || 60;
             CAAT.renderEnabled = true;
             if (CAAT.NO_RAF) {
-                CAAT.INTERVAL_ID = setInterval(
+                CAAT.LOOP_ID = setInterval(
                     function () {
                         var t = new Date().getTime();
 
@@ -163,6 +166,7 @@ CAAT.Module({
                     1000 / CAAT.FPS
                 );
             } else {
+                CAAT.ENDRAF = false;
                 CAAT.renderFrameRAF();
             }
         };
@@ -186,7 +190,7 @@ CAAT.Module({
             c.FRAME_TIME = new Date().getTime() - t;
 
 
-            window.requestAnimFrame(c.renderFrameRAF, 0);
+            CAAT.LOOP_ID = window.requestAnimFrame(c.renderFrameRAF, 0);
         };
         
         /**
@@ -199,9 +203,23 @@ CAAT.Module({
                 window.oRequestAnimationFrame ||
                 window.msRequestAnimationFrame ||
                 function raf(/* function */ callback, /* DOMElement */ element) {
-                    window.setTimeout(callback, 1000 / CAAT.FPS);
+                    return window.setTimeout(callback, 1000 / CAAT.FPS);
                 };
-        })();        
+        })(); 
+
+        /**
+         * Polyfill for cancelRequestAnimationFrame.
+         */
+        window.cancelRequestAnimFrame = (function () {
+            return  window.cancelRequestAnimationFrame ||
+                window.webkitCancelRequestAnimationFrame ||
+                window.mozCancelRequestAnimationFramee ||
+                window.oCancelRequestAnimationFrame ||
+                window.msCancelRequestAnimationFrame ||
+                function cancelRaf(handleID) {
+                    window.clearTimeout(handleID);
+                };
+        })();       
     },
 
     extendsWith:function () {
