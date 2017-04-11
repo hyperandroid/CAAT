@@ -344,10 +344,6 @@ CAAT.Module({
 
                     this.parentOffsetX= sihelper.x;
                     this.parentOffsetY= sihelper.y;
-
-                    this.width= image.mapInfo[0].width;
-                    this.height= image.mapInfo[0].height;
-
                 } else {
                     this.image = image;
                     this.width = image.width;
