@@ -68,6 +68,11 @@ CAAT.Module( {
          */
         meta:           false,
 
+		/**
+		 * Wheel delta, negative value for scrolling up, positive for scrolling down
+		 */
+		wheelDelta:     0,
+
         /**
          * Original mouse/touch event
          */
@@ -77,16 +82,17 @@ CAAT.Module( {
 
 		init : function( x,y,sourceEvent,source,screenPoint,time ) {
 			this.point.set(x,y);
-			this.source=        source;
-			this.screenPoint=   screenPoint;
+			this.source =       source;
+			this.screenPoint =  screenPoint;
             this.alt =          sourceEvent.altKey;
             this.control =      sourceEvent.ctrlKey;
             this.shift =        sourceEvent.shiftKey;
             this.meta =         sourceEvent.metaKey;
-            this.sourceEvent=   sourceEvent;
-            this.x=             x;
-            this.y=             y;
-            this.time=          time;
+            this.wheelDelta =   sourceEvent.wheelDelta;
+            this.sourceEvent =  sourceEvent;
+            this.x =            x;
+            this.y =            y;
+            this.time =         time;
 			return this;
 		},
 		isAltDown : function() {

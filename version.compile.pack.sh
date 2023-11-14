@@ -5,7 +5,8 @@
 source ./version.compile.variables.sh
 ./version.sh
 VERSION=`cat version.nfo`
-echo "New generated version: ${VERSION}"
+
+echo -e "New generated version: ${VERSION}"
 
 CAAT_DST="/tmp/caat"
 
@@ -17,13 +18,13 @@ FILE_CAAT="${DST_FILE_NAME}.js"
 FILE_CAAT_CSS="${DST_FILE_NAME}-css.js"
 FILE_CAAT_BOX2D="${DST_FILE_NAME}-box2d.js"
 
-echo "Packing ${FILE_CAAT}"
-echo "/*" > "${FILE_CAAT}"
+echo -e "Packing ${FILE_CAAT}"
+echo -e "/*" > "${FILE_CAAT}"
 cat LICENSE >> "${FILE_CAAT}"
-echo "\nVersion: ${VERSION}\n" >> "${FILE_CAAT}"
-echo "Created on:" >> "${FILE_CAAT}"
+echo -e "\nVersion: ${VERSION}\n" >> "${FILE_CAAT}"
+echo -e "Created on:" >> "${FILE_CAAT}"
 date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S" >> "${FILE_CAAT}"
-echo "*/\n\n" >> "${FILE_CAAT}"
+echo -e  "*/\n\n" >> "${FILE_CAAT}"
 
 more ./src/Core/ModuleManager.js >> "${FILE_CAAT}"
 more ./src/Core/Constants.js >> "${FILE_CAAT}"
@@ -121,12 +122,12 @@ more ./src/Foundation/UI/ShapeActor.js >> "${FILE_CAAT}"
 more ./src/Foundation/UI/StarActor.js >> "${FILE_CAAT}"
 more ./src/Foundation/UI/TextActor.js >> "${FILE_CAAT}"
 
-echo "CAAT.ModuleManager.solveAll();" >> "${FILE_CAAT}"
+echo -e "CAAT.ModuleManager.solveAll();" >> "${FILE_CAAT}"
 
 # Distribute resulting compiled files
 #
-echo "\nCopying:"
-echo "\tCopying results to ${CAAT_BUILD_DIR}"
+echo -e "\nCopying:"
+echo -e "\tCopying results to ${CAAT_BUILD_DIR}"
 cp ${FILE_CAAT} ${CAAT_BUILD_DIR}
 
 
@@ -134,17 +135,17 @@ cp ${FILE_CAAT} ${CAAT_BUILD_DIR}
 #
 # CSS
 #
-echo "Packing ${FILE_CAAT_CSS}"
-echo "/*" > "${FILE_CAAT_CSS}"
+echo -e "Packing ${FILE_CAAT_CSS}"
+echo -e "/*" > "${FILE_CAAT_CSS}"
 cat LICENSE >> "${FILE_CAAT_CSS}"
-echo "\nVersion: ${VERSION}\n" >> "${FILE_CAAT_CSS}"
-echo "Created on:" >> "${FILE_CAAT_CSS}"
+echo -e "\nVersion: ${VERSION}\n" >> "${FILE_CAAT_CSS}"
+echo -e "Created on:" >> "${FILE_CAAT_CSS}"
 date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S" >> "${FILE_CAAT_CSS}"
-echo "*/\n\n" >> "${FILE_CAAT_CSS}"
+echo -e "*/\n\n" >> "${FILE_CAAT_CSS}"
 
 
 more ./src/Core/ModuleManager.js >> "${FILE_CAAT_CSS}"
-echo "CAAT.__CSS__=1;" >> "${FILE_CAAT_CSS}"
+echo -e "CAAT.__CSS__=1;" >> "${FILE_CAAT_CSS}"
 more ./src/Core/Constants.js >> "${FILE_CAAT_CSS}"
 more ./src/Core/Class.js >> "${FILE_CAAT_CSS}"
 
@@ -236,34 +237,34 @@ more ./src/Foundation/UI/ShapeActor.js >> "${FILE_CAAT_CSS}"
 more ./src/Foundation/UI/StarActor.js >> "${FILE_CAAT_CSS}"
 more ./src/Foundation/UI/TextActor.js >> "${FILE_CAAT_CSS}"
 
-echo "CAAT.ModuleManager.solveAll();" >> "${FILE_CAAT_CSS}"
+echo -e "CAAT.ModuleManager.solveAll();" >> "${FILE_CAAT_CSS}"
 
 # Distribute resulting compiled files
 #
-echo "\nCopying:"
-echo "\tCopying results to ${CAAT_BUILD_DIR}"
+echo -e "\nCopying:"
+echo -e "\tCopying results to ${CAAT_BUILD_DIR}"
 cp ${FILE_CAAT_CSS} ${CAAT_BUILD_DIR}
 
 
 
 # box2d
 
-echo "Packing ${FILE_CAAT_BOX2D}"
-echo "/*" > "${FILE_CAAT_BOX2D}"
+echo -e "Packing ${FILE_CAAT_BOX2D}"
+echo -e "/*" > "${FILE_CAAT_BOX2D}"
 cat LICENSE >> "${FILE_CAAT_BOX2D}"
-echo "\nVersion: ${VERSION}\n" >> "${FILE_CAAT_BOX2D}"
-echo "Created on:" >> "${FILE_CAAT_BOX2D}"
+echo -e "\nVersion: ${VERSION}\n" >> "${FILE_CAAT_BOX2D}"
+echo -e "Created on:" >> "${FILE_CAAT_BOX2D}"
 date "+DATE: %Y-%m-%d%nTIME: %H:%M:%S" >> "${FILE_CAAT_BOX2D}"
-echo "*/\n\n" >> "${FILE_CAAT_BOX2D}"
+echo -e "*/\n\n" >> "${FILE_CAAT_BOX2D}"
 
 more ./src/Foundation/Box2D/B2DBodyActor.js >> "${FILE_CAAT_BOX2D}"
 more ./src/Foundation/Box2D/B2DCircularBody.js >> "${FILE_CAAT_BOX2D}"
 more ./src/Foundation/Box2D/B2DPolygonBody.js >> "${FILE_CAAT_BOX2D}"
 
-echo "CAAT.ModuleManager.solveAll();" >> "${FILE_CAAT_BOX2D}"
+echo -e "CAAT.ModuleManager.solveAll();" >> "${FILE_CAAT_BOX2D}"
 
 # Distribute resulting compiled files
 #
-echo "\nCopying:"
-echo "\tCopying results to ${CAAT_BUILD_DIR}"
+echo -e "\nCopying:"
+echo -e "\tCopying results to ${CAAT_BUILD_DIR}"
 cp ${FILE_CAAT_BOX2D} ${CAAT_BUILD_DIR}

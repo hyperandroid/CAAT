@@ -1592,7 +1592,7 @@ CAAT.Module({
                 return otherActor.viewToModel(this.modelToView(point));
             },
             /**
-             * Transform a point from model to view space.
+             * Transform a point from view to model space.
              * <p>
              * WARNING: every call to this method calculates
              * actor's world model view matrix.
@@ -1773,6 +1773,13 @@ CAAT.Module({
              * @param mouseEvent {CAAT.Event.MouseEvent}
              */
             mouseDblClick:function (mouseEvent) {
+            },
+            /**
+             * Default mouse wheel handler
+             *
+             * @param mouseEvent {CAAT.Event.MouseEvent}
+             */
+            mouseWheel:function (mouseEvent) {
             },
             /**
              * Default mouse enter on Actor handler.
